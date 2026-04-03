@@ -15,7 +15,7 @@
   "result": {
     "id": "minecraft:bat_spawn_egg",
     "components": {
-      "minecraft:item_model": "minecraft:sculk_sensor",
+      "minecraft:item_model": "minecraft:waxed_chiseled_copper",
       "minecraft:item_name": "Entity Detector",
       "minecraft:custom_data": { "ra": { "entity_detector": true } },
       "minecraft:entity_data": {

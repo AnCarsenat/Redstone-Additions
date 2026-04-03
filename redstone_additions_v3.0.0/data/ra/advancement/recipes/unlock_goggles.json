@@ -1,0 +1,23 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "ra:goggles"
+      }
+    },
+    "has_copper": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          { "items": ["minecraft:copper_ingot"] }
+        ]
+      }
+    }
+  },
+  "requirements": [["has_the_recipe", "has_copper"]],
+  "rewards": {
+    "recipes": ["ra:goggles"]
+  }
+}

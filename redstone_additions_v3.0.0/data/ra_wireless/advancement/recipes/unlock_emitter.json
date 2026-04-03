@@ -1,0 +1,23 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "ra_wireless:emitter"
+      }
+    },
+    "has_end_stone_bricks": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          { "items": ["minecraft:end_stone_bricks"] }
+        ]
+      }
+    }
+  },
+  "requirements": [["has_the_recipe", "has_end_stone_bricks"]],
+  "rewards": {
+    "recipes": ["ra_wireless:emitter"]
+  }
+}

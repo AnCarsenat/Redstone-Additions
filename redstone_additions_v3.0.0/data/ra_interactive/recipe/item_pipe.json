@@ -2,24 +2,26 @@
   "type": "minecraft:crafting_shaped",
   "category": "redstone",
   "pattern": [
-    "M M",
-    "MRM",
-    "M M"
+    "IRI",
+    "DHD",
+    "IRI"
   ],
   "key": {
-    "M": "minecraft:mossy_cobblestone",
-    "R": "minecraft:redstone_repeater"
+    "I": "minecraft:iron_ingot",
+    "R": "minecraft:redstone",
+    "D": "minecraft:dispenser",
+    "H": "minecraft:hopper"
   },
   "result": {
     "id": "minecraft:bat_spawn_egg",
     "count": 1,
     "components": {
-      "minecraft:item_model": "minecraft:mossy_cobblestone",
-      "minecraft:item_name": "Extender",
-      "minecraft:custom_data": { "ra": { "extender": true } },
+      "minecraft:item_model": "minecraft:dispenser",
+      "minecraft:item_name": "Item Pipe",
+      "minecraft:custom_data": { "ra": { "item_pipe": true } },
       "minecraft:entity_data": {
         "id": "minecraft:bat",
-        "Tags": ["ra.spawned", "ra.place.extender"],
+        "Tags": ["ra.spawned", "ra.place.item_pipe"],
         "Silent": true,
         "NoAI": true,
         "Invulnerable": true

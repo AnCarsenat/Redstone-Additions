@@ -1,0 +1,23 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "ra_gates:clock"
+      }
+    },
+    "has_daylight_detector": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          { "items": ["minecraft:daylight_detector"] }
+        ]
+      }
+    }
+  },
+  "requirements": [["has_the_recipe", "has_daylight_detector"]],
+  "rewards": {
+    "recipes": ["ra_gates:clock"]
+  }
+}

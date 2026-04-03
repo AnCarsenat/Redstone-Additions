@@ -1,24 +1,44 @@
-{
+﻿{
   "type": "minecraft:crafting_shaped",
   "category": "redstone",
   "pattern": [
-    " G ",
-    "GRG",
-    " S "
+    "XTX",
+    "IBI",
+    "XIX"
   ],
   "key": {
-    "G": "minecraft:gold_ingot",
-    "R": "minecraft:redstone",
-    "S": "minecraft:stick"
+    "X": "minecraft:air",
+    "T": "minecraft:redstone_torch",
+    "I": "minecraft:iron_ingot",
+    "B": ["minecraft:oak_button", "minecraft:spruce_button", "minecraft:birch_button", "minecraft:jungle_button", "minecraft:acacia_button", "minecraft:dark_oak_button", "minecraft:cherry_button", "minecraft:pale_oak_button", "minecraft:mangrove_button", "minecraft:stone_button", "minecraft:polished_blackstone_button"]
   },
   "result": {
-    "id": "minecraft:warped_fungus_on_a_stick",
+    "id": "minecraft:blaze_rod",
     "count": 1,
     "components": {
       "minecraft:item_model": "minecraft:red_dye",
-      "minecraft:item_name": "{\"text\":\"Redstone Remote\",\"color\":\"red\",\"italic\":false}",
-      "minecraft:custom_data": { "ra": { "remote": true, "channel": 1 } },
-      "minecraft:lore": ["{\"text\":\"Channel: 1\",\"color\":\"gray\",\"italic\":false}", "{\"text\":\"Right-click: Toggle all receivers\",\"color\":\"dark_gray\",\"italic\":false}", "{\"text\":\"Shift+Right: Change channel\",\"color\":\"dark_gray\",\"italic\":false}"]
+      "minecraft:item_name": "Redstone Remote",
+      "minecraft:custom_data": { "ra": { "remote": 1, "channel": "default" } },
+      "minecraft:lore": [
+        {
+          "text": "Channel: default",
+          "italic": false,
+          "color": "yellow"
+        },
+        {
+          "text": "RMB: Pulse receivers",
+          "italic": false,
+          "color": "gray"
+        },
+        {
+          "text": "Shift+RMB: Set channel",
+          "italic": false,
+          "color": "gray"
+        }
+      ],
+      "minecraft:enchantment_glint_override": true,
+      "minecraft:food": { "nutrition": 0, "saturation": 0.0, "can_always_eat": true },
+      "minecraft:consumable": { "consume_seconds": 1000000, "animation": "none", "has_consume_particles": false }
     }
   },
   "show_notification": true

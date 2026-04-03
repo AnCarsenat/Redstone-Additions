@@ -1,0 +1,23 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "ra_gates:randomizer"
+      }
+    },
+    "has_bookshelf": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          { "items": ["minecraft:bookshelf"] }
+        ]
+      }
+    }
+  },
+  "requirements": [["has_the_recipe", "has_bookshelf"]],
+  "rewards": {
+    "recipes": ["ra_gates:randomizer"]
+  }
+}

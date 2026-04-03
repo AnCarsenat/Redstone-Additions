@@ -2,14 +2,13 @@
   "type": "minecraft:crafting_shaped",
   "category": "redstone",
   "pattern": [
-    "PBP",
+    "B B",
     "BRB",
-    "PBP"
+    "B B"
   ],
   "key": {
-    "P": "minecraft:paper",
     "B": "minecraft:bookshelf",
-    "R": "minecraft:redstone"
+    "R": "minecraft:redstone_repeater"
   },
   "result": {
     "id": "minecraft:bat_spawn_egg",

@@ -1,0 +1,23 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "ra_wireless:remote"
+      }
+    },
+    "has_gold_ingot": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          { "items": ["minecraft:gold_ingot"] }
+        ]
+      }
+    }
+  },
+  "requirements": [["has_the_recipe", "has_gold_ingot"]],
+  "rewards": {
+    "recipes": ["ra_wireless:remote"]
+  }
+}

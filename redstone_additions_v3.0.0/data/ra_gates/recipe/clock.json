@@ -2,13 +2,12 @@
   "type": "minecraft:crafting_shaped",
   "category": "redstone",
   "pattern": [
-    "SRS",
+    "R R",
     "RCR",
-    "SRS"
+    "R R"
   ],
   "key": {
-    "S": "minecraft:stone",
-    "R": "minecraft:redstone",
+    "R": "minecraft:redstone_repeater",
     "C": "minecraft:clock"
   },
   "result": {

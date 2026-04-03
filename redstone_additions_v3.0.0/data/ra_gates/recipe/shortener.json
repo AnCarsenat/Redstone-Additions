@@ -2,14 +2,13 @@
   "type": "minecraft:crafting_shaped",
   "category": "redstone",
   "pattern": [
-    "SMS",
+    "M M",
     "MRM",
-    "SMS"
+    "M M"
   ],
   "key": {
-    "S": "minecraft:stone_bricks",
     "M": "minecraft:mossy_stone_bricks",
-    "R": "minecraft:redstone"
+    "R": "minecraft:redstone_repeater"
   },
   "result": {
     "id": "minecraft:bat_spawn_egg",

@@ -2,13 +2,13 @@
   "type": "minecraft:crafting_shaped",
   "category": "redstone",
   "pattern": [
-    "SSS",
+    "S S",
     "SRS",
-    "SSS"
+    "S S"
   ],
   "key": {
     "S": "minecraft:smooth_stone_slab",
-    "R": "minecraft:redstone"
+    "R": "minecraft:redstone_repeater"
   },
   "result": {
     "id": "minecraft:bat_spawn_egg",

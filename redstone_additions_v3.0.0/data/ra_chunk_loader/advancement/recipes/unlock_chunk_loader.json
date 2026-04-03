@@ -1,0 +1,23 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "ra_chunk_loader:chunk_loader"
+      }
+    },
+    "has_lodestone": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          { "items": ["minecraft:lodestone"] }
+        ]
+      }
+    }
+  },
+  "requirements": [["has_the_recipe", "has_lodestone"]],
+  "rewards": {
+    "recipes": ["ra_chunk_loader:chunk_loader"]
+  }
+}

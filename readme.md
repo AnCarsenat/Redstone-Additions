@@ -155,12 +155,12 @@ Wiki pages:
 
 ## Latest Changelog
 
-### v4.0.1 — April 2026
-- Refined recipes and progression hooks for multiple modules (including remote advancement criteria)
-- Improved marker targeting and status rendering reliability for goggles and displays
-- Hardened load/upgrade selectors and normalized Creative Data Handler tellraw output
-- Fixed Blast Forge text clipping and aligned several display placement behaviors
-- Rewrote wiki documentation with a full architecture deep dive and expanded contributor guidance
+### v4.0.1 — April 3, 2026
+- Refactored several redstone component recipes and related advancement unlocks for cleaner progression.
+- Unified Delayer, Extender, and Shortener recipe progression around quartz block.
+- Fixed Redstone Remote recipe advancement criteria to require iron ingot consistently.
+- Fixed Blast Forge text display clipping inside the forge.
+- Updated README and changelog documentation for the 4.0.1 release.
 
 ---
 

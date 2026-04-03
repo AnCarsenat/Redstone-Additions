@@ -7,14 +7,14 @@
       },
       "trigger": "minecraft:recipe_unlocked"
     },
-    "has_observer": {
+    "has_dispenser": {
       "conditions": {
-        "items": [{ "items": "minecraft:observer" }]
+        "items": [{ "items": "minecraft:dispenser" }]
       },
       "trigger": "minecraft:inventory_changed"
     }
   },
-  "requirements": [["has_the_recipe", "has_observer"]],
+  "requirements": [["has_the_recipe", "has_dispenser"]],
   "rewards": {
     "recipes": ["ra_interactive:item_mover"]
   }

@@ -9,13 +9,13 @@
   "key": {
     "C": ["minecraft:cobblestone", "minecraft:blackstone"],
     "R": "minecraft:redstone",
-    "O": "minecraft:observer",
+    "O": "minecraft:dispenser",
     "H": "minecraft:hopper"
   },
   "result": {
     "id": "minecraft:bat_spawn_egg",
     "components": {
-      "minecraft:item_model": "minecraft:observer",
+      "minecraft:item_model": "minecraft:dispenser",
       "minecraft:item_name": "Item Mover",
       "minecraft:lore": [{"text":"Moves items from back to front","color":"gray","italic":false}],
       "minecraft:custom_data": { "ra": { "item_mover": true } },

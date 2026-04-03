@@ -2,7 +2,7 @@
   "parent": "ra_advancements:ra_interactive",
   "display": {
     "icon": {
-      "id": "minecraft:observer"
+      "id": "minecraft:dispenser"
     },
     "title": "Item Mover",
     "description": "Obtain the Item Mover item.",

@@ -4,26 +4,19 @@
 
 ### Added
 
+- Added advancement coverage for refactored redstone component recipes.
 - New architecture documentation page in the wiki with full runtime flow details.
 
 ### Changed
 
-- Reworked several crafting recipes and related advancements for cleaner progression and balance.
-- Replaced legacy gate recipe material usage for Delayer, Extender, and Shortener with a unified quartz block path.
-- Hardened selector usage around load/upgrade paths to reduce edge-case targeting errors.
-- Normalized Creative Data Handler tellraw payload format for consistent UI output.
-- Refined goggles and status display behavior for more stable marker targeting and rendering.
-- Expanded and reorganized wiki and developer documentation for contributors.
+- Reworked several crafting recipes and related advancements for cleaner progression.
+- Replaced legacy Delayer/Extender/Shortener recipe ingredients with a quartz block progression path.
+- Updated README and changelog documentation for the 4.0.1 release.
 
 ### Fixed
 
 - Fixed remote advancement criteria mismatch (iron ingot requirement consistency).
-- Fixed Blast Forge text display clipping and related display alignment issues.
-- Fixed clock item display placement offset.
-
-### Internal
-
-- Continued maintainability refactors across recipe and function structure.
+- Fixed Blast Forge text display clipping inside the forge.
 
 ## [4.0.0] - 2026-02-24
 

@@ -1,11 +1,11 @@
 # /ra_interactive:blocks/item_mover/on_break
 # Called when item mover is broken. As armor stand, at position.
 
-# Kill the vanilla observer drop
-kill @e[type=item,nbt={Item:{id:"minecraft:observer"}},distance=..2,limit=1,sort=nearest]
+# Kill the vanilla dispenser drop
+kill @e[type=item,nbt={Item:{id:"minecraft:dispenser"}},distance=..2,limit=1,sort=nearest]
 
 # Drop the custom item
-summon item ~ ~ ~ {Item:{id:"minecraft:bat_spawn_egg",count:1,components:{"minecraft:item_model":"minecraft:observer","minecraft:item_name":"Item Mover","minecraft:lore":[{text:"Moves items from back to front",color:"gray",italic:false}],"minecraft:custom_data":{ra:{item_mover:1b}},"minecraft:entity_data":{id:"minecraft:bat",Tags:["ra.spawned","ra.place.item_mover"],Silent:1b,NoAI:1b,Invulnerable:1b}}}}
+summon item ~ ~ ~ {Item:{id:"minecraft:bat_spawn_egg",count:1,components:{"minecraft:item_model":"minecraft:dispenser","minecraft:item_name":"Item Mover","minecraft:lore":[{text:"Moves items from back to front",color:"gray",italic:false}],"minecraft:custom_data":{ra:{item_mover:1b}},"minecraft:entity_data":{id:"minecraft:bat",Tags:["ra.spawned","ra.place.item_mover"],Silent:1b,NoAI:1b,Invulnerable:1b}}}}
 
 playsound minecraft:block.stone.break block @a[distance=..16] ~ ~ ~ 1 1
 particle minecraft:cloud ~ ~ ~ 0.2 0.2 0.2 0.02 5

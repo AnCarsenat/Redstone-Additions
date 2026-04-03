@@ -7,8 +7,8 @@
 #   Coal        → +50 heat
 #   Charcoal    → +40 heat
 #   Blaze Powder → +500 heat
-#   Blaze Rod   → +1500 heat  (NEW in v4.0.0 — note: not a standard blast furnace fuel)
-#   Lava Bucket → +5000 heat  (NEW in v4.0.0 — returns empty bucket)
+#   Blaze Rod   → +1500 heat  (NEW in v4.0.1 — note: not a standard blast furnace fuel)
+#   Lava Bucket → +5000 heat  (NEW in v4.0.1 — returns empty bucket)
 #
 # Only consumes fuel if there are materials to process in input_1
 

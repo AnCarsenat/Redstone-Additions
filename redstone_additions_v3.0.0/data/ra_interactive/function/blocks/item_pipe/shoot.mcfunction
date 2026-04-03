@@ -21,6 +21,3 @@ kill @e[type=marker,tag=ra.motion_helper]
 # Remove tag and item from pipe
 tag @e[type=item,tag=ra.pipe_shot] remove ra.pipe_shot
 data remove block ~ ~ ~ Items[0]
-
-# Play dispenser sound
-playsound minecraft:block.dispenser.dispense block @a[distance=..16] ~ ~ ~ 0.5 1.2

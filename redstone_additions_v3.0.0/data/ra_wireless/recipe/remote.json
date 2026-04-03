@@ -2,15 +2,14 @@
   "type": "minecraft:crafting_shaped",
   "category": "redstone",
   "pattern": [
-    "XTX",
+    " T ",
     "IBI",
-    "XIX"
+    " I "
   ],
   "key": {
-    "X": "minecraft:air",
     "T": "minecraft:redstone_torch",
     "I": "minecraft:iron_ingot",
-    "B": ["minecraft:oak_button", "minecraft:spruce_button", "minecraft:birch_button", "minecraft:jungle_button", "minecraft:acacia_button", "minecraft:dark_oak_button", "minecraft:cherry_button", "minecraft:pale_oak_button", "minecraft:mangrove_button", "minecraft:stone_button", "minecraft:polished_blackstone_button"]
+    "B": ["minecraft:oak_button", "minecraft:spruce_button", "minecraft:birch_button", "minecraft:jungle_button", "minecraft:acacia_button", "minecraft:dark_oak_button", "minecraft:cherry_button", "minecraft:pale_oak_button", "minecraft:mangrove_button", "minecraft:bamboo_button", "minecraft:crimson_button", "minecraft:warped_button", "minecraft:stone_button", "minecraft:polished_blackstone_button"]
   },
   "result": {
     "id": "minecraft:blaze_rod",

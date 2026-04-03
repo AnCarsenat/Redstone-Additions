@@ -7,16 +7,16 @@
         "recipe": "ra_wireless:remote"
       }
     },
-    "has_gold_ingot": {
+    "has_iron_ingot": {
       "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
-          { "items": ["minecraft:gold_ingot"] }
+          { "items": ["minecraft:iron_ingot"] }
         ]
       }
     }
   },
-  "requirements": [["has_the_recipe", "has_gold_ingot"]],
+  "requirements": [["has_the_recipe", "has_iron_ingot"]],
   "rewards": {
     "recipes": ["ra_wireless:remote"]
   }

@@ -3,7 +3,7 @@
 # Context: as bat, at bat position
 
 execute unless entity @s[tag=ra.place.uni_gate] run return 0
-execute if entity @e[type=armor_stand,tag=ra.custom_block.uni_gate,distance=..0.5,limit=1] run return 0
+execute if entity @e[tag=ra.custom_block.uni_gate,distance=..0.5,limit=1] run return 0
 # Place smooth stone slab with armor stand marker
 function ra_lib:placement/place {block_id:"minecraft:smooth_stone_slab",block_tag:"uni_gate",dir_type:0}
 

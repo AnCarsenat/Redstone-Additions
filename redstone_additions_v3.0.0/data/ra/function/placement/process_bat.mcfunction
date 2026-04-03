@@ -13,8 +13,8 @@ execute store result score #y ra.temp run data get entity @s Pos[1]
 execute store result score #z ra.temp run data get entity @s Pos[2]
 
 # If a custom block marker already exists here, this is a duplicate placement attempt.
-execute if entity @e[type=armor_stand,tag=ra.custom_block,distance=..0.25,limit=1] run kill @s
-execute if entity @e[type=armor_stand,tag=ra.custom_block,distance=..0.25,limit=1] run return 0
+execute if entity @e[tag=ra.custom_block,distance=..0.25,limit=1] run kill @s
+execute if entity @e[tag=ra.custom_block,distance=..0.25,limit=1] run return 0
 
 # Get block definition from bat's custom data and route to registry
 function #ra:placement_handlers

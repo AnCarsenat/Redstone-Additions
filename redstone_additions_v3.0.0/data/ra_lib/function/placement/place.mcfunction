@@ -1,6 +1,6 @@
 # /ra_lib:placement/place {block_id:"...",block_tag:"...",dir_type:N}
-# Place custom block with marker armor stand. At position, player tagged ra.placer nearby.
-# Output: Block placed, armor stand with ra.custom_block + ra.custom_block.{tag} + ra.new
+# Place custom block with marker entity. At position, player tagged ra.placer nearby.
+# Output: Block placed, marker with ra.custom_block + ra.custom_block.{tag} + ra.new
 # IMPORTANT: Caller must remove ra.new tag after setting properties!
 # dir_type: 0 = no facing, 1 = horizontal only, 2 = full 6-directional
 
@@ -24,7 +24,7 @@ $data modify storage ra:temp block_id set value "$(block_id)"
 function ra_lib:placement/set_block
 
 # Summon marker with initialized data structure
-$summon armor_stand ~ ~ ~ {NoGravity:1b,Invisible:1b,Marker:1b,Tags:["ra.custom_block","ra.custom_block.$(block_tag)","ra.new"],data:{properties:{},data:{}}}
+$summon marker ~ ~ ~ {Tags:["ra.custom_block","ra.custom_block.$(block_tag)","ra.new"],data:{properties:{},data:{}}}
 data modify entity @e[tag=ra.new,limit=1] Rotation set from storage ra:temp Rotation
 execute as @p[tag=ra.placer] run scoreboard players operation @e[tag=ra.new,limit=1] ra.facing = @s ra.facing
 

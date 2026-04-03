@@ -4,6 +4,9 @@
 # Kill vanilla daylight_detector drop
 kill @e[type=item,nbt={Item:{id:"minecraft:daylight_detector"}},distance=..2,limit=1,sort=nearest]
 
+# Kill display item
+kill @e[type=item_display,tag=ra.custom_block.clock,distance=..2,limit=1,sort=nearest]
+
 # Revert any redstone blocks back to iron blocks
 fill ~-1 ~-1 ~-1 ~1 ~1 ~1 iron_block replace redstone_block
 

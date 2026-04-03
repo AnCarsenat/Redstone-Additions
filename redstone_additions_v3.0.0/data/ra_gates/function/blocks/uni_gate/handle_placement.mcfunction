@@ -6,6 +6,9 @@ execute unless entity @s[tag=ra.place.uni_gate] run return 0
 # Place smooth stone slab with armor stand marker
 function ra_lib:placement/place {block_id:"minecraft:smooth_stone_slab",block_tag:"uni_gate",dir_type:0}
 
+# Display item above the slab gate
+summon item_display ~ ~0.5 ~ {item:{id:"minecraft:comparator",count:1},Tags:["ra.custom_block.display_item","ra.custom_block.uni_gate"]}
+
 # Add checkRed tag for signal detection
 tag @e[tag=ra.custom_block.uni_gate,tag=ra.new] add ra.checkRed
 

@@ -15,9 +15,6 @@ $data modify entity @e[tag=ra.new,limit=1] data.properties.tier_level set value 
 # Add multiblock base tag for detection
 tag @e[tag=ra.new,limit=1] add ra.multiblock_base
 
-# Optional extra visual entity for the base model
-$summon block_display ~ ~ ~ {block_state:{Name:"$(display_block)"},Tags:["ra.custom_block","ra.custom_block.$(block_tag)","ra.custom_block.display"],transformation:{scale:[$(display_scale)f,$(display_scale)f,$(display_scale)f]}}
-
 # Remove ra.new tag
 $tag @e[tag=ra.custom_block.$(block_tag),tag=ra.new] remove ra.new
 

@@ -7,16 +7,16 @@
         "recipe": "ra_gates:delayer"
       }
     },
-    "has_chiseled_stone_bricks": {
+    "has_quartz_block": {
       "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
-          { "items": ["minecraft:chiseled_stone_bricks"] }
+          { "items": ["minecraft:quartz_block"] }
         ]
       }
     }
   },
-  "requirements": [["has_the_recipe", "has_chiseled_stone_bricks"]],
+  "requirements": [["has_the_recipe", "has_quartz_block"]],
   "rewards": {
     "recipes": ["ra_gates:delayer"]
   }

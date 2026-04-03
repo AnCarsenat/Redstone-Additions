@@ -7,16 +7,16 @@
         "recipe": "ra_gates:extender"
       }
     },
-    "has_mossy_cobblestone": {
+    "has_quartz_block": {
       "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
-          { "items": ["minecraft:mossy_cobblestone"] }
+          { "items": ["minecraft:quartz_block"] }
         ]
       }
     }
   },
-  "requirements": [["has_the_recipe", "has_mossy_cobblestone"]],
+  "requirements": [["has_the_recipe", "has_quartz_block"]],
   "rewards": {
     "recipes": ["ra_gates:extender"]
   }

@@ -19,8 +19,16 @@
       "minecraft:dyed_color": 16750848,
       "minecraft:enchantment_glint_override": true,
       "minecraft:lore": [
-        "{\"text\":\"Reveals custom block info\",\"color\":\"gray\",\"italic\":false}",
-        "{\"text\":\"Wear or hold to scan nearby blocks\",\"color\":\"dark_gray\",\"italic\":false}"
+        {
+          "text": "Reveals custom block info",
+          "color": "gray",
+          "italic": false
+        },
+        {
+          "text": "Wear or hold to scan nearby blocks",
+          "color": "dark_gray",
+          "italic": false
+        }
       ]
     }
   },

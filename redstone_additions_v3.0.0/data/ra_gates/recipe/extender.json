@@ -2,19 +2,19 @@
   "type": "minecraft:crafting_shaped",
   "category": "redstone",
   "pattern": [
-    "M M",
-    "MRM",
-    "M M"
+    " R ",
+    " C ",
+    "   "
   ],
   "key": {
-    "M": "minecraft:mossy_cobblestone",
-    "R": "minecraft:redstone_repeater"
+    "C": "minecraft:quartz_block",
+    "R": "minecraft:repeater"
   },
   "result": {
     "id": "minecraft:bat_spawn_egg",
     "count": 1,
     "components": {
-      "minecraft:item_model": "minecraft:mossy_cobblestone",
+      "minecraft:item_model": "minecraft:quartz_block",
       "minecraft:item_name": "Extender",
       "minecraft:custom_data": { "ra": { "extender": true } },
       "minecraft:entity_data": {

@@ -8,7 +8,7 @@
   ],
   "key": {
     "B": "minecraft:bookshelf",
-    "R": "minecraft:redstone_repeater"
+    "R": "minecraft:repeater"
   },
   "result": {
     "id": "minecraft:bat_spawn_egg",

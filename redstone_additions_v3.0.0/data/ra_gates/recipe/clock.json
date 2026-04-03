@@ -7,7 +7,7 @@
     "R R"
   ],
   "key": {
-    "R": "minecraft:redstone_repeater",
+    "R": "minecraft:repeater",
     "C": "minecraft:clock"
   },
   "result": {

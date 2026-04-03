@@ -2,19 +2,19 @@
   "type": "minecraft:crafting_shaped",
   "category": "redstone",
   "pattern": [
-    "M M",
-    "MRM",
-    "M M"
+    "   ",
+    " C ",
+    " R "
   ],
   "key": {
-    "M": "minecraft:mossy_stone_bricks",
-    "R": "minecraft:redstone_repeater"
+    "C": "minecraft:quartz_block",
+    "R": "minecraft:repeater"
   },
   "result": {
     "id": "minecraft:bat_spawn_egg",
     "count": 1,
     "components": {
-      "minecraft:item_model": "minecraft:mossy_stone_bricks",
+      "minecraft:item_model": "minecraft:quartz_block",
       "minecraft:item_name": "Shortener",
       "minecraft:custom_data": { "ra": { "shortener": true } },
       "minecraft:entity_data": {

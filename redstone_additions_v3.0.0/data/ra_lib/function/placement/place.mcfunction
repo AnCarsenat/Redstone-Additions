@@ -24,7 +24,7 @@ $data modify storage ra:temp block_id set value "$(block_id)"
 function ra_lib:placement/set_block
 
 # Summon marker with initialized data structure
-$summon marker ~ ~ ~ {Tags:["ra.custom_block","ra.custom_block.$(block_tag)","ra.new"],data:{properties:{},data:{}}}
+$summon marker ~ ~ ~ {Tags:["ra.custom_block","ra.custom_block.$(block_tag)","ra.new"],data:{_init:1b,properties:{},data:{}}}
 data modify entity @e[type=marker,tag=ra.new,distance=..0.1,sort=nearest,limit=1] Rotation set from storage ra:temp Rotation
 execute as @p[tag=ra.placer,sort=nearest,limit=1] run scoreboard players operation @e[type=marker,tag=ra.new,distance=..0.1,sort=nearest,limit=1] ra.facing = @s ra.facing
 

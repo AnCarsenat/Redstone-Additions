@@ -9,6 +9,9 @@ scoreboard objectives add ra.edit_type trigger
 scoreboard objectives add ra.edit_step dummy
 scoreboard players enable @a ra.edit_type
 
+# Initialize shared temp storage used by macros and status rendering
+data modify storage ra:temp set value {has_facing:0b,facing_name:"north",block_id:"",io:{},status_literal:{},billboard:{},goggles_props:{},upgrade:{}}
+
 # ========================== SUB-LOAD ==
 # Initialize library systems
 function ra_lib:init
@@ -34,4 +37,4 @@ tellraw @a [{text:"[RA_Lib] ",color:"gold"},{text:"v4.0.0 loaded",color:"green"}
 
 # Welcome message
 tellraw @a [{text:"[",color:"dark_gray"},{text:"RA",color:"gold",bold:true},{text:"] ",color:"dark_gray"},{text:"Redstone Additions v4.0.0 loaded!",color:"green"}]
-tellraw @a [{text:"Use ",color:"gray"},{text:"/function ra:give_all_items",color:"yellow",hover_event:{action:"show_text",value:"Give all items"},click_event:{action:"suggest_command",command:"/function ra:give_all_items"}},{text:" to get items",color:"gray"}]
+tellraw @a [{text:"Use ",color:"gray"},{text:"/function ra:give_all_items",color:"yellow",hoverEvent:{action:"show_text",value:"Give all items"},clickEvent:{action:"suggest_command",value:"/function ra:give_all_items"}},{text:" to get items",color:"gray"}]

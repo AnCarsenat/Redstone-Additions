@@ -35,8 +35,8 @@ execute if score #up_roll ra.temp > #up_chance ra.temp run return 0
 
 # === Spawn upgraded item ===
 execute at @s run summon item ~ ~0.5 ~ {Item:{id:"minecraft:stone",count:1},Tags:["ra.upgraded"],PickupDelay:20}
-execute as @e[type=item,tag=ra.upgraded,limit=1,sort=nearest] run data modify entity @s Item set from storage ra:temp upgrade.result
-execute as @e[type=item,tag=ra.upgraded,limit=1,sort=nearest] run tag @s remove ra.upgraded
+execute as @e[type=item,tag=ra.upgraded,distance=..1.0,limit=1,sort=nearest] run data modify entity @s Item set from storage ra:temp upgrade.result
+execute as @e[type=item,tag=ra.upgraded,distance=..1.0,limit=1,sort=nearest] run tag @s remove ra.upgraded
 
 # === Effects ===
 execute at @s run particle minecraft:totem_of_undying ~ ~0.5 ~ 0.2 0.3 0.2 0.1 15

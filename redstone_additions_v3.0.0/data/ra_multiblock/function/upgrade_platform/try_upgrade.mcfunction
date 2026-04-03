@@ -14,11 +14,24 @@ function ra_multiblock:upgrade_platform/recipes/match_all
 # No matching recipe — skip
 execute unless data storage ra:temp upgrade.result run return 0
 
-# === Consume 1 from input stack ===
+# Roll success chance for this recipe (1..100)
+scoreboard players random #up_roll ra.temp 1 100
+execute store result score #up_chance ra.temp run data get storage ra:temp upgrade.chance 1
+
+# If the roll fails, destroy the item without producing output
+execute unless score #up_roll ra.temp <= #up_chance ra.temp run tag @s add ra.upgrade_failed
+
+# === Consume the input stack ===
 execute store result score #up_count ra.temp run data get entity @s Item.count
 scoreboard players remove #up_count ra.temp 1
 execute if score #up_count ra.temp matches 0 run kill @s
 execute if score #up_count ra.temp matches 1.. store result entity @s Item.count int 1 run scoreboard players get #up_count ra.temp
+
+# Failed upgrade: show break feedback and stop here
+execute if entity @s[tag=ra.upgrade_failed] at @s run particle minecraft:smoke ~ ~0.5 ~ 0.15 0.15 0.15 0.01 10
+execute if entity @s[tag=ra.upgrade_failed] at @s run playsound minecraft:block.grindstone.use block @a[distance=..16] ~ ~ ~ 0.7 0.7
+tag @s remove ra.upgrade_failed
+execute if score #up_roll ra.temp > #up_chance ra.temp run return 0
 
 # === Spawn upgraded item ===
 execute at @s run summon item ~ ~0.5 ~ {Item:{id:"minecraft:stone",count:1},Tags:["ra.upgraded"],PickupDelay:20}

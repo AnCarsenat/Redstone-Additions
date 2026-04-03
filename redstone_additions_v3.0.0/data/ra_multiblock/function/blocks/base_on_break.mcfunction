@@ -6,6 +6,9 @@
 # Kill vanilla block drop
 $kill @e[type=item,nbt={Item:{id:"$(block_id)"}},distance=..2,limit=1,sort=nearest]
 
+# Kill attached block display visual
+$kill @e[type=block_display,tag=ra.custom_block.$(block_tag),distance=..2,limit=1,sort=nearest]
+
 # Disassemble any linked multiblock (use aligned position + tight distance)
 execute align xyz positioned ~0.5 ~ ~0.5 as @e[tag=ra.multiblock,distance=..0.5,limit=1,sort=nearest] run function ra_lib_multiblock:disassemble
 

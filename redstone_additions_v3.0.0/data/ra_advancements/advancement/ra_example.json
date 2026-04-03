@@ -1,0 +1,20 @@
+{
+  "parent": "ra_advancements:ra",
+  "display": {
+    "icon": { "id": "minecraft:blast_furnace" },
+    "title": "Example Multiblocks",
+    "description": "Learn the two example multiblocks and how they progress.",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "criteria": {
+    "start_example": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          { "items": ["minecraft:bat_spawn_egg"], "components": {"custom_data": {"ra": {"example_copper_base": true}}} }
+        ]
+      }
+    }
+  }
+}

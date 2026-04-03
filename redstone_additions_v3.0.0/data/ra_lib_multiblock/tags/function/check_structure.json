@@ -1,6 +1,25 @@
 {
   "values": [
-    "ra_multiblock:blast_forge/check_structure",
-    "ra_multiblock:upgrade_platform/check_structure"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+}  }    }      }        ]          { "items": ["minecraft:bat_spawn_egg"], "components": {"custom_data": {"ra": {"example_copper_base": 1b}}} }        "items": [      "conditions": {      "trigger": "minecraft:inventory_changed",    "start_example": {  "criteria": {  },    "announce_to_chat": true    "show_toast": true,    "description": "Learn the two example multiblocks and how they progress.",    "title": "Example Multiblocks",    "icon": { "id": "minecraft:blast_furnace" },  "display": {    "ra_example:blast_forge/check_structure",
+    "ra_example:upgrade_platform/check_structure"
   ]
 }

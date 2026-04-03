@@ -27,6 +27,9 @@ function ra_gates:tick
 # Run wireless redstone tick
 function ra_wireless:tick
 
+# Run example multiblocks tick
+function ra_example:tick
+
 # Run chunk loader tick
 function ra_chunk_loader:tick
 

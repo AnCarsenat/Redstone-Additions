@@ -9,7 +9,8 @@ function ra_lib:placement/place {block_id:"minecraft:smooth_stone_slab",block_ta
 
 # Display item above the slab gate
 kill @e[type=item_display,tag=ra.custom_block.uni_gate,distance=..0.6]
-summon item_display ~ ~0.5 ~ {item:{id:"minecraft:comparator",count:1},item_display:"fixed",transformation:{left_rotation:[0.7071f,0f,0f,0.7071f],right_rotation:[0f,0f,0f,1f],translation:[0f,0f,0f],scale:[0.5f,0.5f,0.5f]},Tags:["ra.custom_block.display_item","ra.custom_block.uni_gate"]}
+kill @e[type=item_display,tag=ra.custom_block.display_item.uni_gate,distance=..0.6]
+summon item_display ~ ~0.5 ~ {item:{id:"minecraft:comparator",count:1},item_display:"fixed",transformation:{left_rotation:[0.7071f,0f,0f,0.7071f],right_rotation:[0f,0f,0f,1f],translation:[0f,0f,0f],scale:[0.5f,0.5f,0.5f]},Tags:["ra.custom_block.display_item","ra.custom_block.display_item.uni_gate"]}
 
 # Add checkRed tag for signal detection
 tag @e[tag=ra.custom_block.uni_gate,tag=ra.new] add ra.checkRed

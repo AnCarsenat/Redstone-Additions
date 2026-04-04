@@ -38,7 +38,6 @@ scoreboard objectives remove ra.power.local_up
 scoreboard objectives remove ra.power.local_down
 scoreboard objectives remove ra.inv.slot
 scoreboard objectives remove ra.inv.count
-scoreboard objectives remove ra.dir
 scoreboard objectives remove ra.channel
 scoreboard objectives remove ra.pulse_timer
 scoreboard objectives remove ra.multiblock

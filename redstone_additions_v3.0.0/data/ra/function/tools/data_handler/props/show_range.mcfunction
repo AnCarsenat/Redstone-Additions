@@ -1,0 +1,2 @@
+# Show 'range' property - int type
+tellraw @s [{text:"  range: ",color:"white"},{text:"[",color:"dark_gray"},{nbt:"properties.range",storage:"ra:dh",color:"gold"},{text:"]",color:"dark_gray"},{text:" "},{text:"int",color:"aqua"},{text:" "},{text:"[Modify]",color:"yellow",click_event:{action:"run_command",command:"/trigger ra.dh.action set 1"},hover_event:{action:"show_text",value:"Modify this property"}}]

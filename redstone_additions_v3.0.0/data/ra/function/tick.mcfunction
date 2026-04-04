@@ -6,11 +6,26 @@
 # Tags get re-added each tick while clicking via advancement
 # If tag exists but wasn't refreshed this tick, player stopped
 tag @a[tag=ra.cdh_active,tag=!ra.cdh_clicked] remove ra.cdh_active
+tag @a[tag=ra.dh_active,tag=!ra.dh_clicked] remove ra.dh_active
 tag @a[tag=ra.wrench_active,tag=!ra.wrench_clicked] remove ra.wrench_active
 tag @a[tag=ra.remote_active,tag=!ra.remote_clicked] remove ra.remote_active
+# Debug-only input handler active tag cleanup (commented by request)
+# tag @a[tag=ra.input_handler_active,tag=!ra.input_handler_clicked] remove ra.input_handler_active
 tag @a[tag=ra.cdh_clicked] remove ra.cdh_clicked
+tag @a[tag=ra.dh_clicked] remove ra.dh_clicked
 tag @a[tag=ra.wrench_clicked] remove ra.wrench_clicked
 tag @a[tag=ra.remote_clicked] remove ra.remote_clicked
+# Debug-only input handler clicked tag cleanup (commented by request)
+# tag @a[tag=ra.input_handler_clicked] remove ra.input_handler_clicked
+
+# Tick modular input sessions
+function ra_lib:input/tick
+
+# Tick non-OP input data handler actions
+function ra:tools/data_handler/tick
+
+# Debug-only input handler tick (commented by request)
+# function ra:tools/input_data_handler/tick
 
 # Placement system - detect bats for custom block placement
 function ra:placement/detect_bats

@@ -7,7 +7,14 @@
 # Data handler scoreboards
 scoreboard objectives add ra.edit_type trigger
 scoreboard objectives add ra.edit_step dummy
+scoreboard objectives add ra.dh.action trigger
+scoreboard objectives add ra.dh.pending dummy
+# Debug-only input handler objective (commented by request)
+# scoreboard objectives add ra.input_handler.action trigger
 scoreboard players enable @a ra.edit_type
+scoreboard players enable @a ra.dh.action
+# Debug-only input handler objective enable (commented by request)
+# scoreboard players enable @a ra.input_handler.action
 
 # Initialize shared temp storage used by macros and status rendering
 data merge storage ra:temp {has_facing:0b,facing_name:"north",block_id:"",io:{},status_literal:{},billboard:{},goggles_props:{},upgrade:{}}

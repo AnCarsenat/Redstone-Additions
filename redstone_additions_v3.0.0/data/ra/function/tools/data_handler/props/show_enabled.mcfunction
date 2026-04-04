@@ -1,0 +1,2 @@
+# Show 'enabled' property - bool type
+tellraw @s [{text:"  enabled: ",color:"white"},{text:"[",color:"dark_gray"},{nbt:"properties.enabled",storage:"ra:dh",color:"green"},{text:"]",color:"dark_gray"},{text:" "},{text:"bool",color:"aqua"},{text:" "},{text:"[Toggle]",color:"yellow",click_event:{action:"run_command",command:"/trigger ra.dh.action set 11"},hover_event:{action:"show_text",value:"Toggle this property"}}]

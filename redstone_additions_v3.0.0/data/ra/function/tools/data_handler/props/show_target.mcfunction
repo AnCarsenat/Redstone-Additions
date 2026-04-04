@@ -1,0 +1,2 @@
+# Show 'target' property - string type
+tellraw @s [{text:"  target: ",color:"white"},{text:"[",color:"dark_gray"},{nbt:"properties.target",storage:"ra:dh",color:"green"},{text:"]",color:"dark_gray"},{text:" "},{text:"string",color:"aqua"},{text:" "},{text:"[Modify]",color:"yellow",click_event:{action:"run_command",command:"/trigger ra.dh.action set 10"},hover_event:{action:"show_text",value:"Modify this property"}}]

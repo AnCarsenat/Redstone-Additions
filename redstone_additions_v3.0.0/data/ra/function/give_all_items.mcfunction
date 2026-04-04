@@ -4,7 +4,10 @@
 # === Tools ===
 function ra:tools/wrench/give
 function ra:tools/creative_data_handler/give
+function ra:tools/data_handler/give
 function ra:tools/goggles/give
+# Debug-only input handler tool (commented by request)
+# function ra:tools/input_data_handler/give
 
 # === Interactive Blocks ===
 function ra_interactive:items/give_all

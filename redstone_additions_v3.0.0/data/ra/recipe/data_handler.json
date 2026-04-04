@@ -1,6 +1,6 @@
 {
   "type": "minecraft:crafting_shaped",
-  "category": "tools",
+  "category": "redstone",
   "pattern": [
     "T T",
     "ISI",
@@ -16,15 +16,15 @@
     "count": 1,
     "components": {
       "minecraft:item_model": "minecraft:light_blue_dye",
-      "minecraft:item_name": "Creative Data Handler",
+      "minecraft:item_name": "Data Handler",
       "minecraft:lore": [
         {
-          "text": "Shift+RMB: Edit block properties",
+          "text": "Shift+RMB: Scan and edit block properties",
           "italic": false,
           "color": "gray"
         }
       ],
-      "minecraft:custom_data": { "ra": { "creative_data_handler": true } },
+      "minecraft:custom_data": { "ra": { "data_handler": true } },
       "minecraft:enchantment_glint_override": true,
       "minecraft:food": { "nutrition": 0, "saturation": 0.0, "can_always_eat": true },
       "minecraft:consumable": { "consume_seconds": 1000000, "animation": "none", "has_consume_particles": false }

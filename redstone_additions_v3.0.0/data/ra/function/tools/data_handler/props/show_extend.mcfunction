@@ -1,0 +1,2 @@
+# Show 'extend' property - int type
+tellraw @s [{text:"  extend: ",color:"white"},{text:"[",color:"dark_gray"},{nbt:"properties.extend",storage:"ra:dh",color:"gold"},{text:"]",color:"dark_gray"},{text:" "},{text:"int",color:"aqua"},{text:" "},{text:"[Modify]",color:"yellow",click_event:{action:"run_command",command:"/trigger ra.dh.action set 15"},hover_event:{action:"show_text",value:"Modify this property"}}]

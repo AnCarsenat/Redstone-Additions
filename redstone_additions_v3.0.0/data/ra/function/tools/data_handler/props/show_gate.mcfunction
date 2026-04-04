@@ -1,0 +1,2 @@
+# Show 'gate' property - string type
+tellraw @s [{text:"  gate: ",color:"white"},{text:"[",color:"dark_gray"},{nbt:"properties.gate",storage:"ra:dh",color:"green"},{text:"]",color:"dark_gray"},{text:" "},{text:"string",color:"aqua"},{text:" "},{text:"[Modify]",color:"yellow",click_event:{action:"run_command",command:"/trigger ra.dh.action set 18"},hover_event:{action:"show_text",value:"Modify this property (AND, OR, NOT, XOR, NAND, NOR, XNOR)"}}]

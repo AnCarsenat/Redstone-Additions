@@ -3,7 +3,7 @@
     "description": [
       {"text": "⚡ ", "color": "red", "bold": true},
       {"text": "Redstone Additions", "color": "gold", "bold": true},
-      {"text": " v4.0.1\n", "color": "yellow"},
+      {"text": " v5.0.0\n", "color": "yellow"},
       {"text": "Automate ", "color": "gray", "italic": true},
       {"text": "Everything", "color": "white", "italic": true, "bold": true},
       {"text": " • ", "color": "dark_gray"},

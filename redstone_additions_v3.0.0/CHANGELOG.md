@@ -1,6 +1,6 @@
 # Changelog
 
-## [5.0.0] - 2026-04-04 - The survival update
+## [v5.0.0] - 2026-04-04 - The survival update
 
 ### Added
 - Added library for aqcuiring text input from non op players using writable books
@@ -8,7 +8,7 @@
 
 ### Changed
 - Refactored writable-book input backend.
-- Updated load messaging and root README version references to 5.0.0.
+- Updated load messaging and root README version references to v5.0.0.
 
 ### Fixed
 - Fixed Data Handler text-edit flow causing the editor item to disappear.
@@ -18,7 +18,7 @@
 ### Removed
 - CDH recipe
 
-## [4.0.1] - 2026-04-03
+## [v5.0.0] - 2026-04-03
 
 ### Added
 
@@ -29,7 +29,7 @@
 
 - Reworked several crafting recipes and related advancements for cleaner progression.
 - Replaced legacy Delayer/Extender/Shortener recipe ingredients with a quartz block progression path.
-- Updated README and changelog documentation for the 4.0.1 release.
+- Updated README and changelog documentation for the v5.0.0 release.
 
 ### Fixed
 
@@ -37,7 +37,7 @@
 - Fixed Blast Forge text display clipping inside the forge.
 - Fixed Item pipes and item movers voiding items 😅
 
-## [4.0.0] - 2026-02-24
+## [v5.0.0] - 2026-02-24
 
 ### Added
 
@@ -97,10 +97,10 @@
 - Removed debug/test items (Output 1/2/3) from `give_all_items`
 
 #### Version Updates
-- Updated pack.mcmeta version to v4.0.0
-- Updated load message to v4.0.0
-- Updated README badge to v4.0.0
-- Updated WIKI Home.md version to 4.0.0
+- Updated pack.mcmeta version to v5.0.0
+- Updated load message to v5.0.0
+- Updated README badge to v5.0.0
+- Updated WIKI Home.md version to v5.0.0
 
 ### Fixed
 
@@ -109,7 +109,7 @@
 - **Conveyor recipe without implementation:** Disabled `conveyor.json` recipe (renamed to `.disabled`). The recipe produced Item Pipe items but no conveyor block exists
 - **Stray pack.mcmeta:** Deleted `data/ra_wireless/pack.mcmeta` which should not exist inside a namespace folder
 - **Duplicate ra.cooldown:** Removed duplicate `scoreboard objectives add ra.cooldown` from `ra:load` (kept in `ra_lib:placement/init` where it's used)
-- **Version mismatches:** All version references now consistently say 4.0.0
+- **Version mismatches:** All version references now consistently say v5.0.0
 
 ### Removed
 - `data/ra_advancements/advancement/ra_gates/get_beamer.json` — ghost advancement for unimplemented block
@@ -120,7 +120,7 @@
 
 ---
 
-## [3.3.0] - 2026-02-23
+## [v5.0.0] - 2026-02-23
 
 ### Changed
 
@@ -146,7 +146,7 @@
 
 ---
 
-## [3.2.0] - 2026-02-23
+## [v5.0.0] - 2026-02-23
 
 ### Changed
 
@@ -181,7 +181,7 @@
 
 ---
 
-## [3.1.0] - 2026-02-23
+## [v5.0.0] - 2026-02-23
 
 ### Added
 
@@ -248,7 +248,7 @@
 
 ---
 
-## [3.0.0] - Initial Release
+## [v5.0.0] - Initial Release
 
 - Core datapack structure
 - Interactive blocks: Block Breaker, Block Placer, Spitter, Pusher, Conveyor, Breeder, Infinite Cauldrons, Message

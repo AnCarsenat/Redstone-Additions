@@ -7,8 +7,9 @@
 #   Coal        → +50 heat
 #   Charcoal    → +40 heat
 #   Blaze Powder → +500 heat
-#   Blaze Rod   → +1500 heat  (NEW in v4.0.1 — note: not a standard blast furnace fuel)
-#   Lava Bucket → +5000 heat  (NEW in v4.0.1 — returns empty bucket)
+#   Blaze Rod   → +1500 heat
+#   Lava Bucket → +5000 heat  
+#   Coal Block → + 400 heat
 #
 # Only consumes fuel if there are materials to process in input_1
 
@@ -25,6 +26,11 @@ execute unless data storage ra:temp bf.fuel_check run return 0
 execute if data storage ra:temp bf.fuel_check{id:"minecraft:coal"} run scoreboard players add @s ra.heat 50
 $execute if data storage ra:temp bf.fuel_check{id:"minecraft:coal"} positioned $(in2) run function ra_multiblock:blast_forge/consume_first_item
 execute if data storage ra:temp bf.fuel_check{id:"minecraft:coal"} run return 1
+
+# Coal Blocks → +50 heat
+execute if data storage ra:temp bf.fuel_check{id:"minecraft:coal_block"} run scoreboard players add @s ra.heat 400
+$execute if data storage ra:temp bf.fuel_check{id:"minecraft:coal_block"} positioned $(in2) run function ra_multiblock:blast_forge/consume_first_item
+execute if data storage ra:temp bf.fuel_check{id:"minecraft:coal_block"} run return 1
 
 # Charcoal → +40 heat
 execute if data storage ra:temp bf.fuel_check{id:"minecraft:charcoal"} run scoreboard players add @s ra.heat 40

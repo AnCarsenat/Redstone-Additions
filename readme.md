@@ -15,7 +15,7 @@
 
 <p align="center">
   <img src="https://img.shields.io/badge/Minecraft-1.21+-2EA44F?logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiI+PHJlY3QgZmlsbD0iIzVBOTEzMiIgd2lkdGg9IjE2IiBoZWlnaHQ9IjE2Ii8+PC9zdmc+" alt="Minecraft 1.21+">
-  <img src="https://img.shields.io/badge/Version-4.0.2-blue" alt="Version 4.0.2">
+  <img src="https://img.shields.io/badge/Version-v5.0.0-blue" alt="Version v5.0.0">
   <img src="https://img.shields.io/badge/Blocks-28-red" alt="28 blocks">
   <img src="https://img.shields.io/badge/Tools-4-lightgrey" alt="4 tools">
   <img src="https://img.shields.io/badge/License-Custom-orange" alt="Custom License">
@@ -155,12 +155,12 @@ Wiki pages:
 
 ## Latest Changelog
 
-### v4.0.2 — April 4, 2026
+### v5.0.0 — April 4, 2026
 - Refactored several redstone component recipes and related advancement unlocks for cleaner progression.
 - Unified Delayer, Extender, and Shortener recipe progression around quartz block.
 - Fixed Redstone Remote recipe advancement criteria to require iron ingot consistently.
 - Fixed Blast Forge text display clipping inside the forge.
-- Updated README and changelog documentation for the 4.0.2 release.
+- Updated README and changelog documentation for the v5.0.0 release.
 
 ---
 

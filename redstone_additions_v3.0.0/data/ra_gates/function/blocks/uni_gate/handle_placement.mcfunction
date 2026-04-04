@@ -12,9 +12,6 @@ kill @e[type=item_display,tag=ra.custom_block.uni_gate,distance=..0.6]
 kill @e[type=item_display,tag=ra.custom_block.display_item.uni_gate,distance=..0.6]
 summon item_display ~ ~0.5 ~ {item:{id:"minecraft:comparator",count:1},item_display:"fixed",transformation:{left_rotation:[0.7071f,0f,0f,0.7071f],right_rotation:[0f,0f,0f,1f],translation:[0f,0f,0f],scale:[0.5f,0.5f,0.5f]},Tags:["ra.custom_block.display_item","ra.custom_block.display_item.uni_gate"]}
 
-# Add checkRed tag for signal detection
-tag @e[type=marker,tag=ra.custom_block.uni_gate,tag=ra.new,distance=..0.5] add ra.checkRed
-
 # Set default properties (gate_type: and, or, not, xor, nand, nor, xnor)
 data modify entity @e[type=marker,tag=ra.custom_block.uni_gate,tag=ra.new,distance=..0.5,sort=nearest,limit=1] data.properties.gate_type set value "and"
 scoreboard players set @e[type=marker,tag=ra.custom_block.uni_gate,tag=ra.new,distance=..0.5] ra.cooldown 0

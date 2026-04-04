@@ -1,8 +1,7 @@
 # /ra_gates:tick
 # Tick all logic gates
 
-# Check redstone signals for all gates first
-function ra_gates:check_signals
+# Per-block redstone detection runs in each block process function.
 
 # Process UNI gate (universal logic gate - replaces individual gates)
 function ra_gates:blocks/uni_gate/tick

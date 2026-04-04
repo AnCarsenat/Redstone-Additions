@@ -1,10 +1,6 @@
 # /ra_gates:load
 # Initialize gates module
 
-# Scoreboards for signal detection
-scoreboard objectives add ra.act_red dummy
-scoreboard objectives add ra.inac_red dummy
-
 # Register gate blocks
 function ra_gates:blocks/uni_gate/register_block
 function ra_gates:blocks/clock/register_block

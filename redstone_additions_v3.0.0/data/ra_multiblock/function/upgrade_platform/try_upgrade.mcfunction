@@ -15,7 +15,7 @@ function ra_multiblock:upgrade_platform/recipes/match_all
 execute unless data storage ra:temp upgrade.result run return 0
 
 # Roll success chance for this recipe (1..100)
-scoreboard players random #up_roll ra.temp 1 100
+execute store result score #up_roll ra.temp run random roll 1..100
 execute store result score #up_chance ra.temp run data get storage ra:temp upgrade.chance 1
 
 # If the roll fails, destroy the item without producing output

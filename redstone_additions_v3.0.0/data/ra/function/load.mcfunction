@@ -19,6 +19,9 @@ scoreboard players enable @a ra.dh.action
 # Initialize shared temp storage used by macros and status rendering
 data merge storage ra:temp {has_facing:0b,facing_name:"north",block_id:"",io:{},status_literal:{},billboard:{},goggles_props:{},upgrade:{}}
 
+# Initialize configurable text-display offsets once.
+function ra:tools/goggles/billboard/init_offsets
+
 # ========================== SUB-LOAD ==
 # Initialize library systems
 function ra_lib:init
@@ -28,6 +31,7 @@ function ra_interactive:load
 function ra_sensors:load
 function ra_gates:load
 function ra_wireless:load
+function ra_wires:load
 function ra_chunk_loader:load
 function ra_multiblock:load
 

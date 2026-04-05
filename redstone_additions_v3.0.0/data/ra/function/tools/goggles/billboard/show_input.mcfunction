@@ -3,6 +3,5 @@
 # Context: as multiblock marker, at base position
 # Input: $(label) = text label, $(x) $(y) $(z) = block offset from base
 
-# Summon label billboard above the IO block (offset + 1.3 Y)
-# Use align xyz to snap to block grid, then center + Y offset for text position
-$execute positioned ~$(x) ~$(y) ~$(z) align xyz run summon text_display ~0.5 ~1.3 ~0.5 {Tags:["ra.billboard","ra.display"],billboard:"center",text:{text:"$(label)",color:"green",italic:false},background:553648127,shadow:true,see_through:false,line_width:200,transformation:{left_rotation:[0f,0f,0f,1f],right_rotation:[0f,0f,0f,1f],translation:[0f,0f,0f],scale:[0.4f,0.4f,0.4f]}}
+$data modify storage ra:temp io set value {x:$(x),y:$(y),z:$(z),label:"$(label)",color:"green"}
+function ra:tools/goggles/billboard/show_io_line

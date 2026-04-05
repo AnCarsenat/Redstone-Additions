@@ -20,3 +20,6 @@ execute if entity @s[tag=ra.custom_block.clock] run function ra:tools/goggles/st
 
 # Delayer — show delay
 execute if entity @s[tag=ra.custom_block.delayer] run function ra:tools/goggles/status/read_status_macro
+
+# RA Wires blocks — liquid, gas, and electric status
+execute if entity @s[tag=ra.wires.node] run function ra_wires:goggles/show_status

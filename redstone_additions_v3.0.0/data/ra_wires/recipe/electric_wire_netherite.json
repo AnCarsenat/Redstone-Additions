@@ -1,0 +1,38 @@
+{
+    "type":  "minecraft:crafting_shaped",
+    "category":  "redstone",
+    "pattern":  [
+                    " B ",
+                    "RCR",
+                    " B "
+                ],
+    "key":  {
+                "B":  "minecraft:polished_blackstone",
+                "R":  "minecraft:redstone",
+                "C":  "minecraft:copper_ingot"
+            },
+    "result":  {
+                   "id":  "minecraft:bat_spawn_egg",
+                   "count":  1,
+                   "components":  {
+                                      "minecraft:item_model":  "minecraft:black_candle",
+                                      "minecraft:item_name":  "L2 Wire",
+                                      "minecraft:custom_data":  {
+                                                                    "ra":  {
+                                                                               "electric_wire_netherite":  true
+                                                                           }
+                                                                },
+                                      "minecraft:entity_data":  {
+                                                                    "id":  "minecraft:bat",
+                                                                    "Tags":  [
+                                                                                 "ra.spawned",
+                                                                                 "ra.place.electric_wire_netherite"
+                                                                             ],
+                                                                    "Silent":  true,
+                                                                    "NoAI":  true,
+                                                                    "Invulnerable":  true
+                                                                }
+                                  }
+               },
+    "show_notification":  true
+}

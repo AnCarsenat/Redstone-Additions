@@ -1,0 +1,33 @@
+{
+    "parent":  "ra_advancements:ra_wires",
+    "display":  {
+                    "icon":  {
+                                 "id":  "minecraft:blue_candle"
+                             },
+                    "title":  "L2 Plastic Pipe",
+                    "description":  "Obtain the L2 Plastic Pipe.",
+                    "show_toast":  true,
+                    "announce_to_chat":  true
+                },
+    "criteria":  {
+                     "get_liquid_pipe_netherite":  {
+                                                       "trigger":  "minecraft:inventory_changed",
+                                                       "conditions":  {
+                                                                          "items":  [
+                                                                                        {
+                                                                                            "items":  [
+                                                                                                          "minecraft:bat_spawn_egg"
+                                                                                                      ],
+                                                                                            "components":  {
+                                                                                                               "custom_data":  {
+                                                                                                                                   "ra":  {
+                                                                                                                                              "liquid_pipe_netherite":  true
+                                                                                                                                          }
+                                                                                                                               }
+                                                                                                           }
+                                                                                        }
+                                                                                    ]
+                                                                      }
+                                                   }
+                 }
+}

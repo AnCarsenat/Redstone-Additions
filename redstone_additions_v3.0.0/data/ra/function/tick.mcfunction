@@ -30,6 +30,9 @@ function ra:tools/data_handler/tick
 # Placement system - detect bats for custom block placement
 function ra:placement/detect_bats
 
+# Keep all custom block markers centered on world-grid coordinates.
+execute as @e[type=marker,tag=ra.custom_block] at @s align xyz positioned ~0.5 ~0.5 ~0.5 run tp @s ~ ~ ~
+
 # Run interactive blocks tick
 function ra_interactive:tick
 
@@ -41,6 +44,9 @@ function ra_gates:tick
 
 # Run wireless redstone tick
 function ra_wireless:tick
+
+# Run liquids, gases, and electric wires tick
+function ra_wires:tick
 
 # Run chunk loader tick
 function ra_chunk_loader:tick

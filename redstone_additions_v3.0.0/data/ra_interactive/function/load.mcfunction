@@ -6,6 +6,7 @@ function ra_interactive:blocks/block_breaker/register_block
 function ra_interactive:blocks/breeder/register_block
 function ra_interactive:blocks/block_placer/register_block
 function ra_interactive:blocks/pusher/register_block
+function ra_interactive:blocks/spitter/register_block
 function ra_interactive:blocks/item_pipe/register_block
 function ra_interactive:blocks/infinite_water_cauldron/register_block
 function ra_interactive:blocks/infinite_lava_cauldron/register_block

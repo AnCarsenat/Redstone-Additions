@@ -1,9 +1,13 @@
 # /ra:tools/goggles/billboard/handle_billboard
-# MACRO FUNCTION — Summon text_display billboard above custom block
+# MACRO FUNCTION — Summon centered name billboard above custom block
 # Context: as custom block armor stand, at block position
 # Input: $(name) = display name of the block
 
-$summon text_display ~ ~1.2 ~ {Tags:["ra.billboard","ra.display"],billboard:"center",text:{text:"$(name)",color:"gold",bold:false},background:1073741824,shadow:true,see_through:false,line_width:200,transformation:{left_rotation:[0f,0f,0f,1f],right_rotation:[0f,0f,0f,1f],translation:[0f,0f,0f],scale:[0.5f,0.5f,0.5f]}}
+execute unless data storage ra:display offsets.billboard_name run function ra:tools/goggles/billboard/init_offsets
+
+data modify storage ra:temp billboard_render set from storage ra:display offsets.billboard_name
+$data modify storage ra:temp billboard_render.name set value "$(name)"
+function ra:tools/goggles/billboard/render_name with storage ra:temp billboard_render
 
 # Show block status below the name
 function ra:tools/goggles/status/read_status

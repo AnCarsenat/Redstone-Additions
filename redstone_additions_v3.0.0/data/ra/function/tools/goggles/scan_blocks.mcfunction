@@ -9,3 +9,4 @@ function ra_interactive:goggles/draw_displays
 function ra_gates:goggles/draw_displays
 function ra_sensors:goggles/draw_displays
 function ra_wireless:goggles/draw_displays
+function ra_wires:goggles/draw_displays

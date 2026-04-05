@@ -46,6 +46,21 @@ execute if entity @s[tag=ra.custom_block.clock] if data entity @s data.propertie
 execute if entity @s[tag=ra.custom_block.emitter] run data modify storage ra:cdh block_type set value "Wireless Emitter"
 execute if entity @s[tag=ra.custom_block.receiver] run data modify storage ra:cdh block_type set value "Wireless Receiver"
 
+# RA Wires blocks
+execute if entity @s[tag=ra.custom_block.liquid_pipe] run data modify storage ra:cdh block_type set value "Plastic Pipe"
+execute if entity @s[tag=ra.custom_block.liquid_tank] run data modify storage ra:cdh block_type set value "Liquid Tank"
+execute if entity @s[tag=ra.custom_block.liquid_pump] run data modify storage ra:cdh block_type set value "Liquid Pump"
+execute if entity @s[tag=ra.custom_block.liquid_valve] run data modify storage ra:cdh block_type set value "Liquid Valve"
+execute if entity @s[tag=ra.custom_block.liquid_drain] run data modify storage ra:cdh block_type set value "Liquid Drain"
+execute if entity @s[tag=ra.custom_block.gas_pipe] run data modify storage ra:cdh block_type set value "Plastic Pipe (Legacy)"
+execute if entity @s[tag=ra.custom_block.gas_tank] run data modify storage ra:cdh block_type set value "Gas Tank"
+execute if entity @s[tag=ra.custom_block.gas_pump] run data modify storage ra:cdh block_type set value "Gas Pump"
+execute if entity @s[tag=ra.custom_block.gas_valve] run data modify storage ra:cdh block_type set value "Gas Valve"
+execute if entity @s[tag=ra.custom_block.electric_wire] run data modify storage ra:cdh block_type set value "Wire"
+execute if entity @s[tag=ra.custom_block.electric_generator] run data modify storage ra:cdh block_type set value "EU Generator"
+execute if entity @s[tag=ra.custom_block.electric_consumer] run data modify storage ra:cdh block_type set value "EU Consumer"
+execute if entity @s[tag=ra.custom_block.electric_switch] run data modify storage ra:cdh block_type set value "EU Switch"
+
 # Store properties and internal data
 data modify storage ra:cdh properties set from entity @s data.properties
 data modify storage ra:cdh internal_data set from entity @s data.data

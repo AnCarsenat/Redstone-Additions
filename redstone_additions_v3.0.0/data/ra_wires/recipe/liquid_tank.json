@@ -1,0 +1,37 @@
+{
+    "type":  "minecraft:crafting_shaped",
+    "category":  "redstone",
+    "pattern":  [
+                    "C C",
+                    "CBC",
+                    "C C"
+                ],
+    "key":  {
+                "C":  "minecraft:copper_ingot",
+                "B":  "minecraft:barrel"
+            },
+    "result":  {
+                   "id":  "minecraft:bat_spawn_egg",
+                   "count":  1,
+                   "components":  {
+                                      "minecraft:item_model":  "minecraft:copper_block",
+                                      "minecraft:item_name":  "Liquid Tank",
+                                      "minecraft:custom_data":  {
+                                                                    "ra":  {
+                                                                               "liquid_tank":  true
+                                                                           }
+                                                                },
+                                      "minecraft:entity_data":  {
+                                                                    "id":  "minecraft:bat",
+                                                                    "Tags":  [
+                                                                                 "ra.spawned",
+                                                                                 "ra.place.liquid_tank"
+                                                                             ],
+                                                                    "Silent":  true,
+                                                                    "NoAI":  true,
+                                                                    "Invulnerable":  true
+                                                                }
+                                  }
+               },
+    "show_notification":  true
+}

@@ -57,6 +57,9 @@ scoreboard objectives remove ra.input.next
 scoreboard objectives remove ra.input.last
 scoreboard objectives remove ra.input.value
 scoreboard objectives remove ra.input.trigger
+scoreboard objectives remove ra.wires.tmp
+scoreboard objectives remove ra.wires.tmp2
+scoreboard objectives remove ra.wires.tinker
 
 # === Clear data storage ===
 data remove storage ra:multiblock {}
@@ -65,6 +68,7 @@ data remove storage ra:block {}
 data remove storage ra:cdh {}
 data remove storage ra:dh {}
 data remove storage ra:input {}
+data remove storage ra:wires {}
 
 # === Cancel scheduled ticks ===
 schedule clear ra:tick
@@ -84,6 +88,15 @@ tag @a remove ra.input_handler_clicked
 tag @a remove ra.input.active
 tag @a remove ra.debug
 tag @e[tag=ra.dh_target] remove ra.dh_target
+tag @a remove ra.wires.tinker_user
+tag @e[tag=ra.wires.node] remove ra.wires.node
+tag @e[tag=ra.wires.tinkerable] remove ra.wires.tinkerable
+tag @e[tag=ra.wires.fluid_node] remove ra.wires.fluid_node
+tag @e[tag=ra.wires.liquid_node] remove ra.wires.liquid_node
+tag @e[tag=ra.wires.gas_node] remove ra.wires.gas_node
+tag @e[tag=ra.wires.electric_node] remove ra.wires.electric_node
+tag @e[tag=ra.wires.legacy_gas_pipe] remove ra.wires.legacy_gas_pipe
+kill @e[type=block_display,tag=ra.wires.pipe_display]
 
 # === Final message ===
 tellraw @a [{text:"\n"},{text:"[",color:"dark_gray"},{text:"RA",color:"gold",bold:true},{text:"] ",color:"dark_gray"},{text:"Redstone Additions has been uninstalled.",color:"red"}]

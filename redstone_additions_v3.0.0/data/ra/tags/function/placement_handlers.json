@@ -22,6 +22,7 @@
     "ra_gates:blocks/shortener/handle_placement",
     "ra_wireless:blocks/emitter/handle_placement",
     "ra_wireless:blocks/receiver/handle_placement",
+    "ra_wires:blocks/handle_placement",
     "ra_chunk_loader:blocks/chunk_loader/handle_placement",
     "ra_multiblock:blocks/copper_base/handle_placement",
     "ra_multiblock:blocks/iron_base/handle_placement",

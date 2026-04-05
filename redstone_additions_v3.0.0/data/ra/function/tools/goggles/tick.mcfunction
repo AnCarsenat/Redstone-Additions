@@ -7,6 +7,12 @@ execute as @a at @s if items entity @s armor.head *[custom_data~{ra:{goggles:1b}
 execute as @a at @s if items entity @s weapon.mainhand *[custom_data~{ra:{goggles:1b}}] run tag @s add ra.goggles_active
 execute as @a at @s if items entity @s weapon.offhand *[custom_data~{ra:{goggles:1b}}] run tag @s add ra.goggles_active
 
+# Tinker cooldown handling for goggles interactions
+scoreboard players remove @a[scores={ra.wires.tinker=1..}] ra.wires.tinker 1
+
+# Sneak + hold goggles in main hand to tinker nearest RA Wires block
+execute as @a[tag=ra.goggles_active,scores={ra.wires.tinker=..0}] at @s if predicate ra:is_sneaking if items entity @s weapon.mainhand *[custom_data~{ra:{goggles:1b}}] run function ra_wires:tools/goggles_tinker
+
 # Run scan for players with goggles (throttled to every 40 ticks = 2 sec)
 scoreboard players add #goggles_timer ra.temp 1
 execute unless score #goggles_timer ra.temp matches 40.. run return 0

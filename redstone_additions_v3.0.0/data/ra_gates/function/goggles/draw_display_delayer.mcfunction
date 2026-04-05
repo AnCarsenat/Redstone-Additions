@@ -1,5 +1,5 @@
 # /ra_gates:goggles/draw_display_delayer
 # Context: as delayer armor stand, at block position
 
-data modify storage ra:temp billboard set value {name:"Delayer"}
+data modify storage ra:temp billboard set value {name:"Delayer",show_name:1b,show_status:1b}
 function ra:tools/goggles/billboard/handle_billboard with storage ra:temp billboard

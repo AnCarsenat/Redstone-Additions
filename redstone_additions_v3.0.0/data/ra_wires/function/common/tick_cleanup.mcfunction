@@ -10,4 +10,5 @@ tag @e[type=marker,tag=ra.wires.pipe_display_v2,tag=!ra.custom_block.liquid_pipe
 tag @e[type=marker,tag=ra.wires.pipe_display_v3,tag=!ra.custom_block.liquid_pipe,tag=!ra.custom_block.gas_pipe] remove ra.wires.pipe_display_v3
 tag @e[type=marker,tag=ra.wires.pipe_display_v4,tag=!ra.custom_block.liquid_pipe,tag=!ra.custom_block.gas_pipe] remove ra.wires.pipe_display_v4
 tag @e[type=marker,tag=ra.wires.pipe_display_v5,tag=!ra.custom_block.liquid_pipe,tag=!ra.custom_block.gas_pipe] remove ra.wires.pipe_display_v5
+tag @e[type=marker,tag=ra.wires.pipe_display_v6,tag=!ra.custom_block.liquid_pipe,tag=!ra.custom_block.gas_pipe] remove ra.wires.pipe_display_v6
 tag @e[type=marker,tag=ra.wires.wire_display_v1,tag=!ra.custom_block.electric_wire] remove ra.wires.wire_display_v1

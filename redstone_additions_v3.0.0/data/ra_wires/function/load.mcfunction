@@ -12,10 +12,12 @@ tag @e[type=marker,tag=ra.custom_block.liquid_pipe] remove ra.wires.pipe_display
 tag @e[type=marker,tag=ra.custom_block.liquid_pipe] remove ra.wires.pipe_display_v3
 tag @e[type=marker,tag=ra.custom_block.liquid_pipe] remove ra.wires.pipe_display_v4
 tag @e[type=marker,tag=ra.custom_block.liquid_pipe] remove ra.wires.pipe_display_v5
+tag @e[type=marker,tag=ra.custom_block.liquid_pipe] remove ra.wires.pipe_display_v6
 tag @e[type=marker,tag=ra.custom_block.gas_pipe] remove ra.wires.pipe_display_v2
 tag @e[type=marker,tag=ra.custom_block.gas_pipe] remove ra.wires.pipe_display_v3
 tag @e[type=marker,tag=ra.custom_block.gas_pipe] remove ra.wires.pipe_display_v4
 tag @e[type=marker,tag=ra.custom_block.gas_pipe] remove ra.wires.pipe_display_v5
+tag @e[type=marker,tag=ra.custom_block.gas_pipe] remove ra.wires.pipe_display_v6
 tag @e[type=marker,tag=ra.custom_block.electric_wire] remove ra.wires.wire_display_v1
 data modify storage ra:wires initialized set value 1b
 

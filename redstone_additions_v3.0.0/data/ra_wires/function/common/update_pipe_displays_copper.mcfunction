@@ -1,7 +1,7 @@
 # /ra_wires:common/update_pipe_displays_copper
 # Render L1 (copper tier) conduit visuals.
 
-# Center visual (L1 slightly slimmer)
+# Center visual
 execute align xyz positioned ~0.5 ~0.5 ~0.5 run summon block_display ~ ~ ~ {Tags:["ra.wires.pipe_display","ra.wires.pipe_display.center"],block_state:{Name:"minecraft:light_blue_concrete"},transformation:{left_rotation:[0f,0f,0f,1f],right_rotation:[0f,0f,0f,1f],translation:[-0.28f,-0.28f,-0.28f],scale:[0.56f,0.56f,0.56f]}}
 
 # East / West bridge bars

@@ -5,9 +5,11 @@
 ### Changed
 - `ra:give_all_items` now gives one prefilled bundle per namespace instead of loose item spam.
 - Added `ra:items/bundles/give_all` and namespace bundle helper functions under `ra:items/bundles/*`.
+- Goggles overlays are now block-defined: billboards only render for blocks that opt in with `show_name` / `show_status`.
 
 ### Docs
 - Updated wiki Home/Developer Guide command descriptions to reflect direct namespace bundles.
+- Updated wiki architecture docs to document block-defined goggles rendering profiles.
 
 ## [v5.1.0] - 2026-04-05 - Transport Networks
 
@@ -30,7 +32,7 @@
 - Fixed non-zero score checks in transport logic to valid score-match syntax.
 - Added explicit fallback particles/status for liquid drain failure cases.
 
-## [v5.0.0] - 2026-04-04 - The survival update
+## [v5.1.0] - 2026-04-04 - The survival update
 
 ### Added
 - Added library for aqcuiring text input from non op players using writable books
@@ -38,7 +40,7 @@
 
 ### Changed
 - Refactored writable-book input backend.
-- Updated load messaging and root README version references to v5.0.0.
+- Updated load messaging and root README version references to v5.1.0.
 
 ### Fixed
 - Fixed Data Handler text-edit flow causing the editor item to disappear.
@@ -48,7 +50,7 @@
 ### Removed
 - CDH recipe
 
-## [v5.0.0] - 2026-04-03
+## [v5.1.0] - 2026-04-03
 
 ### Added
 
@@ -59,7 +61,7 @@
 
 - Reworked several crafting recipes and related advancements for cleaner progression.
 - Replaced legacy Delayer/Extender/Shortener recipe ingredients with a quartz block progression path.
-- Updated README and changelog documentation for the v5.0.0 release.
+- Updated README and changelog documentation for the v5.1.0 release.
 
 ### Fixed
 
@@ -67,7 +69,7 @@
 - Fixed Blast Forge text display clipping inside the forge.
 - Fixed Item pipes and item movers voiding items 😅
 
-## [v5.0.0] - 2026-02-24
+## [v5.1.0] - 2026-02-24
 
 ### Added
 
@@ -127,10 +129,10 @@
 - Removed debug/test items (Output 1/2/3) from `give_all_items`
 
 #### Version Updates
-- Updated pack.mcmeta version to v5.0.0
-- Updated load message to v5.0.0
-- Updated README badge to v5.0.0
-- Updated WIKI Home.md version to v5.0.0
+- Updated pack.mcmeta version to v5.1.0
+- Updated load message to v5.1.0
+- Updated README badge to v5.1.0
+- Updated WIKI Home.md version to v5.1.0
 
 ### Fixed
 
@@ -139,7 +141,7 @@
 - **Conveyor recipe without implementation:** Disabled `conveyor.json` recipe (renamed to `.disabled`). The recipe produced Item Pipe items but no conveyor block exists
 - **Stray pack.mcmeta:** Deleted `data/ra_wireless/pack.mcmeta` which should not exist inside a namespace folder
 - **Duplicate ra.cooldown:** Removed duplicate `scoreboard objectives add ra.cooldown` from `ra:load` (kept in `ra_lib:placement/init` where it's used)
-- **Version mismatches:** All version references now consistently say v5.0.0
+- **Version mismatches:** All version references now consistently say v5.1.0
 
 ### Removed
 - `data/ra_advancements/advancement/ra_gates/get_beamer.json` — ghost advancement for unimplemented block
@@ -150,7 +152,7 @@
 
 ---
 
-## [v5.0.0] - 2026-02-23
+## [v5.1.0] - 2026-02-23
 
 ### Changed
 
@@ -176,7 +178,7 @@
 
 ---
 
-## [v5.0.0] - 2026-02-23
+## [v5.1.0] - 2026-02-23
 
 ### Changed
 
@@ -211,7 +213,7 @@
 
 ---
 
-## [v5.0.0] - 2026-02-23
+## [v5.1.0] - 2026-02-23
 
 ### Added
 
@@ -278,7 +280,7 @@
 
 ---
 
-## [v5.0.0] - Initial Release
+## [v5.1.0] - Initial Release
 
 - Core datapack structure
 - Interactive blocks: Block Breaker, Block Placer, Spitter, Pusher, Conveyor, Breeder, Infinite Cauldrons, Message

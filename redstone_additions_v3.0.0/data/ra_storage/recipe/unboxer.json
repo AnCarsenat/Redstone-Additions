@@ -17,7 +17,7 @@
     "components": {
       "minecraft:item_model": "minecraft:dispenser",
       "minecraft:item_name": "Unboxer",
-      "minecraft:lore": [{"text":"Unboxes input1 boxes into output1 container","color":"gray","italic":false}],
+      "minecraft:lore": [{"text":"Unboxes boxes from itself into output1 container","color":"gray","italic":false}],
       "minecraft:custom_data": { "ra": { "unboxer": true } },
       "minecraft:entity_data": {
         "id": "minecraft:bat",

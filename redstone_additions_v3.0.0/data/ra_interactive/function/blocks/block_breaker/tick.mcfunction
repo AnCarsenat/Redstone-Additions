@@ -1,4 +1,4 @@
-﻿# data/ra_interactive/function/blocks/block_breaker/tick.mcfunction
+# data/ra_interactive/function/blocks/block_breaker/tick.mcfunction
 # Tick all block breakers
 
 # Check for break detection (block removed)

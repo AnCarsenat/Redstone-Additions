@@ -1,4 +1,4 @@
-﻿# /ra_wireless:blocks/emitter/tick
+# /ra_wireless:blocks/emitter/tick
 # Tick all emitters
 
 # Check for break detection (using end_stone_bricks as emitter block)

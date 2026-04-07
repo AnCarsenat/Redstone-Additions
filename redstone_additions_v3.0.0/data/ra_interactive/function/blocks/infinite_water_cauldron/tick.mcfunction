@@ -1,4 +1,4 @@
-﻿# /ra_interactive:blocks/infinite_water_cauldron/tick
+# /ra_interactive:blocks/infinite_water_cauldron/tick
 # Tick all infinite water cauldrons
 
 # Check for break detection (only if block is air)

@@ -1,4 +1,4 @@
-﻿# /ra_chunk_loader:blocks/chunk_loader/tick
+# /ra_chunk_loader:blocks/chunk_loader/tick
 # Tick all chunk loader markers
 
 # Break detection

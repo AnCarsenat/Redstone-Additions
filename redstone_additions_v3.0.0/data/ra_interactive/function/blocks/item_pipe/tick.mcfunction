@@ -1,4 +1,4 @@
-﻿# /ra_interactive:blocks/item_pipe/tick
+# /ra_interactive:blocks/item_pipe/tick
 # Tick all item pipes. Called every tick.
 
 # Keep marker anchors snapped to centered block coordinates.

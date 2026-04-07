@@ -1,4 +1,4 @@
-﻿# /ra_interactive:blocks/block_placer/tick
+# /ra_interactive:blocks/block_placer/tick
 # Tick all block placers
 
 # Check for break detection

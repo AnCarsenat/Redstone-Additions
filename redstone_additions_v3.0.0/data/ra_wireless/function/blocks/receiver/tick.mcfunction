@@ -1,4 +1,4 @@
-﻿# /ra_wireless:blocks/receiver/tick
+# /ra_wireless:blocks/receiver/tick
 # Tick all receivers
 
 # Check for break detection (using purpur_block as receiver block)

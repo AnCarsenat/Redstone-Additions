@@ -1,4 +1,4 @@
-﻿# /ra_interactive:blocks/infinite_lava_cauldron/tick
+# /ra_interactive:blocks/infinite_lava_cauldron/tick
 # Tick all infinite lava cauldrons
 
 # Check for break detection (only if block is air)

@@ -1,4 +1,4 @@
-﻿# /ra_gates:blocks/clock/tick
+# /ra_gates:blocks/clock/tick
 # Tick all clocks
 
 # Check for break detection

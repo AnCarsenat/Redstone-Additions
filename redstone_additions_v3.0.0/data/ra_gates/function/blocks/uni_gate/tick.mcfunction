@@ -1,4 +1,4 @@
-﻿# /ra_gates:blocks/uni_gate/tick
+# /ra_gates:blocks/uni_gate/tick
 # Tick all UNI gates
 
 # Check for break detection

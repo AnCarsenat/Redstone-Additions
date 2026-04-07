@@ -1,4 +1,4 @@
-﻿# /ra_wires:liquid/tick
+# /ra_wires:liquid/tick
 # Tick merged fluid pipes, tanks, pumps, valves, and drains
 
 # Keep legacy tags participating in the merged fluid network.

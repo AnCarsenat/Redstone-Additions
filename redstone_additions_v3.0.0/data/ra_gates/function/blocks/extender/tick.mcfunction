@@ -1,4 +1,4 @@
-﻿# /ra_gates:blocks/extender/tick
+# /ra_gates:blocks/extender/tick
 # Tick all extenders - extends signal duration by configurable ticks
 
 # Check for break detection

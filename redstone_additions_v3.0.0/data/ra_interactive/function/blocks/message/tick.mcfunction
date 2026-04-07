@@ -1,4 +1,4 @@
-﻿# /ra_interactive:blocks/message/tick
+# /ra_interactive:blocks/message/tick
 # Tick all message blocks
 
 # Check for break detection (exclude new blocks, check for note_block)

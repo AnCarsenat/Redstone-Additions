@@ -1,4 +1,4 @@
-﻿# /ra_interactive:blocks/spitter/tick
+# /ra_interactive:blocks/spitter/tick
 # Tick all spitters
 
 # Check for break detection

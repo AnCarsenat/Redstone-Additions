@@ -1,4 +1,4 @@
-﻿# /ra_wires:electric/tick
+# /ra_wires:electric/tick
 # Tick electric wires, generator, consumer, and switch
 
 # Migrate legacy wall-based electric wires to conduit visuals.

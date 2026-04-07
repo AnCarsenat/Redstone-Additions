@@ -1,4 +1,4 @@
-﻿# /ra_gates:blocks/shortener/tick
+# /ra_gates:blocks/shortener/tick
 # Tick all shorteners - shortens signal to configurable pulse length
 
 # Check for break detection

@@ -1,4 +1,4 @@
-﻿# /ra_sensors:blocks/tag_remover/tick
+# /ra_sensors:blocks/tag_remover/tick
 # Tick all tag removers
 
 # Check for break detection

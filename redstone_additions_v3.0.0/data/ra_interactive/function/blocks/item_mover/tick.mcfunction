@@ -1,4 +1,4 @@
-﻿# /ra_interactive:blocks/item_mover/tick
+# /ra_interactive:blocks/item_mover/tick
 # Tick all item movers
 
 # Break detection â€” dispenser removed

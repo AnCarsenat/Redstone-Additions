@@ -1,4 +1,4 @@
-﻿# /ra_gates:blocks/delayer/tick
+# /ra_gates:blocks/delayer/tick
 # Tick all delayers - delays signal by configurable ticks
 
 # Check for break detection

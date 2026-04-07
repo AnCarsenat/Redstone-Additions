@@ -1,4 +1,4 @@
-﻿# /ra_interactive:blocks/breeder/tick
+# /ra_interactive:blocks/breeder/tick
 # Tick all breeders
 
 # Check for break detection

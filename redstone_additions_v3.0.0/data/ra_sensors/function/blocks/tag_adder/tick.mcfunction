@@ -1,4 +1,4 @@
-﻿# /ra_sensors:blocks/tag_adder/tick
+# /ra_sensors:blocks/tag_adder/tick
 # Tick all tag adders
 
 # Check for break detection

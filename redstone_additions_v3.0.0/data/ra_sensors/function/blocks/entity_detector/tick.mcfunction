@@ -1,4 +1,4 @@
-﻿# /ra_sensors:blocks/entity_detector/tick
+# /ra_sensors:blocks/entity_detector/tick
 # Tick all entity detectors
 
 # Check for break detection

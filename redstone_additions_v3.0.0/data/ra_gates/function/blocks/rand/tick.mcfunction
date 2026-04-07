@@ -1,4 +1,4 @@
-﻿# /ra_gates:blocks/rand/tick
+# /ra_gates:blocks/rand/tick
 # Tick all randomizers - outputs random signal on pulse
 
 # Check for break detection

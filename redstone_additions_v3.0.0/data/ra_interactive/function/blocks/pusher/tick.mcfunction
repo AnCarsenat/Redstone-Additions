@@ -1,4 +1,4 @@
-﻿# /ra_interactive:blocks/pusher/tick
+# /ra_interactive:blocks/pusher/tick
 # Tick all pushers
 
 # Check for break detection

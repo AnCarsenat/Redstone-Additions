@@ -1,4 +1,4 @@
-﻿# /ra_interactive:blocks/infinite_snow_cauldron/tick
+# /ra_interactive:blocks/infinite_snow_cauldron/tick
 # Tick all infinite snow cauldrons
 
 # Check for break detection (only if block is air)

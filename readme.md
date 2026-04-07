@@ -5,7 +5,7 @@
 <h1 align="center">Redstone Additions V3</h1>
 
 <p align="center">
-  <strong>44 custom blocks. 5 tools. Vanilla datapack for Minecraft 1.21+.</strong>
+  <strong>46 custom blocks. 5 tools. Vanilla datapack for Minecraft 1.21+.</strong>
 </p>
 
 <p align="center">
@@ -15,8 +15,8 @@
 
 <p align="center">
   <img src="https://img.shields.io/badge/Minecraft-1.21+-2EA44F?logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiI+PHJlY3QgZmlsbD0iIzVBOTEzMiIgd2lkdGg9IjE2IiBoZWlnaHQ9IjE2Ii8+PC9zdmc+" alt="Minecraft 1.21+">
-  <img src="https://img.shields.io/badge/Version-v5.1.0-blue" alt="Version v5.1.0">
-  <img src="https://img.shields.io/badge/Blocks-44-red" alt="44 blocks">
+  <img src="https://img.shields.io/badge/Version-v5.1.1-blue" alt="Version v5.1.1">
+  <img src="https://img.shields.io/badge/Blocks-46-red" alt="46 blocks">
   <img src="https://img.shields.io/badge/Tools-5-lightgrey" alt="5 tools">
   <img src="https://img.shields.io/badge/License-Custom-orange" alt="Custom License">
 </p>
@@ -51,6 +51,10 @@ Everything runs in vanilla using datapack functions and custom block markers. No
 - Infinite Lava Cauldron
 - Infinite Snow Cauldron
 - Message Block
+
+### Storage (2)
+- Boxer
+- Unboxer
 
 ### Sensors (3)
 - Entity Detector
@@ -176,7 +180,7 @@ Wiki pages:
 
 ## Latest Changelog
 
-### v5.1.0 — April 5, 2026
+### v5.1.1 — April 5, 2026
 - Added `ra_wires` with liquid, gas, and electric transport blocks.
 - Added liquid drain fallback particles/status when no valid source can be drained.
 - Added goggles tinkering to toggle/cycle transport block properties in-world.

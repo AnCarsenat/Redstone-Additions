@@ -1,6 +1,6 @@
 # Redstone Additions V3 — Contributing Guidelines
 
-**Version:** v5.1.0  
+**Version:** v5.1.1  
 **Minecraft:** 1.21+
 
 ---

@@ -11,6 +11,8 @@
 execute unless data storage ra:display offsets.billboard_name run function ra:tools/goggles/billboard/init_offsets
 
 # Default policy: a block must explicitly opt in to show name and/or status.
+# Backward compatibility: legacy callers only set "name" and expect name rendering.
+execute unless data storage ra:temp billboard.show_name unless data storage ra:temp billboard.show_status if data storage ra:temp billboard.name run data modify storage ra:temp billboard.show_name set value 1b
 execute unless data storage ra:temp billboard.show_name unless data storage ra:temp billboard.show_status run return 0
 
 # Optional name line.

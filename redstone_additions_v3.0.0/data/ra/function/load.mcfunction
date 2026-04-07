@@ -28,6 +28,7 @@ function ra_lib:init
 
 # Initialize sub-modules
 function ra_interactive:load
+function ra_storage:load
 function ra_sensors:load
 function ra_gates:load
 function ra_wireless:load

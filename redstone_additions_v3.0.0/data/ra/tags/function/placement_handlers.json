@@ -11,6 +11,8 @@
     "ra_interactive:blocks/infinite_snow_cauldron/handle_placement",
     "ra_interactive:blocks/message/handle_placement",
     "ra_interactive:blocks/item_mover/handle_placement",
+    "ra_storage:blocks/boxer/handle_placement",
+    "ra_storage:blocks/unboxer/handle_placement",
     "ra_sensors:blocks/entity_detector/handle_placement",
     "ra_sensors:blocks/tag_adder/handle_placement",
     "ra_sensors:blocks/tag_remover/handle_placement",

@@ -24,6 +24,8 @@ execute if entity @s[tag=ra.custom_block.item_pipe] run data modify storage ra:c
 execute if entity @s[tag=ra.custom_block.infinite_water_cauldron] run data modify storage ra:cdh block_type set value "Infinite Water Cauldron"
 execute if entity @s[tag=ra.custom_block.infinite_lava_cauldron] run data modify storage ra:cdh block_type set value "Infinite Lava Cauldron"
 execute if entity @s[tag=ra.custom_block.infinite_snow_cauldron] run data modify storage ra:cdh block_type set value "Infinite Snow Cauldron"
+execute if entity @s[tag=ra.custom_block.boxer] run data modify storage ra:cdh block_type set value "Boxer"
+execute if entity @s[tag=ra.custom_block.unboxer] run data modify storage ra:cdh block_type set value "Unboxer"
 
 # Sensor blocks
 execute if entity @s[tag=ra.custom_block.entity_detector] run data modify storage ra:cdh block_type set value "Entity Detector"

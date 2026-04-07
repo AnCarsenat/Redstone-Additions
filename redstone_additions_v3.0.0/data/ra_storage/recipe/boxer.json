@@ -1,0 +1,32 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "redstone",
+  "pattern": [
+    "PPP",
+    "RDR",
+    " I "
+  ],
+  "key": {
+    "P": "minecraft:paper",
+    "R": "minecraft:redstone",
+    "D": "minecraft:dropper",
+    "I": "minecraft:iron_ingot"
+  },
+  "result": {
+    "id": "minecraft:bat_spawn_egg",
+    "components": {
+      "minecraft:item_model": "minecraft:dropper",
+      "minecraft:item_name": "Boxer",
+      "minecraft:lore": [{"text":"Compacts input1 container into output1 boxes","color":"gray","italic":false}],
+      "minecraft:custom_data": { "ra": { "boxer": true } },
+      "minecraft:entity_data": {
+        "id": "minecraft:bat",
+        "Tags": ["ra.spawned", "ra.place.boxer"],
+        "Silent": true,
+        "NoAI": true,
+        "Invulnerable": true
+      }
+    }
+  },
+  "show_notification": true
+}

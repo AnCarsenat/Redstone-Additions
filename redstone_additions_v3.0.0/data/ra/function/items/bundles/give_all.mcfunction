@@ -3,6 +3,7 @@
 
 function ra:items/bundles/give_tools_bundle
 function ra:items/bundles/give_interactive_bundle
+function ra:items/bundles/give_storage_bundle
 function ra:items/bundles/give_gates_bundle
 function ra:items/bundles/give_sensors_bundle
 function ra:items/bundles/give_wireless_bundle

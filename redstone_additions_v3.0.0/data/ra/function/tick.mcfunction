@@ -36,6 +36,9 @@ execute as @e[type=marker,tag=ra.custom_block] at @s align xyz positioned ~0.5 ~
 # Run interactive blocks tick
 function ra_interactive:tick
 
+# Run storage blocks tick
+function ra_storage:tick
+
 # Run sensor blocks tick
 function ra_sensors:tick
 

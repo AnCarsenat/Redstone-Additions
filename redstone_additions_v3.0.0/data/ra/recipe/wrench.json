@@ -10,7 +10,7 @@
                 "S":  "minecraft:stick",
                 "I":  "minecraft:iron_ingot"
             },
-    "category":  "tools",
+    "category":  "redstone",
     "result":  {
                    "components":  {
                                       "minecraft:lore":  [

@@ -17,10 +17,17 @@
     "components": {
       "minecraft:item_model": "minecraft:end_stone_bricks",
       "minecraft:item_name": "Wireless Emitter",
-      "minecraft:custom_data": { "ra": { "emitter": true } },
+      "minecraft:custom_data": {
+        "ra": {
+          "emitter": true
+        }
+      },
       "minecraft:entity_data": {
         "id": "minecraft:bat",
-        "Tags": ["ra.spawned", "ra.place.emitter"],
+        "Tags": [
+          "ra.spawned",
+          "ra.place.emitter"
+        ],
         "Silent": true,
         "NoAI": true,
         "Invulnerable": true

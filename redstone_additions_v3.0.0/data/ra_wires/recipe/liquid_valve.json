@@ -1,38 +1,38 @@
 {
-    "type":  "minecraft:crafting_shaped",
-    "category":  "redstone",
-    "pattern":  [
-                    " C ",
-                    "RLR",
-                    " C "
-                ],
-    "key":  {
-                "C":  "minecraft:copper_ingot",
-                "R":  "minecraft:redstone",
-                "L":  "minecraft:lever"
+    "type": "minecraft:crafting_shaped",
+    "category": "redstone",
+    "pattern": [
+        " C ",
+        "RLR",
+        " C "
+    ],
+    "key": {
+        "C": "minecraft:copper_ingot",
+        "R": "minecraft:redstone",
+        "L": "minecraft:lever"
+    },
+    "result": {
+        "id": "minecraft:bat_spawn_egg",
+        "count": 1,
+        "components": {
+            "minecraft:item_model": "minecraft:waxed_cut_copper",
+            "minecraft:item_name": "Liquid Valve",
+            "minecraft:custom_data": {
+                "ra": {
+                    "liquid_valve": true
+                }
             },
-    "result":  {
-                   "id":  "minecraft:bat_spawn_egg",
-                   "count":  1,
-                   "components":  {
-                                      "minecraft:item_model":  "minecraft:waxed_cut_copper",
-                                      "minecraft:item_name":  "Liquid Valve",
-                                      "minecraft:custom_data":  {
-                                                                    "ra":  {
-                                                                               "liquid_valve":  true
-                                                                           }
-                                                                },
-                                      "minecraft:entity_data":  {
-                                                                    "id":  "minecraft:bat",
-                                                                    "Tags":  [
-                                                                                 "ra.spawned",
-                                                                                 "ra.place.liquid_valve"
-                                                                             ],
-                                                                    "Silent":  true,
-                                                                    "NoAI":  true,
-                                                                    "Invulnerable":  true
-                                                                }
-                                  }
-               },
-    "show_notification":  true
+            "minecraft:entity_data": {
+                "id": "minecraft:bat",
+                "Tags": [
+                    "ra.spawned",
+                    "ra.place.liquid_valve"
+                ],
+                "Silent": true,
+                "NoAI": true,
+                "Invulnerable": true
+            }
+        }
+    },
+    "show_notification": true
 }

@@ -17,11 +17,24 @@
     "components": {
       "minecraft:item_model": "minecraft:dropper",
       "minecraft:item_name": "Boxer",
-      "minecraft:lore": [{"text":"Compacts input1 container into output1 boxes","color":"gray","italic":false}],
-      "minecraft:custom_data": { "ra": { "boxer": true } },
+      "minecraft:lore": [
+        {
+          "text": "Compacts input1 container into output1 boxes",
+          "color": "gray",
+          "italic": false
+        }
+      ],
+      "minecraft:custom_data": {
+        "ra": {
+          "boxer": true
+        }
+      },
       "minecraft:entity_data": {
         "id": "minecraft:bat",
-        "Tags": ["ra.spawned", "ra.place.boxer"],
+        "Tags": [
+          "ra.spawned",
+          "ra.place.boxer"
+        ],
         "Silent": true,
         "NoAI": true,
         "Invulnerable": true

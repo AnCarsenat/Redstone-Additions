@@ -1,40 +1,40 @@
 {
-    "type":  "minecraft:crafting_shaped",
-    "category":  "redstone",
-    "pattern":  [
-                    "IRI",
-                    "CBC",
-                    "RFR"
-                ],
-    "key":  {
-                "I":  "minecraft:iron_ingot",
-                "R":  "minecraft:redstone",
-                "C":  "minecraft:copper_ingot",
-                "B":  "minecraft:blast_furnace",
-                "F":  "minecraft:furnace"
+    "type": "minecraft:crafting_shaped",
+    "category": "redstone",
+    "pattern": [
+        "IRI",
+        "CBC",
+        "RFR"
+    ],
+    "key": {
+        "I": "minecraft:iron_ingot",
+        "R": "minecraft:redstone",
+        "C": "minecraft:copper_ingot",
+        "B": "minecraft:blast_furnace",
+        "F": "minecraft:furnace"
+    },
+    "result": {
+        "id": "minecraft:bat_spawn_egg",
+        "count": 1,
+        "components": {
+            "minecraft:item_model": "minecraft:blast_furnace",
+            "minecraft:item_name": "EU Generator",
+            "minecraft:custom_data": {
+                "ra": {
+                    "electric_generator": true
+                }
             },
-    "result":  {
-                   "id":  "minecraft:bat_spawn_egg",
-                   "count":  1,
-                   "components":  {
-                                      "minecraft:item_model":  "minecraft:blast_furnace",
-                                      "minecraft:item_name":  "EU Generator",
-                                      "minecraft:custom_data":  {
-                                                                    "ra":  {
-                                                                               "electric_generator":  true
-                                                                           }
-                                                                },
-                                      "minecraft:entity_data":  {
-                                                                    "id":  "minecraft:bat",
-                                                                    "Tags":  [
-                                                                                 "ra.spawned",
-                                                                                 "ra.place.electric_generator"
-                                                                             ],
-                                                                    "Silent":  true,
-                                                                    "NoAI":  true,
-                                                                    "Invulnerable":  true
-                                                                }
-                                  }
-               },
-    "show_notification":  true
+            "minecraft:entity_data": {
+                "id": "minecraft:bat",
+                "Tags": [
+                    "ra.spawned",
+                    "ra.place.electric_generator"
+                ],
+                "Silent": true,
+                "NoAI": true,
+                "Invulnerable": true
+            }
+        }
+    },
+    "show_notification": true
 }

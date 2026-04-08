@@ -1,38 +1,39 @@
 {
-    "type":  "minecraft:crafting_shaped",
-    "category":  "redstone",
-    "pattern":  [
-                    " B ",
-                    "RLR",
-                    " B "
-                ],
-    "key":  {
-                "B":  "minecraft:smooth_basalt",
-                "R":  "minecraft:redstone",
-                "L":  "minecraft:lever"
-            },
-    "result":  {
-                   "id":  "minecraft:bat_spawn_egg",
-                   "count":  1,
-                   "components":  {
-                                      "minecraft:item_model":  "minecraft:smooth_basalt",
-                                      "minecraft:item_name":  "Gas Valve",
-                                      "minecraft:custom_data":  {
-                                                                    "ra":  {
-                                                                               "gas_valve":  true
-                                                                           }
-                                                                },
-                                      "minecraft:entity_data":  {
-                                                                    "id":  "minecraft:bat",
-                                                                    "Tags":  [
-                                                                                 "ra.spawned",
-                                                                                 "ra.place.gas_valve"
-                                                                             ],
-                                                                    "Silent":  true,
-                                                                    "NoAI":  true,
-                                                                    "Invulnerable":  true
-                                                                }
-                                  }
-               },
-    "show_notification":  true
+  "type": "minecraft:crafting_shaped",
+  "category": "redstone",
+  "pattern": [
+    " C ",
+    "ILI",
+    " C "
+  ],
+  "key": {
+    "R": "minecraft:redstone",
+    "I": "minecraft:iron_ingot",
+    "C": "minecraft:cobblestone",
+    "L": "minecraft:lever"
+  },
+  "result": {
+    "id": "minecraft:bat_spawn_egg",
+    "count": 1,
+    "components": {
+      "minecraft:item_model": "minecraft:smooth_basalt",
+      "minecraft:item_name": "Gas Valve",
+      "minecraft:custom_data": {
+        "ra": {
+          "gas_valve": true
+        }
+      },
+      "minecraft:entity_data": {
+        "id": "minecraft:bat",
+        "Tags": [
+          "ra.spawned",
+          "ra.place.gas_valve"
+        ],
+        "Silent": true,
+        "NoAI": true,
+        "Invulnerable": true
+      }
+    }
+  },
+  "show_notification": true
 }

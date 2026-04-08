@@ -2,13 +2,13 @@
   "type": "minecraft:crafting_shaped",
   "category": "redstone",
   "pattern": [
-    "R R",
     "RCR",
-    "R R"
+    "SSS"
   ],
   "key": {
     "R": "minecraft:repeater",
-    "C": "minecraft:clock"
+    "C": "minecraft:clock",
+    "S": "stone"
   },
   "result": {
     "id": "minecraft:bat_spawn_egg",
@@ -16,10 +16,17 @@
     "components": {
       "minecraft:item_model": "minecraft:daylight_detector",
       "minecraft:item_name": "Clock",
-      "minecraft:custom_data": { "ra": { "clock": true } },
+      "minecraft:custom_data": {
+        "ra": {
+          "clock": true
+        }
+      },
       "minecraft:entity_data": {
         "id": "minecraft:bat",
-        "Tags": ["ra.spawned", "ra.place.clock"],
+        "Tags": [
+          "ra.spawned",
+          "ra.place.clock"
+        ],
         "Silent": true,
         "NoAI": true,
         "Invulnerable": true

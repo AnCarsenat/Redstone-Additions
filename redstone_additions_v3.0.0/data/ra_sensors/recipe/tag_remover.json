@@ -3,13 +3,11 @@
   "category": "redstone",
   "pattern": [
     "CCC",
-    "NRW",
+    "CWC",
     "CCC"
   ],
   "key": {
     "C": "minecraft:cobblestone",
-    "N": "minecraft:name_tag",
-    "R": "minecraft:red_glazed_terracotta",
     "W": "minecraft:water_bucket"
   },
   "result": {
@@ -17,10 +15,17 @@
     "components": {
       "minecraft:item_model": "minecraft:red_glazed_terracotta",
       "minecraft:item_name": "Tag Remover",
-      "minecraft:custom_data": { "ra": { "tag_remover": true } },
+      "minecraft:custom_data": {
+        "ra": {
+          "tag_remover": true
+        }
+      },
       "minecraft:entity_data": {
         "id": "minecraft:bat",
-        "Tags": ["ra.spawned", "ra.place.tag_remover"],
+        "Tags": [
+          "ra.spawned",
+          "ra.place.tag_remover"
+        ],
         "Silent": true,
         "NoAI": true,
         "Invulnerable": true

@@ -1,37 +1,36 @@
 {
-    "type":  "minecraft:crafting_shaped",
-    "category":  "redstone",
-    "pattern":  [
-                    " C ",
-                    "CRC",
-                    " C "
-                ],
-    "key":  {
-                "C":  "minecraft:copper_ingot",
-                "R":  "minecraft:redstone"
-            },
-    "result":  {
-                   "id":  "minecraft:bat_spawn_egg",
-                   "count":  1,
-                   "components":  {
-                                      "minecraft:item_model":  "minecraft:light_blue_candle",
-                                      "minecraft:item_name":  "L1 Plastic Pipe",
-                                      "minecraft:custom_data":  {
-                                                                    "ra":  {
-                                                                               "liquid_pipe_copper":  true
-                                                                           }
-                                                                },
-                                      "minecraft:entity_data":  {
-                                                                    "id":  "minecraft:bat",
-                                                                    "Tags":  [
-                                                                                 "ra.spawned",
-                                                                                 "ra.place.liquid_pipe_copper"
-                                                                             ],
-                                                                    "Silent":  true,
-                                                                    "NoAI":  true,
-                                                                    "Invulnerable":  true
-                                                                }
-                                  }
-               },
-    "show_notification":  true
+  "type": "minecraft:crafting_shaped",
+  "category": "redstone",
+  "pattern": [
+    "CCC",
+    "C C",
+    "CCC"
+  ],
+  "key": {
+    "C": "minecraft:light_blue_concrete"
+  },
+  "result": {
+    "id": "minecraft:bat_spawn_egg",
+    "count": 16,
+    "components": {
+      "minecraft:item_model": "minecraft:light_blue_candle",
+      "minecraft:item_name": "L1 Plastic Pipe",
+      "minecraft:custom_data": {
+        "ra": {
+          "liquid_pipe_copper": true
+        }
+      },
+      "minecraft:entity_data": {
+        "id": "minecraft:bat",
+        "Tags": [
+          "ra.spawned",
+          "ra.place.liquid_pipe_copper"
+        ],
+        "Silent": true,
+        "NoAI": true,
+        "Invulnerable": true
+      }
+    }
+  },
+  "show_notification": true
 }

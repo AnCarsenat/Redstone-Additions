@@ -1,40 +1,40 @@
 {
-    "type":  "minecraft:crafting_shaped",
-    "category":  "redstone",
-    "pattern":  [
-                    "ICI",
-                    "RDR",
-                    "IBI"
-                ],
-    "key":  {
-                "I":  "minecraft:iron_ingot",
-                "C":  "minecraft:copper_ingot",
-                "R":  "minecraft:redstone",
-                "D":  "minecraft:dropper",
-                "B":  "minecraft:bucket"
+    "type": "minecraft:crafting_shaped",
+    "category": "redstone",
+    "pattern": [
+        "ICI",
+        "RDR",
+        "IBI"
+    ],
+    "key": {
+        "I": "minecraft:iron_ingot",
+        "C": "minecraft:copper_ingot",
+        "R": "minecraft:redstone",
+        "D": "minecraft:dropper",
+        "B": "minecraft:bucket"
+    },
+    "result": {
+        "id": "minecraft:bat_spawn_egg",
+        "count": 1,
+        "components": {
+            "minecraft:item_model": "minecraft:dropper",
+            "minecraft:item_name": "Liquid Drain",
+            "minecraft:custom_data": {
+                "ra": {
+                    "liquid_drain": true
+                }
             },
-    "result":  {
-                   "id":  "minecraft:bat_spawn_egg",
-                   "count":  1,
-                   "components":  {
-                                      "minecraft:item_model":  "minecraft:dropper",
-                                      "minecraft:item_name":  "Liquid Drain",
-                                      "minecraft:custom_data":  {
-                                                                    "ra":  {
-                                                                               "liquid_drain":  true
-                                                                           }
-                                                                },
-                                      "minecraft:entity_data":  {
-                                                                    "id":  "minecraft:bat",
-                                                                    "Tags":  [
-                                                                                 "ra.spawned",
-                                                                                 "ra.place.liquid_drain"
-                                                                             ],
-                                                                    "Silent":  true,
-                                                                    "NoAI":  true,
-                                                                    "Invulnerable":  true
-                                                                }
-                                  }
-               },
-    "show_notification":  true
+            "minecraft:entity_data": {
+                "id": "minecraft:bat",
+                "Tags": [
+                    "ra.spawned",
+                    "ra.place.liquid_drain"
+                ],
+                "Silent": true,
+                "NoAI": true,
+                "Invulnerable": true
+            }
+        }
+    },
+    "show_notification": true
 }

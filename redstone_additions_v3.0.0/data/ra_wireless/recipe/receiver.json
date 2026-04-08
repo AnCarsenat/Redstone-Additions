@@ -17,10 +17,17 @@
     "components": {
       "minecraft:item_model": "minecraft:purpur_block",
       "minecraft:item_name": "Wireless Receiver",
-      "minecraft:custom_data": { "ra": { "receiver": true } },
+      "minecraft:custom_data": {
+        "ra": {
+          "receiver": true
+        }
+      },
       "minecraft:entity_data": {
         "id": "minecraft:bat",
-        "Tags": ["ra.spawned", "ra.place.receiver"],
+        "Tags": [
+          "ra.spawned",
+          "ra.place.receiver"
+        ],
         "Silent": true,
         "NoAI": true,
         "Invulnerable": true

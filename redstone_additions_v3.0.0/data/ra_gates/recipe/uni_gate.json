@@ -2,13 +2,14 @@
   "type": "minecraft:crafting_shaped",
   "category": "redstone",
   "pattern": [
-    "S S",
-    "SRS",
-    "S S"
+    " S",
+    "TRT",
+    " S "
   ],
   "key": {
     "S": "minecraft:smooth_stone_slab",
-    "R": "minecraft:repeater"
+    "R": "minecraft:repeater",
+    "T": "redstone_torch"
   },
   "result": {
     "id": "minecraft:bat_spawn_egg",
@@ -16,10 +17,17 @@
     "components": {
       "minecraft:item_model": "minecraft:smooth_stone_slab",
       "minecraft:item_name": "UNI Gate",
-      "minecraft:custom_data": { "ra": { "uni_gate": true } },
+      "minecraft:custom_data": {
+        "ra": {
+          "uni_gate": true
+        }
+      },
       "minecraft:entity_data": {
         "id": "minecraft:bat",
-        "Tags": ["ra.spawned", "ra.place.uni_gate"],
+        "Tags": [
+          "ra.spawned",
+          "ra.place.uni_gate"
+        ],
         "Silent": true,
         "NoAI": true,
         "Invulnerable": true

@@ -3,24 +3,30 @@
   "category": "redstone",
   "pattern": [
     "CCC",
-    "ESR",
+    "ROR",
     "CCC"
   ],
   "key": {
     "C": "minecraft:cobblestone",
-    "E": "minecraft:spider_eye",
-    "S": "minecraft:sculk_sensor",
-    "R": "minecraft:redstone"
+    "R": "minecraft:redstone",
+    "O": "minecraft:observer"
   },
   "result": {
     "id": "minecraft:bat_spawn_egg",
     "components": {
       "minecraft:item_model": "minecraft:waxed_chiseled_copper",
       "minecraft:item_name": "Entity Detector",
-      "minecraft:custom_data": { "ra": { "entity_detector": true } },
+      "minecraft:custom_data": {
+        "ra": {
+          "entity_detector": true
+        }
+      },
       "minecraft:entity_data": {
         "id": "minecraft:bat",
-        "Tags": ["ra.spawned", "ra.place.entity_detector"],
+        "Tags": [
+          "ra.spawned",
+          "ra.place.entity_detector"
+        ],
         "Silent": true,
         "NoAI": true,
         "Invulnerable": true

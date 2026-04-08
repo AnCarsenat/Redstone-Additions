@@ -1,40 +1,40 @@
 {
-    "type":  "minecraft:crafting_shaped",
-    "category":  "redstone",
-    "pattern":  [
-                    "IRI",
-                    "PDP",
-                    "IBI"
-                ],
-    "key":  {
-                "I":  "minecraft:iron_ingot",
-                "R":  "minecraft:redstone",
-                "P":  "minecraft:copper_ingot",
-                "D":  "minecraft:dispenser",
-                "B":  "minecraft:bucket"
+    "type": "minecraft:crafting_shaped",
+    "category": "redstone",
+    "pattern": [
+        "IRI",
+        "PDP",
+        "IBI"
+    ],
+    "key": {
+        "I": "minecraft:iron_ingot",
+        "R": "minecraft:redstone",
+        "P": "minecraft:copper_ingot",
+        "D": "minecraft:dispenser",
+        "B": "minecraft:bucket"
+    },
+    "result": {
+        "id": "minecraft:bat_spawn_egg",
+        "count": 1,
+        "components": {
+            "minecraft:item_model": "minecraft:dispenser",
+            "minecraft:item_name": "Liquid Pump",
+            "minecraft:custom_data": {
+                "ra": {
+                    "liquid_pump": true
+                }
             },
-    "result":  {
-                   "id":  "minecraft:bat_spawn_egg",
-                   "count":  1,
-                   "components":  {
-                                      "minecraft:item_model":  "minecraft:dispenser",
-                                      "minecraft:item_name":  "Liquid Pump",
-                                      "minecraft:custom_data":  {
-                                                                    "ra":  {
-                                                                               "liquid_pump":  true
-                                                                           }
-                                                                },
-                                      "minecraft:entity_data":  {
-                                                                    "id":  "minecraft:bat",
-                                                                    "Tags":  [
-                                                                                 "ra.spawned",
-                                                                                 "ra.place.liquid_pump"
-                                                                             ],
-                                                                    "Silent":  true,
-                                                                    "NoAI":  true,
-                                                                    "Invulnerable":  true
-                                                                }
-                                  }
-               },
-    "show_notification":  true
+            "minecraft:entity_data": {
+                "id": "minecraft:bat",
+                "Tags": [
+                    "ra.spawned",
+                    "ra.place.liquid_pump"
+                ],
+                "Silent": true,
+                "NoAI": true,
+                "Invulnerable": true
+            }
+        }
+    },
+    "show_notification": true
 }

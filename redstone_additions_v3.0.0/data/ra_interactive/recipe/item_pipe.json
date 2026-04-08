@@ -2,26 +2,32 @@
   "type": "minecraft:crafting_shaped",
   "category": "redstone",
   "pattern": [
-    "IRI",
-    "DHD",
-    "IRI"
+    "CCC",
+    "IHI",
+    "CCC"
   ],
   "key": {
-    "I": "minecraft:iron_ingot",
-    "R": "minecraft:redstone",
-    "D": "minecraft:dispenser",
-    "H": "minecraft:hopper"
+    "I": "minecraft:copper_ingot",
+    "H": "minecraft:hopper",
+    "C": "minecraft:cobblestone"
   },
   "result": {
     "id": "minecraft:bat_spawn_egg",
-    "count": 1,
+    "count": 8,
     "components": {
       "minecraft:item_model": "minecraft:dispenser",
       "minecraft:item_name": "Item Pipe",
-      "minecraft:custom_data": { "ra": { "item_pipe": true } },
+      "minecraft:custom_data": {
+        "ra": {
+          "item_pipe": true
+        }
+      },
       "minecraft:entity_data": {
         "id": "minecraft:bat",
-        "Tags": ["ra.spawned", "ra.place.item_pipe"],
+        "Tags": [
+          "ra.spawned",
+          "ra.place.item_pipe"
+        ],
         "Silent": true,
         "NoAI": true,
         "Invulnerable": true

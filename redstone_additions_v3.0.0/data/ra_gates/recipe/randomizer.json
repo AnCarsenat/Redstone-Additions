@@ -2,9 +2,9 @@
   "type": "minecraft:crafting_shaped",
   "category": "redstone",
   "pattern": [
-    "B B",
-    "BRB",
-    "B B"
+    " R ",
+    "RBR",
+    " R "
   ],
   "key": {
     "B": "minecraft:bookshelf",
@@ -16,10 +16,17 @@
     "components": {
       "minecraft:item_model": "minecraft:bookshelf",
       "minecraft:item_name": "Randomizer",
-      "minecraft:custom_data": { "ra": { "rand": true } },
+      "minecraft:custom_data": {
+        "ra": {
+          "rand": true
+        }
+      },
       "minecraft:entity_data": {
         "id": "minecraft:bat",
-        "Tags": ["ra.spawned", "ra.place.rand"],
+        "Tags": [
+          "ra.spawned",
+          "ra.place.rand"
+        ],
         "Silent": true,
         "NoAI": true,
         "Invulnerable": true

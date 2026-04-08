@@ -9,7 +9,22 @@
   "key": {
     "T": "minecraft:redstone_torch",
     "I": "minecraft:iron_ingot",
-    "B": ["minecraft:oak_button", "minecraft:spruce_button", "minecraft:birch_button", "minecraft:jungle_button", "minecraft:acacia_button", "minecraft:dark_oak_button", "minecraft:cherry_button", "minecraft:pale_oak_button", "minecraft:mangrove_button", "minecraft:bamboo_button", "minecraft:crimson_button", "minecraft:warped_button", "minecraft:stone_button", "minecraft:polished_blackstone_button"]
+    "B": [
+      "minecraft:oak_button",
+      "minecraft:spruce_button",
+      "minecraft:birch_button",
+      "minecraft:jungle_button",
+      "minecraft:acacia_button",
+      "minecraft:dark_oak_button",
+      "minecraft:cherry_button",
+      "minecraft:pale_oak_button",
+      "minecraft:mangrove_button",
+      "minecraft:bamboo_button",
+      "minecraft:crimson_button",
+      "minecraft:warped_button",
+      "minecraft:stone_button",
+      "minecraft:polished_blackstone_button"
+    ]
   },
   "result": {
     "id": "minecraft:blaze_rod",
@@ -17,7 +32,12 @@
     "components": {
       "minecraft:item_model": "minecraft:red_dye",
       "minecraft:item_name": "Redstone Remote",
-      "minecraft:custom_data": { "ra": { "remote": 1, "channel": "default" } },
+      "minecraft:custom_data": {
+        "ra": {
+          "remote": 1,
+          "channel": "default"
+        }
+      },
       "minecraft:lore": [
         {
           "text": "Channel: default",
@@ -36,8 +56,16 @@
         }
       ],
       "minecraft:enchantment_glint_override": true,
-      "minecraft:food": { "nutrition": 0, "saturation": 0.0, "can_always_eat": true },
-      "minecraft:consumable": { "consume_seconds": 1000000, "animation": "none", "has_consume_particles": false }
+      "minecraft:food": {
+        "nutrition": 0,
+        "saturation": 0.0,
+        "can_always_eat": true
+      },
+      "minecraft:consumable": {
+        "consume_seconds": 1000000,
+        "animation": "none",
+        "has_consume_particles": false
+      }
     }
   },
   "show_notification": true

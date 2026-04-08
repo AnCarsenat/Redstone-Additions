@@ -3,24 +3,29 @@
   "category": "redstone",
   "pattern": [
     "CCC",
-    "NGR",
+    "CNC",
     "CCC"
   ],
   "key": {
     "C": "minecraft:cobblestone",
-    "N": "minecraft:name_tag",
-    "G": "minecraft:green_glazed_terracotta",
-    "R": "minecraft:redstone"
+    "N": "minecraft:name_tag"
   },
   "result": {
     "id": "minecraft:bat_spawn_egg",
     "components": {
       "minecraft:item_model": "minecraft:green_glazed_terracotta",
       "minecraft:item_name": "Tag Adder",
-      "minecraft:custom_data": { "ra": { "tag_adder": true } },
+      "minecraft:custom_data": {
+        "ra": {
+          "tag_adder": true
+        }
+      },
       "minecraft:entity_data": {
         "id": "minecraft:bat",
-        "Tags": ["ra.spawned", "ra.place.tag_adder"],
+        "Tags": [
+          "ra.spawned",
+          "ra.place.tag_adder"
+        ],
         "Silent": true,
         "NoAI": true,
         "Invulnerable": true

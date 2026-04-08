@@ -83,14 +83,14 @@ For lifecycle internals and marker architecture, see [How It Works](how-it-works
 | ra_sensors | tag_remover | ![Tag Remover recipe](images/recipes/ra_sensors/tag_remover.png){ width="220" } |
 | ra_wireless | emitter | ![Wireless Emitter recipe](images/recipes/ra_wireless/emitter.png){ width="220" } |
 | ra_wireless | receiver | ![Wireless Receiver recipe](images/recipes/ra_wireless/receiver.png){ width="220" } |
-| ra_wires | liquid_pipe (copper) | ![Copper Liquid Pipe recipe](images/recipes/ra_wires/L1_plastic_pipe.png){ width="220" } |
-| ra_wires | liquid_pipe (netherite) | ![Netherite Liquid Pipe recipe](images/recipes/ra_wires/L2_plastic_pipe.png){ width="220" } |
+| ra_wires | liquid_pipe (copper) | ![Copper Liquid Pipe recipe](images/recipes/ra_wires/copper_pipe.png){ width="220" } |
+| ra_wires | liquid_pipe (netherite) | ![Netherite Liquid Pipe recipe](images/recipes/ra_wires/iron_pipe.png){ width="220" } |
 | ra_wires | liquid_tank | ![Liquid Tank recipe](images/recipes/ra_wires/liquid_tank.png){ width="220" } |
 | ra_wires | liquid_pump | ![Liquid Pump recipe](images/recipes/ra_wires/liquid_pump.png){ width="220" } |
 | ra_wires | liquid_valve | ![Liquid Valve recipe](images/recipes/ra_wires/liquid_valve.png){ width="220" } |
 | ra_wires | liquid_drain | ![Liquid Drain recipe](images/recipes/ra_wires/liquid_drain.png){ width="220" } |
-| ra_wires | gas_pipe (copper) | Image pending |
-| ra_wires | gas_pipe (netherite) | Image pending |
+| ra_wires | gas_pipe (copper) | ![Copper Gas Pipe recipe](images/recipes/ra_wires/copper_pipe.png){ width="220" } |
+| ra_wires | gas_pipe (netherite) | ![Netherite Gas Pipe recipe](images/recipes/ra_wires/iron_pipe.png){ width="220" } |
 | ra_wires | gas_tank | ![Gas Tank recipe](images/recipes/ra_wires/gas_tank.png){ width="220" } |
 | ra_wires | gas_pump | ![Gas Pump recipe](images/recipes/ra_wires/gas_pump.png){ width="220" } |
 | ra_wires | gas_valve | ![Gas Valve recipe](images/recipes/ra_wires/gas_valve.png){ width="220" } |
@@ -100,11 +100,11 @@ For lifecycle internals and marker architecture, see [How It Works](how-it-works
 | ra_wires | electric_consumer | ![EU Consumer recipe](images/recipes/ra_wires/eu_consumer.png){ width="220" } |
 | ra_wires | electric_switch | ![EU Switch recipe](images/recipes/ra_wires/eu_switch.png){ width="220" } |
 | ra_chunk_loader | chunk_loader | ![Chunk Loader recipe](images/recipes/ra_chunk_loader/chunk_loader.png){ width="220" } |
-| ra_multiblock | copper_base | Image pending |
+| ra_multiblock | copper_base | ![Copper Multiblock Base recipe](images/recipes/ra_multiblock/copper_base.png){ width="220" } |
 | ra_multiblock | iron_base | Image pending |
-| ra_multiblock | gold_base | Image pending |
-| ra_multiblock | diamond_base | Image pending |
-| ra_multiblock | netherite_base | Image pending |
+| ra_multiblock | gold_base | ![Gold Multiblock Base recipe](images/recipes/ra_multiblock/gold_base.png){ width="220" } |
+| ra_multiblock | diamond_base | ![Diamond Multiblock Base recipe](images/recipes/ra_multiblock/diamond_base.png){ width="220" } |
+| ra_multiblock | netherite_base | ![Netherite Multiblock Base recipe](images/recipes/ra_multiblock/netherite_base.png){ width="220" } |
 
 ## Tools
 

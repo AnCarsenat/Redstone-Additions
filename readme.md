@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="icon.png" alt="Redstone Additions" width="128">
+  <img src="https://github.com/AnCarsenat/Redstone-Additions/raw/main/icon.png" alt="Redstone Additions" width="128">
 </p>
 
 <h1 align="center">Redstone Additions</h1>
@@ -15,7 +15,7 @@
 
 <p align="center">
   <img src="https://img.shields.io/badge/Minecraft-1.21+-2EA44F" alt="Minecraft 1.21+">
-  <img src="https://img.shields.io/badge/Version-v5.1.1-blue" alt="Version v5.1.1">
+  <img src="https://img.shields.io/badge/Version-v5.1.2-blue" alt="Version v5.1.2">
   <img src="https://img.shields.io/badge/Blocks-46-red" alt="46 blocks">
   <img src="https://img.shields.io/badge/Tools-5-lightgrey" alt="5 tools">
   <img src="https://img.shields.io/badge/Recipes-48-8A2BE2" alt="48 recipes">
@@ -137,33 +137,33 @@ I recommend using [Bundles Beyond](https://modrinth.com/mod/bundles-beyond) for 
 
 | Block | Recipe JSON | Recipe image |
 |---|---|---|
-| Copper Liquid Pipe | [redstone_additions/data/ra_wires/recipe/liquid_pipe_copper.json](redstone_additions/data/ra_wires/recipe/liquid_pipe_copper.json) | <img src="docs/images/recipes/ra_wires/copper_pipe.png" alt="Copper liquid pipe recipe" width="210"> |
-| Netherite Liquid Pipe | [redstone_additions/data/ra_wires/recipe/liquid_pipe_netherite.json](redstone_additions/data/ra_wires/recipe/liquid_pipe_netherite.json) | <img src="docs/images/recipes/ra_wires/iron_pipe.png" alt="Netherite liquid pipe recipe" width="210"> |
-| Liquid Tank | [redstone_additions/data/ra_wires/recipe/liquid_tank.json](redstone_additions/data/ra_wires/recipe/liquid_tank.json) | <img src="docs/images/recipes/ra_wires/liquid_tank.png" alt="Liquid tank recipe" width="210"> |
-| Liquid Pump | [redstone_additions/data/ra_wires/recipe/liquid_pump.json](redstone_additions/data/ra_wires/recipe/liquid_pump.json) | <img src="docs/images/recipes/ra_wires/liquid_pump.png" alt="Liquid pump recipe" width="210"> |
-| Liquid Valve | [redstone_additions/data/ra_wires/recipe/liquid_valve.json](redstone_additions/data/ra_wires/recipe/liquid_valve.json) | <img src="docs/images/recipes/ra_wires/liquid_valve.png" alt="Liquid valve recipe" width="210"> |
-| Liquid Drain | [redstone_additions/data/ra_wires/recipe/liquid_drain.json](redstone_additions/data/ra_wires/recipe/liquid_drain.json) | <img src="docs/images/recipes/ra_wires/liquid_drain.png" alt="Liquid drain recipe" width="210"> |
-| Copper Gas Pipe | No recipe file yet | <img src="docs/images/recipes/ra_wires/copper_pipe.png" alt="Copper gas pipe recipe" width="210"> |
-| Netherite Gas Pipe | No recipe file yet | <img src="docs/images/recipes/ra_wires/iron_pipe.png" alt="Netherite gas pipe recipe" width="210"> |
-| Gas Tank | [redstone_additions/data/ra_wires/recipe/gas_tank.json](redstone_additions/data/ra_wires/recipe/gas_tank.json) | <img src="docs/images/recipes/ra_wires/gas_tank.png" alt="Gas tank recipe" width="210"> |
-| Gas Pump | [redstone_additions/data/ra_wires/recipe/gas_pump.json](redstone_additions/data/ra_wires/recipe/gas_pump.json) | <img src="docs/images/recipes/ra_wires/gas_pump.png" alt="Gas pump recipe" width="210"> |
-| Gas Valve | [redstone_additions/data/ra_wires/recipe/gas_valve.json](redstone_additions/data/ra_wires/recipe/gas_valve.json) | <img src="docs/images/recipes/ra_wires/gas_valve.png" alt="Gas valve recipe" width="210"> |
-| Copper Electric Wire | [redstone_additions/data/ra_wires/recipe/electric_wire_copper.json](redstone_additions/data/ra_wires/recipe/electric_wire_copper.json) | <img src="docs/images/recipes/ra_wires/copper_wire.png" alt="Copper electric wire recipe" width="210"> |
-| Netherite Electric Wire | [redstone_additions/data/ra_wires/recipe/electric_wire_netherite.json](redstone_additions/data/ra_wires/recipe/electric_wire_netherite.json) | <img src="docs/images/recipes/ra_wires/insulated_wire.png" alt="Netherite electric wire recipe" width="210"> |
-| EU Generator | [redstone_additions/data/ra_wires/recipe/electric_generator.json](redstone_additions/data/ra_wires/recipe/electric_generator.json) | <img src="docs/images/recipes/ra_wires/eu_generator.png" alt="EU generator recipe" width="210"> |
-| EU Consumer | [redstone_additions/data/ra_wires/recipe/electric_consumer.json](redstone_additions/data/ra_wires/recipe/electric_consumer.json) | <img src="docs/images/recipes/ra_wires/eu_consumer.png" alt="EU consumer recipe" width="210"> |
-| EU Switch | [redstone_additions/data/ra_wires/recipe/electric_switch.json](redstone_additions/data/ra_wires/recipe/electric_switch.json) | <img src="docs/images/recipes/ra_wires/eu_switch.png" alt="EU switch recipe" width="210"> |
+| Copper Liquid Pipe | [redstone_additions/data/ra_wires/recipe/liquid_pipe_copper.json](redstone_additions/data/ra_wires/recipe/liquid_pipe_copper.json) | <img src="https://github.com/AnCarsenat/Redstone-Additions/raw/main/docs/images/recipes/ra_wires/copper_pipe.png" alt="Copper liquid pipe recipe" width="210"> |
+| Netherite Liquid Pipe | [redstone_additions/data/ra_wires/recipe/liquid_pipe_netherite.json](redstone_additions/data/ra_wires/recipe/liquid_pipe_netherite.json) | <img src="https://github.com/AnCarsenat/Redstone-Additions/raw/main/docs/images/recipes/ra_wires/iron_pipe.png" alt="Netherite liquid pipe recipe" width="210"> |
+| Liquid Tank | [redstone_additions/data/ra_wires/recipe/liquid_tank.json](redstone_additions/data/ra_wires/recipe/liquid_tank.json) | <img src="https://github.com/AnCarsenat/Redstone-Additions/raw/main/docs/images/recipes/ra_wires/liquid_tank.png" alt="Liquid tank recipe" width="210"> |
+| Liquid Pump | [redstone_additions/data/ra_wires/recipe/liquid_pump.json](redstone_additions/data/ra_wires/recipe/liquid_pump.json) | <img src="https://github.com/AnCarsenat/Redstone-Additions/raw/main/docs//images/recipes/ra_wires/liquid_pump.png" alt="Liquid pump recipe" width="210"> |
+| Liquid Valve | [redstone_additions/data/ra_wires/recipe/liquid_valve.json](redstone_additions/data/ra_wires/recipe/liquid_valve.json) | <img src="https://github.com/AnCarsenat/Redstone-Additions/raw/main/docs//images/recipes/ra_wires/liquid_valve.png" alt="Liquid valve recipe" width="210"> |
+| Liquid Drain | [redstone_additions/data/ra_wires/recipe/liquid_drain.json](redstone_additions/data/ra_wires/recipe/liquid_drain.json) | <img src="https://github.com/AnCarsenat/Redstone-Additions/raw/main/docs//images/recipes/ra_wires/liquid_drain.png" alt="Liquid drain recipe" width="210"> |
+| Copper Gas Pipe | No recipe file yet | <img src="https://github.com/AnCarsenat/Redstone-Additions/raw/main/docs//images/recipes/ra_wires/copper_pipe.png" alt="Copper gas pipe recipe" width="210"> |
+| Netherite Gas Pipe | No recipe file yet | <img src="https://github.com/AnCarsenat/Redstone-Additions/raw/main/docs//images/recipes/ra_wires/iron_pipe.png" alt="Netherite gas pipe recipe" width="210"> |
+| Gas Tank | [redstone_additions/data/ra_wires/recipe/gas_tank.json](redstone_additions/data/ra_wires/recipe/gas_tank.json) | <img src="https://github.com/AnCarsenat/Redstone-Additions/raw/main/docs//images/recipes/ra_wires/gas_tank.png" alt="Gas tank recipe" width="210"> |
+| Gas Pump | [redstone_additions/data/ra_wires/recipe/gas_pump.json](redstone_additions/data/ra_wires/recipe/gas_pump.json) | <img src="https://github.com/AnCarsenat/Redstone-Additions/raw/main/docs//images/recipes/ra_wires/gas_pump.png" alt="Gas pump recipe" width="210"> |
+| Gas Valve | [redstone_additions/data/ra_wires/recipe/gas_valve.json](redstone_additions/data/ra_wires/recipe/gas_valve.json) | <img src="https://github.com/AnCarsenat/Redstone-Additions/raw/main/docs//images/recipes/ra_wires/gas_valve.png" alt="Gas valve recipe" width="210"> |
+| Copper Electric Wire | [redstone_additions/data/ra_wires/recipe/electric_wire_copper.json](redstone_additions/data/ra_wires/recipe/electric_wire_copper.json) | <img src="https://github.com/AnCarsenat/Redstone-Additions/raw/main/docs//images/recipes/ra_wires/copper_wire.png" alt="Copper electric wire recipe" width="210"> |
+| Netherite Electric Wire | [redstone_additions/data/ra_wires/recipe/electric_wire_netherite.json](redstone_additions/data/ra_wires/recipe/electric_wire_netherite.json) | <img src="https://github.com/AnCarsenat/Redstone-Additions/raw/main/docs//images/recipes/ra_wires/insulated_wire.png" alt="Netherite electric wire recipe" width="210"> |
+| EU Generator | [redstone_additions/data/ra_wires/recipe/electric_generator.json](redstone_additions/data/ra_wires/recipe/electric_generator.json) | <img src="https://github.com/AnCarsenat/Redstone-Additions/raw/main/docs//images/recipes/ra_wires/eu_generator.png" alt="EU generator recipe" width="210"> |
+| EU Consumer | [redstone_additions/data/ra_wires/recipe/electric_consumer.json](redstone_additions/data/ra_wires/recipe/electric_consumer.json) | <img src="https://github.com/AnCarsenat/Redstone-Additions/raw/main/docs//images/recipes/ra_wires/eu_consumer.png" alt="EU consumer recipe" width="210"> |
+| EU Switch | [redstone_additions/data/ra_wires/recipe/electric_switch.json](redstone_additions/data/ra_wires/recipe/electric_switch.json) | <img src="https://github.com/AnCarsenat/Redstone-Additions/raw/main/docs//images/recipes/ra_wires/eu_switch.png" alt="EU switch recipe" width="210"> |
 
 ### Other Module Previews
 
 | Module | Preview |
 |---|---|
-| Logic Gates | <img src="docs/images/recipes/ra_gates/clock.png" alt="Clock recipe" width="220"> |
-| Interactive Machines | <img src="docs/images/recipes/ra_interactive/block_placer.png" alt="Block placer recipe" width="220"> |
-| Sensors | <img src="docs/images/recipes/ra_sensors/entity_detector.png" alt="Entity detector recipe" width="220"> |
-| Wireless Redstone | <img src="docs/images/recipes/ra_wireless/emitter.png" alt="Emitter recipe" width="220"> |
-| Chunk Loader | <img src="docs/images/recipes/ra_chunk_loader/chunk_loader.png" alt="Chunk loader recipe" width="220"> |
-| Multiblocks | <img src="docs/images/recipes/ra_multiblock/copper_base.png" alt="Copper multiblock base recipe" width="220"> |
+| Logic Gates | <img src="https://github.com/AnCarsenat/Redstone-Additions/raw/main/docs//images/recipes/ra_gates/clock.png" alt="Clock recipe" width="220"> |
+| Interactive Machines | <img src="https://github.com/AnCarsenat/Redstone-Additions/raw/main/docs//images/recipes/ra_interactive/block_placer.png" alt="Block placer recipe" width="220"> |
+| Sensors | <img src="https://github.com/AnCarsenat/Redstone-Additions/raw/main/docs//images/recipes/ra_sensors/entity_detector.png" alt="Entity detector recipe" width="220"> |
+| Wireless Redstone | <img src="https://github.com/AnCarsenat/Redstone-Additions/raw/main/docs//images/recipes/ra_wireless/emitter.png" alt="Emitter recipe" width="220"> |
+| Chunk Loader | <img src="https://github.com/AnCarsenat/Redstone-Additions/raw/main/docs//images/recipes/ra_chunk_loader/chunk_loader.png" alt="Chunk loader recipe" width="220"> |
+| Multiblocks | <img src="https://github.com/AnCarsenat/Redstone-Additions/raw/main/docs//images/recipes/ra_multiblock/copper_base.png" alt="Copper multiblock base recipe" width="220"> |
 
 ---
 

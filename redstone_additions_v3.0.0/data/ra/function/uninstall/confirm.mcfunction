@@ -102,4 +102,4 @@ kill @e[type=block_display,tag=ra.wires.wire_display]
 
 # === Final message ===
 tellraw @a [{text:"\n"},{text:"[",color:"dark_gray"},{text:"RA",color:"gold",bold:true},{text:"] ",color:"dark_gray"},{text:"Redstone Additions has been uninstalled.",color:"red"}]
-tellraw @a [{text:"  "},{text:"You may now disable the datapack with: ",color:"gray"},{text:"/datapack disable \"file/redstone_additions_v3.0.0\"",color:"yellow",click_event:{action:"suggest_command",command:"/datapack disable \"file/redstone_additions_v3.0.0\""},hover_event:{action:"show_text",value:"Click to run"}}]
+tellraw @a [{text:"  "},{text:"You may now disable the datapack with: ",color:"gray"},{text:"/datapack disable \"file/redstone_additions\"",color:"yellow",click_event:{action:"suggest_command",command:"/datapack disable \"file/redstone_additions\""},hover_event:{action:"show_text",value:"Click to run"}}]

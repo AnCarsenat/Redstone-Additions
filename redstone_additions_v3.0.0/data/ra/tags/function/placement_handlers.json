@@ -3,7 +3,6 @@
     "ra_interactive:blocks/block_breaker/handle_placement",
     "ra_interactive:blocks/spitter/handle_placement",
     "ra_interactive:blocks/block_placer/handle_placement",
-    "ra_interactive:blocks/pusher/handle_placement",
     "ra_interactive:blocks/item_pipe/handle_placement",
     "ra_interactive:blocks/breeder/handle_placement",
     "ra_interactive:blocks/infinite_water_cauldron/handle_placement",

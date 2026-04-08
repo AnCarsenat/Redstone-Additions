@@ -10,7 +10,7 @@ The `ra_chunk_loader` module contains one block that force-loads its chunk while
 
 | Block | Item model | Physical block | Recipe |
 |---|---|---|---|
-| Chunk Loader | `minecraft:lodestone` | `minecraft:lodestone` | Yes |
+| Chunk Loader | `minecraft:lodestone` | `minecraft:lodestone` | ![Chunk Loader recipe](images/recipes/ra_chunk_loader/chunk_loader.png){ width="220" } |
 
 ## Runtime Behavior
 

@@ -10,12 +10,12 @@ The `ra_gates` namespace provides compact logic and timing blocks for vanilla re
 
 | Block | Item model | Recipe | Main property |
 |---|---|---|---|
-| UNI Gate | `minecraft:smooth_stone_slab` | Yes | `gate_type` |
-| Clock | `minecraft:daylight_detector` | Yes | `cooldown` |
-| Delayer | `minecraft:quartz_block` | Yes | `delay` |
-| Extender | `minecraft:quartz_block` | Yes | `extend` |
-| Randomizer | `minecraft:bookshelf` | Yes | `chance` |
-| Shortener | `minecraft:quartz_block` | Yes | `pulse` |
+| UNI Gate | `minecraft:smooth_stone_slab` | ![UNI Gate recipe](images/recipes/ra_gates/uni_gate.png){ width="220" } | `gate_type` |
+| Clock | `minecraft:daylight_detector` | ![Clock recipe](images/recipes/ra_gates/clock.png){ width="220" } | `cooldown` |
+| Delayer | `minecraft:quartz_block` | ![Delayer recipe](images/recipes/ra_gates/delayer.png){ width="220" } | `delay` |
+| Extender | `minecraft:quartz_block` | ![Extender recipe](images/recipes/ra_gates/extender.png){ width="220" } | `extend` |
+| Randomizer | `minecraft:bookshelf` | ![Randomizer recipe](images/recipes/ra_gates/randomizer.png){ width="220" } | `chance` |
+| Shortener | `minecraft:quartz_block` | ![Shortener recipe](images/recipes/ra_gates/shortener.png){ width="220" } | `pulse` |
 
 ## Shared Signal Model
 

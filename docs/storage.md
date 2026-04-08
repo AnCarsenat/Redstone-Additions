@@ -11,8 +11,8 @@ The `ra_storage` module adds Boxer, Unboxer, and Item Crate workflows for compac
 
 | Block | Item model | Recipe | Default I/O |
 |---|---|---|---|
-| Boxer | `minecraft:dropper` | Yes (`boxer.json`) | `input1="^ ^ ^-1"`, `output1="^ ^ ^1"` |
-| Unboxer | `minecraft:dispenser` | Yes (`unboxer.json`) | `input1="~ ~ ~"`, `output1="^ ^ ^1"` |
+| Boxer | `minecraft:dropper` | ![Boxer recipe](images/recipes/ra_storage/boxer.png){ width="220" } | `input1="^ ^ ^-1"`, `output1="^ ^ ^1"` |
+| Unboxer | `minecraft:dispenser` | ![Unboxer recipe](images/recipes/ra_storage/unboxer.png){ width="220" } | `input1="~ ~ ~"`, `output1="^ ^ ^1"` |
 
 ## Item Crate Model
 

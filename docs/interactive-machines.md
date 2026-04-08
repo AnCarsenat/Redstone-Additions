@@ -10,17 +10,17 @@ The `ra_interactive` module provides 11 utility machines for automation and map 
 
 | Block | Item model | Recipe | Trigger model | Notes |
 |---|---|---|---|---|
-| Block Breaker | `minecraft:dispenser` | Yes | While powered | 40 tick action cooldown |
-| Block Placer | `minecraft:dispenser` | Yes | While powered | Places from inventory into air in front |
-| Item Pipe | `minecraft:dispenser` | Yes | Continuous | 4 tick transfer cycle |
-| Item Mover | `minecraft:observer` | Yes | Continuous | Rear container to front container |
-| Spitter | `minecraft:dropper` | Yes | Continuous | Throws item entities forward |
-| Pusher | `minecraft:magenta_glazed_terracotta` | Yes | While powered | Pushes entities forward, 20 tick cooldown |
-| Breeder | `minecraft:dispenser` | Yes | Rising edge | Uses dispenser inventory food |
-| Infinite Water Cauldron | `minecraft:cauldron` | Yes | Continuous | Keeps `water_cauldron[level=3]` |
-| Infinite Lava Cauldron | `minecraft:cauldron` | Yes | Continuous | Keeps `lava_cauldron` |
-| Infinite Snow Cauldron | `minecraft:cauldron` | Yes | Continuous | Keeps `powder_snow_cauldron[level=3]` |
-| Message Block | `minecraft:note_block` | Yes | Rising edge | Sends text to players in range |
+| Block Breaker | `minecraft:dispenser` | ![Block Breaker recipe](images/recipes/ra_interactive/block_breaker.png){ width="220" } | While powered | 40 tick action cooldown |
+| Block Placer | `minecraft:dispenser` | ![Block Placer recipe](images/recipes/ra_interactive/block_placer.png){ width="220" } | While powered | Places from inventory into air in front |
+| Item Pipe | `minecraft:dispenser` | ![Item Pipe recipe](images/recipes/ra_interactive/item_pipe.png){ width="220" } | Continuous | 4 tick transfer cycle |
+| Item Mover | `minecraft:observer` | ![Item Mover recipe](images/recipes/ra_interactive/item_mover.png){ width="220" } | Continuous | Rear container to front container |
+| Spitter | `minecraft:dropper` | ![Spitter recipe](images/recipes/ra_interactive/spitter.png){ width="220" } | Continuous | Throws item entities forward |
+| Pusher | `minecraft:magenta_glazed_terracotta` | Yes (image pending) | While powered | Pushes entities forward, 20 tick cooldown |
+| Breeder | `minecraft:dispenser` | ![Breeder recipe](images/recipes/ra_interactive/breeder.png){ width="220" } | Rising edge | Uses dispenser inventory food |
+| Infinite Water Cauldron | `minecraft:cauldron` | ![Infinite Water Cauldron recipe](images/recipes/ra_interactive/infinite_water_caudron.png){ width="220" } | Continuous | Keeps `water_cauldron[level=3]` |
+| Infinite Lava Cauldron | `minecraft:cauldron` | ![Infinite Lava Cauldron recipe](images/recipes/ra_interactive/infinite_lava_cauldron.png){ width="220" } | Continuous | Keeps `lava_cauldron` |
+| Infinite Snow Cauldron | `minecraft:cauldron` | ![Infinite Snow Cauldron recipe](images/recipes/ra_interactive/infinite_snow_cauldron.png){ width="220" } | Continuous | Keeps `powder_snow_cauldron[level=3]` |
+| Message Block | `minecraft:note_block` | ![Message Block recipe](images/recipes/ra_interactive/message.png){ width="220" } | Rising edge | Sends text to players in range |
 
 ## Behavior Notes
 

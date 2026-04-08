@@ -10,9 +10,9 @@ The `ra_sensors` module provides entity detection and tag mutation blocks.
 
 | Block | Item model | Recipe | Trigger model | Property model |
 |---|---|---|---|---|
-| Entity Detector | `minecraft:waxed_chiseled_copper` | Yes | Continuous | `entity_selector` |
-| Tag Adder | `minecraft:green_glazed_terracotta` | Yes | Rising edge | `tag`, `entity_selector` |
-| Tag Remover | `minecraft:red_glazed_terracotta` | Yes | Rising edge | `tag`, `entity_selector` |
+| Entity Detector | `minecraft:waxed_chiseled_copper` | ![Entity Detector recipe](images/recipes/ra_sensors/entity_detector.png){ width="220" } | Continuous | `entity_selector` |
+| Tag Adder | `minecraft:green_glazed_terracotta` | ![Tag Adder recipe](images/recipes/ra_sensors/tag_adder.png){ width="220" } | Rising edge | `tag`, `entity_selector` |
+| Tag Remover | `minecraft:red_glazed_terracotta` | ![Tag Remover recipe](images/recipes/ra_sensors/tag_remover.png){ width="220" } | Rising edge | `tag`, `entity_selector` |
 
 ## Entity Detector
 

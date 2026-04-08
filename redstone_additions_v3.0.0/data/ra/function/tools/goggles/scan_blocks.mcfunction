@@ -44,7 +44,9 @@ execute as @e[tag=ra.custom_block.emitter,distance=..16] at @s run function ra_w
 execute as @e[tag=ra.custom_block.receiver,distance=..16] at @s run function ra_wireless:goggles/draw_display_receiver
 
 # Wires
-execute as @e[type=marker,tag=ra.custom_block.liquid_pipe,distance=..16] at @s run data modify storage ra:temp billboard set value {name:"Plastic Pipe",show_name:1b,show_status:1b}
+execute as @e[type=marker,tag=ra.custom_block.liquid_pipe,distance=..16] at @s if data entity @s data.properties{tier:"iron"} run data modify storage ra:temp billboard set value {name:"L2 Iron Pipe",show_name:1b,show_status:1b}
+execute as @e[type=marker,tag=ra.custom_block.liquid_pipe,distance=..16] at @s if data entity @s data.properties{tier:"netherite"} run data modify storage ra:temp billboard set value {name:"L2 Iron Pipe",show_name:1b,show_status:1b}
+execute as @e[type=marker,tag=ra.custom_block.liquid_pipe,distance=..16] at @s unless data entity @s data.properties{tier:"iron"} unless data entity @s data.properties{tier:"netherite"} run data modify storage ra:temp billboard set value {name:"L1 Copper Pipe",show_name:1b,show_status:1b}
 execute as @e[type=marker,tag=ra.custom_block.liquid_pipe,distance=..16] at @s run function ra:tools/goggles/billboard/handle_billboard with storage ra:temp billboard
 
 execute as @e[type=marker,tag=ra.custom_block.liquid_tank,distance=..16] at @s run data modify storage ra:temp billboard set value {name:"Liquid Tank",show_name:1b,show_status:1b}

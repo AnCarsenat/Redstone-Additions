@@ -3,18 +3,18 @@
   "category": "redstone",
   "pattern": [
     "CCC",
-    "C C",
+    "   ",
     "CCC"
   ],
   "key": {
-    "C": "minecraft:light_blue_concrete"
+    "C": "minecraft:copper_ingot"
   },
   "result": {
     "id": "minecraft:bat_spawn_egg",
     "count": 16,
     "components": {
-      "minecraft:item_model": "minecraft:light_blue_candle",
-      "minecraft:item_name": "L1 Plastic Pipe",
+      "minecraft:item_model": "minecraft:copper_block",
+      "minecraft:item_name": "L1 Copper Pipe",
       "minecraft:custom_data": {
         "ra": {
           "liquid_pipe_copper": true

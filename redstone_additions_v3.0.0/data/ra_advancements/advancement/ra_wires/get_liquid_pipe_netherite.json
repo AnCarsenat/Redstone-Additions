@@ -2,10 +2,10 @@
     "parent":  "ra_advancements:ra_wires",
     "display":  {
                     "icon":  {
-                                 "id":  "minecraft:blue_candle"
+                                 "id":  "minecraft:iron_block"
                              },
-                    "title":  "L2 Plastic Pipe",
-                    "description":  "Obtain the L2 Plastic Pipe.",
+                    "title":  "L2 Iron Pipe",
+                    "description":  "Obtain the L2 Iron Pipe.",
                     "show_toast":  true,
                     "announce_to_chat":  true
                 },

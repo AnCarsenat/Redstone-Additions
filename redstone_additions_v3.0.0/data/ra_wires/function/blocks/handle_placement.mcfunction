@@ -3,7 +3,7 @@
 
 # ------------------------------ FLUID (MERGED LIQUID + GAS) ------------------------------
 
-# L1 plastic pipe
+# L1 copper pipe
 execute if entity @s[tag=ra.place.liquid_pipe_copper] run function ra_lib:placement/place {block_id:"minecraft:conduit[waterlogged=false]",block_tag:"liquid_pipe",dir_type:0}
 execute if entity @s[tag=ra.place.liquid_pipe_copper] run data merge entity @e[type=marker,tag=ra.custom_block.liquid_pipe,tag=ra.new,distance=..0.5,sort=nearest,limit=1] {data:{properties:{tier:"copper",enabled:1b,transfer_rate:50},data:{medium_id:0,amount:0,capacity:200},status:{medium:"Empty"}}}
 execute if entity @s[tag=ra.place.liquid_pipe_copper] run tag @e[type=marker,tag=ra.custom_block.liquid_pipe,tag=ra.new,distance=..0.5,sort=nearest,limit=1] add ra.wires.node
@@ -14,9 +14,9 @@ execute if entity @s[tag=ra.place.liquid_pipe_copper] as @e[type=marker,tag=ra.c
 execute if entity @s[tag=ra.place.liquid_pipe_copper] run tag @e[type=marker,tag=ra.custom_block.liquid_pipe,tag=ra.new,distance=..0.5,sort=nearest,limit=1] remove ra.new
 execute if entity @s[tag=ra.place.liquid_pipe_copper] run return 1
 
-# L2 plastic pipe
+# L2 iron pipe
 execute if entity @s[tag=ra.place.liquid_pipe_netherite] run function ra_lib:placement/place {block_id:"minecraft:conduit[waterlogged=false]",block_tag:"liquid_pipe",dir_type:0}
-execute if entity @s[tag=ra.place.liquid_pipe_netherite] run data merge entity @e[type=marker,tag=ra.custom_block.liquid_pipe,tag=ra.new,distance=..0.5,sort=nearest,limit=1] {data:{properties:{tier:"netherite",enabled:1b,transfer_rate:80},data:{medium_id:0,amount:0,capacity:260},status:{medium:"Empty"}}}
+execute if entity @s[tag=ra.place.liquid_pipe_netherite] run data merge entity @e[type=marker,tag=ra.custom_block.liquid_pipe,tag=ra.new,distance=..0.5,sort=nearest,limit=1] {data:{properties:{tier:"iron",enabled:1b,transfer_rate:80},data:{medium_id:0,amount:0,capacity:260},status:{medium:"Empty"}}}
 execute if entity @s[tag=ra.place.liquid_pipe_netherite] run tag @e[type=marker,tag=ra.custom_block.liquid_pipe,tag=ra.new,distance=..0.5,sort=nearest,limit=1] add ra.wires.node
 execute if entity @s[tag=ra.place.liquid_pipe_netherite] run tag @e[type=marker,tag=ra.custom_block.liquid_pipe,tag=ra.new,distance=..0.5,sort=nearest,limit=1] add ra.wires.tinkerable
 execute if entity @s[tag=ra.place.liquid_pipe_netherite] run tag @e[type=marker,tag=ra.custom_block.liquid_pipe,tag=ra.new,distance=..0.5,sort=nearest,limit=1] add ra.wires.fluid_node
@@ -36,9 +36,9 @@ execute if entity @s[tag=ra.place.gas_pipe_copper] as @e[type=marker,tag=ra.cust
 execute if entity @s[tag=ra.place.gas_pipe_copper] run tag @e[type=marker,tag=ra.custom_block.liquid_pipe,tag=ra.new,distance=..0.5,sort=nearest,limit=1] remove ra.new
 execute if entity @s[tag=ra.place.gas_pipe_copper] run return 1
 
-# Legacy netherite gas pipe placement now maps to merged fluid pipe
+# Legacy L2 gas pipe placement now maps to merged fluid pipe
 execute if entity @s[tag=ra.place.gas_pipe_netherite] run function ra_lib:placement/place {block_id:"minecraft:conduit[waterlogged=false]",block_tag:"liquid_pipe",dir_type:0}
-execute if entity @s[tag=ra.place.gas_pipe_netherite] run data merge entity @e[type=marker,tag=ra.custom_block.liquid_pipe,tag=ra.new,distance=..0.5,sort=nearest,limit=1] {data:{properties:{tier:"netherite",enabled:1b,transfer_rate:80},data:{medium_id:0,amount:0,capacity:260},status:{medium:"Empty"}}}
+execute if entity @s[tag=ra.place.gas_pipe_netherite] run data merge entity @e[type=marker,tag=ra.custom_block.liquid_pipe,tag=ra.new,distance=..0.5,sort=nearest,limit=1] {data:{properties:{tier:"iron",enabled:1b,transfer_rate:80},data:{medium_id:0,amount:0,capacity:260},status:{medium:"Empty"}}}
 execute if entity @s[tag=ra.place.gas_pipe_netherite] run tag @e[type=marker,tag=ra.custom_block.liquid_pipe,tag=ra.new,distance=..0.5,sort=nearest,limit=1] add ra.wires.node
 execute if entity @s[tag=ra.place.gas_pipe_netherite] run tag @e[type=marker,tag=ra.custom_block.liquid_pipe,tag=ra.new,distance=..0.5,sort=nearest,limit=1] add ra.wires.tinkerable
 execute if entity @s[tag=ra.place.gas_pipe_netherite] run tag @e[type=marker,tag=ra.custom_block.liquid_pipe,tag=ra.new,distance=..0.5,sort=nearest,limit=1] add ra.wires.fluid_node

@@ -2,20 +2,19 @@
   "type": "minecraft:crafting_shaped",
   "category": "redstone",
   "pattern": [
-    "CCC",
-    "CIC",
-    "CCC"
+    "III",
+    "   ",
+    "III"
   ],
   "key": {
-    "C": "blue_concrete",
     "I": "minecraft:iron_ingot"
   },
   "result": {
     "id": "minecraft:bat_spawn_egg",
     "count": 1,
     "components": {
-      "minecraft:item_model": "minecraft:blue_candle",
-      "minecraft:item_name": "L2 Plastic Pipe",
+      "minecraft:item_model": "minecraft:iron_block",
+      "minecraft:item_name": "L2 Iron Pipe",
       "minecraft:custom_data": {
         "ra": {
           "liquid_pipe_netherite": true

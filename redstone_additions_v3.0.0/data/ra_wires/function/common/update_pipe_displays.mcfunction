@@ -8,5 +8,6 @@ kill @e[type=block_display,tag=ra.wires.pipe_display,distance=..0.9]
 
 execute unless block ~ ~ ~ conduit run return 0
 
+execute if data entity @s data.properties{tier:"iron"} run function ra_wires:common/update_pipe_displays_netherite
 execute if data entity @s data.properties{tier:"netherite"} run function ra_wires:common/update_pipe_displays_netherite
-execute unless data entity @s data.properties{tier:"netherite"} run function ra_wires:common/update_pipe_displays_copper
+execute unless data entity @s data.properties{tier:"iron"} unless data entity @s data.properties{tier:"netherite"} run function ra_wires:common/update_pipe_displays_copper

@@ -2,10 +2,10 @@
     "parent":  "ra_advancements:ra_wires",
     "display":  {
                     "icon":  {
-                                 "id":  "minecraft:light_blue_candle"
+                                 "id":  "minecraft:copper_block"
                              },
-                    "title":  "L1 Plastic Pipe",
-                    "description":  "Obtain the L1 Plastic Pipe.",
+                    "title":  "L1 Copper Pipe",
+                    "description":  "Obtain the L1 Copper Pipe.",
                     "show_toast":  true,
                     "announce_to_chat":  true
                 },

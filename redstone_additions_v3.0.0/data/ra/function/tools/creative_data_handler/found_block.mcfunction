@@ -49,12 +49,16 @@ execute if entity @s[tag=ra.custom_block.emitter] run data modify storage ra:cdh
 execute if entity @s[tag=ra.custom_block.receiver] run data modify storage ra:cdh block_type set value "Wireless Receiver"
 
 # RA Wires blocks
-execute if entity @s[tag=ra.custom_block.liquid_pipe] run data modify storage ra:cdh block_type set value "Plastic Pipe"
+execute if entity @s[tag=ra.custom_block.liquid_pipe] run data modify storage ra:cdh block_type set value "L1 Copper Pipe"
+execute if entity @s[tag=ra.custom_block.liquid_pipe] if data entity @s data.properties{tier:"iron"} run data modify storage ra:cdh block_type set value "L2 Iron Pipe"
+execute if entity @s[tag=ra.custom_block.liquid_pipe] if data entity @s data.properties{tier:"netherite"} run data modify storage ra:cdh block_type set value "L2 Iron Pipe"
 execute if entity @s[tag=ra.custom_block.liquid_tank] run data modify storage ra:cdh block_type set value "Liquid Tank"
 execute if entity @s[tag=ra.custom_block.liquid_pump] run data modify storage ra:cdh block_type set value "Liquid Pump"
 execute if entity @s[tag=ra.custom_block.liquid_valve] run data modify storage ra:cdh block_type set value "Liquid Valve"
 execute if entity @s[tag=ra.custom_block.liquid_drain] run data modify storage ra:cdh block_type set value "Liquid Drain"
-execute if entity @s[tag=ra.custom_block.gas_pipe] run data modify storage ra:cdh block_type set value "Plastic Pipe (Legacy)"
+execute if entity @s[tag=ra.custom_block.gas_pipe] run data modify storage ra:cdh block_type set value "L1 Copper Pipe (Legacy)"
+execute if entity @s[tag=ra.custom_block.gas_pipe] if data entity @s data.properties{tier:"iron"} run data modify storage ra:cdh block_type set value "L2 Iron Pipe (Legacy)"
+execute if entity @s[tag=ra.custom_block.gas_pipe] if data entity @s data.properties{tier:"netherite"} run data modify storage ra:cdh block_type set value "L2 Iron Pipe (Legacy)"
 execute if entity @s[tag=ra.custom_block.gas_tank] run data modify storage ra:cdh block_type set value "Gas Tank"
 execute if entity @s[tag=ra.custom_block.gas_pump] run data modify storage ra:cdh block_type set value "Gas Pump"
 execute if entity @s[tag=ra.custom_block.gas_valve] run data modify storage ra:cdh block_type set value "Gas Valve"

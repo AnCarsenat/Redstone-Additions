@@ -8,43 +8,17 @@
 
 ---
 
-Redstone Additions V3 is a vanilla datapack with modular systems for automation, storage, redstone logic, sensors, wireless signaling, chunk control, multiblock infrastructure, and transport networks.
+Redstone Additions V3 is a vanilla datapack with automation, storage, wireless signaling, sensors, chunk loading, multiblocks, and transport networks.
 
-This documentation is synced to the source layout in `redstone_additions_v3.0.0/data`.
+!!! tip "Player-first wiki"
+    This home page is intentionally dense so most players can stay on one page and only open extra docs when they need deep technical details.
 
-## What Is New In v5.1.1
-
-- New `ra_wires` namespace with liquid pipes, gas pipes, and electric wires.
-- Added liquid drain block with fallback particle/status behavior when no source can be drained.
-- Added goggles tinkering for transport blocks (toggle enabled states and cycle source medium IDs).
-- Added full recipe and advancement coverage for transport and EU network blocks.
-- Main branch now includes `ra_storage` with Boxer, Unboxer, and Item Crate workflows.
-- Goggles module `draw_displays` wrappers were removed and inlined into core scanner functions.
-
-## Feature Map
-
-| Module | Namespace | Content |
-|---|---|---|
-| [Logic Gates](logic-gates.md) | `ra_gates` | 6 logic/timing blocks (UNI Gate, Clock, Delayer, Extender, Randomizer, Shortener) |
-| [Interactive Machines](interactive-machines.md) | `ra_interactive` | 11 machine blocks (automation, transport, utility, messaging) |
-| Storage | `ra_storage` | Boxer + Unboxer block pair and storage-box item flow |
-| [Sensors](sensors.md) | `ra_sensors` | 3 detection/tagging blocks |
-| [Wireless Redstone](wireless-redstone.md) | `ra_wireless` | Emitter, Receiver, and Remote tool |
-| [Transport Networks](transport-networks.md) | `ra_wires` | 16 transport/electric blocks with liquid, gas, and EU flow |
-| [Chunk Loader](chunk-loader.md) | `ra_chunk_loader` | 1 force-load block |
-| [Multiblocks](multiblocks.md) | `ra_multiblock`, `ra_lib_multiblock` | 5 base tiers plus assembled structures |
-
-Current pack totals (from give/recipe/tag registrations):
-
-- 46 placeable custom blocks
-- 5 tools (Wrench, Creative Data Handler, Data Handler, Goggles, Redstone Remote)
-
-## Installation
+## Quick Start
 
 1. Download from [Modrinth](https://modrinth.com/datapack/redstone-additions-v3) or clone from GitHub.
 2. Place `redstone_additions_v3.0.0` in your world datapacks folder.
 3. Run `/reload`.
-4. Run `/function ra:give_all_items` for the categorized namespace bundle kit.
+4. Run `/function ra:give_all_items` to get one prefilled bundle per namespace.
 
 Path example:
 
@@ -52,87 +26,62 @@ Path example:
 .minecraft/saves/<world>/datapacks/redstone_additions_v3.0.0/
 ```
 
-## Core Commands
+## Visual Module Atlas
+
+| Module | What you get | Recipe preview |
+|---|---|---|
+| [Logic Gates](logic-gates.md) | 6 timing/logic blocks | ![Clock recipe](images/recipes/ra_gates/clock.png){ width="220" } |
+| [Interactive Machines](interactive-machines.md) | 11 automation/utility blocks | ![Block Placer recipe](images/recipes/ra_interactive/block_placer.png){ width="220" } |
+| [Storage](block-reference.md) | Boxer + Unboxer workflow | ![Boxer recipe](images/recipes/ra_storage/boxer.png){ width="220" } |
+| [Sensors](sensors.md) | Entity detector + tag operators | ![Entity Detector recipe](images/recipes/ra_sensors/entity_detector.png){ width="220" } |
+| [Wireless Redstone](wireless-redstone.md) | Emitter, Receiver, and Remote | ![Wireless Emitter recipe](images/recipes/ra_wireless/emitter.png){ width="220" } |
+| [Transport Networks](transport-networks.md) | Liquid, gas, and EU transport | ![Liquid Pump recipe](images/recipes/ra_wires/liquid_pump.png){ width="220" } |
+| [Chunk Loader](chunk-loader.md) | 1 force-load block | ![Chunk Loader recipe](images/recipes/ra_chunk_loader/chunk_loader.png){ width="220" } |
+| [Multiblocks](multiblocks.md) | 5 base tiers + structures | ![Copper Base recipe](images/recipes/ra_multiblock/copper_base.png){ width="220" } |
+
+Current pack totals:
+
+- 46 placeable custom blocks
+- 5 tools (Wrench, Creative Data Handler, Data Handler, Goggles, Redstone Remote)
+
+## Commands Most Players Need
 
 | Command | Purpose |
 |---|---|
-| `/function ra:give_all_items` | Give one prefilled bundle per namespace |
-| `/function ra:items/bundles/give_all` | Direct entrypoint for the categorized bundle kit |
-| `/function ra:items/bundles/give_storage_bundle` | Give only the storage namespace bundle |
-| `/function ra_interactive:items/give_all` | Interactive machines |
-| `/function ra_storage:items/give_all` | Storage blocks and storage-box item |
-| `/function ra_gates:items/give_all` | Gates and timing blocks |
-| `/function ra_sensors:items/give_all` | Sensor blocks |
-| `/function ra_wireless:items/give_all` | Wireless blocks and remote |
-| `/function ra_wires:items/give_all` | Transport pipes, drains, and EU blocks |
-| `/function ra_chunk_loader:items/give_all` | Chunk loader |
+| `/function ra:give_all_items` | Full starter kit (all namespaces) |
+| `/function ra_gates:items/give_all` | Logic gates bundle |
+| `/function ra_interactive:items/give_all` | Interactive machines bundle |
+| `/function ra_storage:items/give_all` | Boxer and Unboxer bundle |
+| `/function ra_sensors:items/give_all` | Sensor bundle |
+| `/function ra_wireless:items/give_all` | Wireless bundle |
+| `/function ra_wires:items/give_all` | Transport/EU bundle |
+| `/function ra_chunk_loader:items/give_all` | Chunk loader bundle |
 | `/function ra_multiblock:blocks/give_all` | Multiblock bases |
 | `/function ra:uninstall` | Opens uninstall confirmation dialog |
 
-## Tooling
+## Tools At A Glance
 
-### Wrench
+| Tool | Give command | Recipe preview | Main use |
+|---|---|---|---|
+| Wrench | `/function ra:tools/wrench/give` | ![Wrench recipe](images/recipes/ra/wrench.png){ width="200" } | Mode cycling and multiblock assembly |
+| Data Handler | `/function ra:tools/data_handler/give` | ![Data Handler recipe](images/recipes/ra/data_handler.png){ width="200" } | Edit nearby block `data.properties` |
+| Goggles | `/function ra:tools/goggles/give` | ![Goggles recipe](images/recipes/ra/goggles.png){ width="200" } | In-world status overlays |
 
-- Give: `/function ra:tools/wrench/give`
-- Item: blaze rod with custom model
-- Main use: mode cycling and multiblock assembly interactions
+## What Is New In v5.1.1
 
-### Creative Data Handler
+- Added `ra_wires` namespace with liquid, gas, and electric transport blocks.
+- Added liquid drain fallback behavior when no source can be drained.
+- Added goggles tinkering for transport blocks (toggle/cycle runtime properties).
+- Added full recipe and advancement coverage for transport and EU blocks.
 
-- Give: `/function ra:tools/creative_data_handler/give`
-- Item: blaze rod with custom model
-- Main use: inspect/edit `data.properties` on nearby custom block markers
+## Need More Detail
 
-### Data Handler
+For most players, this home page plus [Block Reference](block-reference.md) is enough.
 
-- Give: `/function ra:tools/data_handler/give`
-- Item: blaze rod with custom model
-- Main use: non-OP-friendly property editing menus with trigger actions and modular numeric/text input
+Open these pages only when needed:
 
-### Goggles
-
-- Give: `/function ra:tools/goggles/give`
-- Item: leather helmet
-- Main use: visual status overlay for nearby blocks and multiblocks
-
-### Redstone Remote
-
-- Give: `/function ra_wireless:tools/remote/give`
-- Item: blaze rod with custom model
-- Main use: pulse all wireless receivers on a selected channel
-
-## How Placement Works
-
-1. Block items are bat spawn eggs with `ra.spawned` and `ra.place.*` tags.
-2. `ra:placement/detect_bats` picks up new bats each tick.
-3. Placement handlers from `ra:placement_handlers` route each block type.
-4. `ra_lib:placement/place` places a real block and creates an invisible marker entity.
-5. Module tick functions process marker logic every tick.
-
-For the full internal pipeline, read [How It Works](how-it-works.md).
-
-## Architecture Snapshot
-
-| Namespace | Role |
-|---|---|
-| `ra` | Core load/tick loop, tools, uninstall, placement dispatch |
-| `ra_lib` | Shared utilities (placement, orientation, redstone, inventory, input) |
-| `ra_lib_multiblock` | Multiblock assembly/validation/disassembly runtime |
-| `ra_gates` | Logic and timing blocks |
-| `ra_interactive` | Automation and utility machines |
-| `ra_storage` | Boxer/Unboxer automation and storage-box data flow |
-| `ra_sensors` | Entity detection and tag operations |
-| `ra_wireless` | Channel-based signal transmission |
-| `ra_wires` | Liquid/gas/EU transport, network transfer, and goggles tinkering |
-| `ra_chunk_loader` | Force-load control block |
-| `ra_multiblock` | Base tiers and concrete multiblock implementations |
-| `ra_advancements` | Advancements for progression/unlock flow |
-
-## Reference Pages
-
-- [Transport Networks](transport-networks.md)
+- [Wireless Redstone](wireless-redstone.md)
 - [How It Works](how-it-works.md)
-- [Block Reference](block-reference.md)
 - [Recipe Reference](recipe-reference.md)
 - [Developer Guide](developer-guide.md)
 - [Extension Examples](extension-examples.md)

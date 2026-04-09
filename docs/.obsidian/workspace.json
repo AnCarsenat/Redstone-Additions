@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "item-reference.md",
+                "file": "developer-guide.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "item-reference"
+              "title": "developer-guide"
             }
           }
         ]
@@ -94,7 +94,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "item-reference.md",
+                "file": "developer-guide.md",
                 "collapseAll": true,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -104,7 +104,7 @@
                 "unlinkedCollapsed": true
               },
               "icon": "links-coming-in",
-              "title": "Backlinks for item-reference"
+              "title": "Backlinks for developer-guide"
             }
           },
           {
@@ -113,12 +113,12 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "item-reference.md",
+                "file": "developer-guide.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               },
               "icon": "links-going-out",
-              "title": "Outgoing links from item-reference"
+              "title": "Outgoing links from developer-guide"
             }
           },
           {
@@ -156,13 +156,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "item-reference.md",
+                "file": "developer-guide.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Outline of item-reference"
+              "title": "Outline of developer-guide"
             }
           }
         ],
@@ -185,20 +185,22 @@
   },
   "active": "665b12ae00c0621d",
   "lastOpenFiles": [
-    "block-reference.md",
+    "index.md",
+    "interactive-machines.md",
+    "item-reference.md",
+    "logic-gates.md",
     "multiblocks.md",
-    "recipe-reference.md",
     "storage.md",
+    "wireless-redstone.md",
     "transport-networks.md",
     "sensors.md",
+    "recipe-reference.md",
+    "block-reference.md",
     "images/ra_multiblock/blast_forge_schematic.png",
     "images/ra_multiblock/2026-04-08_14.09.14.png",
     "images/ra_multiblock/blast_forge.png",
     "images/ra_multiblock/2026-04-08_14.10.15.png",
-    "logic-gates.md",
-    "item-reference.md",
     "changelog.md",
-    "index.md",
     "chunk-loader.md"
   ]
 }

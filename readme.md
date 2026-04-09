@@ -31,26 +31,20 @@ I recommend using [Bundles Beyond](https://modrinth.com/mod/bundles-beyond) for 
 
 ---
 
-## Quick Links
-
-| Link | URL |
+## Default Module Previews
+*Does not include all recipes* go to [Wiki](https://ancarsenat.github.io/Redstone-Additions) for all recipes.
+| Module | Preview |
 |---|---|
-| Docs Home | https://ancarsenat.github.io/Redstone-Additions/ |
-| Logic Gates | https://ancarsenat.github.io/Redstone-Additions/logic-gates/ |
-| Interactive Machines | https://ancarsenat.github.io/Redstone-Additions/interactive-machines/ |
-| Storage | https://ancarsenat.github.io/Redstone-Additions/storage/ |
-| Sensors | https://ancarsenat.github.io/Redstone-Additions/sensors/ |
-| Wireless Redstone | https://ancarsenat.github.io/Redstone-Additions/wireless-redstone/ |
-| Transport Networks | https://ancarsenat.github.io/Redstone-Additions/transport-networks/ |
-| Chunk Loader | https://ancarsenat.github.io/Redstone-Additions/chunk-loader/ |
-| Multiblocks | https://ancarsenat.github.io/Redstone-Additions/multiblocks/ |
-| Block Reference | https://ancarsenat.github.io/Redstone-Additions/block-reference/ |
-| Recipe Reference | https://ancarsenat.github.io/Redstone-Additions/recipe-reference/ |
-| Changelog | https://ancarsenat.github.io/Redstone-Additions/changelog/ |
+| Logic Gates | <img src="https://github.com/AnCarsenat/Redstone-Additions/raw/main/docs/images/recipes/ra_gates/clock.png" alt="Clock recipe" width="220"> |
+| Interactive Machines | <img src="https://github.com/AnCarsenat/Redstone-Additions/raw/main/docs/images/recipes/ra_interactive/block_placer.png" alt="Block placer recipe" width="220"> |
+| Sensors | <img src="https://github.com/AnCarsenat/Redstone-Additions/raw/main/docs/images/recipes/ra_sensors/entity_detector.png" alt="Entity detector recipe" width="220"> |
+| Wireless Redstone | <img src="https://github.com/AnCarsenat/Redstone-Additions/raw/main/docs/images/recipes/ra_wireless/emitter.png" alt="Emitter recipe" width="220"> |
+| Chunk Loader | <img src="https://github.com/AnCarsenat/Redstone-Additions/raw/main/docs/images/recipes/ra_chunk_loader/chunk_loader.png" alt="Chunk loader recipe" width="220"> |
+| Multiblocks | <img src="https://github.com/AnCarsenat/Redstone-Additions/raw/main/docs/images/recipes/ra_multiblock/copper_base.png" alt="Copper multiblock base recipe" width="220"> |
 
 ---
 
-## Block Inventory
+## Blocks
 
 ### Logic Gates (6)
 - UNI Gate
@@ -123,50 +117,6 @@ I recommend using [Bundles Beyond](https://modrinth.com/mod/bundles-beyond) for 
 
 ---
 
-## New Block Recipes And Images
-
-### Storage (`ra_storage`)
-
-| Block | Recipe JSON | Recipe image |
-|---|---|---|
-| Boxer | [redstone_additions/data/ra_storage/recipe/boxer.json](redstone_additions/data/ra_storage/recipe/boxer.json) | <img src="docs/images/recipes/ra_storage/boxer.png" alt="Boxer recipe" width="210"> |
-| Unboxer | [redstone_additions/data/ra_storage/recipe/unboxer.json](redstone_additions/data/ra_storage/recipe/unboxer.json) | <img src="docs/images/recipes/ra_storage/unboxer.png" alt="Unboxer recipe" width="210"> |
-| Item Crate | [redstone_additions/data/ra_storage/recipe/storage_box.json](redstone_additions/data/ra_storage/recipe/storage_box.json) | Image pending |
-
-### Transport Networks (`ra_wires`)
-
-| Block | Recipe JSON | Recipe image |
-|---|---|---|
-| Copper Liquid Pipe | [redstone_additions/data/ra_wires/recipe/liquid_pipe_copper.json](redstone_additions/data/ra_wires/recipe/liquid_pipe_copper.json) | <img src="https://github.com/AnCarsenat/Redstone-Additions/raw/main/docs/images/recipes/ra_wires/copper_pipe.png" alt="Copper liquid pipe recipe" width="210"> |
-| Netherite Liquid Pipe | [redstone_additions/data/ra_wires/recipe/liquid_pipe_netherite.json](redstone_additions/data/ra_wires/recipe/liquid_pipe_netherite.json) | <img src="https://github.com/AnCarsenat/Redstone-Additions/raw/main/docs/images/recipes/ra_wires/iron_pipe.png" alt="Netherite liquid pipe recipe" width="210"> |
-| Liquid Tank | [redstone_additions/data/ra_wires/recipe/liquid_tank.json](redstone_additions/data/ra_wires/recipe/liquid_tank.json) | <img src="https://github.com/AnCarsenat/Redstone-Additions/raw/main/docs/images/recipes/ra_wires/liquid_tank.png" alt="Liquid tank recipe" width="210"> |
-| Liquid Pump | [redstone_additions/data/ra_wires/recipe/liquid_pump.json](redstone_additions/data/ra_wires/recipe/liquid_pump.json) | <img src="https://github.com/AnCarsenat/Redstone-Additions/raw/main/docs//images/recipes/ra_wires/liquid_pump.png" alt="Liquid pump recipe" width="210"> |
-| Liquid Valve | [redstone_additions/data/ra_wires/recipe/liquid_valve.json](redstone_additions/data/ra_wires/recipe/liquid_valve.json) | <img src="https://github.com/AnCarsenat/Redstone-Additions/raw/main/docs//images/recipes/ra_wires/liquid_valve.png" alt="Liquid valve recipe" width="210"> |
-| Liquid Drain | [redstone_additions/data/ra_wires/recipe/liquid_drain.json](redstone_additions/data/ra_wires/recipe/liquid_drain.json) | <img src="https://github.com/AnCarsenat/Redstone-Additions/raw/main/docs//images/recipes/ra_wires/liquid_drain.png" alt="Liquid drain recipe" width="210"> |
-| Copper Gas Pipe | No recipe file yet | <img src="https://github.com/AnCarsenat/Redstone-Additions/raw/main/docs//images/recipes/ra_wires/copper_pipe.png" alt="Copper gas pipe recipe" width="210"> |
-| Netherite Gas Pipe | No recipe file yet | <img src="https://github.com/AnCarsenat/Redstone-Additions/raw/main/docs//images/recipes/ra_wires/iron_pipe.png" alt="Netherite gas pipe recipe" width="210"> |
-| Gas Tank | [redstone_additions/data/ra_wires/recipe/gas_tank.json](redstone_additions/data/ra_wires/recipe/gas_tank.json) | <img src="https://github.com/AnCarsenat/Redstone-Additions/raw/main/docs//images/recipes/ra_wires/gas_tank.png" alt="Gas tank recipe" width="210"> |
-| Gas Pump | [redstone_additions/data/ra_wires/recipe/gas_pump.json](redstone_additions/data/ra_wires/recipe/gas_pump.json) | <img src="https://github.com/AnCarsenat/Redstone-Additions/raw/main/docs//images/recipes/ra_wires/gas_pump.png" alt="Gas pump recipe" width="210"> |
-| Gas Valve | [redstone_additions/data/ra_wires/recipe/gas_valve.json](redstone_additions/data/ra_wires/recipe/gas_valve.json) | <img src="https://github.com/AnCarsenat/Redstone-Additions/raw/main/docs//images/recipes/ra_wires/gas_valve.png" alt="Gas valve recipe" width="210"> |
-| Copper Electric Wire | [redstone_additions/data/ra_wires/recipe/electric_wire_copper.json](redstone_additions/data/ra_wires/recipe/electric_wire_copper.json) | <img src="https://github.com/AnCarsenat/Redstone-Additions/raw/main/docs//images/recipes/ra_wires/copper_wire.png" alt="Copper electric wire recipe" width="210"> |
-| Netherite Electric Wire | [redstone_additions/data/ra_wires/recipe/electric_wire_netherite.json](redstone_additions/data/ra_wires/recipe/electric_wire_netherite.json) | <img src="https://github.com/AnCarsenat/Redstone-Additions/raw/main/docs//images/recipes/ra_wires/insulated_wire.png" alt="Netherite electric wire recipe" width="210"> |
-| EU Generator | [redstone_additions/data/ra_wires/recipe/electric_generator.json](redstone_additions/data/ra_wires/recipe/electric_generator.json) | <img src="https://github.com/AnCarsenat/Redstone-Additions/raw/main/docs//images/recipes/ra_wires/eu_generator.png" alt="EU generator recipe" width="210"> |
-| EU Consumer | [redstone_additions/data/ra_wires/recipe/electric_consumer.json](redstone_additions/data/ra_wires/recipe/electric_consumer.json) | <img src="https://github.com/AnCarsenat/Redstone-Additions/raw/main/docs//images/recipes/ra_wires/eu_consumer.png" alt="EU consumer recipe" width="210"> |
-| EU Switch | [redstone_additions/data/ra_wires/recipe/electric_switch.json](redstone_additions/data/ra_wires/recipe/electric_switch.json) | <img src="https://github.com/AnCarsenat/Redstone-Additions/raw/main/docs//images/recipes/ra_wires/eu_switch.png" alt="EU switch recipe" width="210"> |
-
-### Other Module Previews
-
-| Module | Preview |
-|---|---|
-| Logic Gates | <img src="https://github.com/AnCarsenat/Redstone-Additions/raw/main/docs//images/recipes/ra_gates/clock.png" alt="Clock recipe" width="220"> |
-| Interactive Machines | <img src="https://github.com/AnCarsenat/Redstone-Additions/raw/main/docs//images/recipes/ra_interactive/block_placer.png" alt="Block placer recipe" width="220"> |
-| Sensors | <img src="https://github.com/AnCarsenat/Redstone-Additions/raw/main/docs//images/recipes/ra_sensors/entity_detector.png" alt="Entity detector recipe" width="220"> |
-| Wireless Redstone | <img src="https://github.com/AnCarsenat/Redstone-Additions/raw/main/docs//images/recipes/ra_wireless/emitter.png" alt="Emitter recipe" width="220"> |
-| Chunk Loader | <img src="https://github.com/AnCarsenat/Redstone-Additions/raw/main/docs//images/recipes/ra_chunk_loader/chunk_loader.png" alt="Chunk loader recipe" width="220"> |
-| Multiblocks | <img src="https://github.com/AnCarsenat/Redstone-Additions/raw/main/docs//images/recipes/ra_multiblock/copper_base.png" alt="Copper multiblock base recipe" width="220"> |
-
----
-
 ## Installation
 
 ### Option A (Modrinth)
@@ -186,6 +136,25 @@ Starter command:
 ```mcfunction
 /function ra:give_all_items
 ```
+
+---
+
+## Quick Links
+
+| Link | URL |
+|---|---|
+| Docs Home | https://ancarsenat.github.io/Redstone-Additions/ |
+| Logic Gates | https://ancarsenat.github.io/Redstone-Additions/logic-gates/ |
+| Interactive Machines | https://ancarsenat.github.io/Redstone-Additions/interactive-machines/ |
+| Storage | https://ancarsenat.github.io/Redstone-Additions/storage/ |
+| Sensors | https://ancarsenat.github.io/Redstone-Additions/sensors/ |
+| Wireless Redstone | https://ancarsenat.github.io/Redstone-Additions/wireless-redstone/ |
+| Transport Networks | https://ancarsenat.github.io/Redstone-Additions/transport-networks/ |
+| Chunk Loader | https://ancarsenat.github.io/Redstone-Additions/chunk-loader/ |
+| Multiblocks | https://ancarsenat.github.io/Redstone-Additions/multiblocks/ |
+| Block Reference | https://ancarsenat.github.io/Redstone-Additions/block-reference/ |
+| Recipe Reference | https://ancarsenat.github.io/Redstone-Additions/recipe-reference/ |
+| Changelog | https://ancarsenat.github.io/Redstone-Additions/changelog/ |
 
 ---
 
@@ -211,18 +180,10 @@ Starter command:
 
 ---
 
-## Documentation Source
+## Documentation
 
-- Site: [https://ancarsenat.github.io/Redstone-Additions/](https://ancarsenat.github.io/Redstone-Additions/)
-- Docs pages: [docs/](docs/)
-- Build config: [mkdocs.yml](mkdocs.yml)
-
-Local docs:
-
-```bash
-pip install -r requirements-docs.txt
-mkdocs serve
-```
+- Wiki : [https://ancarsenat.github.io/Redstone-Additions/](https://ancarsenat.github.io/Redstone-Additions/)
+- Build config: [mkdocs.yml](https://github.com/AnCarsenat/Redstone-Additions/raw/main/mkdocs.yml)
 
 ---
 
@@ -232,7 +193,7 @@ Copyright (c) 2026 AnCarsenat. All rights reserved.
 
 You may use this datapack on any world or server and modify it for private use. You may not redistribute, mirror, reupload, or repackage it in whole or in part without explicit written permission.
 
-See [LICENSE](LICENSE) for full terms.
+See [LICENSE](https://github.com/AnCarsenat/Redstone-Additions/raw/main/LICENSE) for full terms.
 
 ---
 

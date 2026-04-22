@@ -1,6 +1,6 @@
 # Developer Guide
 
-This guide documents implementation architecture and contributor workflow for `v5.1.2`.
+This guide documents implementation architecture and contributor workflow for `v5.1.3`.
 
 If you want conceptual runtime flow first, start with [How It Works](how-it-works.md). This page is focused on engineering-level extension and maintenance work.
 

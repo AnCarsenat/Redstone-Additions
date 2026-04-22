@@ -1,5 +1,18 @@
 # Changelog
 
+## [v5.1.3] - 2026-04-22 - Chunk Loader Status + Stability Fixes
+
+### Added
+- Chunk Loader status display support, including the new `draw_display_chunk_loader` renderer.
+- Goggles status rendering for Chunk Loader.
+
+### Changed
+- Updated Item Pipe processing behavior for improved handling.
+
+### Fixed
+- Fixed reload command-limit issues by scheduling `ra:tick` for the next tick.
+- Fixed RA multiblock recipe definitions by removing unused crafting key symbols.
+
 ## [v5.1.2] - 2026-04-08 - Docs Refresh - Transport Cleanup
 
 ### Changed

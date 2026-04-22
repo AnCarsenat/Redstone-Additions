@@ -35,3 +35,11 @@ execute if entity @s[tag=ra.custom_block.delayer] if data entity @s data.propert
 execute if entity @s[tag=ra.custom_block.delayer] if data entity @s data.properties.delay run data modify storage ra:temp status_literal.value set from entity @s data.properties.delay
 execute if entity @s[tag=ra.custom_block.delayer] if data entity @s data.properties.delay run function ra:tools/goggles/billboard/show_literal_line with storage ra:temp status_literal
 execute if entity @s[tag=ra.custom_block.delayer] unless data entity @s data.properties.delay run summon text_display ~ ~0.8 ~ {Tags:["ra.billboard","ra.display"],billboard:"center",text:[{text:"Delay: ",color:"gray"},{text:"N/A",color:"red"},{text:"t",color:"gray"}],background:1073741824,shadow:true,see_through:false,line_width:200,transformation:{left_rotation:[0f,0f,0f,1f],right_rotation:[0f,0f,0f,1f],translation:[0f,0f,0f],scale:[0.35f,0.35f,0.35f]}}
+
+# Chunk Loader status: show whether the block is currently powered
+execute if entity @s[tag=ra.custom_block.chunk_loader,tag=ra.powered] run data modify storage ra:temp status_literal set value {y:0.8,label:"State: ",value_color:"green",suffix:""}
+execute if entity @s[tag=ra.custom_block.chunk_loader,tag=ra.powered] run data modify storage ra:temp status_literal.value set value "ON"
+execute if entity @s[tag=ra.custom_block.chunk_loader,tag=ra.powered] run function ra:tools/goggles/billboard/show_literal_line with storage ra:temp status_literal
+execute if entity @s[tag=ra.custom_block.chunk_loader] unless entity @s[tag=ra.powered] run data modify storage ra:temp status_literal set value {y:0.8,label:"State: ",value_color:"red",suffix:""}
+execute if entity @s[tag=ra.custom_block.chunk_loader] unless entity @s[tag=ra.powered] run data modify storage ra:temp status_literal.value set value "OFF"
+execute if entity @s[tag=ra.custom_block.chunk_loader] unless entity @s[tag=ra.powered] run function ra:tools/goggles/billboard/show_literal_line with storage ra:temp status_literal

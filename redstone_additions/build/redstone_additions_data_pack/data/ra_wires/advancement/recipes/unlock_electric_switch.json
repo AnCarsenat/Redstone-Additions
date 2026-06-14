@@ -1,0 +1,34 @@
+{
+    "parent":  "minecraft:recipes/root",
+    "criteria":  {
+                     "has_the_recipe":  {
+                                            "trigger":  "minecraft:recipe_unlocked",
+                                            "conditions":  {
+                                                               "recipe":  "ra_wires:electric_switch"
+                                                           }
+                                        },
+                     "has_material":  {
+                                          "trigger":  "minecraft:inventory_changed",
+                                          "conditions":  {
+                                                             "items":  [
+                                                                           {
+                                                                               "items":  [
+                                                                                             "minecraft:redstone_lamp"
+                                                                                         ]
+                                                                           }
+                                                                       ]
+                                                         }
+                                      }
+                 },
+    "requirements":  [
+                         [
+                             "has_the_recipe",
+                             "has_material"
+                         ]
+                     ],
+    "rewards":  {
+                    "recipes":  [
+                                    "ra_wires:electric_switch"
+                                ]
+                }
+}

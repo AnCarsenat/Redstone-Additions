@@ -1,0 +1,23 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "ra_interactive:item_pipe"
+      }
+    },
+    "has_hopper": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          { "items": ["minecraft:hopper"] }
+        ]
+      }
+    }
+  },
+  "requirements": [["has_the_recipe", "has_hopper"]],
+  "rewards": {
+    "recipes": ["ra_interactive:item_pipe"]
+  }
+}

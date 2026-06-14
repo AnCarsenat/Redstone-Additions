@@ -1,0 +1,21 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "ra_interactive:spitter"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    },
+    "has_dropper": {
+      "conditions": {
+        "items": [{ "items": "minecraft:dropper" }]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "requirements": [["has_the_recipe", "has_dropper"]],
+  "rewards": {
+    "recipes": ["ra_interactive:spitter"]
+  }
+}

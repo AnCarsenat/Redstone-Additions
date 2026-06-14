@@ -1,0 +1,25 @@
+{
+  "parent": "ra_advancements:ra_sensors",
+  "display": {
+    "icon": {
+      "id": "minecraft:sculk_sensor"
+    },
+    "title": "Entity Detector",
+    "description": "Obtain the Entity Detector.",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "criteria": {
+    "get_entity_detector": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": ["minecraft:bat_spawn_egg"],
+            "components": {"custom_data":{"ra": { "entity_detector": true}}}
+          }
+        ]
+      }
+    }
+  }
+}

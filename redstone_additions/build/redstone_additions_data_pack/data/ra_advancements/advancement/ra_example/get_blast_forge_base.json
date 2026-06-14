@@ -1,0 +1,20 @@
+{
+  "parent": "ra_advancements:ra_example",
+  "display": {
+    "icon": { "id": "minecraft:blast_furnace" },
+    "title": "Blast Forge Base",
+    "description": "Obtain the example Blast Forge core and place it in the world.",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "criteria": {
+    "get_blast_forge_base": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          { "items": ["minecraft:bat_spawn_egg"], "components": {"custom_data": {"ra": {"example_copper_base": true}}} }
+        ]
+      }
+    }
+  }
+}

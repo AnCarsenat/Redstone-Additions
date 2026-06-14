@@ -1,0 +1,30 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "OOO",
+    "LCL",
+    "OOO"
+  ],
+  "key": {
+    "O": "minecraft:obsidian",
+    "L": "minecraft:lava_bucket",
+    "C": "minecraft:cauldron"
+  },
+  "result": {
+    "id": "minecraft:bat_spawn_egg",
+    "components": {
+      "minecraft:item_model": "minecraft:cauldron",
+      "minecraft:item_name": "Infinite Lava Cauldron",
+      "minecraft:custom_data": { "ra": { "infinite_lava_cauldron": true } },
+      "minecraft:entity_data": {
+        "id": "minecraft:bat",
+        "Tags": ["ra.spawned", "ra.place.infinite_lava_cauldron"],
+        "Silent": true,
+        "NoAI": true,
+        "Invulnerable": true
+      }
+    }
+  },
+  "show_notification": true
+}

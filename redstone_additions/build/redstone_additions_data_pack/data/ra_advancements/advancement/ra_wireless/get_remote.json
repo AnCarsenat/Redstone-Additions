@@ -1,0 +1,25 @@
+{
+  "parent": "ra_advancements:ra_wireless",
+  "display": {
+    "icon": {
+      "id": "minecraft:red_dye"
+    },
+    "title": "Redstone Remote",
+    "description": "Obtain the Redstone Remote.",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "criteria": {
+    "get_remote": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": ["minecraft:warped_fungus_on_a_stick"],
+            "components": {"custom_data":{"ra": { "remote": true}}}
+          }
+        ]
+      }
+    }
+  }
+}

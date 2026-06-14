@@ -1,0 +1,19 @@
+{
+  "parent": "ra_advancements:ra",
+  "display": {
+    "icon": { "id": "minecraft:piston" },
+    "title": "Redstone Interactive",
+    "description": "Utilize blocks to interact with the world around you.",
+    "show_toast": true
+  },
+  "criteria": {
+    "get_sensor_item": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          { "items": ["minecraft:observer"] }
+        ]
+      }
+    }
+  }
+}

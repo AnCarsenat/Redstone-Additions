@@ -1,0 +1,25 @@
+{
+  "parent": "ra_advancements:ra_interactive",
+  "display": {
+    "icon": {
+      "id": "minecraft:dispenser"
+    },
+    "title": "Item Pipe",
+    "description": "Obtain the Item Pipe.",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "criteria": {
+    "get_item_pipe": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": ["minecraft:bat_spawn_egg"],
+            "components": {"custom_data":{"ra": { "item_pipe": true}}}
+          }
+        ]
+      }
+    }
+  }
+}

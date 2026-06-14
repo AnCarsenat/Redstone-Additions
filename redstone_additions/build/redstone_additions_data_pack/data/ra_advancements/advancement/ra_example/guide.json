@@ -1,0 +1,20 @@
+{
+  "parent": "ra_advancements:ra_example/get_upgrade_platform_base",
+  "display": {
+    "icon": { "id": "minecraft:diamond" },
+    "title": "Example Progression",
+    "description": "A guide path for the moved example multiblocks, including the new failure chance on upgrades.",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "criteria": {
+    "example_progress": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          { "items": ["minecraft:bat_spawn_egg"], "components": {"custom_data": {"ra": {"example_netherite_base": true}}} }
+        ]
+      }
+    }
+  }
+}

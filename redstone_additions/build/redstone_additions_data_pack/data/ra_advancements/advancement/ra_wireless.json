@@ -1,0 +1,19 @@
+{
+  "parent": "ra_advancements:ra",
+  "display": {
+    "icon": { "id": "minecraft:end_stone_bricks" },
+    "title": "Redstone Wireless",
+    "description": "Control redstone signals wirelessly.",
+    "show_toast": true
+  },
+  "criteria": {
+    "get_wireless_item": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          { "items": ["minecraft:gold_ingot"] }
+        ]
+      }
+    }
+  }
+}

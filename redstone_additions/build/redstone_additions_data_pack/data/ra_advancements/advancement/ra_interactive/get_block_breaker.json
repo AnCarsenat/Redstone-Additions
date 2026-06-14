@@ -1,0 +1,25 @@
+{
+  "parent": "ra_advancements:ra_interactive",
+  "display": {
+    "icon": {
+      "id": "minecraft:iron_pickaxe"
+    },
+    "title": "Block Breaker",
+    "description": "Obtain the Block Breaker item.",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "criteria": {
+    "get_block_breaker": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": ["minecraft:bat_spawn_egg"],
+            "components": {"custom_data":{"ra": { "block_breaker": 1}}}
+          }
+        ]
+      }
+    }
+  }
+}

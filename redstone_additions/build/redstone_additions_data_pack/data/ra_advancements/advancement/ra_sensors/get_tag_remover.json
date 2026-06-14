@@ -1,0 +1,25 @@
+{
+  "parent": "ra_advancements:ra_sensors",
+  "display": {
+    "icon": {
+      "id": "minecraft:red_glazed_terracotta"
+    },
+    "title": "Tag Remover",
+    "description": "Obtain the Tag Remover item.",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "criteria": {
+    "get_tag_remover": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": ["minecraft:bat_spawn_egg"],
+            "components": {"custom_data":{"ra": { "tag_remover": 1}}}
+          }
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "ra_interactive:message_block"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    },
+    "has_note_block": {
+      "conditions": {
+        "items": [{ "items": "minecraft:note_block" }]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "requirements": [["has_the_recipe", "has_note_block"]],
+  "rewards": {
+    "recipes": ["ra_interactive:message_block"]
+  }
+}

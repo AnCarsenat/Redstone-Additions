@@ -1,0 +1,25 @@
+{
+  "parent": "ra_advancements:ra_wireless",
+  "display": {
+    "icon": {
+      "id": "minecraft:end_stone_bricks"
+    },
+    "title": "Wireless Emitter",
+    "description": "Obtain the Wireless Emitter.",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "criteria": {
+    "get_emitter": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": ["minecraft:bat_spawn_egg"],
+            "components": {"custom_data":{"ra": { "emitter": true}}}
+          }
+        ]
+      }
+    }
+  }
+}

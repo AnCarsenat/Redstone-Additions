@@ -1,0 +1,19 @@
+{
+  "parent": "ra_advancements:root",
+  "display": {
+    "icon": { "id": "minecraft:redstone" },
+    "title": "Redstone Additions Core",
+    "description": "Discover the core features of Redstone Additions.",
+    "show_toast": true
+  },
+  "criteria": {
+    "get_core_item": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          { "items": ["minecraft:redstone"] }
+        ]
+      }
+    }
+  }
+}

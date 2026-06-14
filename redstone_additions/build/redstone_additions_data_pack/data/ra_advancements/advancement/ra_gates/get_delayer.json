@@ -1,0 +1,25 @@
+{
+  "parent": "ra_advancements:ra_gates",
+  "display": {
+    "icon": {
+      "id": "minecraft:chiseled_stone_bricks"
+    },
+    "title": "Delayer",
+    "description": "Obtain the Delayer.",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "criteria": {
+    "get_delayer": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": ["minecraft:bat_spawn_egg"],
+            "components": {"custom_data":{"ra": { "delayer": true}}}
+          }
+        ]
+      }
+    }
+  }
+}

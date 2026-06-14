@@ -1,0 +1,30 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "redstone",
+  "pattern": [
+    "CCC",
+    "RDR",
+    "CCC"
+  ],
+  "key": {
+    "C": ["minecraft:cobblestone", "minecraft:blackstone"],
+    "R": "minecraft:redstone",
+    "D": "minecraft:dropper"
+  },
+  "result": {
+    "id": "minecraft:bat_spawn_egg",
+    "components": {
+      "minecraft:item_model": "minecraft:dropper",
+      "minecraft:item_name": "Spitter",
+      "minecraft:custom_data": { "ra": { "spitter": true } },
+      "minecraft:entity_data": {
+        "id": "minecraft:bat",
+        "Tags": ["ra.spawned", "ra.place.spitter"],
+        "Silent": true,
+        "NoAI": true,
+        "Invulnerable": true
+      }
+    }
+  },
+  "show_notification": true
+}

@@ -1,0 +1,30 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "redstone",
+  "pattern": [
+    "CCC",
+    "CDP",
+    "CCC"
+  ],
+  "key": {
+    "C": ["minecraft:cobblestone", "minecraft:blackstone"],
+    "P": "minecraft:stone_pickaxe",
+    "D": "minecraft:dispenser"
+  },
+  "result": {
+    "id": "minecraft:bat_spawn_egg",
+    "components": {
+      "minecraft:item_model": "minecraft:dispenser",
+      "minecraft:item_name": "Block Breaker",
+      "minecraft:custom_data": { "ra": { "block_breaker": true } },
+      "minecraft:entity_data": {
+        "id": "minecraft:bat",
+        "Tags": ["ra.spawned", "ra.place.block_breaker"],
+        "Silent": true,
+        "NoAI": true,
+        "Invulnerable": true
+      }
+    }
+  },
+  "show_notification": true
+}

@@ -1,0 +1,21 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "ra_interactive:infinite_snow_cauldron"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    },
+    "has_powder_snow": {
+      "conditions": {
+        "items": [{ "items": "minecraft:powder_snow_bucket" }]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "requirements": [["has_the_recipe", "has_powder_snow"]],
+  "rewards": {
+    "recipes": ["ra_interactive:infinite_snow_cauldron"]
+  }
+}

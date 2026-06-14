@@ -1,0 +1,21 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "ra_interactive:infinite_lava_cauldron"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    },
+    "has_lava": {
+      "conditions": {
+        "items": [{ "items": "minecraft:lava_bucket" }]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "requirements": [["has_the_recipe", "has_lava"]],
+  "rewards": {
+    "recipes": ["ra_interactive:infinite_lava_cauldron"]
+  }
+}

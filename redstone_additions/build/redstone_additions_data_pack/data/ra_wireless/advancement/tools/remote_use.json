@@ -1,0 +1,18 @@
+{
+  "criteria": {
+    "requirement": {
+      "trigger": "minecraft:using_item",
+      "conditions": {
+        "item": {
+          "items": "minecraft:blaze_rod",
+          "predicates": {
+            "minecraft:custom_data": {"ra": {"remote": true}}
+          }
+        }
+      }
+    }
+  },
+  "rewards": {
+    "function": "ra_wireless:tools/remote/on_use"
+  }
+}

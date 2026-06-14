@@ -1,0 +1,44 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "DDD",
+    "DRD",
+    "DDD"
+  ],
+  "key": {
+    "D": "minecraft:diamond_block",
+    "R": "minecraft:redstone"
+  },
+  "result": {
+    "id": "minecraft:bat_spawn_egg",
+    "components": {
+      "minecraft:item_model": "minecraft:diamond_block",
+      "minecraft:item_name": "Diamond Multiblock Base",
+      "minecraft:lore": [
+        {
+          "text": "Tier 4 Multiblock Core",
+          "color": "gray",
+          "italic": false
+        }
+      ],
+      "minecraft:custom_data": {
+        "ra": {
+          "multiblock_base": "diamond"
+        }
+      },
+      "minecraft:entity_data": {
+        "id": "minecraft:bat",
+        "Tags": [
+          "ra.spawned",
+          "ra.place.multiblock_base",
+          "ra.place.multiblock_base.diamond"
+        ],
+        "Silent": true,
+        "NoAI": true,
+        "Invulnerable": true
+      }
+    }
+  },
+  "show_notification": true
+}

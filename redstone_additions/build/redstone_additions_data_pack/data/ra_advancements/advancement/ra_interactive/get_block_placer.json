@@ -1,0 +1,25 @@
+{
+  "parent": "ra_advancements:ra_interactive",
+  "display": {
+    "icon": {
+      "id": "minecraft:dispenser"
+    },
+    "title": "Block Placer",
+    "description": "Obtain the Block Placer item.",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "criteria": {
+    "get_block_placer": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": ["minecraft:bat_spawn_egg"],
+            "components": {"custom_data":{"ra": { "block_placer": 1}}}
+          }
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,2 @@
+# Show 'channel' property - string type
+tellraw @s [{text:"  channel: ",color:"white"},{text:"[",color:"dark_gray"},{nbt:"properties.channel",storage:"ra:dh",color:"green"},{text:"]",color:"dark_gray"},{text:" "},{text:"string",color:"aqua"},{text:" "},{text:"[Modify]",color:"yellow",click_event:{action:"run_command",command:"/trigger ra.dh.action set 13"},hover_event:{action:"show_text",value:"Modify this property"}}]

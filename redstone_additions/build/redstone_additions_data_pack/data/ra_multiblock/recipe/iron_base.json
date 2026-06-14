@@ -1,0 +1,44 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "III",
+    "IRI",
+    "III"
+  ],
+  "key": {
+    "I": "minecraft:iron_ingot",
+    "R": "minecraft:redstone"
+  },
+  "result": {
+    "id": "minecraft:bat_spawn_egg",
+    "components": {
+      "minecraft:item_model": "minecraft:iron_block",
+      "minecraft:item_name": "Iron Multiblock Base",
+      "minecraft:lore": [
+        {
+          "text": "Tier 2 Multiblock Core",
+          "color": "gray",
+          "italic": false
+        }
+      ],
+      "minecraft:custom_data": {
+        "ra": {
+          "multiblock_base": "iron"
+        }
+      },
+      "minecraft:entity_data": {
+        "id": "minecraft:bat",
+        "Tags": [
+          "ra.spawned",
+          "ra.place.multiblock_base",
+          "ra.place.multiblock_base.iron"
+        ],
+        "Silent": true,
+        "NoAI": true,
+        "Invulnerable": true
+      }
+    }
+  },
+  "show_notification": true
+}

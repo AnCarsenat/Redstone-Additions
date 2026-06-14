@@ -1,0 +1,18 @@
+{
+  "criteria": {
+    "requirement": {
+      "trigger": "minecraft:using_item",
+      "conditions": {
+        "item": {
+          "items": "minecraft:blaze_rod",
+          "predicates": {
+            "minecraft:custom_data": {"ra": {"data_handler": true}}
+          }
+        }
+      }
+    }
+  },
+  "rewards": {
+    "function": "ra:tools/data_handler/on_use"
+  }
+}

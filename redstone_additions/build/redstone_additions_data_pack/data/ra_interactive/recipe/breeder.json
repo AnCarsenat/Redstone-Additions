@@ -1,0 +1,31 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "redstone",
+  "pattern": [
+    "CCC",
+    "ADK",
+    "CCC"
+  ],
+  "key": {
+    "C": "minecraft:cobblestone",
+    "A": "minecraft:apple",
+    "D": "minecraft:dispenser",
+    "K": "minecraft:copper_ingot"
+  },
+  "result": {
+    "id": "minecraft:bat_spawn_egg",
+    "components": {
+      "minecraft:item_model": "minecraft:dispenser",
+      "minecraft:item_name": "Breeder",
+      "minecraft:custom_data": { "ra": { "breeder": true } },
+      "minecraft:entity_data": {
+        "id": "minecraft:bat",
+        "Tags": ["ra.spawned", "ra.place.breeder"],
+        "Silent": true,
+        "NoAI": true,
+        "Invulnerable": true
+      }
+    }
+  },
+  "show_notification": true
+}

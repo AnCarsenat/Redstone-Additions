@@ -1,0 +1,44 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "III",
+    "INI",
+    "III"
+  ],
+  "key": {
+    "N": "minecraft:netherite_ingot",
+    "I": "minecraft:iron_block"
+  },
+  "result": {
+    "id": "minecraft:bat_spawn_egg",
+    "components": {
+      "minecraft:item_model": "minecraft:netherite_block",
+      "minecraft:item_name": "Netherite Multiblock Base",
+      "minecraft:lore": [
+        {
+          "text": "Tier 5 Multiblock Core",
+          "color": "gray",
+          "italic": false
+        }
+      ],
+      "minecraft:custom_data": {
+        "ra": {
+          "multiblock_base": "netherite"
+        }
+      },
+      "minecraft:entity_data": {
+        "id": "minecraft:bat",
+        "Tags": [
+          "ra.spawned",
+          "ra.place.multiblock_base",
+          "ra.place.multiblock_base.netherite"
+        ],
+        "Silent": true,
+        "NoAI": true,
+        "Invulnerable": true
+      }
+    }
+  },
+  "show_notification": true
+}

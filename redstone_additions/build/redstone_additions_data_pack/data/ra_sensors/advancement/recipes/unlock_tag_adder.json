@@ -1,0 +1,21 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "ra_sensors:tag_adder"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    },
+    "has_name_tag": {
+      "conditions": {
+        "items": [{ "items": "minecraft:name_tag" }]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "requirements": [["has_the_recipe", "has_name_tag"]],
+  "rewards": {
+    "recipes": ["ra_sensors:tag_adder"]
+  }
+}

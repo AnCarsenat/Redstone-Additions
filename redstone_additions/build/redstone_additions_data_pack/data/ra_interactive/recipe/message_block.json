@@ -1,0 +1,31 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "redstone",
+  "pattern": [
+    "CCC",
+    "BNR",
+    "CCC"
+  ],
+  "key": {
+    "C": "minecraft:cobblestone",
+    "B": "minecraft:book",
+    "N": "minecraft:note_block",
+    "R": "minecraft:redstone"
+  },
+  "result": {
+    "id": "minecraft:bat_spawn_egg",
+    "components": {
+      "minecraft:item_model": "minecraft:note_block",
+      "minecraft:item_name": "Message Block",
+      "minecraft:custom_data": { "ra": { "message_block": true } },
+      "minecraft:entity_data": {
+        "id": "minecraft:bat",
+        "Tags": ["ra.spawned", "ra.place.message_block"],
+        "Silent": true,
+        "NoAI": true,
+        "Invulnerable": true
+      }
+    }
+  },
+  "show_notification": true
+}

@@ -1,0 +1,21 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "ra_interactive:block_breaker"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    },
+    "has_dispenser": {
+      "conditions": {
+        "items": [{ "items": "minecraft:dispenser" }]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "requirements": [["has_the_recipe", "has_dispenser"]],
+  "rewards": {
+    "recipes": ["ra_interactive:block_breaker"]
+  }
+}

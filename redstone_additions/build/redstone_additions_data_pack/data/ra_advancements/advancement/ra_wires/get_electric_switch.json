@@ -1,0 +1,33 @@
+{
+    "parent":  "ra_advancements:ra_wires",
+    "display":  {
+                    "icon":  {
+                                 "id":  "minecraft:redstone_lamp"
+                             },
+                    "title":  "EU Switch",
+                    "description":  "Obtain the EU Switch.",
+                    "show_toast":  true,
+                    "announce_to_chat":  true
+                },
+    "criteria":  {
+                     "get_electric_switch":  {
+                                                 "trigger":  "minecraft:inventory_changed",
+                                                 "conditions":  {
+                                                                    "items":  [
+                                                                                  {
+                                                                                      "items":  [
+                                                                                                    "minecraft:bat_spawn_egg"
+                                                                                                ],
+                                                                                      "components":  {
+                                                                                                         "custom_data":  {
+                                                                                                                             "ra":  {
+                                                                                                                                        "electric_switch":  true
+                                                                                                                                    }
+                                                                                                                         }
+                                                                                                     }
+                                                                                  }
+                                                                              ]
+                                                                }
+                                             }
+                 }
+}

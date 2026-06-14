@@ -1,0 +1,23 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "ra_wireless:receiver"
+      }
+    },
+    "has_purpur_block": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          { "items": ["minecraft:purpur_block"] }
+        ]
+      }
+    }
+  },
+  "requirements": [["has_the_recipe", "has_purpur_block"]],
+  "rewards": {
+    "recipes": ["ra_wireless:receiver"]
+  }
+}

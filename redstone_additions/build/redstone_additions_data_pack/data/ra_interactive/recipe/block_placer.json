@@ -1,0 +1,31 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "redstone",
+  "pattern": [
+    "CCC",
+    "BDR",
+    "CCC"
+  ],
+  "key": {
+    "C": ["minecraft:cobblestone", "minecraft:blackstone"],
+    "B": "minecraft:bow",
+    "D": "minecraft:dispenser",
+    "R": "minecraft:redstone_block"
+  },
+  "result": {
+    "id": "minecraft:bat_spawn_egg",
+    "components": {
+      "minecraft:item_model": "minecraft:dispenser",
+      "minecraft:item_name": "Block Placer",
+      "minecraft:custom_data": { "ra": { "block_placer": true } },
+      "minecraft:entity_data": {
+        "id": "minecraft:bat",
+        "Tags": ["ra.spawned", "ra.place.block_placer"],
+        "Silent": true,
+        "NoAI": true,
+        "Invulnerable": true
+      }
+    }
+  },
+  "show_notification": true
+}

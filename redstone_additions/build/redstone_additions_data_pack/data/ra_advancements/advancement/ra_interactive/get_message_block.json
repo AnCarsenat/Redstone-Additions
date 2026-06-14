@@ -1,0 +1,25 @@
+{
+  "parent": "ra_advancements:ra_interactive",
+  "display": {
+    "icon": {
+      "id": "minecraft:note_block"
+    },
+    "title": "Message Block",
+    "description": "Obtain the Message Block.",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "criteria": {
+    "get_message_block": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": ["minecraft:bat_spawn_egg"],
+            "components": {"custom_data":{"ra": { "message_block": true}}}
+          }
+        ]
+      }
+    }
+  }
+}

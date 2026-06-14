@@ -1,0 +1,30 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "redstone",
+  "pattern": [
+    "   ",
+    " C ",
+    " R "
+  ],
+  "key": {
+    "C": "minecraft:quartz_block",
+    "R": "minecraft:repeater"
+  },
+  "result": {
+    "id": "minecraft:bat_spawn_egg",
+    "count": 1,
+    "components": {
+      "minecraft:item_model": "minecraft:quartz_block",
+      "minecraft:item_name": "Shortener",
+      "minecraft:custom_data": { "ra": { "shortener": true } },
+      "minecraft:entity_data": {
+        "id": "minecraft:bat",
+        "Tags": ["ra.spawned", "ra.place.shortener"],
+        "Silent": true,
+        "NoAI": true,
+        "Invulnerable": true
+      }
+    }
+  },
+  "show_notification": true
+}

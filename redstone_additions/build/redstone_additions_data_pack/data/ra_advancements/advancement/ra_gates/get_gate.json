@@ -1,0 +1,25 @@
+{
+  "parent": "ra_advancements:ra_gates",
+  "display": {
+    "icon": {
+      "id": "minecraft:smooth_stone_slab"
+    },
+    "title": "Uni Gate",
+    "description": "Obtain the Uni Gate.",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "criteria": {
+    "get_uni_gate": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": ["minecraft:bat_spawn_egg"],
+            "components": {"custom_data":{"ra": { "uni_gate": 1}}}
+          }
+        ]
+      }
+    }
+  }
+}

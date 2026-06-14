@@ -1,0 +1,22 @@
+{
+  "display": {
+    "icon": {
+      "id": "minecraft:crafter"
+    },
+    "title": "Redstone Additions",
+    "description": "The world of redstone at the palm of your hand.",
+    "background": "minecraft:block/redstone_ore"
+  },
+  "criteria": {
+    "on_game_load": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "minecraft:redstone"
+          }
+        ]
+      }
+    }
+  }
+}

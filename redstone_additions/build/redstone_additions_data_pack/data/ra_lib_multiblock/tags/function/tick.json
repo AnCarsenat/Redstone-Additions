@@ -1,0 +1,6 @@
+{
+  "values": [
+    "ra_multiblock:blast_forge/tick_dispatch",
+    "ra_multiblock:upgrade_platform/tick_dispatch"
+  ]
+}

@@ -1,0 +1,25 @@
+{
+    "parent":  "ra_advancements:ra",
+    "display":  {
+                    "icon":  {
+                                 "id":  "minecraft:conduit"
+                             },
+                    "title":  "Fluid and EU Networks",
+                    "description":  "Build merged fluid transport and electric infrastructure with RA Wires.",
+                    "show_toast":  true
+                },
+    "criteria":  {
+                     "get_wires_item":  {
+                                            "trigger":  "minecraft:inventory_changed",
+                                            "conditions":  {
+                                                               "items":  [
+                                                                             {
+                                                                                 "items":  [
+                                                                                               "minecraft:copper_ingot"
+                                                                                           ]
+                                                                             }
+                                                                         ]
+                                                           }
+                                        }
+                 }
+}

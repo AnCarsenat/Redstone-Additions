@@ -4,7 +4,35 @@
 			"path": "."
 		}
 	],
-	"settings": {},
+	"settings": {
+		"terminal.integrated.env.linux": {
+			"MINECRAFT_PATH": "/home/ancar/.local/share/PrismLauncher/instances/Fabric 26.1.2 [Client mods]/minecraft"
+		}
+	},
+	"tasks": {
+		"version": "2.0.0",
+		"tasks": [
+			{
+				"label": "beet: build link DevWorld",
+				"type": "shell",
+				"command": "bash",
+				"args": [
+					"-lc",
+					"source /home/ancar/Desktop/Informatique/2025-2026/Minecraft/Datapacks/Redstone-Additions/redstone_additions/.venv/bin/activate && beet build --link DevWorld"
+				],
+				"options": {
+					"env": {
+						"MINECRAFT_PATH": "/home/ancar/.local/share/PrismLauncher/instances/Fabric 26.1.2 [Client mods]/minecraft"
+					}
+				},
+				"group": {
+					"kind": "build",
+					"isDefault": true
+				},
+				"problemMatcher": []
+			}
+		]
+	},
 	"extensions": {
 		"recommendations": []
 	}

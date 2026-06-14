@@ -1,0 +1,33 @@
+{
+    "parent":  "ra_advancements:ra_wires",
+    "display":  {
+                    "icon":  {
+                                 "id":  "minecraft:iron_block"
+                             },
+                    "title":  "Gas Tank",
+                    "description":  "Obtain the Gas Tank.",
+                    "show_toast":  true,
+                    "announce_to_chat":  true
+                },
+    "criteria":  {
+                     "get_gas_tank":  {
+                                          "trigger":  "minecraft:inventory_changed",
+                                          "conditions":  {
+                                                             "items":  [
+                                                                           {
+                                                                               "items":  [
+                                                                                             "minecraft:bat_spawn_egg"
+                                                                                         ],
+                                                                               "components":  {
+                                                                                                  "custom_data":  {
+                                                                                                                      "ra":  {
+                                                                                                                                 "gas_tank":  true
+                                                                                                                             }
+                                                                                                                  }
+                                                                                              }
+                                                                           }
+                                                                       ]
+                                                         }
+                                      }
+                 }
+}

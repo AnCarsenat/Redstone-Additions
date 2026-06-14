@@ -1,0 +1,44 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "GGG",
+    "GRG",
+    "GGG"
+  ],
+  "key": {
+    "G": "minecraft:gold_block",
+    "R": "minecraft:redstone"
+  },
+  "result": {
+    "id": "minecraft:bat_spawn_egg",
+    "components": {
+      "minecraft:item_model": "minecraft:gold_block",
+      "minecraft:item_name": "Gold Multiblock Base",
+      "minecraft:lore": [
+        {
+          "text": "Tier 3 Multiblock Core",
+          "color": "gray",
+          "italic": false
+        }
+      ],
+      "minecraft:custom_data": {
+        "ra": {
+          "multiblock_base": "gold"
+        }
+      },
+      "minecraft:entity_data": {
+        "id": "minecraft:bat",
+        "Tags": [
+          "ra.spawned",
+          "ra.place.multiblock_base",
+          "ra.place.multiblock_base.gold"
+        ],
+        "Silent": true,
+        "NoAI": true,
+        "Invulnerable": true
+      }
+    }
+  },
+  "show_notification": true
+}

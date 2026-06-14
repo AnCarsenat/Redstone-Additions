@@ -1,0 +1,10 @@
+{
+    "name": "Redstone additions",
+    "description": "Redstone additions on beet",
+
+    "data_pack": {
+        "load": ["src"]
+    },
+
+    "output": "build"
+}

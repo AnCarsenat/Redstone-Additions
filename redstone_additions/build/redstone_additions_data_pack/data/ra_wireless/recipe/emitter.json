@@ -1,0 +1,38 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "redstone",
+  "pattern": [
+    "GEG",
+    "ERE",
+    "GEG"
+  ],
+  "key": {
+    "G": "minecraft:gold_ingot",
+    "E": "minecraft:end_stone_bricks",
+    "R": "minecraft:redstone"
+  },
+  "result": {
+    "id": "minecraft:bat_spawn_egg",
+    "count": 1,
+    "components": {
+      "minecraft:item_model": "minecraft:end_stone_bricks",
+      "minecraft:item_name": "Wireless Emitter",
+      "minecraft:custom_data": {
+        "ra": {
+          "emitter": true
+        }
+      },
+      "minecraft:entity_data": {
+        "id": "minecraft:bat",
+        "Tags": [
+          "ra.spawned",
+          "ra.place.emitter"
+        ],
+        "Silent": true,
+        "NoAI": true,
+        "Invulnerable": true
+      }
+    }
+  },
+  "show_notification": true
+}

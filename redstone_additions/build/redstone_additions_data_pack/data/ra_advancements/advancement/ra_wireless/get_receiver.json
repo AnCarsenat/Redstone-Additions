@@ -1,0 +1,25 @@
+{
+  "parent": "ra_advancements:ra_wireless",
+  "display": {
+    "icon": {
+      "id": "minecraft:purpur_block"
+    },
+    "title": "Wireless Receiver",
+    "description": "Obtain the Wireless Receiver.",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "criteria": {
+    "get_receiver": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": ["minecraft:bat_spawn_egg"],
+            "components": {"custom_data":{"ra": { "receiver": true}}}
+          }
+        ]
+      }
+    }
+  }
+}

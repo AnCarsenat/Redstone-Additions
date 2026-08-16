@@ -4,4 +4,5 @@
 # Uses insert_or_drop: a multiblock producing into a full output barrel used to
 # have its product deleted by `loot insert`.
 
-function ra_lib:inventory/insert_or_drop with storage ra:multiblock io_item
+data modify storage ra:inventory item set from storage ra:multiblock io_item
+function ra_lib:inventory/insert_or_drop

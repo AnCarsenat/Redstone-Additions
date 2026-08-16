@@ -89,7 +89,14 @@ when.
 
 **Item loss and duplication**
 - **A full output container destroyed the overflow** in the Unboxer, the Blast
-  Forge and every multiblock IO insert.
+  Forge and every multiblock IO insert. These now place the stack into an
+  explicitly chosen free slot, dropping it whole when there is none.
+- **Delivered stacks were inserted AND dropped.** The first version of
+  `insert_or_drop` worked out the leftover by subtracting `loot insert`'s return
+  value from the requested count — but that command reports the number of item
+  entries it handled, not the number of items, so a full stack looked almost
+  entirely un-inserted and was duplicated onto the floor. Nothing on that path
+  uses `loot insert` any more.
 - **The Unboxer duplicated items** — it inserted into the output before removing
   from the box, so any path reaching one and not the other produced both.
 - **The Unboxer only emptied part of a crate.** It moved one stored stack per

@@ -8,8 +8,16 @@
 # the destination has no free slot and the items have to merge into partial
 # stacks, which /item cannot express.
 #
-# Caveat: whatever does not fit is not returned to the caller beyond the count in
-# the result, so callers must not assume the whole amount moved.
+# Caveat: whatever does not fit is DESTROYED, and the return value cannot be used
+# to work out how much that was. `loot insert` reports the number of item entries
+# it handled, not the number of items, so a 64-stack reports far less than 64 even
+# when all of it went in. insert_or_drop originally subtracted this from the
+# requested count and dropped the difference — inserting the stack AND dropping
+# almost all of it again.
+#
+# Only safe with a count of 1, where "handled" and "inserted" coincide and the
+# result is a plain success flag. For anything larger use insert_or_drop, which
+# picks a slot explicitly and never consults a loot table.
 #
 # Input: Macro with item fields directly:
 #   $(id) = item ID (e.g., "minecraft:diamond")

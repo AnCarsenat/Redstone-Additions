@@ -24,7 +24,8 @@ $execute positioned $(in1) run function ra_multiblock:blast_forge/consume_first_
 
 # === Insert result into output barrel ===
 # insert_or_drop, not insert: a full output barrel used to delete the smelt.
-$execute positioned $(out1) run function ra_lib:inventory/insert_or_drop with storage ra:temp bf.result
+data modify storage ra:inventory item set from storage ra:temp bf.result
+$execute positioned $(out1) run function ra_lib:inventory/insert_or_drop
 
 # === Update status data on marker entity ===
 execute store result entity @s data.status.heat int 1 run scoreboard players get @s ra.heat

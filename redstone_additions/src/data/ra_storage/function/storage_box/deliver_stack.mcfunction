@@ -5,4 +5,5 @@
 # offset is measured from the current position, so without this the output offset
 # would be applied relative to the input side rather than to the block.
 
-$execute at @s positioned $(output) run function ra_lib:inventory/insert_or_drop with storage ra:temp mover_item
+data modify storage ra:inventory item set from storage ra:temp mover_item
+$execute at @s positioned $(output) run function ra_lib:inventory/insert_or_drop

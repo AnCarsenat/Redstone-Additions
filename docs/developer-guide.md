@@ -5,6 +5,90 @@ This guide documents implementation architecture and contributor workflow for `v
 If you want conceptual runtime flow first, start with [How It Works](how-it-works.md). This page is focused on engineering-level extension and maintenance work.
 
 If you want to contribute and write somewhat correct addons / fixes see [Contributing Guidelines](contributing-guidelines.md)
+
+## Development Setup
+
+This project uses **[Beet](https://github.com/mcbeet/beet)** to build the datapack from source.
+
+### Prerequisites
+- Python 3.10 or higher
+- Git
+
+### Quick Start
+
+#### 1. Clone the Repository
+```bash
+git clone https://github.com/AnCarsenat/Redstone-Additions.git
+cd Redstone-Additions
+git checkout beet_rewrite
+```
+
+#### 2. Set Up the Virtual Environment
+Navigate to the `redstone_additions/` directory and create a Python virtual environment:
+
+```bash
+cd redstone_additions
+python3 -m venv .venv
+```
+
+#### 3. Activate the Virtual Environment
+**On Linux/macOS:**
+```bash
+source .venv/bin/activate
+```
+
+**On Windows (CMD):**
+```bash
+.venv\Scripts\activate.bat
+```
+
+**On Windows (PowerShell):**
+```bash
+.venv\Scripts\Activate.ps1
+```
+
+#### 4. Install Dependencies
+```bash
+pip install -r requirements.txt
+```
+
+#### 5. Link to Your Minecraft World
+Use beet's `link` command to connect to your Minecraft world. Specify the path to your Minecraft installation and the world name:
+
+```bash
+beet link --minecraft /path/to/minecraft <world_name>
+```
+
+**Example with PrismLauncher:**
+```bash
+beet link --minecraft "~/.local/share/PrismLauncher/instances/26.2 Fabric/minecraft" DevWorld
+```
+
+#### 6. Build and Test
+Build the datapack from source:
+
+```bash
+beet build
+```
+
+To enable auto-rebuild when you make changes, use watch mode:
+
+```bash
+beet watch
+```
+
+Then use `/reload` in-game to apply changes immediately.
+
+### Development Workflow
+
+1. Navigate to the `redstone_additions/` directory
+2. Ensure the virtual environment is activated: `source .venv/bin/activate`
+3. Edit files in the `src/` directory
+4. Use `beet watch` for automatic rebuilding on file changes
+5. Use `/reload` in-game to apply changes
+
+---
+
 ## 1) Core Entrypoints (`ra`)
 
 Primary core functions:

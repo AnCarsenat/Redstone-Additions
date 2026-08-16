@@ -303,6 +303,44 @@ Keep IDs consistent across:
 - recipe result custom_data
 - on-break drop item data
 
+### Pack format overlays
+
+`src/pack.mcmeta` declares `min_format` 88 through `max_format` 107, i.e.
+Minecraft 1.21.9 through 26.2. When a vanilla schema changes shape inside that
+span, the fix is an **overlay**, not a version bump: an overlay directory sits
+next to `data/` in `src/`, mirrors the same paths, and the game swaps its files
+in for the format range the overlay declares.
+
+There is one today:
+
+```
+src/
+  pack.mcmeta                                  min_format 88, max_format 107
+  data/ra/predicate/is_sneaking.json           {"flags": {"is_sneaking": true}}
+  overlay_102/
+    data/ra/predicate/is_sneaking.json         {"minecraft:flags": {"is_sneaking": true}}
+```
+
+```json
+"overlays": {
+  "entries": [
+    { "directory": "overlay_102", "min_format": 102, "max_format": 107 }
+  ]
+}
+```
+
+Format 102 (`26.2-snapshot-3`) rewrote entity predicates into component-map
+form. The base file keeps the pre-102 spelling and the overlay carries the new
+one; the game picks whichever matches the running version, so both work from a
+single build. beet copies overlay directories through untouched — no plugin, no
+extra config.
+
+Reach for this when a vanilla format changes under a file the pack already
+ships. Do **not** reach for it for mcfunction differences: an overlay replaces
+whole files, so duplicating a function into an overlay means maintaining two
+copies of live logic forever. If a *command* changes across the range, prefer
+narrowing the declared range over forking the function.
+
 ## 5) Tooling Integration
 
 ### Wrench

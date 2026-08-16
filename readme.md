@@ -5,7 +5,7 @@
 <h1 align="center">Redstone Additions</h1>
 
 <p align="center">
-  <strong>45 custom blocks. 5 tools. 50 recipes. Vanilla datapack for Minecraft 1.21.9–1.21.10.</strong>
+  <strong>45 custom blocks. 5 tools. 50 recipes. Vanilla datapack for Minecraft 1.21.9–26.2.</strong>
 </p>
 
 <p align="center">
@@ -14,7 +14,7 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Minecraft-1.21.9--1.21.10-2EA44F" alt="Minecraft 1.21.9-1.21.10">
+  <img src="https://img.shields.io/badge/Minecraft-1.21.9--26.2-2EA44F" alt="Minecraft 1.21.9-26.2">
   <img src="https://img.shields.io/badge/Version-v5.1.4-blue" alt="Version v5.1.4">
   <img src="https://img.shields.io/badge/Blocks-45-red" alt="45 blocks">
   <img src="https://img.shields.io/badge/Tools-5-lightgrey" alt="5 tools">
@@ -29,8 +29,17 @@ All systems run as a pure datapack using marker entities and function-driven run
 
 ## Version Compatibility
 
-**Supported: Minecraft 1.21.9 – 1.21.10** (data pack format 88). This is the only
-range the pack declares, and the only one it is tested against.
+**Supported: Minecraft 1.21.9 – 26.2** (data pack formats 88 – 107).
+
+The pack declares and loads across that whole span. Exactly one thing inside it
+genuinely changes shape: format 102 (`26.2-snapshot-3`) rewrote entity
+predicates into component-map form, so `ra:is_sneaking` — which gates the
+wrench's shift action, the goggles' tinker action and the Redstone Remote's
+channel prompt — needs both spellings. The pack ships both: the base file uses
+the pre-102 form and `overlay_102/` carries the component-map form, applied
+automatically from `26.2-snapshot-3` onward. Nothing else in the pack touches a
+feature that broke between 88 and 107 — no `filtered` loot function, no
+`contents` dynamic entry, no renamed game rules, no special crafting recipes.
 
 Earlier versions are **not supported**, but most of the pack does not actually
 need 1.21.9 — the hard floor is the `pack.mcmeta` schema. If you edit
@@ -46,10 +55,7 @@ is what breaks and when:
 | 1.20.2 | Everything — the pack is built on macro functions and `return run` |
 
 So in practice the content runs on 1.21.5+ with only the pipe filters missing,
-and on 1.21.2+ in a degraded state. None of that is tested or supported; the
-declared range stays narrow deliberately, because a wider one only suppresses
-Minecraft's "made for a different version" warning rather than making the pack
-work.
+and on 1.21.2+ in a degraded state. None of that is declared or supported.
 
 
 I recommend using [Bundles Beyond](https://modrinth.com/mod/bundles-beyond) for better bundle previews.

@@ -6,9 +6,8 @@ A large maintenance release. The fluid and gas system was rebuilt on a shared
 network engine, several item-destroying and item-duplicating bugs were fixed, and
 a full audit pass removed dead code and a class of per-tick performance problems.
 
-**Supported versions:** 1.21.9 – 1.21.10 (data pack format 88). The pack declares
-only the range it is tested against. Most of the content does not need 1.21.9 —
-see the compatibility table in the README for what breaks on older versions and
+**Supported versions:** 1.21.9 – 26.2 (data pack formats 88 – 107). Most of the
+content does not need 1.21.9 — see the compatibility table in the README for what breaks on older versions and
 when.
 
 ### Added
@@ -153,17 +152,25 @@ when.
   offsets are measured from the block centre, not its floor.
 
 **Other**
-- **The declared pack format range over-claimed and undershot at once.**
+- **The declared pack format range stopped short of the current game.**
   `max_format` was 102, which is `26.2-snapshot-3` — an early snapshot, so the
-  range never reached the 26.2 release (format 107) it was aiming at. It also
-  spanned the snapshot where entity predicates were reworked "from a structure
-  with multiple optional fields to one similar to data component maps", which is
-  the shape `ra:predicate/is_sneaking` uses — and that predicate gates the wrench
-  shift-action, the goggles tinker and the Remote's channel prompt. A format
-  range does not create compatibility; it suppresses Minecraft's "made for a
-  different version" warning, so the pack would have loaded silently into a
-  version where three tools stop responding. Now declares 88 only, the format it
-  is tested against.
+  range never reached the 26.2 release (format 107) it was aiming at. It now
+  declares `min_format` 88 through `max_format` 107, covering 1.21.9 up to 26.2.
+- **`ra:predicate/is_sneaking` broke at format 102 and now ships in both
+  spellings.** That snapshot reworked entity predicates "from a structure with
+  multiple optional fields to one similar to data component maps", which is
+  exactly the shape this predicate used — and it gates the wrench shift-action,
+  the goggles tinker and the Remote's channel prompt, so all three would have
+  gone silent on 26.2. The pre-102 form stays in `data/`, and a new
+  `overlay_102/` supplies the component-map form (`"minecraft:flags"` instead of
+  `"flags"`), which the game applies automatically from `26.2-snapshot-3` onward.
+  Overlay entries carry their own `min_format`/`max_format`, available since
+  `25w31a` — the same version that introduced those fields on the pack itself, so
+  every version this pack loads on understands the overlay.
+  The rest of the pack was audited against the 88 → 107 breaking-change list and
+  touches none of it: no `filtered` loot function, no `contents` dynamic loot
+  entry, no renamed game rules, no special crafting recipe types, no removed
+  entity NBT.
 - Load message reported v5.1.2 while the pack reported v5.1.3.
 - `ra_lib_multiblock:create_marker` could set up an unrelated marker anywhere in
   the world — its selector had no type or distance limit.

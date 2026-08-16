@@ -42,6 +42,15 @@
     ],
     "pack_format": 88,
     "min_format": 88,
-    "max_format": 88
+    "max_format": 107
+  },
+  "overlays": {
+    "entries": [
+      {
+        "directory": "overlay_102",
+        "min_format": 102,
+        "max_format": 107
+      }
+    ]
   }
 }

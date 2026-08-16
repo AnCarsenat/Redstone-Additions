@@ -97,6 +97,10 @@ see the compatibility table on the home page for what breaks on older versions.
   Forge and every multiblock IO insert.
 - **The Unboxer duplicated items** — it inserted into the output before removing
   from the box, so any path reaching one and not the other produced both.
+- **The Unboxer only emptied part of a crate.** It moved one stored stack per
+  cooldown, so a crate sat half-full in the input between cycles. A crate is now
+  emptied completely in a single activation, and the emptied crate is passed to
+  the output container rather than being left to block the input.
 - **The Unboxer threw the box on the floor**, via the vanilla dispenser trigger.
 - `ra_lib:inventory/remove` silently failed past slot 8 — every container larger
   than a dispenser — and reported success anyway. It now handles any container

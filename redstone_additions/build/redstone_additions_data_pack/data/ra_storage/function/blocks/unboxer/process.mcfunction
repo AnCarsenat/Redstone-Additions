@@ -1,11 +1,13 @@
 # /ra_storage:blocks/unboxer/process
-# MACRO FUNCTION - unboxes one stored stack from input1 boxes into output1.
+# MACRO FUNCTION - empties one Item Crate from input1 into output1, completely.
 # Called with entity @s data.properties (requires input1/output1 strings).
 #
-# Order matters: the stack is taken out of the box first, then inserted with
-# insert_or_drop. Inserting first and consuming afterwards duplicated items
-# whenever the consume step did not run, and a full output silently destroyed
-# whatever `loot insert` could not fit.
+# The crate is emptied in a single activation. Moving one stored stack per
+# cooldown left a partly-full crate sitting in the input between cycles, which is
+# what made it look like only the first couple of stacks came out.
+#
+# Nothing is destroyed: each stack goes out through insert_or_drop, so whatever
+# the output container cannot hold is dropped as an item entity instead.
 
 # Hopper-like cooldown
 execute unless score @s ra.cooldown matches -2147483648.. run scoreboard players set @s ra.cooldown 0
@@ -16,38 +18,40 @@ execute if score @s ra.cooldown matches ..3 run return 0
 $execute positioned $(input1) unless block ~ ~ ~ #ra_lib:containers run return 0
 $execute positioned $(output1) unless block ~ ~ ~ #ra_lib:containers run return 0
 
-# Select one candidate box item from input1 (or partner chest half)
+# Select one candidate crate from input1 (or partner chest half)
 $execute positioned $(input1) run function ra_interactive:blocks/item_mover/select_input
 execute if score #mover_has_input ra.temp matches 0 run return 0
 
-# Only process storage boxes (new key or legacy key) that contain a stored stack
+# Only process storage crates (new key or legacy key). An already-empty crate is
+# accepted too, so it gets flushed to the output instead of blocking the input.
 execute unless data storage ra:temp mover_item.components."minecraft:custom_data".ra.item_box unless data storage ra:temp mover_item.components."minecraft:custom_data".ra.storage_box_item run return 0
-execute unless data storage ra:temp mover_item.components."minecraft:custom_data".ra.storage_box.items[0] run return 0
 
-# Take the stack out of the box (this also overwrites mover_item with it).
-scoreboard players set #unboxer_done ra.temp 0
-$execute positioned $(input1) run execute if score #mover_input_partner ra.temp matches 0 run function ra_storage:storage_box/take_first_from_box
-$execute positioned $(input1) run execute if score #mover_input_partner ra.temp matches 1 if block ~ ~ ~ minecraft:chest[facing=north,type=left] positioned ~1 ~ ~ run function ra_storage:storage_box/take_first_from_box
-$execute positioned $(input1) run execute if score #mover_input_partner ra.temp matches 1 if block ~ ~ ~ minecraft:chest[facing=north,type=right] positioned ~-1 ~ ~ run function ra_storage:storage_box/take_first_from_box
-$execute positioned $(input1) run execute if score #mover_input_partner ra.temp matches 1 if block ~ ~ ~ minecraft:chest[facing=south,type=left] positioned ~-1 ~ ~ run function ra_storage:storage_box/take_first_from_box
-$execute positioned $(input1) run execute if score #mover_input_partner ra.temp matches 1 if block ~ ~ ~ minecraft:chest[facing=south,type=right] positioned ~1 ~ ~ run function ra_storage:storage_box/take_first_from_box
-$execute positioned $(input1) run execute if score #mover_input_partner ra.temp matches 1 if block ~ ~ ~ minecraft:chest[facing=east,type=left] positioned ~ ~ ~1 run function ra_storage:storage_box/take_first_from_box
-$execute positioned $(input1) run execute if score #mover_input_partner ra.temp matches 1 if block ~ ~ ~ minecraft:chest[facing=east,type=right] positioned ~ ~ ~-1 run function ra_storage:storage_box/take_first_from_box
-$execute positioned $(input1) run execute if score #mover_input_partner ra.temp matches 1 if block ~ ~ ~ minecraft:chest[facing=west,type=left] positioned ~ ~ ~-1 run function ra_storage:storage_box/take_first_from_box
-$execute positioned $(input1) run execute if score #mover_input_partner ra.temp matches 1 if block ~ ~ ~ minecraft:chest[facing=west,type=right] positioned ~ ~ ~1 run function ra_storage:storage_box/take_first_from_box
-$execute positioned $(input1) run execute if score #mover_input_partner ra.temp matches 1 if block ~ ~ ~ minecraft:trapped_chest[facing=north,type=left] positioned ~1 ~ ~ run function ra_storage:storage_box/take_first_from_box
-$execute positioned $(input1) run execute if score #mover_input_partner ra.temp matches 1 if block ~ ~ ~ minecraft:trapped_chest[facing=north,type=right] positioned ~-1 ~ ~ run function ra_storage:storage_box/take_first_from_box
-$execute positioned $(input1) run execute if score #mover_input_partner ra.temp matches 1 if block ~ ~ ~ minecraft:trapped_chest[facing=south,type=left] positioned ~-1 ~ ~ run function ra_storage:storage_box/take_first_from_box
-$execute positioned $(input1) run execute if score #mover_input_partner ra.temp matches 1 if block ~ ~ ~ minecraft:trapped_chest[facing=south,type=right] positioned ~1 ~ ~ run function ra_storage:storage_box/take_first_from_box
-$execute positioned $(input1) run execute if score #mover_input_partner ra.temp matches 1 if block ~ ~ ~ minecraft:trapped_chest[facing=east,type=left] positioned ~ ~ ~1 run function ra_storage:storage_box/take_first_from_box
-$execute positioned $(input1) run execute if score #mover_input_partner ra.temp matches 1 if block ~ ~ ~ minecraft:trapped_chest[facing=east,type=right] positioned ~ ~ ~-1 run function ra_storage:storage_box/take_first_from_box
-$execute positioned $(input1) run execute if score #mover_input_partner ra.temp matches 1 if block ~ ~ ~ minecraft:trapped_chest[facing=west,type=left] positioned ~ ~ ~-1 run function ra_storage:storage_box/take_first_from_box
-$execute positioned $(input1) run execute if score #mover_input_partner ra.temp matches 1 if block ~ ~ ~ minecraft:trapped_chest[facing=west,type=right] positioned ~ ~ ~1 run function ra_storage:storage_box/take_first_from_box
-execute if score #unboxer_done ra.temp matches 0 run return 0
+# The loop runs positioned at whichever container half holds the crate, so the
+# output offset has to travel with it — `at @s` inside resets to the marker
+# before applying it, since caret offsets are relative to the current position.
+$data modify storage ra:temp unboxer.output set value "$(output1)"
+scoreboard players set #unboxer_moved ra.temp 0
 
-# Deliver it. Anything the output cannot hold is dropped rather than deleted,
-# so a full destination never costs the player the contents of a box.
-$execute positioned $(output1) run function ra_lib:inventory/insert_or_drop with storage ra:temp mover_item
+$execute positioned $(input1) run execute if score #mover_input_partner ra.temp matches 0 run function ra_storage:storage_box/empty_crate_here
+$execute positioned $(input1) run execute if score #mover_input_partner ra.temp matches 1 if block ~ ~ ~ minecraft:chest[facing=north,type=left] positioned ~1 ~ ~ run function ra_storage:storage_box/empty_crate_here
+$execute positioned $(input1) run execute if score #mover_input_partner ra.temp matches 1 if block ~ ~ ~ minecraft:chest[facing=north,type=right] positioned ~-1 ~ ~ run function ra_storage:storage_box/empty_crate_here
+$execute positioned $(input1) run execute if score #mover_input_partner ra.temp matches 1 if block ~ ~ ~ minecraft:chest[facing=south,type=left] positioned ~-1 ~ ~ run function ra_storage:storage_box/empty_crate_here
+$execute positioned $(input1) run execute if score #mover_input_partner ra.temp matches 1 if block ~ ~ ~ minecraft:chest[facing=south,type=right] positioned ~1 ~ ~ run function ra_storage:storage_box/empty_crate_here
+$execute positioned $(input1) run execute if score #mover_input_partner ra.temp matches 1 if block ~ ~ ~ minecraft:chest[facing=east,type=left] positioned ~ ~ ~1 run function ra_storage:storage_box/empty_crate_here
+$execute positioned $(input1) run execute if score #mover_input_partner ra.temp matches 1 if block ~ ~ ~ minecraft:chest[facing=east,type=right] positioned ~ ~ ~-1 run function ra_storage:storage_box/empty_crate_here
+$execute positioned $(input1) run execute if score #mover_input_partner ra.temp matches 1 if block ~ ~ ~ minecraft:chest[facing=west,type=left] positioned ~ ~ ~-1 run function ra_storage:storage_box/empty_crate_here
+$execute positioned $(input1) run execute if score #mover_input_partner ra.temp matches 1 if block ~ ~ ~ minecraft:chest[facing=west,type=right] positioned ~ ~ ~1 run function ra_storage:storage_box/empty_crate_here
+$execute positioned $(input1) run execute if score #mover_input_partner ra.temp matches 1 if block ~ ~ ~ minecraft:trapped_chest[facing=north,type=left] positioned ~1 ~ ~ run function ra_storage:storage_box/empty_crate_here
+$execute positioned $(input1) run execute if score #mover_input_partner ra.temp matches 1 if block ~ ~ ~ minecraft:trapped_chest[facing=north,type=right] positioned ~-1 ~ ~ run function ra_storage:storage_box/empty_crate_here
+$execute positioned $(input1) run execute if score #mover_input_partner ra.temp matches 1 if block ~ ~ ~ minecraft:trapped_chest[facing=south,type=left] positioned ~-1 ~ ~ run function ra_storage:storage_box/empty_crate_here
+$execute positioned $(input1) run execute if score #mover_input_partner ra.temp matches 1 if block ~ ~ ~ minecraft:trapped_chest[facing=south,type=right] positioned ~1 ~ ~ run function ra_storage:storage_box/empty_crate_here
+$execute positioned $(input1) run execute if score #mover_input_partner ra.temp matches 1 if block ~ ~ ~ minecraft:trapped_chest[facing=east,type=left] positioned ~ ~ ~1 run function ra_storage:storage_box/empty_crate_here
+$execute positioned $(input1) run execute if score #mover_input_partner ra.temp matches 1 if block ~ ~ ~ minecraft:trapped_chest[facing=east,type=right] positioned ~ ~ ~-1 run function ra_storage:storage_box/empty_crate_here
+$execute positioned $(input1) run execute if score #mover_input_partner ra.temp matches 1 if block ~ ~ ~ minecraft:trapped_chest[facing=west,type=left] positioned ~ ~ ~-1 run function ra_storage:storage_box/empty_crate_here
+$execute positioned $(input1) run execute if score #mover_input_partner ra.temp matches 1 if block ~ ~ ~ minecraft:trapped_chest[facing=west,type=right] positioned ~ ~ ~1 run function ra_storage:storage_box/empty_crate_here
+
+data remove storage ra:temp unboxer
+execute if score #unboxer_moved ra.temp matches 0 run return 0
 
 scoreboard players set @s ra.cooldown 0
 playsound minecraft:block.wood.break block @a[distance=..16] ~ ~ ~ 0.8 1.1

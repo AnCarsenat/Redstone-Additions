@@ -34,7 +34,7 @@ They are made by a Boxer and emptied by an Unboxer.
 3. Leave the Boxer unpowered. It packs the full input container into one Item Crate and inserts that crate into `output1`.
 4. Place an Unboxer facing an output container.
 5. Put one or more Item Crates in the container **behind** the Unboxer (default `input1`).
-6. Leave the Unboxer unpowered. It forwards one stored stack at a time from each crate into `output1`.
+6. Leave the Unboxer unpowered. It empties each crate completely into `output1`, then passes the empty crate along.
 
 ## Runtime Behavior
 
@@ -53,9 +53,9 @@ They are made by a Boxer and emptied by an Unboxer.
 1. Runs while **unpowered**. Redstone *locks* it, the way it locks a hopper.
 2. Selects one candidate item from `input1` (including partner chest handling when applicable).
 3. Accepts both modern crates (`ra.item_box`) and legacy crates (`ra.storage_box_item`).
-4. Takes the first stored stack **out of the crate first**, then delivers it to `output1`.
-5. If `output1` cannot hold it all, the remainder is **dropped as an item** rather than destroyed.
-6. Rebuilds crate preview and lore after each extraction.
+4. Empties the crate **completely** in one activation, taking each stored stack out before delivering it.
+5. If `output1` cannot hold a stack, the remainder is **dropped as an item** rather than destroyed.
+6. Passes the emptied crate to `output1` too, so a stack of crates keeps feeding through instead of stalling on the one just emptied.
 7. Enforces a hopper-like minimum 4 tick cooldown between successful operations.
 
 ## Command Quick Reference

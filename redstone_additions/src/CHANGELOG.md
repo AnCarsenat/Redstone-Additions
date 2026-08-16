@@ -150,6 +150,9 @@ when.
   before any of it could match.
 - `enabled` on liquid pipes, liquid tanks and gas tanks. Nothing read it, so it
   appeared in the Data Handler as a toggle that changed nothing.
+- The **Pusher** item, which shipped in the Interactive bundle and was recognised
+  by both data handlers but had no placement handler, block folder or tick logic.
+  Placing it did nothing.
 - Unused objectives `ra.channel`, `ra.edit_step`, `ra.inv.slot`, `ra.mb_enabled`.
 - Redundant stone-button pass in redstone detection, eight no-op tag sweeps in
   `ra_wires:common/tick_cleanup`, and the inert `#ra_gates:*` / `#ra_multiblock:*`
@@ -157,8 +160,6 @@ when.
 
 ### Known issues
 
-- The **Pusher** is offered in the Interactive bundle and recognised by the data
-  handlers, but has no placement handler or tick logic — placing it does nothing.
 - Blast Forge and Upgrade Platform still use hand-written per-facing coordinate
   tables rather than the new multiblock registry.
 - This release has not been play-tested in game.

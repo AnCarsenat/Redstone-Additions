@@ -79,13 +79,12 @@ I recommend using [Bundles Beyond](https://modrinth.com/mod/bundles-beyond) for 
 - Randomizer
 - Shortener
 
-### Interactive Machines (11)
+### Interactive Machines (10)
 - Block Breaker
 - Block Placer
 - Item Pipe
 - Item Mover
 - Spitter
-- Pusher
 - Breeder
 - Infinite Water Cauldron
 - Infinite Lava Cauldron

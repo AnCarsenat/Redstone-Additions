@@ -3,14 +3,14 @@
 # Called via clickable [CONFIRM] button from ra:uninstall
 
 # === Kill all custom block entities ===
-kill @e[tag=ra.custom_block]
+kill @e[type=marker,tag=ra.custom_block]
 
 # === Kill all multiblock markers ===
-kill @e[tag=ra.multiblock]
+kill @e[type=marker,tag=ra.multiblock]
 
 # === Kill all goggle billboards and display entities ===
-kill @e[tag=ra.billboard]
-kill @e[tag=ra.display]
+kill @e[type=text_display,tag=ra.billboard]
+kill @e[type=text_display,tag=ra.display]
 
 # === Remove ALL scoreboards ===
 scoreboard objectives remove ra.edit_type
@@ -19,6 +19,7 @@ scoreboard objectives remove ra.dh.action
 scoreboard objectives remove ra.dh.pending
 scoreboard objectives remove ra.input_handler.action
 scoreboard objectives remove ra.cooldown
+scoreboard objectives remove ra.filter_cd
 scoreboard objectives remove ra.temp
 scoreboard objectives remove ra.facing
 scoreboard objectives remove ra.yaw
@@ -40,6 +41,8 @@ scoreboard objectives remove ra.inv.slot
 scoreboard objectives remove ra.inv.count
 scoreboard objectives remove ra.channel
 scoreboard objectives remove ra.pulse_timer
+scoreboard objectives remove ra.remote.pending
+scoreboard objectives remove ra.remote.slot
 scoreboard objectives remove ra.multiblock
 scoreboard objectives remove ra.mb_timer
 scoreboard objectives remove ra.mb_enabled
@@ -87,16 +90,15 @@ tag @a remove ra.input_handler_active
 tag @a remove ra.input_handler_clicked
 tag @a remove ra.input.active
 tag @a remove ra.debug
-tag @e[tag=ra.dh_target] remove ra.dh_target
+tag @e[type=marker,tag=ra.dh_target] remove ra.dh_target
 tag @a remove ra.wires.tinker_user
-tag @e[tag=ra.wires.node] remove ra.wires.node
-tag @e[tag=ra.wires.tinkerable] remove ra.wires.tinkerable
-tag @e[tag=ra.wires.fluid_node] remove ra.wires.fluid_node
-tag @e[tag=ra.wires.liquid_node] remove ra.wires.liquid_node
-tag @e[tag=ra.wires.gas_node] remove ra.wires.gas_node
-tag @e[tag=ra.wires.electric_node] remove ra.wires.electric_node
-tag @e[tag=ra.wires.legacy_gas_pipe] remove ra.wires.legacy_gas_pipe
-tag @e[tag=ra.wires.pipe_io_endpoint] remove ra.wires.pipe_io_endpoint
+tag @e[type=marker,tag=ra.wires.node] remove ra.wires.node
+tag @e[type=marker,tag=ra.wires.tinkerable] remove ra.wires.tinkerable
+tag @e[type=marker,tag=ra.wires.fluid_node] remove ra.wires.fluid_node
+tag @e[type=marker,tag=ra.wires.liquid_node] remove ra.wires.liquid_node
+tag @e[type=marker,tag=ra.wires.gas_node] remove ra.wires.gas_node
+tag @e[type=marker,tag=ra.wires.electric_node] remove ra.wires.electric_node
+tag @e[type=marker,tag=ra.wires.legacy_gas_pipe] remove ra.wires.legacy_gas_pipe
 kill @e[type=block_display,tag=ra.wires.pipe_display]
 kill @e[type=block_display,tag=ra.wires.wire_display]
 

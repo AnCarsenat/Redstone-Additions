@@ -6,7 +6,7 @@
 data modify storage ra:temp wrench_found set value 1b
 
 # Check if already a multiblock (use aligned position + tight distance)
-execute align xyz positioned ~0.5 ~ ~0.5 if entity @e[tag=ra.multiblock,distance=..0.5,limit=1,sort=nearest] run return run function ra:tools/wrench/toggle_multiblock
+execute align xyz positioned ~0.5 ~ ~0.5 if entity @e[type=marker,tag=ra.multiblock,distance=..0.5,limit=1,sort=nearest] run return run function ra:tools/wrench/toggle_multiblock
 
 # Set type for validation
 data modify storage ra:multiblock type set value "blast_forge"

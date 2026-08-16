@@ -1,0 +1,23 @@
+{
+    "parent": "ra_advancements:ra_wires",
+    "display": {
+        "icon": { "id": "minecraft:daylight_detector" },
+        "title": "Solar Panel",
+        "description": "Obtain the Solar Panel.",
+        "show_toast": true,
+        "announce_to_chat": true
+    },
+    "criteria": {
+        "get_solar_panel": {
+            "trigger": "minecraft:inventory_changed",
+            "conditions": {
+                "items": [
+                    {
+                        "items": ["minecraft:bat_spawn_egg"],
+                        "components": { "custom_data": { "ra": { "solar_panel": true } } }
+                    }
+                ]
+            }
+        }
+    }
+}

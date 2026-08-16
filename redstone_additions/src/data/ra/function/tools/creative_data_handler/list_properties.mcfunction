@@ -24,7 +24,7 @@ execute if data storage ra:cdh properties.inverted run function ra:tools/creativ
 execute if data storage ra:cdh properties.delay run function ra:tools/creative_data_handler/props/show_delay
 
 # Check for 'cooldown' property (typically int)
-execute if data entity @e[tag=ra.cdh_target,limit=1] data.properties.cooldown run function ra:tools/creative_data_handler/props/show_cooldown
+execute if data entity @e[type=marker,tag=ra.cdh_target,limit=1] data.properties.cooldown run function ra:tools/creative_data_handler/props/show_cooldown
 
 # Check for 'power' property (typically int)
 execute if data storage ra:cdh properties.power run function ra:tools/creative_data_handler/props/show_power

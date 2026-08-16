@@ -1,179 +1,63 @@
 # /ra_wires:blocks/handle_placement
-# Placement router for all RA Wires blocks
+# Place any RA Wires block.
+# Context: as bat, at bat position.
+#
+# This used to be sixteen blocks of nine near-identical commands, each repeating
+# the same marker selector eight times. Every new block meant another copy, and a
+# fix to the placement sequence had to be applied sixteen times. The per-block
+# part is now just the spec; blocks/place_generic does the work.
+#
+# Spec fields:
+#   block     world block to place
+#   marker    marker tag suffix, i.e. ra.custom_block.{marker}
+#   fluid     1b to tag it as a fluid block for status and displays
+#   net       transport network class to join, or absent for a block that is
+#             not a network node (the Boiler sits between two networks, so it
+#             must not be part of either)
+#   capacity  this node's contribution to its network's capacity
+#   electric  1b for the electric system, which is not on the engine
+#   dir       placement dir_type: 0 none, 1 horizontal, 2 full 6-way (default 0)
+#   props     data.properties for the new marker. Only list what the block
+#             actually reads: a property nobody consults still shows up in the
+#             Data Handler with a [Toggle] button that changes nothing visible.
+#             Pipes and tanks are pure conductors and capacity, so they carry no
+#             `enabled` -- use a valve to cut a line.
 
-# ------------------------------ FLUID (MERGED LIQUID + GAS) ------------------------------
+data remove storage ra:wires spec
 
-# L1 copper pipe
-execute if entity @s[tag=ra.place.liquid_pipe_copper] run function ra_lib:placement/place {block_id:"minecraft:conduit[waterlogged=false]",block_tag:"liquid_pipe",dir_type:0}
-execute if entity @s[tag=ra.place.liquid_pipe_copper] run data merge entity @e[type=marker,tag=ra.custom_block.liquid_pipe,tag=ra.new,distance=..0.5,sort=nearest,limit=1] {data:{properties:{tier:"copper",enabled:1b,transfer_rate:50},data:{medium_id:0,amount:0,capacity:200},status:{medium:"Empty"}}}
-execute if entity @s[tag=ra.place.liquid_pipe_copper] run tag @e[type=marker,tag=ra.custom_block.liquid_pipe,tag=ra.new,distance=..0.5,sort=nearest,limit=1] add ra.wires.node
-execute if entity @s[tag=ra.place.liquid_pipe_copper] run tag @e[type=marker,tag=ra.custom_block.liquid_pipe,tag=ra.new,distance=..0.5,sort=nearest,limit=1] add ra.wires.tinkerable
-execute if entity @s[tag=ra.place.liquid_pipe_copper] run tag @e[type=marker,tag=ra.custom_block.liquid_pipe,tag=ra.new,distance=..0.5,sort=nearest,limit=1] add ra.wires.fluid_node
-execute if entity @s[tag=ra.place.liquid_pipe_copper] run tag @e[type=marker,tag=ra.custom_block.liquid_pipe,tag=ra.new,distance=..0.5,sort=nearest,limit=1] add ra.wires.pipe_io_endpoint
-execute if entity @s[tag=ra.place.liquid_pipe_copper] as @e[type=marker,tag=ra.custom_block.liquid_pipe,tag=ra.new,distance=..0.5,sort=nearest,limit=1] at @s run function ra_wires:common/update_model_local_and_neighbors
-execute if entity @s[tag=ra.place.liquid_pipe_copper] run tag @e[type=marker,tag=ra.custom_block.liquid_pipe,tag=ra.new,distance=..0.5,sort=nearest,limit=1] remove ra.new
-execute if entity @s[tag=ra.place.liquid_pipe_copper] run return 1
+execute if entity @s[tag=ra.place.liquid_pipe_copper] run data modify storage ra:wires spec set value {block:"minecraft:conduit[waterlogged=false]",marker:"liquid_pipe",fluid:1b,net:"fluid",capacity:200,props:{tier:"copper"}}
+execute if entity @s[tag=ra.place.liquid_pipe_netherite] run data modify storage ra:wires spec set value {block:"minecraft:conduit[waterlogged=false]",marker:"liquid_pipe",fluid:1b,net:"fluid",capacity:260,props:{tier:"iron"}}
+execute if entity @s[tag=ra.place.gas_pipe_copper] run data modify storage ra:wires spec set value {block:"minecraft:conduit[waterlogged=false]",marker:"liquid_pipe",fluid:1b,net:"fluid",capacity:200,props:{tier:"copper"}}
+execute if entity @s[tag=ra.place.gas_pipe_netherite] run data modify storage ra:wires spec set value {block:"minecraft:conduit[waterlogged=false]",marker:"liquid_pipe",fluid:1b,net:"fluid",capacity:260,props:{tier:"iron"}}
 
-# L2 iron pipe
-execute if entity @s[tag=ra.place.liquid_pipe_netherite] run function ra_lib:placement/place {block_id:"minecraft:conduit[waterlogged=false]",block_tag:"liquid_pipe",dir_type:0}
-execute if entity @s[tag=ra.place.liquid_pipe_netherite] run data merge entity @e[type=marker,tag=ra.custom_block.liquid_pipe,tag=ra.new,distance=..0.5,sort=nearest,limit=1] {data:{properties:{tier:"iron",enabled:1b,transfer_rate:80},data:{medium_id:0,amount:0,capacity:260},status:{medium:"Empty"}}}
-execute if entity @s[tag=ra.place.liquid_pipe_netherite] run tag @e[type=marker,tag=ra.custom_block.liquid_pipe,tag=ra.new,distance=..0.5,sort=nearest,limit=1] add ra.wires.node
-execute if entity @s[tag=ra.place.liquid_pipe_netherite] run tag @e[type=marker,tag=ra.custom_block.liquid_pipe,tag=ra.new,distance=..0.5,sort=nearest,limit=1] add ra.wires.tinkerable
-execute if entity @s[tag=ra.place.liquid_pipe_netherite] run tag @e[type=marker,tag=ra.custom_block.liquid_pipe,tag=ra.new,distance=..0.5,sort=nearest,limit=1] add ra.wires.fluid_node
-execute if entity @s[tag=ra.place.liquid_pipe_netherite] run tag @e[type=marker,tag=ra.custom_block.liquid_pipe,tag=ra.new,distance=..0.5,sort=nearest,limit=1] add ra.wires.pipe_io_endpoint
-execute if entity @s[tag=ra.place.liquid_pipe_netherite] as @e[type=marker,tag=ra.custom_block.liquid_pipe,tag=ra.new,distance=..0.5,sort=nearest,limit=1] at @s run function ra_wires:common/update_model_local_and_neighbors
-execute if entity @s[tag=ra.place.liquid_pipe_netherite] run tag @e[type=marker,tag=ra.custom_block.liquid_pipe,tag=ra.new,distance=..0.5,sort=nearest,limit=1] remove ra.new
-execute if entity @s[tag=ra.place.liquid_pipe_netherite] run return 1
+execute if entity @s[tag=ra.place.liquid_tank] run data modify storage ra:wires spec set value {block:"minecraft:waxed_copper_block",marker:"liquid_tank",fluid:1b,net:"fluid",capacity:4000}
+execute if entity @s[tag=ra.place.gas_tank] run data modify storage ra:wires spec set value {block:"minecraft:iron_block",marker:"gas_tank",fluid:1b,net:"fluid",capacity:3000}
 
-# Legacy copper gas pipe placement now maps to merged fluid pipe
-execute if entity @s[tag=ra.place.gas_pipe_copper] run function ra_lib:placement/place {block_id:"minecraft:conduit[waterlogged=false]",block_tag:"liquid_pipe",dir_type:0}
-execute if entity @s[tag=ra.place.gas_pipe_copper] run data merge entity @e[type=marker,tag=ra.custom_block.liquid_pipe,tag=ra.new,distance=..0.5,sort=nearest,limit=1] {data:{properties:{tier:"copper",enabled:1b,transfer_rate:50},data:{medium_id:0,amount:0,capacity:200},status:{medium:"Empty"}}}
-execute if entity @s[tag=ra.place.gas_pipe_copper] run tag @e[type=marker,tag=ra.custom_block.liquid_pipe,tag=ra.new,distance=..0.5,sort=nearest,limit=1] add ra.wires.node
-execute if entity @s[tag=ra.place.gas_pipe_copper] run tag @e[type=marker,tag=ra.custom_block.liquid_pipe,tag=ra.new,distance=..0.5,sort=nearest,limit=1] add ra.wires.tinkerable
-execute if entity @s[tag=ra.place.gas_pipe_copper] run tag @e[type=marker,tag=ra.custom_block.liquid_pipe,tag=ra.new,distance=..0.5,sort=nearest,limit=1] add ra.wires.fluid_node
-execute if entity @s[tag=ra.place.gas_pipe_copper] run tag @e[type=marker,tag=ra.custom_block.liquid_pipe,tag=ra.new,distance=..0.5,sort=nearest,limit=1] add ra.wires.pipe_io_endpoint
-execute if entity @s[tag=ra.place.gas_pipe_copper] as @e[type=marker,tag=ra.custom_block.liquid_pipe,tag=ra.new,distance=..0.5,sort=nearest,limit=1] at @s run function ra_wires:common/update_model_local_and_neighbors
-execute if entity @s[tag=ra.place.gas_pipe_copper] run tag @e[type=marker,tag=ra.custom_block.liquid_pipe,tag=ra.new,distance=..0.5,sort=nearest,limit=1] remove ra.new
-execute if entity @s[tag=ra.place.gas_pipe_copper] run return 1
+execute if entity @s[tag=ra.place.liquid_pump] run data modify storage ra:wires spec set value {block:"minecraft:dispenser",marker:"liquid_pump",dir:2,fluid:1b,net:"fluid",capacity:500,props:{enabled:1b}}
+execute if entity @s[tag=ra.place.gas_pump] run data modify storage ra:wires spec set value {block:"minecraft:smoker",marker:"gas_pump",dir:1,fluid:1b,net:"fluid",capacity:500,props:{enabled:1b}}
 
-# Legacy L2 gas pipe placement now maps to merged fluid pipe
-execute if entity @s[tag=ra.place.gas_pipe_netherite] run function ra_lib:placement/place {block_id:"minecraft:conduit[waterlogged=false]",block_tag:"liquid_pipe",dir_type:0}
-execute if entity @s[tag=ra.place.gas_pipe_netherite] run data merge entity @e[type=marker,tag=ra.custom_block.liquid_pipe,tag=ra.new,distance=..0.5,sort=nearest,limit=1] {data:{properties:{tier:"iron",enabled:1b,transfer_rate:80},data:{medium_id:0,amount:0,capacity:260},status:{medium:"Empty"}}}
-execute if entity @s[tag=ra.place.gas_pipe_netherite] run tag @e[type=marker,tag=ra.custom_block.liquid_pipe,tag=ra.new,distance=..0.5,sort=nearest,limit=1] add ra.wires.node
-execute if entity @s[tag=ra.place.gas_pipe_netherite] run tag @e[type=marker,tag=ra.custom_block.liquid_pipe,tag=ra.new,distance=..0.5,sort=nearest,limit=1] add ra.wires.tinkerable
-execute if entity @s[tag=ra.place.gas_pipe_netherite] run tag @e[type=marker,tag=ra.custom_block.liquid_pipe,tag=ra.new,distance=..0.5,sort=nearest,limit=1] add ra.wires.fluid_node
-execute if entity @s[tag=ra.place.gas_pipe_netherite] run tag @e[type=marker,tag=ra.custom_block.liquid_pipe,tag=ra.new,distance=..0.5,sort=nearest,limit=1] add ra.wires.pipe_io_endpoint
-execute if entity @s[tag=ra.place.gas_pipe_netherite] as @e[type=marker,tag=ra.custom_block.liquid_pipe,tag=ra.new,distance=..0.5,sort=nearest,limit=1] at @s run function ra_wires:common/update_model_local_and_neighbors
-execute if entity @s[tag=ra.place.gas_pipe_netherite] run tag @e[type=marker,tag=ra.custom_block.liquid_pipe,tag=ra.new,distance=..0.5,sort=nearest,limit=1] remove ra.new
-execute if entity @s[tag=ra.place.gas_pipe_netherite] run return 1
+execute if entity @s[tag=ra.place.liquid_valve] run data modify storage ra:wires spec set value {block:"minecraft:waxed_cut_copper",marker:"liquid_valve",fluid:1b,net:"fluid",capacity:300,props:{enabled:1b}}
+execute if entity @s[tag=ra.place.gas_valve] run data modify storage ra:wires spec set value {block:"minecraft:smooth_basalt",marker:"gas_valve",fluid:1b,net:"fluid",capacity:280,props:{enabled:1b}}
 
-# Liquid tank
-execute if entity @s[tag=ra.place.liquid_tank] run function ra_lib:placement/place {block_id:"minecraft:waxed_copper_block",block_tag:"liquid_tank",dir_type:0}
-execute if entity @s[tag=ra.place.liquid_tank] run data merge entity @e[type=marker,tag=ra.custom_block.liquid_tank,tag=ra.new,distance=..0.5,sort=nearest,limit=1] {data:{properties:{enabled:1b,transfer_rate:80},data:{medium_id:0,amount:0,capacity:4000},status:{medium:"Empty"}}}
-execute if entity @s[tag=ra.place.liquid_tank] run tag @e[type=marker,tag=ra.custom_block.liquid_tank,tag=ra.new,distance=..0.5,sort=nearest,limit=1] add ra.wires.node
-execute if entity @s[tag=ra.place.liquid_tank] run tag @e[type=marker,tag=ra.custom_block.liquid_tank,tag=ra.new,distance=..0.5,sort=nearest,limit=1] add ra.wires.tinkerable
-execute if entity @s[tag=ra.place.liquid_tank] run tag @e[type=marker,tag=ra.custom_block.liquid_tank,tag=ra.new,distance=..0.5,sort=nearest,limit=1] add ra.wires.fluid_node
-execute if entity @s[tag=ra.place.liquid_tank] run tag @e[type=marker,tag=ra.custom_block.liquid_tank,tag=ra.new,distance=..0.5,sort=nearest,limit=1] add ra.wires.pipe_io_endpoint
-execute if entity @s[tag=ra.place.liquid_tank] as @e[type=marker,tag=ra.custom_block.liquid_tank,tag=ra.new,distance=..0.5,sort=nearest,limit=1] at @s run function ra_wires:common/update_model_local_and_neighbors
-execute if entity @s[tag=ra.place.liquid_tank] run tag @e[type=marker,tag=ra.custom_block.liquid_tank,tag=ra.new,distance=..0.5,sort=nearest,limit=1] remove ra.new
-execute if entity @s[tag=ra.place.liquid_tank] run return 1
+execute if entity @s[tag=ra.place.liquid_drain] run data modify storage ra:wires spec set value {block:"minecraft:dropper",marker:"liquid_drain",dir:2,fluid:1b,net:"fluid",capacity:600,props:{enabled:1b,mode:"drain"}}
 
-# Liquid pump
-execute if entity @s[tag=ra.place.liquid_pump] run function ra_lib:placement/place {block_id:"minecraft:dispenser",block_tag:"liquid_pump",dir_type:2}
-execute if entity @s[tag=ra.place.liquid_pump] run data merge entity @e[type=marker,tag=ra.custom_block.liquid_pump,tag=ra.new,distance=..0.5,sort=nearest,limit=1] {data:{properties:{enabled:1b,transfer_rate:100,generation_rate:80,medium_id:1},data:{medium_id:0,amount:0,capacity:500},status:{medium:"Empty"}}}
-execute if entity @s[tag=ra.place.liquid_pump] run tag @e[type=marker,tag=ra.custom_block.liquid_pump,tag=ra.new,distance=..0.5,sort=nearest,limit=1] add ra.wires.node
-execute if entity @s[tag=ra.place.liquid_pump] run tag @e[type=marker,tag=ra.custom_block.liquid_pump,tag=ra.new,distance=..0.5,sort=nearest,limit=1] add ra.wires.tinkerable
-execute if entity @s[tag=ra.place.liquid_pump] run tag @e[type=marker,tag=ra.custom_block.liquid_pump,tag=ra.new,distance=..0.5,sort=nearest,limit=1] add ra.wires.fluid_node
-execute if entity @s[tag=ra.place.liquid_pump] run tag @e[type=marker,tag=ra.custom_block.liquid_pump,tag=ra.new,distance=..0.5,sort=nearest,limit=1] add ra.wires.pipe_io_endpoint
-execute if entity @s[tag=ra.place.liquid_pump] as @e[type=marker,tag=ra.custom_block.liquid_pump,tag=ra.new,distance=..0.5,sort=nearest,limit=1] at @s run function ra_wires:common/update_model_local_and_neighbors
-execute if entity @s[tag=ra.place.liquid_pump] run tag @e[type=marker,tag=ra.custom_block.liquid_pump,tag=ra.new,distance=..0.5,sort=nearest,limit=1] remove ra.new
-execute if entity @s[tag=ra.place.liquid_pump] run return 1
+execute if entity @s[tag=ra.place.electric_wire_copper] run data modify storage ra:wires spec set value {block:"minecraft:conduit[waterlogged=false]",marker:"electric_wire",electric:1b,props:{tier:"copper",enabled:1b,transfer_rate:60},nodedata:{eu:0,capacity:220}}
+execute if entity @s[tag=ra.place.electric_wire_netherite] run data modify storage ra:wires spec set value {block:"minecraft:conduit[waterlogged=false]",marker:"electric_wire",electric:1b,props:{tier:"netherite",enabled:1b,transfer_rate:95},nodedata:{eu:0,capacity:340}}
+execute if entity @s[tag=ra.place.electric_generator] run data modify storage ra:wires spec set value {block:"minecraft:blast_furnace",marker:"electric_generator",electric:1b,props:{enabled:1b},nodedata:{eu:0,capacity:600}}
+execute if entity @s[tag=ra.place.electric_consumer] run data modify storage ra:wires spec set value {block:"minecraft:observer",marker:"electric_consumer",electric:1b,props:{enabled:1b},nodedata:{eu:0,capacity:400}}
+execute if entity @s[tag=ra.place.solar_panel] run data modify storage ra:wires spec set value {block:"minecraft:daylight_detector",marker:"solar_panel",electric:1b,props:{enabled:1b},nodedata:{eu:0,capacity:500}}
+execute if entity @s[tag=ra.place.electric_switch] run data modify storage ra:wires spec set value {block:"minecraft:redstone_lamp",marker:"electric_switch",electric:1b,props:{enabled:1b},nodedata:{eu:0,capacity:200}}
 
-# Liquid valve
-execute if entity @s[tag=ra.place.liquid_valve] run function ra_lib:placement/place {block_id:"minecraft:waxed_cut_copper",block_tag:"liquid_valve",dir_type:0}
-execute if entity @s[tag=ra.place.liquid_valve] run data merge entity @e[type=marker,tag=ra.custom_block.liquid_valve,tag=ra.new,distance=..0.5,sort=nearest,limit=1] {data:{properties:{enabled:1b,transfer_rate:50},data:{medium_id:0,amount:0,capacity:300},status:{medium:"Empty"}}}
-execute if entity @s[tag=ra.place.liquid_valve] run tag @e[type=marker,tag=ra.custom_block.liquid_valve,tag=ra.new,distance=..0.5,sort=nearest,limit=1] add ra.wires.node
-execute if entity @s[tag=ra.place.liquid_valve] run tag @e[type=marker,tag=ra.custom_block.liquid_valve,tag=ra.new,distance=..0.5,sort=nearest,limit=1] add ra.wires.tinkerable
-execute if entity @s[tag=ra.place.liquid_valve] run tag @e[type=marker,tag=ra.custom_block.liquid_valve,tag=ra.new,distance=..0.5,sort=nearest,limit=1] add ra.wires.fluid_node
-execute if entity @s[tag=ra.place.liquid_valve] run tag @e[type=marker,tag=ra.custom_block.liquid_valve,tag=ra.new,distance=..0.5,sort=nearest,limit=1] add ra.wires.pipe_io_endpoint
-execute if entity @s[tag=ra.place.liquid_valve] as @e[type=marker,tag=ra.custom_block.liquid_valve,tag=ra.new,distance=..0.5,sort=nearest,limit=1] at @s run function ra_wires:common/update_model_local_and_neighbors
-execute if entity @s[tag=ra.place.liquid_valve] run tag @e[type=marker,tag=ra.custom_block.liquid_valve,tag=ra.new,distance=..0.5,sort=nearest,limit=1] remove ra.new
-execute if entity @s[tag=ra.place.liquid_valve] run return 1
+execute if entity @s[tag=ra.place.boiler] run data modify storage ra:wires spec set value {block:"minecraft:furnace",marker:"boiler",props:{enabled:1b}}
 
-# Liquid drain
-execute if entity @s[tag=ra.place.liquid_drain] run function ra_lib:placement/place {block_id:"minecraft:dropper",block_tag:"liquid_drain",dir_type:2}
-execute if entity @s[tag=ra.place.liquid_drain] run data merge entity @e[type=marker,tag=ra.custom_block.liquid_drain,tag=ra.new,distance=..0.5,sort=nearest,limit=1] {data:{properties:{enabled:1b,transfer_rate:100,medium_id:1},data:{medium_id:0,amount:0,capacity:600},status:{medium:"Empty",drain_state:"idle"}}}
-execute if entity @s[tag=ra.place.liquid_drain] run tag @e[type=marker,tag=ra.custom_block.liquid_drain,tag=ra.new,distance=..0.5,sort=nearest,limit=1] add ra.wires.node
-execute if entity @s[tag=ra.place.liquid_drain] run tag @e[type=marker,tag=ra.custom_block.liquid_drain,tag=ra.new,distance=..0.5,sort=nearest,limit=1] add ra.wires.tinkerable
-execute if entity @s[tag=ra.place.liquid_drain] run tag @e[type=marker,tag=ra.custom_block.liquid_drain,tag=ra.new,distance=..0.5,sort=nearest,limit=1] add ra.wires.fluid_node
-execute if entity @s[tag=ra.place.liquid_drain] run tag @e[type=marker,tag=ra.custom_block.liquid_drain,tag=ra.new,distance=..0.5,sort=nearest,limit=1] add ra.wires.pipe_io_endpoint
-execute if entity @s[tag=ra.place.liquid_drain] as @e[type=marker,tag=ra.custom_block.liquid_drain,tag=ra.new,distance=..0.5,sort=nearest,limit=1] at @s run function ra_wires:common/update_model_local_and_neighbors
-execute if entity @s[tag=ra.place.liquid_drain] run tag @e[type=marker,tag=ra.custom_block.liquid_drain,tag=ra.new,distance=..0.5,sort=nearest,limit=1] remove ra.new
-execute if entity @s[tag=ra.place.liquid_drain] run return 1
+execute unless data storage ra:wires spec run return 0
 
-# Gas tank
-execute if entity @s[tag=ra.place.gas_tank] run function ra_lib:placement/place {block_id:"minecraft:iron_block",block_tag:"gas_tank",dir_type:0}
-execute if entity @s[tag=ra.place.gas_tank] run data merge entity @e[type=marker,tag=ra.custom_block.gas_tank,tag=ra.new,distance=..0.5,sort=nearest,limit=1] {data:{properties:{enabled:1b,transfer_rate:70},data:{medium_id:0,amount:0,capacity:3000},status:{medium:"Empty"}}}
-execute if entity @s[tag=ra.place.gas_tank] run tag @e[type=marker,tag=ra.custom_block.gas_tank,tag=ra.new,distance=..0.5,sort=nearest,limit=1] add ra.wires.node
-execute if entity @s[tag=ra.place.gas_tank] run tag @e[type=marker,tag=ra.custom_block.gas_tank,tag=ra.new,distance=..0.5,sort=nearest,limit=1] add ra.wires.tinkerable
-execute if entity @s[tag=ra.place.gas_tank] run tag @e[type=marker,tag=ra.custom_block.gas_tank,tag=ra.new,distance=..0.5,sort=nearest,limit=1] add ra.wires.fluid_node
-execute if entity @s[tag=ra.place.gas_tank] run tag @e[type=marker,tag=ra.custom_block.gas_tank,tag=ra.new,distance=..0.5,sort=nearest,limit=1] add ra.wires.pipe_io_endpoint
-execute if entity @s[tag=ra.place.gas_tank] as @e[type=marker,tag=ra.custom_block.gas_tank,tag=ra.new,distance=..0.5,sort=nearest,limit=1] at @s run function ra_wires:common/update_model_local_and_neighbors
-execute if entity @s[tag=ra.place.gas_tank] run tag @e[type=marker,tag=ra.custom_block.gas_tank,tag=ra.new,distance=..0.5,sort=nearest,limit=1] remove ra.new
-execute if entity @s[tag=ra.place.gas_tank] run return 1
+# Default the facing before the call: macro arguments are bound when the function
+# is invoked, so a default written inside place_generic would arrive too late for
+# its own $(dir). A dropper or dispenser without this always points the same way
+# regardless of how the player placed it.
+execute unless data storage ra:wires spec.dir run data modify storage ra:wires spec.dir set value 0
 
-# Gas pump
-execute if entity @s[tag=ra.place.gas_pump] run function ra_lib:placement/place {block_id:"minecraft:smoker",block_tag:"gas_pump",dir_type:1}
-execute if entity @s[tag=ra.place.gas_pump] run data merge entity @e[type=marker,tag=ra.custom_block.gas_pump,tag=ra.new,distance=..0.5,sort=nearest,limit=1] {data:{properties:{enabled:1b,transfer_rate:90,generation_rate:70,medium_id:11},data:{medium_id:0,amount:0,capacity:500},status:{medium:"Empty"}}}
-execute if entity @s[tag=ra.place.gas_pump] run tag @e[type=marker,tag=ra.custom_block.gas_pump,tag=ra.new,distance=..0.5,sort=nearest,limit=1] add ra.wires.node
-execute if entity @s[tag=ra.place.gas_pump] run tag @e[type=marker,tag=ra.custom_block.gas_pump,tag=ra.new,distance=..0.5,sort=nearest,limit=1] add ra.wires.tinkerable
-execute if entity @s[tag=ra.place.gas_pump] run tag @e[type=marker,tag=ra.custom_block.gas_pump,tag=ra.new,distance=..0.5,sort=nearest,limit=1] add ra.wires.fluid_node
-execute if entity @s[tag=ra.place.gas_pump] run tag @e[type=marker,tag=ra.custom_block.gas_pump,tag=ra.new,distance=..0.5,sort=nearest,limit=1] add ra.wires.pipe_io_endpoint
-execute if entity @s[tag=ra.place.gas_pump] as @e[type=marker,tag=ra.custom_block.gas_pump,tag=ra.new,distance=..0.5,sort=nearest,limit=1] at @s run function ra_wires:common/update_model_local_and_neighbors
-execute if entity @s[tag=ra.place.gas_pump] run tag @e[type=marker,tag=ra.custom_block.gas_pump,tag=ra.new,distance=..0.5,sort=nearest,limit=1] remove ra.new
-execute if entity @s[tag=ra.place.gas_pump] run return 1
-
-# Gas valve
-execute if entity @s[tag=ra.place.gas_valve] run function ra_lib:placement/place {block_id:"minecraft:smooth_basalt",block_tag:"gas_valve",dir_type:0}
-execute if entity @s[tag=ra.place.gas_valve] run data merge entity @e[type=marker,tag=ra.custom_block.gas_valve,tag=ra.new,distance=..0.5,sort=nearest,limit=1] {data:{properties:{enabled:1b,transfer_rate:50},data:{medium_id:0,amount:0,capacity:280},status:{medium:"Empty"}}}
-execute if entity @s[tag=ra.place.gas_valve] run tag @e[type=marker,tag=ra.custom_block.gas_valve,tag=ra.new,distance=..0.5,sort=nearest,limit=1] add ra.wires.node
-execute if entity @s[tag=ra.place.gas_valve] run tag @e[type=marker,tag=ra.custom_block.gas_valve,tag=ra.new,distance=..0.5,sort=nearest,limit=1] add ra.wires.tinkerable
-execute if entity @s[tag=ra.place.gas_valve] run tag @e[type=marker,tag=ra.custom_block.gas_valve,tag=ra.new,distance=..0.5,sort=nearest,limit=1] add ra.wires.fluid_node
-execute if entity @s[tag=ra.place.gas_valve] run tag @e[type=marker,tag=ra.custom_block.gas_valve,tag=ra.new,distance=..0.5,sort=nearest,limit=1] add ra.wires.pipe_io_endpoint
-execute if entity @s[tag=ra.place.gas_valve] as @e[type=marker,tag=ra.custom_block.gas_valve,tag=ra.new,distance=..0.5,sort=nearest,limit=1] at @s run function ra_wires:common/update_model_local_and_neighbors
-execute if entity @s[tag=ra.place.gas_valve] run tag @e[type=marker,tag=ra.custom_block.gas_valve,tag=ra.new,distance=..0.5,sort=nearest,limit=1] remove ra.new
-execute if entity @s[tag=ra.place.gas_valve] run return 1
-
-# ------------------------------ ELECTRIC ------------------------------
-
-# Copper electric wire
-execute if entity @s[tag=ra.place.electric_wire_copper] run function ra_lib:placement/place {block_id:"minecraft:conduit[waterlogged=false]",block_tag:"electric_wire",dir_type:0}
-execute if entity @s[tag=ra.place.electric_wire_copper] run data merge entity @e[type=marker,tag=ra.custom_block.electric_wire,tag=ra.new,distance=..0.5,sort=nearest,limit=1] {data:{properties:{tier:"copper",enabled:1b,transfer_rate:60},data:{eu:0,capacity:220},status:{active:0b}}}
-execute if entity @s[tag=ra.place.electric_wire_copper] run tag @e[type=marker,tag=ra.custom_block.electric_wire,tag=ra.new,distance=..0.5,sort=nearest,limit=1] add ra.wires.node
-execute if entity @s[tag=ra.place.electric_wire_copper] run tag @e[type=marker,tag=ra.custom_block.electric_wire,tag=ra.new,distance=..0.5,sort=nearest,limit=1] add ra.wires.tinkerable
-execute if entity @s[tag=ra.place.electric_wire_copper] run tag @e[type=marker,tag=ra.custom_block.electric_wire,tag=ra.new,distance=..0.5,sort=nearest,limit=1] add ra.wires.electric_node
-execute if entity @s[tag=ra.place.electric_wire_copper] as @e[type=marker,tag=ra.custom_block.electric_wire,tag=ra.new,distance=..0.5,sort=nearest,limit=1] at @s run function ra_wires:common/update_model_local_and_neighbors
-execute if entity @s[tag=ra.place.electric_wire_copper] run tag @e[type=marker,tag=ra.custom_block.electric_wire,tag=ra.new,distance=..0.5,sort=nearest,limit=1] remove ra.new
-execute if entity @s[tag=ra.place.electric_wire_copper] run return 1
-
-# Netherite electric wire
-execute if entity @s[tag=ra.place.electric_wire_netherite] run function ra_lib:placement/place {block_id:"minecraft:conduit[waterlogged=false]",block_tag:"electric_wire",dir_type:0}
-execute if entity @s[tag=ra.place.electric_wire_netherite] run data merge entity @e[type=marker,tag=ra.custom_block.electric_wire,tag=ra.new,distance=..0.5,sort=nearest,limit=1] {data:{properties:{tier:"netherite",enabled:1b,transfer_rate:95},data:{eu:0,capacity:340},status:{active:0b}}}
-execute if entity @s[tag=ra.place.electric_wire_netherite] run tag @e[type=marker,tag=ra.custom_block.electric_wire,tag=ra.new,distance=..0.5,sort=nearest,limit=1] add ra.wires.node
-execute if entity @s[tag=ra.place.electric_wire_netherite] run tag @e[type=marker,tag=ra.custom_block.electric_wire,tag=ra.new,distance=..0.5,sort=nearest,limit=1] add ra.wires.tinkerable
-execute if entity @s[tag=ra.place.electric_wire_netherite] run tag @e[type=marker,tag=ra.custom_block.electric_wire,tag=ra.new,distance=..0.5,sort=nearest,limit=1] add ra.wires.electric_node
-execute if entity @s[tag=ra.place.electric_wire_netherite] as @e[type=marker,tag=ra.custom_block.electric_wire,tag=ra.new,distance=..0.5,sort=nearest,limit=1] at @s run function ra_wires:common/update_model_local_and_neighbors
-execute if entity @s[tag=ra.place.electric_wire_netherite] run tag @e[type=marker,tag=ra.custom_block.electric_wire,tag=ra.new,distance=..0.5,sort=nearest,limit=1] remove ra.new
-execute if entity @s[tag=ra.place.electric_wire_netherite] run return 1
-
-# EU generator
-execute if entity @s[tag=ra.place.electric_generator] run function ra_lib:placement/place {block_id:"minecraft:blast_furnace",block_tag:"electric_generator",dir_type:1}
-execute if entity @s[tag=ra.place.electric_generator] run data merge entity @e[type=marker,tag=ra.custom_block.electric_generator,tag=ra.new,distance=..0.5,sort=nearest,limit=1] {data:{properties:{enabled:1b,transfer_rate:120,generation_rate:60},data:{eu:0,capacity:700},status:{active:0b}}}
-execute if entity @s[tag=ra.place.electric_generator] run tag @e[type=marker,tag=ra.custom_block.electric_generator,tag=ra.new,distance=..0.5,sort=nearest,limit=1] add ra.wires.node
-execute if entity @s[tag=ra.place.electric_generator] run tag @e[type=marker,tag=ra.custom_block.electric_generator,tag=ra.new,distance=..0.5,sort=nearest,limit=1] add ra.wires.tinkerable
-execute if entity @s[tag=ra.place.electric_generator] run tag @e[type=marker,tag=ra.custom_block.electric_generator,tag=ra.new,distance=..0.5,sort=nearest,limit=1] add ra.wires.electric_node
-execute if entity @s[tag=ra.place.electric_generator] as @e[type=marker,tag=ra.custom_block.electric_generator,tag=ra.new,distance=..0.5,sort=nearest,limit=1] at @s run function ra_wires:common/update_model_local_and_neighbors
-execute if entity @s[tag=ra.place.electric_generator] run tag @e[type=marker,tag=ra.custom_block.electric_generator,tag=ra.new,distance=..0.5,sort=nearest,limit=1] remove ra.new
-execute if entity @s[tag=ra.place.electric_generator] run return 1
-
-# EU consumer
-execute if entity @s[tag=ra.place.electric_consumer] run function ra_lib:placement/place {block_id:"minecraft:observer",block_tag:"electric_consumer",dir_type:2}
-execute if entity @s[tag=ra.place.electric_consumer] run data merge entity @e[type=marker,tag=ra.custom_block.electric_consumer,tag=ra.new,distance=..0.5,sort=nearest,limit=1] {data:{properties:{enabled:1b,transfer_rate:70,eu_use:40},data:{eu:0,capacity:220},status:{active:0b}}}
-execute if entity @s[tag=ra.place.electric_consumer] run tag @e[type=marker,tag=ra.custom_block.electric_consumer,tag=ra.new,distance=..0.5,sort=nearest,limit=1] add ra.wires.node
-execute if entity @s[tag=ra.place.electric_consumer] run tag @e[type=marker,tag=ra.custom_block.electric_consumer,tag=ra.new,distance=..0.5,sort=nearest,limit=1] add ra.wires.tinkerable
-execute if entity @s[tag=ra.place.electric_consumer] run tag @e[type=marker,tag=ra.custom_block.electric_consumer,tag=ra.new,distance=..0.5,sort=nearest,limit=1] add ra.wires.electric_node
-execute if entity @s[tag=ra.place.electric_consumer] as @e[type=marker,tag=ra.custom_block.electric_consumer,tag=ra.new,distance=..0.5,sort=nearest,limit=1] at @s run function ra_wires:common/update_model_local_and_neighbors
-execute if entity @s[tag=ra.place.electric_consumer] run tag @e[type=marker,tag=ra.custom_block.electric_consumer,tag=ra.new,distance=..0.5,sort=nearest,limit=1] remove ra.new
-execute if entity @s[tag=ra.place.electric_consumer] run return 1
-
-# EU switch
-execute if entity @s[tag=ra.place.electric_switch] run function ra_lib:placement/place {block_id:"minecraft:redstone_lamp",block_tag:"electric_switch",dir_type:0}
-execute if entity @s[tag=ra.place.electric_switch] run data merge entity @e[type=marker,tag=ra.custom_block.electric_switch,tag=ra.new,distance=..0.5,sort=nearest,limit=1] {data:{properties:{enabled:1b,transfer_rate:120},data:{eu:0,capacity:240},status:{active:0b}}}
-execute if entity @s[tag=ra.place.electric_switch] run tag @e[type=marker,tag=ra.custom_block.electric_switch,tag=ra.new,distance=..0.5,sort=nearest,limit=1] add ra.wires.node
-execute if entity @s[tag=ra.place.electric_switch] run tag @e[type=marker,tag=ra.custom_block.electric_switch,tag=ra.new,distance=..0.5,sort=nearest,limit=1] add ra.wires.tinkerable
-execute if entity @s[tag=ra.place.electric_switch] run tag @e[type=marker,tag=ra.custom_block.electric_switch,tag=ra.new,distance=..0.5,sort=nearest,limit=1] add ra.wires.electric_node
-execute if entity @s[tag=ra.place.electric_switch] as @e[type=marker,tag=ra.custom_block.electric_switch,tag=ra.new,distance=..0.5,sort=nearest,limit=1] at @s run function ra_wires:common/update_model_local_and_neighbors
-execute if entity @s[tag=ra.place.electric_switch] run tag @e[type=marker,tag=ra.custom_block.electric_switch,tag=ra.new,distance=..0.5,sort=nearest,limit=1] remove ra.new
-execute if entity @s[tag=ra.place.electric_switch] run return 1
-
-return 0
+function ra_wires:blocks/place_generic with storage ra:wires spec
+data remove storage ra:wires spec
+return 1

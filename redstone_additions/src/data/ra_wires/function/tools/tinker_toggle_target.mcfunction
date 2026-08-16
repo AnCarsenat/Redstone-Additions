@@ -1,38 +1,34 @@
 # /ra_wires:tools/tinker_toggle_target
-# Toggle enabled state, or cycle medium id for pumps/drains
-# Context: as marker target
+# Goggles tinker action for an RA Wires block.
+# Context: as the marker target.
+#
+# Pumps and drains no longer cycle a numeric medium id. A pump takes whatever it
+# finds next to it, so there is nothing to configure; a drain instead switches
+# between pulling fluid out of the world and putting it back.
 
-# Cycle medium on medium-producing/draining blocks
-execute if entity @s[tag=ra.custom_block.liquid_pump] run execute store result score #mid ra.wires.tmp run data get entity @s data.properties.medium_id 1
-execute if entity @s[tag=ra.custom_block.liquid_drain] run execute store result score #mid ra.wires.tmp run data get entity @s data.properties.medium_id 1
-execute if entity @s[tag=ra.custom_block.gas_pump] run execute store result score #mid ra.wires.tmp run data get entity @s data.properties.medium_id 1
-
-execute if entity @s[tag=ra.custom_block.liquid_pump] run scoreboard players add #mid ra.wires.tmp 1
-execute if entity @s[tag=ra.custom_block.liquid_drain] run scoreboard players add #mid ra.wires.tmp 1
-execute if entity @s[tag=ra.custom_block.gas_pump] run scoreboard players add #mid ra.wires.tmp 1
-execute if entity @s[tag=ra.custom_block.liquid_pump] if score #mid ra.wires.tmp matches 6.. run scoreboard players set #mid ra.wires.tmp 1
-execute if entity @s[tag=ra.custom_block.liquid_drain] if score #mid ra.wires.tmp matches 6.. run scoreboard players set #mid ra.wires.tmp 1
-execute if entity @s[tag=ra.custom_block.gas_pump] if score #mid ra.wires.tmp matches ..10 run scoreboard players set #mid ra.wires.tmp 11
-execute if entity @s[tag=ra.custom_block.gas_pump] if score #mid ra.wires.tmp matches 16.. run scoreboard players set #mid ra.wires.tmp 11
-
-execute if entity @s[tag=ra.custom_block.liquid_pump] run execute store result entity @s data.properties.medium_id int 1 run scoreboard players get #mid ra.wires.tmp
-execute if entity @s[tag=ra.custom_block.liquid_drain] run execute store result entity @s data.properties.medium_id int 1 run scoreboard players get #mid ra.wires.tmp
-execute if entity @s[tag=ra.custom_block.gas_pump] run execute store result entity @s data.properties.medium_id int 1 run scoreboard players get #mid ra.wires.tmp
-
-execute if entity @s[tag=ra.custom_block.liquid_pump] run tellraw @a[tag=ra.wires.tinker_user,limit=1] [{text:"[Goggles] ",color:"gold"},{text:"Pump medium id: ",color:"gray"},{nbt:"data.properties.medium_id",entity:"@s",color:"aqua"}]
-execute if entity @s[tag=ra.custom_block.liquid_drain] run tellraw @a[tag=ra.wires.tinker_user,limit=1] [{text:"[Goggles] ",color:"gold"},{text:"Drain medium id: ",color:"gray"},{nbt:"data.properties.medium_id",entity:"@s",color:"aqua"}]
-execute if entity @s[tag=ra.custom_block.gas_pump] run tellraw @a[tag=ra.wires.tinker_user,limit=1] [{text:"[Goggles] ",color:"gold"},{text:"Gas medium id: ",color:"gray"},{nbt:"data.properties.medium_id",entity:"@s",color:"aqua"}]
-
-execute if entity @s[tag=ra.custom_block.liquid_pump] run return 1
+# --- Drain: cycle mode ---
+# The old state has to be latched before the first write, otherwise the second
+# condition reads the value the first one just set and the mode never flips back.
+execute if entity @s[tag=ra.custom_block.liquid_drain] unless data entity @s data.properties.mode run data modify entity @s data.properties.mode set value "drain"
+tag @s remove ra.wires.mode_flip
+execute if entity @s[tag=ra.custom_block.liquid_drain] if data entity @s data.properties{mode:"drain"} run tag @s add ra.wires.mode_flip
+execute if entity @s[tag=ra.custom_block.liquid_drain] if entity @s[tag=ra.wires.mode_flip] run data modify entity @s data.properties.mode set value "place"
+execute if entity @s[tag=ra.custom_block.liquid_drain] unless entity @s[tag=ra.wires.mode_flip] run data modify entity @s data.properties.mode set value "drain"
+tag @s remove ra.wires.mode_flip
+execute if entity @s[tag=ra.custom_block.liquid_drain] run tellraw @a[tag=ra.wires.tinker_user,limit=1] [{text:"[Goggles] ",color:"gold"},{text:"Drain mode: ",color:"gray"},{nbt:"data.properties.mode",entity:"@s",color:"aqua"}]
 execute if entity @s[tag=ra.custom_block.liquid_drain] run return 1
-execute if entity @s[tag=ra.custom_block.gas_pump] run return 1
 
-# Otherwise toggle enabled
+# --- Everything else: toggle enabled ---
 execute unless data entity @s data.properties.enabled run data modify entity @s data.properties.enabled set value 1b
 execute if data entity @s data.properties{enabled:1b} run tag @s add ra.wires.was_enabled
 execute if entity @s[tag=ra.wires.was_enabled] run data modify entity @s data.properties.enabled set value 0b
 execute unless entity @s[tag=ra.wires.was_enabled] run data modify entity @s data.properties.enabled set value 1b
 tag @s remove ra.wires.was_enabled
+
+# A closed valve genuinely splits the network in two rather than just refusing to
+# move fluid, so the two halves keep separate contents and separate media.
+execute if entity @s[tag=ra.custom_block.liquid_valve] run function ra_wires:tools/valve_apply
+execute if entity @s[tag=ra.custom_block.gas_valve] run function ra_wires:tools/valve_apply
 
 execute if data entity @s data.properties{enabled:1b} run tellraw @a[tag=ra.wires.tinker_user,limit=1] [{text:"[Goggles] ",color:"gold"},{text:"Enabled",color:"green"}]
 execute unless data entity @s data.properties{enabled:1b} run tellraw @a[tag=ra.wires.tinker_user,limit=1] [{text:"[Goggles] ",color:"gold"},{text:"Disabled",color:"red"}]

@@ -1,0 +1,33 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "redstone",
+  "pattern": [
+    "III",
+    "IFI",
+    "III"
+  ],
+  "key": {
+    "I": "minecraft:iron_ingot",
+    "F": "minecraft:furnace"
+  },
+  "result": {
+    "id": "minecraft:bat_spawn_egg",
+    "count": 1,
+    "components": {
+      "minecraft:item_model": "minecraft:furnace",
+      "minecraft:item_name": "Boiler",
+      "minecraft:lore": [
+        {"text": "Water in, steam out, over a heat source", "color": "gray", "italic": false}
+      ],
+      "minecraft:custom_data": { "ra": { "boiler": true } },
+      "minecraft:entity_data": {
+        "id": "minecraft:bat",
+        "Tags": ["ra.spawned", "ra.place.boiler"],
+        "Silent": true,
+        "NoAI": true,
+        "Invulnerable": true
+      }
+    }
+  },
+  "show_notification": true
+}

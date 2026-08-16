@@ -34,7 +34,7 @@ They are made by a Boxer and emptied by an Unboxer.
 3. Power the Boxer. It packs the full input container into one Item Crate and inserts that crate into `output1`.
 4. Place an Unboxer facing an output container.
 5. Put one or more Item Crates **inside the Unboxer itself** (it is a barrel — open it and drop them in).
-6. Power the Unboxer. It empties each crate completely into `output1`, then passes the empty crate along.
+6. Power the Unboxer. It empties each crate completely into `output1` and consumes the crate.
 
 ## Runtime Behavior
 
@@ -55,7 +55,7 @@ They are made by a Boxer and emptied by an Unboxer.
 3. Accepts both modern crates (`ra.item_box`) and legacy crates (`ra.storage_box_item`).
 4. Empties the crate **completely** in one activation, taking each stored stack out before delivering it.
 5. If `output1` cannot hold a stack, the remainder is **dropped as an item** rather than destroyed.
-6. Passes the emptied crate to `output1` too, so a stack of crates keeps feeding through instead of stalling on the one just emptied.
+6. Destroys the spent crate, which also clears the way for the next one in the container.
 7. Enforces a hopper-like minimum 4 tick cooldown between successful operations.
 
 ## Command Quick Reference

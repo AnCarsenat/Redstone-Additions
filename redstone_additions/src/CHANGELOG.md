@@ -101,8 +101,7 @@ when.
   from the box, so any path reaching one and not the other produced both.
 - **The Unboxer only emptied part of a crate.** It moved one stored stack per
   cooldown, so a crate sat half-full in the input between cycles. A crate is now
-  emptied completely in a single activation, and the emptied crate is passed to
-  the output container rather than being left to block the input.
+  emptied completely in a single activation, and the spent crate is consumed.
 - **The Unboxer threw the crate on the floor.** The block was a vanilla dispenser
   and the Unboxer holds the crates it is unboxing in its own inventory, so any
   rising redstone edge reaching it fired the contents out. It is now a barrel —

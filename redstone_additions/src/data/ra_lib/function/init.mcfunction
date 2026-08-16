@@ -6,3 +6,4 @@ function ra_lib:placement/init
 function ra_lib:inventory/init
 function ra_lib:redstone/init
 function ra_lib:input/init
+function ra_lib:transport/init

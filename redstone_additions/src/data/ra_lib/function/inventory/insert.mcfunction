@@ -2,6 +2,15 @@
 # Insert item into container at current position using /loot insert.
 # Handles stacking automatically via game mechanics.
 #
+# FALLBACK PATH. Prefer ra_lib:inventory/move_slot, which moves a whole stack
+# with /item replace: no loot table to parse, and the stack crosses verbatim
+# instead of being rebuilt from an id plus a components blob. Use this only when
+# the destination has no free slot and the items have to merge into partial
+# stacks, which /item cannot express.
+#
+# Caveat: whatever does not fit is not returned to the caller beyond the count in
+# the result, so callers must not assume the whole amount moved.
+#
 # Input: Macro with item fields directly:
 #   $(id) = item ID (e.g., "minecraft:diamond")
 #   $(count) = item count (e.g., 1)

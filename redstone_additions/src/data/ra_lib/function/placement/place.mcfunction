@@ -4,7 +4,14 @@
 # IMPORTANT: Caller must remove ra.new tag after setting properties!
 # dir_type: 0 = no facing, 1 = horizontal only, 2 = full 6-directional
 
-$execute as @p[tag=ra.placer,limit=1,sort=nearest] run function ra_lib:orientation/get_facing {dir_type:$(dir_type)}
+# Reset the shared orientation scratch to the default (south) BEFORE reading the
+# placer. #facing / ra:temp Rotation persist between calls, so a placement with no
+# nearby ra.placer would otherwise silently inherit the previous block's facing.
+scoreboard players set #facing ra.temp 3
+data modify storage ra:temp Rotation set value [0f, 0f]
+data modify storage ra:temp facing set value 3
+
+$execute as @p[tag=ra.placer] run function ra_lib:orientation/get_facing {dir_type:$(dir_type)}
 
 # Set has_facing flag based on dir_type (0 = no facing needed)
 $scoreboard players set #dir_type ra.temp $(dir_type)
@@ -26,6 +33,9 @@ function ra_lib:placement/set_block
 # Summon marker with initialized data structure
 $summon marker ~ ~ ~ {Tags:["ra.custom_block","ra.custom_block.$(block_tag)","ra.new"],data:{_init:1b,properties:{},data:{}}}
 data modify entity @e[type=marker,tag=ra.new,distance=..0.1,sort=nearest,limit=1] Rotation set from storage ra:temp Rotation
-execute as @p[tag=ra.placer,sort=nearest,limit=1] run scoreboard players operation @e[type=marker,tag=ra.new,distance=..0.1,sort=nearest,limit=1] ra.facing = @s ra.facing
+
+# Seed the marker's facing from the scratch score rather than from the placer, so
+# the marker always ends up with a facing score even when no player was found.
+execute store result score @e[type=marker,tag=ra.new,distance=..0.1,sort=nearest,limit=1] ra.facing run scoreboard players get #facing ra.temp
 
 playsound minecraft:block.stone.place block @a[distance=..16] ~ ~ ~ 1 1

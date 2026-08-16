@@ -1,17 +1,47 @@
 {
   "pack": {
     "description": [
-      {"text": "⚡ ", "color": "red", "bold": true},
-      {"text": "Redstone Additions", "color": "gold", "bold": true},
-      {"text": " v5.1.4\n", "color": "yellow"},
-      {"text": "Automate ", "color": "gray", "italic": true},
-      {"text": "Everything", "color": "white", "italic": true, "bold": true},
-      {"text": " • ", "color": "dark_gray"},
-      {"text": "by ", "color": "gray"},
-      {"text": "Ancar", "color": "aqua", "underlined": true}
+      {
+        "text": "⚡ ",
+        "color": "red",
+        "bold": true
+      },
+      {
+        "text": "Redstone Additions",
+        "color": "gold",
+        "bold": true
+      },
+      {
+        "text": " v5.1.4\n",
+        "color": "yellow"
+      },
+      {
+        "text": "Automate ",
+        "color": "gray",
+        "italic": true
+      },
+      {
+        "text": "Everything",
+        "color": "white",
+        "italic": true,
+        "bold": true
+      },
+      {
+        "text": " • ",
+        "color": "dark_gray"
+      },
+      {
+        "text": "by ",
+        "color": "gray"
+      },
+      {
+        "text": "Ancar",
+        "color": "aqua",
+        "underlined": true
+      }
     ],
     "pack_format": 88,
-    "min_format": 88, 
-    "max_format": 102
+    "min_format": 88,
+    "max_format": 88
   }
 }

@@ -2,7 +2,7 @@
 # Context: positioned at output container
 # Backward-compat path for legacy storage_box_item markers.
 
-data modify storage ra:temp storage_box.target_box set from block ~ ~ ~ Items[{id:"minecraft:player_head",components:{"minecraft:custom_data":{ra:{storage_box_item:1b}}}}]
+data modify storage ra:temp storage_box.target_box set from block ~ ~ ~ Items[{components:{"minecraft:custom_data":{ra:{storage_box_item:1b}}}}]
 execute unless data storage ra:temp storage_box.target_box.components."minecraft:custom_data".ra.storage_box.items run data modify storage ra:temp storage_box.target_box.components."minecraft:custom_data".ra.storage_box.items set value []
 execute unless data storage ra:temp storage_box.target_box.components."minecraft:custom_data".ra.storage_box.preview run data modify storage ra:temp storage_box.target_box.components."minecraft:custom_data".ra.storage_box.preview set value []
 
@@ -17,7 +17,7 @@ data modify storage ra:temp storage_box.target_box.components."minecraft:custom_
 
 function ra_storage:storage_box/update_lore_storage_target
 
-data modify block ~ ~ ~ Items[{id:"minecraft:player_head",components:{"minecraft:custom_data":{ra:{storage_box_item:1b}}}}] set from storage ra:temp storage_box.target_box
+data modify block ~ ~ ~ Items[{components:{"minecraft:custom_data":{ra:{storage_box_item:1b}}}}] set from storage ra:temp storage_box.target_box
 
 scoreboard players set #boxer_added ra.temp 1
 return 1

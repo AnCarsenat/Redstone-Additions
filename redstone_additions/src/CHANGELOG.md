@@ -108,6 +108,11 @@ when.
   same inventory and GUI, no dispense behaviour — wearing a dispenser skin drawn
   as a block_display, so it still reads as an Unboxer. Note it now opens a
   barrel's 27 slots rather than a dispenser's 3x3.
+- **Item Crates cannot be placed.** The crate's base item is now a command block
+  rendered as a head, rather than a real player head. A crate carries its entire
+  contents in `custom_data`; placing it as a skull dropped that silently and
+  destroyed everything inside. Command blocks require creative and permission
+  level 2 to place, so a survival player cannot lose a crate that way.
 - **The Boxer ran while unpowered.** An earlier attempt at the dispenser problem
   inverted the redstone control on both storage blocks; the Unboxer was put back
   but the Boxer was missed. Both run while powered again.

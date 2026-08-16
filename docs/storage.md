@@ -19,7 +19,13 @@ The `ra_storage` module adds Boxer, Unboxer, and Item Crate workflows for compac
 Item Crates are storage items (`storage_box.json`) and can also be given directly.
 They are made by a Boxer and emptied by an Unboxer.
 
-- Base item: `minecraft:player_head` with profile `BoxMan01234`
+- Base item: `minecraft:command_block`, rendered as a head via
+  `item_model="minecraft:player_head"` with profile `BoxMan01234`
+- The base is a command block **so the crate cannot be placed**. A crate carries
+  its contents in `custom_data`, and placing it as a block would drop that
+  silently, destroying everything inside. Command blocks use
+  `GameMasterBlockItem`, whose placement check requires creative mode *and*
+  permission level 2, so a survival player cannot place one at all.
 - Stack size: `64`
 - Storage payload keys:
   - `components.minecraft:custom_data.ra.storage_box.items`

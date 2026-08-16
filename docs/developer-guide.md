@@ -325,6 +325,80 @@ Keep IDs consistent across:
 
 When adding new configurable properties, update CDH and Data Handler mappings/defaults.
 
+## Block Skins
+
+Some vanilla blocks carry behaviour you cannot switch off. A **dispenser fires
+its own inventory on any rising redstone edge**, and so does a dropper. A custom
+block that stores items in itself and sits anywhere near redstone will therefore
+eject them, and no datapack logic can intercept it — there is no event to cancel.
+
+The fix is to stop making mechanics and appearance the same decision:
+
+- place the block whose **behaviour** you want (a barrel: same 27-slot inventory
+  and GUI, no dispense)
+- put the **appearance** back with a `block_display` laid over it
+
+The Unboxer is the worked example. Its `input1` is `~ ~ ~` — it holds the crates
+it is unboxing in its own inventory — so as a dispenser it threw them on the
+floor. It is now a barrel wearing a dispenser skin.
+
+### Using it
+
+```mcfunction
+# on placement, and to repair a missing skin
+function ra_lib:skin/apply {real:"minecraft:barrel",skin:"minecraft:dispenser",id:"unboxer"}
+
+# in the break handler, before the marker is killed
+function ra_lib:skin/clear {id:"unboxer"}
+```
+
+Use `ra_lib:skin/apply_static` when the skin block has no `facing` property.
+
+Then repair a skin that went missing, once per tick, only for the blocks
+actually lacking one:
+
+```mcfunction
+execute as @e[type=marker,tag=ra.custom_block.unboxer] at @s unless entity @e[type=block_display,tag=ra.skin.unboxer,distance=..0.9,limit=1] run function ra_storage:blocks/unboxer/refresh_display
+```
+
+Skins are tagged `ra.display`, `ra.skin` and `ra.skin.<id>`, so uninstall clears
+them all with one selector.
+
+### Why it holds together
+
+- **Facing is read back off the real block**, not from stored state, so a block
+  rotated by any means still gets a matching skin and a skin that drifts out of
+  sync repairs itself.
+- **Scale 1.004 with translation −0.002** encloses the real block without the two
+  surfaces sharing a plane. Sitting exactly on `1.0` z-fights.
+- **A `block_display` has no collision and no interaction box**, so the real block
+  behind it still takes right-clicks, hopper insertion and comparator reads.
+
+### What it does not hide
+
+This swaps the *model*, not the block. Anything a player can observe other than
+the model still comes from the real block:
+
+| | Consequence |
+|---|---|
+| **GUI** | The Unboxer opens a **barrel's 27 slots**, not a dispenser's 3×3. This is the most visible tell. |
+| **Sounds** | Opening, breaking and placing use the real block's sounds. |
+| **Mining** | Hardness, tool and particles are the real block's. |
+| **Block states** | A barrel's `open` animation is hidden under the skin. |
+| **Other mods/packs** | Anything reading the world sees a barrel. |
+
+So it is right when you want a block's *mechanics* minus one unwanted behaviour,
+and wrong when you need the skinned block's interactions too.
+
+### When to reach for it
+
+Worth doing for a block that **stores items in its own inventory** and is backed
+by a dispenser or dropper. In this pack that is the Item Pipe, the Item Mover and
+the Boxer — all still unconverted.
+
+Do **not** use it for Block Breaker, Block Placer or the Breeder: those read
+`dispenser[triggered=true]` deliberately, so the vanilla trigger is the feature.
+
 ### Goggles
 
 - collects markers in range of any goggles wearer once, then draws each one

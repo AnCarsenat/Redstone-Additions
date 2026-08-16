@@ -112,6 +112,10 @@ When adding a new custom block, create or update **all** of the following:
 - [ ] `{namespace}/function/blocks/{name}/goggles.mcfunction` — Declare the block's
       display name and its goggles status lines
 - [ ] `ra/function/tools/goggles/draw_block.mcfunction` — Add one dispatch line
+- [ ] If the block stores items in its own inventory, do **not** back it with a
+      dispenser or dropper — those fire their contents on any rising redstone
+      edge. Place a barrel and restore the look with `ra_lib:skin/apply`; see
+      "Block Skins" in the Developer Guide.
 - [ ] `CHANGELOG.md` — Document the addition
 
 ### Item Component Template

@@ -31,7 +31,7 @@ They are made by a Boxer and emptied by an Unboxer.
 
 1. Place a Boxer and point its front toward an output container.
 2. Put the source container behind the Boxer (default `input1`) and ensure output has free space.
-3. Leave the Boxer unpowered. It packs the full input container into one Item Crate and inserts that crate into `output1`.
+3. Power the Boxer. It packs the full input container into one Item Crate and inserts that crate into `output1`.
 4. Place an Unboxer facing an output container.
 5. Put one or more Item Crates **inside the Unboxer itself** (it is a barrel — open it and drop them in).
 6. Power the Unboxer. It empties each crate completely into `output1`, then passes the empty crate along.
@@ -40,7 +40,7 @@ They are made by a Boxer and emptied by an Unboxer.
 
 ### Boxer
 
-1. Runs while **unpowered**. Redstone *locks* it, the way it locks a hopper.
+1. Runs while powered.
 2. Requires both `input1` and `output1` to be valid `#ra_lib:containers`.
 3. Copies the full `Items` list from `input1` into one Item Crate (`ra.storage_box.items`).
 4. Builds a preview list and refreshes crate lore.

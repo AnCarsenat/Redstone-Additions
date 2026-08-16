@@ -49,6 +49,9 @@ see the compatibility table on the home page for what breaks on older versions.
 - `ra_lib:redstone/count_inputs` — counts sides carrying a redstone source,
   powered or not.
 - `ra:tools/block_name` — resolves a block's display name from the block itself.
+- `ra_lib:skin/*` — draw one block's appearance over another block's mechanics,
+  for vanilla blocks carrying behaviour that cannot be switched off. Documented
+  under "Block Skins" in the Developer Guide.
 - Goggles line helpers `prop_line`, `data_line` and `text_line`.
 - Drain **"place" mode**, cycled with the goggles tinker: spends network contents
   putting source blocks back into the world.
@@ -98,7 +101,11 @@ see the compatibility table on the home page for what breaks on older versions.
   and the Unboxer holds the crates it is unboxing in its own inventory, so any
   rising redstone edge reaching it fired the contents out. It is now a barrel —
   same inventory and GUI, no dispense behaviour — wearing a dispenser skin drawn
-  as a block_display, so it still reads as an Unboxer.
+  as a block_display, so it still reads as an Unboxer. Note it now opens a
+  barrel's 27 slots rather than a dispenser's 3x3.
+- **The Boxer ran while unpowered.** An earlier attempt at the dispenser problem
+  inverted the redstone control on both storage blocks; the Unboxer was put back
+  but the Boxer was missed. Both run while powered again.
 - `ra_lib:inventory/remove` silently failed past slot 8 — every container larger
   than a dispenser — and reported success anyway. It now handles any container
   size and amounts split across stacks, all-or-nothing.

@@ -20,10 +20,4 @@ tag @e[type=marker,tag=ra.custom_block.boxer,tag=!ra.storage.io_default_migrated
 
 # Processing
 execute as @e[type=marker,tag=ra.custom_block.boxer] at @s run function ra_lib:redstone/detect
-# Redstone LOCKS this block, the way it locks a hopper; it does not start it.
-# The block is a vanilla dropper, and a vanilla dropper fires its own contents on
-# a rising redstone edge. Requiring power to run therefore meant that operating
-# the block also shot whatever was inside it out into the world — which is how an
-# unboxed box ended up on the floor. Running unpowered removes the trigger
-# entirely, and leaves redstone as a way to pause the machine.
-execute as @e[type=marker,tag=ra.custom_block.boxer,scores={ra.power=0}] at @s run function ra_storage:blocks/boxer/process with entity @s data.properties
+execute as @e[type=marker,tag=ra.custom_block.boxer,scores={ra.power=1..}] at @s run function ra_storage:blocks/boxer/process with entity @s data.properties

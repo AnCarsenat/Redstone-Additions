@@ -99,7 +99,7 @@ tag @e[type=marker,tag=ra.wires.liquid_node] remove ra.wires.liquid_node
 tag @e[type=marker,tag=ra.wires.gas_node] remove ra.wires.gas_node
 tag @e[type=marker,tag=ra.wires.electric_node] remove ra.wires.electric_node
 tag @e[type=marker,tag=ra.wires.legacy_gas_pipe] remove ra.wires.legacy_gas_pipe
-kill @e[type=block_display,tag=ra.custom_block.display.unboxer]
+kill @e[type=block_display,tag=ra.skin]
 kill @e[type=block_display,tag=ra.wires.pipe_display]
 kill @e[type=block_display,tag=ra.wires.wire_display]
 

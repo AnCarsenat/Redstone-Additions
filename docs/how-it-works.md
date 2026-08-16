@@ -172,6 +172,13 @@ The shared network engine used by fluids and item pipes.
   the medium is a readable string in `storage ra:transport`.
 - `net/join`, `net/rejoin`, `net/leave`, `net/offer`, `net/take`, `net/read`.
 
+### skin/
+
+Draw one block's appearance over another block's mechanics, for cases where a
+vanilla block carries behaviour that cannot be switched off — a dispenser firing
+its own inventory on a redstone edge, for instance. `apply` / `apply_static` /
+`clear`. Full rationale and caveats in the Developer Guide.
+
 ### input/
 
 - `init`: creates input objectives and initializes session storage roots.

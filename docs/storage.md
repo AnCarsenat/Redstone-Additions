@@ -33,8 +33,8 @@ They are made by a Boxer and emptied by an Unboxer.
 2. Put the source container behind the Boxer (default `input1`) and ensure output has free space.
 3. Leave the Boxer unpowered. It packs the full input container into one Item Crate and inserts that crate into `output1`.
 4. Place an Unboxer facing an output container.
-5. Put one or more Item Crates in the container **behind** the Unboxer (default `input1`).
-6. Leave the Unboxer unpowered. It empties each crate completely into `output1`, then passes the empty crate along.
+5. Put one or more Item Crates **inside the Unboxer itself** (it is a barrel — open it and drop them in).
+6. Power the Unboxer. It empties each crate completely into `output1`, then passes the empty crate along.
 
 ## Runtime Behavior
 
@@ -50,8 +50,8 @@ They are made by a Boxer and emptied by an Unboxer.
 
 ### Unboxer
 
-1. Runs while **unpowered**. Redstone *locks* it, the way it locks a hopper.
-2. Selects one candidate item from `input1` (including partner chest handling when applicable).
+1. Runs while powered.
+2. Selects one candidate crate from `input1`, which defaults to the Unboxer's own inventory.
 3. Accepts both modern crates (`ra.item_box`) and legacy crates (`ra.storage_box_item`).
 4. Empties the crate **completely** in one activation, taking each stored stack out before delivering it.
 5. If `output1` cannot hold a stack, the remainder is **dropped as an item** rather than destroyed.
@@ -68,16 +68,17 @@ They are made by a Boxer and emptied by an Unboxer.
 
 ## Troubleshooting
 
-- Boxer or Unboxer does nothing: check it is **not** powered — redstone pauses these blocks — and that both `input1`/`output1` point to valid containers.
+- Boxer or Unboxer does nothing: verify it is powered and that `input1`/`output1` point to valid containers.
 - Boxer does not clear input: output likely cannot accept another item (full container).
 - Unboxer does nothing: ensure the selected input item is an Item Crate with at least one stored stack.
 - Items on the floor near the Unboxer: the output was full. Contents are dropped rather than deleted.
 
 !!! warning "Changed in v5.1.4"
-    Redstone control is **inverted**. These blocks are vanilla dropper/dispenser
-    blocks, and a powered dispenser fires its own contents — so requiring power to
-    run also threw the crate on the floor. Existing builds that pulse a Boxer or
-    Unboxer need the signal removed.
+    The Unboxer is now a **barrel**, not a dispenser. It holds the crates it is
+    unboxing in its own inventory, and a vanilla dispenser fires its own contents
+    on any rising redstone edge — which is what threw crates on the floor
+    part-way through. A barrel has the same inventory and GUI and cannot dispense.
+    Redstone control is unchanged: power it to run.
 
 ## Contributor Notes
 

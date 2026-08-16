@@ -8,9 +8,6 @@ A large maintenance release. The fluid and gas system was rebuilt on a shared
 network engine, several item-destroying and item-duplicating bugs were fixed, and
 a full audit pass removed dead code and a class of per-tick performance problems.
 
-**Breaking:** redstone control on the Boxer and Unboxer is inverted — unpowered
-runs, powered pauses. See *Changed*.
-
 **Supported versions:** 1.21.9 – 1.21.10 (data pack format 88). The pack declares
 only the range it is tested against. Most of the content does not need 1.21.9 —
 see the compatibility table on the home page for what breaks on older versions.
@@ -60,10 +57,6 @@ see the compatibility table on the home page for what breaks on older versions.
 
 ### Changed
 
-- **Redstone on the Boxer and Unboxer now LOCKS rather than starts them.** Both
-  are vanilla dispenser/dropper blocks, and a powered dispenser fires its own
-  contents — so requiring power to run also threw the contents on the floor.
-  Existing builds that pulse these blocks must have the signal removed.
 - **Fluid contents belong to the network, not to each node.** Pipes, tanks and
   valves do no per-tick work; only pumps, drains and boilers tick.
 - **Media are strings.** `medium_id` 1/2/5 and the `+10` gas offset are replaced
@@ -101,7 +94,11 @@ see the compatibility table on the home page for what breaks on older versions.
   cooldown, so a crate sat half-full in the input between cycles. A crate is now
   emptied completely in a single activation, and the emptied crate is passed to
   the output container rather than being left to block the input.
-- **The Unboxer threw the box on the floor**, via the vanilla dispenser trigger.
+- **The Unboxer threw the crate on the floor.** The block was a vanilla dispenser
+  and the Unboxer holds the crates it is unboxing in its own inventory, so any
+  rising redstone edge reaching it fired the contents out. It is now a barrel —
+  same inventory and GUI, no dispense behaviour — wearing a dispenser skin drawn
+  as a block_display, so it still reads as an Unboxer.
 - `ra_lib:inventory/remove` silently failed past slot 8 — every container larger
   than a dispenser — and reported success anyway. It now handles any container
   size and amounts split across stacks, all-or-nothing.

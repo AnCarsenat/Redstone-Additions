@@ -19,7 +19,7 @@
       "minecraft:item_name": "Unboxer",
       "minecraft:lore": [
         {
-          "text": "Unboxes boxes from the input side into the output side",
+          "text": "Put crates inside; unboxes them into the block in front",
           "color": "gray",
           "italic": false
         }

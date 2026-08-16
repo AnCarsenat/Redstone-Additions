@@ -1,1 +1,2 @@
 beet>=0.63.0
+minecode-mcp

@@ -2,7 +2,7 @@
 
 <img src="images/icon.png" alt="Redstone Additions" width="128">
 
-**Version:** v5.1.3  
+**Version:** v5.1.4  
 **Minecraft:** 1.21+  
 **Author:** [AnCarsenat](https://github.com/AnCarsenat)
 
@@ -35,13 +35,13 @@ Path example:
 | [Storage](storage.md) | Boxer + Unboxer workflow | ![Boxer recipe](images/recipes/ra_storage/boxer.png){ width="220" } |
 | [Sensors](sensors.md) | Entity detector + tag operators | ![Entity Detector recipe](images/recipes/ra_sensors/entity_detector.png){ width="220" } |
 | [Wireless Redstone](wireless-redstone.md) | Emitter, Receiver, and Remote | ![Wireless Emitter recipe](images/recipes/ra_wireless/emitter.png){ width="220" } |
-| [Transport Networks](transport-networks.md) | Liquid, gas, and EU transport | ![Liquid Pump recipe](images/recipes/ra_wires/liquid_pump.png){ width="220" } |
+| [Transport Networks](transport-networks.md) | Liquid, gas, EU, Boiler, Solar Panel | ![Liquid Pump recipe](images/recipes/ra_wires/liquid_pump.png){ width="220" } |
 | [Chunk Loader](chunk-loader.md) | 1 force-load block | ![Chunk Loader recipe](images/recipes/ra_chunk_loader/chunk_loader.png){ width="220" } |
 | [Multiblocks](multiblocks.md) | 5 base tiers + structures | ![Copper Base recipe](images/recipes/ra_multiblock/copper_base.png){ width="220" } |
 
 Current pack totals:
 
-- 46 placeable custom blocks
+- 48 placeable custom blocks
 - 5 tools (Wrench, Creative Data Handler, Data Handler, Goggles, Redstone Remote)
 
 ## Commands Most Players Need
@@ -67,13 +67,28 @@ Current pack totals:
 | Data Handler | `/function ra:tools/data_handler/give` | ![Data Handler recipe](images/recipes/ra/data_handler.png){ width="200" } | Edit nearby block `data.properties` |
 | Goggles | `/function ra:tools/goggles/give` | ![Goggles recipe](images/recipes/ra/goggles.png){ width="200" } | In-world status overlays |
 
-## What Is New In v5.1.2
+## What Is New In v5.1.4
 
-- Reworked docs for GitHub Pages publishing and refreshed key module pages.
-- Updated recipe and block-reference imagery across core modules.
-- Normalized liquid and gas transport tiers back to copper/iron naming.
-- Fixed multiblock base recipes after transport tier updates.
-- Removed the experimental Pusher block from the active release set.
+- **Fluid and gas rebuilt on a network model.** A connected run of pipes is one
+  network with one medium; fluid no longer crawls a block per tick, and pipes cost
+  nothing to keep running.
+- **Boiler and Solar Panel.** Water over a heat source makes steam; steam drives
+  the EU Generator, which no longer produces power from nothing. The Solar Panel
+  generates EU from sky light.
+- **Liquid Drain can place fluid back into the world**, so a network can carry
+  lava across a base instead of only reporting a number.
+- **Pumps work.** They previously only ever looked at the block to their south.
+- **Item safety.** A full output container no longer destroys what will not fit,
+  and the Unboxer no longer duplicates items or throws the crate on the floor.
+- **Item pipe filters work**, and item pipes move whole stacks instead of one item
+  at a time.
+- Large performance pass across the tick loop, and a visual overhaul that removes
+  z-fighting on pipes and makes wires distinguishable from pipes.
+
+!!! warning "Breaking change"
+    Redstone on the Boxer and Unboxer is now a **lock**, not a trigger: unpowered
+    runs, powered pauses. Existing builds that pulse these blocks need the signal
+    removed. See [Storage](storage.md).
 
 ## Need More Detail
 

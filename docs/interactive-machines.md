@@ -1,6 +1,6 @@
 # Interactive Machines
 
-The `ra_interactive` module provides 11 utility machines for automation and map logic.
+The `ra_interactive` module provides 10 utility machines for automation and map logic.
 
 - Namespace: `ra_interactive`
 - Give all: `/function ra_interactive:items/give_all`
@@ -12,10 +12,9 @@ The `ra_interactive` module provides 11 utility machines for automation and map 
 |---|---|---|---|---|
 | Block Breaker | `minecraft:dispenser` | ![Block Breaker recipe](images/recipes/ra_interactive/block_breaker.png){ width="220" } | While powered | 40 tick action cooldown |
 | Block Placer | `minecraft:dispenser` | ![Block Placer recipe](images/recipes/ra_interactive/block_placer.png){ width="220" } | While powered | Places from inventory into air in front |
-| Item Pipe | `minecraft:dispenser` | ![Item Pipe recipe](images/recipes/ra_interactive/item_pipe.png){ width="220" } | Continuous | 4 tick transfer cycle |
+| Item Pipe | `minecraft:dispenser` | ![Item Pipe recipe](images/recipes/ra_interactive/item_pipe.png){ width="220" } | Continuous | Moves whole stacks; filter via item frame |
 | Item Mover | `minecraft:observer` | ![Item Mover recipe](images/recipes/ra_interactive/item_mover.png){ width="220" } | Continuous | Rear container to front container |
 | Spitter | `minecraft:dropper` | ![Spitter recipe](images/recipes/ra_interactive/spitter.png){ width="220" } | Continuous | Throws item entities forward |
-| Pusher | `minecraft:magenta_glazed_terracotta` | Yes (image pending) | While powered | Pushes entities forward, 20 tick cooldown |
 | Breeder | `minecraft:dispenser` | ![Breeder recipe](images/recipes/ra_interactive/breeder.png){ width="220" } | Rising edge | Uses dispenser inventory food |
 | Infinite Water Cauldron | `minecraft:cauldron` | ![Infinite Water Cauldron recipe](images/recipes/ra_interactive/infinite_water_caudron.png){ width="220" } | Continuous | Keeps `water_cauldron[level=3]` |
 | Infinite Lava Cauldron | `minecraft:cauldron` | ![Infinite Lava Cauldron recipe](images/recipes/ra_interactive/infinite_lava_cauldron.png){ width="220" } | Continuous | Keeps `lava_cauldron` |
@@ -38,6 +37,14 @@ The `ra_interactive` module provides 11 utility machines for automation and map 
 ### Item Pipe
 
 - Runs continuously without requiring redstone pulses.
+- Moves a **whole stack** at a time when the destination has a free slot, falling
+  back to one item at a time to top up partial stacks.
+- A **filter** is an item frame attached to any face of the pipe. Matching items
+  are diverted to an adjacent container instead of going forward. The frame is
+  matched by the block it is attached to, so a frame on a neighbouring block is
+  never mistaken for this pipe's filter.
+- If the destination is full the item stays in the pipe. Pipes apply back
+  pressure rather than dropping their contents.
 - Moves items at a 4 tick cycle.
 - Intentionally has no recipe in current release path.
 
@@ -50,11 +57,6 @@ The `ra_interactive` module provides 11 utility machines for automation and map 
 
 - Uses dropper as visual/base block.
 - Emits inventory items as entities from its facing side.
-
-### Pusher
-
-- Requires redstone power to activate.
-- Pushes entities in front direction and then waits 20 ticks.
 
 ### Breeder
 

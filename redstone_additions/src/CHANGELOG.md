@@ -1,5 +1,163 @@
 # Changelog
 
+## [v5.1.4] - 2026-08-16 - Transport Rewrite, Item Safety, Library Audit
+
+A large maintenance release. The fluid and gas system was rebuilt on a shared
+network engine, several item-destroying and item-duplicating bugs were fixed, and
+a full audit pass removed dead code and a class of per-tick performance problems.
+
+**Breaking:** redstone control on the Boxer and Unboxer is inverted — unpowered
+runs, powered pauses. See *Changed*.
+
+### Added
+
+**Transport engine**
+- `ra_lib:transport` — a shared network engine. Adjacent nodes are grouped by
+  flood fill, recomputed only when something is placed or broken and debounced to
+  at most one rebuild every 5 ticks. Per-network totals live in scoreboards; the
+  medium is a string in storage. Fluid and item networks both use it.
+
+**Blocks**
+- **Boiler** — water in one side, steam out the other, over any block in
+  `#ra_wires:heat_sources`.
+- **Solar Panel** — generates EU from sky light, read from the vanilla daylight
+  detector's own `power` state, so night, rain, roofs and snow cover all work
+  without a custom predicate.
+- **Rock Metallic Drill** — rebuilt on the new multiblock API and actually
+  reachable; it was previously registered in no tag and internally broken.
+
+**Multiblock authoring**
+- A structure is declared **once**, facing north, in
+  `ra_multiblock:register_types`; the library derives the other three facings.
+- IO helpers `ra_lib_multiblock:io/{at,insert,extract,peek,count,is_block}` give
+  named access to a multiblock's inputs and outputs, so tick logic never branches
+  on facing. They work for the existing multiblocks too.
+- Generic `validate`, `check_structure` and `setup_type` hooks; a registered type
+  only needs `load` and `tick` entries.
+- `ra_lib_multiblock:try_tier` — the wrench asks the registry for a tier instead
+  of naming one hardcoded type, so adding a multiblock never edits the wrench.
+- `ra_lib_multiblock/README.md` documents the whole API.
+
+**Library**
+- `ra_lib:inventory/insert_or_drop` — insert what fits, drop the rest. `loot
+  insert` silently destroys the remainder.
+- `ra_lib:inventory/move_slot` — whole-slot transfer via `/item replace block …
+  from block …`, plus `find_free_slot`, `has_free_slot` and `container_size`.
+- `ra_lib:redstone/count_inputs` — counts sides carrying a redstone source,
+  powered or not.
+- `ra:tools/block_name` — resolves a block's display name from the block itself.
+- Goggles line helpers `prop_line`, `data_line` and `text_line`.
+- Drain **"place" mode**, cycled with the goggles tinker: spends network contents
+  putting source blocks back into the world.
+- Infinite-source rule: nine or more matching sources within two blocks counts as
+  inexhaustible; anything smaller genuinely empties.
+
+### Changed
+
+- **Redstone on the Boxer and Unboxer now LOCKS rather than starts them.** Both
+  are vanilla dispenser/dropper blocks, and a powered dispenser fires its own
+  contents — so requiring power to run also threw the contents on the floor.
+  Existing builds that pulse these blocks must have the signal removed.
+- **Fluid contents belong to the network, not to each node.** Pipes, tanks and
+  valves do no per-tick work; only pumps, drains and boilers tick.
+- **Media are strings.** `medium_id` 1/2/5 and the `+10` gas offset are replaced
+  by a registry keyed by name holding display name, state, colour, particle,
+  world block and bucket.
+- **EU Generator burns steam** instead of producing power from nothing.
+- **A closed valve splits its network**, so the two halves keep separate
+  contents and separate media.
+- **Every block owns its goggles readout and its display name**, in
+  `blocks/<name>/goggles.mcfunction`. `draw_block` is pure routing.
+- **Electric wires are visually distinct from fluid pipes** — a 0.26 core in
+  concrete against the pipes' 0.56 metal. An L1 wire and an L1 pipe were
+  previously the same copper block at the same size.
+- Item pipes move whole stacks and cache their filter frame.
+- Added `type=` to 385 entity selectors; the tick graph had 324 untyped ones,
+  each of which walked every loaded entity.
+- `ra_lib:redstone/detect/dust` gates each direction on one connection test:
+  128 commands per call became 8 when no dust is adjacent.
+- UNI Gate writes its 3x3x3 output shell only on a change of result, with a
+  periodic resync.
+- RA Wires one-time migrations are version-gated instead of re-running forever;
+  placement is one spec per block instead of sixteen near-identical copies.
+- Goggles scanning collects markers in range once and draws each one.
+- The Redstone Remote's channel is set through the shared writable-book prompt,
+  which needs no command permissions.
+
+### Fixed
+
+**Item loss and duplication**
+- **A full output container destroyed the overflow** in the Unboxer, the Blast
+  Forge and every multiblock IO insert.
+- **The Unboxer duplicated items** — it inserted into the output before removing
+  from the box, so any path reaching one and not the other produced both.
+- **The Unboxer threw the box on the floor**, via the vanilla dispenser trigger.
+- `ra_lib:inventory/remove` silently failed past slot 8 — every container larger
+  than a dispenser — and reported success anyway. It now handles any container
+  size and amounts split across stacks, all-or-nothing.
+
+**Fluid and gas**
+- **Pumps did nothing.** They probed `^ ^ ^1`, local coordinates on a marker
+  whose rotation is always the default, so a pump could only ever see the block
+  to its south.
+- **Pumps fabricated fluid** from nothing when no source was found.
+- **Propagation was order-dependent and slow** — one block per tick, with the
+  result depending on entity iteration order.
+- Liquid drain, liquid pump and gas pump had no facing.
+- Reopening a gas valve gave it the liquid valve's capacity.
+
+**Interface**
+- **Data Handler [Toggle] did nothing.** Both boolean toggles read the property
+  again on the line after writing it, so the pair always undid itself.
+- **Data Handler reported RA Wires blocks as "Unknown Block"** while reading
+  their properties correctly. Each handler had its own name table and the two had
+  drifted to 22 and 38 entries.
+- **Item pipe filters never matched.** A frame attached to a block sits in the
+  neighbouring block, beyond the 0.75 search radius — and a wider radius cannot
+  tell whose filter it is. Bound by the frame's `block_pos` now.
+- **The Redstone Remote could not be retuned without cheats**; its channel menu
+  suggested a `/function` command.
+- **The Input Form book vanished when selected.** Dropping the book now cancels
+  the request.
+
+**Rendering**
+- **Z-fighting on every connected pipe and wire pair** — both nodes drew a
+  full-length bar over the same volume. Each now draws only its own half.
+- **Connections left dangling next to a destroyed block**, because neighbours
+  were refreshed while the dying marker still advertised itself as a node.
+- Clock and UNI Gate item displays floated half a block above their block;
+  offsets are measured from the block centre, not its floor.
+
+**Other**
+- Load message reported v5.1.2 while the pack reported v5.1.3.
+- `ra_lib_multiblock:create_marker` could set up an unrelated marker anywhere in
+  the world — its selector had no type or distance limit.
+- UNI Gate AND/NAND treated unpowered repeaters, comparators, torches and buttons
+  as absent inputs.
+- Goggles drew every billboard twice when two wearers stood near the same block.
+- `ra_lib:placement/place` inherited the previous placement's facing when no
+  placer was nearby.
+
+### Removed
+
+- `ra:crafting` — never initialised, never called.
+- Dead `ra.custom_block.gas_pipe` handling; the tag is stripped during migration
+  before any of it could match.
+- `enabled` on liquid pipes, liquid tanks and gas tanks. Nothing read it, so it
+  appeared in the Data Handler as a toggle that changed nothing.
+- Unused objectives `ra.channel`, `ra.edit_step`, `ra.inv.slot`, `ra.mb_enabled`.
+- Redundant stone-button pass in redstone detection, eight no-op tag sweeps in
+  `ra_wires:common/tick_cleanup`, and the inert `#ra_gates:*` / `#ra_multiblock:*`
+  function tags.
+
+### Known issues
+
+- The **Pusher** is offered in the Interactive bundle and recognised by the data
+  handlers, but has no placement handler or tick logic — placing it does nothing.
+- Blast Forge and Upgrade Platform still use hand-written per-facing coordinate
+  tables rather than the new multiblock registry.
+- This release has not been play-tested in game.
+
 ## [v5.1.3] - 2026-04-22 - Chunk Loader Status + Stability Fixes
 
 ### Added

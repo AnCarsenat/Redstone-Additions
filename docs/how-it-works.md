@@ -149,9 +149,28 @@ Runtime usage note:
 
 ### inventory/
 
-- `insert`: uses loot insert mechanics for stack-safe insertion.
-- `remove`: macro-based counted removal from container slots.
+- `move_slot`: whole-slot transfer via `/item replace block ... from block ...`.
+  The preferred primitive — the stack crosses verbatim, with no loot table and no
+  NBT arithmetic.
+- `insert_or_drop`: insert what fits, drop the rest as an item entity. Use this
+  rather than `insert` for anything larger than a single item.
+- `insert`: raw `loot insert`. **Destroys** whatever the destination cannot hold,
+  so it is only safe with a count of 1 or behind `insert_or_drop`.
+- `remove`: counted removal, any container size, handling amounts split across
+  several stacks. All-or-nothing.
+- `find_free_slot` / `has_free_slot` / `container_size`: slot helpers.
 - `clear`: reset helper for temporary inventory storage states.
+
+### transport/
+
+The shared network engine used by fluids and item pipes.
+
+- Adjacent nodes of the same class are grouped into networks by flood fill.
+- Rebuilt only when a node is placed or broken, debounced to at most one rebuild
+  every 5 ticks.
+- Per-network amount and capacity live in scoreboards on a `net<id>` fake player;
+  the medium is a readable string in `storage ra:transport`.
+- `net/join`, `net/rejoin`, `net/leave`, `net/offer`, `net/take`, `net/read`.
 
 ### input/
 
@@ -202,16 +221,22 @@ Status overlay system:
 - Detects players wearing/holding goggles.
 - Throttles scans on timer (every 40 ticks).
 - Clears old billboards each cycle.
-- Scans nearby blocks/multiblocks through centralized scanners (`ra:tools/goggles/scan_blocks` and `ra:tools/goggles/scan_multiblocks`).
-- Renders status billboards only for blocks that opt in.
+- Collects every marker in range of any goggles wearer **once**, then draws each
+  one. Drawing per player duplicated billboards when two wearers stood near the
+  same block, and cost a whole-world sweep per block type per player.
+- `ra:tools/goggles/draw_block` is pure routing.
 
 Block-level rendering control:
 
-- Block draw handlers populate `storage ra:temp billboard` and call `ra:tools/goggles/billboard/handle_billboard`.
-- `show_name` and `show_status` are explicit opt-in flags.
-- If neither flag is set but `name` exists, the handler defaults to name rendering for backward compatibility.
-- If neither flag nor `name` is present, no billboard is rendered.
-- This keeps overlays focused on blocks that expose meaningful runtime data.
+- Each block owns its readout in `blocks/<name>/goggles.mcfunction`, next to its
+  tick and placement logic.
+- That function publishes the block's display name to `storage ra:temp block_name`
+  first, then returns early if `storage ra:temp name_only` is set. This makes it
+  the single source of the name: `ra:tools/block_name` reuses the same dispatch to
+  answer the Data Handlers.
+- Status lines are emitted with `prop_line` (a `data.properties` value),
+  `data_line` (a `data.status` value) or `text_line` (a literal). A missing value
+  renders "N/A" in red rather than disappearing.
 
 ## 7) Multiblock Lifecycle (`ra_lib_multiblock`)
 

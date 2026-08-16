@@ -8,14 +8,13 @@
 | ra_gates:clock                       | Clock                     | ![Clock recipe](images/recipes/ra_gates/clock.png){ width="220" } |
 | ra_gates:delayer                     | Delayer                   | ![Delayer recipe](images/recipes/ra_gates/delayer.png){ width="220" } |
 | ra_gates:extender                    | Extender                  | ![Extender recipe](images/recipes/ra_gates/extender.png){ width="220" } |
-| ra_gates:rand                        | Randomizer                | ![Randomizer recipe](images/recipes/ra_gates/randomizer.png){ width="220" } |
+| ra_gates:randomizer                  | Randomizer                | ![Randomizer recipe](images/recipes/ra_gates/randomizer.png){ width="220" } |
 | ra_gates:shortener                   | Shortener                 | ![Shortener recipe](images/recipes/ra_gates/shortener.png){ width="220" } |
 | ra_interactive:block_breaker         | Block Breaker             | ![Block Breaker recipe](images/recipes/ra_interactive/block_breaker.png){ width="220" } |
 | ra_interactive:block_placer          | Block Placer              | ![Block Placer recipe](images/recipes/ra_interactive/block_placer.png){ width="220" } |
 | ra_interactive:item_pipe             | Item Pipe                 | ![Item Pipe recipe](images/recipes/ra_interactive/item_pipe.png){ width="220" } (recipe currently disabled) |
 | ra_interactive:item_mover            | Item Mover                | ![Item Mover recipe](images/recipes/ra_interactive/item_mover.png){ width="220" } |
 | ra_interactive:spitter               | Spitter                   | ![Spitter recipe](images/recipes/ra_interactive/spitter.png){ width="220" } |
-| ra_interactive:pusher                | Pusher                    | Image pending |
 | ra_interactive:breeder               | Breeder                   | ![Breeder recipe](images/recipes/ra_interactive/breeder.png){ width="220" } |
 | ra_interactive:infinite_water_cauldron | Infinite Water Cauldron | ![Infinite Water Cauldron recipe](images/recipes/ra_interactive/infinite_water_caudron.png){ width="220" } |
 | ra_interactive:infinite_lava_cauldron | Infinite Lava Cauldron   | ![Infinite Lava Cauldron recipe](images/recipes/ra_interactive/infinite_lava_cauldron.png){ width="220" } |
@@ -44,6 +43,8 @@
 | ra_wires:electric_generator          | EU Generator              | ![EU Generator recipe](images/recipes/ra_wires/eu_generator.png){ width="220" } |
 | ra_wires:electric_consumer           | EU Consumer               | ![EU Consumer recipe](images/recipes/ra_wires/eu_consumer.png){ width="220" } |
 | ra_wires:electric_switch             | EU Switch                 | ![EU Switch recipe](images/recipes/ra_wires/eu_switch.png){ width="220" } |
+| ra_wires:boiler                      | Boiler                    | Water + heat source to steam |
+| ra_wires:solar_panel                 | Solar Panel               | Generates EU from sky light |
 | ra_chunk_loader:chunk_loader         | Chunk Loader              | ![Chunk Loader recipe](images/recipes/ra_chunk_loader/chunk_loader.png){ width="220" } |
 | ra_multiblock:copper_base            | Copper Multiblock Base    | ![Copper Multiblock Base recipe](images/recipes/ra_multiblock/copper_base.png){ width="220" } |
 | ra_multiblock:iron_base              | Iron Multiblock Base      | Image pending |

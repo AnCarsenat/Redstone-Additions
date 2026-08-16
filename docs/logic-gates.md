@@ -23,7 +23,7 @@ Gate processing runs `ra_lib:redstone/detect` directly inside each block process
 
 - Inputs are read from `ra.power.north/south/east/west/up/down` (`0..16`).
 - Active input count is computed as the number of directions with power `>= 1`.
-- Legacy-like inactive input handling for `and`/`nand` parity checks adjacent `redstone_wire[power=0]` and `lever[powered=false]`.
+- `and`/`nand` compare the powered-side count against a full census of sides that carry a redstone source at all (`ra_lib:redstone/count_inputs`), so an unpowered repeater, comparator, torch or button counts as an input that is off. Before v5.1.4 only dust and levers were considered, so an AND gate could output true with a dead repeater on one side.
 - Any power in `1..16` counts as active for gate truth evaluation.
 
 Each gate then resolves output behavior from those derived input states and local properties.
@@ -35,6 +35,8 @@ Each gate then resolves output behavior from those derived input states and loca
 - Seven modes: `and`, `or`, `not`, `xor`, `nand`, `nor`, `xnor`
 - Mode value in `data.properties.gate_type`
 - Wrench cycles through available modes
+- The output shell is rewritten only when the result changes, with a resync every
+  40 ticks that also repairs a shell edited by hand
 
 ## Clock
 

@@ -26,6 +26,20 @@ The `ra_wireless` module links emitters, receivers, and the handheld remote thro
 
 Channels are string identifiers (default is `"default"`). Matching uses exact string equality.
 
+### Setting the Remote's channel
+
+Sneak and right-click with the Remote. An **Input Form** book appears: write the
+channel on page 1 and close the book. Drop the book to cancel.
+
+This needs no command permissions, so it works on a survival server. Before
+v5.1.4 the menu suggested a `/function` command, which a player without cheats
+could not run — the Remote was stuck on `default` forever.
+
+The Remote's lore does not show its current channel. Lore is baked into an item
+and cannot read that item's own data, so keeping it in step would mean rebuilding
+the item from the player's typed text, which is not safe to do. The channel is
+reported in chat on every pulse and when the prompt opens.
+
 - Emitter property: `data.properties.channel`
 - Receiver property: `data.properties.channel`
 - Remote item channel: `SelectedItem.components.minecraft:custom_data.ra.channel`
@@ -36,7 +50,7 @@ Channels are string identifiers (default is `"default"`). Matching uses exact st
 |---|---|
 | `/function ra_wireless:items/give_all` | Give emitter, receiver, and remote |
 | `/function ra_wireless:tools/remote/give` | Give remote only |
-| `/function ra_wireless:tools/remote/set_channel {channel:"main"}` | Set current remote channel |
+| Sneak + right-click with the Remote | Set its channel (opens a writable book) |
 
 ## Runtime Behavior
 
@@ -56,7 +70,7 @@ Channels are string identifiers (default is `"default"`). Matching uses exact st
 ### Redstone Remote
 
 - Right-click: pulse matching receivers.
-- Sneak + right-click: opens a channel prompt (`suggest_command`) for `/function ra_wireless:tools/remote/set_channel {channel:"..."}`.
+- Sneak + right-click: opens the Input Form book to set the channel. Drop the book to cancel.
 - Pulse length: 4 ticks (`ra.pulsing` + `ra.pulse_timer`).
 
 ## Troubleshooting

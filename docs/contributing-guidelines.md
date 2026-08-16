@@ -1,6 +1,6 @@
 # Redstone Additions — Contributing Guidelines
 
-**Version:** v5.1.3  
+**Version:** v5.1.4  
 **Minecraft:** 1.21+
 
 ---
@@ -18,7 +18,7 @@
 ## Naming Conventions
 
 ### Entity Tags
-- **Format:** `ra.{category}.{block_name}.{additional_fields1}.{additional_fields2}`
+- **Format:** `ra.{category}.{block_name}`
 - **Examples:**
   - `ra.custom_block` — All custom blocks
   - `ra.custom_block.block_breaker` — Specific block type
@@ -48,10 +48,11 @@
   - look-space: `ra.power.front/back/left/right/local_up/local_down`
   - convention: `0` no power, `1..15` normal power, `16` superpower (direct repeater/comparator output)
 - **Gates:** use `ra_lib:redstone/detect` outputs (`ra.power*`) directly; no dedicated gate redstone objectives
-- **Wireless:** `ra.channel`, `ra.pulse_timer`
-- **Multiblock:** `ra.multiblock`, `ra.mb_timer`, `ra.mb_enabled`, `ra.heat`
-- **Inventory:** `ra.inv.slot`, `ra.inv.count`
-- **CDH:** `ra.edit_type`, `ra.edit_step`
+- **Wireless:** `ra.pulse_timer`, `ra.remote.pending`, `ra.remote.slot`
+- **Multiblock:** `ra.multiblock`, `ra.mb_timer`, `ra.heat`
+- **Transport:** `ra.tr.net`, `ra.tr.cap`, `ra.tr.class`, `ra.tr.amount`, `ra.tr.capacity`
+- **Inventory:** `ra.inv.count`
+- **CDH:** `ra.edit_type`
 
 ### Data Storage
 - **Format:** `ra:{namespace}`
@@ -95,7 +96,8 @@ When adding a new custom block, create or update **all** of the following:
 ├── register_block.mcfunction   # Registration (debug tellraw)
 ├── tick.mcfunction             # Per-tick break detection + process dispatch
 ├── on_break.mcfunction         # Cleanup on block destruction
-└── process.mcfunction          # Block-specific logic (if applicable)
+├── process.mcfunction          # Block-specific logic (if applicable)
+└── goggles.mcfunction          # Display name + goggles status lines
 ```
 
 ### Required Registrations
@@ -107,8 +109,9 @@ When adding a new custom block, create or update **all** of the following:
 - [ ] `{namespace}/function/load.mcfunction` — Add `register_block` call
 - [ ] `{namespace}/function/tick.mcfunction` — Add tick dispatch
 - [ ] `ra/tags/function/placement_handlers.json` — Add handle_placement entry
-- [ ] `ra/function/tools/creative_data_handler/found_block.mcfunction` — Add CDH block type mapping
-- [ ] `ra/function/tools/goggles/scan_blocks.mcfunction` — Add goggles billboard
+- [ ] `{namespace}/function/blocks/{name}/goggles.mcfunction` — Declare the block's
+      display name and its goggles status lines
+- [ ] `ra/function/tools/goggles/draw_block.mcfunction` — Add one dispatch line
 - [ ] `CHANGELOG.md` — Document the addition
 
 ### Item Component Template
@@ -135,30 +138,34 @@ When adding a new custom block, create or update **all** of the following:
 
 ## Multiblock Checklist
 
+See `redstone_additions/src/data/ra_lib_multiblock/README.md` for the full API.
+
 When adding a new multiblock structure:
 
-- [ ] Define direction data in `ra_multiblock/function/load.mcfunction`
-  - Store all relative block positions for each facing (north/south/east/west)
-  - Include IO metadata (inputs, outputs, controls)
-- [ ] Create structure validation macro functions
-  - `validate_facing.mcfunction` — Check all blocks exist
-  - `check_facing.mcfunction` — Helper for check_structure
-  - `check_structure.mcfunction` — Entry point
-- [ ] Create processing logic
-  - `tick.mcfunction` — Per-tick dispatch
-  - `tick_facing.mcfunction` — Direction-specific tick (macro)
-  - `process_facing.mcfunction` — Recipe matching + IO (macro)
-  - `on_break.mcfunction` — Cleanup on disassembly
-- [ ] Add wrench assembly support
-  - `ra/function/tools/wrench/try_assemble_{tier}.mcfunction`
+- [ ] Register the structure in `ra_multiblock/function/register_types.mcfunction`
+  - Block offsets are written **once**, for a north-facing structure, relative
+    to the base. The library rotates them into south/east/west.
+  - Name the IO positions there too (`inputs`, `outputs`, `controls`).
+  - Set `tier` so the wrench picks it up — no wrench file needs editing.
+- [ ] Write `tick.mcfunction` — use the `ra_lib_multiblock:io/*` helpers to reach
+      named IO blocks instead of branching on facing.
+- [ ] Add a `tick_dispatch.mcfunction` selecting `ra.multiblock.{id}` and list it
+      in `ra_lib_multiblock/tags/function/tick.json`.
+- [ ] Optional: an `on_break` hook in `ra_lib_multiblock/tags/function/on_break.json`
+      if disassembly needs cleanup beyond removing the marker.
 - [ ] Add I/O data for Goggles display
-  - `ra/function/tools/goggles/scan_multiblocks.mcfunction` — Add scan entry
-  - `ra/function/tools/goggles/billboard/handle_multiblock.mcfunction` — Add IO indicators
-- [ ] Add recipes for required multiblock base tier
+  - `ra/function/tools/goggles/draw_multiblock.mcfunction` — Add draw entry
 - [ ] Add advancement in `ra_advancements/`
-- [ ] Add type tag in `ra_lib_multiblock/function/setup_marker.mcfunction`
-- [ ] Add disassembly cleanup in `ra_lib_multiblock/function/disassemble.mcfunction`
 - [ ] Update `CHANGELOG.md`
+
+Assembly, per-facing rotation, periodic structure validation, disassembly and the
+`ra.multiblock.{id}` marker tag are all handled by the library. Validation,
+`check_structure` and `setup_type` hooks are only needed for a structure whose
+shape cannot be expressed as a list of required blocks.
+
+> Blast Forge and Upgrade Platform predate this and still carry hand-written
+> per-facing coordinate tables and validators. They work; leave them unless you
+> are deliberately migrating them.
 
 ---
 
@@ -166,10 +173,13 @@ When adding a new multiblock structure:
 
 Before releasing a new version:
 
+- [ ] Bump the version everywhere: `pack.mcmeta`, `ra/function/load.mcfunction`,
+      `readme.md`, `GUIDELINES.md`, `docs/index.md`, `docs/developer-guide.md`,
+      `docs/contributing-guidelines.md`
 - [ ] Update version in `pack.mcmeta` (description text)
 - [ ] Update version in `ra/function/load.mcfunction` (load message + welcome message)
 - [ ] Update README badge version (`readme.md`)
-- [ ] Update docs home version number (`docs/index.md`)
+- [ ] Update WIKI `Home.md` version number
 - [ ] Update `CHANGELOG.md` with all changes, categorized under Added/Changed/Fixed/Removed
 - [ ] Run full test:
   - [ ] `/reload` — check for errors in game log

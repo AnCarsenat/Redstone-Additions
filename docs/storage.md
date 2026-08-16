@@ -12,12 +12,12 @@ The `ra_storage` module adds Boxer, Unboxer, and Item Crate workflows for compac
 | Block   | Item model            | Recipe                                                                  | Default I/O                            |
 | ------- | --------------------- | ----------------------------------------------------------------------- | -------------------------------------- |
 | Boxer   | `minecraft:dropper`   | ![Boxer recipe](images/recipes/ra_storage/boxer.png){ width="220" }     | `input1="^ ^ ^-1"`, `output1="^ ^ ^1"` |
-| Unboxer | `minecraft:dispenser` | ![Unboxer recipe](images/recipes/ra_storage/unboxer.png){ width="220" } | `input1="~ ~ ~"`, `output1="^ ^ ^1"`   |
+| Unboxer | `minecraft:dispenser` | ![Unboxer recipe](images/recipes/ra_storage/unboxer.png){ width="220" } | `input1="^ ^ ^-1"`, `output1="^ ^ ^1"`   |
 
 ## Item Crates
 
 Item Crates are storage items (`storage_box.json`) and can also be given directly.
-They are made when you power a boxer block. And are emptied when you power an unboxer
+They are made by a Boxer and emptied by an Unboxer.
 
 - Base item: `minecraft:player_head` with profile `BoxMan01234`
 - Stack size: `64`
@@ -31,16 +31,16 @@ They are made when you power a boxer block. And are emptied when you power an un
 
 1. Place a Boxer and point its front toward an output container.
 2. Put the source container behind the Boxer (default `input1`) and ensure output has free space.
-3. Power the Boxer. It packs the full input container into one Item Crate and inserts that crate into `output1`.
+3. Leave the Boxer unpowered. It packs the full input container into one Item Crate and inserts that crate into `output1`.
 4. Place an Unboxer facing an output container.
-5. Put one or more Item Crates into the Unboxer inventory.
-6. Power the Unboxer. It forwards one stored stack at a time from each crate into `output1`.
+5. Put one or more Item Crates in the container **behind** the Unboxer (default `input1`).
+6. Leave the Unboxer unpowered. It forwards one stored stack at a time from each crate into `output1`.
 
 ## Runtime Behavior
 
 ### Boxer
 
-1. Uses redstone power detection and runs only while powered.
+1. Runs while **unpowered**. Redstone *locks* it, the way it locks a hopper.
 2. Requires both `input1` and `output1` to be valid `#ra_lib:containers`.
 3. Copies the full `Items` list from `input1` into one Item Crate (`ra.storage_box.items`).
 4. Builds a preview list and refreshes crate lore.
@@ -50,11 +50,11 @@ They are made when you power a boxer block. And are emptied when you power an un
 
 ### Unboxer
 
-1. Uses redstone power detection and runs only while powered.
+1. Runs while **unpowered**. Redstone *locks* it, the way it locks a hopper.
 2. Selects one candidate item from `input1` (including partner chest handling when applicable).
 3. Accepts both modern crates (`ra.item_box`) and legacy crates (`ra.storage_box_item`).
-4. Moves the first stored stack from the crate into `output1`.
-5. Supports partial insertion: only the inserted amount is removed from the stored stack.
+4. Takes the first stored stack **out of the crate first**, then delivers it to `output1`.
+5. If `output1` cannot hold it all, the remainder is **dropped as an item** rather than destroyed.
 6. Rebuilds crate preview and lore after each extraction.
 7. Enforces a hopper-like minimum 4 tick cooldown between successful operations.
 
@@ -68,15 +68,21 @@ They are made when you power a boxer block. And are emptied when you power an un
 
 ## Troubleshooting
 
-- Boxer does nothing: verify it is powered and both `input1`/`output1` point to valid containers.
+- Boxer or Unboxer does nothing: check it is **not** powered — redstone pauses these blocks — and that both `input1`/`output1` point to valid containers.
 - Boxer does not clear input: output likely cannot accept another item (full container).
 - Unboxer does nothing: ensure the selected input item is an Item Crate with at least one stored stack.
-- Unboxer stalls intermittently: check output capacity; partial insertion can leave a reduced first stack in the crate.
+- Items on the floor near the Unboxer: the output was full. Contents are dropped rather than deleted.
+
+!!! warning "Changed in v5.1.4"
+    Redstone control is **inverted**. These blocks are vanilla dropper/dispenser
+    blocks, and a powered dispenser fires its own contents — so requiring power to
+    run also threw the crate on the floor. Existing builds that pulse a Boxer or
+    Unboxer need the signal removed.
 
 ## Contributor Notes
 
 1. Keep modern (`ra.item_box`) and legacy (`ra.storage_box_item`) crate compatibility paths intact.
-2. Preserve partial-insert semantics in unboxing (`#mover_inserted` amount consumption).
+2. Take from the crate **before** inserting, and deliver with `ra_lib:inventory/insert_or_drop`. Inserting first and consuming afterwards duplicates items; a plain `loot insert` destroys the overflow.
 3. If lore or preview format changes, update both `update_lore` and `update_lore_storage_target`.
 
 ---

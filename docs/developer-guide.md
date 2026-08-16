@@ -1,6 +1,6 @@
 # Developer Guide
 
-This guide documents implementation architecture and contributor workflow for `v5.1.3`.
+This guide documents implementation architecture and contributor workflow for `v5.1.4`.
 
 If you want conceptual runtime flow first, start with [How It Works](how-it-works.md). This page is focused on engineering-level extension and maintenance work.
 
@@ -194,20 +194,40 @@ Source-specific detectors are split under `ra_lib:redstone/detect/*`.
 
 Key functions:
 
-- `ra_lib:inventory/insert`
+- `ra_lib:inventory/move_slot` — whole-slot transfer with `/item replace`
+- `ra_lib:inventory/insert_or_drop` — insert what fits, drop the rest
+- `ra_lib:inventory/insert` — raw `loot insert`
 - `ra_lib:inventory/remove`
+- `ra_lib:inventory/find_free_slot`, `has_free_slot`, `container_size`
 - `ra_lib:inventory/clear`
 
-`insert` uses loot insertion semantics for stack-safe behavior.
-`remove` is slot-aware and returns success/failure for machine logic.
+!!! danger "`insert` destroys overflow"
+    `loot insert` silently deletes whatever the destination cannot hold. Only use
+    `insert` directly with a count of 1, where the item either fits or the call
+    returns 0. For anything larger use `insert_or_drop`, which recovers the
+    difference and drops it as an item entity.
+
+`move_slot` is the preferred primitive for moving an existing stack: it copies
+the stack verbatim, with no loot table to parse and no NBT arithmetic.
+`remove` handles any container size and amounts split across stacks,
+all-or-nothing.
 
 ### transport
 
-Key function:
+Key functions:
 
-- `ra_lib:transport/update_connection_status`
+- `ra_lib:transport/tick` — rebuilds networks when the topology changed
+- `ra_lib:transport/net/join`, `rejoin`, `leave` — membership
+- `ra_lib:transport/net/offer`, `take`, `read` — contents
+- `ra_lib:transport/update_connection_status` — neighbour count for visuals
 
-This helper computes immediate neighbor connectivity for transport nodes and writes compact status fields used by module visuals and goggles diagnostics.
+The engine groups adjacent nodes of the same class into networks by flood fill.
+Contents belong to the network, not to individual nodes, so a pipe run costs
+nothing per tick and transfer is order-independent. Rebuilds happen only on
+placement or break, debounced to at most one every 5 ticks.
+
+Classes (`fluid`, `item`, `electric`) never merge, so an item pipe and a fluid
+pipe can share a block line without interacting.
 
 ### input
 
@@ -238,7 +258,7 @@ Runtime behavior:
 
 Initialization:
 
-- creates `ra.multiblock`, `ra.mb_timer`, `ra.mb_enabled`
+- creates `ra.multiblock`, `ra.mb_timer`
 - prepares `ra:multiblock` and temp storage branches
 
 Lifecycle functions:
@@ -307,17 +327,34 @@ When adding new configurable properties, update CDH and Data Handler mappings/de
 
 ### Goggles
 
-- scans nearby custom markers and multiblocks
-- renders billboards from block-defined info profiles
+- collects markers in range of any goggles wearer once, then draws each one
+- `ra:tools/goggles/draw_block` and `draw_multiblock` are pure routing
 - refreshes in timed batches
-- module-level `goggles/draw_displays` wrappers were removed; dispatch now lives directly in `ra:tools/goggles/scan_blocks` and `ra:tools/goggles/scan_multiblocks`
 
 Block-defined billboard contract:
 
-- Each block now decides if it renders overlay info by writing config in `storage ra:temp billboard` before calling `ra:tools/goggles/billboard/handle_billboard`.
-- Supported fields: `name`, `show_name` (`1b`), `show_status` (`1b`), optional `name_x`, `name_y`, `name_z`, `name_scale`.
-- If neither `show_name` nor `show_status` is set but `name` exists, the handler defaults to name rendering for backward compatibility.
-- If neither flag is set and no `name` is present, no billboard is rendered for that block.
+Each block owns `blocks/<name>/goggles.mcfunction`. It must:
+
+1. publish its display name to `storage ra:temp block_name`
+2. `execute if data storage ra:temp name_only run return 0`
+3. write `storage ra:temp billboard` and call `ra:tools/goggles/billboard/handle_billboard`
+4. emit its own status lines
+
+```mcfunction
+data modify storage ra:temp block_name set value "Liquid Tank"
+execute if data storage ra:temp name_only run return 0
+
+data modify storage ra:temp billboard set value {show_name:1b,name_y:1.0}
+data modify storage ra:temp billboard.name set from storage ra:temp block_name
+function ra:tools/goggles/billboard/handle_billboard with storage ra:temp billboard
+
+function ra:tools/goggles/billboard/data_line {path:"medium",label:"Medium: ",color:"aqua",suffix:"",y:0.8}
+```
+
+The `name_only` early return is what lets `ra:tools/block_name` reuse this
+dispatch to resolve names for the Data Handlers, so a block's name is written
+once. Billboard offsets are measured from the marker, which sits at the block
+**centre** — a slab-height block wants `name_y` around `0.7`, not `1.0`.
 - Use this to keep low-information blocks clean while enabling richer overlays on data-heavy blocks.
 
 `ra_wires` adds a goggles tinkering path:

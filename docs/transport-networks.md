@@ -1,6 +1,6 @@
 # Transport Networks
 
-The `ra_wires` module adds marker-driven liquid, gas, and EU transport nodes.
+The `ra_wires` module adds liquid, gas, and EU transport.
 
 - Namespace: `ra_wires`
 - Give all: `/function ra_wires:items/give_all`
@@ -10,80 +10,130 @@ The `ra_wires` module adds marker-driven liquid, gas, and EU transport nodes.
 
 | Family | Blocks | Notes |
 |---|---|---|
-| Liquid | Copper/Netherite Pipe, Tank, Pump, Valve, Drain | Supports water, lava, XP, milk, powder snow IDs |
-| Gas | Copper/Netherite Pipe, Tank, Pump, Valve | Supports steam, smoke, hydrogen, oxygen, chlorine IDs |
-| Electric | Copper/Netherite Wire, EU Generator, EU Consumer, EU Switch | Fixed-rate EU generation/transfer/consumption |
+| Fluid | L1 Copper / L2 Iron Pipe, Liquid Tank, Liquid Pump, Liquid Valve, Liquid Drain | Liquids and gases share one pipe network |
+| Gas | Gas Tank, Gas Pump, Gas Valve, Boiler | Gases use the same pipes as liquids |
+| Electric | Copper / L2 Wire, EU Generator, EU Consumer, EU Switch, Solar Panel | Fixed-rate EU generation, transfer and consumption |
 
 ## Flow Model
 
-Transfer is fixed-rate and adjacency based:
+**Fluid contents belong to the network, not to individual pipes.**
 
-1. Source buffers fill (`pump_tick`, `generator_tick`, or drain collection).
-2. Each source tries immediate neighbors in deterministic axis order.
-3. Destination accepts only when enabled, with matching medium for fluid/gas.
-4. Amount moved is capped by source amount, transfer rate, and destination free capacity.
+A connected run of pipes, tanks, pumps, valves and drains is one *network* with a
+single medium, a single amount and a capacity equal to the sum of its members.
+Adding a pipe adds capacity; it does not add another buffer that fluid has to be
+pushed through.
 
-Network state is marker-based:
+That means:
 
-- `data.properties.*` for configuration (`enabled`, `transfer_rate`, `medium_id`, etc.).
-- `data.data.*` for runtime buffers (`amount`, `capacity`, `eu`).
-- `data.status.*` for goggles/readable diagnostics.
+- Fluid does not travel. Anything a pump adds is immediately available to every
+  drain on the same network, however far away.
+- Pipes, tanks and valves do **no** per-tick work. Only pumps, drains and boilers
+  are ticked. A hundred-block pipe run is free to keep running.
+- Network membership is recomputed only when a node is placed or broken, and is
+  debounced so laying a long run costs one rebuild rather than one per block.
 
-## Medium IDs
+Network state:
 
-### Liquids
+- `data.properties.*` — configuration the player can change (`enabled`, `mode`, `tier`).
+- `data.status.*` — read-only values for goggles, refreshed every 20 ticks.
 
-- `0`: Empty
-- `1`: Water
-- `2`: Lava
-- `3`: XP
-- `4`: Milk
-- `5`: Powder Snow
+Pipes and tanks carry no `enabled` property. They are pure conductors and
+capacity; use a **valve** to cut a line.
 
-### Gases
+## Media
 
-- `0`: Empty
-- `1`: Steam
-- `2`: Smoke
-- `3`: Hydrogen
-- `4`: Oxygen
-- `5`: Chlorine
+Media are named, not numbered:
+
+| Key | Name | State | World block |
+|---|---|---|---|
+| `water` | Water | liquid | `minecraft:water` |
+| `lava` | Lava | liquid | `minecraft:lava` |
+| `powder_snow` | Powder Snow | liquid | `minecraft:powder_snow` |
+| `milk` | Milk | liquid | — |
+| `steam` | Steam | gas | — |
+| `smoke` | Smoke | gas | — |
+| `oxygen` | Oxygen | gas | — |
+
+A network holds one medium at a time. It forgets its medium when drained to
+empty, so a different one can be pumped in without breaking anything.
+
+## Pumps and Drains
+
+**Liquid Pump** — pulls a world fluid source into the network. It checks all six
+adjacent blocks, so it works whichever way you place it. A source block is
+all-or-nothing: the pump only takes it if the whole 1000 units fit, so a nearly
+full network cannot delete a lake a partial bucket at a time.
+
+**Liquid Drain** has two modes, cycled with the goggles tinker:
+
+- `drain` — takes a world source into the network (like a pump, on a slower cycle).
+- `place` — spends 1000 units putting a source block of the network's medium back
+  into the world, on the first free side.
+
+`place` mode is what makes a network worth building: carry lava from a pool to
+wherever you want it, or refill cauldrons across a base.
+
+### Infinite Sources
+
+A body of **nine or more** matching source blocks within two blocks of the one
+being taken counts as inexhaustible, and the block is left alone. Anything
+smaller is genuinely consumed, so small pools empty out.
+
+## Boiler and the EU Chain
+
+The Boiler sits **between two networks** — it is deliberately not a member of
+either, because a network holds one medium and it needs water on one side and
+steam on the other.
+
+```text
+water network → [Boiler over a heat source] → steam network → [EU Generator] → EU
+```
+
+- Any block in `#ra_wires:heat_sources` under the Boiler will do: lava, fire,
+  soul fire, magma block, campfire, soul campfire, lava cauldron.
+- Consumes 100 water and produces 100 steam per cycle.
+- The **EU Generator burns steam**. It does not generate power from nothing.
+- The **Solar Panel** generates EU from sky light instead, scaling with the
+  vanilla daylight detector's own light reading — so night, rain, roofs and snow
+  cover all reduce it automatically.
+
+## Valves
+
+A valve's `enabled` state genuinely **splits the network in two**. The halves
+then hold separate contents and separate media. Closing a valve is the supported
+way to isolate part of a system.
+
+The state can be changed with the goggles tinker or the Data Handler; either way
+the network follows.
 
 ## Visual Connectivity
 
-`ra_wires:common/update_model_local_and_neighbors` refreshes local connection state on placement, break, and tinker updates.
+Each node draws only **its own half** of a connection — from its core out to its
+block boundary, never across into the neighbour. Displays are rebuilt only when a
+conduit appears or disappears at a marker, never on a tick where nothing changed.
 
-`ra_lib:transport/update_connection_status` computes nearby node count and writes:
-
-- `data.status.connections`
-- `data.status.enabled`
-
-This keeps nearby node status readable and helps prevent confusing stale visuals.
+Fluid pipes render as a chunky 0.56 core in copper or iron. Electric wires are
+deliberately thinner (0.26) and use concrete, so the two are easy to tell apart
+at a glance.
 
 ## Goggles and Tinkering
 
-Goggles show transport status lines (medium, amount, EU, active state, drain state).
+Goggles show medium, amount, and per-block state lines.
 
-Tinkering controls:
+Tinkering — sneak and hold goggles in the main hand near a node:
 
-- Sneak + hold goggles in main hand near a transport marker.
-- Regular nodes: toggle `enabled`.
-- Pumps/drain source blocks: cycle `medium_id`.
+- Most nodes: toggle `enabled`.
+- Drain: cycle mode between `drain` and `place`.
 
-## Liquid Drain Behavior
-
-Drain nodes inspect the block in front:
-
-- If a drainable source exists, they consume it (full source blocks and cauldron states) and fill internal buffer.
-- If no valid source or no capacity is available, they set `data.status.drain_state` and emit fallback smoke particles.
+Pumps have nothing to configure; they take whatever they find next to them.
 
 ## Extending New Media
 
-To add a new liquid or gas type:
+1. Add an entry to the registry in `ra_wires:media/init` — display name, state,
+   colour, particle, and optionally a world block and bucket.
+2. If it can be pumped out of the world, add a `source_blocks` entry naming the
+   block state, the medium, the volume, and what the block becomes when drained.
 
-1. Add a new ID mapping in `ra_wires:liquid/update_medium_label` or `ra_wires:gas/update_medium_label`.
-2. Extend source detection logic in relevant pump/drain functions.
-3. Update tinker cycle bounds in `ra_wires:tools/tinker_toggle_target`.
-4. Add recipe + advancement files and include the item in `ra_wires:items/give_all`.
+That is all. Nothing else needs a per-medium branch.
 
 ---

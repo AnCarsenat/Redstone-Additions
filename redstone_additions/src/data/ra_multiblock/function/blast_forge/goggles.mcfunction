@@ -1,4 +1,4 @@
-# /ra_multiblock:goggles/draw_display_blast_forge
+# /ra_multiblock:blast_forge/goggles
 # Draw goggles billboards for blast forge multiblock
 # Context: as blast forge marker entity, at base position
 # Shows: name, heat/enabled status, I/O labels above structure (outside the forge)

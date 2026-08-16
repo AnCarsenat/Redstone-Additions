@@ -1,6 +1,7 @@
 {
   "values": [
     "ra_multiblock:blast_forge/setup_type",
-    "ra_multiblock:upgrade_platform/setup_type"
+    "ra_multiblock:upgrade_platform/setup_type",
+    "ra_lib_multiblock:generic/setup_type"
   ]
 }

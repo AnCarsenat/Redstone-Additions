@@ -1,4 +1,4 @@
-# /ra_multiblock:goggles/draw_display_upgrade_platform
+# /ra_multiblock:upgrade_platform/goggles
 # Draw goggles billboards for upgrade platform multiblock
 # Context: as upgrade platform marker entity, at base position
 # Shows: name only (no IO ports, no status)

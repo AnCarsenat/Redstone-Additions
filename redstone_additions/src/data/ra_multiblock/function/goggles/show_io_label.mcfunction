@@ -1,5 +1,7 @@
 # /ra_multiblock:goggles/show_io_label
 # MACRO FUNCTION — Show colored I/O indicator label above a multiblock IO block
+# Shared by both multiblocks' goggles functions, so it stays here rather than in
+# either one's folder.
 # Context: as multiblock marker entity, at base position
 # Input: $(x) $(y) $(z) = block offset from base, $(label) = text, $(color) = text color
 # Labels are rendered with configurable multiblock offsets.

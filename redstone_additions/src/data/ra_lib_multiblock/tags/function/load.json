@@ -1,3 +1,5 @@
 {
-  "values": []
+  "values": [
+    "ra_multiblock:register_types"
+  ]
 }

@@ -1,6 +1,7 @@
 {
   "values": [
     "ra_multiblock:blast_forge/check_structure",
-    "ra_multiblock:upgrade_platform/check_structure"
+    "ra_multiblock:upgrade_platform/check_structure",
+    "ra_lib_multiblock:generic/check_structure"
   ]
 }

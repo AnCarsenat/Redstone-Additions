@@ -3,7 +3,7 @@
 
 # === Break Detection for Multiblock Bases ===
 # Unified check — detects broken block and dispatches cleanup via macro
-execute as @e[tag=ra.multiblock_base] at @s run function ra_multiblock:blocks/check_break
+execute as @e[type=marker,tag=ra.multiblock_base] at @s run function ra_multiblock:blocks/check_break
 
 # === Periodic Structure Validation (every 40 ticks = 2 seconds) ===
 scoreboard players add #mb_validate_timer ra.multiblock 1

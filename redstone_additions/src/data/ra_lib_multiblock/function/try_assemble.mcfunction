@@ -9,7 +9,7 @@ scoreboard players set #mb_result ra.multiblock 0
 
 # Normalize position to block center for consistent distance checks
 # Check if already assembled here (marker within same block)
-execute align xyz positioned ~0.5 ~ ~0.5 if entity @e[tag=ra.multiblock,distance=..0.5,limit=1,sort=nearest] run return 0
+execute align xyz positioned ~0.5 ~ ~0.5 if entity @e[type=marker,tag=ra.multiblock,distance=..0.5,limit=1,sort=nearest] run return 0
 
 # Dispatch to registered multiblock type validators
 # Each validator checks its own type and sets #mb_result to 1 if valid
@@ -18,7 +18,10 @@ function #ra_lib_multiblock:validate
 # If validation passed, create the multiblock marker
 execute if score #mb_result ra.multiblock matches 1 run function ra_lib_multiblock:create_marker
 
-# Clean up assembly staging data from storage
+# Clean up assembly staging data from storage.
+# `type` is cleared too: it used to survive a failed attempt, so a later
+# assembly could be validated against a type the player never asked for.
+data remove storage ra:multiblock type
 data remove storage ra:multiblock facing
 data remove storage ra:multiblock inputs
 data remove storage ra:multiblock outputs

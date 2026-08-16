@@ -20,6 +20,9 @@ scoreboard players set @s ra.power.right 0
 scoreboard players set @s ra.power.local_up 0
 scoreboard players set @s ra.power.local_down 0
 
+# Source scans run weakest first: every later source writes a power at least as
+# high as the ones before it, so a plain overwrite ends up with the strongest
+# value for each side without needing an explicit maximum.
 function ra_lib:redstone/detect/dust
 function ra_lib:redstone/detect/lever
 function ra_lib:redstone/detect/button
@@ -38,63 +41,15 @@ execute if score @s ra.power.down > @s ra.power run scoreboard players operation
 
 # Local direction mapping from world directions using marker facing.
 # Facing IDs: 0=down 1=up 2=north 3=south 4=west 5=east
-execute if score @s ra.facing matches 0 run scoreboard players operation @s ra.power.front = @s ra.power.down
-execute if score @s ra.facing matches 0 run scoreboard players operation @s ra.power.back = @s ra.power.up
-execute if score @s ra.facing matches 0 run scoreboard players operation @s ra.power.left = @s ra.power.east
-execute if score @s ra.facing matches 0 run scoreboard players operation @s ra.power.right = @s ra.power.west
-execute if score @s ra.facing matches 0 run scoreboard players operation @s ra.power.local_up = @s ra.power.south
-execute if score @s ra.facing matches 0 run scoreboard players operation @s ra.power.local_down = @s ra.power.north
-
-execute if score @s ra.facing matches 1 run scoreboard players operation @s ra.power.front = @s ra.power.up
-execute if score @s ra.facing matches 1 run scoreboard players operation @s ra.power.back = @s ra.power.down
-execute if score @s ra.facing matches 1 run scoreboard players operation @s ra.power.left = @s ra.power.east
-execute if score @s ra.facing matches 1 run scoreboard players operation @s ra.power.right = @s ra.power.west
-execute if score @s ra.facing matches 1 run scoreboard players operation @s ra.power.local_up = @s ra.power.north
-execute if score @s ra.facing matches 1 run scoreboard players operation @s ra.power.local_down = @s ra.power.south
-
-execute if score @s ra.facing matches 2 run scoreboard players operation @s ra.power.front = @s ra.power.north
-execute if score @s ra.facing matches 2 run scoreboard players operation @s ra.power.back = @s ra.power.south
-execute if score @s ra.facing matches 2 run scoreboard players operation @s ra.power.left = @s ra.power.west
-execute if score @s ra.facing matches 2 run scoreboard players operation @s ra.power.right = @s ra.power.east
-execute if score @s ra.facing matches 2 run scoreboard players operation @s ra.power.local_up = @s ra.power.up
-execute if score @s ra.facing matches 2 run scoreboard players operation @s ra.power.local_down = @s ra.power.down
-
-execute if score @s ra.facing matches 3 run scoreboard players operation @s ra.power.front = @s ra.power.south
-execute if score @s ra.facing matches 3 run scoreboard players operation @s ra.power.back = @s ra.power.north
-execute if score @s ra.facing matches 3 run scoreboard players operation @s ra.power.left = @s ra.power.east
-execute if score @s ra.facing matches 3 run scoreboard players operation @s ra.power.right = @s ra.power.west
-execute if score @s ra.facing matches 3 run scoreboard players operation @s ra.power.local_up = @s ra.power.up
-execute if score @s ra.facing matches 3 run scoreboard players operation @s ra.power.local_down = @s ra.power.down
-
-execute if score @s ra.facing matches 4 run scoreboard players operation @s ra.power.front = @s ra.power.west
-execute if score @s ra.facing matches 4 run scoreboard players operation @s ra.power.back = @s ra.power.east
-execute if score @s ra.facing matches 4 run scoreboard players operation @s ra.power.left = @s ra.power.south
-execute if score @s ra.facing matches 4 run scoreboard players operation @s ra.power.right = @s ra.power.north
-execute if score @s ra.facing matches 4 run scoreboard players operation @s ra.power.local_up = @s ra.power.up
-execute if score @s ra.facing matches 4 run scoreboard players operation @s ra.power.local_down = @s ra.power.down
-
-execute if score @s ra.facing matches 5 run scoreboard players operation @s ra.power.front = @s ra.power.east
-execute if score @s ra.facing matches 5 run scoreboard players operation @s ra.power.back = @s ra.power.west
-execute if score @s ra.facing matches 5 run scoreboard players operation @s ra.power.left = @s ra.power.north
-execute if score @s ra.facing matches 5 run scoreboard players operation @s ra.power.right = @s ra.power.south
-execute if score @s ra.facing matches 5 run scoreboard players operation @s ra.power.local_up = @s ra.power.up
-execute if score @s ra.facing matches 5 run scoreboard players operation @s ra.power.local_down = @s ra.power.down
+execute if score @s ra.facing matches 0 run function ra_lib:redstone/facing/down
+execute if score @s ra.facing matches 1 run function ra_lib:redstone/facing/up
+execute if score @s ra.facing matches 2 run function ra_lib:redstone/facing/north
+execute if score @s ra.facing matches 3 run function ra_lib:redstone/facing/south
+execute if score @s ra.facing matches 4 run function ra_lib:redstone/facing/west
+execute if score @s ra.facing matches 5 run function ra_lib:redstone/facing/east
 
 # Tags
-execute if score @s ra.power matches 1.. run tag @s add ra.powered
-execute if score @s ra.power matches 16 run tag @s add ra.powered.strong
-execute if score @s ra.power.north matches 1.. run tag @s add ra.powered.north
-execute if score @s ra.power.south matches 1.. run tag @s add ra.powered.south
-execute if score @s ra.power.east matches 1.. run tag @s add ra.powered.east
-execute if score @s ra.power.west matches 1.. run tag @s add ra.powered.west
-execute if score @s ra.power.up matches 1.. run tag @s add ra.powered.up
-execute if score @s ra.power.down matches 1.. run tag @s add ra.powered.down
-execute if score @s ra.power.front matches 1.. run tag @s add ra.powered.front
-execute if score @s ra.power.back matches 1.. run tag @s add ra.powered.back
-execute if score @s ra.power.left matches 1.. run tag @s add ra.powered.left
-execute if score @s ra.power.right matches 1.. run tag @s add ra.powered.right
-execute if score @s ra.power.local_up matches 1.. run tag @s add ra.powered.local_up
-execute if score @s ra.power.local_down matches 1.. run tag @s add ra.powered.local_down
+execute if score @s ra.power matches 1.. run function ra_lib:redstone/tags
 
 # Return power level
 return run scoreboard players get @s ra.power

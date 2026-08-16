@@ -26,7 +26,7 @@ data modify storage ra:temp receiver_channel set from entity @s data.properties.
 tag @s add ra.checking
 
 # Look for any transmitting emitter with matching channel
-execute as @e[tag=ra.custom_block.emitter,tag=ra.transmitting] run function ra_wireless:blocks/receiver/check_emitter_channel
+execute as @e[type=marker,tag=ra.custom_block.emitter,tag=ra.transmitting] run function ra_wireless:blocks/receiver/check_emitter_channel
 
 # Output based on receiving state
 execute if entity @s[tag=ra.receiving] at @s run fill ~-1 ~-1 ~-1 ~1 ~1 ~1 redstone_block replace iron_block

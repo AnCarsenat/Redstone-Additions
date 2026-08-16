@@ -23,7 +23,8 @@ execute unless data storage ra:temp bf.result run return 0
 $execute positioned $(in1) run function ra_multiblock:blast_forge/consume_first_item
 
 # === Insert result into output barrel ===
-$execute positioned $(out1) run function ra_lib:inventory/insert with storage ra:temp bf.result
+# insert_or_drop, not insert: a full output barrel used to delete the smelt.
+$execute positioned $(out1) run function ra_lib:inventory/insert_or_drop with storage ra:temp bf.result
 
 # === Update status data on marker entity ===
 execute store result entity @s data.status.heat int 1 run scoreboard players get @s ra.heat

@@ -3,7 +3,7 @@
 # Macro: {name:"property_name"}
 # As player.
 
-$data remove entity @e[tag=ra.cdh_target,limit=1] data.properties.$(name)
+$data remove entity @e[type=marker,tag=ra.cdh_target,limit=1] data.properties.$(name)
 
 $tellraw @s [{text:"[Creative Data Handler] ",color:"gold"},{text:"Removed property ",color:"gray"},{text:"$(name)",color:"red"}]
 

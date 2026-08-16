@@ -6,7 +6,7 @@
 # Fallback path: if marker raycast misses, allow direct block-based interaction
 
 # Toggle existing multiblock marker at targeted position
-execute if entity @e[tag=ra.multiblock,distance=..0.5,limit=1,sort=nearest] run return run function ra:tools/wrench/toggle_multiblock
+execute if entity @e[type=marker,tag=ra.multiblock,distance=..0.5,limit=1,sort=nearest] run return run function ra:tools/wrench/toggle_multiblock
 
 # Try to assemble based on looked-at base block tier
 execute if block ~ ~ ~ minecraft:waxed_copper_block run return run function ra:tools/wrench/try_assemble_copper

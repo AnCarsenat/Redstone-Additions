@@ -17,14 +17,14 @@ tag @s add ra.dh_active
 execute unless predicate ra:is_sneaking run return 0
 
 # Remove target tag from any previously selected block
-tag @e[tag=ra.dh_target] remove ra.dh_target
+tag @e[type=marker,tag=ra.dh_target] remove ra.dh_target
 
 # Find nearest custom block via raycast (at @s ensures we're at player position)
 data remove storage ra:temp dh_found
-execute at @s anchored eyes positioned ^ ^ ^1 as @e[tag=ra.custom_block,distance=..1.5,limit=1,sort=nearest] run function ra:tools/data_handler/found_block
-execute at @s anchored eyes positioned ^ ^ ^2 unless data storage ra:temp dh_found as @e[tag=ra.custom_block,distance=..1.5,limit=1,sort=nearest] run function ra:tools/data_handler/found_block
-execute at @s anchored eyes positioned ^ ^ ^3 unless data storage ra:temp dh_found as @e[tag=ra.custom_block,distance=..1.5,limit=1,sort=nearest] run function ra:tools/data_handler/found_block
-execute at @s anchored eyes positioned ^ ^ ^4 unless data storage ra:temp dh_found as @e[tag=ra.custom_block,distance=..1.5,limit=1,sort=nearest] run function ra:tools/data_handler/found_block
+execute at @s anchored eyes positioned ^ ^ ^1 as @e[type=marker,tag=ra.custom_block,distance=..1.5,limit=1,sort=nearest] run function ra:tools/data_handler/found_block
+execute at @s anchored eyes positioned ^ ^ ^2 unless data storage ra:temp dh_found as @e[type=marker,tag=ra.custom_block,distance=..1.5,limit=1,sort=nearest] run function ra:tools/data_handler/found_block
+execute at @s anchored eyes positioned ^ ^ ^3 unless data storage ra:temp dh_found as @e[type=marker,tag=ra.custom_block,distance=..1.5,limit=1,sort=nearest] run function ra:tools/data_handler/found_block
+execute at @s anchored eyes positioned ^ ^ ^4 unless data storage ra:temp dh_found as @e[type=marker,tag=ra.custom_block,distance=..1.5,limit=1,sort=nearest] run function ra:tools/data_handler/found_block
 
 # Open menu if found, otherwise show error
 execute if data storage ra:temp dh_found run function ra:tools/data_handler/refresh

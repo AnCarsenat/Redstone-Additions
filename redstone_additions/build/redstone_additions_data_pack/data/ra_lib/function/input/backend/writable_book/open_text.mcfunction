@@ -9,3 +9,4 @@ tellraw @s ""
 tellraw @s [{text:"[RA Input] ",color:"gold"},{text:"Text input requested.",color:"aqua"}]
 tellraw @s [{text:"Write on page 1 of the Input Form book.",color:"gray"}]
 tellraw @s [{text:"Close the book when done. Capture runs automatically.",color:"gray"}]
+tellraw @s [{text:"Drop the book to cancel.",color:"dark_gray"}]

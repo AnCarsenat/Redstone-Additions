@@ -7,7 +7,7 @@ tag @s add ra.checking
 scoreboard players set @s ra.temp 0
 
 # Find matching entities, exclude custom blocks, set score on the checking armor stand
-$execute at @s as $(entity_selector) unless entity @s[tag=ra.custom_block] run scoreboard players set @e[tag=ra.checking,limit=1] ra.temp 1
+$execute at @s as $(entity_selector) unless entity @s[tag=ra.custom_block] run scoreboard players set @e[type=marker,tag=ra.checking,limit=1] ra.temp 1
 
 tag @s remove ra.checking
 

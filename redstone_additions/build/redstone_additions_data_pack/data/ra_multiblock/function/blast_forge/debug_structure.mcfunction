@@ -3,7 +3,7 @@
 # Called: function ... with storage ra:multiblock bf_dir.{direction}
 # Context: as multiblock marker, at base position
 # Usage: /tag @s add ra.debug then assemble. Or run manually:
-#   execute as @e[tag=ra.multiblock.blast_forge,limit=1] at @s run function ra_multiblock:blast_forge/debug_structure with storage ra:multiblock bf_dir.north
+#   execute as @e[type=marker,tag=ra.multiblock.blast_forge,limit=1] at @s run function ra_multiblock:blast_forge/debug_structure with storage ra:multiblock bf_dir.north
 
 $tellraw @a [{text:"[MB Debug] ",color:"gold"},{text:"Checking $(facing) structure:",color:"aqua"}]
 

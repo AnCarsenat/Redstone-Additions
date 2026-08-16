@@ -7,7 +7,7 @@
 # As player.
 
 # Copy value from storage to entity property
-$data modify entity @e[tag=ra.dh_target,limit=1] data.properties.$(name) set from storage ra:dh set_value
+$data modify entity @e[type=marker,tag=ra.dh_target,limit=1] data.properties.$(name) set from storage ra:dh set_value
 
 $tellraw @s [{text:"[Data Handler] ",color:"gold"},{text:"Set ",color:"gray"},{text:"$(name)",color:"yellow"},{text:" = ",color:"gray"},{nbt:"set_value",storage:"ra:dh",color:"green"}]
 

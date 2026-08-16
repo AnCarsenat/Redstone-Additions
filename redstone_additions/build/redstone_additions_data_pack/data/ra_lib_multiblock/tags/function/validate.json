@@ -1,6 +1,7 @@
 {
   "values": [
     "ra_multiblock:blast_forge/validate",
-    "ra_multiblock:upgrade_platform/validate"
+    "ra_multiblock:upgrade_platform/validate",
+    "ra_lib_multiblock:generic/validate"
   ]
 }

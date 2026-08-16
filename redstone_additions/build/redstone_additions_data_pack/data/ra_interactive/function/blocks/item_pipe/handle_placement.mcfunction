@@ -12,7 +12,11 @@ function ra_lib:placement/place {block_id:"minecraft:dispenser",block_tag:"item_
 # Snap marker to centered world-grid coordinates.
 execute as @e[type=marker,tag=ra.custom_block.item_pipe,tag=ra.new,distance=..0.5,sort=nearest,limit=1] at @s align xyz positioned ~0.5 ~0.5 ~0.5 run tp @s ~ ~ ~
 
+# Item pipes join the shared transport engine as an item-class network, so a
+# connected run is one network rather than a chain of independent hops.
+execute as @e[type=marker,tag=ra.custom_block.item_pipe,tag=ra.new,distance=..0.5,sort=nearest,limit=1] run function ra_lib:transport/net/join {class:"item",capacity:0}
+
 # Remove ra.new tag now that setup is complete
-tag @e[tag=ra.custom_block.item_pipe,tag=ra.new] remove ra.new
+tag @e[type=marker,tag=ra.custom_block.item_pipe,tag=ra.new] remove ra.new
 
 return 1

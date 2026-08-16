@@ -8,6 +8,6 @@ execute unless entity @s[tag=ra.place.spitter] run return 0
 function ra_lib:placement/place {block_id:"minecraft:dropper",block_tag:"spitter",dir_type:2}
 
 # Remove ra.new tag now that setup is complete
-tag @e[tag=ra.custom_block.spitter,tag=ra.new] remove ra.new
+tag @e[type=marker,tag=ra.custom_block.spitter,tag=ra.new] remove ra.new
 
 return 1

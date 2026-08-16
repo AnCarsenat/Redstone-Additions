@@ -7,8 +7,8 @@ tellraw @s [{text:"Block: ",color:"gray"},{nbt:"block_type",storage:"ra:cdh",col
 tellraw @s ""
 
 # Properties header with Add and Edit All buttons
-tellraw @s [{text:"─── Properties ───",color:"yellow"},{text:" "},{text:"[+Add]",color:"green",click_event:{action:"suggest_command",command:"/function ra:tools/creative_data_handler/add_property {name:\"\",value:\"\",type:\"\"}"},hover_event:{action:"show_text",value:"Add new property"}},{text:" "},{text:"[Edit All]",color:"aqua",click_event:{action:"suggest_command",command:"/data modify entity @e[tag=ra.cdh_target,limit=1] data.properties set value "},hover_event:{action:"show_text",value:"Edit all properties at once"}}]
-tellraw @s [{text:"  Properties: ",color:"gray"},{nbt:"properties",storage:"ra:cdh",color:"white",click_event:{action:"suggest_command",command:"/data modify entity @e[tag=ra.cdh_target,limit=1] data.properties set value "},hover_event:{action:"show_text",value:"Click to copy and edit"}}]
+tellraw @s [{text:"─── Properties ───",color:"yellow"},{text:" "},{text:"[+Add]",color:"green",click_event:{action:"suggest_command",command:"/function ra:tools/creative_data_handler/add_property {name:\"\",value:\"\",type:\"\"}"},hover_event:{action:"show_text",value:"Add new property"}},{text:" "},{text:"[Edit All]",color:"aqua",click_event:{action:"suggest_command",command:"/data modify entity @e[type=marker,tag=ra.cdh_target,limit=1] data.properties set value "},hover_event:{action:"show_text",value:"Edit all properties at once"}}]
+tellraw @s [{text:"  Properties: ",color:"gray"},{nbt:"properties",storage:"ra:cdh",color:"white",click_event:{action:"suggest_command",command:"/data modify entity @e[type=marker,tag=ra.cdh_target,limit=1] data.properties set value "},hover_event:{action:"show_text",value:"Click to copy and edit"}}]
 
 # List all properties dynamically
 function ra:tools/creative_data_handler/list_properties

@@ -4,16 +4,14 @@
 # Input:
 #   $(name)     = display name of the block
 #   show_name   = optional 1b to render name line
-#   show_status = optional 1b to render status lines
 #   name_x/y/z  = optional name line offsets (default from offsets.billboard_name)
 #   name_scale  = optional name line scale (default from offsets.billboard_name)
 
 execute unless data storage ra:display offsets.billboard_name run function ra:tools/goggles/billboard/init_offsets
 
-# Default policy: a block must explicitly opt in to show name and/or status.
-# Backward compatibility: legacy callers only set "name" and expect name rendering.
-execute unless data storage ra:temp billboard.show_name unless data storage ra:temp billboard.show_status if data storage ra:temp billboard.name run data modify storage ra:temp billboard.show_name set value 1b
-execute unless data storage ra:temp billboard.show_name unless data storage ra:temp billboard.show_status run return 0
+# A caller that supplied a name wants it rendered.
+execute unless data storage ra:temp billboard.show_name if data storage ra:temp billboard.name run data modify storage ra:temp billboard.show_name set value 1b
+execute unless data storage ra:temp billboard.show_name run return 0
 
 # Optional name line.
 execute if data storage ra:temp billboard.show_name run data modify storage ra:temp billboard_render set from storage ra:display offsets.billboard_name
@@ -24,5 +22,6 @@ execute if data storage ra:temp billboard.show_name if data storage ra:temp bill
 $execute if data storage ra:temp billboard.show_name run data modify storage ra:temp billboard_render.name set value "$(name)"
 execute if data storage ra:temp billboard.show_name run function ra:tools/goggles/billboard/render_name with storage ra:temp billboard_render
 
-# Optional status section.
-execute if data storage ra:temp billboard.show_status run function ra:tools/goggles/status/read_status
+# No status section here any more. Each block emits its own lines from its
+# blocks/<name>/goggles function, using prop_line / data_line / text_line, which
+# is what removed the central read_status dispatch table.

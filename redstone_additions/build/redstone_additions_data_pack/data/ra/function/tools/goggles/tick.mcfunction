@@ -19,11 +19,20 @@ execute unless score #goggles_timer ra.temp matches 40.. run return 0
 scoreboard players set #goggles_timer ra.temp 0
 
 # Remove old billboards
-kill @e[tag=ra.billboard]
+kill @e[type=text_display,tag=ra.billboard]
 
-# Scan for each player with goggles
-execute as @a[tag=ra.goggles_active] at @s run function ra:tools/goggles/scan_blocks
-execute as @a[tag=ra.goggles_active] at @s run function ra:tools/goggles/scan_multiblocks
+# Collect everything in range of any goggles wearer first, then draw each marker
+# exactly once. Drawing per player meant every billboard was summoned twice when
+# two wearers stood near the same block, and cost one whole-world sweep per block
+# type per player.
+tag @e[type=marker,tag=ra.goggles_seen] remove ra.goggles_seen
+execute as @a[tag=ra.goggles_active] at @s run tag @e[type=marker,tag=ra.custom_block,distance=..16] add ra.goggles_seen
+execute as @a[tag=ra.goggles_active] at @s run tag @e[type=marker,tag=ra.multiblock,distance=..16] add ra.goggles_seen
+
+execute as @e[type=marker,tag=ra.goggles_seen,tag=ra.custom_block] at @s run function ra:tools/goggles/draw_block
+execute as @e[type=marker,tag=ra.goggles_seen,tag=ra.multiblock] at @s run function ra:tools/goggles/draw_multiblock
+
+tag @e[type=marker,tag=ra.goggles_seen] remove ra.goggles_seen
 
 # Remove goggles tag (re-applied next tick if still wearing/holding)
 tag @a remove ra.goggles_active

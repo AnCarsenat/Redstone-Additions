@@ -9,6 +9,11 @@ execute unless block ~ ~ ~ #ra_lib:containers run return 0
 # Avoid triggering vanilla dispensers by only allowing dispenser targets that are RA custom blocks.
 execute if block ~ ~ ~ minecraft:dispenser unless entity @e[type=marker,tag=ra.custom_block,distance=..0.75,limit=1,sort=nearest] run return 0
 
+# Fast path: whole stack in one move when the destination has a free slot.
+execute store result score #stack ra.temp run function ra_interactive:blocks/item_pipe/move_stack {sx:"^ ^ ^-1"}
+execute if score #stack ra.temp matches 1 run return 1
+
+# Fallback: destination has no free slot, so top up partial stacks one at a time.
 # If destination cannot accept one item, keep items in current pipe.
 data modify storage ra:temp inv_item set from storage ra:temp pipe_item
 data modify storage ra:temp inv_item.count set value 1

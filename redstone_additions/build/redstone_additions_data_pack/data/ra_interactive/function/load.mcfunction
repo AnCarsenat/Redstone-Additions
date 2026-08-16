@@ -1,6 +1,9 @@
 # /data/ra_interactive/function/load.mcfunction
 # RA Interactive — Load and register all interactive custom blocks
 
+# Countdown until each item pipe re-reads its filter frame.
+scoreboard objectives add ra.filter_cd dummy
+
 # Register custom blocks
 function ra_interactive:blocks/block_breaker/register_block
 function ra_interactive:blocks/breeder/register_block

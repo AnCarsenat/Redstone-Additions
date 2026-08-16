@@ -18,6 +18,10 @@ tag @a[tag=ra.remote_clicked] remove ra.remote_clicked
 # Debug-only input handler clicked tag cleanup (commented by request)
 # tag @a[tag=ra.input_handler_clicked] remove ra.input_handler_clicked
 
+# Rebuild transport networks if any were placed or broken. Debounced, so this is
+# a single storage check on a tick where nothing changed.
+function ra_lib:transport/tick
+
 # Tick modular input sessions
 function ra_lib:input/tick
 

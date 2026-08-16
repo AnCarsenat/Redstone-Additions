@@ -1,11 +1,11 @@
 # /ra:tools/data_handler/run_action
 # Execute selected data handler menu action.
 
-execute unless entity @e[tag=ra.dh_target,limit=1] run tellraw @s [{text:"[Data Handler] ",color:"gold"},{text:"No selected target. Shift+RMB a block first.",color:"red"}]
-execute unless entity @e[tag=ra.dh_target,limit=1] run scoreboard players set @s ra.dh.pending 0
-execute unless entity @e[tag=ra.dh_target,limit=1] run scoreboard players set @s ra.dh.action 0
-execute unless entity @e[tag=ra.dh_target,limit=1] run scoreboard players enable @s ra.dh.action
-execute unless entity @e[tag=ra.dh_target,limit=1] run return 0
+execute unless entity @e[type=marker,tag=ra.dh_target,limit=1] run tellraw @s [{text:"[Data Handler] ",color:"gold"},{text:"No selected target. Shift+RMB a block first.",color:"red"}]
+execute unless entity @e[type=marker,tag=ra.dh_target,limit=1] run scoreboard players set @s ra.dh.pending 0
+execute unless entity @e[type=marker,tag=ra.dh_target,limit=1] run scoreboard players set @s ra.dh.action 0
+execute unless entity @e[type=marker,tag=ra.dh_target,limit=1] run scoreboard players enable @s ra.dh.action
+execute unless entity @e[type=marker,tag=ra.dh_target,limit=1] run return 0
 
 # Numeric properties
 execute if score @s ra.dh.action matches 1 run scoreboard players set @s ra.dh.pending 1
@@ -74,12 +74,24 @@ execute if score @s ra.dh.action matches 18 run tellraw @s [{text:"[Data Handler
 execute if score @s ra.dh.action matches 18 run function ra:tools/data_handler/request_text
 
 # Boolean toggles
-execute if score @s ra.dh.action matches 5 if data entity @e[tag=ra.dh_target,limit=1] {data:{properties:{inverted:1b}}} run data modify entity @e[tag=ra.dh_target,limit=1] data.properties.inverted set value 0b
-execute if score @s ra.dh.action matches 5 unless data entity @e[tag=ra.dh_target,limit=1] {data:{properties:{inverted:1b}}} run data modify entity @e[tag=ra.dh_target,limit=1] data.properties.inverted set value 1b
+# The old value must be latched before the first write. Testing the property
+# again on the next line reads what that write just stored, so the pair always
+# undid itself and [Toggle] appeared to do nothing at all.
+execute if score @s ra.dh.action matches 5 run tag @s remove ra.dh.was_set
+execute if score @s ra.dh.action matches 5 if data entity @e[type=marker,tag=ra.dh_target,limit=1] {data:{properties:{inverted:1b}}} run tag @s add ra.dh.was_set
+execute if score @s ra.dh.action matches 5 if entity @s[tag=ra.dh.was_set] run data modify entity @e[type=marker,tag=ra.dh_target,limit=1] data.properties.inverted set value 0b
+execute if score @s ra.dh.action matches 5 unless entity @s[tag=ra.dh.was_set] run data modify entity @e[type=marker,tag=ra.dh_target,limit=1] data.properties.inverted set value 1b
+tag @s remove ra.dh.was_set
 execute if score @s ra.dh.action matches 5 run function ra:tools/data_handler/refresh
 
-execute if score @s ra.dh.action matches 11 if data entity @e[tag=ra.dh_target,limit=1] {data:{properties:{enabled:1b}}} run data modify entity @e[tag=ra.dh_target,limit=1] data.properties.enabled set value 0b
-execute if score @s ra.dh.action matches 11 unless data entity @e[tag=ra.dh_target,limit=1] {data:{properties:{enabled:1b}}} run data modify entity @e[tag=ra.dh_target,limit=1] data.properties.enabled set value 1b
+# The old value must be latched before the first write. Testing the property
+# again on the next line reads what that write just stored, so the pair always
+# undid itself and [Toggle] appeared to do nothing at all.
+execute if score @s ra.dh.action matches 11 run tag @s remove ra.dh.was_set
+execute if score @s ra.dh.action matches 11 if data entity @e[type=marker,tag=ra.dh_target,limit=1] {data:{properties:{enabled:1b}}} run tag @s add ra.dh.was_set
+execute if score @s ra.dh.action matches 11 if entity @s[tag=ra.dh.was_set] run data modify entity @e[type=marker,tag=ra.dh_target,limit=1] data.properties.enabled set value 0b
+execute if score @s ra.dh.action matches 11 unless entity @s[tag=ra.dh.was_set] run data modify entity @e[type=marker,tag=ra.dh_target,limit=1] data.properties.enabled set value 1b
+tag @s remove ra.dh.was_set
 execute if score @s ra.dh.action matches 11 run function ra:tools/data_handler/refresh
 
 # View and refresh actions

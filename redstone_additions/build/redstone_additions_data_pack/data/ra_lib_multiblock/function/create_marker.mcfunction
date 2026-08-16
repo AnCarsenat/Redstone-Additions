@@ -7,8 +7,10 @@
 # NOTE: data:{_init:1b} ensures the compound exists — empty data:{} gets auto-removed by MC
 execute align xyz run summon marker ~0.5 ~ ~0.5 {data:{_init:1b},Tags:["ra.multiblock","ra.multiblock.new"]}
 
-# Transfer assembly data to marker entity (sort=nearest ensures correct entity)
-execute align xyz positioned ~0.5 ~ ~0.5 as @e[tag=ra.multiblock.new,limit=1,sort=nearest] run function ra_lib_multiblock:setup_marker
+# Transfer assembly data to marker entity.
+# type + distance are required: without them a stale or concurrently created
+# ra.multiblock.new marker anywhere in the world could be picked instead.
+execute align xyz positioned ~0.5 ~ ~0.5 as @e[type=marker,tag=ra.multiblock.new,distance=..0.5,limit=1,sort=nearest] run function ra_lib_multiblock:setup_marker
 
 # === Assembly Effects ===
 playsound minecraft:block.respawn_anchor.set_spawn block @a[distance=..16] ~ ~ ~ 1 0.8

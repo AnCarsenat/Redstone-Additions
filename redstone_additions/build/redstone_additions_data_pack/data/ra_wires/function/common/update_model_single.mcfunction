@@ -3,5 +3,4 @@
 
 function ra_lib:transport/update_connection_status
 execute if entity @s[tag=ra.custom_block.liquid_pipe] run function ra_wires:common/update_pipe_displays
-execute if entity @s[tag=ra.custom_block.gas_pipe] run function ra_wires:common/update_pipe_displays
 execute if entity @s[tag=ra.custom_block.electric_wire] run function ra_wires:common/update_wire_displays

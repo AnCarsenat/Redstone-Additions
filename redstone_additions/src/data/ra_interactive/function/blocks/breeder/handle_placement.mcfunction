@@ -8,6 +8,6 @@ execute unless entity @s[tag=ra.place.breeder] run return 0
 function ra_lib:placement/place {block_id:"minecraft:dispenser",block_tag:"breeder",dir_type:2}
 
 # Remove ra.new tag now that setup is complete
-tag @e[tag=ra.custom_block.breeder,tag=ra.new] remove ra.new
+tag @e[type=marker,tag=ra.custom_block.breeder,tag=ra.new] remove ra.new
 
 return 1

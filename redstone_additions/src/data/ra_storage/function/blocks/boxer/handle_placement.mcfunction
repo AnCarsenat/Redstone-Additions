@@ -8,6 +8,6 @@ function ra_lib:placement/place {block_id:"minecraft:dropper",block_tag:"boxer",
 data modify entity @e[type=marker,tag=ra.custom_block.boxer,tag=ra.new,distance=..0.5,sort=nearest,limit=1] data.properties.input1 set value "^ ^ ^-1"
 data modify entity @e[type=marker,tag=ra.custom_block.boxer,tag=ra.new,distance=..0.5,sort=nearest,limit=1] data.properties.output1 set value "^ ^ ^1"
 
-tag @e[tag=ra.custom_block.boxer,tag=ra.new] remove ra.new
+tag @e[type=marker,tag=ra.custom_block.boxer,tag=ra.new] remove ra.new
 
 return 1

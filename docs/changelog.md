@@ -154,6 +154,17 @@ see the compatibility table on the home page for what breaks on older versions.
   offsets are measured from the block centre, not its floor.
 
 **Other**
+- **The declared pack format range over-claimed and undershot at once.**
+  `max_format` was 102, which is `26.2-snapshot-3` — an early snapshot, so the
+  range never reached the 26.2 release (format 107) it was aiming at. It also
+  spanned the snapshot where entity predicates were reworked "from a structure
+  with multiple optional fields to one similar to data component maps", which is
+  the shape `ra:predicate/is_sneaking` uses — and that predicate gates the wrench
+  shift-action, the goggles tinker and the Remote's channel prompt. A format
+  range does not create compatibility; it suppresses Minecraft's "made for a
+  different version" warning, so the pack would have loaded silently into a
+  version where three tools stop responding. Now declares 88 only, the format it
+  is tested against.
 - Load message reported v5.1.2 while the pack reported v5.1.3.
 - `ra_lib_multiblock:create_marker` could set up an unrelated marker anywhere in
   the world — its selector had no type or distance limit.
@@ -177,6 +188,17 @@ see the compatibility table on the home page for what breaks on older versions.
 - Redundant stone-button pass in redstone detection, eight no-op tag sweeps in
   `ra_wires:common/tick_cleanup`, and the inert `#ra_gates:*` / `#ra_multiblock:*`
   function tags.
+
+### Docs
+
+- README and the wiki home page state the real supported range and carry a
+  compatibility table giving the version floor for each feature — the hard floor
+  is the `pack.mcmeta` schema, not the content, so most of the pack runs on
+  1.21.5+ with only Item Pipe filters missing. Both previously advertised
+  "Minecraft 1.21+".
+- Block and recipe counts corrected to 45 and 50, counted from source.
+- New "Block Skins" section in the Developer Guide covering `ra_lib:skin`,
+  including what the technique does not hide.
 
 ### Known issues
 

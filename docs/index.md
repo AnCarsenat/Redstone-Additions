@@ -3,7 +3,7 @@
 <img src="images/icon.png" alt="Redstone Additions" width="128">
 
 **Version:** v5.1.4  
-**Minecraft:** 1.21+  
+**Minecraft:** 1.21.9 – 1.21.10  
 **Author:** [AnCarsenat](https://github.com/AnCarsenat)
 
 ---
@@ -12,6 +12,30 @@ Redstone Additions is a vanilla datapack with automation, storage, wireless sign
 
 !!! tip "Player-first wiki"
     This home page is intentionally dense so most players can stay on one page and only open extra docs when they need deep technical details.
+
+## Version Compatibility
+
+**Supported: Minecraft 1.21.9 – 1.21.10** (data pack format 88). This is the only
+range the pack declares, and the only one it is tested against.
+
+Earlier versions are **not supported**, but most of the pack does not actually
+need 1.21.9 — the hard floor is the `pack.mcmeta` schema. If you edit
+`pack.mcmeta` to a lower `pack_format` and drop `min_format`/`max_format`, this
+is what breaks and when:
+
+| Below | What stops working |
+|---|---|
+| 1.21.9 | Nothing in the content itself — only the `min_format`/`max_format` fields, which that version introduced |
+| 1.21.5 | Item Pipe **filters**, which identify their item frame by `block_pos` |
+| 1.21.2 | Almost every item's appearance and identity (`item_model`, `consumable`, component removal) |
+| 1.20.5 | Setting the Redstone Remote's channel (`copy_custom_data`) |
+| 1.20.2 | Everything — the pack is built on macro functions and `return run` |
+
+So in practice the content runs on 1.21.5+ with only the pipe filters missing,
+and on 1.21.2+ in a degraded state. None of that is tested or supported; the
+declared range stays narrow deliberately, because a wider one only suppresses
+Minecraft's "made for a different version" warning rather than making the pack
+work.
 
 ## Quick Start
 
@@ -41,7 +65,7 @@ Path example:
 
 Current pack totals:
 
-- 48 placeable custom blocks
+- 45 placeable custom blocks
 - 5 tools (Wrench, Creative Data Handler, Data Handler, Goggles, Redstone Remote)
 
 ## Commands Most Players Need

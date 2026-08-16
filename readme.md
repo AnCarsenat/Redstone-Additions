@@ -5,7 +5,7 @@
 <h1 align="center">Redstone Additions</h1>
 
 <p align="center">
-  <strong>46 custom blocks. 5 tools. 48 recipes. Vanilla datapack for Minecraft 1.21+.</strong>
+  <strong>45 custom blocks. 5 tools. 50 recipes. Vanilla datapack for Minecraft 1.21.9–1.21.10.</strong>
 </p>
 
 <p align="center">
@@ -14,11 +14,11 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Minecraft-1.21+-2EA44F" alt="Minecraft 1.21+">
+  <img src="https://img.shields.io/badge/Minecraft-1.21.9--1.21.10-2EA44F" alt="Minecraft 1.21.9-1.21.10">
   <img src="https://img.shields.io/badge/Version-v5.1.4-blue" alt="Version v5.1.4">
-  <img src="https://img.shields.io/badge/Blocks-46-red" alt="46 blocks">
+  <img src="https://img.shields.io/badge/Blocks-45-red" alt="45 blocks">
   <img src="https://img.shields.io/badge/Tools-5-lightgrey" alt="5 tools">
-  <img src="https://img.shields.io/badge/Recipes-48-8A2BE2" alt="48 recipes">
+  <img src="https://img.shields.io/badge/Recipes-50-8A2BE2" alt="50 recipes">
 </p>
 
 ---
@@ -26,6 +26,31 @@
 Redstone Additions expands vanilla redstone with logic gates, automation machines, storage, sensors, wireless signaling, chunk loading, multiblocks, and liquid/gas/electric transport networks.
 
 All systems run as a pure datapack using marker entities and function-driven runtime logic. No mods required.
+
+## Version Compatibility
+
+**Supported: Minecraft 1.21.9 – 1.21.10** (data pack format 88). This is the only
+range the pack declares, and the only one it is tested against.
+
+Earlier versions are **not supported**, but most of the pack does not actually
+need 1.21.9 — the hard floor is the `pack.mcmeta` schema. If you edit
+`pack.mcmeta` to a lower `pack_format` and drop `min_format`/`max_format`, this
+is what breaks and when:
+
+| Below | What stops working |
+|---|---|
+| 1.21.9 | Nothing in the content itself — only the `min_format`/`max_format` fields, which that version introduced |
+| 1.21.5 | Item Pipe **filters**, which identify their item frame by `block_pos` |
+| 1.21.2 | Almost every item's appearance and identity (`item_model`, `consumable`, component removal) |
+| 1.20.5 | Setting the Redstone Remote's channel (`copy_custom_data`) |
+| 1.20.2 | Everything — the pack is built on macro functions and `return run` |
+
+So in practice the content runs on 1.21.5+ with only the pipe filters missing,
+and on 1.21.2+ in a degraded state. None of that is tested or supported; the
+declared range stays narrow deliberately, because a wider one only suppresses
+Minecraft's "made for a different version" warning rather than making the pack
+work.
+
 
 I recommend using [Bundles Beyond](https://modrinth.com/mod/bundles-beyond) for better bundle previews.
 

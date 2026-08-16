@@ -11,6 +11,10 @@ a full audit pass removed dead code and a class of per-tick performance problems
 **Breaking:** redstone control on the Boxer and Unboxer is inverted — unpowered
 runs, powered pauses. See *Changed*.
 
+**Supported versions:** 1.21.9 – 1.21.10 (data pack format 88). The pack declares
+only the range it is tested against. Most of the content does not need 1.21.9 —
+see the compatibility table on the home page for what breaks on older versions.
+
 ### Added
 
 **Transport engine**

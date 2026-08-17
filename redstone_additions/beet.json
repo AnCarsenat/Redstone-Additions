@@ -6,5 +6,7 @@
         "load": ["src"]
     },
 
+    "pipeline": ["tools.ship_updater"],
+
     "output": "build"
 }

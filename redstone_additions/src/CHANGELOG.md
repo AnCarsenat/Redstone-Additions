@@ -305,11 +305,16 @@ property it displays, and two long-standing electric transport bugs fixed.
 
 ### Diagnostics
 
-- Every block type announces itself on load to anyone wearing `ra.debug`. Sixteen of
-  them did not: `ra_wires` printed one "RA Wires blocks registered" line for all of
-  them, `ra_wireless` printed nothing at all, and the five multiblock bases were
-  silent. Knowing a module loaded is not the same as knowing which of its blocks did.
-  The count is now 51 lines for 51 block types.
+- Every block type announces itself on load **to anyone wearing `ra.debug`, and only
+  them**. Two halves to this:
+  - Twenty-three types never announced at all: `ra_wires` printed one "RA Wires blocks
+    registered" line covering sixteen blocks, `ra_wireless` printed nothing, and the
+    five multiblock bases were silent. Knowing a module loaded is not the same as
+    knowing which of its blocks did.
+  - Thirteen announced to *everybody*: the interactive, sensor and chunk-loader blocks
+    used a bare `tellraw @a`, so every player on the server read a registration list
+    on every reload. All of them are gated now.
+  - 51 lines for 51 block types, none of them ungated.
 
 - `/function ra_infinite:debug/poppy` — every Poppy Generator's marker position,
   rotation, facing, cooldown, the block in front and the ground verdict.

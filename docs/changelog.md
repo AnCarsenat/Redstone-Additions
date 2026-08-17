@@ -39,6 +39,13 @@ wire runs.
   properties it used to display but could not change — a wire's `transfer_rate`, a
   tank's `tier`, an anchor's id — are editable, lists included.
 
+### Documentation
+
+- The home page warned that redstone on the Boxer and Unboxer had become a lock and
+  told players to remove the signal from existing builds. Both have always shipped
+  **running while powered** — the inversion was a mid-v5.1.4 workaround, reverted in
+  that same release. Following the warning would have broken working builds.
+
 ### Fixed
 
 - Electric charge only ever reached the first two blocks of a run: a node handed EU

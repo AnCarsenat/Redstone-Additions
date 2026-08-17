@@ -140,10 +140,11 @@ Current pack totals:
 - Large performance pass across the tick loop, and a visual overhaul that removes
   z-fighting on pipes and makes wires distinguishable from pipes.
 
-!!! warning "Breaking change"
-    Redstone on the Boxer and Unboxer is now a **lock**, not a trigger: unpowered
-    runs, powered pauses. Existing builds that pulse these blocks need the signal
-    removed. See [Storage](storage.md).
+!!! note "Redstone on the Boxer and Unboxer"
+    Both **run while powered**, as they always have. An earlier v5.1.4 build
+    inverted this to work around a vanilla dispenser firing its own contents; the
+    Unboxer became a barrel instead and the inversion was reverted before release.
+    See [Storage](storage.md).
 
 ## Need More Detail
 

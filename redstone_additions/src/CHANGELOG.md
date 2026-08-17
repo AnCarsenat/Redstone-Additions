@@ -247,6 +247,16 @@ property it displays, and two long-standing electric transport bugs fixed.
   advancement. Crates come from a Boxer; a recipe whose result is a command block
   was never meant to be reachable, and the docs now say so.
 
+### Documentation
+
+- The home page carried a "Breaking change" warning saying redstone on the Boxer and
+  Unboxer had become a lock — unpowered runs, powered pauses — and told players to
+  remove the signal from existing builds. That inversion was a mid-v5.1.4 workaround
+  for a vanilla dispenser firing its own contents, reverted in the same release once
+  the Unboxer became a barrel, and both blocks have always shipped running while
+  powered. `docs/storage.md` said so correctly; the home page did not, and following
+  it would have broken working builds.
+
 ### Diagnostics
 
 - `/function ra_infinite:debug/poppy` — every Poppy Generator's marker position,

@@ -314,12 +314,17 @@ property it displays, and two long-standing electric transport bugs fixed.
 
 ### Changed
 
-- The survival Data Handler hides tuning fields: `cooldown`, `transfer_rate`,
-  `generation_rate`, `eu_use`, `tier` and `tier_level` are builder and addon-author
-  knobs, not something to retune while holding the survival tool. Creative mode is the
-  test, since a data pack cannot read permission level, and the number of withheld
-  fields is reported so a block does not look settings-free. The Creative Data Handler
-  still shows everything.
+- The survival Data Handler hides fields **the block itself declares**, through the
+  new function tag `#ra:hidden_fields`: generators hide `cooldown`, electric blocks
+  hide `transfer_rate` and their rate fields, pipes and wires hide `tier`, multiblock
+  bases hide `tier` and `tier_level`, ender vaults hide `transfer_rate`. A block that
+  declares nothing hides nothing.
+  - It has to be per block rather than one list of names, or one block's decision
+    becomes another's: `cooldown` is tuning on a generator and the entire point of a
+    Clock, and a global list would take the Clock's period away with it.
+  - Creative mode is the test, since a data pack cannot read permission level, and the
+    number of withheld fields is reported so a block does not look settings-free. The
+    Creative Data Handler still shows everything.
   - Hiding is opt-in and nothing else disappears. The redaction applies to the raw
     `Properties:` line too, so a hidden field is not still readable one line above its
     missing editor; and a property the registry does not know about is now counted and

@@ -3,10 +3,10 @@
 
 $execute unless data storage ra:dh properties.$(name) run return 0
 
-# Tuning fields stay out of survival hands. Creative mode is the test: it is what
-# the Creative Data Handler assumes, and a data pack cannot read permission level.
-$execute unless entity @s[gamemode=creative] if data storage ra:dh creative_only.$(name) run scoreboard players add #dh.hidden ra.temp 1
-$execute unless entity @s[gamemode=creative] if data storage ra:dh creative_only.$(name) run return 0
+# Fields the block itself declared as not-for-survival, via #ra:hidden_fields.
+# Creative mode is the test: a data pack cannot read permission level.
+$execute unless entity @s[gamemode=creative] if data storage ra:dh hidden.$(name) run scoreboard players add #dh.hidden ra.temp 1
+$execute unless entity @s[gamemode=creative] if data storage ra:dh hidden.$(name) run return 0
 
 scoreboard players add #dh.shown ra.temp 1
 function ra:tools/data_handler/props/probe with storage ra:dh q

@@ -1,0 +1,8 @@
+{
+  "values": [
+    "ra_infinite:tools/hidden_fields",
+    "ra_wires:tools/hidden_fields",
+    "ra_ender:tools/hidden_fields",
+    "ra_multiblock:tools/hidden_fields"
+  ]
+}

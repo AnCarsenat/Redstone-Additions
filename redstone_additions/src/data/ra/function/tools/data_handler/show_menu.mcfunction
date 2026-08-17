@@ -9,6 +9,7 @@ tellraw @s ""
 
 # Properties section
 tellraw @s [{text:"─── Properties ───",color:"yellow"}]
+function ra:tools/data_handler/collect_hidden
 function ra:tools/data_handler/props/redact
 tellraw @s [{text:"  Properties: ",color:"gray"},{nbt:"display_props",storage:"ra:dh",color:"white"}]
 

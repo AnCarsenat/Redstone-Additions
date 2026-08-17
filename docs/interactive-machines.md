@@ -16,10 +16,10 @@ The `ra_interactive` module provides 10 utility machines for automation and map 
 | Item Mover | `minecraft:observer` | ![Item Mover recipe](images/recipes/ra_interactive/item_mover.png){ width="220" } | Continuous | Rear container to front container |
 | Spitter | `minecraft:dropper` | ![Spitter recipe](images/recipes/ra_interactive/spitter.png){ width="220" } | Continuous | Throws item entities forward |
 | Breeder | `minecraft:dispenser` | ![Breeder recipe](images/recipes/ra_interactive/breeder.png){ width="220" } | Rising edge | Uses dispenser inventory food |
-| Infinite Water Cauldron | `minecraft:cauldron` | ![Infinite Water Cauldron recipe](images/recipes/ra_interactive/infinite_water_caudron.png){ width="220" } | Continuous | Keeps `water_cauldron[level=3]` |
+| Infinite Water Cauldron | `minecraft:cauldron` | ![Infinite Water Cauldron recipe](images/recipes/ra_interactive/infinite_water_cauldron.png){ width="220" } | Continuous | Keeps `water_cauldron[level=3]` |
 | Infinite Lava Cauldron | `minecraft:cauldron` | ![Infinite Lava Cauldron recipe](images/recipes/ra_interactive/infinite_lava_cauldron.png){ width="220" } | Continuous | Keeps `lava_cauldron` |
 | Infinite Snow Cauldron | `minecraft:cauldron` | ![Infinite Snow Cauldron recipe](images/recipes/ra_interactive/infinite_snow_cauldron.png){ width="220" } | Continuous | Keeps `powder_snow_cauldron[level=3]` |
-| Message Block | `minecraft:note_block` | ![Message Block recipe](images/recipes/ra_interactive/message.png){ width="220" } | Rising edge | Sends text to players in range |
+| Message Block | `minecraft:note_block` | ![Message Block recipe](images/recipes/ra_interactive/message_block.png){ width="220" } | Rising edge | Sends text to players in range |
 
 ## Behavior Notes
 

@@ -1,0 +1,16 @@
+{
+  "_comment": [
+    "Item id -> item model to draw instead. Recipe *ingredients* match by item id",
+    "and cannot carry components, so an ingredient that is really a disguised RA",
+    "item has to be listed here or the picture shows the base item. Results need",
+    "no entry: their minecraft:item_model component is read straight off the",
+    "recipe. Keep this in step with the give functions.",
+    "",
+    "minecraft:command_block is deliberately absent — the Item Crate keeps that",
+    "one and is never a recipe ingredient."
+  ],
+  "minecraft:repeating_command_block": "minecraft:copper_grate",
+  "minecraft:jigsaw": "minecraft:deepslate_diamond_ore",
+  "minecraft:structure_block": "minecraft:ancient_debris",
+  "minecraft:chain_command_block": "minecraft:flowering_azalea"
+}

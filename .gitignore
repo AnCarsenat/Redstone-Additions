@@ -38,3 +38,7 @@ Thumbs.db
 
 # Project specific
 redstone_additions/builds/
+
+# Cached vanilla assets for tools/recipe_render (re-downloaded on demand)
+redstone_additions/tools/recipe_render/assets/
+*.jar

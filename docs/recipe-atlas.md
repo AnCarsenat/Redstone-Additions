@@ -40,6 +40,7 @@ what the pack actually contains rather than what someone remembered to add.
 | [Generator Casing](#infinite-generators) | [Infinite Generators](infinite-generators.md) | Crafting table |
 | [Goggles](#tools) | [Tools](index.md) | Crafting table |
 | [Gold Multiblock Base](#multiblocks) | [Multiblocks](multiblocks.md) | Crafting table |
+| [Infinite Iron Jetpack Kit](#not-crafted-won-on-an-enchanting-table) | [Jetpacks](jetpacks.md) | Enchanting table |
 | [Infinite Lava Cauldron](#interactive-machines) | [Interactive Machines](interactive-machines.md) | Crafting table |
 | [Infinite Snow Cauldron](#interactive-machines) | [Interactive Machines](interactive-machines.md) | Crafting table |
 | [Infinite Water Cauldron](#interactive-machines) | [Interactive Machines](interactive-machines.md) | Crafting table |
@@ -55,9 +56,12 @@ what the pack actually contains rather than what someone remembered to add.
 | [Liquid Tank](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
 | [Liquid Valve](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
 | [Message Block](#interactive-machines) | [Interactive Machines](interactive-machines.md) | Crafting table |
+| [Mineral Core](#not-crafted-won-on-an-enchanting-table) | [Infinite Generators](infinite-generators.md) | Enchanting table |
 | [Mineral Generator](#infinite-generators) | [Infinite Generators](infinite-generators.md) | Crafting table, shapeless |
+| [Nether Core](#not-crafted-won-on-an-enchanting-table) | [Infinite Generators](infinite-generators.md) | Enchanting table |
 | [Nether Generator](#infinite-generators) | [Infinite Generators](infinite-generators.md) | Crafting table, shapeless |
 | [Netherite Multiblock Base](#multiblocks) | [Multiblocks](multiblocks.md) | Crafting table |
+| [Poppy Core](#not-crafted-won-on-an-enchanting-table) | [Infinite Generators](infinite-generators.md) | Enchanting table |
 | [Poppy Generator](#infinite-generators) | [Infinite Generators](infinite-generators.md) | Crafting table, shapeless |
 | [Randomizer](#logic-gates) | [Logic Gates](logic-gates.md) | Crafting table |
 | [Redstone Remote](#wireless-redstone) | [Wireless Redstone](wireless-redstone.md) | Crafting table |
@@ -214,3 +218,17 @@ Module page: [Wireless Redstone](wireless-redstone.md) — give everything: `/fu
 | **Redstone Remote** | ![Redstone Remote recipe](images/recipes/ra_wireless/remote.png){ width="220" } | Crafting table | `ra_wireless:remote` |
 | **Wireless Emitter** | ![Wireless Emitter recipe](images/recipes/ra_wireless/emitter.png){ width="220" } | Crafting table | `ra_wireless:emitter` |
 | **Wireless Receiver** | ![Wireless Receiver recipe](images/recipes/ra_wireless/receiver.png){ width="220" } | Crafting table | `ra_wireless:receiver` |
+
+## Not crafted — won on an enchanting table
+
+These have no recipe. Drop the item on top of a plain enchanting table and
+each one rolls: a hit becomes the upgrade, a miss is destroyed. One item a
+second, so a stack of 64 is 64 separate rolls. Full explanation on
+[Enchant Crafting](enchant-crafting.md).
+
+| Sacrifice | Becomes | Chance | Module |
+| --------- | ------- | ------ | ------ |
+| Iron Jetpack Kit | **Infinite Iron Jetpack Kit** | 10% | [Jetpacks](jetpacks.md) |
+| Stone | **Mineral Core** | 1% | [Infinite Generators](infinite-generators.md) |
+| Netherrack | **Nether Core** | 1% | [Infinite Generators](infinite-generators.md) |
+| Poppy | **Poppy Core** | 1% | [Infinite Generators](infinite-generators.md) |

@@ -256,6 +256,13 @@ property it displays, and two long-standing electric transport bugs fixed.
   cannot drift from the pack. The home page's "Visual Module Atlas" was one sample
   recipe per module with three modules carrying prose instead of a picture; it now
   points at the atlas and every row has a picture.
+  - The atlas also lists what has *no* recipe: the three generator Cores and the
+    Infinite Iron Jetpack Kit, which are gambled for on an enchanting table. Those
+    four are read out of the `enchant_recipes` functions — sacrifice, result and
+    chance — so they cannot drift either, and they appear in the A-to-Z list, which is
+    what a player searching for "Mineral Core" actually uses.
+- Enchant Crafting opens with a four-line summary of the whole mechanic, since the
+  page previously took a couple of paragraphs to say what it does.
 
 - The home page carried a "Breaking change" warning saying redstone on the Boxer and
   Unboxer had become a lock — unpowered runs, powered pauses — and told players to

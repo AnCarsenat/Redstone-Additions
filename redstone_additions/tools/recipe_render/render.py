@@ -383,8 +383,9 @@ def main() -> None:
 
     if args.atlas and not args.recipes and not args.all:
         rows = atlas.collect(PACK_SRC, DOCS_IMAGES, os.path.join(REPO, "docs"))
-        written = atlas.write(rows, args.atlas, os.path.join(REPO, "docs"))
-        print(f"wrote {os.path.relpath(written, REPO)} ({len(rows)} recipes)")
+        gambles = atlas.collect_enchant(PACK_SRC)
+        written = atlas.write(rows, args.atlas, os.path.join(REPO, "docs"), gambles)
+        print(f"wrote {os.path.relpath(written, REPO)} ({len(rows)} recipes, {len(gambles)} enchant-table drops)")
         return
 
     targets = list(args.recipes)
@@ -425,8 +426,9 @@ def main() -> None:
 
     if args.atlas:
         rows = atlas.collect(PACK_SRC, DOCS_IMAGES, os.path.join(REPO, "docs"))
-        written = atlas.write(rows, args.atlas, os.path.join(REPO, "docs"))
-        print(f"wrote {os.path.relpath(written, REPO)} ({len(rows)} recipes)")
+        gambles = atlas.collect_enchant(PACK_SRC)
+        written = atlas.write(rows, args.atlas, os.path.join(REPO, "docs"), gambles)
+        print(f"wrote {os.path.relpath(written, REPO)} ({len(rows)} recipes, {len(gambles)} enchant-table drops)")
 
 
 if __name__ == "__main__":

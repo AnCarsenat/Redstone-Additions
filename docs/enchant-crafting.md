@@ -1,5 +1,11 @@
 # Enchant Crafting
 
+!!! abstract "In short"
+    Drop items on a plain enchanting table. Once a second it eats **one** of them and
+    rolls: a hit hands back an upgrade, a miss destroys the item. Stone, netherrack
+    and poppies each give a **1%** shot at a generator Core; an Iron Jetpack Kit has a
+    **10%** shot at the infinite one. Anything with no recipe is left alone.
+
 The `ra_enchanting` module turns a plain vanilla enchanting table into a gamble:
 throw items on top of it and each one has a small chance of coming back as
 something better. Everything else is lost.

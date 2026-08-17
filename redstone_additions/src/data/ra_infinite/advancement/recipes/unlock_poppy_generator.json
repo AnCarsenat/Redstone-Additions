@@ -1,0 +1,28 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "ra_infinite:poppy_generator"
+      }
+    },
+    "has_core": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "minecraft:chain_command_block",
+            "predicates": {
+              "minecraft:custom_data": { "ra": { "poppy_core": true } }
+            }
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [["has_the_recipe", "has_core"]],
+  "rewards": {
+    "recipes": ["ra_infinite:poppy_generator"]
+  }
+}

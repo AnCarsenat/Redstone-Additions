@@ -1,0 +1,24 @@
+{
+  "parent": "ra_advancements:ra",
+  "display": {
+    "icon": { "id": "minecraft:elytra" },
+    "title": "Jetpacks",
+    "description": "Fit a jetpack to a chestplate and take off.",
+    "show_toast": true
+  },
+  "criteria": {
+    "get_kit": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "minecraft:firework_star",
+            "predicates": {
+              "minecraft:custom_data": { "ra": { "jetpack_kit": true } }
+            }
+          }
+        ]
+      }
+    }
+  }
+}

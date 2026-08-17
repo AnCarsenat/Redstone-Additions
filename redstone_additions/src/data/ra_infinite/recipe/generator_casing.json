@@ -1,0 +1,36 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "GGG",
+    "GNG",
+    "GGG"
+  ],
+  "key": {
+    "G": "minecraft:copper_grate",
+    "N": "minecraft:netherite_scrap"
+  },
+  "result": {
+    "id": "minecraft:repeating_command_block",
+    "count": 1,
+    "components": {
+      "minecraft:item_model": "minecraft:copper_grate",
+      "minecraft:item_name": "Generator Casing",
+      "minecraft:rarity": "uncommon",
+      "minecraft:enchantment_glint_override": true,
+      "minecraft:lore": [
+        {
+          "text": "Craft with a core to build a generator",
+          "color": "gray",
+          "italic": false
+        }
+      ],
+      "minecraft:custom_data": {
+        "ra": {
+          "generator_casing": true
+        }
+      }
+    }
+  },
+  "show_notification": true
+}

@@ -1,0 +1,25 @@
+{
+  "parent": "ra_advancements:ra_infinite",
+  "display": {
+    "icon": { "id": "minecraft:copper_grate" },
+    "title": "Generator Casing",
+    "description": "Craft a Generator Casing from copper grates and a netherite scrap.",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "criteria": {
+    "get_generator_casing": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "minecraft:repeating_command_block",
+            "predicates": {
+              "minecraft:custom_data": { "ra": { "generator_casing": true } }
+            }
+          }
+        ]
+      }
+    }
+  }
+}

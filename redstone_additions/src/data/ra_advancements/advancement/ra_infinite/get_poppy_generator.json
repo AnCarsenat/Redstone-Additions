@@ -1,0 +1,25 @@
+{
+  "parent": "ra_advancements:ra_infinite/get_poppy_core",
+  "display": {
+    "icon": { "id": "minecraft:poppy" },
+    "title": "Poppy Generator",
+    "description": "Obtain the Poppy Generator.",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "criteria": {
+    "get_poppy_generator": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "minecraft:bat_spawn_egg",
+            "predicates": {
+              "minecraft:custom_data": { "ra": { "poppy_generator": true } }
+            }
+          }
+        ]
+      }
+    }
+  }
+}

@@ -1,5 +1,289 @@
 # Changelog
 
+## [Unreleased] - Enchant Crafting, Jetpacks, Infinite Generators
+
+Three new modules. The version strings in `pack.mcmeta`, `ra:load` and the docs
+still say v5.1.4 — bump them when this is released.
+
+### Added
+
+**Enchant crafting (`ra_enchanting`)**
+- Items dropped on a vanilla enchanting table are sacrificed one per second for a
+  chance at an upgrade: enchant particles and a level-up chime on a hit, lava
+  particles and a hiss on a miss, and nothing back either way on a miss.
+- Recipes come from the function tag `#ra_enchanting:recipes`, so an addon
+  registers its own without touching the module. Contract in
+  `ra_enchanting/README.md`.
+- The item scan is the pack's only global `@e[type=item]` selector and runs once
+  every five ticks. Products carry `ra.ench.done` so an upgrade that lands back
+  on the table is not sacrificed again.
+
+**Jetpacks (`ra_jetpacks`)**
+- **Iron Jetpack Kit** — crafted; right-click while wearing any chestplate to fit
+  it. The chestplate keeps its material, durability and enchantments.
+- **Infinite Iron Jetpack Kit** — won by sacrificing an Iron Jetpack Kit on an
+  enchanting table, 10% per kit. Burns no fuel and can be fitted over an existing
+  iron jetpack.
+- Two flight modes, switched with `/trigger ra.jp.mode`: **classic** (sneak to
+  rise, three blocks a second) and **hover** (the `minecraft:gravity` attribute
+  goes to zero, then sneak plus look up to climb at the same three blocks a
+  second, or look down to sink). Sinking hands gravity back with slow falling on
+  top rather than using levitation: the amplifier-255 wrap-around trick no longer
+  reads as `-1`, so it fired the player upward at twelve blocks a second instead.
+- Holding station in hover is a servo, not an absence of gravity. Vertical speed
+  is read from the change in `Pos[1]` each tick and the `minecraft:gravity`
+  modifier is aimed against it — `-0.16` for a full upward thruster, `-0.08` for
+  weightless, `0.0` for vanilla fall, with a 0.006 b/t dead zone and a gentle
+  middle tier. A levitation coast dies in two ticks and the tier is only rewritten
+  when it changes.
+  - This replaces an in-place `tp @s ~ ~ ~` that was supposed to clear velocity.
+    It never did: [MC-275455](https://mojira.dev/MC-275455) was fixed in the
+    1.21.2 snapshots, so relative teleports now *keep* motion, and no command sets
+    a player's velocity any more. Only a force can.
+- A worn jetpack adds `0.7` to `minecraft:sneaking_speed`, so holding sneak to
+  fly no longer drops the player to 30% walking speed.
+- Standing on a block idles the hover thrusters and hands back vanilla physics —
+  walking around with gravity at zero felt wrong and the servo had nothing to hold
+  up. Sneak plus look up is exempt, which is how you lift off.
+- *Landing* — touching down after actually having been airborne, tracked in
+  `ra.jp.air` — runs the same function `/trigger ra.jp.power` runs, so gravity comes
+  back and flight only resumes when the player asks for it. Merely standing no
+  longer does this: it switched the jetpack off the tick after hover was selected,
+  leaving nothing armed to take off with.
+- `/trigger ra.jp.power` disables the jetpack outright for one player: no hover, no
+  sneak thrust, no fuel, no particles, no sound, in either mode. The chestplate
+  keeps its components, so flight comes back with a second trigger.
+- Hover runs a constant downward campfire-smoke wash and a heavier one while
+  climbing or sinking. Its pitch dead zone is ±30°, so a glance no longer flips
+  the state. No end rods — the white streaks read as glitched geometry rather than
+  exhaust.
+- The engine is `minecraft:item.elytra.flying` at volume 0.35, pitch 0.6, replayed
+  once a second. One sound, one volume, whatever the jetpack is doing — hover hold
+  included, since the thrusters are carrying the player there too. The old
+  `entity.breeze_wind_charge.burst` was restarted every tick, and a one-shot fired
+  twenty times a second is not a note — it was inaudible. `/trigger ra.jp.sound`
+  mutes it per player.
+- The sound logic is two functions and no tiers: `flight/sound` keeps the loop alive,
+  `flight/sound_off` `stopsound`s it and clears `ra.jp.sound_on`. `sound_off` runs on
+  every path that stops carrying the player — sneak released in classic, feet on a
+  block in hover, chestplate off, out of fuel, switched off, muted — which fixes
+  classic humming on after sneak was released, since a long sample kept playing to
+  its end. `sound` stops before each replay so copies never stack.
+- Exhaust particles only run while the player is off the ground. Classic mode thrusts
+  on sneak, which is also how you walk quietly.
+- Jetpack particles and sounds are played `as @s at @s`. Dispatching with `as`
+  alone changed who ran the command but not where, so every effect fired at the
+  command origin and none of them were visible or audible. The plume now sits
+  just below the player's feet, out of the way of the view.
+- Fuel: the iron tier burns one coal or charcoal per two minutes of *powered*
+  flight. Running dry cuts the jetpack out until fuel is back in the inventory.
+
+**Ender links (`ra_ender`)**
+- **Ender Item Vault** — a real barrel with a `channel` and a `mode`. One whole
+  stack every 4 ticks, into the first free slot of the nearest eligible vault on the
+  channel. The move is `ra_lib:inventory/move_slot` (`/item replace … from block …`,
+  then clear the source) into a slot checked empty first, so a stack is never in two
+  places and never overwrites anything.
+- Item vaults default to **`shared`**: stand within 4 blocks of any vault on the
+  channel and the whole contents move into that barrel, so the vault you walk up to
+  is the one holding everything. One `data modify … Items set from block …`, with the
+  source cleared only if the copy reported success.
+  - Not a mirror, and cannot be: the same stacks in two barrels means two extraction
+    points, and two players or hoppers pulling in the same tick each get a copy
+    before any function can run. Container clicks are not interceptable. There is
+    always exactly one real copy in a channel.
+  - A holder with someone standing at it keeps what it has, so two people at two
+    ends do not pull it out from under each other. Contents inserted into one end
+    while the far end holds the rest are merged a stack per cycle, since copying the
+    whole list would collide slot numbers.
+- `mode: link` is the automation two-way; `send` / `receive` remain for
+  one-way pipes. Two-way needs a different rule per medium, because the obvious one
+  shuffles: A hands its only stack to B, B now holds more than A and hands it back.
+  - Items follow the outside world. Each vault records how many stacks it left
+    behind and compares: more than before means something was inserted, so push;
+    fewer means something was taken, so pull; unchanged means do nothing, so a quiet
+    pair costs nothing per tick. Deliveries update the receiver's mark on arrival,
+    so a delivered stack is not read as an insert and returned. Pull reuses the push
+    path — the asking vault makes itself the only eligible receiver for one command.
+  - Fluid and EU find their level instead: only the fuller side pushes, and only
+    half the gap, with a dead zone (20 units, 4 EU) so the tail does not oscillate.
+  - A two-way vault wears both the send and the receive tag, so partner searches
+    exclude the searcher via `ra.ender.self`, which is why each cycle exits through
+    `ra_ender:link/done`.
+- **Ender Fluid Vault** — an ordinary fluid node with a 1000 buffer, so pipes and
+  tanks treat it as one of their own. Take from the local network, offer to the
+  partner's, return whatever the far side would not accept: full receivers and
+  medium mismatches cost nothing.
+- **Ender Power Vault** — tagged `ra.wires.electric_node` with a 400 EU buffer, so
+  wires connect to it like a switch. The receiver reports how much room it had and
+  only that much leaves the sender.
+- **Teleport Anchor** — crying obsidian with a string `anchor_id` (`"A"`, `"base"`)
+  and a table of fifteen target ids, one per redstone strength. Power it and stand within 2 blocks: the
+  signal strength picks the row, the nearest player lands on the matching anchor.
+  Strength 16 (a redstone block) is treated as 15. Self-targets are ignored, each
+  anchor waits 20 ticks between firings, and an arriving player gets 30 ticks of
+  grace so a powered destination cannot bounce them back — which is what makes a
+  two-way door work.
+  - `ra_ender:tools/anchor/{help,set_id,set_table,set_target,show}` edit and print
+    the nearest anchor's table. `set_table` takes the list as typed text —
+    `{table:["A","B","C"]}`, signal 1 first, short lists padded — and the Data
+    Handler now lists `anchor_id` and `targets` with buttons that suggest those
+    commands. The Handler has a hand-written row per property name and no way to
+    type a list, so the table was visible but unchangeable; ids became strings at
+    the same time. the Goggles show its id, the live signal and where that signal
+    points.
+- Vaults are directional by design. Two pushing vaults would shuffle one stack
+  forever, and a pair that equalised could never move a single stack.
+- Recipes follow the existing shapes — ender pearls plus the material each vault
+  moves — and nothing in the module can duplicate: every transfer removes before or
+  as it adds, and a broken block drops exactly the item that placed it.
+- Channel matching happens in a macro, since no selector can compare one entity's
+  property against another's.
+
+**Infinite generators (`ra_infinite`)**
+- `#ra_infinite:flower_ground` lists block ids instead of borrowing
+  `#minecraft:dirt`. **26.2 narrowed `#minecraft:dirt`** to dirt, coarse dirt and
+  rooted dirt and moved grass blocks to the new `#minecraft:substrate_overworld`, so
+  a Poppy Generator standing next to a grass block found no ground, planted nothing
+  and reported `Ground: none` — on 26.2 only. Borrowing the new tag instead would
+  break 1.21.10, where it does not exist.
+- `/function ra_infinite:debug/poppy` reports every Poppy Generator's marker
+  position, rotation, facing, cooldown, the block in front and the ground verdict.
+- **Generator Casing** — eight copper grates around a netherite scrap.
+- **Mineral / Nether / Poppy Core** — won on an enchanting table by sacrificing
+  stone, netherrack or poppies, 1% a piece.
+- **Mineral / Nether / Poppy Generator** — casing plus the matching core. Each
+  grows a weighted-random block in front of itself whenever that spot is empty,
+  so a Block Breaker pointed at one is a self-feeding farm. Periods are 100, 120
+  and 80 ticks; the mineral table works out to a diamond every seven minutes or
+  so, the nether table to a piece of ancient debris every ten. Netherite blocks
+  are off the table entirely.
+- Generators are plain droppers, as item and as block, so the face they grow from
+  is obvious. Their redstone ejection is harmless: a generator holds nothing in
+  its own inventory and never reads redstone.
+- The Poppy Generator plants a single flower or a 3×3 patch, cycled with shift+RMB
+  of the Wrench, into anything in `#ra_infinite:flower_ground` — the vanilla dirt
+  family plus farmland. It does not terraform: providing the ground is the player's
+  job.
+  - `single` mode searches the 3×3 around the block in front and plants in the first
+    spot that takes, trying three heights per cell: level with the soil, on top of
+    soil it stares at, and one down for a generator on a pedestal. Insisting on the
+    one block dead ahead is what made it look broken — a generator facing slightly
+    off, or with its grass beside rather than in front of it, planted nothing.
+  - One block, one marker: a placement that ran twice left two markers stacked on a
+    generator, ticking it twice and drawing the Goggles readout twice on top of
+    itself. Each generator's tick now clears the duplicate.
+  - Why it looked broken: `dir_type:2` faces a block **up** when it is placed while
+    looking down, which is how most blocks get placed, and a generator facing up
+    targets the block above itself — where the thing under the target is the
+    generator. No ground, no flower, no message, forever. Place it looking level so
+    it faces sideways at dirt or grass.
+  - The Goggles now show a **Ground** line, `ok` or `none`, so an unplanted generator
+    says whether any of those three spots is plantable.
+- The Nether Generator's period is 100 ticks, matching the Mineral Generator — five
+  seconds each. It was 120.
+- Vanilla recipes match ingredients by item id alone — components exist on a
+  recipe's result, never on its ingredients — so the casing and the three cores
+  each sit on a different `GameMasterBlockItem` (repeating command block, jigsaw,
+  structure block, chain command block). Survival cannot obtain or place any of
+  them, which makes the three generator recipes distinguishable and a bare
+  netherite scrap useless as a casing, with no guard advancement or intermediate
+  item involved. The Item Crate keeps the plain command block, so no recipe here
+  can swallow a loaded crate.
+
+### Fixed
+
+- Ender links: three bugs caught in review before they shipped.
+  - A teleport anchor never fired. `scores={ra.ender.tp_cd=..0}` does not match an
+    entity that has no score at all, so a freshly placed anchor was never eligible,
+    and neither was a player who had never teleported (`ra.ender.grace`). Both are
+    seeded with `add … 0`.
+  - A pull never delivered. `link/send_items` excluded `ra.ender.self`, which marks
+    the vault whose cycle is running — on a pull that is the *receiver*. The
+    exclusion is now `ra.ender.sending`, held only by whoever is pushing.
+  - `tools/anchor/set_table` cleared the table before parsing the typed list, so a
+    typo wiped it, and a stale list from an earlier call could be copied. It parses
+    first and only writes once the list is readable.
+  - The fluid vault tagged itself `ra.wires.fluid_block`; `ra_wires` marks fluid
+    blocks `ra.wires.fluid_node`.
+- **Electric wires stopped propagating after the first transfer.**
+  `ra.wires.did_move` marks a node that has already handed charge to a neighbour on
+  the current tick, but nothing ever cleared it, so the first push a node made
+  tagged it permanently and `transfer_adjacent` skipped every direction from then
+  on. Two solar panels placed side by side would trade once, tag each other, and
+  never feed the wire run again. `ra_wires:electric/tick` now clears the tag at the
+  start of each pass.
+- Block skins rendered black. A `block_display` reads the light level at its own
+  position, and that position is inside the opaque block the skin covers, where
+  the light level is zero. `ra_lib:skin/spawn` and `spawn_static` now set
+  `brightness:{sky:15,block:0}`, which lights a skin like an ordinary surface
+  block — still dimming at night rather than glowing. This also fixes the
+  Unboxer's dispenser skin.
+
+### Removed
+
+- The Item Crate crafting recipe (`ra_storage:storage_box`) and its unlock
+  advancement. Crates come from a Boxer; a recipe whose result is a command block
+  was never meant to be reachable, and the docs now say so.
+
+### Changed
+
+- The Creative Data Handler builds its property rows from one registry instead of a
+  hand-written function per property name. `ra:tools/data_handler/init_registry` holds
+  the list of names; for each name a block actually has, `props/render` probes the
+  value's type — bool, number, list, string — and draws the matching editor. A row's
+  button carries `100 + its registry index`, so `run_action` and `apply_pending` each
+  need one branch for every property rather than one per name, and adding a property
+  to a block now means adding its name to the registry and nothing else.
+  - This is why blocks could show a property the Handler had no way to change: a
+    wire's `transfer_rate`, a tank's `tier`, an anchor's id. All of them are editable
+    now, and a list is edited by writing it out — `["A","B","C"]`.
+  - Type detection order matters: `data get` reports a number for a byte and a length
+    for a list, so the bool and list tests run after the numeric one.
+  - Twenty-one `props/show_*` rows and the per-name branches in `run_action` and
+    `apply_pending` are gone. `ra:dh` state stays global — the Handler is a
+    single-player tool, as before.
+- Goggles lines can stack instead of being hand-placed, tighter and never buried.
+  `stacked_data_line` completes the set alongside `stacked_prop_line` and
+  `stacked_text_line`.
+  `ra:tools/goggles/billboard/stack_reset {top,step}` sets where a block's ladder
+  starts and how far apart the rungs are, in hundredths of a block, and
+  `stacked_prop_line` / `stacked_text_line` take no `y` at all. The old per-line `y`
+  functions are untouched, so nothing else had to change. The Poppy Generator, whose
+  fifth line used to render at `y:0.0` — inside the block, where it cannot be read —
+  is the first user.
+- Recipe pictures are drawn instead of screenshotted. `tools/recipe_render/` takes a
+  recipe file and writes `docs/images/recipes/<namespace>/<name>.png` — 704x324, the
+  vanilla window cropped to slots, arrow and result, the same crop and slot
+  coordinates misode.github.io uses, with the window's bottom border pasted back on
+  so the panel is not sliced open. Assets come from the client jar of whichever
+  version is asked for (`latest` by default), cached per version and git-ignored.
+  - Blocks are rendered from their **real model elements**, the way the game and
+    deepslate do it: `display.gui` transform about the block centre (rotation
+    `[30, 225, 0]`, scale `0.625`), orthographic projection, back-face culling,
+    painter's algorithm, and vanilla's per-face shading constants. Stairs look like
+    stairs, a daylight detector is slab height, and a dropper's front face lands on
+    the side the game puts it — the first draft faked every block as a cube and had
+    the front on the wrong side.
+  - Display rotation is applied Z, then Y, then X, matching `rotationXYZ`'s
+    `Rx·Ry·Rz` order. Spinning before tilting left every block icon leaning over.
+  - Each face is backed by its own average colour before the texture is pasted. The
+    affine transform samples transparent right on a face's edge, which showed as a
+    hairline of background between two faces of the same block.
+  - Items resolve the way the game resolves them: item definition, model parent
+    chain, textures. A result's `minecraft:item_model` component is honoured — which
+    is why the generators appear as droppers. Ingredients cannot carry components,
+    so disguised RA ingredients are declared in `overrides.json`.
+  - Every recipe screen is covered, not just the crafting table: furnace, blast
+    furnace, smoker, campfire (on the furnace GUI), stonecutter and smithing table,
+    with slot coordinates taken from the vanilla menus. Types with no screen of
+    their own are skipped rather than drawn on the wrong background.
+  - Documented in `docs/recipe-renderer.md`. The five new recipes (Generator Casing,
+    the three generators, the Iron Jetpack Kit) are the first to use it.
+- `ra:load` and `ra:tick` dispatch the three new modules; `#ra:placement_handlers`,
+  the goggles `draw_block` table, the Wrench's `cycle_block` table and the
+  categorized bundles all carry the new entries.
+
 ## [v5.1.4] - 2026-08-16 - Transport Rewrite, Item Safety, Library Audit
 
 A large maintenance release. The fluid and gas system was rebuilt on a shared

@@ -1,0 +1,3 @@
+# /ra_ender:blocks/fluid_vault/give
+give @s bat_spawn_egg[item_model="minecraft:purpur_block",item_name="Ender Fluid Vault",rarity=rare,enchantment_glint_override=true,lore=[{text:"Shares liquid and gas with the vault on its channel",color:"gray",italic:false},{text:"Joins the fluid network like a tank",color:"gray",italic:false},{text:"Shift+RMB with the wrench: link / send / receive",color:"dark_gray",italic:false}],custom_data={ra:{ender_fluid_vault:1b}},entity_data={id:"minecraft:bat",Tags:["ra.spawned","ra.place.ender_fluid_vault"],Silent:1b,NoAI:1b,Invulnerable:1b}]
+tellraw @s [{text:"[RA] ",color:"gold"},{text:"Ender Fluid Vault",color:"light_purple"},{text:" — pipe into it like a tank",color:"gray"}]

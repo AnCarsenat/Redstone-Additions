@@ -2,6 +2,20 @@
 
 This page mirrors key datapack milestones from the main project changelog.
 
+## Unreleased — Enchant Crafting, Jetpacks, Infinite Generators
+
+- **[Enchant Crafting](enchant-crafting.md)** — sacrifice items on a vanilla
+  enchanting table for a small chance at an upgrade. Extensible through the
+  `#ra_enchanting:recipes` function tag.
+- **[Jetpacks](jetpacks.md)** — Iron and Infinite Iron upgrade kits that fit onto
+  any chestplate, classic and hover flight modes switched with
+  `/trigger ra.jp.mode`, and coal-burning fuel on the iron tier.
+- **[Infinite Generators](infinite-generators.md)** — a crafted Generator Casing
+  plus a Core gambled off an enchanting table build the Mineral, Nether and Poppy
+  generators, which regrow their own material in front of themselves.
+
+Version strings still read v5.1.4 until this is released.
+
 ## v5.1.4 (2026-08-16) — Transport Rewrite, Item Safety, Library Audit
 
 A large maintenance release. The fluid and gas system was rebuilt on a shared

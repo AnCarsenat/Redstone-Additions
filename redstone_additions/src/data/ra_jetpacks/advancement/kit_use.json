@@ -1,0 +1,18 @@
+{
+  "criteria": {
+    "requirement": {
+      "trigger": "minecraft:using_item",
+      "conditions": {
+        "item": {
+          "items": "minecraft:firework_star",
+          "predicates": {
+            "minecraft:custom_data": { "ra": { "jetpack_kit": true } }
+          }
+        }
+      }
+    }
+  },
+  "rewards": {
+    "function": "ra_jetpacks:kit/on_use"
+  }
+}

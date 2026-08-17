@@ -1,0 +1,28 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "ra_infinite:mineral_generator"
+      }
+    },
+    "has_core": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "minecraft:jigsaw",
+            "predicates": {
+              "minecraft:custom_data": { "ra": { "mineral_core": true } }
+            }
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [["has_the_recipe", "has_core"]],
+  "rewards": {
+    "recipes": ["ra_infinite:mineral_generator"]
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "parent": "ra_advancements:ra_infinite/get_nether_core",
+  "display": {
+    "icon": { "id": "minecraft:chiseled_polished_blackstone" },
+    "title": "Nether Generator",
+    "description": "Obtain the Nether Generator.",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "criteria": {
+    "get_nether_generator": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "minecraft:bat_spawn_egg",
+            "predicates": {
+              "minecraft:custom_data": { "ra": { "nether_generator": true } }
+            }
+          }
+        ]
+      }
+    }
+  }
+}

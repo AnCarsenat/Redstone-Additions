@@ -131,6 +131,11 @@ I recommend using [Bundles Beyond](https://modrinth.com/mod/bundles-beyond) for 
 ### Chunk Loader (1)
 - Chunk Loader
 
+### Infinite Generators (3)
+- Mineral Generator
+- Nether Generator
+- Poppy Generator
+
 ### Multiblock Bases (5)
 - Copper Multiblock Base
 - Iron Multiblock Base
@@ -269,6 +274,9 @@ Starter command:
 | Transport Networks | https://ancarsenat.github.io/Redstone-Additions/transport-networks/ |
 | Chunk Loader | https://ancarsenat.github.io/Redstone-Additions/chunk-loader/ |
 | Multiblocks | https://ancarsenat.github.io/Redstone-Additions/multiblocks/ |
+| Enchant Crafting | https://ancarsenat.github.io/Redstone-Additions/enchant-crafting/ |
+| Jetpacks | https://ancarsenat.github.io/Redstone-Additions/jetpacks/ |
+| Infinite Generators | https://ancarsenat.github.io/Redstone-Additions/infinite-generators/ |
 | Block Reference | https://ancarsenat.github.io/Redstone-Additions/block-reference/ |
 | Recipe Reference | https://ancarsenat.github.io/Redstone-Additions/recipe-reference/ |
 | Changelog | https://ancarsenat.github.io/Redstone-Additions/changelog/ |
@@ -288,6 +296,8 @@ Starter command:
 | `/function ra_wires:items/give_all` | Transport and EU items |
 | `/function ra_chunk_loader:items/give_all` | Chunk loader items |
 | `/function ra_multiblock:blocks/give_all` | Multiblock base items |
+| `/function ra_infinite:items/give_all` | Generator casing and generators |
+| `/function ra_jetpacks:items/give_all` | Jetpack kits |
 | `/function ra:tools/wrench/give` | Wrench |
 | `/function ra:tools/data_handler/give` | Data Handler |
 | `/function ra:tools/creative_data_handler/give` | Creative Data Handler |

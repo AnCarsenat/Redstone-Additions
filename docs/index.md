@@ -68,10 +68,13 @@ Path example:
 | [Transport Networks](transport-networks.md) | Liquid, gas, EU, Boiler, Solar Panel | ![Liquid Pump recipe](images/recipes/ra_wires/liquid_pump.png){ width="220" } |
 | [Chunk Loader](chunk-loader.md) | 1 force-load block | ![Chunk Loader recipe](images/recipes/ra_chunk_loader/chunk_loader.png){ width="220" } |
 | [Multiblocks](multiblocks.md) | 5 base tiers + structures | ![Copper Base recipe](images/recipes/ra_multiblock/copper_base.png){ width="220" } |
+| [Enchant Crafting](enchant-crafting.md) | Sacrifice items on an enchanting table | No item — uses the vanilla table |
+| [Jetpacks](jetpacks.md) | 2 chestplate upgrade kits | Blaze rod, iron, redstone block, coal block |
+| [Infinite Generators](infinite-generators.md) | 3 self-growing blocks + casing | Copper grates around a netherite scrap |
 
 Current pack totals:
 
-- 45 placeable custom blocks
+- 48 placeable custom blocks
 - 5 tools (Wrench, Creative Data Handler, Data Handler, Goggles, Redstone Remote)
 
 ## Commands Most Players Need
@@ -87,6 +90,8 @@ Current pack totals:
 | `/function ra_wires:items/give_all` | Transport/EU bundle |
 | `/function ra_chunk_loader:items/give_all` | Chunk loader bundle |
 | `/function ra_multiblock:blocks/give_all` | Multiblock bases |
+| `/function ra_infinite:items/give_all` | Generator casing and generators |
+| `/function ra_jetpacks:items/give_all` | Jetpack kits |
 | `/function ra:uninstall` | Opens uninstall confirmation dialog |
 
 ## Tools At A Glance

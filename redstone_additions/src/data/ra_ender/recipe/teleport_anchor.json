@@ -1,0 +1,57 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "OEO",
+    "ECE",
+    "OEO"
+  ],
+  "key": {
+    "O": "minecraft:obsidian",
+    "E": "minecraft:ender_pearl",
+    "C": "minecraft:crying_obsidian"
+  },
+  "result": {
+    "id": "minecraft:bat_spawn_egg",
+    "count": 1,
+    "components": {
+      "minecraft:item_model": "minecraft:crying_obsidian",
+      "minecraft:item_name": "Teleport Anchor",
+      "minecraft:rarity": "epic",
+      "minecraft:enchantment_glint_override": true,
+      "minecraft:lore": [
+        {
+          "text": "Teleports whoever stands on it",
+          "color": "gray",
+          "italic": false
+        },
+        {
+          "text": "Redstone strength 1-15 picks the target id",
+          "color": "gray",
+          "italic": false
+        },
+        {
+          "text": "/function ra_ender:tools/anchor/help",
+          "color": "dark_gray",
+          "italic": false
+        }
+      ],
+      "minecraft:custom_data": {
+        "ra": {
+          "teleport_anchor": true
+        }
+      },
+      "minecraft:entity_data": {
+        "id": "minecraft:bat",
+        "Tags": [
+          "ra.spawned",
+          "ra.place.teleport_anchor"
+        ],
+        "Silent": true,
+        "NoAI": true,
+        "Invulnerable": true
+      }
+    }
+  },
+  "show_notification": true
+}

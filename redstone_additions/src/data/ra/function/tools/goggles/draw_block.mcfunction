@@ -51,3 +51,13 @@ execute if entity @s[tag=ra.custom_block.electric_generator] run function ra_wir
 execute if entity @s[tag=ra.custom_block.electric_consumer] run function ra_wires:blocks/electric_consumer/goggles
 execute if entity @s[tag=ra.custom_block.electric_switch] run function ra_wires:blocks/electric_switch/goggles
 execute if entity @s[tag=ra.custom_block.solar_panel] run function ra_wires:blocks/solar_panel/goggles
+# ra_infinite
+execute if entity @s[tag=ra.custom_block.mineral_generator] run function ra_infinite:blocks/mineral_generator/goggles
+execute if entity @s[tag=ra.custom_block.nether_generator] run function ra_infinite:blocks/nether_generator/goggles
+execute if entity @s[tag=ra.custom_block.poppy_generator] run function ra_infinite:blocks/poppy_generator/goggles
+
+# ra_ender
+execute if entity @s[tag=ra.custom_block.ender_item_vault] run function ra_ender:blocks/item_vault/goggles
+execute if entity @s[tag=ra.custom_block.ender_fluid_vault] run function ra_ender:blocks/fluid_vault/goggles
+execute if entity @s[tag=ra.custom_block.ender_power_vault] run function ra_ender:blocks/power_vault/goggles
+execute if entity @s[tag=ra.custom_block.teleport_anchor] run function ra_ender:blocks/teleport_anchor/goggles

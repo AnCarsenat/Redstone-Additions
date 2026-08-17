@@ -61,6 +61,16 @@ function ra_chunk_loader:tick
 # Run multiblock tick
 function ra_multiblock:tick
 
+# Run enchant crafting scan
+function ra_enchanting:tick
+
+# Run infinite generators tick
+function ra_infinite:tick
+
+# Run jetpacks tick
+function ra_jetpacks:tick
+function ra_ender:tick
+
 # Run goggles scan
 function ra:tools/goggles/tick
 

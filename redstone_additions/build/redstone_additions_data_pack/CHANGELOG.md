@@ -305,14 +305,6 @@ property it displays, and two long-standing electric transport bugs fixed.
 
 ### Diagnostics
 
-- Review pass over the four new modules turned up three defects, all fixed: coal or
-  charcoal in the **offhand** did not count as jetpack fuel (`container.*` covers a
-  player's 36 inventory slots, not `weapon.offhand`, while `clear` would happily have
-  taken it); `ra.ender.grace` was seeded *after* the anchors had already looked for a
-  player, so an anchor could not fire on a player's first tick; and an enchant-craft
-  product was claimed within 1.5 blocks, wide enough for two adjacent tables to take
-  each other's result on the same tick — now 0.6.
-
 - Every block type announces itself on load **to anyone wearing `ra.debug`, and only
   them**. Two halves to this:
   - Twenty-three types never announced at all: `ra_wires` printed one "RA Wires blocks

@@ -12,7 +12,9 @@ scoreboard players set @s ra.jp.fuel 0
 # be mistaken for a second piece of coal.
 scoreboard players set #jp.fueled ra.temp 0
 execute if items entity @s container.* minecraft:coal run scoreboard players set #jp.fueled ra.temp 1
+execute if score #jp.fueled ra.temp matches 0 if items entity @s weapon.offhand minecraft:coal run scoreboard players set #jp.fueled ra.temp 1
 execute if score #jp.fueled ra.temp matches 0 if items entity @s container.* minecraft:charcoal run scoreboard players set #jp.fueled ra.temp 2
+execute if score #jp.fueled ra.temp matches 0 if items entity @s weapon.offhand minecraft:charcoal run scoreboard players set #jp.fueled ra.temp 2
 
 execute if score #jp.fueled ra.temp matches 1 run clear @s minecraft:coal 1
 execute if score #jp.fueled ra.temp matches 2 run clear @s minecraft:charcoal 1

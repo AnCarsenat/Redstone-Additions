@@ -6,7 +6,7 @@
         "load": ["src"]
     },
 
-    "pipeline": ["tools.ship_updater"],
+    "pipeline": ["tools.keep_loose_files"],
 
     "output": "build"
 }

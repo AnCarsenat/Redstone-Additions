@@ -21,7 +21,9 @@ tag @s add ra.jp.speed_on
 
 # A jetpack that ran dry comes back the moment there is fuel again.
 execute if entity @s[tag=ra.jp.dry] if items entity @s container.* minecraft:coal run tag @s remove ra.jp.dry
+execute if entity @s[tag=ra.jp.dry] if items entity @s weapon.offhand minecraft:coal run tag @s remove ra.jp.dry
 execute if entity @s[tag=ra.jp.dry] if items entity @s container.* minecraft:charcoal run tag @s remove ra.jp.dry
+execute if entity @s[tag=ra.jp.dry] if items entity @s weapon.offhand minecraft:charcoal run tag @s remove ra.jp.dry
 execute if entity @s[tag=ra.jp.dry] run return 0
 
 execute if score @s ra.jp.state matches 1 run function ra_jetpacks:flight/hover

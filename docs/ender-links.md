@@ -75,7 +75,12 @@ behind (`data.data.last_used`) and compares that with what is there now:
 | Unchanged | Nothing. A quiet pair costs nothing per tick |
 
 A delivery updates the receiver's mark immediately, so an arriving stack is never
-mistaken for an insert and bounced back. Pull is not a second copy of the move
+mistaken for an insert and bounced back.
+
+!!! note "It counts stacks, not items"
+    The mark is the number of stacks in the barrel, so taking *part* of a stack — 32
+    out of 64 — does not read as an extraction and does not pull a refill. Take a whole
+    stack, or use `shared` mode, where the contents come to you regardless. Pull is not a second copy of the move
 logic: the asking vault makes itself the only eligible receiver for one command
 and runs the partner's push.
 

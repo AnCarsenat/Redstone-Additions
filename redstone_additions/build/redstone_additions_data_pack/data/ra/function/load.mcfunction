@@ -34,6 +34,10 @@ function ra_wireless:load
 function ra_wires:load
 function ra_chunk_loader:load
 function ra_multiblock:load
+function ra_enchanting:load
+function ra_infinite:load
+function ra_jetpacks:load
+function ra_ender:load
 
 # Initialize multiblock library
 function ra_lib_multiblock:init

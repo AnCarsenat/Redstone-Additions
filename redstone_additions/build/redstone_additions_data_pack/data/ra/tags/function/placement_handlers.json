@@ -29,6 +29,13 @@
     "ra_multiblock:blocks/iron_base/handle_placement",
     "ra_multiblock:blocks/gold_base/handle_placement",
     "ra_multiblock:blocks/diamond_base/handle_placement",
-    "ra_multiblock:blocks/netherite_base/handle_placement"
+    "ra_multiblock:blocks/netherite_base/handle_placement",
+    "ra_infinite:blocks/mineral_generator/handle_placement",
+    "ra_infinite:blocks/nether_generator/handle_placement",
+    "ra_infinite:blocks/poppy_generator/handle_placement",
+    "ra_ender:blocks/item_vault/handle_placement",
+    "ra_ender:blocks/fluid_vault/handle_placement",
+    "ra_ender:blocks/power_vault/handle_placement",
+    "ra_ender:blocks/teleport_anchor/handle_placement"
   ]
 }

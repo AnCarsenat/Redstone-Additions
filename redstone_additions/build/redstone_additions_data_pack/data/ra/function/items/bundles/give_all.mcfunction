@@ -10,5 +10,8 @@ function ra:items/bundles/give_wireless_bundle
 function ra:items/bundles/give_wires_bundle
 function ra:items/bundles/give_chunk_loader_bundle
 function ra:items/bundles/give_multiblock_bundle
+function ra:items/bundles/give_infinite_bundle
+function ra:items/bundles/give_jetpacks_bundle
+function ra:items/bundles/give_ender_bundle
 
 tellraw @s [{text:"[",color:"dark_gray"},{text:"RA",color:"gold",bold:true},{text:"] ",color:"dark_gray"},{text:"Given categorized namespace bundles!",color:"green"}]

@@ -24,7 +24,15 @@ execute as @e[type=marker,tag=ra.wires.electric_node] at @s run function ra_wire
 execute as @e[type=marker,tag=ra.custom_block.electric_generator] at @s run function ra_wires:electric/generator_tick
 execute as @e[type=marker,tag=ra.custom_block.solar_panel] at @s run function ra_wires:blocks/solar_panel/tick
 
-# Transfer through network
+# Transfer through network.
+#
+# ra.wires.did_move means "this node has already handed charge to a neighbour on
+# this tick", which is what stops one source feeding all six of its neighbours at
+# once. It has to be cleared at the start of every pass: nothing used to clear it,
+# so the first push a node ever made tagged it permanently and transfer_adjacent
+# skipped every direction from then on. Two solar panels placed next to each other
+# would trade once, tag each other, and never feed the wire they were wired to.
+tag @e[type=marker,tag=ra.wires.did_move] remove ra.wires.did_move
 execute as @e[type=marker,tag=ra.wires.electric_node] at @s run function ra_wires:electric/process_source
 
 # Consumer draw

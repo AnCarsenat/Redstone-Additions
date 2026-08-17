@@ -320,6 +320,11 @@ property it displays, and two long-standing electric transport bugs fixed.
   test, since a data pack cannot read permission level, and the number of withheld
   fields is reported so a block does not look settings-free. The Creative Data Handler
   still shows everything.
+  - Hiding is opt-in and nothing else disappears. The redaction applies to the raw
+    `Properties:` line too, so a hidden field is not still readable one line above its
+    missing editor; and a property the registry does not know about is now counted and
+    reported instead of vanishing, which is what a registry-driven list does by default
+    if nothing checks it.
 - The Creative Data Handler builds its property rows from one registry instead of a
   hand-written function per property name. `ra:tools/data_handler/init_registry` holds
   the list of names; for each name a block actually has, `props/render` probes the

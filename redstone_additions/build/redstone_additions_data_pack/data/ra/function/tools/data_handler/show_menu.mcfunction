@@ -9,7 +9,8 @@ tellraw @s ""
 
 # Properties section
 tellraw @s [{text:"─── Properties ───",color:"yellow"}]
-tellraw @s [{text:"  Properties: ",color:"gray"},{nbt:"properties",storage:"ra:dh",color:"white"}]
+function ra:tools/data_handler/props/redact
+tellraw @s [{text:"  Properties: ",color:"gray"},{nbt:"display_props",storage:"ra:dh",color:"white"}]
 
 # List all properties dynamically
 function ra:tools/data_handler/list_properties

@@ -8,6 +8,7 @@ $execute unless data storage ra:dh properties.$(name) run return 0
 $execute unless entity @s[gamemode=creative] if data storage ra:dh creative_only.$(name) run scoreboard players add #dh.hidden ra.temp 1
 $execute unless entity @s[gamemode=creative] if data storage ra:dh creative_only.$(name) run return 0
 
+scoreboard players add #dh.shown ra.temp 1
 function ra:tools/data_handler/props/probe with storage ra:dh q
 
 execute if score #dh.type ra.temp matches 1 run function ra:tools/data_handler/props/row_number with storage ra:dh q

@@ -15,7 +15,17 @@ execute unless data storage ra:dh properties run return run tellraw @s [{text:" 
 data modify storage ra:dh iter set from storage ra:dh registry
 scoreboard players set #dh.act ra.temp 100
 scoreboard players set #dh.hidden ra.temp 0
+scoreboard players set #dh.shown ra.temp 0
+
+# How many fields this player may see at all, so anything the registry does not know
+# about can be reported rather than silently dropped.
+scoreboard players set #dh.total ra.temp 0
+execute store result score #dh.total ra.temp run data get storage ra:dh display_props
+
 function ra:tools/data_handler/props/next
+
+scoreboard players operation #dh.total ra.temp -= #dh.shown ra.temp
+execute if score #dh.total ra.temp matches 1.. run tellraw @s [{text:"  ",color:"dark_gray"},{score:{name:"#dh.total",objective:"ra.temp"},color:"dark_gray"},{text:" field(s) above have no editor yet — they are listed in Properties and can be set with /data",color:"dark_gray",italic:true}]
 
 # Say that something was withheld rather than letting a block look like it has no
 # settings at all.

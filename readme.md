@@ -65,7 +65,9 @@ I recommend using [Bundles Beyond](https://modrinth.com/mod/bundles-beyond) for 
 ---
 
 ## Default Module Previews
-*Does not include all recipes* go to [Wiki](https://ancarsenat.github.io/Redstone-Additions) for all recipes.
+One sample per module. **Every recipe in the pack is on one page in the
+[Recipe Atlas](https://ancarsenat.github.io/Redstone-Additions/recipe-atlas/)** —
+listed A to Z and grouped by module.
 | Module | Preview |
 |---|---|
 | Logic Gates | <img src="https://github.com/AnCarsenat/Redstone-Additions/raw/main/docs/images/recipes/ra_gates/clock.png" alt="Clock recipe" width="220"> |

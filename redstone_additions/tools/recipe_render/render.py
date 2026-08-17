@@ -37,6 +37,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from PIL import Image  # noqa: E402
 
+import atlas  # noqa: E402
 from assets import ensure_assets  # noqa: E402
 from models import Unrenderable, render_item  # noqa: E402
 
@@ -372,7 +373,19 @@ def main() -> None:
     parser.add_argument("--mc-version", default="latest", help="'latest', 'snapshot' or an id")
     parser.add_argument("--assets", default=os.path.join(HERE, "assets"), help="asset cache")
     parser.add_argument("--refresh-assets", action="store_true", help="re-download even if cached")
+    parser.add_argument(
+        "--atlas",
+        nargs="?",
+        const="recipe-atlas.md",
+        help="also write the recipe atlas page (default docs/recipe-atlas.md); on its own it only writes the page",
+    )
     args = parser.parse_args()
+
+    if args.atlas and not args.recipes and not args.all:
+        rows = atlas.collect(PACK_SRC, DOCS_IMAGES, os.path.join(REPO, "docs"))
+        written = atlas.write(rows, args.atlas, os.path.join(REPO, "docs"))
+        print(f"wrote {os.path.relpath(written, REPO)} ({len(rows)} recipes)")
+        return
 
     targets = list(args.recipes)
     if args.all:
@@ -409,6 +422,11 @@ def main() -> None:
 
     if skipped:
         print(f"{skipped} non-crafting recipe(s) skipped")
+
+    if args.atlas:
+        rows = atlas.collect(PACK_SRC, DOCS_IMAGES, os.path.join(REPO, "docs"))
+        written = atlas.write(rows, args.atlas, os.path.join(REPO, "docs"))
+        print(f"wrote {os.path.relpath(written, REPO)} ({len(rows)} recipes)")
 
 
 if __name__ == "__main__":

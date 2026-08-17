@@ -23,6 +23,12 @@ python3 tools/recipe_render/render.py --all --only ra_jetpacks
 # somewhere else, bigger
 python3 tools/recipe_render/render.py src/data/ra/recipe/wrench.json -o /tmp/wrench.png --scale 6
 
+# regenerate the Recipe Atlas page from the recipe files
+python3 tools/recipe_render/render.py --atlas
+
+# both: redraw every picture and rebuild the atlas around them
+python3 tools/recipe_render/render.py --all --atlas
+
 # pin the Minecraft version, or force a re-download
 python3 tools/recipe_render/render.py --all --mc-version 26.2
 python3 tools/recipe_render/render.py --all --refresh-assets
@@ -40,6 +46,7 @@ python3 tools/recipe_render/render.py --all --refresh-assets
 | `--fuel <item>` | what to draw in a furnace fuel slot (empty by default) |
 | `--mc-version <v>` | `latest` (default), `snapshot`, or an id like `26.2` |
 | `--refresh-assets` | re-download even if the version is cached |
+| `--atlas [file]` | write the [Recipe Atlas](recipe-atlas.md) page, default `docs/recipe-atlas.md`. On its own it writes only the page |
 
 ## Assets
 
@@ -135,6 +142,19 @@ Worth knowing before trusting a picture:
 Geometry, window crop, slot coordinates and item resolution now match: same display
 transform, same face order, same shading constants. misode's runs on the GPU through
 deepslate, this one rasterises with Pillow.
+
+## The atlas page
+
+`--atlas` writes [Recipe Atlas](recipe-atlas.md): every recipe in the pack on one
+page, alphabetically and again grouped by module. Names come out of each recipe's
+`minecraft:item_name`, the station from its type, and the picture from
+`docs/images/recipes/`, so the page describes what the pack contains rather than what
+someone remembered to add. A recipe with no rendered picture yet is still listed, with
+a note in place of the image.
+
+Adding a module means one line in `MODULES` in `tools/recipe_render/atlas.py`, which
+maps a namespace to its title and doc page. A namespace missing from that map still
+gets a section, titled after the namespace.
 
 ## Disguised ingredients
 

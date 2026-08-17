@@ -58,24 +58,29 @@ Path example:
 
 ## Visual Module Atlas
 
-| Module | What you get | Recipe preview |
+**Looking for a recipe? [The Recipe Atlas](recipe-atlas.md) has all 58 of them on one
+page**, listed A to Z and grouped by module. This table is the shortcut: one sample
+per module, and where to read about it.
+
+| Module | What you get | Sample recipe |
 |---|---|---|
 | [Logic Gates](logic-gates.md) | 6 timing/logic blocks | ![Clock recipe](images/recipes/ra_gates/clock.png){ width="220" } |
-| [Interactive Machines](interactive-machines.md) | 11 automation/utility blocks | ![Block Placer recipe](images/recipes/ra_interactive/block_placer.png){ width="220" } |
+| [Interactive Machines](interactive-machines.md) | 10 automation/utility blocks | ![Block Placer recipe](images/recipes/ra_interactive/block_placer.png){ width="220" } |
 | [Storage](storage.md) | Boxer + Unboxer workflow | ![Boxer recipe](images/recipes/ra_storage/boxer.png){ width="220" } |
 | [Sensors](sensors.md) | Entity detector + tag operators | ![Entity Detector recipe](images/recipes/ra_sensors/entity_detector.png){ width="220" } |
 | [Wireless Redstone](wireless-redstone.md) | Emitter, Receiver, and Remote | ![Wireless Emitter recipe](images/recipes/ra_wireless/emitter.png){ width="220" } |
 | [Transport Networks](transport-networks.md) | Liquid, gas, EU, Boiler, Solar Panel | ![Liquid Pump recipe](images/recipes/ra_wires/liquid_pump.png){ width="220" } |
 | [Chunk Loader](chunk-loader.md) | 1 force-load block | ![Chunk Loader recipe](images/recipes/ra_chunk_loader/chunk_loader.png){ width="220" } |
 | [Multiblocks](multiblocks.md) | 5 base tiers + structures | ![Copper Base recipe](images/recipes/ra_multiblock/copper_base.png){ width="220" } |
-| [Enchant Crafting](enchant-crafting.md) | Sacrifice items on an enchanting table | No item — uses the vanilla table |
-| [Jetpacks](jetpacks.md) | 2 chestplate upgrade kits | Blaze rod, iron, redstone block, coal block |
-| [Infinite Generators](infinite-generators.md) | 3 self-growing blocks + casing | Copper grates around a netherite scrap |
-| [Ender Links](ender-links.md) | 3 remote vaults + teleport anchor | Ender pearls with the material each carries |
+| [Enchant Crafting](enchant-crafting.md) | Sacrifice items on an enchanting table | No recipe — uses the vanilla table |
+| [Jetpacks](jetpacks.md) | 2 chestplate upgrade kits | ![Iron Jetpack Kit recipe](images/recipes/ra_jetpacks/iron_jetpack_kit.png){ width="220" } |
+| [Infinite Generators](infinite-generators.md) | 3 self-growing blocks + casing | ![Mineral Generator recipe](images/recipes/ra_infinite/mineral_generator.png){ width="220" } |
+| [Ender Links](ender-links.md) | 3 remote vaults + teleport anchor | ![Teleport Anchor recipe](images/recipes/ra_ender/teleport_anchor.png){ width="220" } |
 
 Current pack totals:
 
-- 48 placeable custom blocks
+- 52 placeable custom blocks
+- 58 recipes, all of them in the [Recipe Atlas](recipe-atlas.md)
 - 5 tools (Wrench, Creative Data Handler, Data Handler, Goggles, Redstone Remote)
 
 ## Commands Most Players Need

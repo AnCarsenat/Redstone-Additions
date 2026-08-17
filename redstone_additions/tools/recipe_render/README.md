@@ -15,6 +15,10 @@ python3 tools/recipe_render/render.py --all
 # a whole batch into a staging folder, to look over before it lands in the docs
 python3 tools/recipe_render/render.py --all --out-dir tools/recipe_render/out
 
+# rebuild the Recipe Atlas page (docs/recipe-atlas.md) from the recipe files
+python3 tools/recipe_render/render.py --atlas
+python3 tools/recipe_render/render.py --all --atlas   # pictures and page together
+
 # a subset, somewhere else, bigger
 python3 tools/recipe_render/render.py --all --only ra_jetpacks
 python3 tools/recipe_render/render.py src/data/ra/recipe/wrench.json -o /tmp/wrench.png --scale 6
@@ -30,6 +34,7 @@ Needs Pillow and, on the first run, network access.
 | `assets.py` | version resolution, client jar download, extraction, cache |
 | `models.py` | item id to picture: item definition, model chain, textures |
 | `overrides.json` | which vanilla model to draw for a disguised RA ingredient |
+| `atlas.py` | the Recipe Atlas page: module titles, give commands, page layout |
 | `assets/<version>/` | extracted vanilla assets, git-ignored, re-downloaded on demand |
 
 ## Assets

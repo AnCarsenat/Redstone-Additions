@@ -1,5 +1,9 @@
 # Item Reference
 
+Namespace ids and display names, for commands and addons. If you are here to *browse*
+recipes, the [Recipe Atlas](recipe-atlas.md) is the page you want: every recipe on
+one page, A to Z and by module.
+
 ## Placeable Blocks
 
 | Namespace ID                         | Display name              | Recipe |

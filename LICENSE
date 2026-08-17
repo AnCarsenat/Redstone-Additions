@@ -1,63 +1,102 @@
 Redstone Additions - Custom License
+License version 1.1, 2026-08-17
 Copyright (c) 2026 AnCarsenat. All rights reserved.
 
-By downloading, installing, or using Redstone Additions (the "Datapack"),
-you agree to the following terms:
+By downloading, installing, or using Redstone Additions you agree to the
+following terms. In short: play with it freely, build addons for it freely, but
+do not hand out copies of it.
 
-NOMENCLATURE
-   In this license:
-   "RA" means Redstone Additions.
-   "Addon" means a datapack for RA that depends on RA to function.
-   Addons do not include RA's default namespaces (for example: ra_lib, ra,
-   ra_interactive, etc.).
+0. DEFINITIONS
+   "RA" means Redstone Additions: the built data pack, its source, its
+   documentation, its images and its tooling - every file in the official
+   distribution or repository, in whole or in part.
 
-1. PERMITTED USE
-   You may use the Datapack on any Minecraft world, server, or realm for
-   personal, community, or commercial server use at no cost.
-2. MODIFICATION
-   You may modify the Datapack for your own private use. Modified versions may
-   NOT be publicly distributed, uploaded, or shared without prior written
-   permission from the original author (AnCarsenat).
+   "RA Namespace" means any data pack namespace distributed as part of RA. As of
+   v5.1.5 those are: ra, ra_advancements, ra_chunk_loader, ra_enchanting,
+   ra_ender, ra_example, ra_gates, ra_infinite, ra_interactive, ra_jetpacks,
+   ra_lib, ra_lib_multiblock, ra_multiblock, ra_sensors, ra_storage, ra_wireless,
+   ra_wires, and RA's own files under minecraft. The list grows with RA. What
+   makes a namespace an RA Namespace is that it ships in the official download,
+   not that its name begins with "ra" - an addon of your own may be called
+   ra_myaddon and is still yours.
 
-   You may create an addon for this Datapack that links to the original
-   Datapack. Addons are datapacks for RA and cannot function without RA.
-3. REDISTRIBUTION
-   Datapack:
-   You may NOT redistribute, reupload, mirror, repackage, or bundle the
-   Datapack - in whole or in part, modified or unmodified - on any platform
-   (including, but not limited to, CurseForge, Modrinth, Planet Minecraft,
-   MCPEDL, or any other website, file-sharing service, or modpack) without
-   explicit written permission from the original author.
+   "Addon" means a separate data pack of your own that needs RA in order to work,
+   lives in namespaces of your own, and contains no RA Namespace.
 
-   Addons:
-   You may redistribute, reupload, mirror, repackage, or bundle the Datapack
-   in part and modified on any platform (including, but not limited to,
-   CurseForge, Modrinth, Planet Minecraft, MCPEDL, or any other website,
-   file-sharing service, or modpack) as long as the default RA namespaces are
-   not included.
+   "Snippet" means a short excerpt of the code shown in RA's documentation, or of
+   the ra_example namespace - the material those pages exist in order to be
+   copied from.
 
-   Linking directly to the official download pages (GitHub, Modrinth) IS
-   permitted and encouraged (it will also make it easier for users to
-   navigate).
-4. CREDIT
-   If you showcase, review, or feature the Datapack in videos, streams, blogs,
-   or other media, you must visibly credit "AnCarsenat" as the creator and
-   link to the official repository:
-   https://github.com/AnCarsenat/Redstone-Additions
-5. NO CLAIM OF OWNERSHIP
-   You may not claim the Datapack, or any substantial portion of it, as your
-   own work. This includes renaming the Datapack and presenting it as an
-   original creation.
+1. USE
+   You may use RA on any Minecraft world, server, or realm, at no cost, for
+   personal, community, or commercial-server use.
 
-   You may claim an addon as your own work.
-6. NO WARRANTY
-   The Datapack is provided "as is" without warranty of any kind. The author
-   is not liable for any damage, data loss, or issues arising from its use.
-7. ENFORCEMENT
+2. PRIVATE MODIFICATION
+   You may modify your own copy of RA however you like, for your own use. What
+   you may not do is pass the result on; see 3.
+
+3. DISTRIBUTION OF RA
+   You may NOT redistribute, reupload, mirror, repackage, or bundle RA, or any
+   portion of it, modified or unmodified, on any platform - including but not
+   limited to CurseForge, Modrinth, Planet Minecraft, MCPEDL, any other website,
+   any file-sharing service, and any modpack - without prior written permission
+   from AnCarsenat.
+
+   Linking to the official download pages (GitHub, Modrinth) is permitted and
+   encouraged.
+
+4. ADDONS
+   You may create Addons, and you may distribute them anywhere, on whatever terms
+   you choose, commercially or not, without asking permission. An Addon may
+   include Snippets.
+
+   An Addon must not contain any RA Namespace and must not bundle RA itself: it
+   should expect the player to install RA from an official source. Depending on
+   RA's functions, function tags, scoreboards, storage, and item or block
+   conventions is exactly what an Addon is for and needs no permission.
+
+   Your Addon is your own work and your own copyright.
+
+5. CREDIT
+   If you showcase, review, or feature RA in videos, streams, blogs, or other
+   media, credit "AnCarsenat" visibly as the creator and link to the official
+   repository: https://github.com/AnCarsenat/Redstone-Additions
+
+6. NO CLAIM OF OWNERSHIP
+   You may not claim RA, or any substantial portion of it, as your own work. That
+   includes renaming it and presenting it as an original creation. This does not
+   restrict claiming your own Addon as your own work.
+
+7. CONTRIBUTIONS
+   If you send a change to RA - a pull request, a patch, a file in an issue - you
+   confirm that it is yours to give, and you grant AnCarsenat a perpetual,
+   worldwide, irrevocable right to use, modify, and distribute it as part of RA
+   under these terms. You keep your own copyright in what you wrote.
+
+8. MINECRAFT ASSETS
+   RA is fan content. It is not affiliated with, endorsed by, or associated with
+   Mojang Synergies AB or Microsoft.
+
+   Some files in the repository are rendered from Minecraft's own textures - the
+   recipe pictures under docs/images/recipes/ are drawn from the vanilla client
+   assets by tools/recipe_render. Those textures remain the property of Mojang
+   Synergies AB, are used here under Mojang's asset and brand guidelines, and no
+   rights over them are claimed by this license. Where these terms and Mojang's
+   guidelines disagree, Mojang's guidelines apply.
+
+9. NO WARRANTY
+   RA is provided "as is", without warranty of any kind. The author is not liable
+   for any damage, data loss, or other problem arising from its use.
+
+10. ENFORCEMENT AND CHANGES
    Violation of these terms may result in a DMCA takedown request or other
-   appropriate action. The author reserves the right to revoke permission
-   granted under this license at any time for any reason.
+   appropriate action.
+
+   Any permission granted under 3 - permission to distribute RA - may be revoked
+   at any time, for any reason. The permissions in 1, 2, and 4 are not revoked
+   for a version of RA you already have, so an Addon you have written does not
+   stop being allowed. Future versions of RA may ship under revised terms; the
+   version and date at the top of this file say which terms a copy came with.
 
 For permission requests, collaborations, or questions:
   GitHub: https://github.com/AnCarsenat
-

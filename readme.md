@@ -340,11 +340,23 @@ Starter command:
 
 ## License
 
-Copyright (c) 2026 AnCarsenat. All rights reserved.
+Copyright (c) 2026 AnCarsenat. All rights reserved. See
+[LICENSE](https://github.com/AnCarsenat/Redstone-Additions/raw/main/LICENSE) for the
+full terms — the short version:
 
-You may use this datapack on any world or server and modify it for private use. You may not redistribute, mirror, reupload, or repackage it in whole or in part without explicit written permission.
+- **Play with it freely** on any world, server or realm, including commercial servers.
+- **Modify your own copy** as much as you like.
+- **Do not redistribute it** — no reuploads, mirrors, repackages or modpack bundles of
+  the pack or any part of it, modified or not, without written permission. Link to the
+  official pages instead.
+- **Addons are welcome and need no permission.** A separate pack of your own that
+  depends on RA, in your own namespaces, containing no RA namespace, is yours: publish
+  it anywhere, on any terms, and use the snippets from the docs and `ra_example` to
+  build it.
 
-See [LICENSE](https://github.com/AnCarsenat/Redstone-Additions/raw/main/LICENSE) for full terms.
+Redstone Additions is fan content and is not affiliated with Mojang or Microsoft. The
+recipe pictures under `docs/images/recipes/` are drawn from Minecraft's own textures,
+which remain Mojang's property and are used under their asset guidelines.
 
 ---
 

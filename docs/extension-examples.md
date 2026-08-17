@@ -1,5 +1,13 @@
 # Extension Examples
 
+
+!!! info "These examples are yours to copy"
+    Everything on this page, and the whole `ra_example` namespace, is here to be
+    copied into an addon of your own. The
+    [licence](https://github.com/AnCarsenat/Redstone-Additions/blob/main/LICENSE)
+    permits addons and the snippets they need without asking; what it does not permit
+    is redistributing Redstone Additions itself.
+
 This page contains copy-paste-ready examples for building on Redstone Additions.
 
 All examples follow conventions from `GUIDELINES.md` and current v4 runtime behavior.

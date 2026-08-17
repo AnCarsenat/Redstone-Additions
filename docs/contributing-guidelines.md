@@ -1,5 +1,14 @@
 # Redstone Additions — Contributing Guidelines
 
+
+!!! info "Addons, contributions and the licence"
+    Writing an **addon** needs no permission: keep it in your own namespaces, include
+    no `ra_*` namespace that ships with the pack, and publish it wherever you like.
+    Sending a **contribution** here grants the maintainer the right to ship it as part
+    of Redstone Additions. Redistributing the pack itself, in whole or in part, needs
+    written permission. Full terms in the
+    [licence](https://github.com/AnCarsenat/Redstone-Additions/blob/main/LICENSE).
+
 **Version:** v5.1.5  
 **Minecraft:** 1.21.9 – 26.2 (data pack formats 88 – 107)
 

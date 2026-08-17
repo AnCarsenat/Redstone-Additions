@@ -10,4 +10,7 @@ scoreboard objectives add ra.remote.pending dummy
 # Hotbar slot the remote occupied when its channel prompt opened.
 scoreboard objectives add ra.remote.slot dummy
 
+function ra_wireless:blocks/emitter/register_block
+function ra_wireless:blocks/receiver/register_block
+
 tellraw @a [{text:"[",color:"dark_gray"},{text:"RA",color:"gold",bold:true},{text:"] ",color:"dark_gray"},{text:"Wireless Redstone loaded!",color:"aqua"}]

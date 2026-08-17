@@ -305,6 +305,12 @@ property it displays, and two long-standing electric transport bugs fixed.
 
 ### Diagnostics
 
+- Every block type announces itself on load to anyone wearing `ra.debug`. Sixteen of
+  them did not: `ra_wires` printed one "RA Wires blocks registered" line for all of
+  them, `ra_wireless` printed nothing at all, and the five multiblock bases were
+  silent. Knowing a module loaded is not the same as knowing which of its blocks did.
+  The count is now 51 lines for 51 block types.
+
 - `/function ra_infinite:debug/poppy` — every Poppy Generator's marker position,
   rotation, facing, cooldown, the block in front and the ground verdict.
 - `/function ra_wires:debug/electric` — every electric node's buffer, rate and

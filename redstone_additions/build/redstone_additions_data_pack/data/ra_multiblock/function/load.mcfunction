@@ -2,6 +2,7 @@
 # Load multiblock module - register multiblock type data
 
 tellraw @a[tag=ra.debug] [{text:"[RA] ",color:"gold"},{text:"Multiblock module loaded",color:"gray"}]
+function ra_multiblock:blocks/register_all
 
 # Heat scoreboard for blast forge
 scoreboard objectives add ra.heat dummy

@@ -186,7 +186,7 @@ def find_installs(targets: list[Path]) -> list[Path]:
         if not folder.is_dir():
             continue
         for entry in sorted(folder.iterdir()):
-            if entry.name.startswith("."):
+            if entry.name.startswith(".") or entry.name.endswith((".old", ".bak")):
                 continue
             if entry.is_dir() or entry.suffix.lower() == ".zip":
                 if looks_like_our_pack(entry):

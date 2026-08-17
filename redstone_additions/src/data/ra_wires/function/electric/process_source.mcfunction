@@ -5,7 +5,7 @@ execute unless data entity @s data.properties.enabled run data modify entity @s 
 execute unless data entity @s data.properties.transfer_rate run data modify entity @s data.properties.transfer_rate set value 60
 execute unless data entity @s data.data.eu run data modify entity @s data.data.eu set value 0
 
-execute unless data entity @s data.properties{enabled:1b} run return 0
+execute if data entity @s data.properties{enabled:0b} run return 0
 execute store result score #src_eu ra.wires.tmp run data get entity @s data.data.eu 1
 execute if score #src_eu ra.wires.tmp matches ..0 run return 0
 

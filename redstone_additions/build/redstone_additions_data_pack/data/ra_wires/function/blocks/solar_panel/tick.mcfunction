@@ -7,7 +7,7 @@
 # state. Reading that is free and handles night, rain, roofs, snow cover and the
 # Nether without a single predicate of our own.
 
-execute unless data entity @s data.properties{enabled:1b} run return 0
+execute if data entity @s data.properties{enabled:0b} run return 0
 
 scoreboard players add @s ra.cooldown 1
 execute unless score @s ra.cooldown matches 20.. run return 0

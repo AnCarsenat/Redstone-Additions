@@ -5,8 +5,8 @@ execute unless data entity @s data.properties.enabled run data modify entity @s 
 execute unless data entity @s data.properties.eu_use run data modify entity @s data.properties.eu_use set value 40
 execute unless data entity @s data.data.eu run data modify entity @s data.data.eu set value 0
 
-execute unless data entity @s data.properties{enabled:1b} run data modify entity @s data.status.active set value 0b
-execute unless data entity @s data.properties{enabled:1b} run return 0
+execute if data entity @s data.properties{enabled:0b} run data modify entity @s data.status.active set value 0b
+execute if data entity @s data.properties{enabled:0b} run return 0
 
 execute store result score #eu ra.wires.tmp run data get entity @s data.data.eu 1
 execute store result score #use ra.wires.tmp2 run data get entity @s data.properties.eu_use 1

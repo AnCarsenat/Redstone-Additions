@@ -11,7 +11,7 @@
 # base, instead of the contents only ever being a number on a billboard.
 
 execute unless data entity @s data.properties.mode run data modify entity @s data.properties.mode set value "drain"
-execute unless data entity @s data.properties{enabled:1b} run return 0
+execute if data entity @s data.properties{enabled:0b} run return 0
 
 scoreboard players add @s ra.cooldown 1
 execute unless score @s ra.cooldown matches 20.. run return 0

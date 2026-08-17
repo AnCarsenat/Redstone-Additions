@@ -6,7 +6,7 @@ execute unless data entity @s data.properties.generation_rate run data modify en
 execute unless data entity @s data.data.eu run data modify entity @s data.data.eu set value 0
 execute unless data entity @s data.data.capacity run data modify entity @s data.data.capacity set value 700
 
-execute unless data entity @s data.properties{enabled:1b} run return 0
+execute if data entity @s data.properties{enabled:0b} run return 0
 
 # The generator used to add EU out of nothing every tick, which is why nothing
 # upstream of it mattered. It now burns steam out of an adjacent gas network, so

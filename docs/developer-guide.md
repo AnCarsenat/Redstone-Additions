@@ -360,13 +360,17 @@ has, `props/render` probes the value's type and draws the matching row:
 
 | Type | Detected by | Editor |
 | ---- | ----------- | ------ |
-| bool | the value matches `0b` or `1b` | `[Toggle]`, applied at once |
-| number | `data get` on it succeeds | `[Modify]`, number input |
+| string | `data modify … set string` accepts it | `[Modify]`, text input |
 | list | `<name>[0]` exists | `[Edit list]`, text input pasted as SNBT |
-| string | none of the above | `[Modify]`, text input |
+| bool | the value matches `0b` or `1b` | `[Toggle]`, applied at once |
+| number | none of the above | `[Modify]`, number input |
 
-Order matters in that probe: `data get` reports a number for a byte and a length for
-a list, so both would look numeric if their own tests did not run afterwards.
+!!! warning "`data get` is not a type test"
+    `data get` succeeds on a string — it returns the string's **length** — so
+    "succeeded, therefore a number" classifies every string as a number. That shipped
+    briefly and made the Handler offer a number editor for `channel`, writing ints
+    that no string comparison could ever match. `set string` is the real test: it only
+    accepts a string source.
 
 A row's button carries `100 + its registry index`, so `run_action` and
 `apply_pending` each need **one** branch for all properties rather than one per

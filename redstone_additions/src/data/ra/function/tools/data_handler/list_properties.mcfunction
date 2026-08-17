@@ -14,4 +14,9 @@ execute unless data storage ra:dh properties run return run tellraw @s [{text:" 
 # score without a macro per read.
 data modify storage ra:dh iter set from storage ra:dh registry
 scoreboard players set #dh.act ra.temp 100
+scoreboard players set #dh.hidden ra.temp 0
 function ra:tools/data_handler/props/next
+
+# Say that something was withheld rather than letting a block look like it has no
+# settings at all.
+execute if score #dh.hidden ra.temp matches 1.. run tellraw @s [{text:"  ",color:"dark_gray"},{score:{name:"#dh.hidden",objective:"ra.temp"},color:"dark_gray"},{text:" tuning field(s) hidden — creative mode or the Creative Data Handler shows them",color:"dark_gray",italic:true}]

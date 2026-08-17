@@ -195,6 +195,20 @@ property it displays, and two long-standing electric transport bugs fixed.
 
 ### Fixed
 
+- **The Data Handler asked for a number when editing any string.** Its type probe
+  treated "`data get` succeeded" as "this is a number", but `data get` succeeds on a
+  string too — it returns the string's length. Every string property therefore got the
+  number editor, and using it wrote an int. A vault `channel` written that way matches
+  no string comparison, which is why a sending vault stopped finding its partner. The
+  probe now asks `data modify … set string`, which only accepts a string.
+  - A vault edited while the probe was wrong keeps its int `channel` — set it again
+    with the fixed editor, or break and replace the block. No migration runs for it:
+    a per-tick type check on every vault forever is a poor trade for a bug that
+    existed for hours.
+  - `/function ra_ender:debug/vaults` prints each vault's position, properties, what it
+    can send to or receive from, and whether its channel is a string at all — the one
+    thing that is invisible in chat, since `5` and `"5"` print identically.
+
 - Ender links: three bugs caught in review before they shipped.
   - A teleport anchor never fired. `scores={ra.ender.tp_cd=..0}` does not match an
     entity that has no score at all, so a freshly placed anchor was never eligible,
@@ -300,6 +314,12 @@ property it displays, and two long-standing electric transport bugs fixed.
 
 ### Changed
 
+- The survival Data Handler hides tuning fields: `cooldown`, `transfer_rate`,
+  `generation_rate`, `eu_use`, `tier` and `tier_level` are builder and addon-author
+  knobs, not something to retune while holding the survival tool. Creative mode is the
+  test, since a data pack cannot read permission level, and the number of withheld
+  fields is reported so a block does not look settings-free. The Creative Data Handler
+  still shows everything.
 - The Creative Data Handler builds its property rows from one registry instead of a
   hand-written function per property name. `ra:tools/data_handler/init_registry` holds
   the list of names; for each name a block actually has, `props/render` probes the

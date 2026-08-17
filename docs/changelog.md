@@ -2,6 +2,51 @@
 
 This page mirrors key datapack milestones from the main project changelog.
 
+## v5.1.6 (2026-08-17) — Recipe Atlas, Data Handler Repairs, Licence
+
+A follow-up to v5.1.5: one page holding every recipe, a Data Handler that no longer
+mangles what it edits, blocks that decide for themselves what a survival player may
+retune, and a licence that says what it was always meant to say.
+
+### Added
+
+- **[Recipe Atlas](recipe-atlas.md)** — all 58 recipes on one page, A to Z and by
+  module, with the station each is made at and the give-everything command. Generated
+  from the recipe files, so it cannot drift. It lists the four items that have **no**
+  recipe too, with the sacrifice and chance that win them on an
+  [enchanting table](enchant-crafting.md).
+- Blocks declare which of their own fields the survival Data Handler hides, so one
+  block's tuning knob is no longer every block's: `cooldown` is tuning on a generator
+  and the whole point of a Clock. Creative mode shows everything.
+- `/function ra_ender:debug/vaults` reports each vault's mode, channel and reachable
+  partners.
+
+### Fixed
+
+- The Data Handler asked for a **number when editing any string**, and writing one
+  broke what it touched — an ender vault channel written that way stopped matching its
+  partner, so the vault stopped sending. `data get` succeeds on a string and returns
+  its length, which is what the old type test mistook for a number.
+- Properties with no editor were invisible, and hidden ones were still printed in the
+  raw list. Everything a block carries is shown now; only what a block explicitly hides
+  is withheld.
+- 23 block types never said they registered, and 13 more said it to **everyone** rather
+  than to players wearing `ra.debug`.
+- Coal in the **offhand** did not count as jetpack fuel.
+- A Teleport Anchor could not fire on a player's first tick in the world.
+- Two enchanting tables a block apart could take each other's result.
+
+### Documentation
+
+- The **licence** is rewritten: addons are explicitly free to build and publish, the
+  snippets in the docs are licensed for that purpose, and the clause that accidentally
+  permitted redistributing the pack "in part and modified" is gone. Adds contributions
+  and Mojang-assets clauses, and a version stamp.
+- The home page no longer claims redstone on the Boxer and Unboxer is a lock: both run
+  while powered, and following that warning would have broken working builds.
+- The readme covers the four new modules, with corrected counts (52 blocks, 58
+  recipes).
+
 ## v5.1.5 (2026-08-17) — Enchant Crafting, Jetpacks, Infinite Generators, Ender Links
 
 Four new gameplay modules, drawn recipe images, a Data Handler that can edit every

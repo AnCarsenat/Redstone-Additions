@@ -2,7 +2,7 @@
 
 <img src="images/icon.png" alt="Redstone Additions" width="128">
 
-**Version:** v5.1.5  
+**Version:** v5.1.6  
 **Minecraft:** 1.21.9 – 26.2  
 **Author:** [AnCarsenat](https://github.com/AnCarsenat)
 
@@ -110,7 +110,17 @@ Current pack totals:
 | Data Handler | `/function ra:tools/data_handler/give` | ![Data Handler recipe](images/recipes/ra/data_handler.png){ width="200" } | Edit nearby block `data.properties` |
 | Goggles | `/function ra:tools/goggles/give` | ![Goggles recipe](images/recipes/ra/goggles.png){ width="200" } | In-world status overlays |
 
-## What Is New In v5.1.5
+## What Is New In v5.1.6
+
+- **[Recipe Atlas](recipe-atlas.md)** — every recipe on one page, searchable by name.
+- **The Data Handler no longer mangles strings.** Editing a channel wrote a number,
+  which is why ender vaults stopped talking to each other.
+- **Blocks decide what a survival player may retune**, so a generator's period can be
+  protected without taking the Clock's away.
+- Registration messages go to `ra.debug` players only — and every block type sends one.
+- Jetpacks count coal in your offhand; anchors work on a player's first tick.
+
+## What Was New In v5.1.5
 
 - **Four new modules.** [Enchant Crafting](enchant-crafting.md),
   [Jetpacks](jetpacks.md), [Infinite Generators](infinite-generators.md) and
@@ -128,7 +138,7 @@ Current pack totals:
 - **Recipe pictures are generated** from vanilla assets rather than screenshotted —
   see [Recipe Renderer](recipe-renderer.md).
 
-## What Was New In v5.1.4
+## Older: v5.1.4
 
 - **Fluid and gas rebuilt on a network model.** A connected run of pipes is one
   network with one medium; fluid no longer crawls a block per tick, and pipes cost

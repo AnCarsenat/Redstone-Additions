@@ -12,7 +12,7 @@ do not hand out copies of it.
    distribution or repository, in whole or in part.
 
    "RA Namespace" means any data pack namespace distributed as part of RA. As of
-   v5.1.5 those are: ra, ra_advancements, ra_chunk_loader, ra_enchanting,
+   v5.1.6 those are: ra, ra_advancements, ra_chunk_loader, ra_enchanting,
    ra_ender, ra_example, ra_gates, ra_infinite, ra_interactive, ra_jetpacks,
    ra_lib, ra_lib_multiblock, ra_multiblock, ra_sensors, ra_storage, ra_wireless,
    ra_wires, and RA's own files under minecraft. The list grows with RA. What

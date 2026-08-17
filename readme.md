@@ -15,7 +15,7 @@
 
 <p align="center">
   <img src="https://img.shields.io/badge/Minecraft-1.21.9--26.2-2EA44F" alt="Minecraft 1.21.9-26.2">
-  <img src="https://img.shields.io/badge/Version-v5.1.5-blue" alt="Version v5.1.5">
+  <img src="https://img.shields.io/badge/Version-v5.1.6-blue" alt="Version v5.1.6">
   <img src="https://img.shields.io/badge/Blocks-52-red" alt="52 blocks">
   <img src="https://img.shields.io/badge/Tools-5-lightgrey" alt="5 tools">
   <img src="https://img.shields.io/badge/Recipes-58-8A2BE2" alt="58 recipes">

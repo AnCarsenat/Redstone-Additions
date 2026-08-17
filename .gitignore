@@ -41,3 +41,7 @@ redstone_additions/builds/
 # Cached vanilla assets for tools/recipe_render (re-downloaded on demand)
 redstone_additions/tools/recipe_render/assets/
 *.jar
+
+# mkdocs build output. The published wiki is built from docs/ by
+# .github/workflows/docs-pages.yml, so a committed copy only ever goes stale.
+site/

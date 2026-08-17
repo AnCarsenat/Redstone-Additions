@@ -5,7 +5,7 @@
 <h1 align="center">Redstone Additions</h1>
 
 <p align="center">
-  <strong>45 custom blocks. 5 tools. 50 recipes. Vanilla datapack for Minecraft 1.21.9–26.2.</strong>
+  <strong>52 custom blocks. 2 jetpack kits. 5 tools. 58 recipes. Vanilla datapack for Minecraft 1.21.9–26.2.</strong>
 </p>
 
 <p align="center">
@@ -16,14 +16,16 @@
 <p align="center">
   <img src="https://img.shields.io/badge/Minecraft-1.21.9--26.2-2EA44F" alt="Minecraft 1.21.9-26.2">
   <img src="https://img.shields.io/badge/Version-v5.1.5-blue" alt="Version v5.1.5">
-  <img src="https://img.shields.io/badge/Blocks-45-red" alt="45 blocks">
+  <img src="https://img.shields.io/badge/Blocks-52-red" alt="52 blocks">
   <img src="https://img.shields.io/badge/Tools-5-lightgrey" alt="5 tools">
-  <img src="https://img.shields.io/badge/Recipes-50-8A2BE2" alt="50 recipes">
+  <img src="https://img.shields.io/badge/Recipes-58-8A2BE2" alt="58 recipes">
 </p>
 
 ---
 
 Redstone Additions expands vanilla redstone with logic gates, automation machines, storage, sensors, wireless signaling, chunk loading, multiblocks, and liquid/gas/electric transport networks.
+
+It also goes beyond redstone: **jetpacks** that fit onto any chestplate, **enchant crafting** that gambles items on an enchanting table, **generators** that regrow their own material, and **ender links** that move items, fluids, power and players between distant places.
 
 All systems run as a pure datapack using marker entities and function-driven runtime logic. No mods required.
 
@@ -72,6 +74,9 @@ I recommend using [Bundles Beyond](https://modrinth.com/mod/bundles-beyond) for 
 | Wireless Redstone | <img src="https://github.com/AnCarsenat/Redstone-Additions/raw/main/docs/images/recipes/ra_wireless/emitter.png" alt="Emitter recipe" width="220"> |
 | Chunk Loader | <img src="https://github.com/AnCarsenat/Redstone-Additions/raw/main/docs/images/recipes/ra_chunk_loader/chunk_loader.png" alt="Chunk loader recipe" width="220"> |
 | Multiblocks | <img src="https://github.com/AnCarsenat/Redstone-Additions/raw/main/docs/images/recipes/ra_multiblock/copper_base.png" alt="Copper multiblock base recipe" width="220"> |
+| Jetpacks | <img src="https://github.com/AnCarsenat/Redstone-Additions/raw/main/docs/images/recipes/ra_jetpacks/iron_jetpack_kit.png" alt="Iron Jetpack Kit recipe" width="220"> |
+| Infinite Generators | <img src="https://github.com/AnCarsenat/Redstone-Additions/raw/main/docs/images/recipes/ra_infinite/mineral_generator.png" alt="Mineral Generator recipe" width="220"> |
+| Ender Links | <img src="https://github.com/AnCarsenat/Redstone-Additions/raw/main/docs/images/recipes/ra_ender/teleport_anchor.png" alt="Teleport Anchor recipe" width="220"> |
 
 ---
 
@@ -136,12 +141,27 @@ I recommend using [Bundles Beyond](https://modrinth.com/mod/bundles-beyond) for 
 - Nether Generator
 - Poppy Generator
 
+Built from a crafted Generator Casing plus a Core won by sacrificing stone,
+netherrack or poppies on an enchanting table.
+
+### Ender Links (4)
+- Ender Item Vault — barrels that share their contents across a channel
+- Ender Fluid Vault — liquid and gas across a channel, as a fluid network node
+- Ender Power Vault — EU across a channel, as an electric node
+- Teleport Anchor — redstone strength 1-15 picks which anchor you arrive at
+
 ### Multiblock Bases (5)
 - Copper Multiblock Base
 - Iron Multiblock Base
 - Gold Multiblock Base
 - Diamond Multiblock Base
 - Netherite Multiblock Base
+
+### Items (5)
+- Iron Jetpack Kit — right-click while wearing any chestplate to fit it
+- Infinite Iron Jetpack Kit — won on an enchanting table; burns no fuel
+- Generator Casing
+- Mineral / Nether / Poppy Core
 
 ### Tools (5)
 - Wrench

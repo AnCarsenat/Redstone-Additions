@@ -184,6 +184,8 @@ Before releasing a new version:
 - [ ] Update version in `ra/function/load.mcfunction` (load message + welcome message)
 - [ ] Update README badge version (`readme.md`)
 - [ ] Update WIKI `Home.md` version number
+- [ ] Regenerate the Planet Minecraft description from the readme:
+      `python3 tools/md_to_bbcode.py ../readme.md --base-url https://github.com/AnCarsenat/Redstone-Additions/raw/main/`
 - [ ] Update `CHANGELOG.md` with all changes, categorized under Added/Changed/Fixed/Removed
 - [ ] Run full test:
   - [ ] `/reload` — check for errors in game log

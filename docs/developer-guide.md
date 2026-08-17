@@ -557,6 +557,19 @@ The renderer reads the recipe the way the game does, so a result's
 a disguised RA item used *as* an ingredient needs an entry in
 `tools/recipe_render/overrides.json`.
 
+### The Planet Minecraft description
+
+`readme.bbcode` is generated from `readme.md`, not written by hand — full details
+in [Markdown to BBCode](markdown-to-bbcode.md):
+
+```bash
+python3 tools/md_to_bbcode.py ../readme.md \
+    --base-url https://github.com/AnCarsenat/Redstone-Additions/raw/main/
+```
+
+PMC has no heading or table tag, so headings become sized bold text and tables are
+flattened; relative links need the `--base-url` above to survive.
+
 ### New Block Checklist (Practical)
 
 1. Item custom_data and `ra.place.*` tags are correct.

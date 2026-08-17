@@ -1,0 +1,402 @@
+[center][img width=128 height=128]https://github.com/AnCarsenat/Redstone-Additions/raw/main/icon.png[/img][/center]
+
+[center][size=24][b]Redstone Additions[/b][/size][/center]
+
+[center][b]52 custom blocks. 2 jetpack kits. 5 tools. 58 recipes. Vanilla datapack for Minecraft 1.21.9–26.2.[/b][/center]
+
+[center][url=https://modrinth.com/datapack/redstone-additions][img]https://img.shields.io/badge/Download-Modrinth-00AF5C?style=for-the-badge&logo=modrinth&logoColor=white[/img][/url] [url=https://github.com/AnCarsenat/Redstone-Additions][img]https://img.shields.io/badge/Source-GitHub-181717?style=for-the-badge&logo=github&logoColor=white[/img][/url][/center]
+
+[center][img]https://img.shields.io/badge/Minecraft-1.21.9--26.2-2EA44F[/img] [img]https://img.shields.io/badge/Version-v5.1.6-blue[/img] [img]https://img.shields.io/badge/Blocks-52-red[/img] [img]https://img.shields.io/badge/Tools-5-lightgrey[/img] [img]https://img.shields.io/badge/Recipes-58-8A2BE2[/img][/center]
+
+[hr]
+
+Redstone Additions expands vanilla redstone with logic gates, automation machines, storage, sensors, wireless signaling, chunk loading, multiblocks, and liquid/gas/electric transport networks.
+
+It also goes beyond redstone: [b]jetpacks[/b] that fit onto any chestplate, [b]enchant crafting[/b] that gambles items on an enchanting table, [b]generators[/b] that regrow their own material, and [b]ender links[/b] that move items, fluids, power and players between distant places.
+
+All systems run as a pure datapack using marker entities and function-driven runtime logic. No mods required.
+
+[size=18][b]Version Compatibility[/b][/size]
+
+[b]Supported: Minecraft 1.21.9 – 26.2[/b] (data pack formats 88 – 107).
+
+The pack declares and loads across that whole span. Exactly one thing inside it genuinely changes shape: format 102 ([b]26.2-snapshot-3[/b]) rewrote entity predicates into component-map form, so [b]ra:is_sneaking[/b] — which gates the wrench's shift action, the goggles' tinker action and the Redstone Remote's channel prompt — needs both spellings. The pack ships both: the base file uses the pre-102 form and [b]overlay_102/[/b] carries the component-map form, applied automatically from [b]26.2-snapshot-3[/b] onward. Nothing else in the pack touches a feature that broke between 88 and 107 — no [b]filtered[/b] loot function, no [b]contents[/b] dynamic entry, no renamed game rules, no special crafting recipes.
+
+Earlier versions are [b]not supported[/b], but most of the pack does not actually need 1.21.9 — the hard floor is the [b]pack.mcmeta[/b] schema. If you edit [b]pack.mcmeta[/b] to a lower [b]pack_format[/b] and drop [b]min_format[/b]/[b]max_format[/b], this is what breaks and when:
+
+[list]
+[*][b]1.21.9[/b] — Nothing in the content itself — only the [b]min_format[/b]/[b]max_format[/b] fields, which that version introduced
+[*][b]1.21.5[/b] — Item Pipe [b]filters[/b], which identify their item frame by [b]block_pos[/b]
+[*][b]1.21.2[/b] — Almost every item's appearance and identity ([b]item_model[/b], [b]consumable[/b], component removal)
+[*][b]1.20.5[/b] — Setting the Redstone Remote's channel ([b]copy_custom_data[/b])
+[*][b]1.20.2[/b] — Everything — the pack is built on macro functions and [b]return run[/b]
+[/list]
+
+So in practice the content runs on 1.21.5+ with only the pipe filters missing, and on 1.21.2+ in a degraded state. None of that is declared or supported.
+
+I recommend using [url=https://modrinth.com/mod/bundles-beyond]Bundles Beyond[/url] for better bundle previews.
+
+[hr]
+
+[size=18][b]Default Module Previews[/b][/size]
+
+One sample per module. [b]Every recipe in the pack is on one page in the [url=https://ancarsenat.github.io/Redstone-Additions/recipe-atlas/]Recipe Atlas[/url][/b] — listed A to Z and grouped by module.
+
+[b]Logic Gates[/b]
+[img width=220 height=101]https://github.com/AnCarsenat/Redstone-Additions/raw/main/docs/images/recipes/ra_gates/clock.png[/img]
+
+[b]Interactive Machines[/b]
+[img width=220 height=101]https://github.com/AnCarsenat/Redstone-Additions/raw/main/docs/images/recipes/ra_interactive/block_placer.png[/img]
+
+[b]Sensors[/b]
+[img width=220 height=101]https://github.com/AnCarsenat/Redstone-Additions/raw/main/docs/images/recipes/ra_sensors/entity_detector.png[/img]
+
+[b]Wireless Redstone[/b]
+[img width=220 height=101]https://github.com/AnCarsenat/Redstone-Additions/raw/main/docs/images/recipes/ra_wireless/emitter.png[/img]
+
+[b]Chunk Loader[/b]
+[img width=220 height=101]https://github.com/AnCarsenat/Redstone-Additions/raw/main/docs/images/recipes/ra_chunk_loader/chunk_loader.png[/img]
+
+[b]Multiblocks[/b]
+[img width=220 height=101]https://github.com/AnCarsenat/Redstone-Additions/raw/main/docs/images/recipes/ra_multiblock/copper_base.png[/img]
+
+[b]Jetpacks[/b]
+[img width=220 height=101]https://github.com/AnCarsenat/Redstone-Additions/raw/main/docs/images/recipes/ra_jetpacks/iron_jetpack_kit.png[/img]
+
+[b]Infinite Generators[/b]
+[img width=220 height=101]https://github.com/AnCarsenat/Redstone-Additions/raw/main/docs/images/recipes/ra_infinite/mineral_generator.png[/img]
+
+[b]Ender Links[/b]
+[img width=220 height=101]https://github.com/AnCarsenat/Redstone-Additions/raw/main/docs/images/recipes/ra_ender/teleport_anchor.png[/img]
+
+[hr]
+
+[size=18][b]Blocks[/b][/size]
+
+[size=14][b]Logic Gates (6)[/b][/size]
+
+[list]
+[*]UNI Gate
+[*]Clock
+[*]Delayer
+[*]Extender
+[*]Randomizer
+[*]Shortener
+[/list]
+
+[size=14][b]Interactive Machines (10)[/b][/size]
+
+[list]
+[*]Block Breaker
+[*]Block Placer
+[*]Item Pipe
+[*]Item Mover
+[*]Spitter
+[*]Breeder
+[*]Infinite Water Cauldron
+[*]Infinite Lava Cauldron
+[*]Infinite Snow Cauldron
+[*]Message Block
+[/list]
+
+[size=14][b]Storage (2)[/b][/size]
+
+[list]
+[*]Boxer
+[*]Unboxer
+[/list]
+
+[size=14][b]Sensors (3)[/b][/size]
+
+[list]
+[*]Entity Detector
+[*]Tag Adder
+[*]Tag Remover
+[/list]
+
+[size=14][b]Wireless (2)[/b][/size]
+
+[list]
+[*]Wireless Emitter
+[*]Wireless Receiver
+[/list]
+
+[size=14][b]Transport Networks (16)[/b][/size]
+
+[list]
+[*]Copper Liquid Pipe
+[*]Netherite Liquid Pipe
+[*]Liquid Tank
+[*]Liquid Pump
+[*]Liquid Valve
+[*]Liquid Drain
+[*]Copper Gas Pipe
+[*]Netherite Gas Pipe
+[*]Gas Tank
+[*]Gas Pump
+[*]Gas Valve
+[*]Copper Electric Wire
+[*]Netherite Electric Wire
+[*]EU Generator
+[*]EU Consumer
+[*]EU Switch
+[/list]
+
+[size=14][b]Chunk Loader (1)[/b][/size]
+
+[list]
+[*]Chunk Loader
+[/list]
+
+[size=14][b]Infinite Generators (3)[/b][/size]
+
+[list]
+[*]Mineral Generator
+[*]Nether Generator
+[*]Poppy Generator
+[/list]
+
+Built from a crafted Generator Casing plus a Core won by sacrificing stone, netherrack or poppies on an enchanting table.
+
+[size=14][b]Ender Links (4)[/b][/size]
+
+[list]
+[*]Ender Item Vault — barrels that share their contents across a channel
+[*]Ender Fluid Vault — liquid and gas across a channel, as a fluid network node
+[*]Ender Power Vault — EU across a channel, as an electric node
+[*]Teleport Anchor — redstone strength 1-15 picks which anchor you arrive at
+[/list]
+
+[size=14][b]Multiblock Bases (5)[/b][/size]
+
+[list]
+[*]Copper Multiblock Base
+[*]Iron Multiblock Base
+[*]Gold Multiblock Base
+[*]Diamond Multiblock Base
+[*]Netherite Multiblock Base
+[/list]
+
+[size=14][b]Items (5)[/b][/size]
+
+[list]
+[*]Iron Jetpack Kit — right-click while wearing any chestplate to fit it
+[*]Infinite Iron Jetpack Kit — won on an enchanting table; burns no fuel
+[*]Generator Casing
+[*]Mineral / Nether / Poppy Core
+[/list]
+
+[size=14][b]Tools (5)[/b][/size]
+
+[list]
+[*]Wrench
+[*]Creative Data Handler
+[*]Data Handler
+[*]Goggles
+[*]Redstone Remote
+[/list]
+
+[hr]
+
+[size=18][b]Development Setup[/b][/size]
+
+This project uses [b][url=https://github.com/mcbeet/beet]Beet[/url][/b] to build the datapack from source.
+
+[size=14][b]Prerequisites[/b][/size]
+
+[list]
+[*]Python 3.10 or higher
+[*]Git
+[/list]
+
+[size=14][b]Quick Start[/b][/size]
+
+[b]1. Clone the Repository[/b]
+
+[code]
+git clone https://github.com/AnCarsenat/Redstone-Additions.git
+cd Redstone-Additions
+git checkout beet_rewrite
+[/code]
+
+[b]2. Set Up the Virtual Environment[/b]
+
+Navigate to the [b]redstone_additions/[/b] directory and create a Python virtual environment:
+
+[code]
+cd redstone_additions
+python3 -m venv .venv
+[/code]
+
+[b]3. Activate the Virtual Environment[/b]
+
+[b]On Linux/macOS:[/b]
+
+[code]
+source .venv/bin/activate
+[/code]
+
+[b]On Windows (CMD):[/b]
+
+[code]
+.venv\Scripts\activate.bat
+[/code]
+
+[b]On Windows (PowerShell):[/b]
+
+[code]
+.venv\Scripts\Activate.ps1
+[/code]
+
+[b]4. Install Dependencies[/b]
+
+[code]
+pip install -r requirements.txt
+[/code]
+
+[b]5. Link to Your Minecraft World[/b]
+
+Use beet's [b]link[/b] command to connect to your Minecraft world. Specify the path to your Minecraft installation and the world name:
+
+[code]
+beet link --minecraft /path/to/minecraft <world_name>
+[/code]
+
+[b]Example with PrismLauncher:[/b]
+
+[code]
+beet link --minecraft "~/.local/share/PrismLauncher/instances/26.2 Fabric/minecraft" DevWorld
+[/code]
+
+This creates a symbolic link between the built datapack and your world's datapacks folder.
+
+[b]6. Build and Test[/b]
+
+Build the datapack from source:
+
+[code]
+beet build
+[/code]
+
+The compiled datapack will be generated in the [b]build/[/b] directory and automatically linked to your world.
+
+To enable auto-rebuild when you make changes, use watch mode:
+
+[code]
+beet watch
+[/code]
+
+Then use [b]/reload[/b] in-game to apply changes.
+
+[size=14][b]Development Workflow[/b][/size]
+
+[list=1]
+[*]Navigate to the [b]redstone_additions/[/b] directory
+[*]Ensure the virtual environment is activated: [b]source .venv/bin/activate[/b]
+[*]Edit files in the [b]src/[/b] directory
+[*]Use [b]beet watch[/b] for automatic rebuilding on file changes
+[*]Use [b]/reload[/b] in-game to apply changes immediately
+[/list]
+
+[hr]
+
+[size=18][b]Installation[/b][/size]
+
+[size=14][b]Option A (Modrinth)[/b][/size]
+
+[list=1]
+[*]Download the latest [b].zip[/b] from [url=https://modrinth.com/datapack/redstone-additions]Modrinth[/url].
+[*]Place it in [b].minecraft/saves/<your_world>/datapacks/[/b].
+[*]Run [b]/reload[/b].
+[/list]
+
+[size=14][b]Option B (GitHub)[/b][/size]
+
+[code]
+git clone https://github.com/AnCarsenat/Redstone-Additions.git
+[/code]
+
+Copy [b]redstone_additions[/b] into your world [b]datapacks/[/b] directory, then run [b]/reload[/b].
+
+Starter command:
+
+[code]
+/function ra:give_all_items
+[/code]
+
+[hr]
+
+[size=18][b]Quick Links[/b][/size]
+
+[list]
+[*][b]Docs Home[/b] — https://ancarsenat.github.io/Redstone-Additions/
+[*][b]Logic Gates[/b] — https://ancarsenat.github.io/Redstone-Additions/logic-gates/
+[*][b]Interactive Machines[/b] — https://ancarsenat.github.io/Redstone-Additions/interactive-machines/
+[*][b]Storage[/b] — https://ancarsenat.github.io/Redstone-Additions/storage/
+[*][b]Sensors[/b] — https://ancarsenat.github.io/Redstone-Additions/sensors/
+[*][b]Wireless Redstone[/b] — https://ancarsenat.github.io/Redstone-Additions/wireless-redstone/
+[*][b]Transport Networks[/b] — https://ancarsenat.github.io/Redstone-Additions/transport-networks/
+[*][b]Chunk Loader[/b] — https://ancarsenat.github.io/Redstone-Additions/chunk-loader/
+[*][b]Multiblocks[/b] — https://ancarsenat.github.io/Redstone-Additions/multiblocks/
+[*][b]Enchant Crafting[/b] — https://ancarsenat.github.io/Redstone-Additions/enchant-crafting/
+[*][b]Jetpacks[/b] — https://ancarsenat.github.io/Redstone-Additions/jetpacks/
+[*][b]Infinite Generators[/b] — https://ancarsenat.github.io/Redstone-Additions/infinite-generators/
+[*][b]Ender Links[/b] — https://ancarsenat.github.io/Redstone-Additions/ender-links/
+[*][b]Block Reference[/b] — https://ancarsenat.github.io/Redstone-Additions/block-reference/
+[*][b]Recipe Reference[/b] — https://ancarsenat.github.io/Redstone-Additions/recipe-reference/
+[*][b]Changelog[/b] — https://ancarsenat.github.io/Redstone-Additions/changelog/
+[/list]
+
+[hr]
+
+[size=18][b]Useful Commands[/b][/size]
+
+[list]
+[*][b]/function ra:give_all_items[/b] — One prefilled bundle per namespace
+[*][b]/function ra_gates:items/give_all[/b] — Logic gate items
+[*][b]/function ra_interactive:items/give_all[/b] — Interactive machine items
+[*][b]/function ra_storage:items/give_all[/b] — Storage items
+[*][b]/function ra_sensors:items/give_all[/b] — Sensor items
+[*][b]/function ra_wireless:items/give_all[/b] — Wireless items
+[*][b]/function ra_wires:items/give_all[/b] — Transport and EU items
+[*][b]/function ra_chunk_loader:items/give_all[/b] — Chunk loader items
+[*][b]/function ra_multiblock:blocks/give_all[/b] — Multiblock base items
+[*][b]/function ra_infinite:items/give_all[/b] — Generator casing and generators
+[*][b]/function ra_jetpacks:items/give_all[/b] — Jetpack kits
+[*][b]/function ra_ender:items/give_all[/b] — Ender vaults and Teleport Anchors
+[*][b]/function ra:tools/wrench/give[/b] — Wrench
+[*][b]/function ra:tools/data_handler/give[/b] — Data Handler
+[*][b]/function ra:tools/creative_data_handler/give[/b] — Creative Data Handler
+[*][b]/function ra:tools/goggles/give[/b] — Goggles
+[*][b]/function ra_wireless:tools/remote/give[/b] — Redstone Remote
+[*][b]/function ra:uninstall[/b] — Clean uninstall
+[/list]
+
+[hr]
+
+[size=18][b]Documentation[/b][/size]
+
+[list]
+[*]Wiki : [url]https://ancarsenat.github.io/Redstone-Additions/[/url]
+[*]Build config: [url=https://github.com/AnCarsenat/Redstone-Additions/raw/main/mkdocs.yml]mkdocs.yml[/url]
+[/list]
+
+[hr]
+
+[size=18][b]License[/b][/size]
+
+Copyright (c) 2026 AnCarsenat. All rights reserved. See [url=https://github.com/AnCarsenat/Redstone-Additions/raw/main/LICENSE]LICENSE[/url] for the full terms — the short version:
+
+[list]
+[*][b]Play with it freely[/b] on any world, server or realm, including commercial servers.
+[*][b]Modify your own copy[/b] as much as you like.
+[*][b]Do not redistribute it[/b] — no reuploads, mirrors, repackages or modpack bundles of the pack or any part of it, modified or not, without written permission. Link to the official pages instead.
+[*][b]Addons are welcome and need no permission.[/b] A separate pack of your own that depends on RA, in your own namespaces, containing no RA namespace, is yours: publish it anywhere, on any terms, and use the snippets from the docs and [b]ra_example[/b] to build it.
+[/list]
+
+Redstone Additions is fan content and is not affiliated with Mojang or Microsoft. The recipe pictures under [b]docs/images/recipes/[/b] are drawn from Minecraft's own textures, which remain Mojang's property and are used under their asset guidelines.
+
+[hr]
+
+[center][b]Created by [url=https://github.com/AnCarsenat]AnCarsenat[/url][/b]
+[url=https://github.com/AnCarsenat/Redstone-Additions/issues]Report a Bug[/url] · [url=https://ancarsenat.github.io/Redstone-Additions/]Documentation[/url] · [url=https://modrinth.com/datapack/redstone-additions]Download[/url][/center]

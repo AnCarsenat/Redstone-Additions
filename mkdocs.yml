@@ -59,6 +59,7 @@ nav:
   - For Developers:
       - Developer Guide: developer-guide.md
       - Recipe Renderer: recipe-renderer.md
+      - Markdown to BBCode: markdown-to-bbcode.md
       - Extension Examples: extension-examples.md
       - Contributing Guidelines: contributing-guidelines.md
   - Project:

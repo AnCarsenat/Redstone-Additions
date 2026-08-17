@@ -1,0 +1,25 @@
+{
+  "parent": "ra_advancements:ra_jetpacks",
+  "display": {
+    "icon": { "id": "minecraft:iron_chestplate" },
+    "title": "Iron Jetpack Kit",
+    "description": "Craft the Iron Jetpack Kit.",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "criteria": {
+    "get_iron_jetpack_kit": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "minecraft:firework_star",
+            "predicates": {
+              "minecraft:custom_data": { "ra": { "jetpack_kit": true, "tier": "iron" } }
+            }
+          }
+        ]
+      }
+    }
+  }
+}

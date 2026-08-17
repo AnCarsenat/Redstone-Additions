@@ -1,0 +1,25 @@
+{
+  "parent": "ra_advancements:ra_infinite/get_mineral_core",
+  "display": {
+    "icon": { "id": "minecraft:chiseled_deepslate" },
+    "title": "Mineral Generator",
+    "description": "Obtain the Mineral Generator.",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "criteria": {
+    "get_mineral_generator": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "minecraft:bat_spawn_egg",
+            "predicates": {
+              "minecraft:custom_data": { "ra": { "mineral_generator": true } }
+            }
+          }
+        ]
+      }
+    }
+  }
+}

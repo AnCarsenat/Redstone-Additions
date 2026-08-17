@@ -1,0 +1,35 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "redstone",
+  "pattern": [
+    "GGG",
+    "QQQ",
+    "CRC"
+  ],
+  "key": {
+    "G": "minecraft:glass",
+    "Q": "minecraft:quartz",
+    "C": "minecraft:copper_ingot",
+    "R": "minecraft:redstone"
+  },
+  "result": {
+    "id": "minecraft:bat_spawn_egg",
+    "count": 1,
+    "components": {
+      "minecraft:item_model": "minecraft:daylight_detector",
+      "minecraft:item_name": "Solar Panel",
+      "minecraft:lore": [
+        {"text": "Generates EU from sunlight", "color": "gray", "italic": false}
+      ],
+      "minecraft:custom_data": { "ra": { "solar_panel": true } },
+      "minecraft:entity_data": {
+        "id": "minecraft:bat",
+        "Tags": ["ra.spawned", "ra.place.solar_panel"],
+        "Silent": true,
+        "NoAI": true,
+        "Invulnerable": true
+      }
+    }
+  },
+  "show_notification": true
+}

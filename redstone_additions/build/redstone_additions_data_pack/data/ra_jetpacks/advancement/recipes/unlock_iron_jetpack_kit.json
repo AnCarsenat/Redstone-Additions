@@ -1,0 +1,21 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "ra_jetpacks:iron_jetpack_kit"
+      }
+    },
+    "has_blaze_rod": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [{ "items": "minecraft:blaze_rod" }]
+      }
+    }
+  },
+  "requirements": [["has_the_recipe", "has_blaze_rod"]],
+  "rewards": {
+    "recipes": ["ra_jetpacks:iron_jetpack_kit"]
+  }
+}

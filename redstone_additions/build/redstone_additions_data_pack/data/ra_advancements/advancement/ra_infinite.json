@@ -1,0 +1,24 @@
+{
+  "parent": "ra_advancements:ra",
+  "display": {
+    "icon": { "id": "minecraft:copper_grate" },
+    "title": "Infinite Generators",
+    "description": "Build generators that grow their own material.",
+    "show_toast": true
+  },
+  "criteria": {
+    "get_casing": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "minecraft:repeating_command_block",
+            "predicates": {
+              "minecraft:custom_data": { "ra": { "generator_casing": true } }
+            }
+          }
+        ]
+      }
+    }
+  }
+}

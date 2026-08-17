@@ -8,7 +8,6 @@ __pycache__/
 *$py.class
 *.so
 .Python
-build/
 develop-eggs/
 dist/
 downloads/

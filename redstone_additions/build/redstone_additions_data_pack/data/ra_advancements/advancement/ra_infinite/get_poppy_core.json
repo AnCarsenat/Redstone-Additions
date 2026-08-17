@@ -1,0 +1,26 @@
+{
+  "parent": "ra_advancements:ra_infinite/get_generator_casing",
+  "display": {
+    "icon": { "id": "minecraft:flowering_azalea" },
+    "title": "Poppy Core",
+    "description": "Sacrifice poppies on an enchanting table until a core survives.",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "frame": "goal"
+  },
+  "criteria": {
+    "get_poppy_core": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "minecraft:chain_command_block",
+            "predicates": {
+              "minecraft:custom_data": { "ra": { "poppy_core": true } }
+            }
+          }
+        ]
+      }
+    }
+  }
+}

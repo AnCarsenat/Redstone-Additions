@@ -1,0 +1,26 @@
+{
+  "parent": "ra_advancements:ra_infinite/get_generator_casing",
+  "display": {
+    "icon": { "id": "minecraft:deepslate_diamond_ore" },
+    "title": "Mineral Core",
+    "description": "Sacrifice stone on an enchanting table until a core survives.",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "frame": "goal"
+  },
+  "criteria": {
+    "get_mineral_core": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "minecraft:jigsaw",
+            "predicates": {
+              "minecraft:custom_data": { "ra": { "mineral_core": true } }
+            }
+          }
+        ]
+      }
+    }
+  }
+}

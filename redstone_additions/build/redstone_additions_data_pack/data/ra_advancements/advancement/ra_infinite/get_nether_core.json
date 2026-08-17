@@ -1,0 +1,26 @@
+{
+  "parent": "ra_advancements:ra_infinite/get_generator_casing",
+  "display": {
+    "icon": { "id": "minecraft:ancient_debris" },
+    "title": "Nether Core",
+    "description": "Sacrifice netherrack on an enchanting table until a core survives.",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "frame": "goal"
+  },
+  "criteria": {
+    "get_nether_core": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "minecraft:structure_block",
+            "predicates": {
+              "minecraft:custom_data": { "ra": { "nether_core": true } }
+            }
+          }
+        ]
+      }
+    }
+  }
+}

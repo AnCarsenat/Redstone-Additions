@@ -1,0 +1,46 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "redstone",
+  "ingredients": [
+    "minecraft:repeating_command_block",
+    "minecraft:chain_command_block"
+  ],
+  "result": {
+    "id": "minecraft:bat_spawn_egg",
+    "count": 1,
+    "components": {
+      "minecraft:item_model": "minecraft:dropper",
+      "minecraft:item_name": "Poppy Generator",
+      "minecraft:rarity": "epic",
+      "minecraft:enchantment_glint_override": true,
+      "minecraft:lore": [
+        {
+          "text": "Grows flowers in front of itself, forever",
+          "color": "gray",
+          "italic": false
+        },
+        {
+          "text": "Shift+RMB with the wrench: single / patch",
+          "color": "dark_gray",
+          "italic": false
+        }
+      ],
+      "minecraft:custom_data": {
+        "ra": {
+          "poppy_generator": true
+        }
+      },
+      "minecraft:entity_data": {
+        "id": "minecraft:bat",
+        "Tags": [
+          "ra.spawned",
+          "ra.place.poppy_generator"
+        ],
+        "Silent": true,
+        "NoAI": true,
+        "Invulnerable": true
+      }
+    }
+  },
+  "show_notification": true
+}

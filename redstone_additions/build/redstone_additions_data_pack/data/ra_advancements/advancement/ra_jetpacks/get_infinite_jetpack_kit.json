@@ -1,0 +1,26 @@
+{
+  "parent": "ra_advancements:ra_jetpacks/get_iron_jetpack_kit",
+  "display": {
+    "icon": { "id": "minecraft:netherite_chestplate" },
+    "title": "No Refuelling",
+    "description": "Sacrifice an Iron Jetpack Kit on an enchanting table and win the infinite one.",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "frame": "goal"
+  },
+  "criteria": {
+    "get_infinite_jetpack_kit": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "minecraft:firework_star",
+            "predicates": {
+              "minecraft:custom_data": { "ra": { "jetpack_kit": true, "tier": "infinite" } }
+            }
+          }
+        ]
+      }
+    }
+  }
+}

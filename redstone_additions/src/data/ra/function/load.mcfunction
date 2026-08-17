@@ -1,5 +1,5 @@
 # /data/ra/function/load.mcfunction
-# Redstone Additions v5.1.4 - Core Load
+# Redstone Additions v5.1.5 - Core Load
 # Initializes all scoreboards, libraries, and sub-modules
 
 # ========================== SCOREBOARDS ==========================
@@ -48,8 +48,8 @@ schedule function ra:tick 1t
 
 # ========================== WELCOME MESSAGE ==========================
 # Load message_block
-tellraw @a [{text:"[RA_Lib] ",color:"gold"},{text:"v5.1.4 loaded",color:"green"}]
+tellraw @a [{text:"[RA_Lib] ",color:"gold"},{text:"v5.1.5 loaded",color:"green"}]
 
 # Welcome message_block
-tellraw @a [{text:"[",color:"dark_gray"},{text:"RA",color:"gold",bold:true},{text:"] ",color:"dark_gray"},{text:"Redstone Additions v5.1.4 loaded!",color:"green"}]
+tellraw @a [{text:"[",color:"dark_gray"},{text:"RA",color:"gold",bold:true},{text:"] ",color:"dark_gray"},{text:"Redstone Additions v5.1.5 loaded!",color:"green"}]
 tellraw @a [{text:"Use ",color:"gray"},{text:"/function ra:give_all_items",color:"yellow",hover_event:{action:"show_text",value:"Give all items"},click_event:{action:"suggest_command",command:"/function ra:give_all_items"}},{text:" to get items",color:"gray"}]

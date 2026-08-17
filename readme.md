@@ -15,7 +15,7 @@
 
 <p align="center">
   <img src="https://img.shields.io/badge/Minecraft-1.21.9--26.2-2EA44F" alt="Minecraft 1.21.9-26.2">
-  <img src="https://img.shields.io/badge/Version-v5.1.4-blue" alt="Version v5.1.4">
+  <img src="https://img.shields.io/badge/Version-v5.1.5-blue" alt="Version v5.1.5">
   <img src="https://img.shields.io/badge/Blocks-45-red" alt="45 blocks">
   <img src="https://img.shields.io/badge/Tools-5-lightgrey" alt="5 tools">
   <img src="https://img.shields.io/badge/Recipes-50-8A2BE2" alt="50 recipes">
@@ -277,6 +277,7 @@ Starter command:
 | Enchant Crafting | https://ancarsenat.github.io/Redstone-Additions/enchant-crafting/ |
 | Jetpacks | https://ancarsenat.github.io/Redstone-Additions/jetpacks/ |
 | Infinite Generators | https://ancarsenat.github.io/Redstone-Additions/infinite-generators/ |
+| Ender Links | https://ancarsenat.github.io/Redstone-Additions/ender-links/ |
 | Block Reference | https://ancarsenat.github.io/Redstone-Additions/block-reference/ |
 | Recipe Reference | https://ancarsenat.github.io/Redstone-Additions/recipe-reference/ |
 | Changelog | https://ancarsenat.github.io/Redstone-Additions/changelog/ |
@@ -298,6 +299,7 @@ Starter command:
 | `/function ra_multiblock:blocks/give_all` | Multiblock base items |
 | `/function ra_infinite:items/give_all` | Generator casing and generators |
 | `/function ra_jetpacks:items/give_all` | Jetpack kits |
+| `/function ra_ender:items/give_all` | Ender vaults and Teleport Anchors |
 | `/function ra:tools/wrench/give` | Wrench |
 | `/function ra:tools/data_handler/give` | Data Handler |
 | `/function ra:tools/creative_data_handler/give` | Creative Data Handler |

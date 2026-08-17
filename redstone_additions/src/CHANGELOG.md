@@ -1,9 +1,11 @@
 # Changelog
 
-## [Unreleased] - Enchant Crafting, Jetpacks, Infinite Generators
+## [v5.1.5] - 2026-08-17 - Enchant Crafting, Jetpacks, Infinite Generators, Ender Links
 
-Three new modules. The version strings in `pack.mcmeta`, `ra:load` and the docs
-still say v5.1.4 — bump them when this is released.
+Four new modules, a recipe-image renderer, a Data Handler that can edit every
+property it displays, and two long-standing electric transport bugs fixed.
+
+**Supported versions:** 1.21.9 – 26.2 (data pack formats 88 – 107).
 
 ### Added
 
@@ -206,13 +208,32 @@ still say v5.1.4 — bump them when this is released.
     first and only writes once the list is readable.
   - The fluid vault tagged itself `ra.wires.fluid_block`; `ra_wires` marks fluid
     blocks `ra.wires.fluid_node`.
-- **Electric wires stopped propagating after the first transfer.**
+- **Electric charge only ever reached the first two blocks of a run.** Two separate
+  bugs, both in the node-to-node push:
+  - A node handed EU to whichever neighbour had room, including the one that had
+    just supplied it, and `transfer_adjacent` tries `+X` first — so charge bounced
+    between the first two blocks and never travelled further. A solar panel filled
+    the two wires beside it and left the rest of the line at zero. Transfer now
+    requires the destination to hold less than the source and moves half the
+    difference: half converges the way water finds its level, where the whole
+    difference just makes the pair swap places and oscillate.
+  - **The transfer latch was never released.**
   `ra.wires.did_move` marks a node that has already handed charge to a neighbour on
   the current tick, but nothing ever cleared it, so the first push a node made
   tagged it permanently and `transfer_adjacent` skipped every direction from then
   on. Two solar panels placed side by side would trade once, tag each other, and
-  never feed the wire run again. `ra_wires:electric/tick` now clears the tag at the
-  start of each pass.
+    never feed the wire run again. `ra_wires:electric/tick` now clears the tag at the
+    start of each pass.
+- `{enabled:1b}` matches only a byte, and the Data Handler's `[+Add]` pastes whatever
+  value text it is given, so an `enabled` typed as `1` read the same in chat and
+  failed every gate — as did a property that was missing altogether. A wire run or
+  pipe line then did nothing, with nothing to say why. The ten runtime gates in the
+  electric and fluid paths now ask the tolerant way round, off only when explicitly
+  `0b`, matching the rest of the pack.
+- `ra_lib_multiblock:build/*` was never committed: the directory is called `build`
+  and `.gitignore` excluded `build/` anywhere in the tree, so a fresh clone built a
+  pack whose multiblock assembly called eight functions that did not exist. The pack
+  output is tracked again too, so an older commit checks out as a working pack.
 - Block skins rendered black. A `block_display` reads the light level at its own
   position, and that position is inside the opaque block the skin covers, where
   the light level is zero. `ra_lib:skin/spawn` and `spawn_static` now set
@@ -225,6 +246,15 @@ still say v5.1.4 — bump them when this is released.
 - The Item Crate crafting recipe (`ra_storage:storage_box`) and its unlock
   advancement. Crates come from a Boxer; a recipe whose result is a command block
   was never meant to be reachable, and the docs now say so.
+
+### Diagnostics
+
+- `/function ra_infinite:debug/poppy` — every Poppy Generator's marker position,
+  rotation, facing, cooldown, the block in front and the ground verdict.
+- `/function ra_wires:debug/electric` — every electric node's buffer, rate and
+  properties, whether its `enabled` flag is a byte at all, whether the transfer latch
+  is stuck, and how many neighbours the adjacency probe reaches, using the same
+  offsets and radius the transfer itself uses.
 
 ### Changed
 

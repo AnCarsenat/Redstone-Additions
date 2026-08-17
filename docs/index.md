@@ -2,7 +2,7 @@
 
 <img src="images/icon.png" alt="Redstone Additions" width="128">
 
-**Version:** v5.1.4  
+**Version:** v5.1.5  
 **Minecraft:** 1.21.9 – 26.2  
 **Author:** [AnCarsenat](https://github.com/AnCarsenat)
 
@@ -71,6 +71,7 @@ Path example:
 | [Enchant Crafting](enchant-crafting.md) | Sacrifice items on an enchanting table | No item — uses the vanilla table |
 | [Jetpacks](jetpacks.md) | 2 chestplate upgrade kits | Blaze rod, iron, redstone block, coal block |
 | [Infinite Generators](infinite-generators.md) | 3 self-growing blocks + casing | Copper grates around a netherite scrap |
+| [Ender Links](ender-links.md) | 3 remote vaults + teleport anchor | Ender pearls with the material each carries |
 
 Current pack totals:
 
@@ -92,6 +93,7 @@ Current pack totals:
 | `/function ra_multiblock:blocks/give_all` | Multiblock bases |
 | `/function ra_infinite:items/give_all` | Generator casing and generators |
 | `/function ra_jetpacks:items/give_all` | Jetpack kits |
+| `/function ra_ender:items/give_all` | Ender vaults and Teleport Anchors |
 | `/function ra:uninstall` | Opens uninstall confirmation dialog |
 
 ## Tools At A Glance
@@ -102,7 +104,25 @@ Current pack totals:
 | Data Handler | `/function ra:tools/data_handler/give` | ![Data Handler recipe](images/recipes/ra/data_handler.png){ width="200" } | Edit nearby block `data.properties` |
 | Goggles | `/function ra:tools/goggles/give` | ![Goggles recipe](images/recipes/ra/goggles.png){ width="200" } | In-world status overlays |
 
-## What Is New In v5.1.4
+## What Is New In v5.1.5
+
+- **Four new modules.** [Enchant Crafting](enchant-crafting.md),
+  [Jetpacks](jetpacks.md), [Infinite Generators](infinite-generators.md) and
+  [Ender Links](ender-links.md).
+- **Ender Links.** Vaults that join two places by channel for items, fluids and EU,
+  and Teleport Anchors whose redstone strength picks which anchor you arrive at.
+- **Hover flight that stops when you do.** Holding station is a servo reading your
+  vertical speed rather than switching gravity off, so hover no longer feels like ice.
+- **Electric runs actually carry charge.** Two bugs meant EU never got past the first
+  two blocks of a wire run — a latch that was never released, and nodes handing
+  charge back to whoever gave it to them.
+- **Every property is editable.** The Data Handler picks its editor from the value's
+  type, so a wire's transfer rate, a tank's tier and an anchor's target table can all
+  be changed in game.
+- **Recipe pictures are generated** from vanilla assets rather than screenshotted —
+  see [Recipe Renderer](recipe-renderer.md).
+
+## What Was New In v5.1.4
 
 - **Fluid and gas rebuilt on a network model.** A connected run of pipes is one
   network with one medium; fluid no longer crawls a block per tick, and pipes cost

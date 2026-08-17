@@ -2,19 +2,55 @@
 
 This page mirrors key datapack milestones from the main project changelog.
 
-## Unreleased — Enchant Crafting, Jetpacks, Infinite Generators
+## v5.1.5 (2026-08-17) — Enchant Crafting, Jetpacks, Infinite Generators, Ender Links
+
+Four new gameplay modules, drawn recipe images, a Data Handler that can edit every
+property it shows, and two electric transport bugs that had been quietly breaking
+wire runs.
+
+**Supported versions:** 1.21.9 – 26.2 (data pack formats 88 – 107).
+
+### New modules
 
 - **[Enchant Crafting](enchant-crafting.md)** — sacrifice items on a vanilla
   enchanting table for a small chance at an upgrade. Extensible through the
   `#ra_enchanting:recipes` function tag.
 - **[Jetpacks](jetpacks.md)** — Iron and Infinite Iron upgrade kits that fit onto
-  any chestplate, classic and hover flight modes switched with
-  `/trigger ra.jp.mode`, and coal-burning fuel on the iron tier.
+  any chestplate. Classic and hover flight, switched with `/trigger ra.jp.mode`;
+  hover holds station with a servo that reads your vertical speed and aims gravity
+  against it. `/trigger ra.jp.power` switches the whole thing off, and landing does
+  it for you.
 - **[Infinite Generators](infinite-generators.md)** — a crafted Generator Casing
   plus a Core gambled off an enchanting table build the Mineral, Nether and Poppy
   generators, which regrow their own material in front of themselves.
+- **[Ender Links](ender-links.md)** — vaults that link two places by channel for
+  items, fluids and EU, plus Teleport Anchors with a string id and a table of
+  fifteen targets, one per redstone strength. Item vaults are `shared` by default:
+  the contents follow whoever walks up, since mirroring one stack into two barrels
+  would give it two extraction points.
 
-Version strings still read v5.1.4 until this is released.
+### Tooling
+
+- Recipe pictures are drawn from vanilla assets by
+  [`tools/recipe_render`](recipe-renderer.md) instead of being screenshotted, with
+  blocks rendered from their real models. All 58 regenerated.
+- The [Creative Data Handler](developer-guide.md#creative-data-handler) builds its
+  rows from a registry and picks the editor from each value's actual type, so
+  properties it used to display but could not change — a wire's `transfer_rate`, a
+  tank's `tier`, an anchor's id — are editable, lists included.
+
+### Fixed
+
+- Electric charge only ever reached the first two blocks of a run: a node handed EU
+  back to the neighbour that had just supplied it, and a transfer latch was never
+  released. Charge now moves downhill only, half the gap at a time.
+- A `enabled` flag written as `1` rather than `1b` silently disabled a whole wire run
+  or pipe line. The runtime gates are tolerant now.
+- Poppy Generators planted nothing: 26.2 narrowed `#minecraft:dirt`, which no longer
+  contains grass blocks.
+- Block skins rendered black inside the block they cover.
+- Eight multiblock library functions had never been committed, because the directory
+  they live in is called `build`.
 
 ## v5.1.4 (2026-08-16) — Transport Rewrite, Item Safety, Library Audit
 

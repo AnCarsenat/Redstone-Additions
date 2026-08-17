@@ -350,9 +350,37 @@ narrowing the declared range over forking the function.
 
 ### Creative Data Handler
 
-- property discovery and editing
-- type-specific property menus
+- property discovery and editing, driven by one registry
+- editor chosen from the value's actual type
 - internal data/status inspection helpers
+
+Every property row comes from `storage ra:dh registry`, a plain list of property
+names set by `ra:tools/data_handler/init_registry`. For each name the block actually
+has, `props/render` probes the value's type and draws the matching row:
+
+| Type | Detected by | Editor |
+| ---- | ----------- | ------ |
+| bool | the value matches `0b` or `1b` | `[Toggle]`, applied at once |
+| number | `data get` on it succeeds | `[Modify]`, number input |
+| list | `<name>[0]` exists | `[Edit list]`, text input pasted as SNBT |
+| string | none of the above | `[Modify]`, text input |
+
+Order matters in that probe: `data get` reports a number for a byte and a length for
+a list, so both would look numeric if their own tests did not run afterwards.
+
+A row's button carries `100 + its registry index`, so `run_action` and
+`apply_pending` each need **one** branch for all properties rather than one per
+name. Menu actions stay below 100.
+
+**Adding a property to a block therefore means adding its name to
+`init_registry` and nothing else.** Before this, each property needed a
+hand-written `props/show_<name>` row plus a branch in `run_action` and another in
+`apply_pending`, which is why blocks could display a property the Handler had no way
+to change — a wire's `transfer_rate`, a tank's `tier`, an anchor's id.
+
+A data pack cannot iterate the keys of a compound, which is the only reason the
+registry list exists at all. Note also that `ra:dh` state is global: the Handler is
+a single-player tool, as it always was.
 
 ### Data Handler
 
@@ -467,6 +495,26 @@ The `name_only` early return is what lets `ra:tools/block_name` reuse this
 dispatch to resolve names for the Data Handlers, so a block's name is written
 once. Billboard offsets are measured from the marker, which sits at the block
 **centre** — a slab-height block wants `name_y` around `0.7`, not `1.0`.
+
+#### Stacked lines
+
+`prop_line`, `data_line` and `text_line` each take a hand-picked `y`. That is fine
+for two or three lines and a trap for more: every block invents its own ladder, and
+a block with one line too many draws it at `y:0.0`, inside itself, where nobody can
+read it. Blocks with several lines should say where their ladder starts and let the
+library count:
+
+```mcfunction
+function ra:tools/goggles/billboard/stack_reset {top:110,step:22}
+function ra:tools/goggles/billboard/stacked_prop_line {path:"mode",label:"Mode: ",color:"light_purple",suffix:""}
+function ra:tools/goggles/billboard/stacked_text_line {label:"Enabled: ",value:"yes",color:"green",suffix:""}
+```
+
+`top` and `step` are hundredths of a block — macro arguments are pasted as text, so
+the arithmetic is done with scoreboards and written back as a double. Each stacked
+line takes the current height and steps down. A block that forgets `stack_reset`
+falls back to `top:80, step:20`. The Poppy Generator, with five lines, is the
+worked example.
 - Use this to keep low-information blocks clean while enabling richer overlays on data-heavy blocks.
 
 `ra_wires` adds a goggles tinkering path:
@@ -487,7 +535,23 @@ Use this sequence for safe feature delivery.
 5. Add CDH property support for editable settings.
 6. Add goggles status support for visible diagnostics.
 7. Update docs and changelog.
-8. Run in-world validation pass.
+8. Render the recipe picture (see below) and reference it from the module page.
+9. Run in-world validation pass.
+
+### Recipe pictures
+
+`docs/images/recipes/{namespace}/{name}.png` used to be a screenshot per recipe.
+They are generated now — full details in [Recipe Renderer](recipe-renderer.md):
+
+```bash
+python3 tools/recipe_render/render.py src/data/<namespace>/recipe/<name>.json
+python3 tools/recipe_render/render.py --all          # the whole pack
+```
+
+The renderer reads the recipe the way the game does, so a result's
+`minecraft:item_model` component is honoured. Ingredients carry no components, so
+a disguised RA item used *as* an ingredient needs an entry in
+`tools/recipe_render/overrides.json`.
 
 ### New Block Checklist (Practical)
 

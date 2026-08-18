@@ -1,5 +1,381 @@
 # Changelog
 
+## [v5.1.12] - 2026-08-18 - Depth
+
+**Supported versions:** 1.21.9 - 26.2 (data pack formats 88 - 107).
+
+### Fixed
+
+- Skins z-fought with the block underneath: the 1.004 overlay left too little
+  clearance for the depth buffer at range. Now 1.02.
+  `ra_migrations:5.1.11-to-5.1.12` clears existing skins so they redraw.
+
+## [v5.1.11] - 2026-08-18 - Read Only
+
+**Supported versions:** 1.21.9 - 26.2 (data pack formats 88 - 107).
+
+### Added
+
+- `ra:tools/readonly/init_registry` - one type-keyed declaration of read-only
+  properties, obeyed by both the Data Handler and the wrench. Replaces five
+  per-module `hidden_fields` files and the `#ra:hidden_fields` tag.
+
+### Removed
+
+- `enabled` from the Ender vaults, Teleport Anchor and Infinite generators, which
+  had no way to toggle it. Kept on the Wireless Emitter/Receiver and Multiblock
+  Base, where the wrench's plain right-click is the control.
+
+### Fixed
+
+- The wrench counted cyclable entries before filtering read-only ones; both the
+  menu and the click path now build the list through one function so row indices
+  cannot diverge.
+
+## [v5.1.10] - 2026-08-18 - No Second Switch
+
+**Supported versions:** 1.21.9 - 26.2 (data pack formats 88 - 107).
+
+### Fixed
+
+- Electric Furnace duplicated items: `find_try` stopped writing the slot into
+  `ef.hit`, so `take_input`'s macro had no `$(slot)`, failed entirely, removed
+  nothing, and left a stale `#ef.took` that made `deliver` run anyway.
+
+### Removed
+
+- The `enabled` property throughout `ra_wires`; `ra_migrations:5.1.9-to-5.1.10`
+  strips it from existing markers.
+
+### Changed
+
+- The EU Switch is redstone-driven: powered conducts, unpowered cuts.
+- Menu buttons are bold and spaced.
+
+## [v5.1.9] - 2026-08-18 - One Tool
+
+**Supported versions:** 1.21.9 - 26.2 (data pack formats 88 - 107).
+
+### Added
+
+- Wrench menu for blocks with more than one cyclable property; one property still
+  cycles directly with no menu.
+- `ra:tools/wrench/init_registry` - each block declares a list of cyclable
+  properties, replacing a branch per block.
+- Markers record `data.type`; `ra_migrations:5.1.8-to-5.1.9` backfills it.
+
+### Removed
+
+- The goggles tinker. The goggles read, the wrench changes. `enabled` and the
+  Liquid Drain's mode moved to the wrench.
+
+## [v5.1.8] - 2026-08-18 - Reach, Lift, Scorch
+
+**Supported versions:** 1.21.9 - 26.2 (data pack formats 88 - 107).
+
+### Added
+
+- **Creative EU Source** and **Creative Fluid Source** (`ra_wires`) — make power
+  and fluid out of nothing, for building and testing the consuming half of a
+  system without also running a fuel farm to feed it. The EU source refills its
+  grid to capacity every tick, so a machine on a creative grid never browns out;
+  the fluid source fills with a medium cycled by the wrench, because a network
+  holds one medium at a time and a source stuck on water could not test a lava
+  line. No recipes, on purpose; both ship in the Wires Bundle, or
+  `/function ra_wires:items/give_creative` for just the two.
+
+### Added
+
+- **An upgrade menu, `/trigger ra.jp.kits`.** Lists the three kits with their
+  state and two buttons each: switch one off without removing it, or take it off
+  and get the kit back as an item. Re-shown after every action, so it behaves like
+  a panel rather than a one-shot message.
+
+### Added
+
+- **Electric Furnace** (`ra_wires`) — smelts with EU and no fuel at all, at up to
+  forty times a vanilla furnace. Four power modes cycled with the wrench:
+
+  | Mode | Ticks per item | EU per item |
+  | --- | --- | --- |
+  | low | 100 | 40 |
+  | medium | 50 | 100 |
+  | high | 20 | 300 |
+  | superpowered | 5 | 1000 |
+
+  EU per item climbs faster than speed does, on purpose — four times quicker for
+  four times the power would make every mode but superpowered pointless.
+
+  **Input and output are split by slot inside one barrel:** the top row (slots
+  0–8) is input and is only ever read, rows two and three (slots 9–26) are output
+  and are only ever written. Results are also pushed into any container directly
+  below. That combination is what makes hoppers work with no configuration — a
+  hopper feeding the block fills the lowest free slot, which is the input row,
+  while extraction has to be a push because a hopper underneath would otherwise
+  pull unsmelted ore out of slot 0. With nothing below, results stay in the output
+  rows, so it still works as a standalone block you open by hand.
+
+### Added
+
+- **Magic Crate** - pulls dropped items in from a configurable 5-20 block radius.
+  Eight items per pulse, whole stacks moved verbatim, drops its full inventory when
+  broken.
+- **Jetpack upgrade kits** - Thruster (+45% movement speed), Lift (climbs and sinks
+  about twice as fast), Scorch (sets fire to anything in a 3x3 column six blocks
+  under the exhaust, excluding players, items and the pack's own marker and display
+  entities).
+
+### Fixed
+
+- **The wrench cycled the Electric Furnace's output in silence.** Its message was
+  addressed to `@a[tag=ra.wires.tinker_user]`, which is the tag the *goggles*
+  tinker puts on the player. The wrench never touches the player — it runs `as`
+  the marker off a raycast — so the selector matched nobody. It now messages
+  `@a[distance=..10]` like every other wrench action.
+
+### Fixed
+
+- **The Thruster never engaged in classic mode.** It was gated on a speed floor
+  of 0.18 blocks a tick, and in classic you fly by holding sneak — horizontal air
+  movement never gets near that, because air control is a small fraction of
+  walking speed. The floor was also the wrong idea in general: it cannot tell
+  crossing terrain from lining up a block, since both can be slow. **Hold sprint**
+  to engage it instead — an explicit input, meaning "go fast" the same way it does
+  everywhere else in the game, identical in both flight modes, and nobody sprints
+  while placing blocks, which is where the jitter was unwelcome.
+
+### Fixed
+
+- **Every Electric Furnace readout said `N/A`.** The billboard library has both
+  `data_line`, which reads `data.status`, and `stacked_data_line`, which reads
+  `data.data` — different places behind near-identical names. The furnace wrote
+  `data.status` and asked the stacked reader for it, so every value was simply
+  absent and rendered as the fallback. Added the missing `stacked_status_line`
+  and documented the four-way naming trap at the top of it. The Magic Crate's
+  state line had caught the same edge.
+- **A switched-off jetpack kit could never be switched back on.** `kit/toggle`
+  removed the tag, then tested for it again on the next line — after its own
+  removal — and put it straight back, so every click ended muted. Same shape as
+  the Block Breaker cooldown bug: a condition re-tested after your own first line
+  invalidated it. The state is now read into a score before anything changes it.
+
+### Fixed
+
+- **Standing on the edge of a block counted as flying**, so the Scorch kit set
+  fire to whatever was below a player who was, from their own point of view,
+  standing still on solid ground. The airborne test sampled one point under the
+  player's exact centre, which is over the drop when you stand on a block's edge
+  while your feet are still on the corner. It now samples all four corners of the
+  hitbox as well — a player is 0.6 wide, so +/-0.3 — and any one of them over
+  something solid means supported, which is how vanilla decides it too. Shared by
+  the Thruster, which had the same bug more quietly.
+
+### Fixed
+
+- **The Thruster kit did nothing you could feel.** It raised
+  `minecraft:movement_speed`, which governs *walking*: once you are off the
+  ground, horizontal movement runs on a much smaller air-control factor, so the
+  attribute was a lever that is barely read in flight. It now measures how far you
+  actually moved last tick and adds 55% of it back, capped at 0.2 blocks a tick
+  each way — so it accelerates rather than snapping to speed, pushes whichever way
+  you are really going (strafing and reverse included), does nothing at all while
+  hovering still, and fades on its own as air drag shrinks the delta. It refuses
+  to push you into a wall, since `tp` does not collide.
+
+### Fixed
+
+- **The Scorch kit never set anything on fire.** Its selector carried
+  `type=!boat`, and there has been no `minecraft:boat` entity type since 1.21.2 —
+  it was split into `oak_boat`, `birch_boat` and the rest. One unknown entity type
+  makes the whole selector fail to parse, so the command never ran, while the
+  particles — separate commands — carried on looking correct. The selector now
+  names only three certain types and excludes this pack's own entities with
+  `tag=!ra`; the decoration exclusions moved into one guard line each, so a future
+  rename costs one guard rather than the entire feature.
+- **Scorch now works in hover mode.** It was gated on an airborne score computed
+  earlier in the player tick; it re-tests the ground itself, so it no longer
+  depends on where it is called from.
+
+### Fixed
+
+- **The EU Generator's skin vanished.** Teaching it to glow wrote the state into
+  the block's NAME — `minecraft:furnace[lit=true]` — and a block_display's `Name`
+  is a resource location, which cannot contain brackets. It does not error: the
+  display spawns showing nothing, so the block simply loses its skin. Block states
+  now go through `ra_lib:skin/apply_lit`, which puts them in `Properties` where
+  they belong.
+- **A burning generator reported itself inactive.** `active` was set from how much
+  EU the grid accepted, so a generator with no Battery filled the 50 EU it
+  contributes itself and then read as doing nothing — fuel going down, skin lit,
+  readout saying idle. `active` now means burning, and a separate line says
+  whether the grid is accepting or full.
+- **An unlit Industrial Light re-cleared its whole beam every tick**, about sixty
+  commands per light per tick for lights that were simply switched off. It now
+  clears on the tick it goes out, with a sweep every ten seconds for beams
+  orphaned by a chunk unload.
+
+
+- A vertical Liquid Drain only ever looked at a sneaking player's main hand, so a
+  container or loose items on top of it were ignored. It now tries the hand, then a
+  container above, then loose items above; only the hand path requires sneaking.
+- Status billboards drew inside their own block from the third line down: the text
+  anchor was the block centre and the top face is only 0.5 above it. The anchor is
+  now above the block, with a floor so no ladder can reach back into it.
+- EU Generators reported "No fuel" with coal in them. The fuel check only ever
+  looked at the first occupied stack, so anything that was not fuel sitting in the
+  barrel hid the coal behind it. It now asks the whole container.
+- The Industrial Light never lit. It read `eu_use` with an unguarded `data get`,
+  which stores **zero** on a failed read, so it drew nothing, was given nothing,
+  and read that as the grid being unable to pay - regardless of how much EU there
+  was. Now read through `ra_lib:util/property`, and the goggles name the missing
+  condition.
+- Valves and EU Breakers compared raw amounts instead of fill fraction, so a large
+  near-empty tank farm looked fuller than a small near-full pipe stub and never got
+  topped up. They also moved the whole gap, which swaps two networks rather than
+  levelling them; they now move half.
+
+### Changed
+
+- **The Creative Fluid Source is a beacon**, matching the Creative EU Source. A
+  sponge reads as something that *absorbs* fluid, which is the opposite of what it
+  does. Both break handlers now clear dropped beacons within one block rather than
+  two, so two creative sources side by side cannot eat each other's drop.
+
+### Changed
+
+- **Skins take their brightness from the light around them.** A block_display
+  samples light at its own position, which is inside the block it draws, where the
+  light is always zero — so every skin needed a brightness override or it rendered
+  pitch black. That override was hardcoded to `block:0`, right in daylight and
+  wrong beside a torch: the real block would be lit and its skin would not. The
+  level is now sampled one block above, by binary search over fifteen light
+  predicates — four questions rather than fifteen.
+- **The Thruster only engages at travel speed.** A data pack cannot set a
+  player's velocity: the only server-side ways to move a player are teleporting,
+  knockback and vehicles, so a continuous boost has to be a teleport a tick, and
+  that is visible as jitter no matter how well the magnitude is smoothed. What
+  can be fixed is *when* it fires. It now engages above 0.18 blocks a tick and
+  holds until you drop below 0.10 — two thresholds so a single one at cruising
+  speed cannot flicker. Crossing terrain it works as before; placing blocks it
+  stays out of the way entirely.
+
+### Changed
+
+- **The Electric Furnace pushes its results to a face you choose** — under,
+  front, back or top, cycled with the **wrench**. The old top-row-in/lower-rows-out
+  slot split stopped it re-smelting its own output but made automation awkward,
+  because a hopper cannot be told which rows to touch. Now any smeltable stack
+  anywhere in the barrel is input and nothing ever comes back in, so there is no
+  slot rule to remember and no way for it to find its own product. It refuses to
+  smelt when the destination is missing or full — checked *before* any EU is spent
+  or any input consumed, so a blocked output costs and loses nothing.
+  Power mode moved to the **goggles tinker**: two tools, two settings.
+- **The furnace skin is a blast furnace**, matching the item you place it from,
+  and it now places a light above itself while running — a skin is only a picture
+  and emits no light of its own, unlike the vanilla lit block it imitates.
+- **The Thruster no longer jitters.** It pushed a fraction of last tick's *raw*
+  movement, and a single tick's delta is noisy — it carries the player's input,
+  collision nudges and the previous push — so every wobble became a
+  different-sized teleport, which is exactly what renders as shaking. The delta
+  now feeds a running average (`smoothed = (smoothed * 3 + delta) / 4`, about a
+  four-tick time constant) and the push is built from that, so it changes
+  gradually. Below 0.025 blocks a tick it does not teleport at all, which removes
+  the twitching while drifting to a stop.
+
+### Changed
+
+- **Scorch deals real damage, not only fire.** `/damage 3 minecraft:on_fire`,
+  attributed to the pilot so the kill counts and drops experience, on a ten-tick
+  cadence — at one tick apart it would be twenty hits a second, which deletes
+  anything under a hovering player and makes the burning itself pointless.
+  Burning is still applied every tick.
+- **Scorch reach is exactly 6 blocks**, down from seven.
+- **Scorch runs only while airborne**, gated both at the call site and inside the
+  function.
+- **No more lava particles** in the exhaust — the popping blobs read as dripping
+  stone rather than flame. Flame and small_flame only, with the width coming from
+  a much wider spread instead of from the count, and the plume widening with
+  depth the way thrust actually does.
+- **The Thruster kit is stronger again** — 80% of last tick's travel added back
+  (was 55%), capped at 0.35 blocks a tick each axis (was 0.2), about seven extra
+  blocks a second on top of whatever you were already doing.
+
+### Changed
+
+- **Scorch's exhaust is far calmer.** It was about a hundred particles a tick
+  including `explosion` billows and `large_smoke` — a soot cloud rather than a
+  jet, grey swamping the orange and thick enough to hide your own boots. Now
+  flame and small_flame for the shape with a single `lava` for weight: no smoke,
+  no explosion, nothing grey.
+
+### Changed
+
+- **The Thruster kit is much stronger** — +120% movement speed rather than +45%.
+- **Scorch's exhaust is a plume, not a pilot light.** `flame` alone reads as a
+  spark however many you ask for; the bulk is `lava` and `large_smoke`, and
+  `explosion` is what makes it puff — one large soft billow does more than
+  hundreds of flame particles.
+- **Converting to an infinite jetpack says so when it keeps your kits.**
+
+### Changed
+
+- **Jetpack upgrades now live on the chestplate, not on the player.** Storing
+  them as player tags meant they followed you onto a different chestplate,
+  survived losing the jetpack entirely, and — the way it actually showed up —
+  made every kit report itself already fitted for ever after the first one. The
+  chestplate is now the record: its `custom_data` carries the flags, the lore
+  lists them, and the flight code re-derives its tags from the worn item every
+  tick, so a jetpack handed to someone else arrives with its upgrades and taking
+  one off stops you having them. Converting an iron jetpack to infinite keeps
+  the kits fitted to it instead of stripping them.
+- **The Industrial Light's beam walk no longer depends on constructs I could not
+  verify.** The mode travelled as the word `"on"` in storage and was tested with
+  a root-level compound-filter path, on lines that began with `$` while
+  containing no macro placeholder at all — all of it in the one code path that
+  was silently doing nothing. It is now a number in a score compared with
+  `matches`, and empty space is tested as `minecraft:air`/`minecraft:cave_air` by
+  name rather than through the `#minecraft:air` tag.
+
+### Changed
+
+- **The EU Generator now walks its own inventory instead of interrogating the
+  fuel registry.** Two earlier attempts asked the registry first — "is there coal
+  in there? charcoal?" — sixteen questions per attempt, first against `Items[0]`
+  and then via `execute if items ... container.*`. Both tested the container
+  indirectly, and when it kept reporting no fuel with a full stack of coal in it
+  there was no way to tell which half was lying. It now reads `Items` the way the
+  rest of the pack reads containers, looks each stack's id up in a new id-keyed
+  `fuel_map` in one step, and takes it out by index. Also cheaper: one lookup per
+  stack present, rather than sixteen tests regardless.
+- **The Thruster kit no longer applies on the ground.** A flight upgrade that
+  makes you walk faster around your base is not a flight upgrade; it now applies
+  only while airborne, and comes off cleanly on landing.
+- **Fitted jetpack kits are listed on the chestplate**, appended to its lore so
+  the tier line survives. (They still live on the player, so swapping chestplates
+  carries the upgrades but not the lore.)
+- **The Scorch kit shows itself.** Flame, lava and falling-lava at the boots plus
+  a visible column down the burn reach, and the reach went from six blocks to
+  seven.
+
+### Changed
+
+- **The Breeder stops before it starts.** It ran thirty-five `if items` checks
+  against its container every tick — one per animal/food pair — before any of
+  them could match, and paid all thirty-five whenever nothing did, which is
+  nearly always: animals wander off, and the ones present are usually already in
+  love or still on cooldown. One entity-type-tag check now answers "is there an
+  animal here that could breed right now?" and skips the other thirty-five.
+- **The Unboxer stopped pretending sixteen commands were guarded.** Its
+  double-chest handling was sixteen macro lines each reading
+  `$execute positioned $(input1) run execute if score ... matches 1 ...`. Written
+  that way all sixteen still run, still instantiate a macro and still resolve the
+  position, every pass, even for a single chest that can never match. The
+  condition and the positioning moved to one call site.
+
+
+- EU Generators light up, emit smoke and flame, and cast light while burning.
+- Added `/function ra_wires:debug/generator` and `/function ra_wires:debug/light`.
+
 ## [v5.1.7] - 2026-08-18 - Grids, Bridges, Millilitres
 
 **Supported versions:** 1.21.9 – 26.2 (data pack formats 88 – 107).

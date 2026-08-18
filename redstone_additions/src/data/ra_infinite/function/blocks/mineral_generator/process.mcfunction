@@ -9,7 +9,6 @@ function ra_lib:util/property {name:"cooldown",default:100,min:1}
 execute unless score @s ra.cooldown >= #prop ra.temp run return 0
 scoreboard players set @s ra.cooldown 0
 
-execute if data entity @s data.properties{enabled:0b} run return 0
 
 # Somebody has to take the last one away first.
 execute unless block ^ ^ ^1 #ra_infinite:growable run return 0

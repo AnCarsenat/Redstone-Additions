@@ -217,11 +217,33 @@ Safety behavior:
 
 ## Wrench
 
-Used for mode cycling and multiblock interactions:
+The only tool that **changes** a block. The goggles read, the wrench writes —
+there is no second editing path, which is why the goggles no longer have a
+"tinker" action.
 
-- Detects target custom marker.
-- Dispatches per-block cycle/toggle logic.
-- Runs multiblock assembly attempts for base blocks.
+**Shift+RMB** cycles properties, driven entirely by data:
+
+- The block declares what it can cycle in `ra:tools/wrench/init_registry`,
+  keyed by the type markers carry in `data.type`.
+- Properties listed in `ra:tools/readonly/init_registry` are dropped first, so
+  something the block owns can never be cycled by hand.
+- What is left decides the presentation: **nothing** and it says the block does
+  not cycle, **one** and it cycles immediately, **two or more** and it opens a
+  menu with the current value and a `[ CYCLE ]` button per row.
+
+Menu buttons come back through `/trigger ra.wrench`, carrying the row index plus
+one — a trigger sitting at zero is indistinguishable from nobody clicking. The
+target block is remembered on the player as three scores, because a chat button
+is clicked some time after the menu is drawn and has no idea what it was aimed
+at.
+
+**Plain RMB** toggles the blocks that have a single on/off state worth reaching
+for — the Wireless Emitter and Receiver — and runs multiblock assembly attempts
+on base blocks.
+
+Cyclers run **as the marker, at the block**, and message `@a[distance=..10]`.
+The wrench never touches the player, so anything addressed to a player-side tag
+would reach nobody.
 
 ## Creative Data Handler (CDH)
 
@@ -243,7 +265,7 @@ Property editor for marker entities:
 Status overlay system:
 
 - Detects players wearing/holding goggles.
-- Throttles scans on timer (every 40 ticks).
+- Throttles scans on timer (every 20 ticks — one second).
 - Clears old billboards each cycle.
 - Collects every marker in range of any goggles wearer **once**, then draws each
   one. Drawing per player duplicated billboards when two wearers stood near the
@@ -261,6 +283,12 @@ Block-level rendering control:
 - Status lines are emitted with `prop_line` (a `data.properties` value),
   `data_line` (a `data.status` value) or `text_line` (a literal). A missing value
   renders "N/A" in red rather than disappearing.
+- The stacked variants read **different** places despite the near-identical
+  names: `stacked_prop_line` is `data.properties`, `stacked_status_line` is
+  `data.status`, and `stacked_data_line` is `data.data` — the block's private
+  working state. Asking the wrong one is silent; the value is simply absent and
+  the row renders "N/A". Every readout on the Electric Furnace was blank for
+  exactly that reason.
 
 ## 7) Multiblock Lifecycle (`ra_lib_multiblock`)
 

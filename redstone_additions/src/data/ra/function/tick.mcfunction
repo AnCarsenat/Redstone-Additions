@@ -79,3 +79,7 @@ function ra_ender:tick
 function ra:tools/goggles/tick
 
 schedule function ra:tick 1t
+
+# Wrench menu buttons come back through /trigger ra.wrench.
+scoreboard players enable @a ra.wrench
+execute as @a[scores={ra.wrench=1..}] at @s run function ra:tools/wrench/menu_action

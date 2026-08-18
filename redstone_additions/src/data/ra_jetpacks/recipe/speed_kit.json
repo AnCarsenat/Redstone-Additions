@@ -1,0 +1,41 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [
+    "SFS",
+    "BRB",
+    "SFS"
+  ],
+  "key": {
+    "S": "minecraft:sugar",
+    "F": "minecraft:feather",
+    "B": "minecraft:blaze_powder",
+    "R": "minecraft:redstone_block"
+  },
+  "result": {
+    "id": "minecraft:firework_star",
+    "components": {
+      "minecraft:item_model": "minecraft:firework_rocket",
+      "minecraft:item_name": "Thruster Kit",
+      "minecraft:rarity": "rare",
+      "minecraft:enchantment_glint_override": true,
+      "minecraft:custom_data": {
+        "ra": {
+          "jetpack_kit": true,
+          "upgrade": "speed"
+        }
+      },
+      "minecraft:food": {
+        "nutrition": 0,
+        "saturation": 0,
+        "can_always_eat": true
+      },
+      "minecraft:consumable": {
+        "consume_seconds": 1000000,
+        "animation": "none",
+        "has_consume_particles": false
+      }
+    }
+  },
+  "show_notification": true
+}

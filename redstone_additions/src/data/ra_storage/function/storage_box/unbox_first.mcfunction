@@ -6,7 +6,7 @@ execute unless data entity @s Item.components."minecraft:custom_data".ra.storage
 
 data modify storage ra:temp storage_box.output_item set from entity @s Item.components."minecraft:custom_data".ra.storage_box.items[0]
 
-summon item ~ ~ ~ {Item:{id:"minecraft:stone",count:1},Tags:["ra.storage_box.drop"],PickupDelay:10}
+summon item ~ ~ ~ {Item:{id:"minecraft:stone",count:1},Tags:["ra","ra.storage_box.drop"],PickupDelay:10}
 data modify entity @e[type=item,tag=ra.storage_box.drop,distance=..0.6,limit=1,sort=nearest] Item set from storage ra:temp storage_box.output_item
 tag @e[type=item,tag=ra.storage_box.drop,distance=..0.6,limit=1,sort=nearest] remove ra.storage_box.drop
 

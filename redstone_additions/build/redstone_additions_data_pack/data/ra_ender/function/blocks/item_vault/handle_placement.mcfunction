@@ -10,7 +10,6 @@ function ra_lib:placement/place {block_id:"minecraft:barrel",block_tag:"ender_it
 
 data modify entity @e[type=marker,tag=ra.custom_block.ender_item_vault,tag=ra.new,distance=..0.5,sort=nearest,limit=1] data.properties.channel set value "default"
 data modify entity @e[type=marker,tag=ra.custom_block.ender_item_vault,tag=ra.new,distance=..0.5,sort=nearest,limit=1] data.properties.mode set value "link"
-data modify entity @e[type=marker,tag=ra.custom_block.ender_item_vault,tag=ra.new,distance=..0.5,sort=nearest,limit=1] data.properties.enabled set value 1b
 
 tag @e[type=marker,tag=ra.custom_block.ender_item_vault,tag=ra.new,distance=..0.5] remove ra.new
 tag @s remove ra.place.ender_item_vault

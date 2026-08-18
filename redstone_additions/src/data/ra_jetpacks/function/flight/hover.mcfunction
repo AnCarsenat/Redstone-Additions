@@ -48,13 +48,19 @@ execute unless block ~ ~-0.1 ~ #minecraft:air if score #jp.dir ra.temp matches .
 # Sinking: vanilla gravity back, capped by slow falling.
 execute if score #jp.dir ra.temp matches -1 run scoreboard players set #jp.tier ra.temp 9
 execute if score #jp.dir ra.temp matches -1 run effect clear @s minecraft:levitation
-execute if score #jp.dir ra.temp matches -1 run effect give @s minecraft:slow_falling 1 0 true
+execute if score #jp.dir ra.temp matches -1 unless entity @s[tag=ra.jp.kit_lift] run effect give @s minecraft:slow_falling 1 0 true
+# Lift kit sinks faster by simply not cushioning the fall as much. Slow falling
+# is what makes the descent gentle, so the upgrade drops it and leans on the
+# hover servo's gravity handling instead.
+execute if score #jp.dir ra.temp matches -1 if entity @s[tag=ra.jp.kit_lift] run effect clear @s minecraft:slow_falling
 
 # Climbing: levitation drives the ascent, so gravity only has to stay out of the
 # way. Amplifier 2 is three blocks a second, matching the descent.
 execute if score #jp.dir ra.temp matches 1 run scoreboard players set #jp.tier ra.temp 0
 execute if score #jp.dir ra.temp matches 1 run effect clear @s minecraft:slow_falling
-execute if score #jp.dir ra.temp matches 1 run effect give @s minecraft:levitation 1 2 true
+execute if score #jp.dir ra.temp matches 1 unless entity @s[tag=ra.jp.kit_lift] run effect give @s minecraft:levitation 1 2 true
+# Amplifier 5 is about six blocks a second, double the stock climb.
+execute if score #jp.dir ra.temp matches 1 if entity @s[tag=ra.jp.kit_lift] run effect give @s minecraft:levitation 1 5 true
 
 # Holding: the servo picks the tier.
 execute if score #jp.dir ra.temp matches 0 run effect clear @s minecraft:slow_falling

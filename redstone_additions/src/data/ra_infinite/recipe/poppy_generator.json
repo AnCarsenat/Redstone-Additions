@@ -33,7 +33,7 @@
       "minecraft:entity_data": {
         "id": "minecraft:bat",
         "Tags": [
-          "ra.spawned",
+          "ra", "ra.spawned",
           "ra.place.poppy_generator"
         ],
         "Silent": true,

@@ -37,7 +37,7 @@
             "minecraft:entity_data": {
                 "id": "minecraft:bat",
                 "Tags": [
-                    "ra.spawned",
+                    "ra", "ra.spawned",
                     "ra.place.electric_breaker"
                 ],
                 "Silent": true,

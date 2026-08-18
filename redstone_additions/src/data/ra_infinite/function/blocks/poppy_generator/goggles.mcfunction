@@ -22,8 +22,6 @@ function ra:tools/goggles/billboard/stack_reset {top:105,step:16}
 function ra:tools/goggles/billboard/stacked_prop_line {path:"cooldown",label:"Cooldown: ",color:"aqua",suffix:"t"}
 
 # enabled is a byte, so it is rendered as words rather than copied raw.
-execute unless data entity @s data.properties{enabled:0b} run function ra:tools/goggles/billboard/stacked_text_line {label:"Enabled: ",value:"yes",color:"green",suffix:""}
-execute if data entity @s data.properties{enabled:0b} run function ra:tools/goggles/billboard/stacked_text_line {label:"Enabled: ",value:"no",color:"red",suffix:""}
 
 # Whether the spot it plants into has anything a flower can stand on. Without this
 # a generator aimed at bare stone or at its own top face looks broken rather than

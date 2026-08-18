@@ -19,5 +19,5 @@ kill @e[type=item,nbt={Item:{id:"minecraft:polished_blackstone_wall"}},distance=
 
 # One wire, so one drop. The tier branch that used to be here decided between
 # two items that had become identical.
-summon item ~ ~ ~ {Item:{id:"minecraft:bat_spawn_egg",count:1,components:{"minecraft:item_model":"minecraft:orange_candle","minecraft:item_name":'Wire',"minecraft:custom_data":{ra:{electric_wire_copper:1b}},"minecraft:entity_data":{id:"minecraft:bat",Tags:["ra.spawned","ra.place.electric_wire_copper"],Silent:1b,NoAI:1b,Invulnerable:1b}}}}
+summon item ~ ~ ~ {Item:{id:"minecraft:bat_spawn_egg",count:1,components:{"minecraft:item_model":"minecraft:orange_candle","minecraft:item_name":'Wire',"minecraft:custom_data":{ra:{electric_wire_copper:1b}},"minecraft:entity_data":{id:"minecraft:bat",Tags:["ra","ra.spawned","ra.place.electric_wire_copper"],Silent:1b,NoAI:1b,Invulnerable:1b}}}}
 kill @s

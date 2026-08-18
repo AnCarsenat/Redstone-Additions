@@ -2,13 +2,15 @@
 # Internal: find the fullest and emptiest networks touching this block, and move
 # contents from one to the other. Context: as the bridge marker, at its block.
 #
-# Six neighbours, no facing. Whichever adjacent network holds the most gives to
-# whichever holds the least — so a valve dropped into a pipe run works whichever
-# way round it was placed, and a bridge at a junction still does the sensible
-# thing rather than picking two spaces at random.
+# Six neighbours, no facing. Whichever adjacent network is the FULLEST gives to
+# whichever is the emptiest — see bridge/consider for why fullness rather than
+# amount. A valve dropped into a pipe run works whichever way round it was placed,
+# and a bridge at a junction still does the sensible thing.
 
+# Fill, in ten-thousandths. -1 and 10001 sit outside the real range so the first
+# neighbour seen always beats both.
 scoreboard players set #br.hi ra.wires.tmp -1
-scoreboard players set #br.lo ra.wires.tmp 2147483647
+scoreboard players set #br.lo ra.wires.tmp 10001
 scoreboard players set #br.found ra.wires.tmp 0
 data remove storage ra:wires bridge
 

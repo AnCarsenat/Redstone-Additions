@@ -28,6 +28,9 @@ execute as @e[type=marker,tag=ra.custom_block.electric_wire] at @s if block ~ ~ 
 # Break detection — straight to the cleanup handler, no ra.broken round-trip.
 execute as @e[type=marker,tag=ra.custom_block.electric_wire] at @s unless block ~ ~ ~ conduit run function ra_wires:electric/break/wire
 execute as @e[type=marker,tag=ra.custom_block.electric_generator] at @s unless block ~ ~ ~ barrel run function ra_wires:electric/break/generator
+execute as @e[type=marker,tag=ra.custom_block.creative_eu] at @s unless block ~ ~ ~ beacon run function ra_wires:electric/break/creative_eu
+execute as @e[type=marker,tag=ra.custom_block.creative_fluid] at @s unless block ~ ~ ~ beacon run function ra_wires:electric/break/creative_fluid
+execute as @e[type=marker,tag=ra.custom_block.electric_furnace] at @s unless block ~ ~ ~ barrel run function ra_wires:electric/break/electric_furnace
 execute as @e[type=marker,tag=ra.custom_block.electric_consumer] at @s unless block ~ ~ ~ observer run function ra_wires:electric/break/consumer
 execute as @e[type=marker,tag=ra.custom_block.electric_switch] at @s unless block ~ ~ ~ waxed_cut_copper run function ra_wires:electric/break/switch
 execute as @e[type=marker,tag=ra.custom_block.solar_panel] at @s unless block ~ ~ ~ daylight_detector run function ra_wires:electric/break/solar_panel
@@ -49,7 +52,7 @@ execute as @e[type=marker,tag=ra.custom_block.electric_generator] at @s align xy
 execute as @e[type=marker,tag=ra.wires.electric_node,tag=!ra.tr.node,tag=!ra.custom_block.electric_switch] at @s run function ra_wires:electric/adopt
 
 # A switch is the exception: its enabled state decides whether it conducts, so it
-# joins and leaves as that changes, however it was changed — goggles tinker, Data
+# joins and leaves as that changes, however it was changed — wrench, Data
 # Handler toggle or a raw /data edit. Leaving severs the run at this block and
 # the two halves rebuild as separate grids, which is what the old model could
 # never really do: a switch there just declined to hand charge on, while still
@@ -58,8 +61,13 @@ execute as @e[type=marker,tag=ra.wires.electric_node,tag=!ra.tr.node,tag=!ra.cus
 # Only `enabled` is allowed to keep a node off the grid. A disabled consumer or
 # generator stops drawing or producing but still conducts, exactly as before —
 # cutting a line is the switch's job alone.
-execute as @e[type=marker,tag=ra.custom_block.electric_switch,tag=!ra.tr.node] if data entity @s data.properties{enabled:1b} at @s run function ra_wires:electric/adopt
-execute as @e[type=marker,tag=ra.custom_block.electric_switch,tag=ra.tr.node] unless data entity @s data.properties{enabled:1b} run function ra_lib:transport/net/leave
+# THE SWITCH IS REDSTONE NOW, NOT A PROPERTY
+# It was the one block whose only control was `enabled`, which meant the only way
+# to work a switch was to open a menu -- in a redstone pack. Powered conducts,
+# unpowered cuts, the same convention the EU Breaker and the valves already use,
+# so a lever wired to it does what a lever obviously should.
+execute as @e[type=marker,tag=ra.custom_block.electric_switch,tag=!ra.tr.node] at @s if function ra_lib:redstone/any run function ra_wires:electric/adopt
+execute as @e[type=marker,tag=ra.custom_block.electric_switch,tag=ra.tr.node] at @s unless function ra_lib:redstone/any run function ra_lib:transport/net/leave
 
 # Production, then draw. Order matters only in that a generator's output is
 # spendable on the same tick it is made; nothing depends on which generator or
@@ -68,6 +76,16 @@ execute as @e[type=marker,tag=ra.custom_block.electric_switch,tag=ra.tr.node] un
 execute as @e[type=marker,tag=ra.custom_block.electric_generator] at @s run function ra_wires:electric/generator_tick
 execute as @e[type=marker,tag=ra.custom_block.solar_panel] at @s run function ra_wires:blocks/solar_panel/tick
 execute as @e[type=marker,tag=ra.custom_block.electric_consumer] at @s run function ra_wires:electric/consumer_tick
+# Orphan sweep for the Industrial Light. A light that goes out clears its own
+# beam on that tick; this is only for beams whose marker vanished with a chunk,
+# which have nothing left to notice. Once every ten seconds.
+scoreboard players add #il.sweep ra.wires.tmp2 1
+execute if score #il.sweep ra.wires.tmp2 matches 200.. run scoreboard players set #il.sweep ra.wires.tmp2 0
+
+execute as @e[type=marker,tag=ra.custom_block.electric_furnace] at @s align xyz positioned ~0.5 ~0.5 ~0.5 unless entity @e[type=block_display,tag=ra.skin.electric_furnace,distance=..0.4,limit=1] run function ra_wires:blocks/electric_furnace/refresh_display
+execute as @e[type=marker,tag=ra.custom_block.creative_eu] at @s run function ra_wires:blocks/creative_eu/tick
+execute as @e[type=marker,tag=ra.custom_block.creative_fluid] at @s run function ra_wires:blocks/creative_fluid/tick
+execute as @e[type=marker,tag=ra.custom_block.electric_furnace] at @s run function ra_wires:blocks/electric_furnace/tick
 execute as @e[type=marker,tag=ra.custom_block.industrial_light] at @s run function ra_wires:blocks/industrial_light/tick
 
 # Status refresh. Wires and switches do no other work.

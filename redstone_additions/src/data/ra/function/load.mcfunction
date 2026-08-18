@@ -1,5 +1,5 @@
 # /data/ra/function/load.mcfunction
-# Redstone Additions v5.1.7 - Core Load
+# Redstone Additions v5.1.12 - Core Load
 # Initializes all scoreboards, libraries, and sub-modules
 
 # ========================== SCOREBOARDS ==========================
@@ -51,12 +51,25 @@ function ra_lib_multiblock:init
 
 # ========================== TICKLOOP ==========================
 # Schedule tick for the next game tick to avoid load-time command bursts
+# Bring a world saved by an older version up to date. See ra_migrations:run.
+# The wrench menu: which row was clicked, and which block it belongs to.
+scoreboard objectives add ra.wrench trigger
+scoreboard players enable @a ra.wrench
+scoreboard objectives add ra.wr.x dummy
+scoreboard objectives add ra.wr.y dummy
+scoreboard objectives add ra.wr.z dummy
+
+function ra:tools/wrench/init_registry
+function ra:tools/readonly/init_registry
+
+function ra_migrations:run
+
 schedule function ra:tick 1t
 
 # ========================== WELCOME MESSAGE ==========================
 # Load message_block
-tellraw @a [{text:"[RA_Lib] ",color:"gold"},{text:"v5.1.7 loaded",color:"green"}]
+tellraw @a [{text:"[RA_Lib] ",color:"gold"},{text:"v5.1.12 loaded",color:"green"}]
 
 # Welcome message_block
-tellraw @a [{text:"[",color:"dark_gray"},{text:"RA",color:"gold",bold:true},{text:"] ",color:"dark_gray"},{text:"Redstone Additions v5.1.7 loaded!",color:"green"}]
+tellraw @a [{text:"[",color:"dark_gray"},{text:"RA",color:"gold",bold:true},{text:"] ",color:"dark_gray"},{text:"Redstone Additions v5.1.12 loaded!",color:"green"}]
 tellraw @a [{text:"Use ",color:"gray"},{text:"/function ra:give_all_items",color:"yellow",hover_event:{action:"show_text",value:"Give all items"},click_event:{action:"suggest_command",command:"/function ra:give_all_items"}},{text:" to get items",color:"gray"}]

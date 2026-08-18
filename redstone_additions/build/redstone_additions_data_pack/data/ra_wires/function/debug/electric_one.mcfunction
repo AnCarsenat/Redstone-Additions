@@ -25,9 +25,6 @@ execute unless entity @s[tag=ra.tr.node] run tellraw @s [{text:"   missing ra.tr
 
 # The enabled flag has to be a byte. An int reads the same in chat and behaves
 # the opposite way.
-execute if data entity @s data.properties{enabled:1b} run tellraw @s [{text:"   enabled: ",color:"gray"},{text:"1b, a byte",color:"green"}]
-execute if data entity @s data.properties{enabled:0b} run tellraw @s [{text:"   enabled: ",color:"gray"},{text:"0b, switched off",color:"red"}]
-execute unless data entity @s data.properties{enabled:1b} unless data entity @s data.properties{enabled:0b} run tellraw @s [{text:"   enabled: ",color:"gray"},{text:"not a byte — an int or a string",color:"red"}]
 
 # Left over from the push model; nothing writes it now, so seeing one means an
 # old marker was never adopted.

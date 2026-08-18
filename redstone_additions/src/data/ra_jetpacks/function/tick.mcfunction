@@ -20,6 +20,9 @@ execute as @a[scores={ra.jp.sound=1..}] at @s run function ra_jetpacks:mode/soun
 # Whole jetpack switched off or on with /trigger ra.jp.power.
 execute as @a[scores={ra.jp.power=1..}] at @s run function ra_jetpacks:mode/power_toggle
 
+# Upgrade menu, opened and driven with /trigger ra.jp.kits.
+execute as @a[scores={ra.jp.kits=1..}] at @s run function ra_jetpacks:kit/menu_action
+
 # Anyone wearing a jetpack chestplate.
 execute as @a at @s if items entity @s armor.chest *[minecraft:custom_data~{ra:{jetpack:1b}}] run function ra_jetpacks:flight/tick_player
 

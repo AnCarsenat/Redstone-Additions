@@ -19,6 +19,9 @@ execute unless predicate ra:is_sneaking run return 0
 
 # Amplifier 2 is three blocks a second — brisk, and still well under an elytra.
 effect give @s minecraft:levitation 1 2 true
+# Lift kit: amplifier 5, about six blocks a second. Given after the stock effect
+# so it replaces it -- a higher amplifier always wins.
+execute if entity @s[tag=ra.jp.kit_lift] run effect give @s minecraft:levitation 1 5 true
 
 # Effects only once the player is off the ground: sneak-walking is not flying.
 execute if block ~ ~-0.1 ~ #minecraft:air run particle minecraft:campfire_cosy_smoke ~ ~-0.15 ~ 0.15 0.05 0.15 0.01 3

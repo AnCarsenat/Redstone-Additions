@@ -23,7 +23,7 @@
             "minecraft:entity_data": {
                 "id": "minecraft:bat",
                 "Tags": [
-                    "ra.spawned",
+                    "ra", "ra.spawned",
                     "ra.place.liquid_pipe_copper"
                 ],
                 "Silent": true,

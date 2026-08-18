@@ -12,7 +12,6 @@ execute if data storage ra:wires spec.props run data modify entity @s data.prope
 execute if data storage ra:wires spec.nodedata run data modify entity @s data.data set from storage ra:wires spec.nodedata
 
 tag @s add ra.wires.node
-tag @s add ra.wires.tinkerable
 
 execute if data storage ra:wires spec.fluid run tag @s add ra.wires.fluid_node
 execute if data storage ra:wires spec.electric run tag @s add ra.wires.electric_node
@@ -22,5 +21,6 @@ execute if data storage ra:wires spec.bridge run tag @s add ra.wires.bridge
 execute if data storage ra:wires spec.net run function ra_wires:blocks/place_join with storage ra:wires spec
 
 execute if data storage ra:wires spec{marker:"electric_generator"} run function ra_wires:blocks/electric_generator/refresh_display
+execute if data storage ra:wires spec{marker:"electric_furnace"} run function ra_wires:blocks/electric_furnace/refresh_display
 
 function ra_wires:common/update_model_local_and_neighbors

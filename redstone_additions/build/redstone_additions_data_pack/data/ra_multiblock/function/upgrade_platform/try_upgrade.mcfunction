@@ -34,7 +34,7 @@ tag @s remove ra.upgrade_failed
 execute if score #up_roll ra.temp > #up_chance ra.temp run return 0
 
 # === Spawn upgraded item ===
-execute at @s run summon item ~ ~0.5 ~ {Item:{id:"minecraft:stone",count:1},Tags:["ra.upgraded"],PickupDelay:20}
+execute at @s run summon item ~ ~0.5 ~ {Item:{id:"minecraft:stone",count:1},Tags:["ra","ra.upgraded"],PickupDelay:20}
 execute as @e[type=item,tag=ra.upgraded,distance=..1.0,limit=1,sort=nearest] run data modify entity @s Item set from storage ra:temp upgrade.result
 execute as @e[type=item,tag=ra.upgraded,distance=..1.0,limit=1,sort=nearest] run tag @s remove ra.upgraded
 

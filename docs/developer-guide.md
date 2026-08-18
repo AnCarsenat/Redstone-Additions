@@ -1,6 +1,6 @@
 # Developer Guide
 
-This guide documents implementation architecture and contributor workflow for `v5.1.7`.
+This guide documents implementation architecture and contributor workflow for `v5.1.12`.
 
 If you want conceptual runtime flow first, start with [How It Works](how-it-works.md). This page is focused on engineering-level extension and maintenance work.
 
@@ -549,12 +549,65 @@ falls back to `top:80, step:20`. The Poppy Generator, with five lines, is the
 worked example.
 - Use this to keep low-information blocks clean while enabling richer overlays on data-heavy blocks.
 
-`ra_wires` adds a goggles tinkering path:
+`ra_wires` blocks declare their cyclable properties to the wrench:
 
-- Sneak + goggles in main hand toggles nearest transport block state.
-- On liquid/gas source blocks, tinkering cycles configured medium IDs.
+- Add an entry to `ra:tools/wrench/init_registry`, keyed by the block's type —
+  the same string `ra_lib:placement/place` writes into the marker's `data.type`.
+- Each entry is `{label, prop, fn}`: the name shown in the menu, the property
+  read for the current value, and the function that steps it.
+- One entry and shift+RMB cycles it immediately; two or more and the wrench opens
+  a menu. Nothing else changes.
+
+### Read-only properties
+
+A property the block owns and the player must not edit goes in
+`ra:tools/readonly/init_registry`, keyed by block type:
+
+```mcfunction
+data modify storage ra:dh readonly set value {"electric_generator":{generation_rate:1b}}
+```
+
+Both tools obey it from that one place: the Data Handler shows the row with a
+struck-through `[Modify]` and a reason on hover, and the wrench drops it from the
+cycle menu. A block left with no cyclable properties after filtering reports that
+it does not cycle, rather than silently cycling the one thing you locked.
+
+It is a compound rather than a list because both readers ask "is *this* name
+read-only?" — one command against a compound, a walk against a list.
+
+Cyclers run **as the marker, at the block**, and message `@a[distance=..10]` —
+the wrench never touches the player, so anything addressed to a player-side tag
+reaches nobody.
+
+Read the current state before writing it. A cycler that flips a value and then
+re-tests the same condition sees what it just wrote; that mistake has cost this
+pack a jetpack toggle, a block breaker cooldown and a clock.
 
 When adding new status fields, update goggles scan/status handlers.
+
+## Migrations
+
+A world saved by an older version is brought up to date by `ra_migrations`, run
+from `ra:load` before anything else touches the world.
+
+- One function per version step, named for the step it bridges:
+  `ra_migrations:5.1.8-to-5.1.9`.
+- `ra_migrations:run` calls them oldest-first. Add new ones to the end.
+- **Every migration runs on every load**, so each must be safe to run twice. Fill
+  in what a newer version expects; never overwrite or destroy state.
+
+The names are `-to-` rather than `->` because a resource location path may only
+contain `[a-z0-9_.-/]`, and a file the loader skips is a migration that silently
+never runs.
+
+They are also **identifiers, not the pack version**. A find-and-replace that
+bumps the version across the repo must skip `ra_migrations/`, or the chain
+renames itself to nonsense like `5.1.9-to-5.1.9`.
+
+What has needed one so far: tagging every entity `ra` so `/kill @e[tag=ra]`
+works, writing `data.type` onto markers so the wrench and read-only registries
+have a key, dropping the `enabled` property, and clearing skins so they redraw
+with a wider anti-z-fighting margin.
 
 ## 6) Contributor Workflow
 

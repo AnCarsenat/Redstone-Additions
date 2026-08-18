@@ -24,7 +24,7 @@
             "minecraft:custom_data": { "ra": { "industrial_light": true } },
             "minecraft:entity_data": {
                 "id": "minecraft:bat",
-                "Tags": ["ra.spawned", "ra.place.industrial_light"],
+                "Tags": ["ra", "ra.spawned", "ra.place.industrial_light"],
                 "Silent": true,
                 "NoAI": true,
                 "Invulnerable": true

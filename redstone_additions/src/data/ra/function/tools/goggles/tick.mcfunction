@@ -2,16 +2,19 @@
 # Detect if any player is holding or wearing goggles, then scan
 # Called every tick from ra:tick
 
+# The goggles READ. They used to also change things -- sneak plus goggles cycled
+# a block's mode and toggled `enabled` -- which meant two tools that both altered
+# blocks, with no rule about which owned what. The Electric Furnace ended up with
+# its output on the wrench and its power mode on the goggles, and its wrench
+# message addressed to a tag only the goggles ever set. Everything you can change
+# is on the wrench now.
+
 # Check if any player is wearing goggles (helmet slot) or holding them
 execute as @a at @s if items entity @s armor.head *[custom_data~{ra:{goggles:1b}}] run tag @s add ra.goggles_active
 execute as @a at @s if items entity @s weapon.mainhand *[custom_data~{ra:{goggles:1b}}] run tag @s add ra.goggles_active
 execute as @a at @s if items entity @s weapon.offhand *[custom_data~{ra:{goggles:1b}}] run tag @s add ra.goggles_active
 
-# Tinker cooldown handling for goggles interactions
-scoreboard players remove @a[scores={ra.wires.tinker=1..}] ra.wires.tinker 1
 
-# Sneak + hold goggles in main hand to tinker nearest RA Wires block
-execute as @a[tag=ra.goggles_active,scores={ra.wires.tinker=..0}] at @s if predicate ra:is_sneaking if items entity @s weapon.mainhand *[custom_data~{ra:{goggles:1b}}] run function ra_wires:tools/goggles_tinker
 
 # Redraw once a second.
 #

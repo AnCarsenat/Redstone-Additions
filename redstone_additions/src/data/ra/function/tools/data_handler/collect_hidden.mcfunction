@@ -1,21 +1,14 @@
 # /ra:tools/data_handler/collect_hidden
-# Ask the selected block which of its fields are not for survival players.
-# As player, with a scanned target.
+# Work out which of this block's properties are read-only.
+# Fills storage ra:dh hidden, a compound of name -> 1b.
 #
-# The list belongs to the block, not to this tool. A global list of names would
-# make one block's decision another's: `cooldown` is a tuning knob on a generator
-# and the entire point of a Clock, and hiding the name everywhere would take the
-# Clock's period away with it.
-#
-# Blocks contribute through #ra:hidden_fields, which runs as the target marker.
-# Declaring nothing means hiding nothing.
+# One lookup keyed by the block's type, from ra:tools/readonly/init_registry.
+# It used to fan out through a #ra:hidden_fields function tag into a per-module
+# chain of tag tests, then walk the resulting list into a compound one name at a
+# time. Storing the registry as compounds in the first place removes both halves.
 
-data modify storage ra:dh hidden_names set value []
 data modify storage ra:dh hidden set value {}
 
-execute as @e[type=marker,tag=ra.dh_target,limit=1] run function #ra:hidden_fields
-
-# The declaration is a list, because redaction has to walk it; the membership test
-# in props/render wants a compound. Derive the second from the first, once per scan.
-data modify storage ra:dh hide_build set from storage ra:dh hidden_names
-function ra:tools/data_handler/props/hidden_next
+data remove storage ra:dh ro_q
+execute as @e[type=marker,tag=ra.dh_target,limit=1] run data modify storage ra:dh ro_q.type set from entity @s data.type
+execute if data storage ra:dh ro_q.type run function ra:tools/data_handler/collect_hidden_at with storage ra:dh ro_q

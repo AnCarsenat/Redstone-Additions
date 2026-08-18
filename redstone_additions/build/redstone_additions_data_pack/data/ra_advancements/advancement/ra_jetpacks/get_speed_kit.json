@@ -1,0 +1,34 @@
+{
+  "parent": "ra_advancements:ra_jetpacks",
+  "display": {
+    "icon": {
+      "id": "minecraft:firework_rocket"
+    },
+    "title": "Thruster Kit",
+    "description": "Obtain the Thruster Kit.",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "criteria": {
+    "get_speed_kit": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "minecraft:firework_star"
+            ],
+            "components": {
+              "custom_data": {
+                "ra": {
+                  "jetpack_kit": 1,
+                  "upgrade": "speed"
+                }
+              }
+            }
+          }
+        ]
+      }
+    }
+  }
+}

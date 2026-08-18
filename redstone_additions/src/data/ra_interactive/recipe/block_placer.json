@@ -20,7 +20,7 @@
       "minecraft:custom_data": { "ra": { "block_placer": true } },
       "minecraft:entity_data": {
         "id": "minecraft:bat",
-        "Tags": ["ra.spawned", "ra.place.block_placer"],
+        "Tags": ["ra", "ra.spawned", "ra.place.block_placer"],
         "Silent": true,
         "NoAI": true,
         "Invulnerable": true

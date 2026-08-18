@@ -1,0 +1,25 @@
+{
+  "parent": "ra_advancements:ra_interactive",
+  "display": {
+    "icon": {
+      "id": "minecraft:barrel"
+    },
+    "title": "Magic Crate",
+    "description": "Obtain the Magic Crate item.",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "criteria": {
+    "get_magic_crate": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": ["minecraft:bat_spawn_egg"],
+            "components": {"custom_data":{"ra": { "magic_crate": 1}}}
+          }
+        ]
+      }
+    }
+  }
+}

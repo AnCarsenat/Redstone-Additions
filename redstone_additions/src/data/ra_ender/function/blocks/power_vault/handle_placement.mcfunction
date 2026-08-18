@@ -14,7 +14,6 @@ function ra_lib:placement/place {block_id:"minecraft:purpur_pillar",block_tag:"e
 
 data modify entity @e[type=marker,tag=ra.custom_block.ender_power_vault,tag=ra.new,distance=..0.5,sort=nearest,limit=1] data.properties.channel set value "default"
 data modify entity @e[type=marker,tag=ra.custom_block.ender_power_vault,tag=ra.new,distance=..0.5,sort=nearest,limit=1] data.properties.mode set value "link"
-data modify entity @e[type=marker,tag=ra.custom_block.ender_power_vault,tag=ra.new,distance=..0.5,sort=nearest,limit=1] data.properties.enabled set value 1b
 data modify entity @e[type=marker,tag=ra.custom_block.ender_power_vault,tag=ra.new,distance=..0.5,sort=nearest,limit=1] data.properties.transfer_rate set value 80
 
 tag @e[type=marker,tag=ra.custom_block.ender_power_vault,tag=ra.new,distance=..0.5] add ra.wires.electric_node

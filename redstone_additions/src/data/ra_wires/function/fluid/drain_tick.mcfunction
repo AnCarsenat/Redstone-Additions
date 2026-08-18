@@ -2,7 +2,7 @@
 # Move fluid between the world and the network.
 # Context: as a drain marker, at the drain position.
 #
-# The drain has three roles. Two are chosen with the goggles tinker:
+# The drain has three roles. Two are chosen with the wrench:
 #   "drain" — take a world source into the network, same as a pump but slower
 #   "place" — spend network contents putting the medium back into the world
 #
@@ -19,7 +19,6 @@ execute unless data entity @s data.properties.mode run data modify entity @s dat
 execute if data entity @s data.properties.interval unless data entity @s data.properties.cooldown run data modify entity @s data.properties.cooldown set from entity @s data.properties.interval
 data remove entity @s data.properties.interval
 execute unless data entity @s data.properties.cooldown run data modify entity @s data.properties.cooldown set value 20
-execute if data entity @s data.properties{enabled:0b} run return 0
 
 # Throughput is the cooldown between actions, cycled through three steps with the
 # wrench. Compared as a score rather than baked into the selector, so the setting

@@ -7,11 +7,8 @@
 # a row of consumers that all report themselves as off, which is how you get a
 # generator running flat out and nothing on the base working.
 
-execute unless data entity @s data.properties.enabled run data modify entity @s data.properties.enabled set value 1b
 execute unless data entity @s data.properties.eu_use run data modify entity @s data.properties.eu_use set value 40
 
-execute if data entity @s data.properties{enabled:0b} run data modify entity @s data.status.active set value 0b
-execute if data entity @s data.properties{enabled:0b} run return 0
 
 # Guarded: an unguarded read of a missing eu_use writes zero, and a consumer
 # that costs nothing runs for free off an empty grid.

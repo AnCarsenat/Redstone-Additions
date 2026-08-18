@@ -20,7 +20,7 @@
       "minecraft:custom_data": { "ra": { "message_block": true } },
       "minecraft:entity_data": {
         "id": "minecraft:bat",
-        "Tags": ["ra.spawned", "ra.place.message_block"],
+        "Tags": ["ra", "ra.spawned", "ra.place.message_block"],
         "Silent": true,
         "NoAI": true,
         "Invulnerable": true

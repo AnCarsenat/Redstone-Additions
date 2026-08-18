@@ -24,7 +24,6 @@ scoreboard players set @s ra.ender.cd 0
 # receive tag, so without this every partner search could find itself.
 tag @s add ra.ender.self
 
-execute if data entity @s data.properties{enabled:0b} run return run function ra_ender:link/done
 
 # How full the barrel is now, and how full it was when we last looked.
 scoreboard players set #ender.used ra.temp 0

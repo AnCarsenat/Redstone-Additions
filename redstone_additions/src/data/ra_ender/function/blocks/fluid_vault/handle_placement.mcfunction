@@ -11,7 +11,6 @@ function ra_lib:placement/place {block_id:"minecraft:purpur_block",block_tag:"en
 
 data modify entity @e[type=marker,tag=ra.custom_block.ender_fluid_vault,tag=ra.new,distance=..0.5,sort=nearest,limit=1] data.properties.channel set value "default"
 data modify entity @e[type=marker,tag=ra.custom_block.ender_fluid_vault,tag=ra.new,distance=..0.5,sort=nearest,limit=1] data.properties.mode set value "link"
-data modify entity @e[type=marker,tag=ra.custom_block.ender_fluid_vault,tag=ra.new,distance=..0.5,sort=nearest,limit=1] data.properties.enabled set value 1b
 data modify entity @e[type=marker,tag=ra.custom_block.ender_fluid_vault,tag=ra.new,distance=..0.5,sort=nearest,limit=1] data.properties.transfer_rate set value 200
 
 # Fluid network membership, and the fluid flag the wires status readouts look for.

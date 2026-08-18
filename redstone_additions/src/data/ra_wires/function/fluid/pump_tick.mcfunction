@@ -6,7 +6,6 @@
 # units, so pulling one per tick per pump both trivialised supply and ran the
 # adjacency scan sixty times a second for no reason.
 
-execute if data entity @s data.properties{enabled:0b} run return 0
 
 scoreboard players add @s ra.cooldown 1
 execute unless score @s ra.cooldown matches 20.. run return 0

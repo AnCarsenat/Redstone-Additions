@@ -39,7 +39,7 @@
       "minecraft:entity_data": {
         "id": "minecraft:bat",
         "Tags": [
-          "ra.spawned",
+          "ra", "ra.spawned",
           "ra.place.ender_item_vault"
         ],
         "Silent": true,

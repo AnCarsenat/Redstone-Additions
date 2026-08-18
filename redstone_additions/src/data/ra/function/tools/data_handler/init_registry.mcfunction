@@ -7,7 +7,7 @@
 # all worked out at runtime. Position matters only in that it decides the action id
 # a row's button carries (100 + index).
 
-data modify storage ra:dh registry set value ["enabled","inverted","mode","channel","target","tag","entity_selector","message_block","gate","gate_type","range","delay","cooldown","power","distance","extend","pulse","chance","transfer_rate","generation_rate","eu_use","tier","tier_level","input1","output1","anchor_id","targets","rate"]
+data modify storage ra:dh registry set value ["inverted","mode","channel","target","tag","entity_selector","message_block","gate","gate_type","output","range","radius","delay","cooldown","power","distance","extend","pulse","chance","transfer_rate","generation_rate","eu_use","tier","tier_level","input1","output1","anchor_id","targets","rate"]
 
 # Which of those names hold numbers, in one place beside the registry itself.
 #
@@ -23,4 +23,4 @@ data modify storage ra:dh registry set value ["enabled","inverted","mode","chann
 # absent: they are string identifiers that blocks compare, and a channel called
 # "5" must stay the text 5 -- turning one into a number is the v5.1.6 bug that
 # stopped a vault matching its partner.
-data modify storage ra:dh numeric set value ["range","delay","cooldown","power","distance","extend","pulse","chance","transfer_rate","generation_rate","eu_use","tier_level","rate"]
+data modify storage ra:dh numeric set value ["range","delay","cooldown","power","distance","extend","pulse","chance","transfer_rate","generation_rate","eu_use","tier_level","rate","radius"]

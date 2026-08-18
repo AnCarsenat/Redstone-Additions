@@ -4,7 +4,7 @@
 # Input: $(name) = display name of the multiblock
 
 # Summon name billboard above the multiblock base
-$summon text_display ~ ~2.2 ~ {Tags:["ra.billboard","ra.display"],billboard:"center",text:{text:"$(name)",color:"green",bold:true},background:1073741824,shadow:true,see_through:false,line_width:200,transformation:{left_rotation:[0f,0f,0f,1f],right_rotation:[0f,0f,0f,1f],translation:[0f,0f,0f],scale:[0.6f,0.6f,0.6f]}}
+$summon text_display ~ ~2.2 ~ {Tags:["ra","ra.billboard","ra.display"],billboard:"center",text:{text:"$(name)",color:"green",bold:true},background:1073741824,shadow:true,see_through:false,line_width:200,transformation:{left_rotation:[0f,0f,0f,1f],right_rotation:[0f,0f,0f,1f],translation:[0f,0f,0f],scale:[0.6f,0.6f,0.6f]}}
 
 # Show I/O indicators — copy offsets + label to temp storage, then call show functions
 # Green = Input, Red = Output, Yellow = Control

@@ -2,7 +2,6 @@
 # Send whoever is standing here to the anchor the redstone strength names.
 # Context: as the anchor marker, at the block.
 
-execute if data entity @s data.properties{enabled:0b} run return 0
 
 # Nobody to send. Checked before the redstone scan, which is the expensive part.
 execute unless entity @a[distance=..2,scores={ra.ender.grace=..0}] run return 0

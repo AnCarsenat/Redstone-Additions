@@ -19,7 +19,7 @@
       "minecraft:custom_data": { "ra": { "extender": true } },
       "minecraft:entity_data": {
         "id": "minecraft:bat",
-        "Tags": ["ra.spawned", "ra.place.extender"],
+        "Tags": ["ra", "ra.spawned", "ra.place.extender"],
         "Silent": true,
         "NoAI": true,
         "Invulnerable": true

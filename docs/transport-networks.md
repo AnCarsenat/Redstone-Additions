@@ -46,7 +46,7 @@ That means:
 
 Network state:
 
-- `data.properties.*` — configuration the player can change (`enabled`, `mode`, `tier`).
+- `data.properties.*` — configuration the player can change (`mode`, `rate`, `cooldown`).
 - `data.status.*` — read-only values for goggles, redrawn once a second.
 
 ## Capacity is Storage, and Storage is Finite
@@ -98,18 +98,30 @@ back, as orbs.
 
 ## The Drain's Three Roles
 
-Two are set with the goggles tinker: **drain** takes a world source into the
+Two are set with the wrench: **drain** takes a world source into the
 network, **place** spends network contents putting a source block back.
 
 The third is decided by how you place the block. Stood **vertically** it stops
-working on the world entirely and becomes the hand-loading point: sneak next to
-it holding a full bucket, bottle or potion and its contents go into the network,
-leaving the empty container in your hand. Sneaking is the gate, because a bucket
-is also how you pick fluid up — without it, walking past with a full bucket would
-quietly empty it.
+working on the world entirely and becomes the **loading point**, taking filled
+containers in from three places, tried in that order:
 
-With **nothing** it recognises in hand, it takes your **experience** instead: ten
-points a cycle, 100 mL each, whole points only.
+1. **A sneaking player's main hand.** The empty is left in your hand.
+2. **A container on top of the drain.** The empty goes back into that container,
+   or is dropped if it no longer fits.
+3. **Loose items on top of the drain.** The empty is dropped.
+
+Only the first needs sneaking, because a bucket is also how you pick fluid *up* —
+without that gate, walking past with a full bucket would quietly empty it. A
+bucket you have deliberately put in a barrel or dropped on the block is not
+ambiguous in that way, and running unattended is the point of those two: a hopper
+feeding buckets into a barrel over a drain is how a base loads a network with
+nobody standing there.
+
+One container per cycle, whichever route it came from, so the drain's `cooldown`
+still governs throughput.
+
+With **nothing** it recognises anywhere, it takes a sneaking player's
+**experience** instead: ten points a cycle, 100 mL each, whole points only.
 
 The network is charged before the swap, and only if it can take the whole
 container. There is no such item as a part-full bucket.
@@ -161,7 +173,7 @@ neither direction fires.
     existing build using a valve as a closed tap will find it does not conduct at
     all until powered. To cut a fluid line now, remove a pipe.
 
-Pipes, tanks and wires carry no `enabled` property — they are pure conductors and
+Pipes, tanks and wires carry no configuration at all — they are pure conductors and
 capacity. The **EU Switch** is still a true shutoff: it leaves its network when
 turned off, so the two halves genuinely become separate grids.
 
@@ -189,7 +201,7 @@ adjacent blocks, so it works whichever way you place it. A source block is
 all-or-nothing: the pump only takes it if the whole 1000 units fit, so a nearly
 full network cannot delete a lake a partial bucket at a time.
 
-**Liquid Drain** has two modes, cycled with the goggles tinker:
+**Liquid Drain** has two modes, cycled from the wrench menu:
 
 - `drain` — takes a world source into the network (like a pump, on a slower cycle).
 - `place` — spends 1000 units putting a source block of the network's medium back
@@ -226,11 +238,11 @@ water network → [Boiler over a heat source] → steam network → [EU Generato
 
 ## Valves
 
-A valve's `enabled` state genuinely **splits the network in two**. The halves
+A valve genuinely **splits the network in two**. The halves
 then hold separate contents and separate media. Closing a valve is the supported
 way to isolate part of a system.
 
-The state can be changed with the goggles tinker or the Data Handler; either way
+The state is set with redstone; either way
 the network follows.
 
 ## Visual Connectivity
@@ -249,7 +261,7 @@ Goggles show medium, amount, and per-block state lines.
 
 Tinkering — sneak and hold goggles in the main hand near a node:
 
-- Most nodes: toggle `enabled`.
+- Most nodes: nothing to cycle — the wrench says so.
 - Drain: cycle mode between `drain` and `place`.
 
 Pumps have nothing to configure; they take whatever they find next to them.
@@ -264,3 +276,68 @@ Pumps have nothing to configure; they take whatever they find next to them.
 That is all. Nothing else needs a per-medium branch.
 
 ---
+
+## Electric Furnace
+
+Smelts using EU instead of fuel. There is no fuel slot, because there is no fuel.
+
+![Electric Furnace recipe](images/recipes/ra_wires/electric_furnace.png){ width="260" }
+
+| Mode | Ticks per item | EU per item |
+| --- | --- | --- |
+| low | 100 | 40 |
+| medium | 50 | 100 |
+| high | 20 | 300 |
+| superpowered | 5 | 1000 |
+
+Cycle the mode with the wrench. EU per item rises faster than speed does on
+purpose: four times quicker for four times the power would leave no reason to
+run anything but superpowered, and "low" would never be a real choice on a small
+grid.
+
+### How input and output are split
+
+**Input** is the furnace's own barrel — any smeltable stack, any slot.
+
+**Output** is pushed into the container on one chosen face: **under**, **front**,
+**back** or **top**, chosen from the wrench menu. The power mode is in the
+wrench menu as well — shift+RMB lists Output, Power and Enabled together.
+
+Results never come back into the furnace. That is what stops it smelting its own
+output — cobblestone would otherwise become stone and then smooth stone — and it
+means there is no slot rule for anyone to remember. Feed it with a hopper from
+any side; take from the destination container with anything at all.
+
+If the destination is missing or full the furnace stops and the goggles read
+`Output blocked`. That is checked *before* any EU is spent and before the input
+is consumed, so a blocked output costs nothing and destroys nothing.
+
+### What it can smelt
+
+The recipe table is hand-maintained (`ra_wires:blocks/electric_furnace/init_recipes`),
+because a data pack cannot ask the game what a vanilla smelting recipe produces.
+It covers ores and raw metals, iron and gold gear back to nuggets, food, sand,
+clay, stone, cracked bricks and logs to charcoal. Anything not in the table is
+left alone.
+
+## Creative sources
+
+Two blocks that make something from nothing, for building and testing the
+consuming half of a system without also running a fuel farm or a pump farm to
+feed it. Neither has a recipe. Both are in the **Wires Bundle** with the rest of the
+module, or `/function ra_wires:items/give_creative` for just the two.
+
+| Block | Real block | What it does |
+| --- | --- | --- |
+| Creative EU Source | `minecraft:beacon` | Refills its grid to capacity every tick |
+| Creative Fluid Source | `minecraft:beacon` | Fills its network with one medium, cycled with the wrench |
+
+The EU source fills to capacity rather than producing a fixed rate, so it does
+not matter how much the grid draws: whatever was spent last tick is back this
+tick and a machine on a creative grid never sees a brownout.
+
+The fluid source's medium is a property rather than a fixed choice because a
+fluid network holds exactly one medium at a time — a source stuck on water could
+not be used to test a lava line at all. If the network already holds something
+else the offer is refused and the goggles say so, which is correct behaviour
+rather than a fault.

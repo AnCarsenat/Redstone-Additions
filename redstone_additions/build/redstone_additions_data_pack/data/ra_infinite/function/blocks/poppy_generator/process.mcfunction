@@ -8,7 +8,6 @@ function ra_lib:util/property {name:"cooldown",default:100,min:1}
 execute unless score @s ra.cooldown >= #prop ra.temp run return 0
 scoreboard players set @s ra.cooldown 0
 
-execute if data entity @s data.properties{enabled:0b} run return 0
 
 # One flower in front, always. The 3x3 patch mode is gone: it was a second code
 # path over the same ground for a block whose whole job is one flower at a time.

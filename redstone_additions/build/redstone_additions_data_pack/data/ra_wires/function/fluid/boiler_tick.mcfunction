@@ -11,7 +11,6 @@
 # This is the point of the whole fluid system — water in one side, steam out the
 # other, and an EU Generator next to the steam side turning it into power.
 
-execute if data entity @s data.properties{enabled:0b} run return 0
 
 scoreboard players add @s ra.cooldown 1
 execute unless score @s ra.cooldown matches 20.. run return 0

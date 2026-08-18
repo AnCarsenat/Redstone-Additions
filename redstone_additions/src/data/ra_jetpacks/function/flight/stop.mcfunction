@@ -11,6 +11,11 @@ tag @s remove ra.jp.hover_on
 tag @s remove ra.jp.speed_on
 tag @s remove ra.jetpack_on
 scoreboard players reset @s ra.jp.y
+scoreboard players reset @s ra.jp.x
+scoreboard players reset @s ra.jp.z
+scoreboard players reset @s ra.jp.vx
+scoreboard players reset @s ra.jp.vz
+tag @s remove ra.jp.thrusting
 scoreboard players reset @s ra.jp.grav
 scoreboard players reset @s ra.jp.snd
 scoreboard players reset @s ra.jp.air

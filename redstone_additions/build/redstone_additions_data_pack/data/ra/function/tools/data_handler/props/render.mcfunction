@@ -3,7 +3,7 @@
 
 $execute unless data storage ra:dh properties.$(name) run return 0
 
-# Fields the block declared as its own, via #ra:hidden_fields. They are shown
+# Fields the block declared as its own, in ra:tools/readonly/init_registry. Shown
 # with a dead button rather than withheld: a censored row makes a block look like
 # it has fewer settings than it does, and leaves the player wondering why a value
 # the Goggles happily display is missing here.

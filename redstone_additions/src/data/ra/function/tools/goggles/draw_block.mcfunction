@@ -14,6 +14,7 @@ execute if entity @s[tag=ra.custom_block.infinite_water_cauldron] run function r
 execute if entity @s[tag=ra.custom_block.infinite_lava_cauldron] run function ra_interactive:blocks/infinite_lava_cauldron/goggles
 execute if entity @s[tag=ra.custom_block.infinite_snow_cauldron] run function ra_interactive:blocks/infinite_snow_cauldron/goggles
 execute if entity @s[tag=ra.custom_block.item_mover] run function ra_interactive:blocks/item_mover/goggles
+execute if entity @s[tag=ra.custom_block.magic_crate] run function ra_interactive:blocks/magic_crate/goggles
 execute if entity @s[tag=ra.custom_block.item_pipe] run function ra_interactive:blocks/item_pipe/goggles
 execute if entity @s[tag=ra.custom_block.message_block] run function ra_interactive:blocks/message_block/goggles
 execute if entity @s[tag=ra.custom_block.spitter] run function ra_interactive:blocks/spitter/goggles
@@ -52,6 +53,9 @@ execute if entity @s[tag=ra.custom_block.electric_consumer] run function ra_wire
 execute if entity @s[tag=ra.custom_block.electric_switch] run function ra_wires:blocks/electric_switch/goggles
 execute if entity @s[tag=ra.custom_block.solar_panel] run function ra_wires:blocks/solar_panel/goggles
 execute if entity @s[tag=ra.custom_block.battery] run function ra_wires:blocks/battery/goggles
+execute if entity @s[tag=ra.custom_block.creative_eu] run function ra_wires:blocks/creative_eu/goggles
+execute if entity @s[tag=ra.custom_block.creative_fluid] run function ra_wires:blocks/creative_fluid/goggles
+execute if entity @s[tag=ra.custom_block.electric_furnace] run function ra_wires:blocks/electric_furnace/goggles
 execute if entity @s[tag=ra.custom_block.industrial_light] run function ra_wires:blocks/industrial_light/goggles
 execute if entity @s[tag=ra.custom_block.electric_breaker] run function ra_wires:blocks/electric_breaker/goggles
 # ra_infinite

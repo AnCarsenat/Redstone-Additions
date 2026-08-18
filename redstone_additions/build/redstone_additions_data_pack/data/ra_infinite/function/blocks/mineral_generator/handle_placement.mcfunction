@@ -15,7 +15,6 @@ execute unless entity @s[tag=ra.place.mineral_generator] run return 0
 
 function ra_lib:placement/place {block_id:"minecraft:dropper",block_tag:"mineral_generator",dir_type:2}
 
-data modify entity @e[type=marker,tag=ra.custom_block.mineral_generator,tag=ra.new,distance=..0.5,sort=nearest,limit=1] data.properties.enabled set value 1b
 data modify entity @e[type=marker,tag=ra.custom_block.mineral_generator,tag=ra.new,distance=..0.5,sort=nearest,limit=1] data.properties.cooldown set value 100
 
 

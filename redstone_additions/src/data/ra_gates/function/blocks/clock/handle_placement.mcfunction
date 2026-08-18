@@ -16,7 +16,7 @@ function ra_lib:placement/place {block_id:"minecraft:daylight_detector",block_ta
 # Daylight detector top face is at 0.375, so the offset from the centre is -0.125.
 kill @e[type=item_display,tag=ra.custom_block.clock,distance=..0.6]
 kill @e[type=item_display,tag=ra.custom_block.display_item.clock,distance=..0.6]
-summon item_display ~ ~-0.115 ~ {item:{id:"minecraft:clock",count:1},item_display:"fixed",transformation:{left_rotation:[0.7071f,0f,0f,0.7071f],right_rotation:[0f,0f,0f,1f],translation:[0f,0f,0f],scale:[0.5f,0.5f,0.5f]},Tags:["ra.custom_block.display_item","ra.custom_block.display_item.clock"]}
+summon item_display ~ ~-0.115 ~ {item:{id:"minecraft:clock",count:1},item_display:"fixed",transformation:{left_rotation:[0.7071f,0f,0f,0.7071f],right_rotation:[0f,0f,0f,1f],translation:[0f,0f,0f],scale:[0.5f,0.5f,0.5f]},Tags:["ra","ra.custom_block.display_item","ra.custom_block.display_item.clock"]}
 
 # One property, `cooldown`, in ticks. Anything the item carried is discarded so a
 # fresh clock can never start life with two names for the same number.

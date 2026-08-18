@@ -34,7 +34,7 @@ $data modify storage ra:temp block_id set value "$(block_id)"
 function ra_lib:placement/set_block
 
 # Summon marker with initialized data structure
-$summon marker ~ ~ ~ {Tags:["ra.custom_block","ra.custom_block.$(block_tag)","ra.new"],data:{_init:1b,properties:{},data:{}}}
+$summon marker ~ ~ ~ {Tags:["ra","ra.custom_block","ra.custom_block.$(block_tag)","ra.new"],data:{_init:1b,type:"$(block_tag)",properties:{},data:{}}}
 data modify entity @e[type=marker,tag=ra.new,distance=..0.1,sort=nearest,limit=1] Rotation set from storage ra:temp Rotation
 
 # Seed the marker's facing from the scratch score rather than from the placer, so

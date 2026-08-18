@@ -30,7 +30,7 @@
       "minecraft:entity_data": {
         "id": "minecraft:bat",
         "Tags": [
-          "ra.spawned",
+          "ra", "ra.spawned",
           "ra.place.multiblock_base",
           "ra.place.multiblock_base.copper"
         ],

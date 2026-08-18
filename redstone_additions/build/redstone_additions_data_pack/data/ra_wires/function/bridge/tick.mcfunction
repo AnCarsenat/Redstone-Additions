@@ -17,7 +17,6 @@
 # pointed at two empty spaces and did nothing at all, with no way to tell from
 # looking at it. Now it looks at all six neighbours and finds the networks itself.
 
-execute if data entity @s data.properties{enabled:0b} run return run data modify entity @s data.status.bridge_state set value "disabled"
 
 # Redstone is the on switch. ra_lib:redstone/any is the cheap reader: it stops at
 # the first live side and never resolves a level, which is all that is wanted.

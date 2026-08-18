@@ -14,6 +14,25 @@ scoreboard objectives add ra.jp.fuel dummy
 # Hover servo: last sampled Y in thousandths of a block, and the thruster tier
 # currently written onto the gravity attribute.
 scoreboard objectives add ra.jp.y dummy
+
+# Thruster kit: last sampled X/Z in thousandths, so the push can be measured
+# from how far the player actually moved rather than from where they are looking.
+# Scorch kit: ticks until the next direct hit, so burning is continuous while
+# the damage is not twenty times a second.
+scoreboard objectives add ra.jp.scorch_cd dummy
+
+scoreboard objectives add ra.jp.x dummy
+scoreboard objectives add ra.jp.z dummy
+
+# Thruster kit: the SMOOTHED horizontal speed the push is built from, so a noisy
+# single-tick delta cannot turn into a different-sized teleport every tick.
+# The upgrade menu: /trigger ra.jp.kits opens it, and its buttons come back
+# through the same trigger with a value. See ra_jetpacks:kit/menu_action.
+scoreboard objectives add ra.jp.kits trigger
+scoreboard players enable @a ra.jp.kits
+
+scoreboard objectives add ra.jp.vx dummy
+scoreboard objectives add ra.jp.vz dummy
 scoreboard objectives add ra.jp.grav dummy
 
 # 1 once the player has actually left the ground, so touching down can be told

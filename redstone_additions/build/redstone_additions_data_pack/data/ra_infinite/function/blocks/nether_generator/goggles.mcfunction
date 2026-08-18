@@ -11,5 +11,3 @@ function ra:tools/goggles/billboard/handle_billboard with storage ra:temp billbo
 
 function ra:tools/goggles/billboard/prop_line {path:"cooldown",label:"Cooldown: ",color:"aqua",suffix:"t",y:0.75}
 # enabled is a byte, so it is rendered as words rather than copied raw.
-execute unless data entity @s data.properties{enabled:0b} run function ra:tools/goggles/billboard/text_line {label:"Enabled: ",value:"yes",color:"green",suffix:"",y:0.5}
-execute if data entity @s data.properties{enabled:0b} run function ra:tools/goggles/billboard/text_line {label:"Enabled: ",value:"no",color:"red",suffix:"",y:0.5}

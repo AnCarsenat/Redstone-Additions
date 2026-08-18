@@ -24,6 +24,95 @@ wearing a chestplate to fit the jetpack; the kit is consumed. The iron kit
 refuses to overwrite a chestplate that is already a jetpack, the infinite kit
 deliberately does not — that is how you upgrade in place.
 
+## Upgrade kits
+
+Three further kits, right-clicked **while already wearing a jetpack**. Each is
+consumed and can only be fitted once.
+
+| Kit | Effect |
+| --- | ------ |
+| Thruster Kit | **Hold sprint** while airborne to accelerate horizontally, up to ~7 extra blocks/s |
+| Lift Kit | Climbs at about six blocks a second instead of three, and sinks faster |
+| Scorch Kit | Sets fire to anything in a 3x3 column 6 blocks under you, and hits it for 3 every 10 ticks |
+
+The Thruster does not use a speed attribute. `minecraft:movement_speed` governs
+walking, and horizontal movement in the air runs on a much smaller air-control
+factor — raising walk speed while flying raises a number that is barely read.
+Instead it measures how far you actually moved last tick, feeds that into a
+running average, and adds a fraction of the smoothed value back, capped per tick.
+The smoothing is what stops it shaking: a single tick's delta is noisy, and
+pushing straight from it made every wobble a different-sized teleport. That accelerates rather than snapping to speed, pushes
+whichever way you are genuinely travelling rather than where you are looking, and
+does nothing while you hover still.
+
+It engages only while you **hold sprint**. An earlier version used a speed floor,
+which never fired in classic mode at all — you fly by holding sneak there, and
+horizontal air movement is a small fraction of walking speed. Sprint is an
+explicit input, works the same in both modes, and nobody sprints while placing
+blocks, which is where the per-tick teleport was noticeable.
+
+![Thruster Kit recipe](images/recipes/ra_jetpacks/speed_kit.png){ width="220" }
+![Lift Kit recipe](images/recipes/ra_jetpacks/lift_kit.png){ width="220" }
+![Scorch Kit recipe](images/recipes/ra_jetpacks/scorch_kit.png){ width="220" }
+
+Scorch only runs while genuinely airborne. "On the ground" includes standing on
+the *edge* of a block, which a single sample under the player's centre gets
+wrong — the centre is over the drop while the feet are still on the corner. All
+four corners of the hitbox are checked, the way vanilla decides whether you fall.
+
+Scorch excludes players, dropped items and experience orbs in its selector, and
+every entity this pack owns via the `ra` tag. Armour stands, item frames and
+paintings are spared by a guard inside the per-entity function rather than by the
+selector, because a wrong entity type in a selector silently kills the whole
+feature while a wrong one in a guard costs only that guard. That last exclusion is not tidiness:
+setting `Fire` on an item entity destroys it, and every custom block in Redstone
+Additions is a marker with block displays attached — without it, hovering over
+your own base would burn your machines down.
+
+Each fitted kit appends a line to the chestplate's lore, so you can see what is
+on a jetpack by looking at it.
+
+### Managing fitted kits
+
+`/trigger ra.jp.kits` opens a menu listing the three kits and what state each is
+in. Every fitted kit gets two buttons:
+
+- **[On] / [Off]** — switch it off without removing it. Useful for Scorch, which
+  you rarely want on while flying over your own farm.
+- **[Remove]** — take it off the jetpack and get the kit back as an item, ready
+  to fit to something else.
+
+Being *fitted* is a property of the jetpack and travels with it. Being *switched
+off* is a property of whoever is wearing it, in the same family as
+`/trigger ra.jp.sound` and `/trigger ra.jp.power`. That is also the only place it
+can go cheaply: fitted state is written by one generated item modifier per
+reachable combination, and a separate on/off flag per kit would take that from
+sixteen files to a hundred and twenty-eight.
+
+### Where upgrades are stored
+
+On the **chestplate**, in its `custom_data`, and listed in its lore. Hand a
+jetpack to someone else and the upgrades go with it; take it off and you stop
+having them.
+
+They were briefly stored on the player instead, which was wrong in a way worth
+recording. An item modifier is a static JSON file: it cannot read what is already
+on the item, and `set_components` replaces a component whole rather than merging
+into it, so "add the Scorch flag" is not expressible. That made player tags look
+like the only option — but the consequence was that upgrades followed you onto a
+different chestplate, survived losing the jetpack, and made every kit report
+itself already fitted after the first one.
+
+The answer is to not merge. Read the chestplate's whole state, work out the new
+whole state, write that. Every reachable state has its own generated modifier:
+two tiers times eight upgrade combinations, chosen by pasting a three-bit number
+into the modifier's name. Adding a fourth kit doubles the count, which is the
+honest price of the item being the record.
+
+The flight code re-derives `ra.jp.kit_*` tags from the worn chestplate every
+tick, so those tags are a cache rather than state — which is also what heals a
+world where they were stored on the player.
+
 ## Flight modes
 
 Switch with `/trigger ra.jp.mode`. The mode is per player, not per jetpack.

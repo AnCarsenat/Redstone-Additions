@@ -19,6 +19,7 @@ The `ra_interactive` module provides 10 utility machines for automation and map 
 | Infinite Water Cauldron | `minecraft:cauldron` | ![Infinite Water Cauldron recipe](images/recipes/ra_interactive/infinite_water_cauldron.png){ width="220" } | Continuous | Keeps `water_cauldron[level=3]` |
 | Infinite Lava Cauldron | `minecraft:cauldron` | ![Infinite Lava Cauldron recipe](images/recipes/ra_interactive/infinite_lava_cauldron.png){ width="220" } | Continuous | Keeps `lava_cauldron` |
 | Infinite Snow Cauldron | `minecraft:cauldron` | ![Infinite Snow Cauldron recipe](images/recipes/ra_interactive/infinite_snow_cauldron.png){ width="220" } | Continuous | Keeps `powder_snow_cauldron[level=3]` |
+| Magic Crate | `minecraft:barrel` | ![Magic Crate recipe](images/recipes/ra_interactive/magic_crate.png){ width="220" } | Continuous | Teleports dropped items in from 5-20 blocks |
 | Message Block | `minecraft:note_block` | ![Message Block recipe](images/recipes/ra_interactive/message_block.png){ width="220" } | Rising edge | Sends text to players in range |
 
 ## Behavior Notes
@@ -116,6 +117,28 @@ it finds first.
 - Internal ID uses `message_block` (placement tag and custom_data).
 - Folder path remains `blocks/message`.
 - Default properties initialized to message text and range.
+
+### Magic Crate
+
+A plain barrel — no skin. It wore a hopper for a while, which was a lie in two
+directions: a hopper is five slots that push downwards, and this is twenty-seven
+slots that pull inwards. Every `cooldown` ticks it sweeps for item entities
+within `radius` and teleports them into itself.
+
+| Property | Default | Range | Meaning |
+| --- | --- | --- | --- |
+| `radius` | `8` | 5–20 | How far it reaches |
+| `cooldown` | `20` | 1+ | Ticks between sweeps |
+
+The ceiling on `radius` is enforced in code, not just documented: a radius the
+player could raise without limit turns one block into a server-wide entity
+selector. A sweep takes at most **eight items per pulse**, so a hopper standing
+over a mob farm clears the pile quickly without spiking a single tick.
+
+Items cross as whole stacks, copied verbatim from the item entity, so names,
+enchantments and damage survive. It skips items on a permanent pickup delay, and
+stops when it has no completely empty slot left — the goggles read `Full` rather
+than silently doing nothing. Breaking it drops all 27 slots.
 
 ## Contributor Notes
 

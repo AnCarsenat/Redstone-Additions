@@ -19,7 +19,7 @@
       "minecraft:custom_data": { "ra": { "infinite_lava_cauldron": true } },
       "minecraft:entity_data": {
         "id": "minecraft:bat",
-        "Tags": ["ra.spawned", "ra.place.infinite_lava_cauldron"],
+        "Tags": ["ra", "ra.spawned", "ra.place.infinite_lava_cauldron"],
         "Silent": true,
         "NoAI": true,
         "Invulnerable": true

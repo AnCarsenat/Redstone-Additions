@@ -28,7 +28,7 @@
       "minecraft:entity_data": {
         "id": "minecraft:bat",
         "Tags": [
-          "ra.spawned",
+          "ra", "ra.spawned",
           "ra.place.nether_generator"
         ],
         "Silent": true,

@@ -125,6 +125,11 @@ you let go — which is why classic never feels floaty.
 
 ### Hover
 
+| Holding station | Sneak to steer |
+|---|---|
+| ![Hover flight](images/screenshots/JetpackHover.png) | ![Hover, sneaking](images/screenshots/JetpackHoverShift.png) |
+
+
 The jetpack carries your weight while the chestplate is worn — let go of
 everything and you hang in the air, on the spot.
 

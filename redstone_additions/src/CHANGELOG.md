@@ -1,5 +1,22 @@
 # Changelog
 
+## [v5.1.14] - 2026-08-18 - Pictures
+
+**Supported versions:** 1.21.9 - 26.2 (data pack formats 88 - 107).
+
+### Added
+
+- Seven screenshots embedded across the wiki; a banner per module in the README
+  with a generated media-missing placeholder for modules without one.
+- Industrial Light section in Transport Networks.
+
+### Fixed
+
+- README listed removed tiered pipes/wires as separate blocks and omitted eight
+  Transport Networks blocks, the Magic Crate, three jetpack kits, the Clipboard
+  and the Multimeter. Counts corrected to 57 blocks, 7 tools, 66 recipes.
+- Transport Networks referenced tiered pipes and a non-existent give function.
+
 ## [v5.1.13] - 2026-08-18 - Documented
 
 **Supported versions:** 1.21.9 - 26.2 (data pack formats 88 - 107).

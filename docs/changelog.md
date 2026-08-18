@@ -2,6 +2,32 @@
 
 This page mirrors key datapack milestones from the main project changelog.
 
+## v5.1.14 (2026-08-18) — Pictures
+
+### Added
+
+- **Screenshots in the wiki.** Transport Networks opens on a running EU grid and
+  shows a fluid network, the Electric Furnace and the Industrial Light lit beside
+  unlit; Jetpacks shows hover flight. Seven in `docs/images/screenshots/`.
+- **A banner per module in the README**, with a generated
+  `docs/images/banners/media-missing.png` placeholder for the ones that have no
+  screenshot yet. Swapping a placeholder for a real picture is a one-line edit.
+- An **Industrial Light** section in Transport Networks, which the page never had.
+
+### Fixed
+
+- **The README was stale in ways that mattered.** It listed Netherite Liquid Pipe,
+  Netherite Gas Pipe and Netherite Electric Wire as separate blocks — the tiers
+  were removed, and those item tags now place the single version. It was missing
+  eight Transport Networks blocks (Battery, EU Breaker, Industrial Light, Boiler,
+  Solar Panel, Electric Furnace and both Creative sources), the Magic Crate, the
+  three new jetpack kits, and the Clipboard and Multimeter. Counts corrected:
+  **57 blocks, 7 tools, 66 recipes** — the badges said 52, 5 and 58.
+- **Transport Networks still described tiered pipes** in its Block Families table,
+  and pointed at `ra_wires:items/give_all`, which does not exist. It now names the
+  Wires Bundle and the creative give function.
+- `readme.bbcode` regenerated from the corrected README.
+
 ## v5.1.13 (2026-08-18) — Documented
 
 ### Added

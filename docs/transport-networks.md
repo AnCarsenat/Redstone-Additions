@@ -3,16 +3,23 @@
 The `ra_wires` module adds liquid, gas, and EU transport.
 
 - Namespace: `ra_wires`
-- Give all: `/function ra_wires:items/give_all`
+- Get the blocks: the **Wires Bundle** (`/function ra:items/bundles/give_wires_bundle`)
+- Creative-only sources: `/function ra_wires:items/give_creative`
 - Runtime architecture: [How It Works](how-it-works.md)
+
+
+![An EU grid running](images/screenshots/Electricity.png)
+
+*An EU grid: generator, wire, battery and consumers, with the goggles reporting
+what each one holds and whether the grid is gaining or losing.*
 
 ## Block Families
 
 | Family | Blocks | Notes |
 |---|---|---|
-| Fluid | L1 Copper / L2 Iron Pipe, Liquid Tank, Liquid Pump, Liquid Valve, Liquid Drain | Liquids and gases share one pipe network |
+| Fluid | Copper Pipe, Liquid Tank, Liquid Pump, Liquid Valve, Liquid Drain | Liquids and gases share one pipe network |
 | Gas | Gas Tank, Gas Pump, Gas Valve, Boiler | Gases use the same pipes as liquids |
-| Electric | Copper / L2 Wire, EU Generator, EU Consumer, EU Switch, EU Breaker, Battery, Solar Panel | Grid-wide EU: batteries store it, breakers bridge grids |
+| Electric | Wire, EU Generator, EU Consumer, EU Switch, EU Breaker, Battery, Solar Panel, Industrial Light, Electric Furnace | Grid-wide EU: batteries store it, breakers bridge grids |
 
 ## Flow Model
 
@@ -277,7 +284,14 @@ That is all. Nothing else needs a per-medium branch.
 
 ---
 
+![A fluid network](images/screenshots/Pipes.png)
+
+*A fluid network in millilitres. Contents live on the network, not in the pipes —
+a pipe only adds capacity.*
+
 ## Electric Furnace
+
+![Electric Furnace smelting on EU](images/screenshots/ElectricFurnace.png)
 
 Smelts using EU instead of fuel. There is no fuel slot, because there is no fuel.
 
@@ -319,6 +333,19 @@ because a data pack cannot ask the game what a vanilla smelting recipe produces.
 It covers ores and raw metals, iron and gold gear back to nuggets, food, sand,
 clay, stone, cracked bricks and logs to charcoal. Anything not in the table is
 left alone.
+
+## Industrial Light
+
+Redstone **and** EU, projecting a ten-block beam of real `minecraft:light`. It
+stops at the first solid block, and the only block it will ever remove is a light
+of the exact level it places.
+
+| Unpowered | Lit |
+|---|---|
+| ![Industrial Light off](images/screenshots/IndustrialLightOff.png) | ![Industrial Light on](images/screenshots/IndustrialLightOn.png) |
+
+The goggles name whichever condition is missing — `No redstone` or `No EU` —
+rather than a bare "Dark".
 
 ## Creative sources
 

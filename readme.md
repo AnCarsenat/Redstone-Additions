@@ -15,10 +15,10 @@
 
 <p align="center">
   <img src="https://img.shields.io/badge/Minecraft-1.21.9--26.2-2EA44F" alt="Minecraft 1.21.9-26.2">
-  <img src="https://img.shields.io/badge/Version-v5.1.13-blue" alt="Version v5.1.13">
-  <img src="https://img.shields.io/badge/Blocks-52-red" alt="52 blocks">
-  <img src="https://img.shields.io/badge/Tools-5-lightgrey" alt="5 tools">
-  <img src="https://img.shields.io/badge/Recipes-58-8A2BE2" alt="58 recipes">
+  <img src="https://img.shields.io/badge/Version-v5.1.14-blue" alt="Version v5.1.14">
+  <img src="https://img.shields.io/badge/Blocks-57-red" alt="57 blocks">
+  <img src="https://img.shields.io/badge/Tools-7-lightgrey" alt="7 tools">
+  <img src="https://img.shields.io/badge/Recipes-66-8A2BE2" alt="66 recipes">
 </p>
 
 ---
@@ -64,21 +64,34 @@ I recommend using [Bundles Beyond](https://modrinth.com/mod/bundles-beyond) for 
 
 ---
 
-## Default Module Previews
-One sample per module. **Every recipe in the pack is on one page in the
+## Module Previews
+
+One banner per module. Modules without a screenshot yet show a placeholder —
+**contributions welcome**, drop a PNG in `docs/images/screenshots/` and swap the
+row.
+
+**Every recipe in the pack is on one page in the
 [Recipe Atlas](https://ancarsenat.github.io/Redstone-Additions/recipe-atlas/)** —
 listed A to Z and grouped by module.
-| Module | Preview |
+
+| Module | Banner |
 |---|---|
-| Logic Gates | <img src="https://github.com/AnCarsenat/Redstone-Additions/raw/main/docs/images/recipes/ra_gates/clock.png" alt="Clock recipe" width="220"> |
-| Interactive Machines | <img src="https://github.com/AnCarsenat/Redstone-Additions/raw/main/docs/images/recipes/ra_interactive/block_placer.png" alt="Block placer recipe" width="220"> |
-| Sensors | <img src="https://github.com/AnCarsenat/Redstone-Additions/raw/main/docs/images/recipes/ra_sensors/entity_detector.png" alt="Entity detector recipe" width="220"> |
-| Wireless Redstone | <img src="https://github.com/AnCarsenat/Redstone-Additions/raw/main/docs/images/recipes/ra_wireless/emitter.png" alt="Emitter recipe" width="220"> |
-| Chunk Loader | <img src="https://github.com/AnCarsenat/Redstone-Additions/raw/main/docs/images/recipes/ra_chunk_loader/chunk_loader.png" alt="Chunk loader recipe" width="220"> |
-| Multiblocks | <img src="https://github.com/AnCarsenat/Redstone-Additions/raw/main/docs/images/recipes/ra_multiblock/copper_base.png" alt="Copper multiblock base recipe" width="220"> |
-| Jetpacks | <img src="https://github.com/AnCarsenat/Redstone-Additions/raw/main/docs/images/recipes/ra_jetpacks/iron_jetpack_kit.png" alt="Iron Jetpack Kit recipe" width="220"> |
-| Infinite Generators | <img src="https://github.com/AnCarsenat/Redstone-Additions/raw/main/docs/images/recipes/ra_infinite/mineral_generator.png" alt="Mineral Generator recipe" width="220"> |
-| Ender Links | <img src="https://github.com/AnCarsenat/Redstone-Additions/raw/main/docs/images/recipes/ra_ender/teleport_anchor.png" alt="Teleport Anchor recipe" width="220"> |
+| Logic Gates | <img src="https://github.com/AnCarsenat/Redstone-Additions/raw/main/docs/images/banners/media-missing.png" alt="No screenshot yet" width="320"> |
+| Interactive Machines | <img src="https://github.com/AnCarsenat/Redstone-Additions/raw/main/docs/images/banners/media-missing.png" alt="No screenshot yet" width="320"> |
+| Storage | <img src="https://github.com/AnCarsenat/Redstone-Additions/raw/main/docs/images/banners/media-missing.png" alt="No screenshot yet" width="320"> |
+| Sensors | <img src="https://github.com/AnCarsenat/Redstone-Additions/raw/main/docs/images/banners/media-missing.png" alt="No screenshot yet" width="320"> |
+| Wireless Redstone | <img src="https://github.com/AnCarsenat/Redstone-Additions/raw/main/docs/images/banners/media-missing.png" alt="No screenshot yet" width="320"> |
+| Transport Networks | <img src="https://github.com/AnCarsenat/Redstone-Additions/raw/main/docs/images/screenshots/Electricity.png" alt="An EU grid running" width="320"> |
+| &nbsp;&nbsp;↳ fluids | <img src="https://github.com/AnCarsenat/Redstone-Additions/raw/main/docs/images/screenshots/Pipes.png" alt="A fluid network" width="320"> |
+| &nbsp;&nbsp;↳ Electric Furnace | <img src="https://github.com/AnCarsenat/Redstone-Additions/raw/main/docs/images/screenshots/ElectricFurnace.png" alt="Electric Furnace smelting on EU" width="320"> |
+| &nbsp;&nbsp;↳ Industrial Light | <img src="https://github.com/AnCarsenat/Redstone-Additions/raw/main/docs/images/screenshots/IndustrialLightOn.png" alt="Industrial Light casting its beam" width="320"> |
+| Chunk Loader | <img src="https://github.com/AnCarsenat/Redstone-Additions/raw/main/docs/images/banners/media-missing.png" alt="No screenshot yet" width="320"> |
+| Multiblocks | <img src="https://github.com/AnCarsenat/Redstone-Additions/raw/main/docs/images/ra_multiblock/blast_forge.png" alt="Blast Forge" width="320"> |
+| Enchant Crafting | <img src="https://github.com/AnCarsenat/Redstone-Additions/raw/main/docs/images/banners/media-missing.png" alt="No screenshot yet" width="320"> |
+| Jetpacks | <img src="https://github.com/AnCarsenat/Redstone-Additions/raw/main/docs/images/screenshots/JetpackHover.png" alt="Hover flight" width="320"> |
+| Infinite Generators | <img src="https://github.com/AnCarsenat/Redstone-Additions/raw/main/docs/images/banners/media-missing.png" alt="No screenshot yet" width="320"> |
+| Ender Links | <img src="https://github.com/AnCarsenat/Redstone-Additions/raw/main/docs/images/banners/media-missing.png" alt="No screenshot yet" width="320"> |
+| Tools | <img src="https://github.com/AnCarsenat/Redstone-Additions/raw/main/docs/images/banners/media-missing.png" alt="No screenshot yet" width="320"> |
 
 ---
 
@@ -92,13 +105,14 @@ listed A to Z and grouped by module.
 - Randomizer
 - Shortener
 
-### Interactive Machines (10)
+### Interactive Machines (11)
 - Block Breaker
 - Block Placer
 - Item Pipe
 - Item Mover
 - Spitter
 - Breeder
+- Magic Crate — pulls dropped items in from 5-20 blocks
 - Infinite Water Cauldron
 - Infinite Lava Cauldron
 - Infinite Snow Cauldron
@@ -117,23 +131,39 @@ listed A to Z and grouped by module.
 - Wireless Emitter
 - Wireless Receiver
 
-### Transport Networks (16)
-- Copper Liquid Pipe
-- Netherite Liquid Pipe
+### Transport Networks (20)
+
+Fluids, in millilitres:
+
+- Copper Pipe
 - Liquid Tank
 - Liquid Pump
-- Liquid Valve
-- Liquid Drain
-- Copper Gas Pipe
-- Netherite Gas Pipe
+- Liquid Valve — moves contents between the two networks it separates
+- Liquid Drain — world source in, or network contents back out
 - Gas Tank
 - Gas Pump
 - Gas Valve
-- Copper Electric Wire
-- Netherite Electric Wire
-- EU Generator
+- Boiler — water plus heat to steam
+
+Electricity, in EU:
+
+- Wire
+- EU Generator — a barrel wearing a furnace; drop fuel in, no smelting slot
 - EU Consumer
-- EU Switch
+- EU Switch — redstone conducts, no redstone cuts
+- Battery — 10000 EU of grid capacity
+- EU Breaker — evens EU between the grids either side
+- Solar Panel
+- Industrial Light — redstone plus EU, a 10 block beam of real light
+- Electric Furnace — smelts on EU with no fuel, four power modes
+
+Creative, for building and testing:
+
+- Creative EU Source — refills its grid to capacity every tick
+- Creative Fluid Source — fills with a medium cycled by the wrench
+
+There are no tiers. A netherite pipe was a more expensive way to buy the same
+block, so the tiered items now place the single version.
 
 ### Chunk Loader (1)
 - Chunk Loader
@@ -159,18 +189,30 @@ netherrack or poppies on an enchanting table.
 - Diamond Multiblock Base
 - Netherite Multiblock Base
 
-### Items (5)
+### Items (8)
 - Iron Jetpack Kit — right-click while wearing any chestplate to fit it
 - Infinite Iron Jetpack Kit — won on an enchanting table; burns no fuel
+- Thruster Kit — hold sprint while airborne to accelerate
+- Lift Kit — climbs and sinks about twice as fast
+- Scorch Kit — sets fire to what flies under you
 - Generator Casing
 - Mineral / Nether / Poppy Core
 
-### Tools (5)
-- Wrench
-- Creative Data Handler
-- Data Handler
-- Goggles
-- Redstone Remote
+Fitted kits live on the chestplate and are listed in its lore.
+`/trigger ra.jp.kits` switches one off or takes it back as an item.
+
+### Tools (7)
+- Wrench — the only tool that **changes** a block. Shift+RMB cycles a setting, or
+  opens a menu when the block has more than one
+- Goggles — wear or hold to read every block in range. Read-only
+- Data Handler — edits one block's properties in detail
+- Creative Data Handler — edits anything, including what the block owns
+- Clipboard — copies one block's settings onto others of the same kind
+- Multimeter — reads a network's numbers into chat
+- Redstone Remote — wireless channel control
+
+See the [Tools page](https://ancarsenat.github.io/Redstone-Additions/tools/) for
+recipes and usage.
 
 ---
 
@@ -294,6 +336,7 @@ Starter command:
 | Sensors | https://ancarsenat.github.io/Redstone-Additions/sensors/ |
 | Wireless Redstone | https://ancarsenat.github.io/Redstone-Additions/wireless-redstone/ |
 | Transport Networks | https://ancarsenat.github.io/Redstone-Additions/transport-networks/ |
+| Tools | https://ancarsenat.github.io/Redstone-Additions/tools/ |
 | Chunk Loader | https://ancarsenat.github.io/Redstone-Additions/chunk-loader/ |
 | Multiblocks | https://ancarsenat.github.io/Redstone-Additions/multiblocks/ |
 | Enchant Crafting | https://ancarsenat.github.io/Redstone-Additions/enchant-crafting/ |

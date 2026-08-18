@@ -16,7 +16,6 @@ execute if score #ender.isstr ra.temp matches 1 run tellraw @s [{text:"   channe
 execute if score #ender.isstr ra.temp matches 0 run tellraw @s [{text:"   channel is NOT a string — it matches nothing until repaired",color:"red"}]
 
 # Who this vault can currently reach: the tags are rebuilt every tick from mode.
-execute if entity @s[tag=ra.ender.share] run tellraw @s [{text:"   mode shared: contents follow a player within 4 blocks",color:"aqua"}]
 execute if entity @s[tag=ra.ender.recv_item] run tellraw @s [{text:"   can receive items",color:"aqua"}]
 execute if entity @s[tag=ra.ender.send_item] run tellraw @s [{text:"   can be pulled from",color:"aqua"}]
 execute if entity @s[tag=ra.ender.recv_fluid] run tellraw @s [{text:"   can receive fluid",color:"aqua"}]

@@ -19,5 +19,5 @@ execute as @e[type=marker,tag=ra.custom_block.boxer,tag=!ra.storage.io_default_m
 tag @e[type=marker,tag=ra.custom_block.boxer,tag=!ra.storage.io_default_migrated] add ra.storage.io_default_migrated
 
 # Processing
-execute as @e[type=marker,tag=ra.custom_block.boxer] at @s run function ra_lib:redstone/detect
-execute as @e[type=marker,tag=ra.custom_block.boxer,scores={ra.power=1..}] at @s run function ra_storage:blocks/boxer/process with entity @s data.properties
+execute as @e[type=marker,tag=ra.custom_block.boxer] at @s run function ra_lib:redstone/detect_switch
+execute as @e[type=marker,tag=ra.custom_block.boxer,tag=ra.powered] at @s run function ra_storage:blocks/boxer/process with entity @s data.properties

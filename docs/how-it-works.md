@@ -131,20 +131,37 @@ This separation keeps user-edited values and transient machine state distinct.
 
 ### redstone/
 
-- `detect`: gathers power from multiple sources and updates both world-space and look-space power scoreboards.
-- `detect/*`: source-specific detectors (dust, repeater, comparator, lever, button, block, torch).
-- `clear`: resets tags and prior signal state before a new detection pass.
+One macro reader, `side`, knows every source once. Everything else is a way of
+asking it a narrower question:
+
+- `any`: powered at all? Stops at the first live side.
+- `detect_switch`: `any`, maintaining the `ra.powered` tag. Writes no level.
+- `local/{front,back,left,right,up,down}`: one named side, through the block's facing.
+- `side`: one compass side.
+- `detect`: all six sides plus the aggregate.
+- `detect_local`: `detect` plus look-space scores and direction tags.
+- `count_inputs`: how many sides carry a component at all, powered or not.
+- `clear`: drops every redstone tag. Used by `detect_local` each pass, and once at
+  load to sweep up tags an older version left behind.
+
+Sources are block tags — `binary_sources`, `directional_sources`, `analog_omni`,
+`analog_sources` — so a new source is a data edit, not six code edits in six
+directions. That is how pressure plates came to be missing from the old reader
+entirely.
 
 Redstone output contract:
 
 - `ra.power`: aggregate max power (`0..16`)
 - world-space: `ra.power.north/south/east/west/up/down`
-- look-space: `ra.power.front/back/left/right/local_up/local_down`
-- `16` is reserved for superpower from direct powered repeater/comparator output
+- look-space: `ra.power.front/back/left/right/local_up/local_down` — `detect_local` only
+- `16` is reserved for superpower: a repeater, comparator or observer driving the block
 
 Runtime usage note:
 
-- Gates and wireless emitter run `ra_lib:redstone/detect` directly inside their per-block process functions.
+- Blocks that treat redstone as a switch call `detect_switch`; the UNI gate and the
+  Teleport Anchor, which need levels, call `detect`.
+- The per-source tags (`ra.powered.dust`, `.lever`, `.torch`, …) are gone. Nothing
+  read them, and the reader reports a level rather than which source produced it.
 - The old gate-wide signal sweep function is no longer part of active tick flow.
 
 ### inventory/

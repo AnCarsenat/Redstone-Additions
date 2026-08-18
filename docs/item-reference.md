@@ -31,24 +31,23 @@ one page, A to Z and by module.
 | ra_sensors:tag_remover               | Tag Remover               | ![Tag Remover recipe](images/recipes/ra_sensors/tag_remover.png){ width="220" } |
 | ra_wireless:emitter                  | Wireless Emitter          | ![Wireless Emitter recipe](images/recipes/ra_wireless/emitter.png){ width="220" } |
 | ra_wireless:receiver                 | Wireless Receiver         | ![Wireless Receiver recipe](images/recipes/ra_wireless/receiver.png){ width="220" } |
-| ra_wires:liquid_pipe (copper)        | Copper Liquid Pipe        | ![Copper Liquid Pipe recipe](images/recipes/ra_wires/liquid_pipe_copper.png){ width="220" } |
-| ra_wires:liquid_pipe (netherite)     | Netherite Liquid Pipe     | ![Netherite Liquid Pipe recipe](images/recipes/ra_wires/liquid_pipe_netherite.png){ width="220" } |
+| ra_wires:liquid_pipe                 | Copper Pipe               | ![Copper Pipe recipe](images/recipes/ra_wires/liquid_pipe_copper.png){ width="220" } |
 | ra_wires:liquid_tank                 | Liquid Tank               | ![Liquid Tank recipe](images/recipes/ra_wires/liquid_tank.png){ width="220" } |
 | ra_wires:liquid_pump                 | Liquid Pump               | ![Liquid Pump recipe](images/recipes/ra_wires/liquid_pump.png){ width="220" } |
 | ra_wires:liquid_valve                | Liquid Valve              | ![Liquid Valve recipe](images/recipes/ra_wires/liquid_valve.png){ width="220" } |
 | ra_wires:liquid_drain                | Liquid Drain              | ![Liquid Drain recipe](images/recipes/ra_wires/liquid_drain.png){ width="220" } |
-| ra_wires:gas_pipe (copper)           | Copper Gas Pipe           | ![Copper Gas Pipe recipe](images/recipes/ra_wires/liquid_pipe_copper.png){ width="220" } |
-| ra_wires:gas_pipe (netherite)        | Netherite Gas Pipe        | ![Netherite Gas Pipe recipe](images/recipes/ra_wires/liquid_pipe_netherite.png){ width="220" } |
 | ra_wires:gas_tank                    | Gas Tank                  | ![Gas Tank recipe](images/recipes/ra_wires/gas_tank.png){ width="220" } |
 | ra_wires:gas_pump                    | Gas Pump                  | ![Gas Pump recipe](images/recipes/ra_wires/gas_pump.png){ width="220" } |
 | ra_wires:gas_valve                   | Gas Valve                 | ![Gas Valve recipe](images/recipes/ra_wires/gas_valve.png){ width="220" } |
-| ra_wires:electric_wire (copper)      | Copper Electric Wire      | ![Copper Electric Wire recipe](images/recipes/ra_wires/electric_wire_copper.png){ width="220" } |
-| ra_wires:electric_wire (netherite)   | Netherite Electric Wire   | ![Netherite Electric Wire recipe](images/recipes/ra_wires/electric_wire_netherite.png){ width="220" } |
-| ra_wires:electric_generator          | EU Generator              | ![EU Generator recipe](images/recipes/ra_wires/electric_generator.png){ width="220" } |
+| ra_wires:electric_wire               | Wire                      | ![Wire recipe](images/recipes/ra_wires/electric_wire_copper.png){ width="220" } |
+| ra_wires:electric_generator          | EU Generator (barrel)     | ![EU Generator recipe](images/recipes/ra_wires/electric_generator.png){ width="220" } |
 | ra_wires:electric_consumer           | EU Consumer               | ![EU Consumer recipe](images/recipes/ra_wires/electric_consumer.png){ width="220" } |
 | ra_wires:electric_switch             | EU Switch                 | ![EU Switch recipe](images/recipes/ra_wires/electric_switch.png){ width="220" } |
 | ra_wires:boiler                      | Boiler                    | ![Boiler recipe](images/recipes/ra_wires/boiler.png){ width="220" } |
 | ra_wires:solar_panel                 | Solar Panel               | ![Solar Panel recipe](images/recipes/ra_wires/solar_panel.png){ width="220" } |
+| ra_wires:battery                     | Battery                   | ![Battery recipe](images/recipes/ra_wires/battery.png){ width="220" } |
+| ra_wires:electric_breaker            | EU Breaker                | ![EU Breaker recipe](images/recipes/ra_wires/electric_breaker.png){ width="220" } |
+| ra_wires:industrial_light            | Industrial Light          | ![Industrial Light recipe](images/recipes/ra_wires/industrial_light.png){ width="220" } |
 | ra_ender:ender_item_vault            | Ender Item Vault          | ![Ender Item Vault recipe](images/recipes/ra_ender/ender_item_vault.png){ width="220" } |
 | ra_ender:ender_fluid_vault           | Ender Fluid Vault         | ![Ender Fluid Vault recipe](images/recipes/ra_ender/ender_fluid_vault.png){ width="220" } |
 | ra_ender:ender_power_vault           | Ender Power Vault         | ![Ender Power Vault recipe](images/recipes/ra_ender/ender_power_vault.png){ width="220" } |
@@ -87,4 +86,6 @@ each other and from ordinary materials.
 | ra     | Creative Data Handler | `ra:tools/creative_data_handler/give` | ![Creative Data Handler recipe](images/recipes/ra/data_handler.png){ width="220" } |
 | ra     | Data Handler          | `ra:tools/data_handler/give`          | ![Data Handler recipe](images/recipes/ra/data_handler.png){ width="220" } |
 | ra     | Goggles               | `ra:tools/goggles/give`               | ![Goggles recipe](images/recipes/ra/goggles.png){ width="220" } |
+| ra     | Clipboard             | `ra:tools/clipboard/give`             | no recipe yet |
+| ra     | Multimeter            | `ra:tools/multimeter/give`            | no recipe yet |
 

@@ -16,6 +16,11 @@ tag @s add ra.wires.tinkerable
 
 execute if data storage ra:wires spec.fluid run tag @s add ra.wires.fluid_node
 execute if data storage ra:wires spec.electric run tag @s add ra.wires.electric_node
+# A bridge is deliberately not a node: ra_wires:bridge/tick reaches into the
+# networks on either side of it instead of joining one.
+execute if data storage ra:wires spec.bridge run tag @s add ra.wires.bridge
 execute if data storage ra:wires spec.net run function ra_wires:blocks/place_join with storage ra:wires spec
+
+execute if data storage ra:wires spec{marker:"electric_generator"} run function ra_wires:blocks/electric_generator/refresh_display
 
 function ra_wires:common/update_model_local_and_neighbors

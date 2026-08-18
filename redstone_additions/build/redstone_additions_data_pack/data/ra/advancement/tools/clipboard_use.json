@@ -1,0 +1,18 @@
+{
+  "criteria": {
+    "requirement": {
+      "trigger": "minecraft:using_item",
+      "conditions": {
+        "item": {
+          "items": "minecraft:paper",
+          "predicates": {
+            "minecraft:custom_data": {"ra": {"clipboard": true}}
+          }
+        }
+      }
+    }
+  },
+  "rewards": {
+    "function": "ra:tools/clipboard/on_use"
+  }
+}

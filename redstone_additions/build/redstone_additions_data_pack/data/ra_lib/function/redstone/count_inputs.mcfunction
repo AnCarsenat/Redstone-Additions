@@ -1,83 +1,35 @@
 # /ra_lib:redstone/count_inputs
-# Count how many sides carry a redstone source component, powered or not.
-# As entity, at position. Output: @s ra.rs_inputs (0-6).
+# Count how many sides carry a redstone component, powered or not.
+# As the marker, at the block. Output: @s ra.rs_inputs (0-6).
 #
-# Mirrors ra_lib:redstone/detect exactly, including the ra.redstone.ignore_blocks
-# opt-out: a component only counts as an input on a side if detect would be able
-# to read power from it there. Callers that need to tell "input present but off"
-# apart from "no input on that side" compare this against the powered count.
-# The two must stay in step -- if detect learns a new source, add it here too.
+# Used by the AND and NAND gates, which have to know how many inputs exist before
+# they can say whether all of them are on.
+#
+# This used to be a hand-copied mirror of the old detect: every source test
+# written out again for all six directions, with a comment warning that the two
+# had to be kept in step by hand. They never quite were — detect grew the
+# ra.redstone.ignore_blocks opt-out and this file grew it too, but neither ever
+# learned about pressure plates. Both now share ra_lib:redstone/has_input, so a
+# source added to the block tags is counted here without anyone remembering to.
 
 scoreboard players set @s ra.rs_inputs 0
 
-# north: block at ~ ~ ~-1
-scoreboard players set #rs_side ra.temp 0
-execute if block ~ ~ ~-1 minecraft:redstone_wire[south=side] run scoreboard players set #rs_side ra.temp 1
-execute if block ~ ~ ~-1 minecraft:redstone_wire[south=up] run scoreboard players set #rs_side ra.temp 1
-execute if block ~ ~ ~-1 minecraft:lever run scoreboard players set #rs_side ra.temp 1
-execute if block ~ ~ ~-1 #minecraft:buttons run scoreboard players set #rs_side ra.temp 1
-execute if block ~ ~ ~-1 minecraft:repeater[facing=south] run scoreboard players set #rs_side ra.temp 1
-execute if block ~ ~ ~-1 minecraft:comparator[facing=south] run scoreboard players set #rs_side ra.temp 1
-execute if block ~ ~ ~-1 minecraft:redstone_wall_torch[facing=south] run scoreboard players set #rs_side ra.temp 1
-execute if block ~ ~ ~-1 minecraft:redstone_wall_torch[facing=east] run scoreboard players set #rs_side ra.temp 1
-execute if block ~ ~ ~-1 minecraft:redstone_wall_torch[facing=west] run scoreboard players set #rs_side ra.temp 1
-execute unless entity @s[tag=ra.redstone.ignore_blocks] if block ~ ~ ~-1 minecraft:redstone_block run scoreboard players set #rs_side ra.temp 1
-scoreboard players operation @s ra.rs_inputs += #rs_side ra.temp
+execute store result score #rs.in ra.temp run function ra_lib:redstone/has_input {dx:0,dy:0,dz:-1,side:"north",back:"south",torch:"side"}
+scoreboard players operation @s ra.rs_inputs += #rs.in ra.temp
 
-# south: block at ~ ~ ~1
-scoreboard players set #rs_side ra.temp 0
-execute if block ~ ~ ~1 minecraft:redstone_wire[north=side] run scoreboard players set #rs_side ra.temp 1
-execute if block ~ ~ ~1 minecraft:redstone_wire[north=up] run scoreboard players set #rs_side ra.temp 1
-execute if block ~ ~ ~1 minecraft:lever run scoreboard players set #rs_side ra.temp 1
-execute if block ~ ~ ~1 #minecraft:buttons run scoreboard players set #rs_side ra.temp 1
-execute if block ~ ~ ~1 minecraft:repeater[facing=north] run scoreboard players set #rs_side ra.temp 1
-execute if block ~ ~ ~1 minecraft:comparator[facing=north] run scoreboard players set #rs_side ra.temp 1
-execute if block ~ ~ ~1 minecraft:redstone_wall_torch[facing=north] run scoreboard players set #rs_side ra.temp 1
-execute if block ~ ~ ~1 minecraft:redstone_wall_torch[facing=east] run scoreboard players set #rs_side ra.temp 1
-execute if block ~ ~ ~1 minecraft:redstone_wall_torch[facing=west] run scoreboard players set #rs_side ra.temp 1
-execute unless entity @s[tag=ra.redstone.ignore_blocks] if block ~ ~ ~1 minecraft:redstone_block run scoreboard players set #rs_side ra.temp 1
-scoreboard players operation @s ra.rs_inputs += #rs_side ra.temp
+execute store result score #rs.in ra.temp run function ra_lib:redstone/has_input {dx:0,dy:0,dz:1,side:"south",back:"north",torch:"side"}
+scoreboard players operation @s ra.rs_inputs += #rs.in ra.temp
 
-# west: block at ~-1 ~ ~
-scoreboard players set #rs_side ra.temp 0
-execute if block ~-1 ~ ~ minecraft:redstone_wire[east=side] run scoreboard players set #rs_side ra.temp 1
-execute if block ~-1 ~ ~ minecraft:redstone_wire[east=up] run scoreboard players set #rs_side ra.temp 1
-execute if block ~-1 ~ ~ minecraft:lever run scoreboard players set #rs_side ra.temp 1
-execute if block ~-1 ~ ~ #minecraft:buttons run scoreboard players set #rs_side ra.temp 1
-execute if block ~-1 ~ ~ minecraft:repeater[facing=east] run scoreboard players set #rs_side ra.temp 1
-execute if block ~-1 ~ ~ minecraft:comparator[facing=east] run scoreboard players set #rs_side ra.temp 1
-execute if block ~-1 ~ ~ minecraft:redstone_wall_torch[facing=north] run scoreboard players set #rs_side ra.temp 1
-execute if block ~-1 ~ ~ minecraft:redstone_wall_torch[facing=south] run scoreboard players set #rs_side ra.temp 1
-execute if block ~-1 ~ ~ minecraft:redstone_wall_torch[facing=east] run scoreboard players set #rs_side ra.temp 1
-execute unless entity @s[tag=ra.redstone.ignore_blocks] if block ~-1 ~ ~ minecraft:redstone_block run scoreboard players set #rs_side ra.temp 1
-scoreboard players operation @s ra.rs_inputs += #rs_side ra.temp
+execute store result score #rs.in ra.temp run function ra_lib:redstone/has_input {dx:-1,dy:0,dz:0,side:"west",back:"east",torch:"side"}
+scoreboard players operation @s ra.rs_inputs += #rs.in ra.temp
 
-# east: block at ~1 ~ ~
-scoreboard players set #rs_side ra.temp 0
-execute if block ~1 ~ ~ minecraft:redstone_wire[west=side] run scoreboard players set #rs_side ra.temp 1
-execute if block ~1 ~ ~ minecraft:redstone_wire[west=up] run scoreboard players set #rs_side ra.temp 1
-execute if block ~1 ~ ~ minecraft:lever run scoreboard players set #rs_side ra.temp 1
-execute if block ~1 ~ ~ #minecraft:buttons run scoreboard players set #rs_side ra.temp 1
-execute if block ~1 ~ ~ minecraft:repeater[facing=west] run scoreboard players set #rs_side ra.temp 1
-execute if block ~1 ~ ~ minecraft:comparator[facing=west] run scoreboard players set #rs_side ra.temp 1
-execute if block ~1 ~ ~ minecraft:redstone_wall_torch[facing=north] run scoreboard players set #rs_side ra.temp 1
-execute if block ~1 ~ ~ minecraft:redstone_wall_torch[facing=south] run scoreboard players set #rs_side ra.temp 1
-execute if block ~1 ~ ~ minecraft:redstone_wall_torch[facing=west] run scoreboard players set #rs_side ra.temp 1
-execute unless entity @s[tag=ra.redstone.ignore_blocks] if block ~1 ~ ~ minecraft:redstone_block run scoreboard players set #rs_side ra.temp 1
-scoreboard players operation @s ra.rs_inputs += #rs_side ra.temp
+execute store result score #rs.in ra.temp run function ra_lib:redstone/has_input {dx:1,dy:0,dz:0,side:"east",back:"west",torch:"side"}
+scoreboard players operation @s ra.rs_inputs += #rs.in ra.temp
 
-# up: block at ~ ~1 ~
-scoreboard players set #rs_side ra.temp 0
-execute if block ~ ~1 ~ minecraft:lever run scoreboard players set #rs_side ra.temp 1
-execute if block ~ ~1 ~ #minecraft:buttons run scoreboard players set #rs_side ra.temp 1
-execute if block ~ ~1 ~ minecraft:redstone_torch run scoreboard players set #rs_side ra.temp 1
-execute unless entity @s[tag=ra.redstone.ignore_blocks] if block ~ ~1 ~ minecraft:redstone_block run scoreboard players set #rs_side ra.temp 1
-scoreboard players operation @s ra.rs_inputs += #rs_side ra.temp
+execute store result score #rs.in ra.temp run function ra_lib:redstone/has_input {dx:0,dy:-1,dz:0,side:"down",back:"up",torch:"below"}
+scoreboard players operation @s ra.rs_inputs += #rs.in ra.temp
 
-# down: block at ~ ~-1 ~
-scoreboard players set #rs_side ra.temp 0
-execute if block ~ ~-1 ~ minecraft:lever run scoreboard players set #rs_side ra.temp 1
-execute if block ~ ~-1 ~ #minecraft:buttons run scoreboard players set #rs_side ra.temp 1
-execute if block ~ ~-1 ~ minecraft:redstone_torch run scoreboard players set #rs_side ra.temp 1
-execute unless entity @s[tag=ra.redstone.ignore_blocks] if block ~ ~-1 ~ minecraft:redstone_block run scoreboard players set #rs_side ra.temp 1
-scoreboard players operation @s ra.rs_inputs += #rs_side ra.temp
+execute store result score #rs.in ra.temp run function ra_lib:redstone/has_input {dx:0,dy:1,dz:0,side:"up",back:"down",torch:"none"}
+scoreboard players operation @s ra.rs_inputs += #rs.in ra.temp
+
+return run scoreboard players get @s ra.rs_inputs

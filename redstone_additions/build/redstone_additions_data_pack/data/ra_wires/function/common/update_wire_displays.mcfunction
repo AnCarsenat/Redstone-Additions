@@ -7,5 +7,5 @@ kill @e[type=block_display,tag=ra.wires.wire_display,distance=..0.9]
 
 execute unless block ~ ~ ~ conduit run return 0
 
-execute if data entity @s data.properties{tier:"netherite"} run function ra_wires:common/update_wire_displays_netherite
-execute unless data entity @s data.properties{tier:"netherite"} run function ra_wires:common/update_wire_displays_copper
+# One wire, one look.
+function ra_wires:common/update_wire_displays_copper

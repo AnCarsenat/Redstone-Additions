@@ -1,5 +1,5 @@
 # /ra_wires:blocks/solar_panel/tick
-# Generate EU from sunlight.
+# Generate EU from sunlight and put it on the grid.
 # Context: as the solar panel marker, at the panel position.
 #
 # The panel IS a vanilla daylight detector, so the game has already worked out
@@ -31,15 +31,13 @@ execute if score #solar_gen ra.wires.tmp matches 0 run data modify entity @s dat
 execute if score #solar_gen ra.wires.tmp matches 0 run return 0
 
 data modify entity @s data.status.fuel set value "Sunlight"
-data modify entity @s data.status.active set value 1b
 
-execute store result score #solar_eu ra.wires.tmp2 run data get entity @s data.data.eu 1
-execute store result score #solar_cap ra.wires.tmp run data get entity @s data.data.capacity 1
+# Offer the batch to the grid rather than into a buffer of our own. The network
+# refuses whatever will not fit, so there is no free-space arithmetic here and no
+# capacity of ours to overflow.
+execute store result storage ra:wires eu.amount int 1 run scoreboard players get #solar_gen ra.wires.tmp
+execute store result score #solar_made ra.wires.tmp run function ra_wires:electric/offer_eu with storage ra:wires eu
 
-scoreboard players operation #solar_free ra.wires.tmp = #solar_cap ra.wires.tmp
-scoreboard players operation #solar_free ra.wires.tmp -= #solar_eu ra.wires.tmp2
-execute if score #solar_free ra.wires.tmp matches ..0 run return 0
-execute if score #solar_free ra.wires.tmp < #solar_gen ra.wires.tmp run scoreboard players operation #solar_gen ra.wires.tmp = #solar_free ra.wires.tmp
+execute if score #solar_made ra.wires.tmp matches 1.. run data modify entity @s data.status.active set value 1b
+execute if score #solar_made ra.wires.tmp matches ..0 run data modify entity @s data.status.active set value 0b
 
-scoreboard players operation #solar_eu ra.wires.tmp2 += #solar_gen ra.wires.tmp
-execute store result entity @s data.data.eu int 1 run scoreboard players get #solar_eu ra.wires.tmp2

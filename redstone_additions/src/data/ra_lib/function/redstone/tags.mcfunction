@@ -1,12 +1,15 @@
 # /ra_lib:redstone/tags
-# Internal: apply the ra.powered.* direction tags.
-# Only reached when ra.power is non-zero. ra.power is the maximum over the six
+# Internal: apply the ra.powered.* direction tags. Called by detect_local only.
+# Only reached when ra.power is non-zero: ra.power is the maximum over the six
 # world directions and the look-space scores are copies of those, so a zero
-# aggregate guarantees every individual direction is zero too and none of these
-# tags could apply.
-
-tag @s add ra.powered
-execute if score @s ra.power matches 16 run tag @s add ra.powered.strong
+# aggregate guarantees every individual direction is zero too.
+#
+# ra.powered and ra.powered.strong are NOT set here — ra_lib:redstone/detect owns
+# those two, so a block that calls detect on its own still gets them.
+#
+# The per-source tags this used to also set (ra.powered.dust, .lever, .block and
+# the rest) are gone. Nothing in the pack read them, and the per-side reader
+# detect is now built on reports a level rather than which source produced it.
 
 execute if score @s ra.power.north matches 1.. run tag @s add ra.powered.north
 execute if score @s ra.power.south matches 1.. run tag @s add ra.powered.south

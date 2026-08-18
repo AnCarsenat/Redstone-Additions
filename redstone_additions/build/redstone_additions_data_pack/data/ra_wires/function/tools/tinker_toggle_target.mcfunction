@@ -27,8 +27,8 @@ tag @s remove ra.wires.was_enabled
 
 # A closed valve genuinely splits the network in two rather than just refusing to
 # move fluid, so the two halves keep separate contents and separate media.
-execute if entity @s[tag=ra.custom_block.liquid_valve] run function ra_wires:tools/valve_apply
-execute if entity @s[tag=ra.custom_block.gas_valve] run function ra_wires:tools/valve_apply
+# Valves no longer join or leave a network when toggled -- they are bridges, and
+# `enabled` is read directly by ra_wires:bridge/tick each tick. Nothing to apply.
 
 execute if data entity @s data.properties{enabled:1b} run tellraw @a[tag=ra.wires.tinker_user,limit=1] [{text:"[Goggles] ",color:"gold"},{text:"Enabled",color:"green"}]
 execute unless data entity @s data.properties{enabled:1b} run tellraw @a[tag=ra.wires.tinker_user,limit=1] [{text:"[Goggles] ",color:"gold"},{text:"Disabled",color:"red"}]

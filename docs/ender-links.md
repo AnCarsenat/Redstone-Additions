@@ -22,7 +22,7 @@ Every vault has two properties that matter:
 | Property | Meaning |
 | -------- | ------- |
 | `channel` | A string. Two vaults with the same channel are linked. Default `"default"` |
-| `mode` | `shared` (default), `link`, or `send` / `receive` for a one-way pipe |
+| `mode` | `link` (default), or `send` / `receive` for a one-way pipe |
 
 Set the channel with the [Data Handler](interactive-machines.md); cycle the mode
 with **shift + right-click of the Wrench**. A channel is a pair in practice: a
@@ -37,26 +37,6 @@ players, or two hoppers, pulling in the same tick each walk away with a copy, an
 the duplication has already happened before any function runs. Container clicks are
 not interceptable from a data pack. So there is exactly one real copy of everything
 in a channel, always, and the modes differ in how it gets to where you want it.
-
-### `shared` — the contents follow you
-
-The default, and the closest thing to one inventory. Stand within 4 blocks of any
-vault on the channel and the whole contents move into *that* barrel: whichever
-vault you walk up to is the one holding everything, and the far end is empty while
-you are at this one.
-
-The move is a single `data modify … Items set from block …`, and the source is only
-cleared if that copy reported success — so the stacks are in one barrel before the
-pair of commands and in one barrel after, never in both and never in neither.
-
-Two people at two ends of one channel do not fight over it: a holder with someone
-standing at it keeps what it has, rather than having it pulled away mid-click. And
-if you put something into a vault while the far end still holds the rest, the two
-are merged a stack per cycle through the free-slot path, because copying the whole
-list over would collide slot numbers.
-
-Hoppers and pipes should use `link` or the one-way modes instead — `shared` follows
-players, not machines.
 
 ### `link` — two-way, and why each medium does it differently
 
@@ -79,8 +59,8 @@ mistaken for an insert and bounced back.
 
 !!! note "It counts stacks, not items"
     The mark is the number of stacks in the barrel, so taking *part* of a stack — 32
-    out of 64 — does not read as an extraction and does not pull a refill. Take a whole
-    stack, or use `shared` mode, where the contents come to you regardless. Pull is not a second copy of the move
+    out of 64 — does not read as an extraction and does not pull a refill. Take a
+    whole stack. Pull is not a second copy of the move
 logic: the asking vault makes itself the only eligible receiver for one command
 and runs the partner's push.
 
@@ -179,8 +159,6 @@ Guards worth knowing:
 | `ra.ender.recv_item` / `recv_fluid` / `recv_power` | Recomputed each tick: this vault can accept |
 | `ra.ender.send_item` | Recomputed each tick: this vault can be pulled from |
 | `ra.ender.self` | Held for one cycle so a vault never links to itself |
-| `ra.ender.share` | Recomputed each tick: this vault is in `shared` mode |
-| `ra.ender.occupied` | A player is within 4 blocks of this vault |
 | `ra.ender.pull_target` | The vault a refill is being fetched for, for one command |
 | `ra.ender.tp_dest` | The anchor a teleport is aimed at, for one command |
 

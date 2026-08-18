@@ -11,22 +11,22 @@ tag @e[type=marker,tag=ra.broken,tag=ra.custom_block.ender_item_vault] remove ra
 
 # Defaults for vaults placed before a property existed.
 execute as @e[type=marker,tag=ra.custom_block.ender_item_vault] unless data entity @s data.properties.channel run data modify entity @s data.properties.channel set value "default"
-execute as @e[type=marker,tag=ra.custom_block.ender_item_vault] unless data entity @s data.properties.mode run data modify entity @s data.properties.mode set value "shared"
+# Migration: `shared` is gone. A vault still set to it becomes `link`, which is
+# the closest of the three that remain — two-way and demand driven.
+execute as @e[type=marker,tag=ra.custom_block.ender_item_vault] if data entity @s data.properties{mode:"shared"} run data modify entity @s data.properties.mode set value "link"
+execute as @e[type=marker,tag=ra.custom_block.ender_item_vault] unless data entity @s data.properties.mode run data modify entity @s data.properties.mode set value "link"
 execute as @e[type=marker,tag=ra.custom_block.ender_item_vault] unless data entity @s data.properties.enabled run data modify entity @s data.properties.enabled set value 1b
 
 # Who can receive this tick. Recomputed rather than stored, so editing the mode
 # with the Data Handler takes effect immediately.
-# Which vaults are being stood at, and which are in shared mode. Both are
-# recomputed rather than stored, so a mode change takes effect at once.
-tag @e[type=marker,tag=ra.ender.occupied] remove ra.ender.occupied
-execute as @e[type=marker,tag=ra.custom_block.ender_item_vault] at @s if entity @p[distance=..4] run tag @s add ra.ender.occupied
-tag @e[type=marker,tag=ra.ender.share] remove ra.ender.share
-execute as @e[type=marker,tag=ra.custom_block.ender_item_vault] if data entity @s data.properties{mode:"shared"} unless data entity @s data.properties{enabled:0b} run tag @s add ra.ender.share
+# The `ra.ender.occupied` and `ra.ender.share` bookkeeping went with `shared`:
+# both existed only to work out which vault a player was standing at. Two
+# whole-world sweeps a tick, gone.
 
 tag @e[type=marker,tag=ra.ender.recv_item] remove ra.ender.recv_item
 tag @e[type=marker,tag=ra.ender.send_item] remove ra.ender.send_item
-execute as @e[type=marker,tag=ra.custom_block.ender_item_vault] unless data entity @s data.properties{enabled:0b} unless data entity @s data.properties{mode:"send"} unless data entity @s data.properties{mode:"shared"} run tag @s add ra.ender.recv_item
-execute as @e[type=marker,tag=ra.custom_block.ender_item_vault] unless data entity @s data.properties{enabled:0b} unless data entity @s data.properties{mode:"receive"} unless data entity @s data.properties{mode:"shared"} run tag @s add ra.ender.send_item
+execute as @e[type=marker,tag=ra.custom_block.ender_item_vault] unless data entity @s data.properties{enabled:0b} unless data entity @s data.properties{mode:"send"} run tag @s add ra.ender.recv_item
+execute as @e[type=marker,tag=ra.custom_block.ender_item_vault] unless data entity @s data.properties{enabled:0b} unless data entity @s data.properties{mode:"receive"} run tag @s add ra.ender.send_item
 
 # Hopper rate: one stack every 4 ticks per sending vault.
 scoreboard players add @e[type=marker,tag=ra.custom_block.ender_item_vault] ra.ender.cd 1

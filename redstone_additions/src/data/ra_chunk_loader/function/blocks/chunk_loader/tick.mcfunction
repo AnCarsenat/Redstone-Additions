@@ -12,13 +12,13 @@ execute as @e[type=marker,tag=ra.broken,tag=ra.custom_block.chunk_loader] at @s 
 tag @e[type=marker,tag=ra.broken,tag=ra.custom_block.chunk_loader] remove ra.broken
 
 # Redstone power detection
-execute as @e[type=marker,tag=ra.custom_block.chunk_loader,tag=!ra.new] at @s run function ra_lib:redstone/detect
+execute as @e[type=marker,tag=ra.custom_block.chunk_loader,tag=!ra.new] at @s run function ra_lib:redstone/detect_switch
 
 # Load chunk on rising edge
-execute as @e[type=marker,tag=ra.custom_block.chunk_loader,tag=!ra.was_powered] if score @s ra.power matches 1.. at @s run execute at @s run forceload add ~ ~
+execute as @e[type=marker,tag=ra.custom_block.chunk_loader,tag=!ra.was_powered,tag=ra.powered] at @s run execute at @s run forceload add ~ ~
 
 # Unload chunk on falling edge
-execute as @e[type=marker,tag=ra.custom_block.chunk_loader,tag=ra.was_powered] if score @s ra.power matches ..0 at @s run function ra_chunk_loader:blocks/chunk_loader/on_unpowered
+execute as @e[type=marker,tag=ra.custom_block.chunk_loader,tag=ra.was_powered,tag=!ra.powered] at @s run function ra_chunk_loader:blocks/chunk_loader/on_unpowered
 
 # Track power state
 tag @e[type=marker,tag=ra.custom_block.chunk_loader,tag=ra.powered] add ra.was_powered

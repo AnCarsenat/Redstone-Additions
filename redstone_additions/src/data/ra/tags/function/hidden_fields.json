@@ -1,5 +1,6 @@
 {
   "values": [
+    "ra_interactive:tools/hidden_fields",
     "ra_infinite:tools/hidden_fields",
     "ra_wires:tools/hidden_fields",
     "ra_ender:tools/hidden_fields",

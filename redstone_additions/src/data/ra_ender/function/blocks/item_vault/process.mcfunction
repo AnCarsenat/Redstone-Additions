@@ -33,9 +33,6 @@ execute unless data entity @s data.data.last_used run data modify entity @s data
 execute store result score #ender.was ra.temp run data get entity @s data.data.last_used
 
 # Shared: the contents follow the player, and there is nothing else to do.
-execute if data entity @s data.properties{mode:"shared"} run function ra_ender:blocks/item_vault/shared
-execute if data entity @s data.properties{mode:"shared"} run function ra_ender:blocks/item_vault/mark
-execute if data entity @s data.properties{mode:"shared"} run return run function ra_ender:link/done
 
 # One-way modes keep their old, simpler behaviour: a sender drains, a receiver waits.
 execute if data entity @s data.properties{mode:"send"} run function ra_ender:blocks/item_vault/push

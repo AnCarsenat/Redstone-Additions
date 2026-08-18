@@ -13,8 +13,13 @@ execute as @e[type=marker,tag=ra.broken,tag=ra.custom_block.block_placer] at @s 
 execute as @e[type=marker,tag=ra.broken,tag=ra.custom_block.block_placer] at @s run kill @s
 tag @e[type=marker,tag=ra.broken,tag=ra.custom_block.block_placer] remove ra.broken
 
-# Check for powered dispensers - instant activation (no cooldown)
-execute as @e[type=marker,tag=ra.custom_block.block_placer] at @s if block ~ ~ ~ dispenser[triggered=true] run execute if block ^ ^ ^1 air if data block ~ ~ ~ Items[0] run data modify storage ra:temp place_item set from block ~ ~ ~ Items[0]
-execute as @e[type=marker,tag=ra.custom_block.block_placer] at @s if block ~ ~ ~ dispenser[triggered=true] run execute if block ^ ^ ^1 air if data block ~ ~ ~ Items[0] positioned ^ ^ ^1 run function ra_interactive:blocks/block_placer/place_block with storage ra:temp place_item
-execute as @e[type=marker,tag=ra.custom_block.block_placer] at @s if block ~ ~ ~ dispenser[triggered=true] run execute if block ^ ^ ^1 air if data block ~ ~ ~ Items[0] run playsound minecraft:block.stone.place block @a[distance=..16] ^ ^ ^1 1 0.8
-execute as @e[type=marker,tag=ra.custom_block.block_placer] at @s if block ~ ~ ~ dispenser[triggered=true] run execute if block ^ ^ ^1 air if data block ~ ~ ~ Items[0] run particle minecraft:cloud ^ ^ ^1 0.2 0.2 0.2 0.02 5
+# One placement per second while held. This used to fire on every tick a signal
+# was present, which emptied a stocked placer in under two seconds and made it
+# impossible to use with anything but a single pulse.
+scoreboard players add @e[type=marker,tag=ra.custom_block.block_placer] ra.cooldown 1
+
+# Check for powered dispensers
+
+# One gated call instead of five identical selector sweeps. See fire.mcfunction
+# for why the reset has to happen before the block is placed.
+execute as @e[type=marker,tag=ra.custom_block.block_placer,scores={ra.cooldown=20..}] at @s if block ~ ~ ~ dispenser[triggered=true] if block ^ ^ ^1 air if data block ~ ~ ~ Items[0] run function ra_interactive:blocks/block_placer/fire

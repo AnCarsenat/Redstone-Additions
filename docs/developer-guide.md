@@ -1,6 +1,6 @@
 # Developer Guide
 
-This guide documents implementation architecture and contributor workflow for `v5.1.6`.
+This guide documents implementation architecture and contributor workflow for `v5.1.7`.
 
 If you want conceptual runtime flow first, start with [How It Works](how-it-works.md). This page is focused on engineering-level extension and maintenance work.
 
@@ -165,9 +165,37 @@ Key functions:
 
 ### redstone
 
-Key function:
+Entry points, cheapest first:
 
-- `ra_lib:redstone/detect`
+- `ra_lib:redstone/any` — powered at all? Returns 1/0. Stops at the first live side.
+- `ra_lib:redstone/detect_switch` — `any`, wrapped so it maintains the `ra.powered`
+  tag. For blocks that use redstone as a switch. **Does not write `ra.power`.**
+- `ra_lib:redstone/local/{front,back,left,right,up,down}` — one named side, 0-16,
+  resolved through the block's own `ra.facing`.
+- `ra_lib:redstone/side` — one compass side, 0-16. The macro core; everything
+  above and below is built on it.
+- `ra_lib:redstone/detect` — all six sides, the aggregate, and `ra.powered`.
+- `ra_lib:redstone/detect_local` — `detect` plus the look-space scores and the
+  direction tags. Only if you actually read them.
+- `ra_lib:redstone/count_inputs` — how many sides carry a component, powered or
+  not. Shares its source rules with `has_input`.
+
+Cheaper than any of them: if the block's vanilla base already carries the answer,
+read the block state and call nothing. `dispenser[triggered=true]`,
+`note_block[powered=true]`, `redstone_lamp[lit=true]`. Note that `triggered` on a
+dispenser or dropper also picks up quasi-connectivity, which a library scan does
+not — that is a behaviour difference, not just a speed one.
+
+Sources live in block tags, so adding one is a data edit rather than a code edit:
+
+- `#ra_lib:redstone/binary_sources` — full power when `powered=true`: levers,
+  buttons, non-weighted pressure plates, tripwire hooks, lightning rods.
+- `#ra_lib:redstone/directional_sources` — strong power into the block they face:
+  repeaters, comparators, observers.
+- `#ra_lib:redstone/analog_omni` — carry a level in `power` and give it to every
+  neighbour: both weighted pressure plates, daylight detectors.
+- `#ra_lib:redstone/analog_sources` — the above plus redstone dust, which needs a
+  connection test before its level counts.
 
 It computes:
 

@@ -32,14 +32,19 @@ execute as @e[type=marker,tag=ra.custom_block.gas_pump] at @s unless block ~ ~ ~
 execute as @e[type=marker,tag=ra.custom_block.gas_valve] at @s unless block ~ ~ ~ smooth_basalt run function ra_wires:liquid/break/gas_valve
 execute as @e[type=marker,tag=ra.custom_block.boiler] at @s unless block ~ ~ ~ furnace run function ra_wires:liquid/break/boiler
 
-# A valve's enabled state decides whether it conducts, so network membership has
-# to follow it however it was changed -- goggles tinker, Data Handler toggle or a
-# raw /data edit. Only a valve whose membership disagrees with its property does
-# any work here.
-execute as @e[type=marker,tag=ra.custom_block.liquid_valve,tag=!ra.tr.node] if data entity @s data.properties{enabled:1b} run function ra_wires:tools/valve_apply
-execute as @e[type=marker,tag=ra.custom_block.liquid_valve,tag=ra.tr.node] unless data entity @s data.properties{enabled:1b} run function ra_wires:tools/valve_apply
-execute as @e[type=marker,tag=ra.custom_block.gas_valve,tag=!ra.tr.node] if data entity @s data.properties{enabled:1b} run function ra_wires:tools/valve_apply
-execute as @e[type=marker,tag=ra.custom_block.gas_valve,tag=ra.tr.node] unless data entity @s data.properties{enabled:1b} run function ra_wires:tools/valve_apply
+# Valves are bridges now: they belong to no network and pump between the two they
+# sit between. Two things have to be true of a valve built by an older version.
+#
+# It must stop being a member -- a valve that stayed in a network would merge the
+# very runs it is supposed to keep apart, and the bridge would then find the same
+# network on both sides and refuse to move anything.
+execute as @e[type=marker,tag=ra.custom_block.liquid_valve,tag=ra.tr.node] run function ra_lib:transport/net/leave
+execute as @e[type=marker,tag=ra.custom_block.gas_valve,tag=ra.tr.node] run function ra_lib:transport/net/leave
+
+# And it must be tagged as a bridge so ra_wires:tick drives it at all. Idempotent,
+# so this costs one tag write on a set that is almost always empty.
+tag @e[type=marker,tag=ra.custom_block.liquid_valve,tag=!ra.wires.bridge] add ra.wires.bridge
+tag @e[type=marker,tag=ra.custom_block.gas_valve,tag=!ra.wires.bridge] add ra.wires.bridge
 
 # --- World <-> network ---
 execute as @e[type=marker,tag=ra.custom_block.liquid_pump] at @s run function ra_wires:fluid/pump_tick

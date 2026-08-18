@@ -3,8 +3,10 @@
 # Context: as the generator's marker, at the generator, rotated with it.
 
 # Wait out the configured period.
-execute store result score #gen.period ra.temp run data get entity @s data.properties.cooldown 1
-execute unless score @s ra.cooldown >= #gen.period ra.temp run return 0
+# A missing cooldown used to read as zero here, and zero means "long enough"
+# to the comparison below -- the generator then ran every tick.
+function ra_lib:util/property {name:"cooldown",default:100,min:1}
+execute unless score @s ra.cooldown >= #prop ra.temp run return 0
 scoreboard players set @s ra.cooldown 0
 
 execute if data entity @s data.properties{enabled:0b} run return 0

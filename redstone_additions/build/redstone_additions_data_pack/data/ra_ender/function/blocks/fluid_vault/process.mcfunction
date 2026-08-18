@@ -25,7 +25,8 @@ execute if score #net_amount ra.tr.tmp matches ..0 run return run function ra_en
 execute unless data storage ra:transport cur.medium run return run function ra_ender:link/done
 
 scoreboard players operation #ender.mine ra.temp = #net_amount ra.tr.tmp
-execute store result score #ender.rate ra.temp run data get entity @s data.properties.transfer_rate
+function ra_lib:util/property {name:"transfer_rate",default:200,min:1}
+scoreboard players operation #ender.rate ra.temp = #prop ra.temp
 
 data modify storage ra:ender fluid set value {}
 data modify storage ra:ender fluid.medium set from storage ra:transport cur.medium

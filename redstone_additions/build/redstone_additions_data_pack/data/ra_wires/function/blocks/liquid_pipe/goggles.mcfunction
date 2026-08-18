@@ -8,8 +8,7 @@
 # the same dispatch to answer the Data Handlers, which used to carry two
 # separate hand-written name tables that had already drifted apart.
 
-data modify storage ra:temp block_name set value "L1 Copper Pipe"
-execute if data entity @s data.properties{tier:"iron"} run data modify storage ra:temp block_name set value "L2 Iron Pipe"
+data modify storage ra:temp block_name set value "Copper Pipe"
 execute if data storage ra:temp name_only run return 0
 
 data modify storage ra:temp billboard set value {show_name:1b,name_y:1.0}
@@ -18,4 +17,4 @@ function ra:tools/goggles/billboard/handle_billboard with storage ra:temp billbo
 
 # Contents belong to the network, not this node; refresh_status copies them here.
 function ra:tools/goggles/billboard/data_line {path:"medium",label:"Medium: ",color:"aqua",suffix:"",y:0.8}
-function ra:tools/goggles/billboard/data_line {path:"amount",label:"Amount: ",color:"yellow",suffix:"",y:0.55}
+function ra:tools/goggles/billboard/data_line {path:"amount",label:"Amount: ",color:"yellow",suffix:" mL",y:0.55}

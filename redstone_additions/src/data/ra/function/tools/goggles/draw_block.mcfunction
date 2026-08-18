@@ -51,6 +51,9 @@ execute if entity @s[tag=ra.custom_block.electric_generator] run function ra_wir
 execute if entity @s[tag=ra.custom_block.electric_consumer] run function ra_wires:blocks/electric_consumer/goggles
 execute if entity @s[tag=ra.custom_block.electric_switch] run function ra_wires:blocks/electric_switch/goggles
 execute if entity @s[tag=ra.custom_block.solar_panel] run function ra_wires:blocks/solar_panel/goggles
+execute if entity @s[tag=ra.custom_block.battery] run function ra_wires:blocks/battery/goggles
+execute if entity @s[tag=ra.custom_block.industrial_light] run function ra_wires:blocks/industrial_light/goggles
+execute if entity @s[tag=ra.custom_block.electric_breaker] run function ra_wires:blocks/electric_breaker/goggles
 # ra_infinite
 execute if entity @s[tag=ra.custom_block.mineral_generator] run function ra_infinite:blocks/mineral_generator/goggles
 execute if entity @s[tag=ra.custom_block.nether_generator] run function ra_infinite:blocks/nether_generator/goggles

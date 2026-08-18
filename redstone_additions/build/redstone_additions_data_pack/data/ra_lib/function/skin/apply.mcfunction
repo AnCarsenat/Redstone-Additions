@@ -18,7 +18,18 @@
 #
 # For blocks with no `facing` property, use ra_lib:skin/apply_static.
 
-$kill @e[type=block_display,tag=ra.skin.$(id),distance=..0.9]
+# Both kills are anchored to the block centre, where ra_lib:skin/spawn now stands
+# its displays, so our own skin is at distance 0 and the neighbour's at a full 1.0.
+# Any radius under 0.5 separates them cleanly; 0.4 leaves room for a caller that
+# is not exactly centred.
+$execute align xyz positioned ~0.5 ~0.5 ~0.5 run kill @e[type=block_display,tag=ra.skin.$(id),distance=..0.4]
+
+# Migration for worlds built before skins moved to the centre. Old skins stand on
+# the block's minimum corner, which the centre-anchored kill above cannot reach —
+# without this line the stale one would sit there forever with a new skin drawn
+# on top of it. Anchored to the corner and just as narrow, so it cannot reach a
+# neighbour's skin of either vintage. Safe to delete once no old worlds remain.
+$execute align xyz run kill @e[type=block_display,tag=ra.skin.$(id),distance=..0.4]
 
 $execute unless block ~ ~ ~ $(real) run return 0
 

@@ -1,6 +1,6 @@
 # Redstone Additions — Contributing Guidelines
 
-**Version:** v5.1.6  
+**Version:** v5.1.7  
 **Minecraft:** 1.21.9 – 26.2 (data pack formats 88 – 107)
 
 ---
@@ -45,8 +45,17 @@
 - **Redstone:**
   - aggregate: `ra.power` (0..16)
   - world-space: `ra.power.up/down/north/south/east/west`
-  - look-space: `ra.power.front/back/left/right/local_up/local_down`
-  - convention: `0` no power, `1..15` normal power, `16` superpower (direct repeater/comparator output)
+  - look-space: `ra.power.front/back/left/right/local_up/local_down` (`detect_local` only)
+  - convention: `0` no power, `1..15` normal power, `16` superpower (a repeater,
+    comparator or observer driving the block)
+  - pick the cheapest reader that answers your question: `redstone/any` or
+    `redstone/detect_switch` for on/off, `redstone/local/{side}` for one face,
+    `redstone/detect` only when you need every side. Cheaper than all of them is
+    a base block that carries the answer itself — `dispenser[triggered=true]`,
+    `note_block[powered=true]`, `redstone_lamp[lit=true]` — though `triggered`
+    also picks up quasi-connectivity, which a library scan does not.
+  - new power sources go in the `#ra_lib:redstone/*` block tags, never in a
+    per-direction copy of a test
 - **Gates:** use `ra_lib:redstone/detect` outputs (`ra.power*`) directly; no dedicated gate redstone objectives
 - **Wireless:** `ra.pulse_timer`, `ra.remote.pending`, `ra.remote.slot`
 - **Multiblock:** `ra.multiblock`, `ra.mb_timer`, `ra.heat`

@@ -13,8 +13,6 @@ execute as @e[type=marker,tag=ra.custom_block.ender_power_vault] unless data ent
 execute as @e[type=marker,tag=ra.custom_block.ender_power_vault] unless data entity @s data.properties.mode run data modify entity @s data.properties.mode set value "link"
 execute as @e[type=marker,tag=ra.custom_block.ender_power_vault] unless data entity @s data.properties.enabled run data modify entity @s data.properties.enabled set value 1b
 execute as @e[type=marker,tag=ra.custom_block.ender_power_vault] unless data entity @s data.properties.transfer_rate run data modify entity @s data.properties.transfer_rate set value 80
-execute as @e[type=marker,tag=ra.custom_block.ender_power_vault] unless data entity @s data.data.eu run data modify entity @s data.data.eu set value 0
-execute as @e[type=marker,tag=ra.custom_block.ender_power_vault] unless data entity @s data.data.capacity run data modify entity @s data.data.capacity set value 400
 tag @e[type=marker,tag=ra.custom_block.ender_power_vault] add ra.wires.electric_node
 
 tag @e[type=marker,tag=ra.ender.recv_power] remove ra.ender.recv_power

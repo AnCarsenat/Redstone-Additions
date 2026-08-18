@@ -14,7 +14,8 @@ tag @e[type=marker,tag=ra.broken,tag=ra.custom_block.block_breaker] remove ra.br
 scoreboard players add @e[type=marker,tag=ra.custom_block.block_breaker] ra.cooldown 1
 
 # Check for powered dispensers (only if cooldown ready)
-execute as @e[type=marker,tag=ra.custom_block.block_breaker,scores={ra.cooldown=40..}] at @s if block ~ ~ ~ dispenser[triggered=true] run execute unless block ^ ^ ^1 #air run execute positioned ^ ^ ^1 unless block ~ ~ ~ #ra_lib:unbreakable run fill ~ ~ ~ ~ ~ ~ air destroy
-execute as @e[type=marker,tag=ra.custom_block.block_breaker,scores={ra.cooldown=40..}] at @s if block ~ ~ ~ dispenser[triggered=true] run execute unless block ^ ^ ^1 #air run playsound minecraft:block.stone.break block @a[distance=..16] ~ ~ ~ 1 0.8
-execute as @e[type=marker,tag=ra.custom_block.block_breaker,scores={ra.cooldown=40..}] at @s if block ~ ~ ~ dispenser[triggered=true] run execute unless block ^ ^ ^1 #air run execute positioned ^ ^ ^1 run particle minecraft:block{block_state:"minecraft:stone"} ~ ~ ~ 0.3 0.3 0.3 0.1 20
-execute as @e[type=marker,tag=ra.custom_block.block_breaker,scores={ra.cooldown=40..}] at @s if block ~ ~ ~ dispenser[triggered=true] run execute unless block ^ ^ ^1 #air run scoreboard players set @s ra.cooldown 0
+
+# One gated call instead of five identical selector sweeps that each re-tested the
+# same conditions -- and re-tested them AFTER the first had already changed the
+# world. See fire.mcfunction.
+execute as @e[type=marker,tag=ra.custom_block.block_breaker,scores={ra.cooldown=20..}] at @s if block ~ ~ ~ dispenser[triggered=true] unless block ^ ^ ^1 #air run function ra_interactive:blocks/block_breaker/fire

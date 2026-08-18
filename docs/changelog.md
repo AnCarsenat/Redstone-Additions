@@ -2,6 +2,266 @@
 
 This page mirrors key datapack milestones from the main project changelog.
 
+## v5.1.7 (2026-08-18) — Grids, Bridges, Millilitres
+
+Electric stopped pretending to be a network and became one. Fluids got a unit,
+a hand-loading point and experience. Two library bugs that had been quietly
+wrong for a long time are fixed, and the redstone reader was rebuilt.
+
+### Added
+
+- **Clipboard** and **Multimeter** tools. The Clipboard makes the first block you
+  shift-click the *origin* and matches every block you shift-click after it, same
+  kind only; shift-click at nothing to clear. Everything is shift+RMB because most
+  configurable blocks are backed by a container and a plain click opens their GUI.
+  The Multimeter reads a block's network in chat: which grid, what it stores, what
+  this block contributes, what it draws or makes.
+- **Industrial Light** — redstone *and* EU, projects a 10-block beam of
+  `minecraft:light`. Stops at the first solid block, and clears only light blocks,
+  so nothing a player built can be removed by it.
+
+- **Clipboard** — click a block to make it the *origin*, then click others of the
+  same kind to match them to it. Shift-click a block to re-origin, shift-click at
+  nothing to clear. Same-kind only, because half the pack has a property called
+  `enabled` and a Gas Valve's rate landing on a Randomizer's chance would quietly
+  mean something else. Only `data.properties` travels; a block's private working
+  state stays put.
+- **Multimeter** — click a block to read its network in chat: which grid, what it
+  stores, what this block contributes, and what it draws or makes.
+- **Industrial Light** — redstone *and* EU, projects a 10-block beam of
+  `minecraft:light`. Stops at the first solid block; when it goes out it clears
+  only light blocks, so nothing a player built can be removed by it.
+
+- **Electric runs on the transport network engine.** Adjacent nodes flood-fill
+  into a grid, the charge belongs to the grid, and a generator's output is
+  spendable by a consumer anywhere on it on the same tick. See the note under
+  *Fixed* for what it replaced.
+- **Battery** — 10000 EU of grid storage. Wires, switches and breakers now store
+  **nothing**, so a grid holds what its batteries hold: build them, or spend your
+  generation on the tick it is made.
+- **EU Breaker**, and the **Valve** repurposed to match: a *bridge* belongs to
+  neither of the networks it sits between, and while powered by redstone it moves
+  contents from the network behind it into the network in front. It never merges
+  them — a run with a bridge in it is two networks, always.
+- **Ender Power Vault is a wireless bridge.** It joins its local grid, contributes
+  no capacity, and moves EU out of the grid at one end into the grid at the other.
+  Anything the far side cannot take is put straight back.
+- **Millilitres.** A bucket is 5000 mL, a pipe holds 1000, a tank 100000. Network
+  totals moved out of scoreboards and into `storage ra:transport nets.n<id>`,
+  which is where the per-medium map will go when networks can hold more than one
+  thing at a time.
+- **Experience and potions are media.** One experience point is 100 mL, in both
+  directions.
+- **A vertical drain is the hand-loading point.** Sneak beside it holding a full
+  bucket and its contents go into the network, empty bucket back in hand; with
+  nothing in hand it takes your experience instead, ten points a cycle. Set to
+  *place*, an experience network gives it back as orbs at the same rate.
+- **Wrench-configurable throughput**: Liquid Drain at 2.5 / 5 / 10 L per second,
+  EU Consumer at 20 / 40 / 80 EU per tick.
+- `ra_lib:redstone/any`, `detect_switch`, `local/{front,back,left,right,up,down}`
+  and `side` — read only what you need, instead of every block paying for a full
+  twelve-direction sweep it then threw away.
+- Goggles redraw **once a second** instead of once every two.
+
+### Fixed
+
+- The **Liquid Pump could not pump next to water**. A pump on two pipes had a
+  4000 mL network and a water source is 5000 mL, and a source block is
+  all-or-nothing — offering half and deleting the block anyway would quietly
+  destroy a lake. Pumps and drains hold 5000 mL now, one bucket, so they work
+  standing alone. `network_too_small` is told apart from `network_full`: one means
+  add a tank, the other means wait.
+- **Bridges did nothing unless they happened to face along the pipe run.** A valve
+  dropped into an east-west line while the player faced south pointed at two empty
+  blocks, with nothing on the block to say so. They have no facing at all now —
+  they look at all six neighbours, find the networks themselves, and move from the
+  fullest to the emptiest.
+- A Valve's readout reported the fluid-node fields it does not have and printed
+  `N/A` for every one of them.
+
+- Bridges have **no facing at all** now. They look at all six neighbours and find
+  the networks themselves, moving from the fullest to the emptiest. Bridging the
+  block in front and the block behind meant a valve dropped into an east-west pipe
+  run while the player happened to be facing south pointed at two empty spaces and
+  did nothing — with nothing on the block to say so.
+- A Valve's readout reported the fluid-node fields it does not have and printed
+  `N/A` for all of them. It says what it is moving, and why not when it is not.
+- The Liquid Pump, Gas Pump and Drain hold **5000 mL** — one bucket — so a pump
+  works standing alone. A pump on two pipes had a 4000 mL network and could never
+  accept the 5000 mL source block it was sitting next to, so it refused for ever.
+  `network_too_small` is now told apart from `network_full`: one means add a tank,
+  the other means wait.
+
+- **One name for one meaning: `cooldown`.** A block that waits N ticks before
+  acting again calls that `cooldown`, everywhere, and its readout says
+  `Cooldown:`. The Clock's `delay` and the Liquid Drain's `interval` are renamed
+  to it and migrate themselves; the three generators' goggles said `Period:` over
+  a field called `cooldown`, which is the kind of drift that makes a setting look
+  like it belongs to something else. `delay`, `extend` and `pulse` on the Delayer,
+  Extender and Shortener stay as they are — those are signal *durations*, not rate
+  limits, and folding three meanings into one name would be worse than the drift.
+- **The Block Breaker and Block Placer had no cooldown at all**, and the reason
+  was the same shape as the Clock's: five near-identical `execute` lines
+  re-testing one condition, with the reset on the last. The first line destroys
+  the block in front, so `unless block ^ ^ ^1 #air` was false by the time the
+  reset re-tested it and the reset never ran — the counter climbed for ever and
+  the gate was open on every tick. The placer emptied itself at a block a tick the
+  same way. Both are one gated call into a `fire` function now, which resets
+  before it touches the world, and five whole-world selector sweeps per block per
+  tick became one.
+- The Data Handler's numeric-type list went back to being **one entry beside the
+  registry** rather than seven per-block functions. The registry exists so that
+  adding a property means editing one list; the per-block version undid that.
+- `interval` and `rate` were missing from the registry entirely, so the Handler
+  could not render them — the Liquid Drain's throughput and the bridges' rate were
+  invisible and uneditable. The Industrial Light's `eu_use` and the bridges' `rate`
+  are now declared as tuning fields hidden from survival.
+
+- **The Clock ignored its setting, because it had two of them.** A clock could
+  carry both `delay` and `cooldown`: the Data Handler listed both, `process` read
+  `cooldown`, and `delay` — the one a player naturally reaches for — did nothing.
+  The compatibility line meant to merge them only ran when `cooldown` was
+  *absent*, which is precisely the case that did not need fixing. The clock now
+  runs on a single property, **`delay`, in ticks**, and folds any leftover
+  `cooldown` into it on every tick. A delay of 1 pulses every tick.
+- **A number typed into the Data Handler could be stored as a string, and every
+  block then read its LENGTH.** `data get` does not fail on a string — it succeeds
+  and returns the character count. So a Clock set to `"5"` ran with a period of 1
+  and one set to `"100"` ran with a period of 3: the number you typed changed
+  nothing but the number of digits, which is exactly what "it ignores its setting"
+  looks like. Nothing errors and nothing logs. The type detection was never wrong;
+  once a value is a string the editor faithfully keeps it one.
+  `ra_lib:util/property` now re-parses through a macro — substitution inserts a
+  string's raw characters, so `"5"` and `5` both parse as an integer — and writes
+  the result back as an int, so the repair happens once and the handler offers a
+  number editor from then on.
+- **`execute store result … run data get <missing path>` writes zero**, and a
+  period of zero means "fire every tick". Three generators and the EU Consumer
+  read their period that way with no guard, so a block that lost its property did
+  not slow down — it ran flat out. There is now one guarded reader,
+  `ra_lib:util/property`, with a default and a floor.
+- **The Liquid Valve, Gas Valve and EU Breaker could not be placed at all.**
+  Giving them a facing meant `setblock waxed_cut_copper[facing=south]`, and that
+  block has no states whatsoever — the command failed and nothing appeared. A new
+  `dir_type:3` orients the marker and leaves the block plain.
+- **The Block Placer had no cooldown**, so a held signal fired it every tick and
+  emptied a stocked placer in under two seconds. Both it and the Block Breaker now
+  run at one action per second, hidden from the survival Data Handler.
+
+- **Electric charge could not travel.** Every wire held its own buffer and handed
+  half the difference to one neighbour per tick, which levels charge out rather
+  than delivering it: it crawled a block a tick, a generator with six neighbours
+  fed one of them, and once a run had evened out to within 1 EU the transfer guard
+  stopped it moving at all.
+- **A reload emptied a network's identity.** `transport/init` overwrote the
+  storage holding each network's medium on every load, while the amount sat in a
+  scoreboard that survived — so a network filled since the last rebuild came back
+  holding contents with no medium, and refused everything its own pumps offered
+  until a drain emptied it.
+- **Pressure plates did nothing.** The redstone reader knew about dust, levers,
+  buttons, redstone blocks, torches, repeaters and comparators, and nothing else.
+  Pressure plates, weighted plates, tripwire hooks, observers, lightning rods and
+  daylight detectors are all read now, from block tags rather than six hand-copied
+  direction tests.
+- **A torch standing on a block powered it.** Vanilla never powers the block a
+  torch is mounted on.
+- **The Randomizer overwrote the redstone library's output with a dice roll**,
+  mid-read, on the same marker. One roll in a hundred came up zero and made it
+  wipe its own output the instant it fired.
+- **Two adjacent skinned blocks deleted each other's appearance.** A skin sat on
+  the block corner while the marker sat at the centre, and from a centre every
+  surrounding corner is the same 0.866 away — no radius could tell them apart.
+  Skins are centre-anchored now, and old ones migrate themselves.
+- `facing/up` and `facing/down` both claimed left was east, so flipping a block
+  over left its hands unchanged.
+- `count_inputs` was a hand-copied mirror of the redstone reader, with a comment
+  admitting the two had to be kept in step by hand. They share one implementation.
+
+### Changed
+
+- **The EU Generator is a barrel wearing a furnace skin.** A real blast furnace
+  brought two input slots and its own smelting, of which only the fuel slot ever
+  meant anything, so players filled the top with ore and waited. Drop coal in a
+  box is the whole interaction now. Burn times live in a `fuels` registry beside
+  the other tables; steam still works, so the Boiler chain is intact.
+- **The Breeder is a barrel wearing a dispenser skin**, for the same reason it
+  mattered on the Unboxer: a dispenser throws its own inventory on any rising
+  redstone edge, so a breeder loaded with wheat scattered it across the field the
+  moment you powered it. It reads redstone directly now, since a barrel has no
+  `triggered` state.
+- **Tiered pipes and wires are gone.** One Copper Pipe, one Wire. The four pipe
+  variants placed the same block with the same marker and the same capacity — gas
+  and liquid pipes were never different, and the tiers stopped meaning anything
+  once a pipe held a litre. Retired place tags still map to the survivors so items
+  already in a chest still place something.
+- **The Poppy Generator's `patch` mode is gone.** A second code path over the same
+  ground for a block whose whole job is one flower at a time. The Wrench no longer
+  cycles anything on it.
+- The survival Data Handler **locks fields instead of hiding them**: the value is
+  shown with a struck-through red `[Modify]` and a hover saying why. A censored
+  row made a block look like it had fewer settings than it does. The gamemode test
+  is gone with it — creative players use the Creative Data Handler — and so are
+  `redact_next`, `redact_one` and the "N fields hidden" footer. The refusal is
+  enforced server-side too, since a row's action is a `/trigger` a player can type.
+
+- The **EU Generator is a barrel wearing a furnace**, not a blast furnace. A real
+  furnace brings its own two input slots and its own smelting, of which only the
+  fuel slot ever meant anything — so players filled the top slot with ore and
+  waited. A barrel is a plain inventory: drop coal in and that is the whole
+  interaction, and `ra_lib:skin/apply` puts the furnace back on the outside so it
+  still reads as one. It burns solid fuel from its own inventory now, with burn
+  times in a `fuels` registry beside the other tables. Steam still works, so the
+  water -> Boiler -> steam -> EU chain is intact: fuel is the direct route, steam
+  is the built one.
+
+- **The Ender Item Vault's `shared` mode is gone.** Three modes remain — `link`,
+  `send`, `receive` — and a vault still set to `shared` becomes `link`, the
+  closest of the three. It took two whole-world entity sweeps a tick to work out
+  which vault a player was standing next to, and it was the one mode that followed
+  people rather than machines, which made it the odd one out in a module about
+  automation.
+
+- Bridges — the Liquid Valve, Gas Valve and EU Breaker — **work both ways**. They
+  take from whichever side holds more and give to whichever holds less, stopping
+  when the two are level. One-way was a mistake: the placement had a right and a
+  wrong answer that nothing on the block told you about, and a build that looked
+  correct simply did nothing. The facing now picks the axis, not the direction.
+
+- Goggles print units: **EU** on electric readouts, **mL** on fluid ones.
+- Wire readouts replaced `Enabled: on` — true of every wire ever placed — with the
+  grid's state and its change per second.
+- The Solar Panel's `Light:` line said "Grid full" when the grid backed up. Split
+  into a grid line and a `Sun:` line that only ever talks about the sun.
+- **Wire tiers removed.** L2 differed only in a capacity it no longer has and a
+  transfer rate that stopped existing when charge moved onto the grid.
+- The **EU Switch** is placed as `waxed_cut_copper`, the same block as the Valve.
+
+- **The Valve is no longer a shutoff.** It is a one-way pump between two networks
+  and needs redstone. Existing builds using one as a closed tap will find it does
+  not conduct until powered, and then only in the direction it faces. To cut a
+  fluid line, remove a pipe. The **EU Switch** is still a true shutoff.
+- `ra_lib:redstone/detect` no longer computes look-space scores or the twelve
+  direction tags; nothing in the pack read them. `detect_local` does, for anyone
+  who wants them. The per-source tags are gone.
+- Netherite pipes hold the same 1000 mL as copper ones.
+
+### Documentation
+
+- Every recipe picture regenerated, and the Recipe Atlas rebuilt — 59 recipes.
+  Two stale pictures for retired tiers removed.
+- The **Breeder now documents what it breeds**: all 22 animals and the food each
+  takes, extracted from the dispatch table so the page cannot drift from the code.
+- Item reference, interactive machines, infinite generators, transport networks and
+  ender links updated for everything above.
+
+### Known
+
+- Nothing in this release has been tested in game.
+- Networks still hold **one medium at a time**. Filters, and telling one potion
+  from another, wait on that.
+- Battery, EU Breaker and Industrial Light have no unlock advancement, and the
+  Clipboard and Multimeter have no recipe — both are given by function for now.
+
 ## v5.1.6 (2026-08-17) — Recipe Atlas, Data Handler Repairs, Licence
 
 A follow-up to v5.1.5: one page holding every recipe, a Data Handler that no longer

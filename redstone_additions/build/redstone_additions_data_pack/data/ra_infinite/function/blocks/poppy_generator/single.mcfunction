@@ -8,7 +8,7 @@
 #
 # Insisting on the one block dead ahead is what made this look broken: a generator
 # that faces slightly off, or whose soil sits beside rather than in front of it,
-# planted nothing and said nothing. Patch mode still fills the whole 3x3.
+# planted nothing and said nothing.
 
 scoreboard players set #poppy.done ra.temp 0
 

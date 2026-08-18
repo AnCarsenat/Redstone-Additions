@@ -10,7 +10,8 @@ execute if data entity @s data.properties.entity_selector run function ra_intera
 execute if data entity @s data.properties.entity_selector run return 1
 
 # Legacy fallback for old blocks that still use range.
-execute store result score @s ra.temp run data get entity @s data.properties.range
+function ra_lib:util/property {name:"range",default:16,min:1}
+scoreboard players operation @s ra.temp = #prop ra.temp
 execute if score @s ra.temp matches ..0 run scoreboard players set @s ra.temp 16
 
 # Send tellraw to players within range (use execute if to check range brackets)

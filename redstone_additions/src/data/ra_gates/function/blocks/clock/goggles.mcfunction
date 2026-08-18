@@ -15,4 +15,4 @@ data modify storage ra:temp billboard set value {show_name:1b,name_y:0.7}
 data modify storage ra:temp billboard.name set from storage ra:temp block_name
 function ra:tools/goggles/billboard/handle_billboard with storage ra:temp billboard
 
-function ra:tools/goggles/billboard/prop_line {path:"cooldown",label:"Period: ",color:"aqua",suffix:"t",y:0.45}
+function ra:tools/goggles/billboard/prop_line {path:"cooldown",label:"Cooldown: ",color:"aqua",suffix:"t",y:0.45}

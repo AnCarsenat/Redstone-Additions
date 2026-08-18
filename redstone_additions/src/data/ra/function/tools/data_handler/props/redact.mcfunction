@@ -1,12 +1,8 @@
 # /ra:tools/data_handler/props/redact
-# Build storage ra:dh display_props: everything on the block, minus the fields this
-# player is not meant to see. As player.
+# Build storage ra:dh display_props: everything the block carries.
 #
-# Everything is shown by default. The only thing that removes a field is the block
-# naming it in #ra:hidden_fields, and only for a player who is not in creative.
+# Nothing is removed. Locked fields are still listed in the Properties summary and
+# still get a row -- see props/row_locked. This function is kept as the one place
+# that decides what the summary shows, so a future rule has somewhere to live.
 
 data modify storage ra:dh display_props set from storage ra:dh properties
-execute if entity @s[gamemode=creative] run return 0
-
-data modify storage ra:dh hide_iter set from storage ra:dh hidden_names
-function ra:tools/data_handler/props/redact_next

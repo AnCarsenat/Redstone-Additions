@@ -1,5 +1,5 @@
 # /ra_ender:blocks/power_vault/level
-# Half the gap between the two buffers, or nothing.
+# Half the gap between the two GRIDS, or nothing.
 # Context: as the sending vault marker. Reads #ender.eu, writes #ender.carry.
 
 scoreboard players set #ender.theirs ra.temp -1

@@ -8,12 +8,16 @@
 tag @a[tag=ra.cdh_active,tag=!ra.cdh_clicked] remove ra.cdh_active
 tag @a[tag=ra.dh_active,tag=!ra.dh_clicked] remove ra.dh_active
 tag @a[tag=ra.wrench_active,tag=!ra.wrench_clicked] remove ra.wrench_active
+tag @a[tag=ra.clip_active,tag=!ra.clip_clicked] remove ra.clip_active
+tag @a[tag=ra.meter_active,tag=!ra.meter_clicked] remove ra.meter_active
 tag @a[tag=ra.remote_active,tag=!ra.remote_clicked] remove ra.remote_active
 # Debug-only input handler active tag cleanup (commented by request)
 # tag @a[tag=ra.input_handler_active,tag=!ra.input_handler_clicked] remove ra.input_handler_active
 tag @a[tag=ra.cdh_clicked] remove ra.cdh_clicked
 tag @a[tag=ra.dh_clicked] remove ra.dh_clicked
 tag @a[tag=ra.wrench_clicked] remove ra.wrench_clicked
+tag @a[tag=ra.clip_clicked] remove ra.clip_clicked
+tag @a[tag=ra.meter_clicked] remove ra.meter_clicked
 tag @a[tag=ra.remote_clicked] remove ra.remote_clicked
 # Debug-only input handler clicked tag cleanup (commented by request)
 # tag @a[tag=ra.input_handler_clicked] remove ra.input_handler_clicked

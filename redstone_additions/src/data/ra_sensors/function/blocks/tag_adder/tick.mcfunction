@@ -11,7 +11,7 @@ execute as @e[type=marker,tag=ra.broken,tag=ra.custom_block.tag_adder] at @s run
 tag @e[type=marker,tag=ra.broken,tag=ra.custom_block.tag_adder] remove ra.broken
 
 # Redstone detection
-execute as @e[type=marker,tag=ra.custom_block.tag_adder] at @s run function ra_lib:redstone/detect
+execute as @e[type=marker,tag=ra.custom_block.tag_adder] at @s run function ra_lib:redstone/detect_switch
 
 # Trigger on rising edge (just powered)
 execute as @e[type=marker,tag=ra.custom_block.tag_adder,tag=ra.powered,tag=!ra.was_powered] at @s run data modify storage ra:temp tag set from entity @s data.properties.tag

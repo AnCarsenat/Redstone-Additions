@@ -3,10 +3,17 @@
 
 $execute unless data storage ra:dh properties.$(name) run return 0
 
-# Fields the block itself declared as not-for-survival, via #ra:hidden_fields.
-# Creative mode is the test: a data pack cannot read permission level.
-$execute unless entity @s[gamemode=creative] if data storage ra:dh hidden.$(name) run scoreboard players add #dh.hidden ra.temp 1
-$execute unless entity @s[gamemode=creative] if data storage ra:dh hidden.$(name) run return 0
+# Fields the block declared as its own, via #ra:hidden_fields. They are shown
+# with a dead button rather than withheld: a censored row makes a block look like
+# it has fewer settings than it does, and leaves the player wondering why a value
+# the Goggles happily display is missing here.
+#
+# No gamemode test. Creative players use the Creative Data Handler, which shows
+# and edits everything — so this tool does not need a second mode, and asking
+# what gamemode someone is in to decide what a row looks like was complexity
+# earning nothing.
+$execute if data storage ra:dh hidden.$(name) run scoreboard players add #dh.shown ra.temp 1
+$execute if data storage ra:dh hidden.$(name) run return run function ra:tools/data_handler/props/row_locked with storage ra:dh q
 
 scoreboard players add #dh.shown ra.temp 1
 function ra:tools/data_handler/props/probe with storage ra:dh q

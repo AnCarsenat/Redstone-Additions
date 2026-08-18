@@ -11,10 +11,10 @@ execute as @e[type=marker,tag=ra.broken,tag=ra.custom_block.message_block] at @s
 tag @e[type=marker,tag=ra.broken,tag=ra.custom_block.message_block] remove ra.broken
 
 # Redstone detection
-execute as @e[type=marker,tag=ra.custom_block.message_block,tag=!ra.new] at @s run function ra_lib:redstone/detect
+execute as @e[type=marker,tag=ra.custom_block.message_block,tag=!ra.new] at @s run function ra_lib:redstone/detect_switch
 
 # Trigger on rising edge (just powered)
-execute as @e[type=marker,tag=ra.custom_block.message_block,tag=!ra.was_powered] if score @s ra.power matches 1.. at @s run function ra_interactive:blocks/message_block/send_message_block
+execute as @e[type=marker,tag=ra.custom_block.message_block,tag=!ra.was_powered,tag=ra.powered] at @s run function ra_interactive:blocks/message_block/send_message_block
 
 # Track power state for edge detection
 tag @e[type=marker,tag=ra.custom_block.message_block,tag=ra.powered] add ra.was_powered

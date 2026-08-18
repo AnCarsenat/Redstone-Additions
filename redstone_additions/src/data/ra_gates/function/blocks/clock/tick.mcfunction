@@ -7,11 +7,22 @@ execute as @e[type=marker,tag=ra.broken,tag=ra.custom_block.clock] at @s run kil
 execute as @e[type=marker,tag=ra.broken,tag=ra.custom_block.clock] at @s run kill @e[type=item_display,tag=ra.custom_block.clock,distance=..2]
 execute as @e[type=marker,tag=ra.broken,tag=ra.custom_block.clock] at @s run kill @e[type=item_display,tag=ra.custom_block.display_item.clock,distance=..2]
 execute as @e[type=marker,tag=ra.broken,tag=ra.custom_block.clock] at @s run fill ~-1 ~-1 ~-1 ~1 ~1 ~1 iron_block replace redstone_block
+execute as @e[type=marker,tag=ra.broken,tag=ra.custom_block.clock] run tag @s remove ra.clock_on
 execute as @e[type=marker,tag=ra.broken,tag=ra.custom_block.clock] at @s run summon item ~ ~ ~ {Item:{id:"minecraft:bat_spawn_egg",count:1,components:{"minecraft:item_model":"minecraft:daylight_detector","minecraft:item_name":"Clock","minecraft:custom_data":{ra:{clock:1b}},"minecraft:entity_data":{id:"minecraft:bat",Tags:["ra.spawned","ra.place.clock"],Silent:1b,NoAI:1b,Invulnerable:1b}}},Tags:["ra.drop_temp"]}
 execute as @e[type=marker,tag=ra.broken,tag=ra.custom_block.clock] at @s run kill @s
 tag @e[type=marker,tag=ra.broken,tag=ra.custom_block.clock] remove ra.broken
 
+# Migration. Clocks have been through both names; `cooldown` is the one the pack
+# settled on, because it means the same thing on every timed block. Whichever a
+# marker is carrying ends up as `cooldown`, and `delay` is then removed
+# unconditionally -- leaving both is what made this block look broken.
+execute as @e[type=marker,tag=ra.custom_block.clock] if data entity @s data.properties.delay unless data entity @s data.properties.cooldown run data modify entity @s data.properties.cooldown set from entity @s data.properties.delay
+execute as @e[type=marker,tag=ra.custom_block.clock] run data remove entity @s data.properties.delay
+
 # Process gate logic
-execute as @e[type=marker,tag=ra.custom_block.clock] at @s run function ra_gates:blocks/clock/process with entity @s data.properties
+# No longer a macro call. `with entity @s data.properties` fails outright when a
+# clock has no cooldown property -- which is every clock placed before it was
+# introduced -- and a failed call means the clock never ticks at all.
+execute as @e[type=marker,tag=ra.custom_block.clock] at @s run function ra_gates:blocks/clock/process
 
 

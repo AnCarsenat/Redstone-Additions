@@ -45,8 +45,8 @@ execute if score #boil_dst ra.wires.tmp matches 0 run function ra_wires:fluid/bo
 execute if score #boil_dst ra.wires.tmp matches 0 run return 0
 
 # Both sides confirmed, so neither half of this can fail and strand the water.
-execute as @e[type=marker,tag=ra.wires.boil_src,limit=1] run function ra_lib:transport/net/take {amount:100}
-execute as @e[type=marker,tag=ra.wires.boil_dst,limit=1] run function ra_lib:transport/net/offer {amount:100,medium:"steam"}
+execute as @e[type=marker,tag=ra.wires.boil_src,limit=1] run function ra_lib:transport/net/take {amount:1000}
+execute as @e[type=marker,tag=ra.wires.boil_dst,limit=1] run function ra_lib:transport/net/offer {amount:1000,medium:"steam"}
 
 function ra_wires:fluid/boiler_cleanup
 

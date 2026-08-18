@@ -1,6 +1,6 @@
 # Recipe Atlas
 
-Every recipe in the pack, in one place: 64 of them.
+Every recipe in the pack, in one place: 66 of them.
 
 !!! tip "Finding one"
     Use the search box with the item's name — every recipe below is indexed by
@@ -21,6 +21,7 @@ what the pack actually contains rather than what someone remembered to add.
 | [Boxer](#storage) | [Storage](storage.md) | Crafting table |
 | [Breeder](#interactive-machines) | [Interactive Machines](interactive-machines.md) | Crafting table |
 | [Chunk Loader](#chunk-loader) | [Chunk Loader](chunk-loader.md) | Crafting table |
+| [Clipboard](#tools) | [Tools](index.md) | Crafting table |
 | [Clock](#logic-gates) | [Logic Gates](logic-gates.md) | Crafting table |
 | [Copper Multiblock Base](#multiblocks) | [Multiblocks](multiblocks.md) | Crafting table |
 | [Copper Pipe](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
@@ -61,6 +62,7 @@ what the pack actually contains rather than what someone remembered to add.
 | [Message Block](#interactive-machines) | [Interactive Machines](interactive-machines.md) | Crafting table |
 | [Mineral Core](#not-crafted-won-on-an-enchanting-table) | [Infinite Generators](infinite-generators.md) | Enchanting table |
 | [Mineral Generator](#infinite-generators) | [Infinite Generators](infinite-generators.md) | Crafting table, shapeless |
+| [Multimeter](#tools) | [Tools](index.md) | Crafting table |
 | [Nether Core](#not-crafted-won-on-an-enchanting-table) | [Infinite Generators](infinite-generators.md) | Enchanting table |
 | [Nether Generator](#infinite-generators) | [Infinite Generators](infinite-generators.md) | Crafting table, shapeless |
 | [Netherite Multiblock Base](#multiblocks) | [Multiblocks](multiblocks.md) | Crafting table |
@@ -192,8 +194,10 @@ Module page: [Tools](index.md) — give everything: `/function ra:tools/give_all
 
 | Item | Recipe | Station | Namespace id |
 | ---- | ------ | ------- | ------------ |
+| **Clipboard** | ![Clipboard recipe](images/recipes/ra/clipboard.png){ width="220" } | Crafting table | `ra:clipboard` |
 | **Data Handler** | ![Data Handler recipe](images/recipes/ra/data_handler.png){ width="220" } | Crafting table | `ra:data_handler` |
 | **Goggles** | ![Goggles recipe](images/recipes/ra/goggles.png){ width="220" } | Crafting table | `ra:goggles` |
+| **Multimeter** | ![Multimeter recipe](images/recipes/ra/multimeter.png){ width="220" } | Crafting table | `ra:multimeter` |
 | **Wrench** | ![Wrench recipe](images/recipes/ra/wrench.png){ width="220" } | Crafting table | `ra:wrench` |
 
 ## Transport Networks

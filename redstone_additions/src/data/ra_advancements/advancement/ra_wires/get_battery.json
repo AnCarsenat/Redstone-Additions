@@ -1,0 +1,33 @@
+{
+  "parent": "ra_advancements:ra_wires",
+  "display": {
+    "icon": {
+      "id": "minecraft:waxed_copper_grate"
+    },
+    "title": "Battery",
+    "description": "Obtain the Battery.",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "criteria": {
+    "get_battery": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "minecraft:bat_spawn_egg"
+            ],
+            "components": {
+              "custom_data": {
+                "ra": {
+                  "battery": 1
+                }
+              }
+            }
+          }
+        ]
+      }
+    }
+  }
+}

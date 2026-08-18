@@ -1,5 +1,28 @@
 # Changelog
 
+## [v5.1.13] - 2026-08-18 - Documented
+
+**Supported versions:** 1.21.9 - 26.2 (data pack formats 88 - 107).
+
+### Added
+
+- Recipes for the Clipboard and Multimeter, which had none.
+- `docs/tools.md`, covering all five tools with recipes and usage.
+- Unlock advancements for Battery, EU Breaker, Industrial Light, Boiler and Solar
+  Panel; `get_*` advancements for Battery, EU Breaker, Industrial Light, Clipboard
+  and Multimeter.
+
+### Removed
+
+- Dead advancements: `unlock_electric_wire_netherite`,
+  `unlock_liquid_pipe_netherite` (tiers were removed) and `unlock_conveyor` (no
+  such recipe or block).
+
+### Changed
+
+- How It Works rewritten for the registry-driven wrench and the goggles/wrench
+  split; Developer Guide documents migrations and the read-only registry.
+
 ## [v5.1.12] - 2026-08-18 - Depth
 
 **Supported versions:** 1.21.9 - 26.2 (data pack formats 88 - 107).

@@ -2,6 +2,38 @@
 
 This page mirrors key datapack milestones from the main project changelog.
 
+## v5.1.13 (2026-08-18) — Documented
+
+### Added
+
+- **Recipes for the Clipboard and Multimeter.** Both shipped with a give function
+  and nothing else, so in survival they did not exist.
+- **A [Tools](tools.md) page**, which the wiki never had. The Wrench, Goggles,
+  Data Handler, Clipboard and Multimeter were described only in scattered module
+  notes and the technical pages; the Clipboard and Multimeter had no usage
+  documentation at all, only a row in the item table.
+- **Missing unlock advancements** for the Battery, EU Breaker, Industrial Light,
+  Boiler, Solar Panel — and the Wrench and Data Handler themselves — plus `get_*`
+  advancements for the Battery, EU Breaker,
+  Industrial Light, Clipboard and Multimeter. Those blocks were craftable but the
+  recipe never unlocked itself.
+
+### Removed
+
+- **Three dead advancements**: `unlock_electric_wire_netherite` and
+  `unlock_liquid_pipe_netherite`, left behind when the tiered wires and pipes were
+  removed, and `unlock_conveyor`, which pointed at a recipe and a block that do
+  not exist anywhere in the pack.
+
+### Changed
+
+- The wrench and Data Handler sections of **How It Works** described the old
+  per-block dispatch and the goggles tinker. Rewritten for the registry-driven
+  menu, including the `stacked_prop_line` / `stacked_status_line` /
+  `stacked_data_line` distinction that silently renders `N/A` when you pick wrong.
+- The **Developer Guide** now documents the migrations system and the read-only
+  registry.
+
 ## v5.1.12 (2026-08-18) — Depth
 
 ### Fixed

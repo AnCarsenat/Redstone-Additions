@@ -86,6 +86,6 @@ each other and from ordinary materials.
 | ra     | Creative Data Handler | `ra:tools/creative_data_handler/give` | ![Creative Data Handler recipe](images/recipes/ra/data_handler.png){ width="220" } |
 | ra     | Data Handler          | `ra:tools/data_handler/give`          | ![Data Handler recipe](images/recipes/ra/data_handler.png){ width="220" } |
 | ra     | Goggles               | `ra:tools/goggles/give`               | ![Goggles recipe](images/recipes/ra/goggles.png){ width="220" } |
-| ra     | Clipboard             | `ra:tools/clipboard/give`             | no recipe yet |
-| ra     | Multimeter            | `ra:tools/multimeter/give`            | no recipe yet |
+| ra     | Clipboard             | `ra:tools/clipboard/give`             | ![Clipboard recipe](images/recipes/ra/clipboard.png){ width="220" } |
+| ra     | Multimeter            | `ra:tools/multimeter/give`            | ![Multimeter recipe](images/recipes/ra/multimeter.png){ width="220" } |
 

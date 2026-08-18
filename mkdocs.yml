@@ -52,6 +52,7 @@ nav:
       - Jetpacks: jetpacks.md
       - Infinite Generators: infinite-generators.md
       - Ender Links: ender-links.md
+  - Tools: tools.md
   - Recipe Atlas: recipe-atlas.md
   - Technical Foundation:
       - How It Works: how-it-works.md

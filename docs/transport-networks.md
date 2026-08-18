@@ -300,7 +300,7 @@ grid.
 **Input** is the furnace's own barrel — any smeltable stack, any slot.
 
 **Output** is pushed into the container on one chosen face: **under**, **front**,
-**back** or **top**, chosen from the wrench menu. The power mode is in the
+**back** or **top**, chosen from the [wrench menu](tools.md#wrench). The power mode is in the
 wrench menu as well — shift+RMB lists Output, Power and Enabled together.
 
 Results never come back into the furnace. That is what stops it smelting its own

@@ -1,0 +1,10 @@
+{
+  "values": [
+    "minecraft:armadillo", "minecraft:axolotl", "minecraft:bee", "minecraft:camel",
+    "minecraft:cat", "minecraft:chicken", "minecraft:cow", "minecraft:donkey",
+    "minecraft:fox", "minecraft:frog", "minecraft:goat", "minecraft:hoglin",
+    "minecraft:horse", "minecraft:llama", "minecraft:mooshroom", "minecraft:panda",
+    "minecraft:pig", "minecraft:rabbit", "minecraft:sheep", "minecraft:sniffer",
+    "minecraft:strider", "minecraft:trader_llama", "minecraft:turtle", "minecraft:wolf"
+  ]
+}

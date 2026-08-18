@@ -21,7 +21,7 @@
       "minecraft:custom_data": { "ra": { "item_mover": true } },
       "minecraft:entity_data": {
         "id": "minecraft:bat",
-        "Tags": ["ra.spawned", "ra.place.item_mover"],
+        "Tags": ["ra", "ra.spawned", "ra.place.item_mover"],
         "Silent": true,
         "NoAI": true,
         "Invulnerable": true

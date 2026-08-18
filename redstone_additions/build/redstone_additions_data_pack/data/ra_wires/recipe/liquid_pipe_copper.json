@@ -1,36 +1,36 @@
 {
-  "type": "minecraft:crafting_shaped",
-  "category": "redstone",
-  "pattern": [
-    "CCC",
-    "   ",
-    "CCC"
-  ],
-  "key": {
-    "C": "minecraft:copper_ingot"
-  },
-  "result": {
-    "id": "minecraft:bat_spawn_egg",
-    "count": 16,
-    "components": {
-      "minecraft:item_model": "minecraft:copper_block",
-      "minecraft:item_name": "L1 Copper Pipe",
-      "minecraft:custom_data": {
-        "ra": {
-          "liquid_pipe_copper": true
+    "type": "minecraft:crafting_shaped",
+    "category": "redstone",
+    "pattern": [
+        "CCC",
+        "   ",
+        "CCC"
+    ],
+    "key": {
+        "C": "minecraft:copper_ingot"
+    },
+    "result": {
+        "id": "minecraft:bat_spawn_egg",
+        "count": 16,
+        "components": {
+            "minecraft:item_model": "minecraft:copper_block",
+            "minecraft:item_name": "Copper Pipe",
+            "minecraft:custom_data": {
+                "ra": {
+                    "liquid_pipe_copper": true
+                }
+            },
+            "minecraft:entity_data": {
+                "id": "minecraft:bat",
+                "Tags": [
+                    "ra", "ra.spawned",
+                    "ra.place.liquid_pipe_copper"
+                ],
+                "Silent": true,
+                "NoAI": true,
+                "Invulnerable": true
+            }
         }
-      },
-      "minecraft:entity_data": {
-        "id": "minecraft:bat",
-        "Tags": [
-          "ra.spawned",
-          "ra.place.liquid_pipe_copper"
-        ],
-        "Silent": true,
-        "NoAI": true,
-        "Invulnerable": true
-      }
-    }
-  },
-  "show_notification": true
+    },
+    "show_notification": true
 }

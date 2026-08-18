@@ -5,7 +5,7 @@
 
 # Summon marker entity at block-aligned center
 # NOTE: data:{_init:1b} ensures the compound exists — empty data:{} gets auto-removed by MC
-execute align xyz run summon marker ~0.5 ~ ~0.5 {data:{_init:1b},Tags:["ra.multiblock","ra.multiblock.new"]}
+execute align xyz run summon marker ~0.5 ~ ~0.5 {data:{_init:1b},Tags:["ra","ra.multiblock","ra.multiblock.new"]}
 
 # Transfer assembly data to marker entity.
 # type + distance are required: without them a stale or concurrently created

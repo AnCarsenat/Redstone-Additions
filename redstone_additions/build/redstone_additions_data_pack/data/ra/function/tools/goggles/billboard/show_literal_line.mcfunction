@@ -22,4 +22,11 @@ execute unless data storage ra:temp status_literal.value run data modify storage
 execute unless data storage ra:temp status_literal.suffix run data modify storage ra:temp status_literal.suffix set value ""
 execute unless data storage ra:temp status_literal.value_color run data modify storage ra:temp status_literal.value_color set value "white"
 
+# Floor, so a ladder can never reach back down into its own block. The anchor is
+# 1.3 above the block corner and the block is 1 tall, so anything below -0.3 is
+# inside it. A block with more lines than fit now piles the extras on the bottom
+# rung, which is ugly but readable — being inside the block was neither.
+execute store result score #gg.y ra.temp run data get storage ra:temp status_literal.y 100
+execute if score #gg.y ra.temp matches ..-25 run data modify storage ra:temp status_literal.y set value -0.25d
+
 function ra:tools/goggles/billboard/render_literal_line with storage ra:temp status_literal

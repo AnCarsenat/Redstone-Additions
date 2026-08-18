@@ -1,0 +1,45 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "category": "redstone",
+    "pattern": [
+        "CRC",
+        "RBR",
+        "CRC"
+    ],
+    "key": {
+        "C": "minecraft:copper_ingot",
+        "R": "minecraft:redstone_block",
+        "B": "minecraft:waxed_copper_grate"
+    },
+    "result": {
+        "id": "minecraft:bat_spawn_egg",
+        "count": 1,
+        "components": {
+            "minecraft:item_model": "minecraft:waxed_copper_grate",
+            "minecraft:item_name": "Battery",
+            "minecraft:lore": [
+                {
+                    "text": "Stores 10000 EU for its grid",
+                    "color": "gray",
+                    "italic": false
+                }
+            ],
+            "minecraft:custom_data": {
+                "ra": {
+                    "battery": true
+                }
+            },
+            "minecraft:entity_data": {
+                "id": "minecraft:bat",
+                "Tags": [
+                    "ra", "ra.spawned",
+                    "ra.place.battery"
+                ],
+                "Silent": true,
+                "NoAI": true,
+                "Invulnerable": true
+            }
+        }
+    },
+    "show_notification": true
+}

@@ -62,7 +62,10 @@ scoreboard objectives remove ra.input.value
 scoreboard objectives remove ra.input.trigger
 scoreboard objectives remove ra.wires.tmp
 scoreboard objectives remove ra.wires.tmp2
-scoreboard objectives remove ra.wires.tinker
+scoreboard objectives remove ra.wrench
+scoreboard objectives remove ra.wr.x
+scoreboard objectives remove ra.wr.y
+scoreboard objectives remove ra.wr.z
 
 # === Clear data storage ===
 data remove storage ra:multiblock {}
@@ -91,9 +94,9 @@ tag @a remove ra.input_handler_clicked
 tag @a remove ra.input.active
 tag @a remove ra.debug
 tag @e[type=marker,tag=ra.dh_target] remove ra.dh_target
-tag @a remove ra.wires.tinker_user
+tag @a remove ra.wrench_user
 tag @e[type=marker,tag=ra.wires.node] remove ra.wires.node
-tag @e[type=marker,tag=ra.wires.tinkerable] remove ra.wires.tinkerable
+tag @e[type=marker,tag=ra.wrench.sel] remove ra.wrench.sel
 tag @e[type=marker,tag=ra.wires.fluid_node] remove ra.wires.fluid_node
 tag @e[type=marker,tag=ra.wires.liquid_node] remove ra.wires.liquid_node
 tag @e[type=marker,tag=ra.wires.gas_node] remove ra.wires.gas_node

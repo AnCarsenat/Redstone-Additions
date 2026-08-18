@@ -1,0 +1,33 @@
+{
+  "parent": "ra_advancements:ra",
+  "display": {
+    "icon": {
+      "id": "minecraft:clock"
+    },
+    "title": "Multimeter",
+    "description": "Obtain the Multimeter.",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "criteria": {
+    "get_multimeter": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "minecraft:clock"
+            ],
+            "components": {
+              "custom_data": {
+                "ra": {
+                  "multimeter": 1
+                }
+              }
+            }
+          }
+        ]
+      }
+    }
+  }
+}

@@ -12,6 +12,12 @@ $scoreboard players set #need ra.wires.tmp $(volume)
 scoreboard players operation #free ra.wires.tmp = #net_capacity ra.tr.tmp
 scoreboard players operation #free ra.wires.tmp -= #net_amount ra.tr.tmp
 
+# A network smaller than one source block can never take one, however long you
+# wait. That is a different problem from a network that happens to be full, and
+# saying so is the difference between "add a tank" and "wait a moment".
+execute if score #net_capacity ra.tr.tmp < #need ra.wires.tmp run data modify entity @s data.status.pump_state set value "network_too_small"
+execute if score #net_capacity ra.tr.tmp < #need ra.wires.tmp run return 0
+
 execute if score #free ra.wires.tmp < #need ra.wires.tmp run data modify entity @s data.status.pump_state set value "network_full"
 execute if score #free ra.wires.tmp < #need ra.wires.tmp run return 0
 

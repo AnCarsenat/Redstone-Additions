@@ -19,7 +19,7 @@
       "minecraft:custom_data": { "ra": { "spitter": true } },
       "minecraft:entity_data": {
         "id": "minecraft:bat",
-        "Tags": ["ra.spawned", "ra.place.spitter"],
+        "Tags": ["ra", "ra.spawned", "ra.place.spitter"],
         "Silent": true,
         "NoAI": true,
         "Invulnerable": true

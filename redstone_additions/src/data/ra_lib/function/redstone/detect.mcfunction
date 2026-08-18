@@ -1,55 +1,61 @@
 # /ra_lib:redstone/detect
-# Detect all redstone power. As entity, at position.
-# Output: ra.power (0-16), world dirs (north/south/east/west/up/down),
-#         local dirs (front/back/left/right/local_up/local_down),
-#         tags ra.powered, ra.powered.{source}, ra.powered.{dir}
+# Read the redstone power reaching this block. As the marker, at the block.
+#
+# Output:
+#   ra.power                              strongest side, 0-16
+#   ra.power.north/south/east/west/up/down  per side, 0-16
+#   ra.powered                            set when ra.power is 1 or more
+#   ra.powered.strong                     set when ra.power is 16
+#
+# Returns ra.power, so a caller can branch on it without reading the score back.
+#
+# WHAT CHANGED, AND WHY IT COSTS LESS
+# This used to be seven hand-written source scanners, each repeating the same six
+# directions with the offsets typed out by hand — 505 lines whose dust section
+# alone was fifteen near-identical comparisons times four. Every side is now one
+# call to ra_lib:redstone/side, which knows every source once. Adding a source is
+# a block-tag edit; it can no longer be added to one direction and forgotten in
+# another, which is how pressure plates came to be missing from all six.
+#
+# The rest of the saving is in what is no longer computed by default. The
+# look-space scores and the twelve direction tags had, at the time of writing,
+# exactly zero readers anywhere in the pack, yet every call cleared twenty-two
+# tags and wrote six extra scores to keep them current. They now live in
+# ra_lib:redstone/detect_local, which costs nothing unless a block asks for it.
+#
+# The per-source tags (ra.powered.dust, .lever, .torch and the rest) are gone.
+# Nothing read them either, and reproducing them would mean the per-side reader
+# reporting which source won rather than just how much — a cost paid on every
+# call for information nobody wanted.
+#
+# CHEAPER STILL
+# A block that only needs "am I on?" should call ra_lib:redstone/any, and one that
+# cares about a single face should call ra_lib:redstone/local/front and friends.
+# A block whose vanilla base already carries the answer — dispenser `triggered`,
+# note block `powered`, redstone lamp `lit` — should read the block state and call
+# nothing at all.
 
-function ra_lib:redstone/clear
+execute store result score @s ra.power.north run function ra_lib:redstone/side {dx:0,dy:0,dz:-1,side:"north",back:"south",torch:"side"}
+execute store result score @s ra.power.south run function ra_lib:redstone/side {dx:0,dy:0,dz:1,side:"south",back:"north",torch:"side"}
+execute store result score @s ra.power.west run function ra_lib:redstone/side {dx:-1,dy:0,dz:0,side:"west",back:"east",torch:"side"}
+execute store result score @s ra.power.east run function ra_lib:redstone/side {dx:1,dy:0,dz:0,side:"east",back:"west",torch:"side"}
+execute store result score @s ra.power.down run function ra_lib:redstone/side {dx:0,dy:-1,dz:0,side:"down",back:"up",torch:"below"}
+execute store result score @s ra.power.up run function ra_lib:redstone/side {dx:0,dy:1,dz:0,side:"up",back:"down",torch:"none"}
 
-scoreboard players set @s ra.power 0
-scoreboard players set @s ra.power.north 0
-scoreboard players set @s ra.power.south 0
-scoreboard players set @s ra.power.east 0
-scoreboard players set @s ra.power.west 0
-scoreboard players set @s ra.power.up 0
-scoreboard players set @s ra.power.down 0
-scoreboard players set @s ra.power.front 0
-scoreboard players set @s ra.power.back 0
-scoreboard players set @s ra.power.left 0
-scoreboard players set @s ra.power.right 0
-scoreboard players set @s ra.power.local_up 0
-scoreboard players set @s ra.power.local_down 0
-
-# Source scans run weakest first: every later source writes a power at least as
-# high as the ones before it, so a plain overwrite ends up with the strongest
-# value for each side without needing an explicit maximum.
-function ra_lib:redstone/detect/dust
-function ra_lib:redstone/detect/lever
-function ra_lib:redstone/detect/button
-execute unless entity @s[tag=ra.redstone.ignore_blocks] run function ra_lib:redstone/detect/block
-function ra_lib:redstone/detect/torch
-function ra_lib:redstone/detect/repeater
-function ra_lib:redstone/detect/comparator
-
-# Max power
-execute if score @s ra.power.north > @s ra.power run scoreboard players operation @s ra.power = @s ra.power.north
+# Aggregate: the strongest side wins.
+scoreboard players operation @s ra.power = @s ra.power.north
 execute if score @s ra.power.south > @s ra.power run scoreboard players operation @s ra.power = @s ra.power.south
-execute if score @s ra.power.east > @s ra.power run scoreboard players operation @s ra.power = @s ra.power.east
 execute if score @s ra.power.west > @s ra.power run scoreboard players operation @s ra.power = @s ra.power.west
-execute if score @s ra.power.up > @s ra.power run scoreboard players operation @s ra.power = @s ra.power.up
+execute if score @s ra.power.east > @s ra.power run scoreboard players operation @s ra.power = @s ra.power.east
 execute if score @s ra.power.down > @s ra.power run scoreboard players operation @s ra.power = @s ra.power.down
+execute if score @s ra.power.up > @s ra.power run scoreboard players operation @s ra.power = @s ra.power.up
 
-# Local direction mapping from world directions using marker facing.
-# Facing IDs: 0=down 1=up 2=north 3=south 4=west 5=east
-execute if score @s ra.facing matches 0 run function ra_lib:redstone/facing/down
-execute if score @s ra.facing matches 1 run function ra_lib:redstone/facing/up
-execute if score @s ra.facing matches 2 run function ra_lib:redstone/facing/north
-execute if score @s ra.facing matches 3 run function ra_lib:redstone/facing/south
-execute if score @s ra.facing matches 4 run function ra_lib:redstone/facing/west
-execute if score @s ra.facing matches 5 run function ra_lib:redstone/facing/east
+# Both tags are removed unconditionally first: a block that was powered last tick
+# and is not now has to lose them, and these two are the only ones this function
+# is responsible for.
+tag @s remove ra.powered
+tag @s remove ra.powered.strong
+execute if score @s ra.power matches 1.. run tag @s add ra.powered
+execute if score @s ra.power matches 16 run tag @s add ra.powered.strong
 
-# Tags
-execute if score @s ra.power matches 1.. run function ra_lib:redstone/tags
-
-# Return power level
 return run scoreboard players get @s ra.power

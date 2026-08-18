@@ -24,4 +24,10 @@ $execute if data storage ra:dh properties.$(name)[0] run scoreboard players set 
 $execute if data storage ra:dh properties{$(name):0b} run scoreboard players set #dh.type ra.temp 2
 $execute if data storage ra:dh properties{$(name):1b} run scoreboard players set #dh.type ra.temp 2
 
+# A name the registry calls numeric is numeric, whatever is currently sitting in
+# it. This is the only source here that cannot have been corrupted by an earlier
+# bad write; see init_registry for why the list lives there and what is kept off
+# it on purpose.
+$execute if data storage ra:dh {numeric:["$(name)"]} run scoreboard players set #dh.type ra.temp 1
+
 data remove storage ra:dh probe

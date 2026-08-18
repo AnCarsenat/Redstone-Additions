@@ -1,0 +1,40 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [
+    "PMP",
+    "MRM",
+    "PMP"
+  ],
+  "key": {
+    "P": "minecraft:phantom_membrane",
+    "M": "minecraft:shulker_shell",
+    "R": "minecraft:redstone_block"
+  },
+  "result": {
+    "id": "minecraft:firework_star",
+    "components": {
+      "minecraft:item_model": "minecraft:phantom_membrane",
+      "minecraft:item_name": "Lift Kit",
+      "minecraft:rarity": "rare",
+      "minecraft:enchantment_glint_override": true,
+      "minecraft:custom_data": {
+        "ra": {
+          "jetpack_kit": true,
+          "upgrade": "lift"
+        }
+      },
+      "minecraft:food": {
+        "nutrition": 0,
+        "saturation": 0,
+        "can_always_eat": true
+      },
+      "minecraft:consumable": {
+        "consume_seconds": 1000000,
+        "animation": "none",
+        "has_consume_particles": false
+      }
+    }
+  },
+  "show_notification": true
+}

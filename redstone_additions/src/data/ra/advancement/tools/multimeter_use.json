@@ -1,0 +1,18 @@
+{
+  "criteria": {
+    "requirement": {
+      "trigger": "minecraft:using_item",
+      "conditions": {
+        "item": {
+          "items": "minecraft:clock",
+          "predicates": {
+            "minecraft:custom_data": {"ra": {"multimeter": true}}
+          }
+        }
+      }
+    }
+  },
+  "rewards": {
+    "function": "ra:tools/multimeter/on_use"
+  }
+}

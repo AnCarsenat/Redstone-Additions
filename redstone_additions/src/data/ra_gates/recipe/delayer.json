@@ -19,7 +19,7 @@
       "minecraft:custom_data": { "ra": { "delayer": true } },
       "minecraft:entity_data": {
         "id": "minecraft:bat",
-        "Tags": ["ra.spawned", "ra.place.delayer"],
+        "Tags": ["ra", "ra.spawned", "ra.place.delayer"],
         "Silent": true,
         "NoAI": true,
         "Invulnerable": true

@@ -3,9 +3,9 @@
 
 scoreboard objectives add ra.wires.tmp dummy
 scoreboard objectives add ra.wires.tmp2 dummy
-scoreboard objectives add ra.wires.tinker dummy
 
 function ra_wires:media/init
+function ra_wires:blocks/electric_furnace/init_recipes
 
 data modify storage ra:wires initialized set value 1b
 

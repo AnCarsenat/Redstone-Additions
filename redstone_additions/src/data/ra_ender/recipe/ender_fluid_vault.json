@@ -45,7 +45,7 @@
       "minecraft:entity_data": {
         "id": "minecraft:bat",
         "Tags": [
-          "ra.spawned",
+          "ra", "ra.spawned",
           "ra.place.ender_fluid_vault"
         ],
         "Silent": true,

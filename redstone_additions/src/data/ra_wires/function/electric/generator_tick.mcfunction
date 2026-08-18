@@ -1,38 +1,66 @@
 # /ra_wires:electric/generator_tick
-# Add EU to generator buffer each tick
+# Burn fuel and put the EU it makes onto the grid.
+# Context: as the generator marker, at its position.
+#
+# THE BLOCK IS A BARREL WEARING A FURNACE
+# It used to be a real blast furnace, which meant the block you interacted with
+# had a furnace's own UI: two input slots and a fuel slot, of which only the fuel
+# slot meant anything. Players quite reasonably put ore in the top and waited.
+# A barrel is a plain inventory — drop coal in and that is the whole interaction —
+# and ra_lib:skin/apply puts the furnace back on the outside so it still reads as
+# one. See that function for why mechanics and appearance are separable here.
+#
+# Steam still works. A generator piped into a boiler's steam network burns that
+# instead, so the water -> Boiler -> steam -> EU chain is intact; solid fuel is
+# the direct route, steam is the built one.
 
-execute unless data entity @s data.properties.enabled run data modify entity @s data.properties.enabled set value 1b
-execute unless data entity @s data.properties.generation_rate run data modify entity @s data.properties.generation_rate set value 60
-execute unless data entity @s data.data.eu run data modify entity @s data.data.eu set value 0
-execute unless data entity @s data.data.capacity run data modify entity @s data.data.capacity set value 700
 
-execute if data entity @s data.properties{enabled:0b} run return 0
+function ra_lib:util/property {name:"generation_rate",default:60,min:1}
+scoreboard players operation #gen.rate ra.wires.tmp = #prop ra.temp
 
-# The generator used to add EU out of nothing every tick, which is why nothing
-# upstream of it mattered. It now burns steam out of an adjacent gas network, so
-# the water -> Boiler -> steam -> EU chain is what actually powers a base.
+# --- Solid fuel, out of the barrel ---
+scoreboard players set #gen.burning ra.wires.tmp 0
+
+# Nothing alight: try to light something.
+execute unless data entity @s data.data.burn run function ra_wires:electric/fuel/scan
+
+execute if data entity @s data.data.burn run scoreboard players set #gen.burning ra.wires.tmp 1
+execute if score #gen.burning ra.wires.tmp matches 1 store result score #gen.left ra.wires.tmp run data get entity @s data.data.burn 1
+execute if score #gen.burning ra.wires.tmp matches 1 run scoreboard players remove #gen.left ra.wires.tmp 1
+execute if score #gen.burning ra.wires.tmp matches 1 store result entity @s data.data.burn int 1 run scoreboard players get #gen.left ra.wires.tmp
+execute if score #gen.burning ra.wires.tmp matches 1 if score #gen.left ra.wires.tmp matches ..0 run data remove entity @s data.data.burn
+
+# --- Steam, out of an adjacent gas network ---
 scoreboard players set #eu_fuel ra.wires.tmp2 0
-execute positioned ~1 ~ ~ as @e[type=marker,tag=ra.wires.fluid_node,distance=..0.75,limit=1] run function ra_wires:electric/consume_steam
-execute positioned ~-1 ~ ~ as @e[type=marker,tag=ra.wires.fluid_node,distance=..0.75,limit=1] run function ra_wires:electric/consume_steam
-execute positioned ~ ~ ~1 as @e[type=marker,tag=ra.wires.fluid_node,distance=..0.75,limit=1] run function ra_wires:electric/consume_steam
-execute positioned ~ ~ ~-1 as @e[type=marker,tag=ra.wires.fluid_node,distance=..0.75,limit=1] run function ra_wires:electric/consume_steam
-execute positioned ~ ~1 ~ as @e[type=marker,tag=ra.wires.fluid_node,distance=..0.75,limit=1] run function ra_wires:electric/consume_steam
-execute positioned ~ ~-1 ~ as @e[type=marker,tag=ra.wires.fluid_node,distance=..0.75,limit=1] run function ra_wires:electric/consume_steam
+execute if score #gen.burning ra.wires.tmp matches 0 positioned ~1 ~ ~ as @e[type=marker,tag=ra.wires.fluid_node,distance=..0.75,limit=1] run function ra_wires:electric/consume_steam
+execute if score #gen.burning ra.wires.tmp matches 0 positioned ~-1 ~ ~ as @e[type=marker,tag=ra.wires.fluid_node,distance=..0.75,limit=1] run function ra_wires:electric/consume_steam
+execute if score #gen.burning ra.wires.tmp matches 0 positioned ~ ~ ~1 as @e[type=marker,tag=ra.wires.fluid_node,distance=..0.75,limit=1] run function ra_wires:electric/consume_steam
+execute if score #gen.burning ra.wires.tmp matches 0 positioned ~ ~ ~-1 as @e[type=marker,tag=ra.wires.fluid_node,distance=..0.75,limit=1] run function ra_wires:electric/consume_steam
+execute if score #gen.burning ra.wires.tmp matches 0 positioned ~ ~1 ~ as @e[type=marker,tag=ra.wires.fluid_node,distance=..0.75,limit=1] run function ra_wires:electric/consume_steam
+execute if score #gen.burning ra.wires.tmp matches 0 positioned ~ ~-1 ~ as @e[type=marker,tag=ra.wires.fluid_node,distance=..0.75,limit=1] run function ra_wires:electric/consume_steam
+execute if score #eu_fuel ra.wires.tmp2 matches 1.. run scoreboard players set #gen.burning ra.wires.tmp 1
+execute if score #eu_fuel ra.wires.tmp2 matches 1.. run data modify entity @s data.status.fuel set value "Steam"
 
-execute if score #eu_fuel ra.wires.tmp2 matches 0 run data modify entity @s data.status.fuel set value "No steam"
-execute if score #eu_fuel ra.wires.tmp2 matches 0 run return 0
-data modify entity @s data.status.fuel set value "Steam"
+execute if score #gen.burning ra.wires.tmp matches 0 run function ra_wires:blocks/electric_generator/idle
+execute if score #gen.burning ra.wires.tmp matches 0 run data modify entity @s data.status.fuel set value "No fuel"
+execute if score #gen.burning ra.wires.tmp matches 0 run data modify entity @s data.status.active set value 0b
+execute if score #gen.burning ra.wires.tmp matches 0 run return 0
 
+# Offer this tick's output to the grid. The network decides how much it can hold
+# and hands back the rest as a refusal — there is no buffer here to overflow.
+execute store result storage ra:wires eu.amount int 1 run scoreboard players get #gen.rate ra.wires.tmp
+execute store result score #eu_made ra.wires.tmp run function ra_wires:electric/offer_eu with storage ra:wires eu
 
-execute store result score #eu ra.wires.tmp run data get entity @s data.data.eu 1
-execute store result score #cap ra.wires.tmp2 run data get entity @s data.data.capacity 1
-execute store result score #gen ra.wires.tmp run data get entity @s data.properties.generation_rate 1
+function ra_wires:blocks/electric_generator/running
 
-scoreboard players operation #free ra.wires.tmp2 = #cap ra.wires.tmp2
-scoreboard players operation #free ra.wires.tmp2 -= #eu ra.wires.tmp
-execute if score #free ra.wires.tmp2 matches ..0 run return 0
-execute if score #free ra.wires.tmp2 < #gen ra.wires.tmp run scoreboard players operation #gen ra.wires.tmp = #free ra.wires.tmp2
-execute if score #gen ra.wires.tmp matches ..0 run return 0
-
-scoreboard players operation #eu ra.wires.tmp += #gen ra.wires.tmp
-execute store result entity @s data.data.eu int 1 run scoreboard players get #eu ra.wires.tmp
+# ACTIVE MEANS BURNING, NOT ACCEPTED
+# This used to set active from how much the grid took, so a generator burning
+# happily into a grid that was already full reported itself as inactive — which
+# is what a generator with no Battery on its grid does the moment it has filled
+# the 50 EU the generator itself contributes. The fuel goes down, the skin is
+# lit, and the readout says it is doing nothing. Burning is the thing this block
+# controls, so burning is what it reports; where the EU went is a separate line.
+data modify entity @s data.status.active set value 1b
+execute store result entity @s data.status.output int 1 run scoreboard players get #eu_made ra.wires.tmp
+execute if score #eu_made ra.wires.tmp matches ..0 run data modify entity @s data.status.grid set value "Full - add a Battery"
+execute if score #eu_made ra.wires.tmp matches 1.. run data modify entity @s data.status.grid set value "Accepting"

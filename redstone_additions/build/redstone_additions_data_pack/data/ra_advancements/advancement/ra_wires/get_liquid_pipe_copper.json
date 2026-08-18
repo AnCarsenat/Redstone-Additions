@@ -4,8 +4,8 @@
                     "icon":  {
                                  "id":  "minecraft:copper_block"
                              },
-                    "title":  "L1 Copper Pipe",
-                    "description":  "Obtain the L1 Copper Pipe.",
+                    "title":  "Copper Pipe",
+                    "description":  "Obtain the Copper Pipe.",
                     "show_toast":  true,
                     "announce_to_chat":  true
                 },

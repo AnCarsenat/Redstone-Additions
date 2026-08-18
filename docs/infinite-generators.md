@@ -90,15 +90,11 @@ anything in its own inventory and never reads redstone.
 - `data.properties.enabled` set to `0b` stops a generator without breaking it.
 - Redstone is not involved at all — a generator runs whenever it is loaded.
 
-### Poppy modes
+### Where a Poppy Generator can plant
 
-Shift+right-click a Poppy Generator with the Wrench to cycle
-`data.properties.mode`:
-
-| Mode | Effect |
-| ---- | ------ |
-| `single` | One flower in the block in front |
-| `patch` | The 3×3 around that block, each cell rolling its own flower |
+One flower in the block in front, per cycle. The 3×3 `patch` mode is gone — it was
+a second code path over the same ground for a block whose whole job is one flower
+at a time, and the Wrench no longer cycles anything on this block.
 
 Flowers need something to stand on: `#ra_infinite:flower_ground` — grass block,
 dirt, coarse dirt, rooted dirt, podzol, mycelium, moss, pale moss, mud, muddy
@@ -113,8 +109,8 @@ grass blocks into the new `#minecraft:substrate_overworld`. A tag that borrowed
 nothing. Referencing `#minecraft:substrate_overworld` instead would break the other
 end of the supported range, since that tag does not exist in 1.21.10.
 
-In `single` mode it searches the 3×3 around the block in front and plants in the
-first spot that takes a flower, checking three heights in each cell:
+It searches the 3×3 around the block in front and plants in the first spot that
+takes a flower, checking three heights in each cell:
 
 | Cell | Flower goes |
 | ---- | ----------- |
@@ -124,8 +120,7 @@ first spot that takes a flower, checking three heights in each cell:
 
 Insisting on the one block dead ahead is what made this look broken: a generator
 facing slightly off, or with its soil beside rather than in front of it, planted
-nothing and said nothing. `patch` mode still fills the whole 3×3 rather than
-stopping at the first hit.
+nothing and said nothing.
 
 **Mind which way it faces.** A block placed while looking down faces *up*
 (`dir_type:2`, pitch ≥ 45), and a Poppy Generator facing up targets the block

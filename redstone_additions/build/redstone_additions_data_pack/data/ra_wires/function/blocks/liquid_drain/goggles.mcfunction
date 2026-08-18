@@ -17,6 +17,7 @@ function ra:tools/goggles/billboard/handle_billboard with storage ra:temp billbo
 
 # Contents belong to the network, not this node; refresh_status copies them here.
 function ra:tools/goggles/billboard/data_line {path:"medium",label:"Medium: ",color:"aqua",suffix:"",y:0.8}
-function ra:tools/goggles/billboard/data_line {path:"amount",label:"Amount: ",color:"yellow",suffix:"",y:0.55}
+function ra:tools/goggles/billboard/data_line {path:"amount",label:"Amount: ",color:"yellow",suffix:" mL",y:0.55}
 function ra:tools/goggles/billboard/data_line {path:"drain_state",label:"Drain: ",color:"gray",suffix:"",y:0.3}
 function ra:tools/goggles/billboard/prop_line {path:"mode",label:"Mode: ",color:"aqua",suffix:"",y:0.05}
+function ra:tools/goggles/billboard/prop_line {path:"cooldown",label:"Cooldown: ",color:"gray",suffix:"t",y:-0.2}

@@ -33,22 +33,7 @@ $data modify storage ra:temp unboxer.output set value "$(output1)"
 scoreboard players set #unboxer_moved ra.temp 0
 
 $execute positioned $(input1) run execute if score #mover_input_partner ra.temp matches 0 run function ra_storage:storage_box/empty_crate_here
-$execute positioned $(input1) run execute if score #mover_input_partner ra.temp matches 1 if block ~ ~ ~ minecraft:chest[facing=north,type=left] positioned ~1 ~ ~ run function ra_storage:storage_box/empty_crate_here
-$execute positioned $(input1) run execute if score #mover_input_partner ra.temp matches 1 if block ~ ~ ~ minecraft:chest[facing=north,type=right] positioned ~-1 ~ ~ run function ra_storage:storage_box/empty_crate_here
-$execute positioned $(input1) run execute if score #mover_input_partner ra.temp matches 1 if block ~ ~ ~ minecraft:chest[facing=south,type=left] positioned ~-1 ~ ~ run function ra_storage:storage_box/empty_crate_here
-$execute positioned $(input1) run execute if score #mover_input_partner ra.temp matches 1 if block ~ ~ ~ minecraft:chest[facing=south,type=right] positioned ~1 ~ ~ run function ra_storage:storage_box/empty_crate_here
-$execute positioned $(input1) run execute if score #mover_input_partner ra.temp matches 1 if block ~ ~ ~ minecraft:chest[facing=east,type=left] positioned ~ ~ ~1 run function ra_storage:storage_box/empty_crate_here
-$execute positioned $(input1) run execute if score #mover_input_partner ra.temp matches 1 if block ~ ~ ~ minecraft:chest[facing=east,type=right] positioned ~ ~ ~-1 run function ra_storage:storage_box/empty_crate_here
-$execute positioned $(input1) run execute if score #mover_input_partner ra.temp matches 1 if block ~ ~ ~ minecraft:chest[facing=west,type=left] positioned ~ ~ ~-1 run function ra_storage:storage_box/empty_crate_here
-$execute positioned $(input1) run execute if score #mover_input_partner ra.temp matches 1 if block ~ ~ ~ minecraft:chest[facing=west,type=right] positioned ~ ~ ~1 run function ra_storage:storage_box/empty_crate_here
-$execute positioned $(input1) run execute if score #mover_input_partner ra.temp matches 1 if block ~ ~ ~ minecraft:trapped_chest[facing=north,type=left] positioned ~1 ~ ~ run function ra_storage:storage_box/empty_crate_here
-$execute positioned $(input1) run execute if score #mover_input_partner ra.temp matches 1 if block ~ ~ ~ minecraft:trapped_chest[facing=north,type=right] positioned ~-1 ~ ~ run function ra_storage:storage_box/empty_crate_here
-$execute positioned $(input1) run execute if score #mover_input_partner ra.temp matches 1 if block ~ ~ ~ minecraft:trapped_chest[facing=south,type=left] positioned ~-1 ~ ~ run function ra_storage:storage_box/empty_crate_here
-$execute positioned $(input1) run execute if score #mover_input_partner ra.temp matches 1 if block ~ ~ ~ minecraft:trapped_chest[facing=south,type=right] positioned ~1 ~ ~ run function ra_storage:storage_box/empty_crate_here
-$execute positioned $(input1) run execute if score #mover_input_partner ra.temp matches 1 if block ~ ~ ~ minecraft:trapped_chest[facing=east,type=left] positioned ~ ~ ~1 run function ra_storage:storage_box/empty_crate_here
-$execute positioned $(input1) run execute if score #mover_input_partner ra.temp matches 1 if block ~ ~ ~ minecraft:trapped_chest[facing=east,type=right] positioned ~ ~ ~-1 run function ra_storage:storage_box/empty_crate_here
-$execute positioned $(input1) run execute if score #mover_input_partner ra.temp matches 1 if block ~ ~ ~ minecraft:trapped_chest[facing=west,type=left] positioned ~ ~ ~-1 run function ra_storage:storage_box/empty_crate_here
-$execute positioned $(input1) run execute if score #mover_input_partner ra.temp matches 1 if block ~ ~ ~ minecraft:trapped_chest[facing=west,type=right] positioned ~ ~ ~1 run function ra_storage:storage_box/empty_crate_here
+$execute positioned $(input1) if score #mover_input_partner ra.temp matches 1 run function ra_storage:blocks/unboxer/partner
 
 data remove storage ra:temp unboxer
 execute if score #unboxer_moved ra.temp matches 0 run return 0

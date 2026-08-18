@@ -21,9 +21,10 @@ data modify storage ra:dh block_type set from storage ra:temp block_name
 
 # Gate blocks
 
-# Clock compatibility: older markers may still use delay instead of cooldown
-execute if entity @s[tag=ra.custom_block.clock] if data entity @s data.properties.delay unless data entity @s data.properties.cooldown run data modify entity @s data.properties.cooldown set from entity @s data.properties.delay
-execute if entity @s[tag=ra.custom_block.clock] if data entity @s data.properties.delay unless data entity @s data.properties.cooldown run data remove entity @s data.properties.delay
+# Clock compatibility now runs the other way: `delay` is the property, and
+# ra_gates:blocks/clock/tick folds any leftover `cooldown` into it every tick.
+# Nothing is needed here -- this used to migrate delay INTO cooldown, and only
+# when cooldown was missing, which left clocks carrying both.
 
 # Store properties and internal data
 data modify storage ra:dh properties set from entity @s data.properties

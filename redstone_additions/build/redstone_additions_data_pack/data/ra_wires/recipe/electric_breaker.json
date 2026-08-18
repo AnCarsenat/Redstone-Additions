@@ -1,0 +1,50 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "category": "redstone",
+    "pattern": [
+        " R ",
+        "CLC",
+        " R "
+    ],
+    "key": {
+        "C": "minecraft:copper_ingot",
+        "R": "minecraft:redstone",
+        "L": "minecraft:waxed_copper_bulb"
+    },
+    "result": {
+        "id": "minecraft:bat_spawn_egg",
+        "count": 1,
+        "components": {
+            "minecraft:item_model": "minecraft:waxed_copper_bulb",
+            "minecraft:item_name": "EU Breaker",
+            "minecraft:lore": [
+                {
+                    "text": "Powered: moves EU from the grid behind",
+                    "color": "gray",
+                    "italic": false
+                },
+                {
+                    "text": "into the grid in front. Never merges them.",
+                    "color": "gray",
+                    "italic": false
+                }
+            ],
+            "minecraft:custom_data": {
+                "ra": {
+                    "electric_breaker": true
+                }
+            },
+            "minecraft:entity_data": {
+                "id": "minecraft:bat",
+                "Tags": [
+                    "ra", "ra.spawned",
+                    "ra.place.electric_breaker"
+                ],
+                "Silent": true,
+                "NoAI": true,
+                "Invulnerable": true
+            }
+        }
+    },
+    "show_notification": true
+}

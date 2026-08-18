@@ -10,7 +10,6 @@ execute unless entity @s[tag=ra.place.teleport_anchor] run return 0
 function ra_lib:placement/place {block_id:"minecraft:crying_obsidian",block_tag:"teleport_anchor",dir_type:0}
 
 data modify entity @e[type=marker,tag=ra.custom_block.teleport_anchor,tag=ra.new,distance=..0.5,sort=nearest,limit=1] data.properties.anchor_id set value "A"
-data modify entity @e[type=marker,tag=ra.custom_block.teleport_anchor,tag=ra.new,distance=..0.5,sort=nearest,limit=1] data.properties.enabled set value 1b
 data modify entity @e[type=marker,tag=ra.custom_block.teleport_anchor,tag=ra.new,distance=..0.5,sort=nearest,limit=1] data.properties.targets set value ["","","","","","","","","","","","","","",""]
 
 tag @e[type=marker,tag=ra.custom_block.teleport_anchor,tag=ra.new,distance=..0.5] remove ra.new

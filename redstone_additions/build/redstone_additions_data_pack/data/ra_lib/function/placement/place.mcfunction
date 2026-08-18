@@ -2,7 +2,9 @@
 # Place custom block with marker entity. At position, player tagged ra.placer nearby.
 # Output: Block placed, marker with ra.custom_block + ra.custom_block.{tag} + ra.new
 # IMPORTANT: Caller must remove ra.new tag after setting properties!
-# dir_type: 0 = no facing, 1 = horizontal only, 2 = full 6-directional
+# dir_type: 0 = no facing, 1 = horizontal only, 2 = full 6-directional,
+#           3 = full 6-directional on the MARKER only, block placed plain.
+#           Use 3 for a block with no `facing` state of its own.
 
 # Reset the shared orientation scratch to the default (south) BEFORE reading the
 # placer. #facing / ra:temp Rotation persist between calls, so a placement with no
@@ -13,10 +15,11 @@ data modify storage ra:temp facing set value 3
 
 $execute as @p[tag=ra.placer] run function ra_lib:orientation/get_facing {dir_type:$(dir_type)}
 
-# Set has_facing flag based on dir_type (0 = no facing needed)
+# Set has_facing flag based on dir_type. Only 1 and 2 write the facing onto the
+# block itself; 3 resolves it for the marker and leaves the block plain.
 $scoreboard players set #dir_type ra.temp $(dir_type)
 data modify storage ra:temp has_facing set value 0b
-execute if score #dir_type ra.temp matches 1.. run data modify storage ra:temp has_facing set value 1b
+execute if score #dir_type ra.temp matches 1..2 run data modify storage ra:temp has_facing set value 1b
 
 # Get facing name from score
 execute if score #facing ra.temp matches 0 run data modify storage ra:temp facing_name set value "down"
@@ -31,7 +34,7 @@ $data modify storage ra:temp block_id set value "$(block_id)"
 function ra_lib:placement/set_block
 
 # Summon marker with initialized data structure
-$summon marker ~ ~ ~ {Tags:["ra.custom_block","ra.custom_block.$(block_tag)","ra.new"],data:{_init:1b,properties:{},data:{}}}
+$summon marker ~ ~ ~ {Tags:["ra","ra.custom_block","ra.custom_block.$(block_tag)","ra.new"],data:{_init:1b,type:"$(block_tag)",properties:{},data:{}}}
 data modify entity @e[type=marker,tag=ra.new,distance=..0.1,sort=nearest,limit=1] Rotation set from storage ra:temp Rotation
 
 # Seed the marker's facing from the scratch score rather than from the placer, so

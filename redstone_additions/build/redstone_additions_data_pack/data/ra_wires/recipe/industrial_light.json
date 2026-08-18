@@ -1,0 +1,35 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "category": "redstone",
+    "pattern": [
+        "CGC",
+        "GLG",
+        "CRC"
+    ],
+    "key": {
+        "C": "minecraft:copper_ingot",
+        "G": "minecraft:glass",
+        "L": "minecraft:sea_lantern",
+        "R": "minecraft:redstone"
+    },
+    "result": {
+        "id": "minecraft:bat_spawn_egg",
+        "count": 1,
+        "components": {
+            "minecraft:item_model": "minecraft:sea_lantern",
+            "minecraft:item_name": "Industrial Light",
+            "minecraft:lore": [
+                { "text": "Redstone + EU: a 10 block beam of light", "color": "gray", "italic": false }
+            ],
+            "minecraft:custom_data": { "ra": { "industrial_light": true } },
+            "minecraft:entity_data": {
+                "id": "minecraft:bat",
+                "Tags": ["ra", "ra.spawned", "ra.place.industrial_light"],
+                "Silent": true,
+                "NoAI": true,
+                "Invulnerable": true
+            }
+        }
+    },
+    "show_notification": true
+}

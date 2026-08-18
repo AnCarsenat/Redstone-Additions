@@ -5,6 +5,27 @@
 # Reset success flag
 scoreboard players set @s ra.temp 0
 
+# ONE CHECK BEFORE THIRTY-FIVE
+# What follows is a line per (animal, food) pair, and every one of them runs an
+# `if items ... container.*` against the same container before the first can
+# match. That is thirty-five commands per powered breeder per tick, paid in full
+# whenever nothing matches -- which is nearly always, because animals wander off,
+# and the ones that are there spend most of their time either already in love or
+# still on their breeding cooldown.
+#
+# The pairs below all end up asking the same question first: is there an animal
+# in front of me that could breed right now? Asking it once, with an entity type
+# tag, costs one command and skips the other thirty-five outright. It repeats the
+# Age/InLove test each breed/* function does for itself, which is the point --
+# those tests were the reason the chain ran to the end and found nothing.
+#
+# Measured from the breeder itself, with the same radius and the same NBT test
+# the breed/* functions use. Note that they are NOT measured from the `^ ^ ^-1`
+# the lines below use: each breed/* opens with `positioned ^ ^ ^1`, which undoes
+# it exactly, so the animal search happens back at this block. Putting the gate a
+# block behind would test empty air and stop every breeder working.
+execute unless entity @e[type=#ra_interactive:breedable,distance=..2,limit=1,nbt={Age:0,InLove:0}] run return 0
+
 # Try each animal type - functions check for food and breed if possible
 # Cows/Mooshrooms - Wheat
 execute if score @s ra.temp matches 0 positioned ^ ^ ^-1 if items block ~ ~ ~ container.* wheat run function ra_interactive:blocks/breeder/breed/cow

@@ -1,0 +1,35 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "redstone",
+  "pattern": [
+    "III",
+    "CFC",
+    "IRI"
+  ],
+  "key": {
+    "I": "minecraft:iron_ingot",
+    "C": "minecraft:copper_ingot",
+    "F": "minecraft:blast_furnace",
+    "R": "minecraft:redstone_block"
+  },
+  "result": {
+    "id": "minecraft:bat_spawn_egg",
+    "components": {
+      "minecraft:item_model": "minecraft:blast_furnace",
+      "minecraft:item_name": "Electric Furnace",
+      "minecraft:lore": [
+        { "text": "Smelts with EU - no fuel", "color": "gray", "italic": false },
+        { "text": "Top row in, rows 2-3 out", "color": "gray", "italic": false }
+      ],
+      "minecraft:custom_data": { "ra": { "electric_furnace": true } },
+      "minecraft:entity_data": {
+        "id": "minecraft:bat",
+        "Tags": ["ra", "ra.spawned", "ra.place.electric_furnace"],
+        "Silent": true,
+        "NoAI": true,
+        "Invulnerable": true
+      }
+    }
+  },
+  "show_notification": true
+}

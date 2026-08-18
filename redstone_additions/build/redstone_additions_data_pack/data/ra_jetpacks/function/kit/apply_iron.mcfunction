@@ -13,7 +13,12 @@ execute if score #jp.ok ra.temp matches 0 run title @s actionbar [{text:"Wear a 
 execute if score #jp.ok ra.temp matches 0 run playsound minecraft:block.fire.extinguish player @s ~ ~ ~ 0.6 0.6
 execute if score #jp.ok ra.temp matches 0 run return 0
 
-item modify entity @s armor.chest ra_jetpacks:apply_iron
+# fit_iron_0 rather than a modifier of its own: a fresh jetpack is the iron tier
+# with no upgrades, which is exactly state 0, and routing through the same
+# generated files keeps one source of truth for the lore. It also guarantees a
+# newly fitted jetpack carries no upgrade flags left over from whatever the
+# chestplate was before.
+item modify entity @s armor.chest ra_jetpacks:fit_iron_0
 clear @s *[minecraft:custom_data~{ra:{jetpack_kit:1b,tier:"iron"}}] 1
 
 title @s actionbar [{text:"Iron jetpack fitted",color:"green"},{text:" — sneak to fly",color:"gray"}]

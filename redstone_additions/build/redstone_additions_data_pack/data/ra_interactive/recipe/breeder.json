@@ -20,7 +20,7 @@
       "minecraft:custom_data": { "ra": { "breeder": true } },
       "minecraft:entity_data": {
         "id": "minecraft:bat",
-        "Tags": ["ra.spawned", "ra.place.breeder"],
+        "Tags": ["ra", "ra.spawned", "ra.place.breeder"],
         "Silent": true,
         "NoAI": true,
         "Invulnerable": true

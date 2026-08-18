@@ -2,7 +2,7 @@
 
 <img src="images/icon.png" alt="Redstone Additions" width="128">
 
-**Version:** v5.1.6  
+**Version:** v5.1.14  
 **Minecraft:** 1.21.9 – 26.2  
 **Author:** [AnCarsenat](https://github.com/AnCarsenat)
 
@@ -20,7 +20,7 @@ Redstone Additions is a vanilla datapack with automation, storage, wireless sign
 The pack declares and loads across that whole span. Exactly one thing inside it
 genuinely changes shape: format 102 (`26.2-snapshot-3`) rewrote entity
 predicates into component-map form, so `ra:is_sneaking` — which gates the
-wrench's shift action, the goggles' tinker action and the Redstone Remote's
+wrench's shift action (see [Tools](tools.md)) and the Redstone Remote's
 channel prompt — needs both spellings. The pack ships both: the base file uses
 the pre-102 form and `overlay_102/` carries the component-map form, applied
 automatically from `26.2-snapshot-3` onward. Nothing else in the pack touches a
@@ -110,7 +110,7 @@ Current pack totals:
 | Data Handler | `/function ra:tools/data_handler/give` | ![Data Handler recipe](images/recipes/ra/data_handler.png){ width="200" } | Edit nearby block `data.properties` |
 | Goggles | `/function ra:tools/goggles/give` | ![Goggles recipe](images/recipes/ra/goggles.png){ width="200" } | In-world status overlays |
 
-## What Is New In v5.1.6
+## What Is New In v5.1.14
 
 - **[Recipe Atlas](recipe-atlas.md)** — every recipe on one page, searchable by name.
 - **The Data Handler no longer mangles strings.** Editing a channel wrote a number,

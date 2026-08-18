@@ -11,7 +11,6 @@
 # This is the point of the whole fluid system — water in one side, steam out the
 # other, and an EU Generator next to the steam side turning it into power.
 
-execute if data entity @s data.properties{enabled:0b} run return 0
 
 scoreboard players add @s ra.cooldown 1
 execute unless score @s ra.cooldown matches 20.. run return 0
@@ -45,8 +44,8 @@ execute if score #boil_dst ra.wires.tmp matches 0 run function ra_wires:fluid/bo
 execute if score #boil_dst ra.wires.tmp matches 0 run return 0
 
 # Both sides confirmed, so neither half of this can fail and strand the water.
-execute as @e[type=marker,tag=ra.wires.boil_src,limit=1] run function ra_lib:transport/net/take {amount:100}
-execute as @e[type=marker,tag=ra.wires.boil_dst,limit=1] run function ra_lib:transport/net/offer {amount:100,medium:"steam"}
+execute as @e[type=marker,tag=ra.wires.boil_src,limit=1] run function ra_lib:transport/net/take {amount:1000}
+execute as @e[type=marker,tag=ra.wires.boil_dst,limit=1] run function ra_lib:transport/net/offer {amount:1000,medium:"steam"}
 
 function ra_wires:fluid/boiler_cleanup
 

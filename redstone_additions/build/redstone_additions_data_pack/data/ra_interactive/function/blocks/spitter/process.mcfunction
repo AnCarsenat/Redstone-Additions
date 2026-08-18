@@ -19,7 +19,7 @@ scoreboard players set @s ra.cooldown 0
 data modify storage ra:temp spit_item set from block ~ ~ ~ Items[0]
 
 # Spawn item entity in front (^ ^ ^0.8)
-summon item ^ ^ ^0.8 {Item:{id:"minecraft:stone",count:1},Tags:["ra.spit"],PickupDelay:10s}
+summon item ^ ^ ^0.8 {Item:{id:"minecraft:stone",count:1},Tags:["ra","ra.spit"],PickupDelay:10s}
 data modify entity @e[type=item,tag=ra.spit,limit=1,sort=nearest] Item set from storage ra:temp spit_item
 
 # Remove tag

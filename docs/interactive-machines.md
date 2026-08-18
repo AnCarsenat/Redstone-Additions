@@ -15,10 +15,11 @@ The `ra_interactive` module provides 10 utility machines for automation and map 
 | Item Pipe | `minecraft:dispenser` | ![Item Pipe recipe](images/recipes/ra_interactive/item_pipe.png){ width="220" } | Continuous | Moves whole stacks; filter via item frame |
 | Item Mover | `minecraft:observer` | ![Item Mover recipe](images/recipes/ra_interactive/item_mover.png){ width="220" } | Continuous | Rear container to front container |
 | Spitter | `minecraft:dropper` | ![Spitter recipe](images/recipes/ra_interactive/spitter.png){ width="220" } | Continuous | Throws item entities forward |
-| Breeder | `minecraft:dispenser` | ![Breeder recipe](images/recipes/ra_interactive/breeder.png){ width="220" } | Rising edge | Uses dispenser inventory food |
+| Breeder | `minecraft:barrel` (dispenser skin) | ![Breeder recipe](images/recipes/ra_interactive/breeder.png){ width="220" } | While powered | Feeds animals from its own inventory |
 | Infinite Water Cauldron | `minecraft:cauldron` | ![Infinite Water Cauldron recipe](images/recipes/ra_interactive/infinite_water_cauldron.png){ width="220" } | Continuous | Keeps `water_cauldron[level=3]` |
 | Infinite Lava Cauldron | `minecraft:cauldron` | ![Infinite Lava Cauldron recipe](images/recipes/ra_interactive/infinite_lava_cauldron.png){ width="220" } | Continuous | Keeps `lava_cauldron` |
 | Infinite Snow Cauldron | `minecraft:cauldron` | ![Infinite Snow Cauldron recipe](images/recipes/ra_interactive/infinite_snow_cauldron.png){ width="220" } | Continuous | Keeps `powder_snow_cauldron[level=3]` |
+| Magic Crate | `minecraft:barrel` | ![Magic Crate recipe](images/recipes/ra_interactive/magic_crate.png){ width="220" } | Continuous | Teleports dropped items in from 5-20 blocks |
 | Message Block | `minecraft:note_block` | ![Message Block recipe](images/recipes/ra_interactive/message_block.png){ width="220" } | Rising edge | Sends text to players in range |
 
 ## Behavior Notes
@@ -60,8 +61,50 @@ The `ra_interactive` module provides 10 utility machines for automation and map 
 
 ### Breeder
 
-- Runs on rising-edge power only.
-- Reads dispenser inventory and feeds matching nearby animals.
+Put food in it, power it, and it feeds whatever is standing in front of it.
+
+- The block is a **barrel wearing a dispenser skin**. It used to be a real
+  dispenser, which throws its own inventory on any rising redstone edge — so a
+  breeder loaded with wheat scattered the wheat across the field the moment you
+  powered it. A barrel is the same inventory with none of that behaviour.
+- Powered by redstone directly, and it looks **one block in front** of itself for
+  an adult animal that is not already in love mode.
+- One item is consumed per pair bred, out of its own inventory.
+
+#### What it will breed, and on what
+
+Two animals of the same kind must be in front of it, both adult, and the right
+food must be somewhere in the barrel.
+
+| Animal | Feed it |
+|---|---|
+| Cow | `wheat` |
+| Mooshroom | `wheat` |
+| Sheep | `wheat` |
+| Pig | `carrot`, `potato`, `beetroot` |
+| Chicken | `wheat_seeds`, `melon_seeds`, `pumpkin_seeds`, `beetroot_seeds`, `torchflower_seeds`, `pitcher_pod` |
+| Goat | `wheat` |
+| Rabbit | `carrot`, `golden_carrot`, `dandelion` |
+| Horse | `golden_apple`, `golden_carrot`, `enchanted_golden_apple` |
+| Llama | `hay_block` |
+| Turtle | `seagrass` |
+| Panda | `bamboo` |
+| Fox | `sweet_berries`, `glow_berries` |
+| Bee | any flower |
+| Wolf | `beef`, `chicken`, `cooked_beef`, `cooked_chicken`, `cooked_mutton`, `cooked_porkchop`, `cooked_rabbit`, `mutton`, `porkchop`, `rabbit`, `rotten_flesh` |
+| Cat | `cod`, `salmon` |
+| Axolotl | `tropical_fish_bucket` |
+| Strider | `warped_fungus` |
+| Hoglin | `crimson_fungus` |
+| Camel | `cactus` |
+| Sniffer | `torchflower_seeds` |
+| Frog | `slime_ball` |
+| Armadillo | `spider_eye` |
+
+Bees take any flower. Wolves take any raw or cooked meat, rotten flesh included.
+Chickens take any of the six seeds, and sniffers share torchflower seeds with
+them — a breeder holding torchflower seeds in front of both will feed whichever
+it finds first.
 
 ### Infinite Cauldrons
 
@@ -74,6 +117,28 @@ The `ra_interactive` module provides 10 utility machines for automation and map 
 - Internal ID uses `message_block` (placement tag and custom_data).
 - Folder path remains `blocks/message`.
 - Default properties initialized to message text and range.
+
+### Magic Crate
+
+A plain barrel — no skin. It wore a hopper for a while, which was a lie in two
+directions: a hopper is five slots that push downwards, and this is twenty-seven
+slots that pull inwards. Every `cooldown` ticks it sweeps for item entities
+within `radius` and teleports them into itself.
+
+| Property | Default | Range | Meaning |
+| --- | --- | --- | --- |
+| `radius` | `8` | 5–20 | How far it reaches |
+| `cooldown` | `20` | 1+ | Ticks between sweeps |
+
+The ceiling on `radius` is enforced in code, not just documented: a radius the
+player could raise without limit turns one block into a server-wide entity
+selector. A sweep takes at most **eight items per pulse**, so a hopper standing
+over a mob farm clears the pile quickly without spiking a single tick.
+
+Items cross as whole stacks, copied verbatim from the item entity, so names,
+enchantments and damage survive. It skips items on a permanent pickup delay, and
+stops when it has no completely empty slot left — the goggles read `Full` rather
+than silently doing nothing. Breaking it drops all 27 slots.
 
 ## Contributor Notes
 

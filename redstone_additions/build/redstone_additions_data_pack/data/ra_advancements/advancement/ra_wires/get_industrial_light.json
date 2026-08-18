@@ -1,0 +1,33 @@
+{
+  "parent": "ra_advancements:ra_wires",
+  "display": {
+    "icon": {
+      "id": "minecraft:sea_lantern"
+    },
+    "title": "Industrial Light",
+    "description": "Obtain the Industrial Light.",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "criteria": {
+    "get_industrial_light": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "minecraft:bat_spawn_egg"
+            ],
+            "components": {
+              "custom_data": {
+                "ra": {
+                  "industrial_light": 1
+                }
+              }
+            }
+          }
+        ]
+      }
+    }
+  }
+}

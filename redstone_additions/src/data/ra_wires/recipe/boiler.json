@@ -22,7 +22,7 @@
       "minecraft:custom_data": { "ra": { "boiler": true } },
       "minecraft:entity_data": {
         "id": "minecraft:bat",
-        "Tags": ["ra.spawned", "ra.place.boiler"],
+        "Tags": ["ra", "ra.spawned", "ra.place.boiler"],
         "Silent": true,
         "NoAI": true,
         "Invulnerable": true

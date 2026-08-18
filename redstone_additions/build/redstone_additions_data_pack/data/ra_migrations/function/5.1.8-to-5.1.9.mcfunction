@@ -1,0 +1,65 @@
+# /ra_migrations:5.1.8-to-5.1.9
+# Write each existing marker's block type into data.type.
+#
+# 5.1.9 keys the wrench's cyclable-property registry by block type, and a data
+# pack cannot ask an entity which of its tags names its kind -- so placement now
+# writes it down. Markers placed before that have the tag but not the field, and
+# without this the wrench would tell you every block you already built predates
+# menus.
+#
+# One line per block type is the whole trick: the tag is the type, it just cannot
+# be read back as a string. Idempotent -- it overwrites with the same value.
+
+execute as @e[type=marker,tag=ra.custom_block.battery] run data modify entity @s data.type set value "battery"
+execute as @e[type=marker,tag=ra.custom_block.block_breaker] run data modify entity @s data.type set value "block_breaker"
+execute as @e[type=marker,tag=ra.custom_block.block_placer] run data modify entity @s data.type set value "block_placer"
+execute as @e[type=marker,tag=ra.custom_block.boiler] run data modify entity @s data.type set value "boiler"
+execute as @e[type=marker,tag=ra.custom_block.boxer] run data modify entity @s data.type set value "boxer"
+execute as @e[type=marker,tag=ra.custom_block.breeder] run data modify entity @s data.type set value "breeder"
+execute as @e[type=marker,tag=ra.custom_block.chunk_loader] run data modify entity @s data.type set value "chunk_loader"
+execute as @e[type=marker,tag=ra.custom_block.clock] run data modify entity @s data.type set value "clock"
+execute as @e[type=marker,tag=ra.custom_block.creative_eu] run data modify entity @s data.type set value "creative_eu"
+execute as @e[type=marker,tag=ra.custom_block.creative_fluid] run data modify entity @s data.type set value "creative_fluid"
+execute as @e[type=marker,tag=ra.custom_block.delayer] run data modify entity @s data.type set value "delayer"
+execute as @e[type=marker,tag=ra.custom_block.electric_breaker] run data modify entity @s data.type set value "electric_breaker"
+execute as @e[type=marker,tag=ra.custom_block.electric_consumer] run data modify entity @s data.type set value "electric_consumer"
+execute as @e[type=marker,tag=ra.custom_block.electric_furnace] run data modify entity @s data.type set value "electric_furnace"
+execute as @e[type=marker,tag=ra.custom_block.electric_generator] run data modify entity @s data.type set value "electric_generator"
+execute as @e[type=marker,tag=ra.custom_block.electric_switch] run data modify entity @s data.type set value "electric_switch"
+execute as @e[type=marker,tag=ra.custom_block.electric_wire] run data modify entity @s data.type set value "electric_wire"
+execute as @e[type=marker,tag=ra.custom_block.emitter] run data modify entity @s data.type set value "emitter"
+execute as @e[type=marker,tag=ra.custom_block.ender_fluid_vault] run data modify entity @s data.type set value "ender_fluid_vault"
+execute as @e[type=marker,tag=ra.custom_block.ender_item_vault] run data modify entity @s data.type set value "ender_item_vault"
+execute as @e[type=marker,tag=ra.custom_block.ender_power_vault] run data modify entity @s data.type set value "ender_power_vault"
+execute as @e[type=marker,tag=ra.custom_block.entity_detector] run data modify entity @s data.type set value "entity_detector"
+execute as @e[type=marker,tag=ra.custom_block.extender] run data modify entity @s data.type set value "extender"
+execute as @e[type=marker,tag=ra.custom_block.gas_pump] run data modify entity @s data.type set value "gas_pump"
+execute as @e[type=marker,tag=ra.custom_block.gas_tank] run data modify entity @s data.type set value "gas_tank"
+execute as @e[type=marker,tag=ra.custom_block.gas_valve] run data modify entity @s data.type set value "gas_valve"
+execute as @e[type=marker,tag=ra.custom_block.industrial_light] run data modify entity @s data.type set value "industrial_light"
+execute as @e[type=marker,tag=ra.custom_block.infinite_lava_cauldron] run data modify entity @s data.type set value "infinite_lava_cauldron"
+execute as @e[type=marker,tag=ra.custom_block.infinite_snow_cauldron] run data modify entity @s data.type set value "infinite_snow_cauldron"
+execute as @e[type=marker,tag=ra.custom_block.infinite_water_cauldron] run data modify entity @s data.type set value "infinite_water_cauldron"
+execute as @e[type=marker,tag=ra.custom_block.item_mover] run data modify entity @s data.type set value "item_mover"
+execute as @e[type=marker,tag=ra.custom_block.item_pipe] run data modify entity @s data.type set value "item_pipe"
+execute as @e[type=marker,tag=ra.custom_block.liquid_drain] run data modify entity @s data.type set value "liquid_drain"
+execute as @e[type=marker,tag=ra.custom_block.liquid_pipe] run data modify entity @s data.type set value "liquid_pipe"
+execute as @e[type=marker,tag=ra.custom_block.liquid_pump] run data modify entity @s data.type set value "liquid_pump"
+execute as @e[type=marker,tag=ra.custom_block.liquid_tank] run data modify entity @s data.type set value "liquid_tank"
+execute as @e[type=marker,tag=ra.custom_block.liquid_valve] run data modify entity @s data.type set value "liquid_valve"
+execute as @e[type=marker,tag=ra.custom_block.magic_crate] run data modify entity @s data.type set value "magic_crate"
+execute as @e[type=marker,tag=ra.custom_block.message_block] run data modify entity @s data.type set value "message_block"
+execute as @e[type=marker,tag=ra.custom_block.mineral_generator] run data modify entity @s data.type set value "mineral_generator"
+execute as @e[type=marker,tag=ra.custom_block.multiblock_base] run data modify entity @s data.type set value "multiblock_base"
+execute as @e[type=marker,tag=ra.custom_block.nether_generator] run data modify entity @s data.type set value "nether_generator"
+execute as @e[type=marker,tag=ra.custom_block.poppy_generator] run data modify entity @s data.type set value "poppy_generator"
+execute as @e[type=marker,tag=ra.custom_block.randomizer] run data modify entity @s data.type set value "randomizer"
+execute as @e[type=marker,tag=ra.custom_block.receiver] run data modify entity @s data.type set value "receiver"
+execute as @e[type=marker,tag=ra.custom_block.shortener] run data modify entity @s data.type set value "shortener"
+execute as @e[type=marker,tag=ra.custom_block.solar_panel] run data modify entity @s data.type set value "solar_panel"
+execute as @e[type=marker,tag=ra.custom_block.spitter] run data modify entity @s data.type set value "spitter"
+execute as @e[type=marker,tag=ra.custom_block.tag_adder] run data modify entity @s data.type set value "tag_adder"
+execute as @e[type=marker,tag=ra.custom_block.tag_remover] run data modify entity @s data.type set value "tag_remover"
+execute as @e[type=marker,tag=ra.custom_block.teleport_anchor] run data modify entity @s data.type set value "teleport_anchor"
+execute as @e[type=marker,tag=ra.custom_block.unboxer] run data modify entity @s data.type set value "unboxer"
+execute as @e[type=marker,tag=ra.custom_block.uni_gate] run data modify entity @s data.type set value "uni_gate"

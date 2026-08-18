@@ -4,8 +4,8 @@
                     "icon":  {
                                  "id":  "minecraft:orange_candle"
                              },
-                    "title":  "Copper Wire",
-                    "description":  "Obtain the Copper Wire.",
+                    "title":  "Wire",
+                    "description":  "Obtain the Wire.",
                     "show_toast":  true,
                     "announce_to_chat":  true
                 },

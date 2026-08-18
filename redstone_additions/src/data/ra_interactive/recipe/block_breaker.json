@@ -19,7 +19,7 @@
       "minecraft:custom_data": { "ra": { "block_breaker": true } },
       "minecraft:entity_data": {
         "id": "minecraft:bat",
-        "Tags": ["ra.spawned", "ra.place.block_breaker"],
+        "Tags": ["ra", "ra.spawned", "ra.place.block_breaker"],
         "Silent": true,
         "NoAI": true,
         "Invulnerable": true

@@ -10,7 +10,7 @@
         "I": "minecraft:iron_ingot",
         "R": "minecraft:redstone",
         "C": "minecraft:copper_ingot",
-        "B": "minecraft:blast_furnace",
+        "B": "minecraft:barrel",
         "F": "minecraft:furnace"
     },
     "result": {
@@ -27,7 +27,7 @@
             "minecraft:entity_data": {
                 "id": "minecraft:bat",
                 "Tags": [
-                    "ra.spawned",
+                    "ra", "ra.spawned",
                     "ra.place.electric_generator"
                 ],
                 "Silent": true,

@@ -1,0 +1,51 @@
+{
+  "function": "minecraft:set_components",
+  "components": {
+    "minecraft:custom_data": {
+      "ra": {
+        "jetpack": true,
+        "jetpack_tier": "iron",
+        "jp_speed": true,
+        "jp_lift": true
+      }
+    },
+    "minecraft:enchantment_glint_override": true,
+    "minecraft:lore": [
+      {
+        "text": "Iron Jetpack",
+        "color": "gold",
+        "italic": false
+      },
+      {
+        "text": "Sneak to fly - 1 coal per 2 minutes",
+        "color": "gray",
+        "italic": false
+      },
+      {
+        "text": "Thruster Kit - +45% speed while flying",
+        "color": "gold",
+        "italic": false
+      },
+      {
+        "text": "Lift Kit - climbs and sinks twice as fast",
+        "color": "aqua",
+        "italic": false
+      },
+      {
+        "text": "/trigger ra.jp.kits manages the kits",
+        "color": "dark_gray",
+        "italic": false
+      },
+      {
+        "text": "/trigger ra.jp.mode switches classic / hover",
+        "color": "dark_gray",
+        "italic": false
+      },
+      {
+        "text": "/trigger ra.jp.sound mutes the engine",
+        "color": "dark_gray",
+        "italic": false
+      }
+    ]
+  }
+}

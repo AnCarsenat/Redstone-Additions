@@ -24,7 +24,7 @@
       "minecraft:custom_data": { "ra": { "solar_panel": true } },
       "minecraft:entity_data": {
         "id": "minecraft:bat",
-        "Tags": ["ra.spawned", "ra.place.solar_panel"],
+        "Tags": ["ra", "ra.spawned", "ra.place.solar_panel"],
         "Silent": true,
         "NoAI": true,
         "Invulnerable": true

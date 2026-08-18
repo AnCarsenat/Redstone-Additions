@@ -11,5 +11,3 @@ function ra:tools/goggles/billboard/handle_billboard with storage ra:temp billbo
 function ra:tools/goggles/billboard/stack_reset {top:105,step:16}
 function ra:tools/goggles/billboard/stacked_prop_line {path:"channel",label:"Channel: ",color:"light_purple",suffix:""}
 function ra:tools/goggles/billboard/stacked_prop_line {path:"mode",label:"Mode: ",color:"aqua",suffix:""}
-execute unless data entity @s data.properties{enabled:0b} run function ra:tools/goggles/billboard/stacked_text_line {label:"Enabled: ",value:"yes",color:"green",suffix:""}
-execute if data entity @s data.properties{enabled:0b} run function ra:tools/goggles/billboard/stacked_text_line {label:"Enabled: ",value:"no",color:"red",suffix:""}

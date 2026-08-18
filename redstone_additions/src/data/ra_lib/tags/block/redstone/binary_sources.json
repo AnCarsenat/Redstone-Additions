@@ -1,0 +1,11 @@
+{
+  "values": [
+    "minecraft:lever",
+    "#minecraft:buttons",
+    "#minecraft:wooden_pressure_plates",
+    "minecraft:stone_pressure_plate",
+    "minecraft:polished_blackstone_pressure_plate",
+    "minecraft:tripwire_hook",
+    "minecraft:lightning_rod"
+  ]
+}

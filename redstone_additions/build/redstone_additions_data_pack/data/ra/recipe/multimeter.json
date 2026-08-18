@@ -1,0 +1,32 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [
+    " C ",
+    "RQR",
+    " I "
+  ],
+  "key": {
+    "C": "minecraft:copper_ingot",
+    "R": "minecraft:redstone",
+    "Q": "minecraft:quartz",
+    "I": "minecraft:iron_ingot"
+  },
+  "result": {
+    "id": "minecraft:clock",
+    "count": 1,
+    "components": {
+      "minecraft:item_model": "minecraft:clock",
+      "minecraft:item_name": "Multimeter",
+      "minecraft:custom_data": { "ra": { "multimeter": true } },
+      "minecraft:enchantment_glint_override": true,
+      "minecraft:lore": [
+        { "text": "RMB a block: read its network", "color": "gray", "italic": false },
+        { "text": "Stored, capacity, and what this block adds", "color": "gray", "italic": false }
+      ],
+      "minecraft:food": { "nutrition": 0, "saturation": 0, "can_always_eat": true },
+      "minecraft:consumable": { "consume_seconds": 1000000, "animation": "none", "has_consume_particles": false }
+    }
+  },
+  "show_notification": true
+}

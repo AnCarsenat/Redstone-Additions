@@ -17,7 +17,6 @@ scoreboard players set @s ra.ender.cd 0
 # receive tag, so without this every partner search could find itself.
 tag @s add ra.ender.self
 
-execute if data entity @s data.properties{enabled:0b} run return run function ra_ender:link/done
 execute if data entity @s data.properties{mode:"receive"} run return run function ra_ender:link/done
 
 function ra_lib:transport/net/read
@@ -25,7 +24,8 @@ execute if score #net_amount ra.tr.tmp matches ..0 run return run function ra_en
 execute unless data storage ra:transport cur.medium run return run function ra_ender:link/done
 
 scoreboard players operation #ender.mine ra.temp = #net_amount ra.tr.tmp
-execute store result score #ender.rate ra.temp run data get entity @s data.properties.transfer_rate
+function ra_lib:util/property {name:"transfer_rate",default:200,min:1}
+scoreboard players operation #ender.rate ra.temp = #prop ra.temp
 
 data modify storage ra:ender fluid set value {}
 data modify storage ra:ender fluid.medium set from storage ra:transport cur.medium

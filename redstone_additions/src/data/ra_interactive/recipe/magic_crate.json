@@ -1,0 +1,33 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "redstone",
+  "pattern": [
+    "EPE",
+    "IHI",
+    "ECE"
+  ],
+  "key": {
+    "E": "minecraft:ender_pearl",
+    "P": "minecraft:ender_eye",
+    "I": "minecraft:iron_ingot",
+    "H": "minecraft:hopper",
+    "C": "minecraft:chest"
+  },
+  "result": {
+    "id": "minecraft:bat_spawn_egg",
+    "components": {
+      "minecraft:item_model": "minecraft:barrel",
+      "minecraft:item_name": "Magic Crate",
+      "minecraft:lore": [{ "text": "Pulls dropped items in from up to 20 blocks", "color": "gray", "italic": false }],
+      "minecraft:custom_data": { "ra": { "magic_crate": true } },
+      "minecraft:entity_data": {
+        "id": "minecraft:bat",
+        "Tags": ["ra", "ra.spawned", "ra.place.magic_crate"],
+        "Silent": true,
+        "NoAI": true,
+        "Invulnerable": true
+      }
+    }
+  },
+  "show_notification": true
+}

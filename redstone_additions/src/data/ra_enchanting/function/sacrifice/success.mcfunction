@@ -4,7 +4,7 @@
 
 # ra.ench.done keeps the product out of the next scan, so an upgrade that landed
 # back on the same table is not immediately sacrificed again.
-summon item ~ ~0.3 ~ {Item:{id:"minecraft:stone",count:1},Tags:["ra.ench.product","ra.ench.done"],PickupDelay:20s}
+summon item ~ ~0.3 ~ {Item:{id:"minecraft:stone",count:1},Tags:["ra","ra.ench.product","ra.ench.done"],PickupDelay:20s}
 data modify entity @e[type=item,tag=ra.ench.product,distance=..0.6,limit=1,sort=nearest] Item set from storage ra:enchant result
 tag @e[type=item,tag=ra.ench.product,distance=..0.6,limit=1,sort=nearest] remove ra.ench.product
 

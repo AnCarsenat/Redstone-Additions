@@ -4,7 +4,7 @@
 # Shows: name, heat/enabled status, I/O labels above structure (outside the forge)
 
 # === Name billboard (above the ceiling, y+2.5) ===
-summon text_display ~ ~2.5 ~ {Tags:["ra.billboard","ra.display"],billboard:"center",text:{text:"Blast Forge",color:"green",bold:true},background:1073741824,shadow:true,see_through:false,line_width:200,transformation:{left_rotation:[0f,0f,0f,1f],right_rotation:[0f,0f,0f,1f],translation:[0f,0f,0f],scale:[0.6f,0.6f,0.6f]}}
+summon text_display ~ ~2.5 ~ {Tags:["ra","ra.billboard","ra.display"],billboard:"center",text:{text:"Blast Forge",color:"green",bold:true},background:1073741824,shadow:true,see_through:false,line_width:200,transformation:{left_rotation:[0f,0f,0f,1f],right_rotation:[0f,0f,0f,1f],translation:[0f,0f,0f],scale:[0.6f,0.6f,0.6f]}}
 
 # === Status billboards ===
 function ra:tools/goggles/status/read_status_multiblock

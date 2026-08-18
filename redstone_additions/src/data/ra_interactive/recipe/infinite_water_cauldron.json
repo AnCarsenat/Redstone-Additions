@@ -19,7 +19,7 @@
       "minecraft:custom_data": { "ra": { "infinite_water_cauldron": true } },
       "minecraft:entity_data": {
         "id": "minecraft:bat",
-        "Tags": ["ra.spawned", "ra.place.infinite_water_cauldron"],
+        "Tags": ["ra", "ra.spawned", "ra.place.infinite_water_cauldron"],
         "Silent": true,
         "NoAI": true,
         "Invulnerable": true

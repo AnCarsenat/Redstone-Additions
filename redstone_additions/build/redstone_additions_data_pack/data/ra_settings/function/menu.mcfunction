@@ -11,6 +11,11 @@
 
 tellraw @s [{text:""},{text:"─── ",color:"dark_gray"},{text:"Your Redstone Additions Preferences",color:"gold",bold:true},{text:" ───",color:"dark_gray"}]
 
+# With a single page there is nothing to choose between, so showing a menu whose
+# only content is one button is a click that teaches the player nothing. Open it.
+execute unless data storage ra:settings pages[1] run scoreboard players set @s ra.settings.page 0
+execute unless data storage ra:settings pages[1] run return run function ra_settings:page/open
+
 scoreboard players set #idx ra.set.tmp 0
 data modify storage ra:settings scan set from storage ra:settings pages
 function ra_settings:page/list

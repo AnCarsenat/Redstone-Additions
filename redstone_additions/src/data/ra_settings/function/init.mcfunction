@@ -37,6 +37,15 @@ scoreboard objectives add ra.settings.act trigger
 scoreboard players enable @a ra.settings.open
 scoreboard players enable @a ra.settings.act
 
+# Server-settings buttons, and the session that authorises them. The objective is
+# only ever enabled for a player holding ra.admin, so a hand-typed /trigger from
+# anyone else is refused by the game before it reaches the dispatcher.
+scoreboard objectives add ra.settings.admin trigger
+scoreboard objectives add ra.admin.ttl dummy
+
+# A tag outlives the permission that granted it, so no session survives a reload.
+tag @a remove ra.admin
+
 # Which page a player is looking at, so a row click knows what it belongs to.
 scoreboard objectives add ra.settings.page dummy
 

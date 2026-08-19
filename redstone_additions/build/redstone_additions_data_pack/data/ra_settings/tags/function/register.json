@@ -1,6 +1,7 @@
 {
   "values": [
     "ra_settings:pages",
-    "ra_settings:defaults"
+    "ra_settings:defaults",
+    "ra_settings:admin_actions"
   ]
 }

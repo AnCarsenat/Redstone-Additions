@@ -61,6 +61,23 @@ to walk the whole tree — that is the reason these are functions and not a menu
 /function ra_settings:admin/wires/electric_furnace/disable
 ```
 
+### Sessions, and why the buttons stopped asking
+
+Opening the index starts a **server-settings session**: it gives you the
+`ra.admin` tag, and the buttons on every page switch from running their function
+to firing a trigger. That is what stops Minecraft asking you to confirm each
+click — a `run_command` link prompts every time, a `/trigger` does not.
+
+The tag is the permission check. It can only be obtained by reaching
+`/function ra_settings:admin/show`, which needs level 2, and the trigger is only
+enabled for players holding it.
+
+!!! warning "Sessions are bounded on purpose"
+    A tag outlives the permission that granted it. If it never expired, someone
+    de-opped while still holding one would keep changing server settings. So it is
+    **cleared for everybody on every load**, and **expires after five minutes**,
+    refreshed each time you click something. Reopen the index to start again.
+
 ### Turning blocks off
 
 Every placeable block has an `enable` / `disable` pair. A disabled block cannot be
@@ -85,6 +102,29 @@ balanced around the old number. Wrench an existing block if you want it changed.
 Stepping is one click, but moving a generator from 60 to 500 EU is forty-four of
 them. Every numeric setting also has `edit`, which opens the same input form the
 Data Handler uses for a clock's delay.
+
+---
+
+---
+
+## Uninstalling
+
+```
+/function ra:uninstall
+```
+
+Also a button at the bottom of the server settings index.
+
+It asks **twice**. The first prompt asks; the second lists exactly what is about
+to be destroyed — every machine becomes an ordinary block, every network,
+multiblock and display is removed, and every setting including your
+disabled-block list is erased.
+
+Both confirmations deliberately use ordinary command links rather than the
+triggers the rest of the panel uses, so Minecraft's own "run this command?"
+dialog stays in the way. This is the one place the extra friction is worth having.
+
+There is no backup. Copy the world first if you want one.
 
 ---
 

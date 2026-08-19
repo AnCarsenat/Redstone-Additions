@@ -1,6 +1,10 @@
-# /data/ra/function/uninstall.mcfunction
-# Uninstall Redstone Additions — Confirmation Prompt
-# Shows a clickable confirmation dialog before performing the actual uninstall
+# /ra:uninstall
+# First of two warnings. Nothing is removed by this function.
+#
+# Two prompts rather than one because this is unrecoverable and reachable from a
+# button on the settings index -- one misclick should not be able to end a world's
+# worth of machines. The first asks; the second says exactly what goes.
 
-tellraw @a [{text:"\n"},{text:"[",color:"dark_gray"},{text:"RA",color:"gold",bold:true},{text:"] ",color:"dark_gray"},{text:"Are you sure you want to uninstall Redstone Additions?",color:"red",bold:true}]
-tellraw @a [{text:"  "},{text:"[CONFIRM]",color:"dark_red",bold:true,click_event:{action:"run_command",command:"/function ra:uninstall/confirm"},hover_event:{action:"show_text",value:"Click to uninstall - this cannot be undone!"}},{text:"  "},{text:"[CANCEL]",color:"green",bold:true,click_event:{action:"run_command",command:"/function ra:uninstall/cancel"},hover_event:{action:"show_text",value:"Cancel uninstallation"}}]
+tellraw @s [{text:"\n"},{text:"[",color:"dark_gray"},{text:"RA",color:"gold",bold:true},{text:"] ",color:"dark_gray"},{text:"Uninstall Redstone Additions?",color:"red",bold:true}]
+tellraw @s [{text:"  This removes every custom block, marker and display in the world.",color:"gray"}]
+tellraw @s [{text:"  "},{text:"[ Continue ]",color:"red",bold:true,hover_event:{action:"show_text",value:"You will be asked once more"},click_event:{action:"run_command",command:"/function ra:uninstall/warn"}},{text:"   "},{text:"[ Cancel ]",color:"green",bold:true,hover_event:{action:"show_text",value:"Leave everything alone"},click_event:{action:"run_command",command:"/function ra:uninstall/cancel"}}]

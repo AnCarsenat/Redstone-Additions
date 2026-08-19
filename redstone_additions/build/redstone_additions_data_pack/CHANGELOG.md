@@ -24,6 +24,16 @@
 - Numeric and text settings can be **typed**, through the same input form the
   Data Handler opens for a clock's delay, instead of only stepped.
 - The goggles redraw interval and scan range are settings.
+- **Server-settings sessions.** Opening the index grants `ra.admin` and switches
+  every button from a command link to a trigger, so Minecraft stops asking for
+  confirmation on each click. The tag can only be obtained through a level-2
+  function; it is cleared on every load and expires after five minutes, because a
+  tag outlives the permission that granted it.
+- **Uninstall now warns twice**, the second time listing exactly what is about to
+  be destroyed, and is reachable from the settings index. Its own buttons keep the
+  confirmation dialog on purpose. It also cleans up everything added since the
+  original uninstall was written -- the settings half is generated, so it cannot
+  drift again.
 - [Settings](settings.md) documentation page.
 
 ### Fixed

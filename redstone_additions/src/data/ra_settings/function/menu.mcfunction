@@ -22,9 +22,13 @@ function ra_settings:page/list
 data remove storage ra:settings scan
 
 tellraw @s [{text:"These affect only you.",color:"dark_gray"}]
-# Shown to everyone rather than only to operators, because nothing can tell them
-# apart: there is no permission-level selector, and @s[level=...] is EXPERIENCE
-# level, which is a different number that happens to look plausible. A player
-# without permission who runs it is told no by the game, which is the right
-# answer from the right place.
-tellraw @s [{text:"Operators: ",color:"dark_gray"},{text:"/function ra_settings:admin/show",color:"yellow",hover_event:{action:"show_text",value:"World-wide settings (needs permission level 2)"},click_event:{action:"suggest_command",command:"/function ra_settings:admin/show"}}]
+# Shown to everyone, because nothing can tell operators apart: there is no
+# permission-level selector, and @s[level=...] is EXPERIENCE level, which is a
+# different number that happens to look plausible.
+#
+# It RUNS a trigger rather than suggesting a function. Suggesting /function is
+# useless to somebody who cannot run one -- it puts text in their chat box that
+# the game will refuse -- whereas the trigger works for everybody and lands in
+# ra_settings:server_open, which opens the panel for a holder of ra.admin and
+# explains itself to anyone else.
+tellraw @s [{text:"  "},{text:"[ Server settings ]",color:"gray",hover_event:{action:"show_text",value:"World-wide settings — needs operator permission"},click_event:{action:"run_command",command:"/trigger ra.settings.open set 2"}}]

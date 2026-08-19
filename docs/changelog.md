@@ -7,48 +7,34 @@ This page mirrors key datapack milestones from the main project changelog.
 ### Added
 
 - **[Settings](settings.md).** Two kinds, reached two ways. Server settings live
-  under `/function ra_settings:admin/` and autocomplete, because a function path
-  is the only command surface that does — a macro argument completes to nothing.
-  Player preferences are `/trigger ra.settings.open`, which needs no permissions.
-- **Blocks can be turned off**, per block type. The item is handed back rather
-  than swallowed, and anything already built keeps working.
+  under `/function ra_settings:admin/` and autocomplete — a function path is the
+  only command surface that does. Player preferences are
+  `/trigger ra.settings.open`, which needs no permissions. `/function ra:settings`
+  is the short way in.
+- **Blocks can be turned off**, per type, with a page listing which and a warning
+  on load. The item is handed back rather than swallowed, and anything already
+  built keeps working.
 - **Defaults can be retuned** — generator EU/tick, clock interval, vault rates,
-  crate radius. Applied at placement, so a build balanced around the old numbers
-  is not changed underneath it.
+  crate radius. Applied at placement, with **[Apply to placed]** to push a change
+  onto blocks already standing.
 - **Sound and particle switches, per player.** All 118 `playsound` and `particle`
-  calls in the pack respect them, and every player is seeded a default the moment
-  they join — an absent score would otherwise exclude them from their own sounds.
-- Numbers and text can be **typed** rather than only stepped, through the input
-  form the Data Handler already uses.
-- **`ra.admin` gives server-settings access**, and persists — a tagged player
-  opens the panel directly, straight from the button, across reloads. Every button
-  is a trigger, so Minecraft stops asking you to confirm each click.
-  `ra_settings:admin/grant` and `/revoke` manage it.
-- **Uninstall warns twice** and says what it is about to destroy. Reachable from
-  the settings index; its own buttons keep the confirmation dialog.
-- **Back buttons** on every server-settings page, and a settings button that hands
-  you the command unrun when opening the panel is not yours to do.
-- **Jetpacks and Enchant Crafting pages** — Thruster Kit thrust, speed cap and
-  deadzone are tunable, and enchant crafting can be turned off. Settings pages
-  group tunables and block switches with a rule between them.
+  calls respect them.
+- **Uninstall warns twice** and says what it is about to destroy.
 
 ### Fixed
 
-- **Text input never completed anywhere in the pack**, settings and Data Handler
-  alike. The writable-book backend only accepted a page stored as an NBT compound,
-  but pages are written as bare strings unless chat filtering is enabled.
-- **The debug setting fought the `ra.debug` tag**, stripping it every tick from
-  anyone who had added it by hand. The setting now only ever adds it, and clears
-  it once when switched off.
-- **Toggles took a tick to apply**, which read as nothing happening.
-- **The Electric Furnace flickered and z-fought while working.** Its skin was
-  killed and resummoned on every state change; `kill` does not take effect until
-  the end of the tick, so two identical displays overlapped in between.
-- **A working furnace looked switched off** for all but one tick in five on
-  superpowered. Whether it looks like it is cooking is now a question about
-  whether it *can* cook, not about which tick an item finished on.
-- **A steam-fed EU Generator was drawn permanently unlit** — it read the solid-fuel
-  countdown, which steam never sets.
+- **Ender vaults could not find each other** — the tag a sending vault searches
+  for was cleared every tick and never set. Broken since v5.1.8, in all three
+  vault types.
+- **The Electric Furnace flickered and z-fought** while working; a working furnace
+  was drawn as switched off for four ticks in five on superpowered; a steam-fed EU
+  Generator ran while drawn permanently unlit.
+- **Jetpack upgrade kits fired with the jetpack off** — in normal mode, jumping and
+  sprinting gave you the Thruster for free — and kept working on an empty tank.
+- **Text input never completed anywhere it was used by the settings**, because the
+  session was opened at the wrong point in the tick.
+- **`/trigger` completion is no longer cluttered**: nine blanket-enabled triggers
+  down to one.
 
 ## v5.1.14 (2026-08-18) — Pictures
 

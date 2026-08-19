@@ -10,93 +10,81 @@
   Server settings are `/function ra_settings:admin/...` and nothing else, because
   `/function` autocompletes and that is the only way an operator finds a setting
   without being told its name. Player preferences are `/trigger ra.settings.open`
-  and nothing else, so someone with no permissions can change what they see and
-  hear.
-- **Blocks can be turned off.** Every placeable block has enable/disable.
-  A disabled block cannot be placed and the item is handed back; blocks already
-  standing in the world keep working.
+  and nothing else, so somebody with no permissions can change what they see and
+  hear. `/function ra:settings` is the short way into the operator panel.
+- **Blocks can be turned off.** Every placeable block has enable/disable. A
+  disabled block cannot be placed and the item is handed back; anything already
+  built keeps working, and the item can still be crafted and held.
+- **A disabled-blocks page**, listing every switched-off block in red with a button
+  to re-enable each, plus a warning on every load when the list is not empty —
+  shown whether or not the load message is.
 - **Block defaults can be retuned** — generator EU/tick, clock interval, vault
-  transfer rates, magic crate radius and the rest. Applied when a block is placed,
-  so existing builds are not silently re-balanced underneath them.
+  transfer rates, crate radius and the rest. Applied when a block is placed, so a
+  build balanced around the old numbers is not changed underneath it, with
+  **[Apply to placed]** as the explicit opt-out.
 - **Per-player sound and particle switches**, honoured by all 118 `playsound` and
-  `particle` calls in the pack, plus a debug-message switch wired through the
-  existing `ra.debug` tag.
-- Numeric and text settings can be **typed**, through the same input form the
-  Data Handler opens for a clock's delay, instead of only stepped.
+  `particle` calls in the pack, plus a debug switch wired through the existing
+  `ra.debug` tag.
+- **Jetpacks and Enchant Crafting settings pages.** Thruster Kit thrust, speed cap
+  and deadzone are tunable; enchant crafting can be switched off. The jetpack
+  values are read once per tick rather than per flying player.
+- Numeric and text settings can be **typed**, through the same input form the Data
+  Handler opens for a clock's delay, instead of only stepped.
 - The goggles redraw interval and scan range are settings.
-- **`ra.admin` gives server-settings access.** Every button on the settings pages
-  is a trigger rather than a command link, so Minecraft stops asking for
-  confirmation on each click; the tag is the permission check that replaces it.
-  It persists across reloads, so a tagged player opens the panel directly. It can
-  only be handed out by something that already needs permission level 2, so nobody
-  can grant it to themselves — but it is a role rather than a session, so
-  `ra_settings:admin/revoke` is how you take it back when someone is de-opped.
-- **Uninstall now warns twice**, the second time listing exactly what is about to
-  be destroyed, and is reachable from the settings index. Its own buttons keep the
-  confirmation dialog on purpose. It also cleans up everything added since the
-  original uninstall was written -- the settings half is generated, so it cannot
-  drift again.
-- **Back buttons** at the bottom of every server-settings page.
-- The settings button fires a trigger that opens the panel for an operator who
-  already has a session, and otherwise puts the command in chat **unrun** — a
-  trigger handler runs at permission level 2, so opening the panel from one
-  unconditionally would have handed server settings to everybody.
-- **Jetpacks and Enchant Crafting settings pages.** Thrust, speed cap and deadzone
-  are tunable — labelled as **Thruster Kit** settings, because that is the only
-  kit that uses this thrust model — and enchant crafting can be switched off. The jetpack values are read
-  once per tick rather than per flying player, because `ra_settings:get` is a
-  macro and the flight path runs for everyone in the air.
-- **`/function ra:settings`** opens the server settings without tabbing through
-  the tree.
-- **[Apply to placed]** on every block-default row, pushing the configured value
-  onto blocks already in the world and reporting how many changed. Defaults still
-  apply only to new blocks by default; this is the explicit opt-out.
-- **A disabled-blocks page**, `/function ra_settings:disabled`, listing every
-  switched-off block in red with a button to re-enable each — and a warning on
-  every load when the list is not empty, shown whether or not the load message is.
-- **Triggers are enabled only where they are usable** — a tool's menu triggers
-  while that tool is in hand, the jetpack's while one is worn, the settings menu's
-  while a menu is drawn. A player who has touched none of it now sees one name in
-  their `/trigger` completion instead of nine.
-- [Settings](settings.md) documentation, now covering every trigger in the pack
-  and what it carries.
+- **`ra.admin` grants server-settings access** and persists, so a tagged player
+  opens the panel straight from the button. Managed with
+  `ra_settings:admin/grant` and `/revoke`.
+- **Uninstall warns twice**, the second time listing exactly what is about to be
+  destroyed, and is reachable from the settings index. Its own buttons keep the
+  confirmation dialog on purpose. It also cleans up what the original missed, and
+  the settings half is generated so it cannot drift again.
+- [Settings](settings.md) documentation, covering both scopes, the trigger table
+  and the JSON contract for adding a page.
 
 ### Fixed
 
-- **The debug-message setting fought the `ra.debug` tag and won.** Syncing the tag
-  from the score in both directions stripped it every tick from anyone who had
-  added it with `/tag @s add ra.debug`, which is still what
-  `ra_multiblock:blast_forge/debug_structure` tells you to do. The score now only
-  adds the tag, and removes it once on the tick the setting is switched off.
-- **Text input never completed.** The writable-book backend only submitted when
-  page 1 was an NBT *compound*, but a book page is a filterable string and is
-  written as a bare string unless chat filtering is on — so on nearly every server
-  the book was scanned forever and the text was never captured. No error, just a
-  request that timed out. `submit` already read both shapes; only the guard was
-  wrong. This affected the Data Handler's text fields too, not only settings.
-- **A text setting with no `default` did not appear at all.** A macro whose
-  arguments are incomplete fails without running any of its lines, so the missing
-  field took the whole row down with it.
-- **A cancelled or timed-out text input said nothing.** It now says so instead of
-  leaving you looking at an unchanged value.
-- **Settings applied a tick late.** The hooks ran before the click dispatcher, so
-  a toggle did nothing until the following tick and read as broken.
-- **On/off rows showed `0` and `1`.** They say `on` and `off`.
+- **Ender vaults could not find each other.** `link/send_items` looks for a partner
+  wearing `ra.ender.recv_item`; `item_vault/tick` cleared that tag every tick and
+  nothing anywhere set it, so a sending vault searched for a tag no vault could be
+  wearing. Broken since v5.1.8, when the lines that set it were deleted along with
+  the `enabled` property they mentioned. All three vault types were affected.
 - **The Electric Furnace skin flickered, vanished and z-fought while working.**
-  `apply_lit` killed the old `block_display` and summoned a replacement, but
-  `kill` does not remove an entity until the end of the tick — so two identical
-  displays overlapped for the rest of it, and the handover popped a frame with no
-  skin. State changes now edit the display that is already there.
-- **A working furnace was drawn as switched off.** The lit state flipped on every
-  cooldown, so it showed as lit for one tick in five on superpowered and one in a
-  hundred on low. It is now decided by whether the furnace can actually cook —
-  something to smelt, somewhere to put it, enough EU — with the cooldown deciding
-  only which tick an item comes out on.
-- **A steam-fed EU Generator produced power while drawn permanently unlit.** It
-  read `data.data.burn`, the solid-fuel countdown, which the steam path never
-  sets.
-- Asking whether there is enough EU no longer spends any, via the new
-  `ra_wires:electric/peek_eu`.
+  `apply_lit` killed the old `block_display` and summoned a replacement, but `kill`
+  does not remove an entity until the end of the tick — so two identical displays
+  overlapped for the rest of it. State changes now edit the display already there.
+- **A working furnace was drawn as switched off**, one tick in five on
+  superpowered. Whether it looks like it is cooking is now decided by whether it
+  can cook, with the cooldown deciding only which tick an item comes out on.
+- **A steam-fed EU Generator produced power while drawn permanently unlit** — it
+  read `data.data.burn`, the solid-fuel countdown, which the steam path never sets.
+- **Jetpack upgrade kits fired with the jetpack switched off.** The Thruster and
+  Scorch ran on "wearing the kit and off the ground", so in normal mode — where the
+  jetpack only runs while you sneak — jump, sprint, jump gave a forward boost for
+  free. They were also called above the fuel check, so they worked on an empty tank.
+- **Text input never completed.** A settings text edit opened its input session
+  before `ra_lib:input/tick` in the tick order, so the book was scanned in the same
+  tick it was handed over — a state the Data Handler cannot reach, which is why its
+  text input worked throughout and this did not.
+- **Settings could consume another tool's input session**, handing the Data Handler
+  an empty answer and leaving it waiting for one already taken.
+- **A failed settings read disabled the module that asked.** `ra_settings:get`
+  answered 0 for a missing key, and zero is a real value — "off" for a flag,
+  "disabled" for a gate. It now requires the caller to say what missing means.
+- **The debug setting fought the `ra.debug` tag**, stripping it every tick from
+  anyone who had added it by hand.
+- **A bare `/trigger ra.settings.admin` performed an arbitrary action** instead of
+  opening the index.
+- **Back redrew the page you had just left** on top of the index.
+- **`/trigger` completion was cluttered** with nine blanket-enabled triggers. They
+  are now handed out where usable — a tool's while it is in hand, the jetpack's
+  while one is worn, the settings menu's while a menu is drawn — leaving one.
+
+### Changed
+
+- Settings pages are buttons rather than a wall of text, grouped tunables then
+  block switches, one namespace per line on the index.
+- Player-facing links **run** a trigger rather than suggesting a function: a
+  suggested `/function` is useless to somebody who cannot run one.
 
 ## [v5.1.14] - 2026-08-18 - Pictures
 

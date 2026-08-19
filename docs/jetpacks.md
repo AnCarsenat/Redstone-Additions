@@ -35,6 +35,13 @@ consumed and can only be fitted once.
 | Lift Kit | Climbs at about six blocks a second instead of three, and sinks faster |
 | Scorch Kit | Sets fire to anything in a 3x3 column 6 blocks under you, and hits it for 3 every 10 ticks |
 
+!!! note "Upgrade kits only run while the jetpack does"
+    Wearing a kit is not enough. In **normal** mode the jetpack only runs while you
+    hold sneak, so the Thruster and Scorch do nothing unless you are sneaking —
+    jumping and sprinting is not using the jetpack. In **hover** mode the jetpack
+    holds you up the whole time you are airborne, so the kits run whenever you are.
+    Neither works on an empty tank.
+
 The Thruster does not use a speed attribute. `minecraft:movement_speed` governs
 walking, and horizontal movement in the air runs on a much smaller air-control
 factor — raising walk speed while flying raises a number that is barely read.

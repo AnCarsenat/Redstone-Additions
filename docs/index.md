@@ -113,11 +113,27 @@ Current pack totals:
 ## What Is New In v5.1.15
 
 - **[Settings](settings.md).** Server settings autocomplete under
-  `/function ra_settings:admin/`; players change their own with
-  `/trigger ra.settings.open`. Turn blocks off, retune defaults, mute sounds.
-- **The Electric Furnace stops flickering.** Its skin was rebuilt on every state
-  change, which z-fought and blinked; the EU Generator ran on steam while drawn
-  permanently unlit.
+  `/function ra_settings:admin/` or open with `/function ra:settings`; players
+  change their own with `/trigger ra.settings.open`. Turn blocks off, retune
+  defaults, mute sounds and particles.
+- **Blocks can be disabled**, with a page listing which and a warning on load.
+- **Block defaults can be retuned**, and pushed onto blocks already built with
+  **[Apply to placed]**.
+- **Per-player sound and particle switches**, honoured by all 118 `playsound` and
+  `particle` calls in the pack.
+- **Uninstall asks twice** and says exactly what it is about to destroy.
+
+### Fixed
+
+- **Ender vaults could not find each other.** The tags a sending vault searches for
+  were cleared every tick and never set — broken since v5.1.8, in all three vault
+  types.
+- **The Electric Furnace flickered and z-fought** while working, and a steam-fed
+  EU Generator ran while drawn permanently unlit.
+- **Jetpack upgrade kits fired with the jetpack off**, and on an empty tank.
+- **Text input never completed** on a server without chat filtering.
+- **`/trigger` completion is no longer cluttered** — nine blanket-enabled triggers
+  down to one.
 
 ## What Was New In v5.1.14
 

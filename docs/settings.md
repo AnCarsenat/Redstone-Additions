@@ -61,22 +61,32 @@ to walk the whole tree — that is the reason these are functions and not a menu
 /function ra_settings:admin/wires/electric_furnace/disable
 ```
 
-### Sessions, and why the buttons stopped asking
+### `ra.admin`, and why the buttons stopped asking
 
-Opening the index starts a **server-settings session**: it gives you the
-`ra.admin` tag, and the buttons on every page switch from running their function
-to firing a trigger. That is what stops Minecraft asking you to confirm each
-click — a `run_command` link prompts every time, a `/trigger` does not.
+The buttons on every page fire a trigger rather than running their function. That
+is what stops Minecraft asking you to confirm each click — a `run_command` link
+prompts every time, a `/trigger` does not.
 
-The tag is the permission check. It can only be obtained by reaching
-`/function ra_settings:admin/show`, which needs level 2, and the trigger is only
-enabled for players holding it.
+A trigger does not check permissions, so the check is the **`ra.admin` tag**.
+Anyone holding it opens the panel straight from the button and can press
+everything on it. Anyone without it is handed the command unrun instead.
 
-!!! warning "Sessions are bounded on purpose"
-    A tag outlives the permission that granted it. If it never expired, someone
-    de-opped while still holding one would keep changing server settings. So it is
-    **cleared for everybody on every load**, and **expires after five minutes**,
-    refreshed each time you click something. Reopen the index to start again.
+```
+/function ra_settings:admin/grant     give the nearest player access
+/function ra_settings:admin/revoke    take it back
+```
+
+Opening the index as an operator also grants it, so in practice you never have to
+run `grant` yourself.
+
+The tag **persists across reloads** — that is the point of tagging somebody. It
+can only be handed out by something that already needs permission level 2 (`/tag`,
+or either function above), so no player can give it to themselves.
+
+!!! warning "It is a role, not a session"
+    Because it persists, removing somebody's operator status does **not** remove
+    their settings access. Use `/function ra_settings:admin/revoke`, or
+    `/tag <player> remove ra.admin`, when you take someone's admin rights away.
 
 ### Turning blocks off
 

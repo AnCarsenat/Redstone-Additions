@@ -37,14 +37,21 @@ scoreboard objectives add ra.settings.act trigger
 scoreboard players enable @a ra.settings.open
 scoreboard players enable @a ra.settings.act
 
-# Server-settings buttons, and the session that authorises them. The objective is
-# only ever enabled for a player holding ra.admin, so a hand-typed /trigger from
-# anyone else is refused by the game before it reaches the dispatcher.
+# Server-settings buttons. The objective is only ever enabled for a player holding
+# ra.admin, so a hand-typed /trigger from anyone else is refused by the game
+# before it reaches the dispatcher.
 scoreboard objectives add ra.settings.admin trigger
-scoreboard objectives add ra.admin.ttl dummy
 
-# A tag outlives the permission that granted it, so no session survives a reload.
-tag @a remove ra.admin
+# ra.admin IS THE PERMISSION, AND IT PERSISTS
+# It is deliberately not cleared here. A server owner tags the people who should
+# have settings access -- with /tag, or by opening the panel once through
+# ra_settings:admin/show -- and that holds across reloads, which is the whole
+# point of tagging somebody.
+#
+# The consequence, stated plainly: this is a role, not a session. Somebody who is
+# de-opped keeps settings access until the tag is taken off them. Granting it
+# needs permission level 2 (both /tag and /function do), so nobody can give it to
+# themselves -- but taking it back is a deliberate act. See ra_settings:admin/revoke.
 
 # Which page a player is looking at, so a row click knows what it belongs to.
 scoreboard objectives add ra.settings.page dummy

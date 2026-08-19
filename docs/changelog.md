@@ -20,9 +20,10 @@ This page mirrors key datapack milestones from the main project changelog.
   they join — an absent score would otherwise exclude them from their own sounds.
 - Numbers and text can be **typed** rather than only stepped, through the input
   form the Data Handler already uses.
-- **Server-settings sessions.** Opening the index grants `ra.admin` and the
-  buttons become triggers, so Minecraft stops asking you to confirm every click.
-  Bounded deliberately: cleared on load, and expires after five minutes.
+- **`ra.admin` gives server-settings access**, and persists — a tagged player
+  opens the panel directly, straight from the button, across reloads. Every button
+  is a trigger, so Minecraft stops asking you to confirm each click.
+  `ra_settings:admin/grant` and `/revoke` manage it.
 - **Uninstall warns twice** and says what it is about to destroy. Reachable from
   the settings index; its own buttons keep the confirmation dialog.
 - **Back buttons** on every server-settings page, and a settings button that hands

@@ -349,8 +349,8 @@ def beet_default(ctx: Context):
             "scoreboard objectives remove ra.settings.admin",
             "scoreboard objectives remove ra.settings.page",
             "scoreboard objectives remove ra.settings.pend",
-            "scoreboard objectives remove ra.admin.ttl",
             "scoreboard objectives remove ra.set.tmp",
+            "scoreboard objectives remove ra.u.dbg.was",
             "data remove storage ra:settings {}",
             "tag @a remove ra.admin",
         ]

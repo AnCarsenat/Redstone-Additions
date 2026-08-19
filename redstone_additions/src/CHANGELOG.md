@@ -24,11 +24,13 @@
 - Numeric and text settings can be **typed**, through the same input form the
   Data Handler opens for a clock's delay, instead of only stepped.
 - The goggles redraw interval and scan range are settings.
-- **Server-settings sessions.** Opening the index grants `ra.admin` and switches
-  every button from a command link to a trigger, so Minecraft stops asking for
-  confirmation on each click. The tag can only be obtained through a level-2
-  function; it is cleared on every load and expires after five minutes, because a
-  tag outlives the permission that granted it.
+- **`ra.admin` gives server-settings access.** Every button on the settings pages
+  is a trigger rather than a command link, so Minecraft stops asking for
+  confirmation on each click; the tag is the permission check that replaces it.
+  It persists across reloads, so a tagged player opens the panel directly. It can
+  only be handed out by something that already needs permission level 2, so nobody
+  can grant it to themselves — but it is a role rather than a session, so
+  `ra_settings:admin/revoke` is how you take it back when someone is de-opped.
 - **Uninstall now warns twice**, the second time listing exactly what is about to
   be destroyed, and is reachable from the settings index. Its own buttons keep the
   confirmation dialog on purpose. It also cleans up everything added since the

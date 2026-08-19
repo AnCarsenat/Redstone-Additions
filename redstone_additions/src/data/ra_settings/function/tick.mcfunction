@@ -1,32 +1,13 @@
 # /ra_settings:tick
-# Collect settings menu clicks and finished input. Called once per tick from ra:tick.
+# The half of the settings tick that must run EARLY. Called from ra:tick before
+# the module ticks.
 #
-# Triggers are the only control surface a non-operator has: /trigger writes to a
-# score they could not otherwise touch, and only while the objective is enabled
-# for them. Re-enabling every tick is what makes a button clickable more than
-# once -- a trigger disables itself the moment it is used.
+# Only seeding. The module ticks below this in ra:tick emit sounds and particles
+# filtered on per-player scores, and a player with no score is excluded by those
+# filters -- so the scores have to exist before anything tries to play a sound.
+#
+# Everything else -- menu clicks, the admin dispatcher, typed input -- lives in
+# ra_settings:input_tick, which runs AFTER ra_lib:input/tick. See there for why
+# that separation is not cosmetic.
 
-# Seeding runs first: a player with no score is excluded by every gated
-# selector, so until this has run they would hear and see nothing.
 function ra_settings:sync
-
-scoreboard players enable @a ra.settings.open
-scoreboard players enable @a ra.settings.act
-
-execute as @a[scores={ra.settings.open=1..}] at @s run function ra_settings:open_click
-execute as @a[scores={ra.settings.act=1..}] at @s run function ra_settings:act
-# Anyone holding ra.admin can press the server-settings buttons, straight away and
-# after a reload -- they do not have to open the panel through the function first
-# to "arm" it. Enabling is what makes their /trigger legal; the dispatcher checks
-# the tag again on arrival.
-scoreboard players enable @a[tag=ra.admin] ra.settings.admin
-
-execute as @a[scores={ra.settings.admin=1..}] at @s run function ra_settings:admin_dispatch
-
-# Typed input is NOT collected here. It is collected in ra_settings:input_tick,
-# which ra:tick runs immediately after ra_lib:input/tick -- the position the Data
-# Handler's own collector occupies, and the one arrangement known to work.
-
-# Last, so a setting changed by any of the above is applied on this tick and not
-# the next one -- a toggle that appears to do nothing for a tick reads as broken.
-function ra_settings:hooks

@@ -70,6 +70,14 @@ function ra_migrations:run
 
 schedule function ra:tick 1t
 
+# ========================== DISABLED BLOCKS ==========================
+# Said before the welcome gate, and not subject to it. A disabled block leaves no
+# trace anywhere a player looks -- it just refuses to place -- so a server that
+# has some needs to be told on every load, whether or not it wants the greeting.
+execute store result score #dis ra.set.tmp run data get storage ra:settings disabled
+execute if score #dis ra.set.tmp matches 1.. run tellraw @a [{text:"[",color:"dark_gray"},{text:"RA",color:"gold",bold:true},{text:"] ",color:"dark_gray"},{score:{name:"#dis",objective:"ra.set.tmp"},color:"red",bold:true},{text:" block type(s) are disabled and cannot be placed.",color:"red"}]
+execute if score #dis ra.set.tmp matches 1.. run tellraw @a [{text:"  "},{text:"[ Which ones? ]",color:"yellow",hover_event:{action:"show_text",value:"List them, with a button to re-enable each"},click_event:{action:"suggest_command",command:"/function ra_settings:disabled"}}]
+
 # ========================== WELCOME MESSAGE ==========================
 # Gated on a setting, because a server that has run this pack for a year does not
 # need to tell everyone about it on every reload. Read into a score first: the

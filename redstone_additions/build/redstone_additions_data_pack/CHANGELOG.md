@@ -51,6 +51,9 @@
 - **[Apply to placed]** on every block-default row, pushing the configured value
   onto blocks already in the world and reporting how many changed. Defaults still
   apply only to new blocks by default; this is the explicit opt-out.
+- **A disabled-blocks page**, `/function ra_settings:disabled`, listing every
+  switched-off block in red with a button to re-enable each — and a warning on
+  every load when the list is not empty, shown whether or not the load message is.
 - [Settings](settings.md) documentation page.
 
 ### Fixed

@@ -95,7 +95,22 @@ placed, and the item is handed back rather than swallowed — the policy is the
 admin's, and it should not cost the player their block.
 
 **Disabling never removes blocks already in the world.** They keep working. An
-admin who wants them gone can break them.
+admin who wants them gone can break them. The item can still be crafted and held
+— only placement is refused.
+
+### Seeing what is off
+
+```
+/function ra_settings:disabled
+```
+
+Also a **[Disabled blocks]** button on the index. Lists every disabled block in
+red with an **[Enable]** button beside each.
+
+The stored form is a list of what is *off*, so a disabled block leaves no trace
+anywhere a player looks — it simply refuses to place. For the same reason the
+pack says so on every load when the list is not empty, and that warning is not
+subject to the load-message setting.
 
 ### Changing defaults
 

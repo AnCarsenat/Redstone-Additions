@@ -5,7 +5,7 @@
 scoreboard players set @s ra.settings.apage 0
 
 tellraw @s [{text:"─── ",color:"dark_gray"},{text:"Chunk Loader",color:"gold",bold:true},{text:" ───",color:"dark_gray"}]
-execute unless data storage ra:settings disabled[{b:"chunk_loader"}] run tellraw @s [{text:"  Chunk Loader: ",color:"white"},{text:"enabled ",color:"green"},{text:"[Disable]",color:"red",bold:true,hover_event:{action:"show_text",value:"Stop Chunk Loader being placed"},click_event:{action:"run_command",command:"/trigger ra.settings.admin set 1"}}]
-execute if data storage ra:settings disabled[{b:"chunk_loader"}] run tellraw @s [{text:"  Chunk Loader: ",color:"white"},{text:"disabled ",color:"red"},{text:"[Enable]",color:"green",bold:true,hover_event:{action:"show_text",value:"Allow Chunk Loader again"},click_event:{action:"run_command",command:"/trigger ra.settings.admin set 2"}}]
+execute unless data storage ra:settings disabled[{b:"chunk_loader"}] run tellraw @s [{text:"  Chunk Loader: ",color:"white"},{text:"enabled ",color:"green"},{text:"[Disable]",color:"red",bold:true,hover_event:{action:"show_text",value:"Stop Chunk Loader being placed"},click_event:{action:"run_command",command:"/trigger ra.settings.admin set 2"}}]
+execute if data storage ra:settings disabled[{b:"chunk_loader"}] run tellraw @s [{text:"  Chunk Loader: ",color:"white"},{text:"disabled ",color:"red"},{text:"[Enable]",color:"green",bold:true,hover_event:{action:"show_text",value:"Allow Chunk Loader again"},click_event:{action:"run_command",command:"/trigger ra.settings.admin set 3"}}]
 tellraw @s [{text:""}]
-tellraw @s [{text:"  "},{text:"[Back]",color:"gray",bold:true,hover_event:{action:"show_text",value:"Back to all server settings"},click_event:{action:"run_command",command:"/trigger ra.settings.admin set 3"}}]
+tellraw @s [{text:"  "},{text:"[Back]",color:"gray",bold:true,hover_event:{action:"show_text",value:"Back to all server settings"},click_event:{action:"run_command",command:"/trigger ra.settings.admin set 4"}}]

@@ -40,3 +40,5 @@ function ra_lib:input/router/open
 # consume() tears a session down as it reads, so whoever consumes must first
 # check that the answer was meant for them.
 scoreboard players operation @s ra.settings.req = @s ra.input.req
+
+execute if entity @s[tag=ra.debug] run tellraw @s [{text:"[set/dbg] ",color:"dark_purple"},{text:"asked",color:"gray"},{text:"  mode ",color:"dark_gray"},{score:{name:"@s",objective:"ra.input.mode"},color:"dark_gray"},{text:" backend ",color:"dark_gray"},{score:{name:"@s",objective:"ra.input.backend"},color:"dark_gray"},{text:" req ",color:"dark_gray"},{score:{name:"@s",objective:"ra.input.req"},color:"dark_gray"}]

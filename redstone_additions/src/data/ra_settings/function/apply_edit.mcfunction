@@ -9,6 +9,8 @@ execute if data storage ra:settings edit{kind:"global"} run function ra_settings
 execute if data storage ra:settings edit{kind:"prop"} run function ra_settings:apply/prop with storage ra:settings edit
 execute if data storage ra:settings edit{kind:"user"} run function ra_settings:apply/user with storage ra:settings edit
 
+execute if entity @s[tag=ra.debug] run tellraw @s [{text:"[set/dbg] ",color:"dark_purple"},{text:"applied; text was ",color:"gray"},{nbt:"consume.text",storage:"ra:input",color:"aqua"},{text:"  kind ",color:"dark_gray"},{nbt:"edit.kind",storage:"ra:settings",color:"dark_gray"}]
+
 data remove storage ra:settings edit
 
 execute if score @s ra.settings.apage matches 0.. run function ra_settings:admin_refresh

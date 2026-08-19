@@ -42,6 +42,15 @@ execute unless data entity @s Inventory[{Slot:35b}] run scoreboard players set @
 
 $execute if score @s ra.temp matches 1 run give @s minecraft:writable_book[item_name="Input Form",lore=[{text:"Write text on page 1",italic:false,color:"gray"},{text:"Close the book to submit",italic:false,color:"gray"}],custom_data={ra:{input_book:1b,input_req:$(req)}}]
 
+# Remember that this request has had its form. Handing one out is not idempotent:
+# every give that the caller cannot tell happened is another book, and the caller
+# tells by matching a predicate against the inventory. If that predicate ever
+# fails to recognise the book it just produced -- for any reason, in any version
+# -- the scan re-gives on the next tick, and the next, until the inventory fills
+# and the surplus falls on the floor, where the drop watcher reads it as the
+# player cancelling. A flag cannot mismatch.
+$execute if score @s ra.temp matches 1 run data modify storage ra:input sessions.req_$(req).given set value 1b
+
 # Did the form land on the floor instead of going in? The slot survey above is a
 # guess about where the item will go, and a guess that is wrong drops it -- where
 # the drop watcher reads it a tick later as the player cancelling.

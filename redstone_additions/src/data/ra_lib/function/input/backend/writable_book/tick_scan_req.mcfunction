@@ -8,11 +8,18 @@
 scoreboard players set #input_dropped ra.temp 0
 $execute at @s as @e[type=item,distance=..8] if data entity @s {Item:{id:"minecraft:writable_book",components:{"minecraft:custom_data":{ra:{input_book:1b,input_req:$(req)}}}}} run scoreboard players set #input_dropped ra.temp 1
 
+# Dropped means dropped: on the floor AND not in hand. A stray copy on the ground
+# while the player still holds theirs is not somebody cancelling, and treating it
+# as one threw away a request the player was still working on.
+$execute if data entity @s Inventory[{id:"minecraft:writable_book",components:{"minecraft:custom_data":{ra:{input_book:1b,input_req:$(req)}}}}] run scoreboard players set #input_dropped ra.temp 0
+
 execute if score #input_dropped ra.temp matches 1 run function ra_lib:input/backend/writable_book/cancel_dropped
 execute if score #input_dropped ra.temp matches 1 run return 0
 
 # Keep the request book available while waiting without overwriting the current hand.
-$execute unless data entity @s Inventory[{id:"minecraft:writable_book",components:{"minecraft:custom_data":{ra:{input_book:1b,input_req:$(req)}}}}] run function ra_lib:input/backend/writable_book/give_book_safe {req:$(req)}
+# One form per request. The inventory test alone decided this before, which made
+# a predicate that failed to match cost an unbounded number of books.
+$execute unless data storage ra:input sessions.req_$(req).given unless data entity @s Inventory[{id:"minecraft:writable_book",components:{"minecraft:custom_data":{ra:{input_book:1b,input_req:$(req)}}}}] run function ra_lib:input/backend/writable_book/give_book_safe {req:$(req)}
 
 # Submit when page 1 exists AND has something on it.
 #

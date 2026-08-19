@@ -59,6 +59,11 @@ scoreboard objectives add ra.settings.page dummy
 # Which SERVER settings page an operator is on, so an action can redraw it.
 scoreboard objectives add ra.settings.apage dummy
 
+# The ra_lib:input request this player opened FOR SETTINGS. Sessions are shared
+# with every other tool that asks for typed input, so consuming one without
+# checking whose it is takes the Data Handler's answer away from it.
+scoreboard objectives add ra.settings.req dummy
+
 # A row waiting on typed input, as row index + 1. Mirrors ra.dh.pending, and for
 # the same reason: the answer arrives some ticks after the click, and something
 # has to remember what the question was.

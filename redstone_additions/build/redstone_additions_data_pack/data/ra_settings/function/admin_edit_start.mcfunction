@@ -29,6 +29,9 @@ function ra_lib:input/router/open
 # meant that a request which never opened anything still left us waiting for an
 # answer, and the next tick reported it as cancelled -- a failure to ask looked
 # identical to the player changing their mind.
+# Remember the request id as well as the fact that we are waiting, so the
+# consumer can tell our answer from another tool's.
+execute if score @s ra.input.backend matches 1..2 run scoreboard players operation @s ra.settings.req = @s ra.input.req
 execute if score @s ra.input.backend matches 1..2 run scoreboard players set @s ra.settings.pend -1
 
 # Reported AFTER the backend is chosen, not before, so the numbers are the ones

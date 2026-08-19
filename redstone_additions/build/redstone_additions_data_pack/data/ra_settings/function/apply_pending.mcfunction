@@ -12,6 +12,12 @@ execute unless entity @s[tag=ra.input.active] unless score @s ra.input.state mat
 execute unless entity @s[tag=ra.input.active] unless score @s ra.input.state matches 2 run scoreboard players set @s ra.settings.pend 0
 execute unless entity @s[tag=ra.input.active] unless score @s ra.input.state matches 2 run return 0
 
+# Only OUR request. ra_lib:input is shared -- the Data Handler opens sessions
+# through it too -- and ra_lib:input/consume tears the session down as it reads.
+# Consuming one that belonged to another tool would hand it an empty answer and
+# leave this one waiting for a reply that had already been taken.
+execute unless score @s ra.settings.req = @s ra.input.req run return 0
+
 execute store result score #ok ra.set.tmp run function ra_lib:input/poll
 execute unless score #ok ra.set.tmp matches 2 run return 0
 

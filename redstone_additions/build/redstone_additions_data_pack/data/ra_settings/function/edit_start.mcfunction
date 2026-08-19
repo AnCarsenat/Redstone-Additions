@@ -31,6 +31,9 @@ function ra_lib:input/router/open
 
 # Start waiting ONLY now, and only if a backend actually opened -- see
 # ra_settings:admin_edit_start. Row index + 1, because 0 is "nothing pending".
+# Remember the request id as well as the fact that we are waiting, so the
+# consumer can tell our answer from another tool's.
+execute if score @s ra.input.backend matches 1..2 run scoreboard players operation @s ra.settings.req = @s ra.input.req
 execute if score @s ra.input.backend matches 1..2 run scoreboard players operation @s ra.settings.pend = #v ra.set.tmp
 execute if score @s ra.input.backend matches 1..2 run scoreboard players add @s ra.settings.pend 1
 

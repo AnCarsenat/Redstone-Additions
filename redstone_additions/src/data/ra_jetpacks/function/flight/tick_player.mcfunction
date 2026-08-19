@@ -48,7 +48,6 @@ function ra_jetpacks:flight/airborne
 # It also used to be an attribute modifier, which is the wrong lever entirely --
 # see flight/thrust for why movement_speed does almost nothing once you are in
 # the air.
-execute if entity @s[tag=ra.jp.kit_speed] if score #jp.airborne ra.temp matches 1 run function ra_jetpacks:flight/thrust
 execute if score #jp.airborne ra.temp matches 0 run scoreboard players reset @s ra.jp.x
 execute if score #jp.airborne ra.temp matches 0 run scoreboard players reset @s ra.jp.z
 execute if score #jp.airborne ra.temp matches 0 run scoreboard players reset @s ra.jp.vx
@@ -67,4 +66,28 @@ execute unless score @s ra.jp.state matches 1 run function ra_jetpacks:flight/cl
 
 # Scorch kit. Only while actually off the ground -- standing in a village with
 # the kit fitted should not set fire to the villagers.
-execute if entity @s[tag=ra.jp.kit_scorch] if score #jp.airborne ra.temp matches 1 run function ra_jetpacks:flight/scorch
+# IS THE JETPACK ACTUALLY RUNNING?
+# The upgrade kits used to fire on "wearing the kit and off the ground", which is
+# not the same thing at all. In normal mode the jetpack only runs while you sneak
+# -- flight/classic returns early otherwise -- so jump, sprint, jump handed you the
+# thruster for free, with the pack switched off. In hover the jetpack IS holding
+# you up whenever you are airborne, so there the two really do coincide.
+scoreboard players set #jp.firing ra.temp 0
+execute if score #jp.airborne ra.temp matches 1 if score @s ra.jp.state matches 1 run scoreboard players set #jp.firing ra.temp 1
+execute if score #jp.airborne ra.temp matches 1 unless score @s ra.jp.state matches 1 if predicate ra:is_sneaking run scoreboard players set #jp.firing ra.temp 1
+
+# Below the fuel check on purpose. Both kits used to run above it, so they kept
+# working on an empty tank -- the one state where the jetpack is unambiguously off.
+# Not firing means the smoothing has to be dropped, not merely paused. thrust
+# measures how far you moved since it last looked; leave that reading behind while
+# the pack is off and the next burst opens with a position delta covering the
+# whole glide, which is a lurch nobody asked for. Cleared, it re-seeds on the next
+# tick with a delta of zero -- the same thing that happens on landing.
+execute if score #jp.firing ra.temp matches 0 run scoreboard players reset @s ra.jp.x
+execute if score #jp.firing ra.temp matches 0 run scoreboard players reset @s ra.jp.z
+execute if score #jp.firing ra.temp matches 0 run scoreboard players reset @s ra.jp.vx
+execute if score #jp.firing ra.temp matches 0 run scoreboard players reset @s ra.jp.vz
+execute if score #jp.firing ra.temp matches 0 run tag @s remove ra.jp.thrusting
+
+execute if entity @s[tag=ra.jp.kit_speed] if score #jp.firing ra.temp matches 1 run function ra_jetpacks:flight/thrust
+execute if entity @s[tag=ra.jp.kit_scorch] if score #jp.firing ra.temp matches 1 run function ra_jetpacks:flight/scorch

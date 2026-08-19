@@ -8,12 +8,18 @@
 scoreboard objectives add ra.edit_type trigger
 scoreboard objectives add ra.dh.action trigger
 scoreboard objectives add ra.dh.pending dummy
+
+# How long a tool's menu triggers stay usable after it was last in hand. An
+# enabled trigger appears in everyone's /trigger completion whether it can do
+# anything or not, so they are handed out while the tool is held and taken back
+# when it is not -- with a grace window, because putting the wrench away to read
+# the menu it just printed should not disarm the buttons.
+scoreboard objectives add ra.hold.wrench dummy
+scoreboard objectives add ra.hold.dh dummy
 # Clipboard slot number, assigned on first use. See ra:tools/clipboard/ensure_id.
 scoreboard objectives add ra.clip.id dummy
 # Debug-only input handler objective (commented by request)
 # scoreboard objectives add ra.input_handler.action trigger
-scoreboard players enable @a ra.edit_type
-scoreboard players enable @a ra.dh.action
 # Debug-only input handler objective enable (commented by request)
 # scoreboard players enable @a ra.input_handler.action
 

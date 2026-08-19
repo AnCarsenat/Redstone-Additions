@@ -54,10 +54,10 @@
 - **A disabled-blocks page**, `/function ra_settings:disabled`, listing every
   switched-off block in red with a button to re-enable each — and a warning on
   every load when the list is not empty, shown whether or not the load message is.
-- **Triggers are enabled only where they are usable** — `ra.settings.act` while a
-  menu is on screen, `ra.settings.admin` for operators, `ra.wrench` once you have
-  selected a block. An enabled trigger shows in everyone's `/trigger` completion
-  whether it does anything or not.
+- **Triggers are enabled only where they are usable** — a tool's menu triggers
+  while that tool is in hand, the jetpack's while one is worn, the settings menu's
+  while a menu is drawn. A player who has touched none of it now sees one name in
+  their `/trigger` completion instead of nine.
 - [Settings](settings.md) documentation, now covering every trigger in the pack
   and what it carries.
 

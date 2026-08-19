@@ -182,9 +182,9 @@ The rest of the pack's triggers, for reference:
 
 | Trigger | Owner | What it does |
 |---|---|---|
-| `ra.wrench` | Wrench | Which row of the wrench menu you clicked. Enabled once you have selected a block with it. |
-| `ra.dh.action` | Data Handler | Which row of the property editor you clicked. |
-| `ra.edit_type` | Data Handler | Which property type you picked when adding one. |
+| `ra.wrench` | Wrench | Which row of the wrench menu you clicked. Enabled while the wrench is in hand. |
+| `ra.dh.action` | Data Handler | Which row of the property editor you clicked. Enabled while the Handler is in hand. |
+| `ra.edit_type` | Data Handler | Which property type you picked when adding one. Same. |
 | `ra.input.trigger` | Input library | How you answer a numeric prompt when the book backend is not used. |
 | `ra.jp.mode` / `.sound` / `.power` / `.kits` | Jetpacks | Flight mode, sound mute, power toggle, kit menu. |
 
@@ -194,10 +194,17 @@ An enabled trigger appears in everyone's `/trigger` completion whether or not it
 can do anything, so the list fills with names that are pure noise. A trigger is
 also per-player state the server re-enables every tick.
 
-So they are enabled where they are usable: `ra.settings.act` only while a menu is
-drawn (it lapses after a minute of not touching one), `ra.settings.admin` only for
-`ra.admin`, and `ra.wrench` only once you have selected a block. `ra.settings.open`
-is always on, because it is the door.
+So they are handed out where they are usable and taken back when they are not:
+
+- `ra.settings.act` — while a settings menu is drawn, lapsing a minute after your last click
+- `ra.settings.admin` — for holders of `ra.admin`
+- `ra.wrench`, `ra.dh.action`, `ra.edit_type` — while that tool is in your main hand, with a ten-second grace window so putting it away to read the menu it just printed does not disarm the buttons
+- `ra.jp.mode` / `.sound` / `.power` / `.kits` — while you are wearing a jetpack
+- `ra.settings.open` — always, because it is the door
+
+A player who has touched none of this sees exactly one name in their `/trigger`
+completion. Taking a trigger back means `scoreboard players reset`: the enabled
+flag is stored with the score, so removing one removes the other.
 
 ---
 

@@ -88,6 +88,9 @@ function ra:tools/goggles/tick
 
 schedule function ra:tick 1t
 
-# Wrench menu buttons come back through /trigger ra.wrench.
-scoreboard players enable @a ra.wrench
+# Wrench menu buttons come back through /trigger ra.wrench -- but only for players
+# who have actually selected a block with it. ra.wr.x is set at selection and is
+# what menu_action needs anyway, so a player who has never used the wrench does
+# not carry a trigger they cannot use.
+scoreboard players enable @a[scores={ra.wr.x=-2147483648..}] ra.wrench
 execute as @a[scores={ra.wrench=1..}] at @s run function ra:tools/wrench/menu_action

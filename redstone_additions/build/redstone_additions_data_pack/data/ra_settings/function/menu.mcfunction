@@ -9,6 +9,9 @@
 # of secrecy; they are absent because a button a player is only going to be
 # refused is worse than no button.
 
+# Drawing a menu is what makes its buttons usable; see ra_settings:init.
+scoreboard players set @s ra.settings.viewing 1200
+
 tellraw @s [{text:""},{text:"─── ",color:"dark_gray"},{text:"Your Redstone Additions Preferences",color:"gold",bold:true},{text:" ───",color:"dark_gray"}]
 
 # With a single page there is nothing to choose between, so showing a menu whose

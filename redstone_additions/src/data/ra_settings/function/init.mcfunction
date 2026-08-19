@@ -34,8 +34,16 @@
 # no `set 1` for anyone to get wrong.
 scoreboard objectives add ra.settings.open trigger
 scoreboard objectives add ra.settings.act trigger
+
+# `open` is the way IN, so everybody always has it -- it is the one trigger that
+# has to be there before anything has happened.
 scoreboard players enable @a ra.settings.open
-scoreboard players enable @a ra.settings.act
+
+# `act` is only meaningful while a menu is on screen, so it is enabled while that
+# is true and reset when it stops being true. An enabled trigger shows up in
+# everyone's /trigger completion whether it can do anything or not, and a list of
+# names that do nothing is worse than a shorter list.
+scoreboard objectives add ra.settings.viewing dummy
 
 # Server-settings buttons. The objective is only ever enabled for a player holding
 # ra.admin, so a hand-typed /trigger from anyone else is refused by the game

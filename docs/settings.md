@@ -159,6 +159,48 @@ There is no backup. Copy the world first if you want one.
 
 ---
 
+## Triggers
+
+`/trigger` is the only command surface a player without permissions has. Every
+button in this pack that a non-operator can press goes through one, because a
+`suggest_command` pointing at a `/function` is useless to somebody who cannot run
+one — it fills their chat box with something the game then refuses.
+
+The three the settings system owns:
+
+| Trigger | You type | What it does |
+|---|---|---|
+| `ra.settings.open` | `/trigger ra.settings.open` | **The way in.** Opens your own preferences. `set 2` opens the server settings, `set 3` the disabled-block list. Always available. |
+| `ra.settings.act` | never by hand | Carries *which row you clicked* in a menu. Enabled only while you have one open. |
+| `ra.settings.admin` | `/trigger ra.settings.admin` | Carries *which server-settings button you clicked*. Bare, it opens the index. Enabled only for `ra.admin`. |
+
+`act` and `admin` are button plumbing — the number is a row index, not something
+to pick. Typing `admin` bare is understood and opens the index; typing `act` bare
+does nothing useful, which is why it only exists while a menu is on screen.
+
+The rest of the pack's triggers, for reference:
+
+| Trigger | Owner | What it does |
+|---|---|---|
+| `ra.wrench` | Wrench | Which row of the wrench menu you clicked. Enabled once you have selected a block with it. |
+| `ra.dh.action` | Data Handler | Which row of the property editor you clicked. |
+| `ra.edit_type` | Data Handler | Which property type you picked when adding one. |
+| `ra.input.trigger` | Input library | How you answer a numeric prompt when the book backend is not used. |
+| `ra.jp.mode` / `.sound` / `.power` / `.kits` | Jetpacks | Flight mode, sound mute, power toggle, kit menu. |
+
+### Why some are switched off
+
+An enabled trigger appears in everyone's `/trigger` completion whether or not it
+can do anything, so the list fills with names that are pure noise. A trigger is
+also per-player state the server re-enables every tick.
+
+So they are enabled where they are usable: `ra.settings.act` only while a menu is
+drawn (it lapses after a minute of not touching one), `ra.settings.admin` only for
+`ra.admin`, and `ra.wrench` only once you have selected a block. `ra.settings.open`
+is always on, because it is the door.
+
+---
+
 ## Adding a setting
 
 One JSON file per page, in `tools/settings/`. The build generates the menu, the

@@ -9,6 +9,9 @@ $execute unless data storage ra:settings pages[$(p)] run return run tellraw @s [
 
 $data modify storage ra:settings cur set from storage ra:settings pages[$(p)]
 
+# Drawing a menu is what makes its buttons usable; see ra_settings:init.
+scoreboard players set @s ra.settings.viewing 1200
+
 tellraw @s [{text:""},{text:"─── ",color:"dark_gray"},{nbt:"cur.title",storage:"ra:settings",color:"gold",bold:true},{text:" ───",color:"dark_gray"}]
 
 execute if data storage ra:settings cur.render run function ra_settings:page/custom with storage ra:settings cur

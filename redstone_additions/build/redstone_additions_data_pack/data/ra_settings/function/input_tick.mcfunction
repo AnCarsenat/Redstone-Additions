@@ -19,7 +19,13 @@
 # opposite ends of the tick, and now each gets the end it needs.
 
 scoreboard players enable @a ra.settings.open
-scoreboard players enable @a ra.settings.act
+
+# Only for players with a menu open. Resetting removes the score AND the enabled
+# flag with it, which is the only way to take a trigger back off somebody.
+execute as @a[scores={ra.settings.viewing=1..}] run scoreboard players remove @s ra.settings.viewing 1
+scoreboard players enable @a[scores={ra.settings.viewing=1..}] ra.settings.act
+execute as @a[scores={ra.settings.viewing=..0}] run scoreboard players reset @s ra.settings.act
+execute as @a[scores={ra.settings.viewing=..0}] run scoreboard players reset @s ra.settings.viewing
 
 execute as @a[scores={ra.settings.open=1..}] at @s run function ra_settings:open_click
 execute as @a[scores={ra.settings.act=1..}] at @s run function ra_settings:act

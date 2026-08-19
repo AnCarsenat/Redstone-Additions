@@ -14,6 +14,7 @@
 execute store result score #v ra.set.tmp run scoreboard players get @s ra.settings.act
 scoreboard players set @s ra.settings.act 0
 scoreboard players enable @s ra.settings.act
+scoreboard players set @s ra.settings.viewing 1200
 
 # Highest band first: 1025.. would otherwise also satisfy the 513.. test.
 scoreboard players set #dir ra.set.tmp -1

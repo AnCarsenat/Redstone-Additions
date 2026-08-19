@@ -54,7 +54,6 @@ function ra_lib_multiblock:init
 # Bring a world saved by an older version up to date. See ra_migrations:run.
 # The wrench menu: which row was clicked, and which block it belongs to.
 scoreboard objectives add ra.wrench trigger
-scoreboard players enable @a ra.wrench
 scoreboard objectives add ra.wr.x dummy
 scoreboard objectives add ra.wr.y dummy
 scoreboard objectives add ra.wr.z dummy

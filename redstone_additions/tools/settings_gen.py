@@ -112,7 +112,12 @@ def beet_default(ctx: Context):
         Back would draw the index and then immediately draw the page you had just
         left on top of it, which is why the menus appeared twice."""
         actions.append(f'{{f:"{fn}",nav:1b}}' if nav else f'{{f:"{fn}"}}')
-        return len(actions)  # 1-based: /trigger cannot deliver 0
+        # Codes start at 2. 1 is reserved for "open the index", because a bare
+        # /trigger ra.settings.admin adds 1 -- and somebody typing that means "show
+        # me the settings", not "perform whichever action happens to be first in a
+        # generated list". A reserved code turns a plausible typo into the obvious
+        # answer instead of a silent, arbitrary change.
+        return len(actions) + 1
 
     for page in pages:
         pid, title = page["id"], page["title"]

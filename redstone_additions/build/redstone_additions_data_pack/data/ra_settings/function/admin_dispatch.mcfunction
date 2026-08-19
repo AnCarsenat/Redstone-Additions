@@ -13,7 +13,10 @@ execute unless entity @s[tag=ra.admin] run return run tellraw @s [{text:"[Settin
 
 scoreboard players enable @s ra.settings.admin
 
-# Codes are 1-based, because a trigger score of 0 is the "not clicked" state.
-scoreboard players remove #a ra.set.tmp 1
+# 1 means "open the index" -- what a bare /trigger ra.settings.admin produces.
+execute if score #a ra.set.tmp matches 1 run return run function ra_settings:admin/show
+
+# Everything else is an action, numbered from 2 so that 1 could be reserved.
+scoreboard players remove #a ra.set.tmp 2
 execute store result storage ra:settings q.a int 1 run scoreboard players get #a ra.set.tmp
 function ra_settings:admin_run with storage ra:settings q

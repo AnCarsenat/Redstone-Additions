@@ -56,6 +56,9 @@ scoreboard objectives add ra.settings.admin trigger
 # Which page a player is looking at, so a row click knows what it belongs to.
 scoreboard objectives add ra.settings.page dummy
 
+# Which SERVER settings page an operator is on, so an action can redraw it.
+scoreboard objectives add ra.settings.apage dummy
+
 # A row waiting on typed input, as row index + 1. Mirrors ra.dh.pending, and for
 # the same reason: the answer arrives some ticks after the click, and something
 # has to remember what the question was.
@@ -63,6 +66,11 @@ scoreboard objectives add ra.settings.pend dummy
 
 # Scratch for the renderer and the dispatcher.
 scoreboard objectives add ra.set.tmp dummy
+
+# Remembers last tick's debug setting, so ra_settings:hooks can act on the change
+# rather than on the value. Created here rather than there: hooks runs every tick,
+# and re-adding an existing objective logs a complaint every one of them.
+scoreboard objectives add ra.u.dbg.was dummy
 
 # Rebuilds the menu registry and seeds any setting that has no value yet. Values
 # already chosen are never overwritten -- see the generated ra_settings:defaults.

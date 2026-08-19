@@ -1,12 +1,17 @@
-# /ra_settings:get {key:"wires.sound_volume"}
+# /ra_settings:get {key:"welcome",default:1}
 # Read a GLOBAL setting into #setting ra.set.tmp. Returns it as well.
 #
-# Zero is a real value for a bool, so a missing key cannot be reported as 0 and
-# left at that. The caller gets whatever ra_settings:defaults seeded, and defaults
-# runs on every load, so a key declared by a registered module always exists. A
-# key that does not exist means the module never declared it -- a spelling
-# mistake, not a runtime condition -- and reads as 0.
+# THE DEFAULT IS NOT OPTIONAL, AND THAT IS THE POINT
+# This used to answer 0 for a key it could not find. Zero is a real value -- it
+# is "off" for a flag and "disabled" for a gate -- so a key that was missing for
+# any reason at all read as a deliberate "no", and a feature gated on it switched
+# itself off. A settings system that has not finished loading should never be able
+# to disable a module.
+#
+# With a default supplied by the caller, a missing key reads as whatever the
+# caller considers normal. Callers that gate a feature pass 1, so the failure
+# direction is "carry on working".
 
-scoreboard players set #setting ra.set.tmp 0
-$execute if data storage ra:settings global.$(key) store result score #setting ra.set.tmp run data get storage ra:settings global.$(key)
+$scoreboard players set #setting ra.set.tmp $(default)
+$execute if data storage ra:settings global."$(key)" store result score #setting ra.set.tmp run data get storage ra:settings global."$(key)"
 return run scoreboard players get #setting ra.set.tmp

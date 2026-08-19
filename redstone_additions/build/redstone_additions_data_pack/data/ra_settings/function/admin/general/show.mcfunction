@@ -1,4 +1,9 @@
 # Current values on the General page.
+#
+# Records which page this is, so an action can redraw it afterwards. Per
+# player, because two operators can be on different pages at once.
+scoreboard players set @s ra.settings.apage 4
+
 tellraw @s [{text:"─── ",color:"dark_gray"},{text:"General",color:"gold",bold:true},{text:" ───",color:"dark_gray"}]
 tellraw @s [{text:"  Show the load message: ",color:"white"},{nbt:"global.\"welcome\"",storage:"ra:settings",color:"aqua"},{text:"  "},{text:"[On]",color:"green",bold:true,hover_event:{action:"show_text",value:"/function ra_settings:admin/general/show_the_load_message/on"},click_event:{action:"run_command",command:"/trigger ra.settings.admin set 57"}},{text:" "},{text:"[Off]",color:"red",bold:true,hover_event:{action:"show_text",value:"/function ra_settings:admin/general/show_the_load_message/off"},click_event:{action:"run_command",command:"/trigger ra.settings.admin set 58"}}]
 tellraw @s [{text:"  Chat prefix: ",color:"white"},{nbt:"global.\"prefix\"",storage:"ra:settings",color:"aqua"},{text:"  "},{text:"[Set]",color:"yellow",bold:true,hover_event:{action:"show_text",value:"Type a new value"},click_event:{action:"run_command",command:"/trigger ra.settings.admin set 59"}},{text:" "},{text:"[Reset]",color:"gray",bold:true,hover_event:{action:"show_text",value:"/function ra_settings:admin/general/chat_prefix/reset"},click_event:{action:"run_command",command:"/trigger ra.settings.admin set 60"}}]

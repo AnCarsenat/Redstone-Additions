@@ -19,8 +19,6 @@
 # the tick it changes, and after that a hand-added tag is left alone. ra.u.dbg.was
 # is what makes "changed" knowable without reading the score twice.
 
-scoreboard objectives add ra.u.dbg.was dummy
-
 tag @a[scores={ra.u.dbg=1..}] add ra.debug
 
 # The falling edge only: on for a player whose setting was on last tick and is

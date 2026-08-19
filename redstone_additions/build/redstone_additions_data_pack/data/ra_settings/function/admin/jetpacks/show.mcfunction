@@ -1,4 +1,9 @@
 # Current values on the Jetpacks page.
+#
+# Records which page this is, so an action can redraw it afterwards. Per
+# player, because two operators can be on different pages at once.
+scoreboard players set @s ra.settings.apage 7
+
 tellraw @s [{text:"─── ",color:"dark_gray"},{text:"Jetpacks",color:"gold",bold:true},{text:" ───",color:"dark_gray"}]
 tellraw @s [{text:"  Thruster Kit only — other kits are unaffected",color:"dark_gray",italic:true}]
 tellraw @s [{text:"  Thruster thrust (% of speed): ",color:"white"},{nbt:"global.\"jetpack_thrust\"",storage:"ra:settings",color:"aqua"},{text:"  "},{text:"[-]",color:"red",bold:true,hover_event:{action:"show_text",value:"Down by 10"},click_event:{action:"run_command",command:"/trigger ra.settings.admin set 124"}},{text:" "},{text:"[+]",color:"green",bold:true,hover_event:{action:"show_text",value:"Up by 10"},click_event:{action:"run_command",command:"/trigger ra.settings.admin set 125"}},{text:" "},{text:"[Set]",color:"yellow",bold:true,hover_event:{action:"show_text",value:"Type an exact value"},click_event:{action:"run_command",command:"/trigger ra.settings.admin set 126"}},{text:" "},{text:"[Reset]",color:"gray",bold:true,hover_event:{action:"show_text",value:"/function ra_settings:admin/jetpacks/thruster_thrust_of_speed/reset"},click_event:{action:"run_command",command:"/trigger ra.settings.admin set 127"}}]

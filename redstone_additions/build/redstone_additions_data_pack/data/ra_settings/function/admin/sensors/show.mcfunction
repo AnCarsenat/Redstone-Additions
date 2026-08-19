@@ -1,4 +1,9 @@
 # Current values on the Sensors page.
+#
+# Records which page this is, so an action can redraw it afterwards. Per
+# player, because two operators can be on different pages at once.
+scoreboard players set @s ra.settings.apage 9
+
 tellraw @s [{text:"─── ",color:"dark_gray"},{text:"Sensors",color:"gold",bold:true},{text:" ───",color:"dark_gray"}]
 execute unless data storage ra:settings disabled[{b:"entity_detector"}] run tellraw @s [{text:"  Entity Detector: ",color:"white"},{text:"enabled ",color:"green"},{text:"[Disable]",color:"red",bold:true,hover_event:{action:"show_text",value:"Stop Entity Detector being placed"},click_event:{action:"run_command",command:"/trigger ra.settings.admin set 140"}}]
 execute if data storage ra:settings disabled[{b:"entity_detector"}] run tellraw @s [{text:"  Entity Detector: ",color:"white"},{text:"disabled ",color:"red"},{text:"[Enable]",color:"green",bold:true,hover_event:{action:"show_text",value:"Allow Entity Detector again"},click_event:{action:"run_command",command:"/trigger ra.settings.admin set 141"}}]

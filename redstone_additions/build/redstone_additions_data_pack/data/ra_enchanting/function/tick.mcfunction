@@ -5,7 +5,9 @@
 # ticks instead of every tick. A sacrificed stack rolls once per second, which
 # is four scan steps — see sacrifice/on_table.
 
-execute store result score #ec.on ra.temp run function ra_settings:get {key:"enchanting"}
+# Defaults to ON. A settings lookup that fails must not be able to switch a module
+# off -- see ra_settings:get for why this used to be possible.
+execute store result score #ec.on ra.temp run function ra_settings:get {key:"enchanting",default:1}
 execute if score #ec.on ra.temp matches ..0 run return 0
 
 scoreboard players add #scan ra.ench.scan 1

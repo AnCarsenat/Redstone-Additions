@@ -25,9 +25,15 @@ This page mirrors key datapack milestones from the main project changelog.
   Bounded deliberately: cleared on load, and expires after five minutes.
 - **Uninstall warns twice** and says what it is about to destroy. Reachable from
   the settings index; its own buttons keep the confirmation dialog.
+- **Back buttons** on every server-settings page, and a settings button that hands
+  you the command unrun when opening the panel is not yours to do.
 
 ### Fixed
 
+- **The debug setting fought the `ra.debug` tag**, stripping it every tick from
+  anyone who had added it by hand. The setting now only ever adds it, and clears
+  it once when switched off.
+- **Toggles took a tick to apply**, which read as nothing happening.
 - **The Electric Furnace flickered and z-fought while working.** Its skin was
   killed and resummoned on every state change; `kill` does not take effect until
   the end of the tick, so two identical displays overlapped in between.

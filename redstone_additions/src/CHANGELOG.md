@@ -34,10 +34,23 @@
   confirmation dialog on purpose. It also cleans up everything added since the
   original uninstall was written -- the settings half is generated, so it cannot
   drift again.
+- **Back buttons** at the bottom of every server-settings page.
+- The settings button fires a trigger that opens the panel for an operator who
+  already has a session, and otherwise puts the command in chat **unrun** — a
+  trigger handler runs at permission level 2, so opening the panel from one
+  unconditionally would have handed server settings to everybody.
 - [Settings](settings.md) documentation page.
 
 ### Fixed
 
+- **The debug-message setting fought the `ra.debug` tag and won.** Syncing the tag
+  from the score in both directions stripped it every tick from anyone who had
+  added it with `/tag @s add ra.debug`, which is still what
+  `ra_multiblock:blast_forge/debug_structure` tells you to do. The score now only
+  adds the tag, and removes it once on the tick the setting is switched off.
+- **Settings applied a tick late.** The hooks ran before the click dispatcher, so
+  a toggle did nothing until the following tick and read as broken.
+- **On/off rows showed `0` and `1`.** They say `on` and `off`.
 - **The Electric Furnace skin flickered, vanished and z-fought while working.**
   `apply_lit` killed the old `block_display` and summoned a replacement, but
   `kill` does not remove an entity until the end of the tick — so two identical

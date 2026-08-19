@@ -255,6 +255,13 @@ def beet_default(ctx: Context):
             ctx.data.functions[f"{ADMIN}/{pid}/show"] = Function(
                 [f"# Current values on the {title} page.", f"tellraw @s {BAR % title}"]
                 + [ln for r in admin_rows for ln in _show_line(r, f"{ADMIN}/{pid}", act)]
+                + [
+                    'tellraw @s [{text:""}]',
+                    'tellraw @s [{text:"  "},'
+                    + _btn("Back", f"{ADMIN}/show", "gray",
+                           "Back to all server settings", act(f"{ADMIN}/show"))
+                    + "]",
+                ]
             )
             admin_index.append((pid, title))
 

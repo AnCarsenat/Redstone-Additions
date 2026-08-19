@@ -9,7 +9,6 @@
 # Seeding runs first: a player with no score is excluded by every gated
 # selector, so until this has run they would hear and see nothing.
 function ra_settings:sync
-function ra_settings:hooks
 
 scoreboard players enable @a ra.settings.open
 scoreboard players enable @a ra.settings.act
@@ -26,3 +25,7 @@ execute as @a[scores={ra.settings.admin=1..}] at @s run function ra_settings:adm
 
 execute as @a[scores={ra.settings.pend=1..}] at @s run function ra_settings:apply_pending
 execute as @a[scores={ra.settings.pend=..-1}] at @s run function ra_settings:apply_pending
+
+# Last, so a setting changed by any of the above is applied on this tick and not
+# the next one -- a toggle that appears to do nothing for a tick reads as broken.
+function ra_settings:hooks

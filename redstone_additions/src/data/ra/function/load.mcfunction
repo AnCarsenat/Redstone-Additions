@@ -82,9 +82,12 @@ tellraw @a [{text:"[RA_Lib] ",color:"gold"},{text:"v5.1.15 loaded",color:"green"
 
 # Welcome message_block
 tellraw @a [{text:"[",color:"dark_gray"},{text:"RA",color:"gold",bold:true},{text:"] ",color:"dark_gray"},{text:"Redstone Additions v5.1.15 loaded!",color:"green"}]
-# Server settings run straight from the button: an operator clicking it wants the
-# page, not the command in their chat box.
-tellraw @a [{text:"Server settings: ",color:"gray"},{text:"[ Open ]",color:"yellow",bold:true,hover_event:{action:"show_text",value:"World-wide settings — needs permission level 2"},click_event:{action:"run_command",command:"/function ra_settings:admin/show"}}]
+# The server button fires a TRIGGER, not the function. A /function link raises a
+# confirmation dialog and then fails for anyone without permission; the trigger
+# opens the panel for an operator who already has a session, and hands everyone
+# else the command unrun so the game can refuse them properly.
+# See ra_settings:server_open.
+tellraw @a [{text:"Server settings: ",color:"gray"},{text:"[ Open ]",color:"yellow",bold:true,hover_event:{action:"show_text",value:"World-wide settings — needs permission level 2"},click_event:{action:"run_command",command:"/trigger ra.settings.open set 2"}}]
 
 # User settings are SUGGESTED rather than run, so the command lands in the chat
 # box and the player reads it before pressing enter. This one has to be

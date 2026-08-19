@@ -69,7 +69,9 @@ scoreboard players operation @s ra.jp.vz /= #jp.four ra.temp
 scoreboard players operation #jp.mx ra.temp = @s ra.jp.vx
 scoreboard players operation #jp.mz ra.temp = @s ra.jp.vz
 
-scoreboard players set #jp.k ra.temp 80
+# Configurable, but read once per tick in ra_jetpacks:tick rather than here --
+# this function runs for every player in the air.
+scoreboard players operation #jp.k ra.temp = #jp.cfg.k ra.temp
 scoreboard players set #jp.c100 ra.temp 100
 scoreboard players operation #jp.mx ra.temp *= #jp.k ra.temp
 scoreboard players operation #jp.mx ra.temp /= #jp.c100 ra.temp
@@ -79,8 +81,12 @@ scoreboard players operation #jp.mz ra.temp /= #jp.c100 ra.temp
 # Cap the push at 0.35 blocks a tick each way, so amplifying our own
 # amplification settles at a top speed instead of climbing until the player
 # outruns the chunk loader.
-scoreboard players set #jp.cap ra.temp 350
-scoreboard players set #jp.ncap ra.temp -350
+scoreboard players operation #jp.cap ra.temp = #jp.cfg.cap ra.temp
+# The negative bound is derived, not configured twice: two numbers that must stay
+# equal and opposite are one number and a sign.
+scoreboard players set #jp.neg ra.temp -1
+scoreboard players operation #jp.ncap ra.temp = #jp.cap ra.temp
+scoreboard players operation #jp.ncap ra.temp *= #jp.neg ra.temp
 execute if score #jp.mx ra.temp > #jp.cap ra.temp run scoreboard players operation #jp.mx ra.temp = #jp.cap ra.temp
 execute if score #jp.mx ra.temp < #jp.ncap ra.temp run scoreboard players operation #jp.mx ra.temp = #jp.ncap ra.temp
 execute if score #jp.mz ra.temp > #jp.cap ra.temp run scoreboard players operation #jp.mz ra.temp = #jp.cap ra.temp
@@ -111,8 +117,10 @@ tag @s add ra.jp.thrusting
 # Sprinting on the spot still measures a delta of nearly nothing. Below a couple
 # of centimetres a tick the push is not felt, but it IS still a teleport, so
 # under the threshold do nothing at all.
-scoreboard players set #jp.dead ra.temp 25
-scoreboard players set #jp.ndead ra.temp -25
+scoreboard players operation #jp.dead ra.temp = #jp.cfg.dead ra.temp
+scoreboard players set #jp.neg ra.temp -1
+scoreboard players operation #jp.ndead ra.temp = #jp.dead ra.temp
+scoreboard players operation #jp.ndead ra.temp *= #jp.neg ra.temp
 scoreboard players set #jp.moving ra.temp 0
 execute if score #jp.mx ra.temp > #jp.dead ra.temp run scoreboard players set #jp.moving ra.temp 1
 execute if score #jp.mx ra.temp < #jp.ndead ra.temp run scoreboard players set #jp.moving ra.temp 1

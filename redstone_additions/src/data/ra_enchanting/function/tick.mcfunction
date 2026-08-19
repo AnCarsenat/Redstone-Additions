@@ -5,6 +5,9 @@
 # ticks instead of every tick. A sacrificed stack rolls once per second, which
 # is four scan steps — see sacrifice/on_table.
 
+execute store result score #ec.on ra.temp run function ra_settings:get {key:"enchanting"}
+execute if score #ec.on ra.temp matches ..0 run return 0
+
 scoreboard players add #scan ra.ench.scan 1
 execute unless score #scan ra.ench.scan matches 5.. run return 0
 scoreboard players set #scan ra.ench.scan 0

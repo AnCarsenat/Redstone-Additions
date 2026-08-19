@@ -25,6 +25,11 @@ execute if data storage ra:settings cur{type:"int"} run scoreboard players set @
 execute if data storage ra:settings cur{type:"int"} store result score @s ra.input.min run data get storage ra:settings cur.min
 execute if data storage ra:settings cur{type:"int"} store result score @s ra.input.max run data get storage ra:settings cur.max
 
+# Say that the request went out. ra_lib:input prints its own instructions once a
+# backend opens, so if this line appears and nothing follows it, the failure is in
+# the backend rather than in the settings code that asked for it.
+tellraw @s [{text:"[Settings] ",color:"gold"},{text:"Waiting for your input...",color:"gray"}]
+
 function ra_lib:input/session/create
 function ra_lib:input/router/select_backend
 function ra_lib:input/router/open

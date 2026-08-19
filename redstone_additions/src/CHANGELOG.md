@@ -41,6 +41,10 @@
   already has a session, and otherwise puts the command in chat **unrun** — a
   trigger handler runs at permission level 2, so opening the panel from one
   unconditionally would have handed server settings to everybody.
+- **Jetpacks and Enchant Crafting settings pages.** Thrust, speed cap and deadzone
+  are tunable; enchant crafting can be switched off. The jetpack values are read
+  once per tick rather than per flying player, because `ra_settings:get` is a
+  macro and the flight path runs for everyone in the air.
 - [Settings](settings.md) documentation page.
 
 ### Fixed
@@ -50,6 +54,11 @@
   added it with `/tag @s add ra.debug`, which is still what
   `ra_multiblock:blast_forge/debug_structure` tells you to do. The score now only
   adds the tag, and removes it once on the tick the setting is switched off.
+- **A text setting with no `default` did not appear at all.** A macro whose
+  arguments are incomplete fails without running any of its lines, so the missing
+  field took the whole row down with it.
+- **A cancelled or timed-out text input said nothing.** It now says so instead of
+  leaving you looking at an unchanged value.
 - **Settings applied a tick late.** The hooks ran before the click dispatcher, so
   a toggle did nothing until the following tick and read as broken.
 - **On/off rows showed `0` and `1`.** They say `on` and `off`.

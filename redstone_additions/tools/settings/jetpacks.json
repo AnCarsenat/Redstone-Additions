@@ -1,0 +1,37 @@
+{
+  "id": "jetpacks",
+  "title": "Jetpacks",
+  "namespace": "ra_jetpacks",
+  "rows": [
+    {
+      "type": "int",
+      "key": "jetpack_thrust",
+      "label": "Thrust (% of speed)",
+      "scope": "global",
+      "default": 80,
+      "min": 10,
+      "max": 300,
+      "step": 10
+    },
+    {
+      "type": "int",
+      "key": "jetpack_speed_cap",
+      "label": "Speed cap (cm/tick)",
+      "scope": "global",
+      "default": 350,
+      "min": 50,
+      "max": 2000,
+      "step": 25
+    },
+    {
+      "type": "int",
+      "key": "jetpack_deadzone",
+      "label": "Deadzone (cm/tick)",
+      "scope": "global",
+      "default": 25,
+      "min": 0,
+      "max": 200,
+      "step": 5
+    }
+  ]
+}

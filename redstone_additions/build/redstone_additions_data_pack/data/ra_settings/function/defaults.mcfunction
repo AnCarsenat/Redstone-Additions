@@ -6,6 +6,7 @@ execute unless data storage ra:settings global run data modify storage ra:settin
 execute unless data storage ra:settings disabled run data modify storage ra:settings disabled set value []
 execute unless data storage ra:settings users run data modify storage ra:settings users set value []
 
+execute unless data storage ra:settings global."enchanting" run data modify storage ra:settings global."enchanting" set value 1b
 execute unless data storage ra:settings global.props."ender_power_vault"."transfer_rate" run data modify storage ra:settings global.props."ender_power_vault"."transfer_rate" set value 80
 execute unless data storage ra:settings global.props."ender_fluid_vault"."transfer_rate" run data modify storage ra:settings global.props."ender_fluid_vault"."transfer_rate" set value 200
 execute unless data storage ra:settings global.props."clock"."cooldown" run data modify storage ra:settings global.props."clock"."cooldown" set value 20
@@ -23,6 +24,9 @@ execute unless data storage ra:settings global.props."poppy_generator"."cooldown
 execute unless data storage ra:settings global.props."magic_crate"."radius" run data modify storage ra:settings global.props."magic_crate"."radius" set value 8
 execute unless data storage ra:settings global.props."magic_crate"."cooldown" run data modify storage ra:settings global.props."magic_crate"."cooldown" set value 20
 execute unless data storage ra:settings global.props."message_block"."range" run data modify storage ra:settings global.props."message_block"."range" set value 16
+execute unless data storage ra:settings global."jetpack_thrust" run data modify storage ra:settings global."jetpack_thrust" set value 80
+execute unless data storage ra:settings global."jetpack_speed_cap" run data modify storage ra:settings global."jetpack_speed_cap" set value 350
+execute unless data storage ra:settings global."jetpack_deadzone" run data modify storage ra:settings global."jetpack_deadzone" set value 25
 execute unless data storage ra:settings global.props."electric_generator"."generation_rate" run data modify storage ra:settings global.props."electric_generator"."generation_rate" set value 60
 execute unless data storage ra:settings global.props."electric_consumer"."cooldown" run data modify storage ra:settings global.props."electric_consumer"."cooldown" set value 20
 execute unless data storage ra:settings global.props."industrial_light"."eu_use" run data modify storage ra:settings global.props."industrial_light"."eu_use" set value 10

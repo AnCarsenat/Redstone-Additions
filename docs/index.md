@@ -2,7 +2,7 @@
 
 <img src="images/icon.png" alt="Redstone Additions" width="128">
 
-**Version:** v5.1.14  
+**Version:** v5.1.15  
 **Minecraft:** 1.21.9 – 26.2  
 **Author:** [AnCarsenat](https://github.com/AnCarsenat)
 
@@ -110,7 +110,16 @@ Current pack totals:
 | Data Handler | `/function ra:tools/data_handler/give` | ![Data Handler recipe](images/recipes/ra/data_handler.png){ width="200" } | Edit nearby block `data.properties` |
 | Goggles | `/function ra:tools/goggles/give` | ![Goggles recipe](images/recipes/ra/goggles.png){ width="200" } | In-world status overlays |
 
-## What Is New In v5.1.14
+## What Is New In v5.1.15
+
+- **[Settings](settings.md).** Server settings autocomplete under
+  `/function ra_settings:admin/`; players change their own with
+  `/trigger ra.settings.open`. Turn blocks off, retune defaults, mute sounds.
+- **The Electric Furnace stops flickering.** Its skin was rebuilt on every state
+  change, which z-fought and blinked; the EU Generator ran on steam while drawn
+  permanently unlit.
+
+## What Was New In v5.1.14
 
 - **[Recipe Atlas](recipe-atlas.md)** — every recipe on one page, searchable by name.
 - **The Data Handler no longer mangles strings.** Editing a channel wrote a number,

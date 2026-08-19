@@ -1,5 +1,49 @@
 # Changelog
 
+## [v5.1.15] - 2026-08-19 - Settings
+
+**Supported versions:** 1.21.9 - 26.2 (data pack formats 88 - 107).
+
+### Added
+
+- **A settings system, `ra_settings`.** Two scopes, reached two ways on purpose.
+  Server settings are `/function ra_settings:admin/...` and nothing else, because
+  `/function` autocompletes and that is the only way an operator finds a setting
+  without being told its name. Player preferences are `/trigger ra.settings.open`
+  and nothing else, so someone with no permissions can change what they see and
+  hear.
+- **Blocks can be turned off.** Every placeable block has enable/disable.
+  A disabled block cannot be placed and the item is handed back; blocks already
+  standing in the world keep working.
+- **Block defaults can be retuned** — generator EU/tick, clock interval, vault
+  transfer rates, magic crate radius and the rest. Applied when a block is placed,
+  so existing builds are not silently re-balanced underneath them.
+- **Per-player sound and particle switches**, honoured by all 118 `playsound` and
+  `particle` calls in the pack, plus a debug-message switch wired through the
+  existing `ra.debug` tag.
+- Numeric and text settings can be **typed**, through the same input form the
+  Data Handler opens for a clock's delay, instead of only stepped.
+- The goggles redraw interval and scan range are settings.
+- [Settings](settings.md) documentation page.
+
+### Fixed
+
+- **The Electric Furnace skin flickered, vanished and z-fought while working.**
+  `apply_lit` killed the old `block_display` and summoned a replacement, but
+  `kill` does not remove an entity until the end of the tick — so two identical
+  displays overlapped for the rest of it, and the handover popped a frame with no
+  skin. State changes now edit the display that is already there.
+- **A working furnace was drawn as switched off.** The lit state flipped on every
+  cooldown, so it showed as lit for one tick in five on superpowered and one in a
+  hundred on low. It is now decided by whether the furnace can actually cook —
+  something to smelt, somewhere to put it, enough EU — with the cooldown deciding
+  only which tick an item comes out on.
+- **A steam-fed EU Generator produced power while drawn permanently unlit.** It
+  read `data.data.burn`, the solid-fuel countdown, which the steam path never
+  sets.
+- Asking whether there is enough EU no longer spends any, via the new
+  `ra_wires:electric/peek_eu`.
+
 ## [v5.1.14] - 2026-08-18 - Pictures
 
 **Supported versions:** 1.21.9 - 26.2 (data pack formats 88 - 107).

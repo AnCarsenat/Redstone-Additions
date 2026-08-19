@@ -2,6 +2,36 @@
 
 This page mirrors key datapack milestones from the main project changelog.
 
+## v5.1.15 (2026-08-19) — Settings
+
+### Added
+
+- **[Settings](settings.md).** Two kinds, reached two ways. Server settings live
+  under `/function ra_settings:admin/` and autocomplete, because a function path
+  is the only command surface that does — a macro argument completes to nothing.
+  Player preferences are `/trigger ra.settings.open`, which needs no permissions.
+- **Blocks can be turned off**, per block type. The item is handed back rather
+  than swallowed, and anything already built keeps working.
+- **Defaults can be retuned** — generator EU/tick, clock interval, vault rates,
+  crate radius. Applied at placement, so a build balanced around the old numbers
+  is not changed underneath it.
+- **Sound and particle switches, per player.** All 118 `playsound` and `particle`
+  calls in the pack respect them, and every player is seeded a default the moment
+  they join — an absent score would otherwise exclude them from their own sounds.
+- Numbers and text can be **typed** rather than only stepped, through the input
+  form the Data Handler already uses.
+
+### Fixed
+
+- **The Electric Furnace flickered and z-fought while working.** Its skin was
+  killed and resummoned on every state change; `kill` does not take effect until
+  the end of the tick, so two identical displays overlapped in between.
+- **A working furnace looked switched off** for all but one tick in five on
+  superpowered. Whether it looks like it is cooking is now a question about
+  whether it *can* cook, not about which tick an item finished on.
+- **A steam-fed EU Generator was drawn permanently unlit** — it read the solid-fuel
+  countdown, which steam never sets.
+
 ## v5.1.14 (2026-08-18) — Pictures
 
 ### Added

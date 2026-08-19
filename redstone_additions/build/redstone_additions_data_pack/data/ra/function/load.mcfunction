@@ -1,5 +1,5 @@
 # /data/ra/function/load.mcfunction
-# Redstone Additions v5.1.14 - Core Load
+# Redstone Additions v5.1.15 - Core Load
 # Initializes all scoreboards, libraries, and sub-modules
 
 # ========================== SCOREBOARDS ==========================
@@ -78,10 +78,10 @@ schedule function ra:tick 1t
 execute store result score #welcome ra.temp run function ra_settings:get {key:"welcome"}
 execute if score #welcome ra.temp matches ..0 run return 0
 # Load message_block
-tellraw @a [{text:"[RA_Lib] ",color:"gold"},{text:"v5.1.14 loaded",color:"green"}]
+tellraw @a [{text:"[RA_Lib] ",color:"gold"},{text:"v5.1.15 loaded",color:"green"}]
 
 # Welcome message_block
-tellraw @a [{text:"[",color:"dark_gray"},{text:"RA",color:"gold",bold:true},{text:"] ",color:"dark_gray"},{text:"Redstone Additions v5.1.14 loaded!",color:"green"}]
+tellraw @a [{text:"[",color:"dark_gray"},{text:"RA",color:"gold",bold:true},{text:"] ",color:"dark_gray"},{text:"Redstone Additions v5.1.15 loaded!",color:"green"}]
 # Server settings run straight from the button: an operator clicking it wants the
 # page, not the command in their chat box.
 tellraw @a [{text:"Server settings: ",color:"gray"},{text:"[ Open ]",color:"yellow",bold:true,hover_event:{action:"show_text",value:"World-wide settings — needs permission level 2"},click_event:{action:"run_command",command:"/function ra_settings:admin/show"}}]

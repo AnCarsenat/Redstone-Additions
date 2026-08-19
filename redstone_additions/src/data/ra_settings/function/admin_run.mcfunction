@@ -21,4 +21,4 @@ data remove storage ra:settings call
 #
 # Not while an input form is open either: the value has not been typed yet, and a
 # redraw would bury the instructions.
-execute if score #nav ra.set.tmp matches 0 unless score @s ra.settings.pend matches -1 run function ra_settings:admin_refresh
+execute if score #nav ra.set.tmp matches 0 unless score @s ra.settings.pend matches 1.. run function ra_settings:admin_refresh

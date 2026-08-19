@@ -178,9 +178,9 @@ def beet_default(ctx: Context):
                 # generator from 60 to 500 EU would be forty-four clicks.
                 ctx.data.functions[f"{base}/edit"] = Function([
                     f"# {label}: type an exact value ({lo}-{hi}).",
-                    f'data modify storage ra:settings admin_edit set value '
-                    f'{{block:"{block}",prop:"{prop}",type:"int",min:{lo},max:{hi}}}',
-                    "function ra_settings:admin_edit_start",
+                    f'data modify storage ra:settings edit set value '
+                    f'{{kind:"prop",block:"{block}",prop:"{prop}",type:"int",min:{lo},max:{hi}}}',
+                    "function ra_settings:edit_start",
                 ])
                 continue
 
@@ -223,8 +223,9 @@ def beet_default(ctx: Context):
                 # where the value currently sits.
                 ctx.data.functions[f"{base}/edit"] = Function([
                     f"# {label}: type an exact value ({lo}-{hi}).",
-                    f'data modify storage ra:settings admin_edit set value {{key:"{key}",type:"int",min:{lo},max:{hi}}}',
-                    "function ra_settings:admin_edit_start",
+                    f'data modify storage ra:settings edit set value '
+                    f'{{kind:"global",key:"{key}",type:"int",min:{lo},max:{hi}}}',
+                    "function ra_settings:edit_start",
                 ])
 
             elif t == "str":
@@ -236,8 +237,9 @@ def beet_default(ctx: Context):
                 # it, through the same input form the Data Handler opens.
                 ctx.data.functions[f"{base}/edit"] = Function([
                     f"# {label}: type a new value.",
-                    f'data modify storage ra:settings admin_edit set value {{key:"{key}",type:"str"}}',
-                    "function ra_settings:admin_edit_start",
+                    f'data modify storage ra:settings edit set value '
+                    f'{{kind:"global",key:"{key}",type:"str"}}',
+                    "function ra_settings:edit_start",
                 ])
                 ctx.data.functions[f"{base}/reset"] = Function([
                     f'# {label}: back to the shipped default.',

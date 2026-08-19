@@ -1,4 +1,4 @@
-# /ra_settings:admin_apply_prop {block,prop}
+# /ra_settings:apply/prop {block,prop}
 # Internal: store a typed number as a block's property default.
 
 $execute store result storage ra:settings global.props."$(block)"."$(prop)" int 1 run data get storage ra:input consume.number

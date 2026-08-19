@@ -36,6 +36,10 @@ function ra_lib:input/tick
 # Tick non-OP input data handler actions
 function ra:tools/data_handler/tick
 
+# Settings typed input, collected in the same place and for the same reason: this
+# is after ra_lib:input/tick, so a form finished this tick is seen this tick.
+function ra_settings:input_tick
+
 # Debug-only input handler tick (commented by request)
 # function ra:tools/input_data_handler/tick
 

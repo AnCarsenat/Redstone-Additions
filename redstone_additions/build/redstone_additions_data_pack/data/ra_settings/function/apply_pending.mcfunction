@@ -1,21 +1,20 @@
 # /ra_settings:apply_pending
-# Write a typed value into the setting that was waiting for it.
-# Context: as the player. Mirrors ra:tools/data_handler/apply_pending.
+# Write a typed value into whatever storage ra:settings edit describes.
+# Context: as the player.
 #
-# A cancelled session -- the player dropped the form, or let it time out -- never
-# becomes ready, so the wait has to be abandoned rather than held forever. The
-# second condition matters: submit clears ra.input.active but leaves state at 2,
-# and without it a finished answer would be thrown away on the very tick it
-# arrived.
+# The guard order is the Data Handler's, for the same reasons its comments give:
+# a cancelled session never becomes ready, so waiting on one forever is wrong;
+# and submit clears ra.input.active while leaving state at 2, so testing only the
+# tag would throw away a finished answer on the tick it arrived.
 
-execute unless entity @s[tag=ra.input.active] unless score @s ra.input.state matches 2 run tellraw @s [{text:"[Settings] ",color:"gold"},{text:"Session gone before an answer arrived — mine ",color:"gray"},{score:{name:"@s",objective:"ra.settings.req"},color:"gray"},{text:", live ",color:"gray"},{score:{name:"@s",objective:"ra.input.req"},color:"gray"},{text:", state ",color:"gray"},{score:{name:"@s",objective:"ra.input.state"},color:"gray"}]
+execute unless data storage ra:settings edit run scoreboard players set @s ra.settings.pend 0
+execute unless data storage ra:settings edit run return 0
+
 execute unless entity @s[tag=ra.input.active] unless score @s ra.input.state matches 2 run scoreboard players set @s ra.settings.pend 0
 execute unless entity @s[tag=ra.input.active] unless score @s ra.input.state matches 2 run return 0
 
-# Only OUR request. ra_lib:input is shared -- the Data Handler opens sessions
-# through it too -- and ra_lib:input/consume tears the session down as it reads.
-# Consuming one that belonged to another tool would hand it an empty answer and
-# leave this one waiting for a reply that had already been taken.
+# Not our answer. The Data Handler shares this library, and consuming its session
+# would hand it an empty result and leave it waiting for one already taken.
 execute unless score @s ra.settings.req = @s ra.input.req run return 0
 
 execute store result score #ok ra.set.tmp run function ra_lib:input/poll
@@ -24,19 +23,5 @@ execute unless score #ok ra.set.tmp matches 2 run return 0
 execute store result score #ok ra.set.tmp run function ra_lib:input/consume
 execute unless score #ok ra.set.tmp matches 1 run return 0
 
-# -1 means an operator typing into the admin tree: there is no menu row to write
-# back to, and the target is named in storage ra:settings admin_edit instead.
-# Act BEFORE clearing the flag: clearing it first would make the very next line's
-# test false, and the operator's typed value would be consumed and dropped.
-execute if score @s ra.settings.pend matches ..-1 run function ra_settings:admin_apply
-execute if score @s ra.settings.pend matches ..-1 run scoreboard players set @s ra.settings.pend 0
-execute unless score @s ra.settings.pend matches 1.. run return 0
-
-execute store result storage ra:settings q.p int 1 run scoreboard players get @s ra.settings.page
-scoreboard players operation #r ra.set.tmp = @s ra.settings.pend
-scoreboard players remove #r ra.set.tmp 1
-execute store result storage ra:settings q.r int 1 run scoreboard players get #r ra.set.tmp
-
 scoreboard players set @s ra.settings.pend 0
-function ra_settings:apply_at with storage ra:settings q
-function ra_settings:page/open
+function ra_settings:apply_edit

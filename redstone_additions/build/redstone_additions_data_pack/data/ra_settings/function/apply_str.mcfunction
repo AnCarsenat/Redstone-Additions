@@ -11,7 +11,7 @@
 # the literal a path predicate needs. That is what makes this two lines instead
 # of a lookup table.
 
-data modify storage ra:settings put.key set from storage ra:settings cur.key
+data modify storage ra:settings put.key set from storage ra:settings edit.key
 data modify storage ra:settings put.u set from entity @s UUID
 function ra_settings:apply_str_at with storage ra:settings put
 data remove storage ra:settings put

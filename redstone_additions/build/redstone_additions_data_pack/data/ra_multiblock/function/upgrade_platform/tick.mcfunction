@@ -7,7 +7,7 @@
 execute unless data entity @s data.properties{enabled:1b} run return 0
 
 # === Ambient Particles (always when enabled) ===
-particle minecraft:enchant ~ ~1.5 ~ 1 0.5 1 1 3
+particle minecraft:enchant ~ ~1.5 ~ 1 0.5 1 1 3 normal @a[scores={ra.u.par=1..}]
 
 # === Redstone Control ===
 # Redstone block under the center = platform is locked

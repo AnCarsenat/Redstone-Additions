@@ -19,7 +19,7 @@ tag @e[type=marker,tag=ra.new,distance=..0.5,sort=nearest,limit=1] add ra.multib
 $tag @e[type=marker,tag=ra.custom_block.$(block_tag),tag=ra.new,distance=..0.5] remove ra.new
 
 # Placement effects
-$playsound $(place_sound) block @a[distance=..16] ~ ~ ~ $(place_volume) $(place_pitch)
-particle minecraft:electric_spark ~ ~0.5 ~ 0.3 0.3 0.3 0.05 15
+$playsound $(place_sound) block @a[distance=..16,scores={ra.u.snd=1..}] ~ ~ ~ $(place_volume) $(place_pitch)
+particle minecraft:electric_spark ~ ~0.5 ~ 0.3 0.3 0.3 0.05 15 normal @a[scores={ra.u.par=1..}]
 
 return 1

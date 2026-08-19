@@ -9,4 +9,4 @@ execute as @e[type=marker,tag=ra.custom_block.receiver] run function ra_wireless
 
 # Feedback
 tellraw @s [{text:"[Remote] ",color:"red"},{text:"Pulsed receivers on channel ",color:"gray"},{nbt:"remote_channel",storage:"ra:temp",color:"yellow"}]
-playsound minecraft:block.lever.click block @s ~ ~ ~ 1 1
+playsound minecraft:block.lever.click block @s[scores={ra.u.snd=1..}] ~ ~ ~ 1 1

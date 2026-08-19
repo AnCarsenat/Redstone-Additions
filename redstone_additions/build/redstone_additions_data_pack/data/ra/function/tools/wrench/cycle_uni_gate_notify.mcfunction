@@ -8,10 +8,10 @@ data modify storage ra:temp current_gate set from entity @s data.properties.gate
 tellraw @a[distance=..10] [{text:"[Wrench] ",color:"gold"},{text:"UNI Gate mode: ",color:"gray"},{nbt:"current_gate",storage:"ra:temp",color:"light_purple",bold:true}]
 
 # Play sound
-playsound minecraft:block.note_block.hat block @a[distance=..16] ~ ~ ~ 0.5 2
+playsound minecraft:block.note_block.hat block @a[distance=..16,scores={ra.u.snd=1..}] ~ ~ ~ 0.5 2
 
 # Visual feedback
-particle minecraft:happy_villager ~ ~0.5 ~ 0.3 0.3 0.3 0 5
+particle minecraft:happy_villager ~ ~0.5 ~ 0.3 0.3 0.3 0 5 normal @a[scores={ra.u.par=1..}]
 
 # Clear storage
 data remove storage ra:temp current_gate

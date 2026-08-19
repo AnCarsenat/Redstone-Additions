@@ -28,15 +28,14 @@
       "step": 4
     },
     {
-      "type": "list",
-      "key": "units",
-      "label": "Fluid units",
+      "type": "int",
+      "key": "goggles_redraw",
+      "label": "Goggles redraw (ticks)",
       "scope": "global",
-      "default": 0,
-      "values": [
-        "millilitres",
-        "buckets"
-      ]
+      "default": 20,
+      "min": 5,
+      "max": 100,
+      "step": 5
     }
   ]
 }

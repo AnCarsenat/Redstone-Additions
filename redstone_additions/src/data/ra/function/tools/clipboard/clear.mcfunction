@@ -6,4 +6,4 @@ function ra:tools/clipboard/clear_slot with storage ra:temp clip
 data remove storage ra:temp clip
 
 tellraw @s [{text:"[Clipboard] ",color:"gold"},{text:"Cleared. The next block you click becomes the new origin.",color:"gray"}]
-playsound minecraft:item.book.put block @s ~ ~ ~ 0.7 0.9
+playsound minecraft:item.book.put block @s[scores={ra.u.snd=1..}] ~ ~ ~ 0.7 0.9

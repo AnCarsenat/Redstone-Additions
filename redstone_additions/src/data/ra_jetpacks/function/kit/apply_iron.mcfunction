@@ -22,6 +22,6 @@ item modify entity @s armor.chest ra_jetpacks:fit_iron_0
 clear @s *[minecraft:custom_data~{ra:{jetpack_kit:1b,tier:"iron"}}] 1
 
 title @s actionbar [{text:"Iron jetpack fitted",color:"green"},{text:" — sneak to fly",color:"gray"}]
-particle minecraft:enchant ~ ~1 ~ 0.4 0.6 0.4 0.6 40
-playsound minecraft:block.anvil.use player @a[distance=..16] ~ ~ ~ 0.8 1.2
-playsound minecraft:entity.player.levelup player @s ~ ~ ~ 0.6 1.6
+particle minecraft:enchant ~ ~1 ~ 0.4 0.6 0.4 0.6 40 normal @a[scores={ra.u.par=1..}]
+playsound minecraft:block.anvil.use player @a[distance=..16,scores={ra.u.snd=1..}] ~ ~ ~ 0.8 1.2
+playsound minecraft:entity.player.levelup player @s[scores={ra.u.snd=1..}] ~ ~ ~ 0.6 1.6

@@ -12,5 +12,5 @@ scoreboard players set @s ra.cooldown 0
 
 data modify storage ra:temp place_item set from block ~ ~ ~ Items[0]
 execute positioned ^ ^ ^1 run function ra_interactive:blocks/block_placer/place_block with storage ra:temp place_item
-playsound minecraft:block.stone.place block @a[distance=..16] ^ ^ ^1 1 0.8
-particle minecraft:cloud ^ ^ ^1 0.2 0.2 0.2 0.02 5
+playsound minecraft:block.stone.place block @a[distance=..16,scores={ra.u.snd=1..}] ^ ^ ^1 1 0.8
+particle minecraft:cloud ^ ^ ^1 0.2 0.2 0.2 0.02 5 normal @a[scores={ra.u.par=1..}]

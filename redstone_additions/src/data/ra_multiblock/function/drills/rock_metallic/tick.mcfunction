@@ -18,8 +18,8 @@ scoreboard players add @s ra.cooldown 1
 execute unless score @s ra.cooldown matches 40.. run return 0
 scoreboard players set @s ra.cooldown 0
 
-particle minecraft:smoke ~ ~1 ~ 0.5 0.2 0.5 0.1 5 force
-playsound minecraft:block.stone.break block @a[distance=..12] ~ ~ ~ 0.4 0.7
+particle minecraft:smoke ~ ~1 ~ 0.5 0.2 0.5 0.1 5 force @a[scores={ra.u.par=1..}]
+playsound minecraft:block.stone.break block @a[distance=..12,scores={ra.u.snd=1..}] ~ ~ ~ 0.4 0.7
 
 # Build the item first, then let the library position the insert. Passing an
 # item's components through macro arguments would mean quoting them twice.

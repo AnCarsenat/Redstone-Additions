@@ -20,4 +20,4 @@ execute if score #co.rate ra.wires.tmp matches 2 run data modify entity @s data.
 execute if score #co.rate ra.wires.tmp matches 0 run tellraw @a[distance=..10] [{text:"[Wrench] ",color:"gold"},{text:"Consumer draw: ",color:"gray"},{text:"normal — 40 EU/t",color:"yellow"}]
 execute if score #co.rate ra.wires.tmp matches 1 run tellraw @a[distance=..10] [{text:"[Wrench] ",color:"gold"},{text:"Consumer draw: ",color:"gray"},{text:"heavy — 80 EU/t",color:"red"}]
 execute if score #co.rate ra.wires.tmp matches 2 run tellraw @a[distance=..10] [{text:"[Wrench] ",color:"gold"},{text:"Consumer draw: ",color:"gray"},{text:"light — 20 EU/t",color:"green"}]
-playsound minecraft:block.lever.click block @a[distance=..10] ~ ~ ~ 0.6 1.4
+playsound minecraft:block.lever.click block @a[distance=..10,scores={ra.u.snd=1..}] ~ ~ ~ 0.6 1.4

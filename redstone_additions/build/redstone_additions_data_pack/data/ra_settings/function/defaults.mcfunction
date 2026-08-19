@@ -16,7 +16,7 @@ execute unless data storage ra:settings global.props."randomizer"."chance" run d
 execute unless data storage ra:settings global."welcome" run data modify storage ra:settings global."welcome" set value 1b
 execute unless data storage ra:settings global."prefix" run data modify storage ra:settings global."prefix" set value "RA"
 execute unless data storage ra:settings global."goggles_range" run data modify storage ra:settings global."goggles_range" set value 16
-execute unless data storage ra:settings global."units" run data modify storage ra:settings global."units" set value 0
+execute unless data storage ra:settings global."goggles_redraw" run data modify storage ra:settings global."goggles_redraw" set value 20
 execute unless data storage ra:settings global.props."mineral_generator"."cooldown" run data modify storage ra:settings global.props."mineral_generator"."cooldown" set value 100
 execute unless data storage ra:settings global.props."nether_generator"."cooldown" run data modify storage ra:settings global.props."nether_generator"."cooldown" set value 100
 execute unless data storage ra:settings global.props."poppy_generator"."cooldown" run data modify storage ra:settings global.props."poppy_generator"."cooldown" set value 100
@@ -29,6 +29,4 @@ execute unless data storage ra:settings global.props."industrial_light"."eu_use"
 execute unless data storage ra:settings global.props."liquid_drain"."cooldown" run data modify storage ra:settings global.props."liquid_drain"."cooldown" set value 20
 scoreboard objectives add ra.u.snd dummy
 scoreboard objectives add ra.u.par dummy
-scoreboard objectives add ra.u.chat dummy
 scoreboard objectives add ra.u.dbg dummy
-scoreboard objectives add ra.u.ggl dummy

@@ -39,5 +39,5 @@ data remove storage ra:temp unboxer
 execute if score #unboxer_moved ra.temp matches 0 run return 0
 
 scoreboard players set @s ra.cooldown 0
-playsound minecraft:block.wood.break block @a[distance=..16] ~ ~ ~ 0.8 1.1
-particle minecraft:cloud ~ ~0.2 ~ 0.2 0.2 0.2 0.01 5
+playsound minecraft:block.wood.break block @a[distance=..16,scores={ra.u.snd=1..}] ~ ~ ~ 0.8 1.1
+particle minecraft:cloud ~ ~0.2 ~ 0.2 0.2 0.2 0.01 5 normal @a[scores={ra.u.par=1..}]

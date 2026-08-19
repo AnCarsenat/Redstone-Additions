@@ -29,4 +29,4 @@ tag @e[type=item,tag=ra.spit] remove ra.spit
 data remove block ~ ~ ~ Items[0]
 
 # Play sound
-playsound minecraft:block.dispenser.dispense block @a[distance=..16] ~ ~ ~ 0.5 1.2
+playsound minecraft:block.dispenser.dispense block @a[distance=..16,scores={ra.u.snd=1..}] ~ ~ ~ 0.5 1.2

@@ -24,8 +24,13 @@ execute as @a at @s if items entity @s weapon.offhand *[custom_data~{ra:{goggles
 # wearer plus one draw per marker in range, so the cost of halving the interval
 # is small next to what the tick loop already does, and it is bounded by how many
 # blocks are within 16 of someone actually wearing goggles.
+# The interval is a setting now, so the threshold is a score rather than a
+# literal -- `matches` cannot take one. Read once per tick, which is cheap beside
+# the sweep it is deciding whether to run.
 scoreboard players add #goggles_timer ra.temp 1
-execute unless score #goggles_timer ra.temp matches 20.. run return 0
+execute store result score #goggles_want ra.temp run function ra_settings:get {key:"goggles_redraw"}
+execute if score #goggles_want ra.temp matches ..0 run scoreboard players set #goggles_want ra.temp 20
+execute if score #goggles_timer ra.temp < #goggles_want ra.temp run return 0
 scoreboard players set #goggles_timer ra.temp 0
 
 # Remove old billboards
@@ -36,8 +41,11 @@ kill @e[type=text_display,tag=ra.billboard]
 # two wearers stood near the same block, and cost one whole-world sweep per block
 # type per player.
 tag @e[type=marker,tag=ra.goggles_seen] remove ra.goggles_seen
-execute as @a[tag=ra.goggles_active] at @s run tag @e[type=marker,tag=ra.custom_block,distance=..16] add ra.goggles_seen
-execute as @a[tag=ra.goggles_active] at @s run tag @e[type=marker,tag=ra.multiblock,distance=..16] add ra.goggles_seen
+# The range is a setting too, and a selector's distance cannot be a score, so the
+# two scans go through a macro. One instantiation per redraw, not per player.
+execute store result storage ra:temp goggles.range int 1 run function ra_settings:get {key:"goggles_range"}
+execute if data storage ra:temp goggles{range:0} run data modify storage ra:temp goggles.range set value 16
+function ra:tools/goggles/scan_range with storage ra:temp goggles
 
 execute as @e[type=marker,tag=ra.goggles_seen,tag=ra.custom_block] at @s run function ra:tools/goggles/draw_block
 execute as @e[type=marker,tag=ra.goggles_seen,tag=ra.multiblock] at @s run function ra:tools/goggles/draw_multiblock

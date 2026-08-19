@@ -25,4 +25,4 @@ function ra_lib:input/cancel
 scoreboard players set @s ra.remote.pending 1
 function ra_lib:input/open_text
 
-playsound minecraft:block.note_block.bell block @s ~ ~ ~ 0.5 1.2
+playsound minecraft:block.note_block.bell block @s[scores={ra.u.snd=1..}] ~ ~ ~ 0.5 1.2

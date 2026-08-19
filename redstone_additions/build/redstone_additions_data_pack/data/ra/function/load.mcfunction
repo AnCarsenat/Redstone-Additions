@@ -71,6 +71,12 @@ function ra_migrations:run
 schedule function ra:tick 1t
 
 # ========================== WELCOME MESSAGE ==========================
+# Gated on a setting, because a server that has run this pack for a year does not
+# need to tell everyone about it on every reload. Read into a score first: the
+# messages below are plain tellraw lines and `execute if data` on each would be
+# the same test written six times.
+execute store result score #welcome ra.temp run function ra_settings:get {key:"welcome"}
+execute if score #welcome ra.temp matches ..0 run return 0
 # Load message_block
 tellraw @a [{text:"[RA_Lib] ",color:"gold"},{text:"v5.1.14 loaded",color:"green"}]
 

@@ -1,4 +1,4 @@
 # Current values on the Chunk Loader page.
 tellraw @s [{text:"─── ",color:"dark_gray"},{text:"Chunk Loader",color:"gold",bold:true},{text:" ───",color:"dark_gray"}]
-execute unless data storage ra:settings disabled[{b:"chunk_loader"}] run tellraw @s [{text:"  Chunk Loader: ",color:"white"},{text:"enabled",color:"green"}]
-execute if data storage ra:settings disabled[{b:"chunk_loader"}] run tellraw @s [{text:"  Chunk Loader: ",color:"white"},{text:"disabled",color:"red"}]
+execute unless data storage ra:settings disabled[{b:"chunk_loader"}] run tellraw @s [{text:"  Chunk Loader: ",color:"white"},{text:"enabled ",color:"green"},{text:"[Disable]",color:"red",bold:true,hover_event:{action:"show_text",value:"Stop Chunk Loader being placed"},click_event:{action:"run_command",command:"/function ra_settings:admin/chunk_loader/chunk_loader/disable"}}]
+execute if data storage ra:settings disabled[{b:"chunk_loader"}] run tellraw @s [{text:"  Chunk Loader: ",color:"white"},{text:"disabled ",color:"red"},{text:"[Enable]",color:"green",bold:true,hover_event:{action:"show_text",value:"Allow Chunk Loader again"},click_event:{action:"run_command",command:"/function ra_settings:admin/chunk_loader/chunk_loader/enable"}}]

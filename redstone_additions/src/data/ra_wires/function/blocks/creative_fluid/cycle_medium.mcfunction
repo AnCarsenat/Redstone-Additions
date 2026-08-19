@@ -22,4 +22,4 @@ execute if score #cr.m ra.wires.tmp matches 4 run data modify entity @s data.pro
 execute if score #cr.m ra.wires.tmp matches 5 run data modify entity @s data.properties.medium set value "smoke"
 
 tellraw @a[distance=..10] [{text:"[Wrench] ",color:"gold"},{text:"Creative source: ",color:"gray"},{nbt:"data.properties.medium",entity:"@s",color:"aqua"}]
-playsound minecraft:block.lever.click block @a[distance=..10] ~ ~ ~ 0.6 1.4
+playsound minecraft:block.lever.click block @a[distance=..10,scores={ra.u.snd=1..}] ~ ~ ~ 0.6 1.4

@@ -47,5 +47,5 @@ function ra_wires:fluid/drain_exp_take with storage ra:wires xp
 
 data modify entity @s data.status.drain_state set value "absorbing_xp"
 function ra_wires:fluid/particles {medium:"experience"}
-playsound minecraft:entity.experience_orb.pickup block @a[distance=..8] ~ ~ ~ 0.6 1.4
+playsound minecraft:entity.experience_orb.pickup block @a[distance=..8,scores={ra.u.snd=1..}] ~ ~ ~ 0.6 1.4
 function ra_wires:fluid/drain_exp_clear

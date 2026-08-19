@@ -6,4 +6,4 @@ $execute unless data storage ra:dh hidden.$(name) run return 0
 
 data modify storage ra:dh denied set value 1b
 $tellraw @s [{text:"[Data Handler] ",color:"gold"},{text:"$(name)",color:"yellow"},{text:" is set by the block and cannot be changed here.",color:"gray"}]
-playsound minecraft:block.note_block.bass block @s ~ ~ ~ 0.7 0.7
+playsound minecraft:block.note_block.bass block @s[scores={ra.u.snd=1..}] ~ ~ ~ 0.7 0.7

@@ -32,8 +32,8 @@ function ra_ender:blocks/teleport_anchor/find_dest with storage ra:ender anchor
 tag @s remove ra.ender.self
 execute unless entity @e[type=marker,tag=ra.ender.tp_dest] run return 0
 
-playsound minecraft:entity.enderman.teleport block @a[distance=..12] ~ ~ ~ 0.7 1.2
-particle minecraft:portal ~ ~0.6 ~ 0.3 0.5 0.3 0.2 30
+playsound minecraft:entity.enderman.teleport block @a[distance=..12,scores={ra.u.snd=1..}] ~ ~ ~ 0.7 1.2
+particle minecraft:portal ~ ~0.6 ~ 0.3 0.5 0.3 0.2 30 normal @a[scores={ra.u.par=1..}]
 
 execute as @a[distance=..2,scores={ra.ender.grace=..0},limit=1,sort=nearest] run function ra_ender:blocks/teleport_anchor/send_player
 

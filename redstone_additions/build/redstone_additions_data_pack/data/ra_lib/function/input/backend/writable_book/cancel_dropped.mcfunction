@@ -7,6 +7,6 @@
 # lying on the floor.
 
 tellraw @s [{text:"[RA Input] ",color:"gold"},{text:"Input cancelled.",color:"gray"}]
-playsound minecraft:block.note_block.bass block @s ~ ~ ~ 0.5 0.8
+playsound minecraft:block.note_block.bass block @s[scores={ra.u.snd=1..}] ~ ~ ~ 0.5 0.8
 
 function ra_lib:input/cancel

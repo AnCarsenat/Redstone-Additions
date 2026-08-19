@@ -7,6 +7,6 @@
 
 function ra_wires:blocks/electric_furnace/stay_lit
 
-particle minecraft:smoke ~ ~1.1 ~ 0.15 0.05 0.15 0.01 2
-particle minecraft:flame ~ ~0.6 ~ 0.2 0.1 0.2 0.005 1
-playsound minecraft:block.blastfurnace.fire_crackle block @a[distance=..10] ~ ~ ~ 0.3 1.6
+particle minecraft:smoke ~ ~1.1 ~ 0.15 0.05 0.15 0.01 2 normal @a[scores={ra.u.par=1..}]
+particle minecraft:flame ~ ~0.6 ~ 0.2 0.1 0.2 0.005 1 normal @a[scores={ra.u.par=1..}]
+playsound minecraft:block.blastfurnace.fire_crackle block @a[distance=..10,scores={ra.u.snd=1..}] ~ ~ ~ 0.3 1.6

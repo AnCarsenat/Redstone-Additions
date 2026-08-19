@@ -49,6 +49,6 @@ execute as @e[type=marker,tag=ra.wires.boil_dst,limit=1] run function ra_lib:tra
 
 function ra_wires:fluid/boiler_cleanup
 
-particle minecraft:cloud ~ ~1 ~ 0.3 0.2 0.3 0.02 12
-playsound minecraft:block.fire.extinguish block @a[distance=..12] ~ ~ ~ 0.3 1.6
+particle minecraft:cloud ~ ~1 ~ 0.3 0.2 0.3 0.02 12 normal @a[scores={ra.u.par=1..}]
+playsound minecraft:block.fire.extinguish block @a[distance=..12,scores={ra.u.snd=1..}] ~ ~ ~ 0.3 1.6
 data modify entity @s data.status.boiler_state set value "boiling"

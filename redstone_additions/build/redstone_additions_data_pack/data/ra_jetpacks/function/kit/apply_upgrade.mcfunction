@@ -24,6 +24,6 @@ function ra_jetpacks:kit/write_fitted
 $clear @s *[minecraft:custom_data~{ra:{jetpack_kit:1b,upgrade:"$(kit)"}}] 1
 
 $title @s actionbar [{text:"$(name) kit fitted",color:"green"},{text:" - $(hint)",color:"gray"}]
-particle minecraft:enchant ~ ~1 ~ 0.4 0.6 0.4 0.6 40
-playsound minecraft:block.anvil.use player @a[distance=..16] ~ ~ ~ 0.8 1.4
-playsound minecraft:entity.player.levelup player @s ~ ~ ~ 0.6 1.8
+particle minecraft:enchant ~ ~1 ~ 0.4 0.6 0.4 0.6 40 normal @a[scores={ra.u.par=1..}]
+playsound minecraft:block.anvil.use player @a[distance=..16,scores={ra.u.snd=1..}] ~ ~ ~ 0.8 1.4
+playsound minecraft:entity.player.levelup player @s[scores={ra.u.snd=1..}] ~ ~ ~ 0.6 1.8

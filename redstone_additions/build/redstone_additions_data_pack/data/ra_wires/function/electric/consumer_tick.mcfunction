@@ -27,4 +27,4 @@ execute if score #got ra.wires.tmp < #use ra.wires.tmp2 run data modify entity @
 execute if score #got ra.wires.tmp < #use ra.wires.tmp2 run return 0
 
 data modify entity @s data.status.active set value 1b
-particle minecraft:electric_spark ~ ~0.9 ~ 0.25 0.25 0.25 0.01 2
+particle minecraft:electric_spark ~ ~0.9 ~ 0.25 0.25 0.25 0.01 2 normal @a[scores={ra.u.par=1..}]

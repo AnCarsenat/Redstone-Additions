@@ -20,6 +20,6 @@ clear @s *[minecraft:custom_data~{ra:{jetpack_kit:1b,tier:"infinite"}}] 1
 
 execute if score #jp.n ra.temp matches 1.. run title @s actionbar [{text:"Infinite jetpack fitted",color:"light_purple"},{text:" - fuel free, kits kept",color:"gray"}]
 execute if score #jp.n ra.temp matches ..0 run title @s actionbar [{text:"Infinite jetpack fitted",color:"light_purple"},{text:" - no fuel needed",color:"gray"}]
-particle minecraft:enchant ~ ~1 ~ 0.4 0.6 0.4 0.8 60
-playsound minecraft:block.beacon.activate player @a[distance=..16] ~ ~ ~ 0.7 1.4
-playsound minecraft:entity.player.levelup player @s ~ ~ ~ 0.6 1.8
+particle minecraft:enchant ~ ~1 ~ 0.4 0.6 0.4 0.8 60 normal @a[scores={ra.u.par=1..}]
+playsound minecraft:block.beacon.activate player @a[distance=..16,scores={ra.u.snd=1..}] ~ ~ ~ 0.7 1.4
+playsound minecraft:entity.player.levelup player @s[scores={ra.u.snd=1..}] ~ ~ ~ 0.6 1.8

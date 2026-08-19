@@ -22,6 +22,10 @@ tag @a[tag=ra.remote_clicked] remove ra.remote_clicked
 # Debug-only input handler clicked tag cleanup (commented by request)
 # tag @a[tag=ra.input_handler_clicked] remove ra.input_handler_clicked
 
+# Settings: seed per-player defaults and collect menu clicks. Early, because the
+# module ticks below emit sounds and particles that are filtered on those scores.
+function ra_settings:tick
+
 # Rebuild transport networks if any were placed or broken. Debounced, so this is
 # a single storage check on a tick where nothing changed.
 function ra_lib:transport/tick
@@ -79,9 +83,6 @@ function ra_ender:tick
 function ra:tools/goggles/tick
 
 schedule function ra:tick 1t
-
-# Settings menu buttons come back through /trigger ra.settings.open and ra.settings.act.
-function ra_settings:tick
 
 # Wrench menu buttons come back through /trigger ra.wrench.
 scoreboard players enable @a ra.wrench

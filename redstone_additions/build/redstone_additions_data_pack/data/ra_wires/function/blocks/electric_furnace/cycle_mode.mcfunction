@@ -19,4 +19,4 @@ execute if score #ef.m ra.wires.tmp matches 1 run tellraw @a[distance=..10] [{te
 execute if score #ef.m ra.wires.tmp matches 2 run tellraw @a[distance=..10] [{text:"[Wrench] ",color:"gold"},{text:"Furnace: ",color:"gray"},{text:"high - 20 ticks, 300 EU/item",color:"yellow"}]
 execute if score #ef.m ra.wires.tmp matches 3 run tellraw @a[distance=..10] [{text:"[Wrench] ",color:"gold"},{text:"Furnace: ",color:"gray"},{text:"superpowered - 5 ticks, 1000 EU/item",color:"red"}]
 
-playsound minecraft:block.lever.click block @a[distance=..10] ~ ~ ~ 0.6 1.4
+playsound minecraft:block.lever.click block @a[distance=..10,scores={ra.u.snd=1..}] ~ ~ ~ 0.6 1.4

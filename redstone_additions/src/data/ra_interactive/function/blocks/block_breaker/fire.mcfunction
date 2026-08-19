@@ -16,5 +16,5 @@
 scoreboard players set @s ra.cooldown 0
 
 execute positioned ^ ^ ^1 unless block ~ ~ ~ #ra_lib:unbreakable run fill ~ ~ ~ ~ ~ ~ air destroy
-playsound minecraft:block.stone.break block @a[distance=..16] ~ ~ ~ 1 0.8
+playsound minecraft:block.stone.break block @a[distance=..16,scores={ra.u.snd=1..}] ~ ~ ~ 1 0.8
 execute positioned ^ ^ ^1 run particle minecraft:block{block_state:"minecraft:stone"} ~ ~ ~ 0.3 0.3 0.3 0.1 20

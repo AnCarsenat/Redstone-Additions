@@ -44,4 +44,4 @@ execute if score #remote_state ra.temp matches 0 run return 0
 
 data modify storage ra:temp current_channel set from storage ra_wireless:remote channel
 tellraw @s [{text:"[Remote] ",color:"red"},{text:"Channel set to ",color:"gray"},{nbt:"current_channel",storage:"ra:temp",color:"yellow"}]
-playsound minecraft:block.note_block.pling block @s ~ ~ ~ 0.5 1.5
+playsound minecraft:block.note_block.pling block @s[scores={ra.u.snd=1..}] ~ ~ ~ 0.5 1.5

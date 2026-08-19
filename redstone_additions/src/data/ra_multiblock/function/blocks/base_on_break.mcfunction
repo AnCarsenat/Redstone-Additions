@@ -12,7 +12,7 @@ execute align xyz positioned ~0.5 ~ ~0.5 as @e[type=marker,tag=ra.multiblock,dis
 # Drop the custom item
 $summon item ~ ~ ~ {Item:{id:"minecraft:bat_spawn_egg",count:1,components:{"minecraft:item_model":"$(block_model)","minecraft:item_name":"$(tier_name) Multiblock Base","minecraft:custom_data":{ra:{multiblock_base:"$(tier)"}},"minecraft:entity_data":{id:"minecraft:bat",Tags:["ra","ra.spawned","ra.place.multiblock_base","ra.place.multiblock_base.$(tier)"],Silent:1b,NoAI:1b,Invulnerable:1b},"minecraft:lore":[{text:"$(lore_text)",color:"gray",italic:false}]}}}
 
-$playsound $(break_sound) block @a[distance=..16] ~ ~ ~ $(break_volume) $(break_pitch)
-particle minecraft:cloud ~ ~ ~ 0.2 0.2 0.2 0.02 5
+$playsound $(break_sound) block @a[distance=..16,scores={ra.u.snd=1..}] ~ ~ ~ $(break_volume) $(break_pitch)
+particle minecraft:cloud ~ ~ ~ 0.2 0.2 0.2 0.02 5 normal @a[scores={ra.u.par=1..}]
 
 kill @s

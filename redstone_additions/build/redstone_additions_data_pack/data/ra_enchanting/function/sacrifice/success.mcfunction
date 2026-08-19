@@ -8,7 +8,7 @@ summon item ~ ~0.3 ~ {Item:{id:"minecraft:stone",count:1},Tags:["ra","ra.ench.pr
 data modify entity @e[type=item,tag=ra.ench.product,distance=..0.6,limit=1,sort=nearest] Item set from storage ra:enchant result
 tag @e[type=item,tag=ra.ench.product,distance=..0.6,limit=1,sort=nearest] remove ra.ench.product
 
-particle minecraft:enchant ~ ~0.6 ~ 0.3 0.4 0.3 0.8 60
-particle minecraft:end_rod ~ ~0.4 ~ 0.15 0.15 0.15 0.05 12
-playsound minecraft:block.enchantment_table.use block @a[distance=..16] ~ ~ ~ 1 1.2
-playsound minecraft:entity.player.levelup block @a[distance=..16] ~ ~ ~ 0.8 1.4
+particle minecraft:enchant ~ ~0.6 ~ 0.3 0.4 0.3 0.8 60 normal @a[scores={ra.u.par=1..}]
+particle minecraft:end_rod ~ ~0.4 ~ 0.15 0.15 0.15 0.05 12 normal @a[scores={ra.u.par=1..}]
+playsound minecraft:block.enchantment_table.use block @a[distance=..16,scores={ra.u.snd=1..}] ~ ~ ~ 1 1.2
+playsound minecraft:entity.player.levelup block @a[distance=..16,scores={ra.u.snd=1..}] ~ ~ ~ 0.8 1.4

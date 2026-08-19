@@ -11,8 +11,8 @@ execute if score #gen.roll ra.temp matches 6 run setblock ~ ~ ~ minecraft:allium
 execute if score #gen.roll ra.temp matches 7 run setblock ~ ~ ~ minecraft:blue_orchid
 execute if score #gen.roll ra.temp matches 8 run setblock ~ ~ ~ minecraft:lily_of_the_valley
 
-particle minecraft:happy_villager ~ ~0.4 ~ 0.3 0.3 0.3 0.01 4
-playsound minecraft:block.grass.place block @a[distance=..12] ~ ~ ~ 0.3 1.3
+particle minecraft:happy_villager ~ ~0.4 ~ 0.3 0.3 0.3 0.01 4 normal @a[scores={ra.u.par=1..}]
+playsound minecraft:block.grass.place block @a[distance=..12,scores={ra.u.snd=1..}] ~ ~ ~ 0.3 1.3
 
 # Single mode stops searching once something has been planted.
 scoreboard players set #poppy.done ra.temp 1

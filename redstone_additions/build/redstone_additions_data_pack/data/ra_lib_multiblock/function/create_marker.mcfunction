@@ -13,12 +13,12 @@ execute align xyz run summon marker ~0.5 ~ ~0.5 {data:{_init:1b},Tags:["ra","ra.
 execute align xyz positioned ~0.5 ~ ~0.5 as @e[type=marker,tag=ra.multiblock.new,distance=..0.5,limit=1,sort=nearest] run function ra_lib_multiblock:setup_marker
 
 # === Assembly Effects ===
-playsound minecraft:block.respawn_anchor.set_spawn block @a[distance=..16] ~ ~ ~ 1 0.8
-playsound minecraft:block.beacon.activate block @a[distance=..16] ~ ~ ~ 0.8 1.5
-playsound minecraft:entity.player.levelup block @a[distance=..16] ~ ~ ~ 0.5 0.5
+playsound minecraft:block.respawn_anchor.set_spawn block @a[distance=..16,scores={ra.u.snd=1..}] ~ ~ ~ 1 0.8
+playsound minecraft:block.beacon.activate block @a[distance=..16,scores={ra.u.snd=1..}] ~ ~ ~ 0.8 1.5
+playsound minecraft:entity.player.levelup block @a[distance=..16,scores={ra.u.snd=1..}] ~ ~ ~ 0.5 0.5
 
-particle minecraft:totem_of_undying ~ ~1 ~ 0.5 0.5 0.5 0.3 50
-particle minecraft:electric_spark ~ ~0.5 ~ 1 1 1 0.1 30
-particle minecraft:entity_effect{color:[1.0,0.85,0.0,1.0]} ~ ~0.5 ~ 0.5 0.5 0.5 0 20
+particle minecraft:totem_of_undying ~ ~1 ~ 0.5 0.5 0.5 0.3 50 normal @a[scores={ra.u.par=1..}]
+particle minecraft:electric_spark ~ ~0.5 ~ 1 1 1 0.1 30 normal @a[scores={ra.u.par=1..}]
+particle minecraft:entity_effect{color:[1.0,0.85,0.0,1.0]} ~ ~0.5 ~ 0.5 0.5 0.5 0 20 normal @a[scores={ra.u.par=1..}]
 
 tellraw @a[distance=..16] [{text:"[RA] ",color:"gold"},{text:"Multiblock assembled!",color:"green",bold:true}]

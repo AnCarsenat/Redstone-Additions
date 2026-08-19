@@ -23,7 +23,7 @@ execute unless data storage ra:temp clip_ok run return run function ra:tools/cli
 function ra:tools/clipboard/apply with storage ra:temp clip
 
 tellraw @a[tag=ra.clip_active,limit=1] [{text:"[Clipboard] ",color:"gold"},{text:"Matched this ",color:"gray"},{nbt:"block_name",storage:"ra:temp",color:"yellow"},{text:" to the origin.",color:"gray"}]
-playsound minecraft:block.amethyst_block.chime block @a[tag=ra.clip_active,limit=1] ~ ~ ~ 0.7 1.4
-particle minecraft:happy_villager ~ ~0.8 ~ 0.3 0.3 0.3 0.02 6
+playsound minecraft:block.amethyst_block.chime block @a[tag=ra.clip_active,limit=1,scores={ra.u.snd=1..}] ~ ~ ~ 0.7 1.4
+particle minecraft:happy_villager ~ ~0.8 ~ 0.3 0.3 0.3 0.02 6 normal @a[scores={ra.u.par=1..}]
 data remove storage ra:temp clip
 data remove storage ra:temp clip_ok

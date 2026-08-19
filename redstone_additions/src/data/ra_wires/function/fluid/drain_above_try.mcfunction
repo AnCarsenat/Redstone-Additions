@@ -33,4 +33,4 @@ $execute if score #dr.put ra.wires.tmp matches ..0 run summon item ~ ~1.2 ~ {Ite
 scoreboard players set #dr.took ra.wires.tmp 1
 data modify entity @s data.status.drain_state set value "emptied_container"
 $function ra_wires:fluid/particles {medium:"$(medium)"}
-playsound minecraft:item.bucket_empty block @a[distance=..8] ~ ~ ~ 0.7 1.2
+playsound minecraft:item.bucket_empty block @a[distance=..8,scores={ra.u.snd=1..}] ~ ~ ~ 0.7 1.2

@@ -6,6 +6,11 @@
 # for them. Re-enabling every tick is what makes a button clickable more than
 # once -- a trigger disables itself the moment it is used.
 
+# Seeding runs first: a player with no score is excluded by every gated
+# selector, so until this has run they would hear and see nothing.
+function ra_settings:sync
+function ra_settings:hooks
+
 scoreboard players enable @a ra.settings.open
 scoreboard players enable @a ra.settings.act
 

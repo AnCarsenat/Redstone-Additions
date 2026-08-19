@@ -42,6 +42,17 @@ execute unless data entity @s Inventory[{Slot:35b}] run scoreboard players set @
 
 $execute if score @s ra.temp matches 1 run give @s minecraft:writable_book[item_name="Input Form",lore=[{text:"Write text on page 1",italic:false,color:"gray"},{text:"Close the book to submit",italic:false,color:"gray"}],custom_data={ra:{input_book:1b,input_req:$(req)}}]
 
+# Did the form land on the floor instead of going in? The slot survey above is a
+# guess about where the item will go, and a guess that is wrong drops it -- where
+# the drop watcher reads it a tick later as the player cancelling.
+#
+# The test is "is it on the ground", not "is it missing from the inventory". Those
+# are equivalent only while the inventory predicate matches, and if that ever
+# stopped matching, the second form would fire on every SUCCESSFUL give and cancel
+# every request. Asking about the thing that actually went wrong cannot misfire
+# that way: right after a give that worked, there is no dropped form to find.
+$execute if score @s ra.temp matches 1 at @s if entity @e[type=item,distance=..8,nbt={Item:{id:"minecraft:writable_book",components:{"minecraft:custom_data":{ra:{input_book:1b,input_req:$(req)}}}}}] run function ra_lib:input/backend/writable_book/overflow {req:$(req)}
+
 $execute if score @s ra.temp matches 1 run data remove storage ra:input sessions.req_$(req).inventory_full_warned
 $execute if score @s ra.temp matches 0 unless data storage ra:input sessions.req_$(req).inventory_full_warned run tellraw @s [{text:"[RA Input] ",color:"gold"},{text:"Inventory full. Free one slot for Input Form.",color:"red"}]
 $execute if score @s ra.temp matches 0 run data modify storage ra:input sessions.req_$(req).inventory_full_warned set value 1b

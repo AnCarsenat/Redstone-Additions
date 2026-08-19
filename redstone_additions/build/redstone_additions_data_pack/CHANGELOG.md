@@ -42,7 +42,8 @@
   trigger handler runs at permission level 2, so opening the panel from one
   unconditionally would have handed server settings to everybody.
 - **Jetpacks and Enchant Crafting settings pages.** Thrust, speed cap and deadzone
-  are tunable; enchant crafting can be switched off. The jetpack values are read
+  are tunable — labelled as **Thruster Kit** settings, because that is the only
+  kit that uses this thrust model — and enchant crafting can be switched off. The jetpack values are read
   once per tick rather than per flying player, because `ra_settings:get` is a
   macro and the flight path runs for everyone in the air.
 - [Settings](settings.md) documentation page.
@@ -54,6 +55,12 @@
   added it with `/tag @s add ra.debug`, which is still what
   `ra_multiblock:blast_forge/debug_structure` tells you to do. The score now only
   adds the tag, and removes it once on the tick the setting is switched off.
+- **Text input never completed.** The writable-book backend only submitted when
+  page 1 was an NBT *compound*, but a book page is a filterable string and is
+  written as a bare string unless chat filtering is on — so on nearly every server
+  the book was scanned forever and the text was never captured. No error, just a
+  request that timed out. `submit` already read both shapes; only the guard was
+  wrong. This affected the Data Handler's text fields too, not only settings.
 - **A text setting with no `default` did not appear at all.** A macro whose
   arguments are incomplete fails without running any of its lines, so the missing
   field took the whole row down with it.

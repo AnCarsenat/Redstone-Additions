@@ -28,11 +28,15 @@ This page mirrors key datapack milestones from the main project changelog.
   the settings index; its own buttons keep the confirmation dialog.
 - **Back buttons** on every server-settings page, and a settings button that hands
   you the command unrun when opening the panel is not yours to do.
-- **Jetpacks and Enchant Crafting pages** — thrust, speed cap and deadzone are
-  tunable, and enchant crafting can be turned off.
+- **Jetpacks and Enchant Crafting pages** — Thruster Kit thrust, speed cap and
+  deadzone are tunable, and enchant crafting can be turned off. Settings pages
+  group tunables and block switches with a rule between them.
 
 ### Fixed
 
+- **Text input never completed anywhere in the pack**, settings and Data Handler
+  alike. The writable-book backend only accepted a page stored as an NBT compound,
+  but pages are written as bare strings unless chat filtering is enabled.
 - **The debug setting fought the `ra.debug` tag**, stripping it every tick from
   anyone who had added it by hand. The setting now only ever adds it, and clears
   it once when switched off.

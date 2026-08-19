@@ -125,6 +125,10 @@ def beet_default(ctx: Context):
 
             admin_rows.append(row)
 
+            # Decoration, not a setting: nothing to seed, nothing to click.
+            if t in ("note", "sep"):
+                continue
+
             if t == "block":
                 block, label = row["block"], row["label"]
                 base = f'{ADMIN}/{pid}/{_slug(label)}'
@@ -254,7 +258,17 @@ def beet_default(ctx: Context):
         if admin_rows:
             ctx.data.functions[f"{ADMIN}/{pid}/show"] = Function(
                 [f"# Current values on the {title} page.", f"tellraw @s {BAR % title}"]
-                + [ln for r in admin_rows for ln in _show_line(r, f"{ADMIN}/{pid}", act)]
+                # Tunables and on/off switches are different kinds of decision, so
+                # they are drawn as two groups with a rule between them rather than
+                # one undifferentiated column.
+                + [ln for r in admin_rows if r["type"] != "block"
+                   for ln in _show_line(r, f"{ADMIN}/{pid}", act)]
+                + (['tellraw @s [{text:"  ———— blocks ————",color:"dark_gray"}]']
+                   if any(r["type"] == "block" for r in admin_rows)
+                   and any(r["type"] not in ("block", "note", "sep") for r in admin_rows)
+                   else [])
+                + [ln for r in admin_rows if r["type"] == "block"
+                   for ln in _show_line(r, f"{ADMIN}/{pid}", act)]
                 + [
                     'tellraw @s [{text:""}]',
                     'tellraw @s [{text:"  "},'
@@ -392,6 +406,15 @@ def _show_line(row, base, act):
     label = row["label"]
     t = row["type"]
     slug = f"{base}/{_slug(label)}"
+
+    if t == "note":
+        # Text with no value and no buttons. A page whose settings only apply to
+        # part of a module needs to say so where they are, not in a wiki page
+        # nobody has open at the time.
+        return [f'tellraw @s [{{text:"  {label}",color:"dark_gray",italic:true}}]']
+
+    if t == "sep":
+        return ['tellraw @s [{text:"  ————————————————",color:"dark_gray"}]']
 
     if t == "block":
         block = row["block"]

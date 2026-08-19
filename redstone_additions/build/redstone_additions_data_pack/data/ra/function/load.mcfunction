@@ -59,6 +59,10 @@ scoreboard objectives add ra.wr.x dummy
 scoreboard objectives add ra.wr.y dummy
 scoreboard objectives add ra.wr.z dummy
 
+# Settings. After the modules have loaded, because each module registers its own
+# page through #ra_settings:register and cannot do that before it exists.
+function ra_settings:init
+
 function ra:tools/wrench/init_registry
 function ra:tools/readonly/init_registry
 
@@ -72,4 +76,13 @@ tellraw @a [{text:"[RA_Lib] ",color:"gold"},{text:"v5.1.14 loaded",color:"green"
 
 # Welcome message_block
 tellraw @a [{text:"[",color:"dark_gray"},{text:"RA",color:"gold",bold:true},{text:"] ",color:"dark_gray"},{text:"Redstone Additions v5.1.14 loaded!",color:"green"}]
+# Server settings run straight from the button: an operator clicking it wants the
+# page, not the command in their chat box.
+tellraw @a [{text:"Server settings: ",color:"gray"},{text:"[ Open ]",color:"yellow",bold:true,hover_event:{action:"show_text",value:"World-wide settings — needs permission level 2"},click_event:{action:"run_command",command:"/function ra_settings:admin/show"}}]
+
+# User settings are SUGGESTED rather than run, so the command lands in the chat
+# box and the player reads it before pressing enter. This one has to be
+# remembered -- it is the only way back into the menu once this message has
+# scrolled away -- and a button that silently works teaches nobody its name.
+tellraw @a [{text:"Your settings: ",color:"gray"},{text:"/trigger ra.settings.open",color:"yellow",bold:true,hover_event:{action:"show_text",value:"Click to put this in your chat box — then press enter"},click_event:{action:"suggest_command",command:"/trigger ra.settings.open"}}]
 tellraw @a [{text:"Use ",color:"gray"},{text:"/function ra:give_all_items",color:"yellow",hover_event:{action:"show_text",value:"Give all items"},click_event:{action:"suggest_command",command:"/function ra:give_all_items"}},{text:" to get items",color:"gray"}]

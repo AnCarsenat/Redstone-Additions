@@ -1,12 +1,14 @@
 {
     "name": "Redstone additions",
     "description": "Redstone additions on beet",
-
     "data_pack": {
-        "load": ["src"]
+        "load": [
+            "src"
+        ]
     },
-
-    "pipeline": ["tools.keep_loose_files"],
-
+    "pipeline": [
+        "tools.settings_gen",
+        "tools.keep_loose_files"
+    ],
     "output": "build"
 }

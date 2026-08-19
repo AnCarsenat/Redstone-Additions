@@ -1,0 +1,12 @@
+{
+  "id": "multiblock",
+  "title": "Multiblocks",
+  "rows": [
+    {
+      "type": "block",
+      "block": "multiblock_base",
+      "label": "Multiblock Base"
+    }
+  ],
+  "namespace": "ra_multiblock"
+}

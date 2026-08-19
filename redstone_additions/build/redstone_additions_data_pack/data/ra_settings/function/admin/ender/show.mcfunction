@@ -1,0 +1,12 @@
+# Current values on the Ender Vaults page.
+tellraw @s [{text:"─── ",color:"dark_gray"},{text:"Ender Vaults",color:"gold",bold:true},{text:" ───",color:"dark_gray"}]
+tellraw @s [{text:"  Power Vault EU/tick: ",color:"white"},{nbt:"global.props.\"ender_power_vault\".\"transfer_rate\"",storage:"ra:settings",color:"aqua"}]
+tellraw @s [{text:"  Fluid Vault mB/tick: ",color:"white"},{nbt:"global.props.\"ender_fluid_vault\".\"transfer_rate\"",storage:"ra:settings",color:"aqua"}]
+execute unless data storage ra:settings disabled[{b:"ender_item_vault"}] run tellraw @s [{text:"  Ender Item Vault: ",color:"white"},{text:"enabled",color:"green"}]
+execute if data storage ra:settings disabled[{b:"ender_item_vault"}] run tellraw @s [{text:"  Ender Item Vault: ",color:"white"},{text:"disabled",color:"red"}]
+execute unless data storage ra:settings disabled[{b:"ender_fluid_vault"}] run tellraw @s [{text:"  Ender Fluid Vault: ",color:"white"},{text:"enabled",color:"green"}]
+execute if data storage ra:settings disabled[{b:"ender_fluid_vault"}] run tellraw @s [{text:"  Ender Fluid Vault: ",color:"white"},{text:"disabled",color:"red"}]
+execute unless data storage ra:settings disabled[{b:"ender_power_vault"}] run tellraw @s [{text:"  Ender Power Vault: ",color:"white"},{text:"enabled",color:"green"}]
+execute if data storage ra:settings disabled[{b:"ender_power_vault"}] run tellraw @s [{text:"  Ender Power Vault: ",color:"white"},{text:"disabled",color:"red"}]
+execute unless data storage ra:settings disabled[{b:"teleport_anchor"}] run tellraw @s [{text:"  Teleport Anchor: ",color:"white"},{text:"enabled",color:"green"}]
+execute if data storage ra:settings disabled[{b:"teleport_anchor"}] run tellraw @s [{text:"  Teleport Anchor: ",color:"white"},{text:"disabled",color:"red"}]

@@ -1,0 +1,11 @@
+# Current values on the Infinite Generators page.
+tellraw @s [{text:"─── ",color:"dark_gray"},{text:"Infinite Generators",color:"gold",bold:true},{text:" ───",color:"dark_gray"}]
+tellraw @s [{text:"  Mineral interval: ",color:"white"},{nbt:"global.props.\"mineral_generator\".\"cooldown\"",storage:"ra:settings",color:"aqua"}]
+tellraw @s [{text:"  Nether interval: ",color:"white"},{nbt:"global.props.\"nether_generator\".\"cooldown\"",storage:"ra:settings",color:"aqua"}]
+tellraw @s [{text:"  Poppy interval: ",color:"white"},{nbt:"global.props.\"poppy_generator\".\"cooldown\"",storage:"ra:settings",color:"aqua"}]
+execute unless data storage ra:settings disabled[{b:"mineral_generator"}] run tellraw @s [{text:"  Mineral Generator: ",color:"white"},{text:"enabled",color:"green"}]
+execute if data storage ra:settings disabled[{b:"mineral_generator"}] run tellraw @s [{text:"  Mineral Generator: ",color:"white"},{text:"disabled",color:"red"}]
+execute unless data storage ra:settings disabled[{b:"nether_generator"}] run tellraw @s [{text:"  Nether Generator: ",color:"white"},{text:"enabled",color:"green"}]
+execute if data storage ra:settings disabled[{b:"nether_generator"}] run tellraw @s [{text:"  Nether Generator: ",color:"white"},{text:"disabled",color:"red"}]
+execute unless data storage ra:settings disabled[{b:"poppy_generator"}] run tellraw @s [{text:"  Poppy Generator: ",color:"white"},{text:"enabled",color:"green"}]
+execute if data storage ra:settings disabled[{b:"poppy_generator"}] run tellraw @s [{text:"  Poppy Generator: ",color:"white"},{text:"disabled",color:"red"}]

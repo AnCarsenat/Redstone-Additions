@@ -1,0 +1,87 @@
+{
+  "id": "gates",
+  "title": "Logic Gates",
+  "rows": [
+    {
+      "type": "prop",
+      "block": "clock",
+      "prop": "cooldown",
+      "label": "Clock interval",
+      "default": 20,
+      "min": 2,
+      "max": 1200,
+      "step": 2
+    },
+    {
+      "type": "prop",
+      "block": "delayer",
+      "prop": "delay",
+      "label": "Delayer delay",
+      "default": 20,
+      "min": 1,
+      "max": 1200,
+      "step": 5
+    },
+    {
+      "type": "prop",
+      "block": "extender",
+      "prop": "extend",
+      "label": "Extender duration",
+      "default": 20,
+      "min": 1,
+      "max": 1200,
+      "step": 5
+    },
+    {
+      "type": "prop",
+      "block": "shortener",
+      "prop": "pulse",
+      "label": "Shortener pulse",
+      "default": 2,
+      "min": 1,
+      "max": 200,
+      "step": 1
+    },
+    {
+      "type": "prop",
+      "block": "randomizer",
+      "prop": "chance",
+      "label": "Randomizer chance %",
+      "default": 50,
+      "min": 0,
+      "max": 100,
+      "step": 5
+    },
+    {
+      "type": "block",
+      "block": "uni_gate",
+      "label": "Universal Gate"
+    },
+    {
+      "type": "block",
+      "block": "clock",
+      "label": "Clock"
+    },
+    {
+      "type": "block",
+      "block": "delayer",
+      "label": "Delayer"
+    },
+    {
+      "type": "block",
+      "block": "extender",
+      "label": "Extender"
+    },
+    {
+      "type": "block",
+      "block": "shortener",
+      "label": "Shortener"
+    },
+    {
+      "type": "block",
+      "block": "randomizer",
+      "label": "Randomizer"
+    }
+  ],
+  "namespace": "ra_gates"
+}

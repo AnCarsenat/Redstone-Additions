@@ -1,0 +1,22 @@
+{
+  "id": "sensors",
+  "title": "Sensors",
+  "rows": [
+    {
+      "type": "block",
+      "block": "entity_detector",
+      "label": "Entity Detector"
+    },
+    {
+      "type": "block",
+      "block": "tag_adder",
+      "label": "Tag Adder"
+    },
+    {
+      "type": "block",
+      "block": "tag_remover",
+      "label": "Tag Remover"
+    }
+  ],
+  "namespace": "ra_sensors"
+}

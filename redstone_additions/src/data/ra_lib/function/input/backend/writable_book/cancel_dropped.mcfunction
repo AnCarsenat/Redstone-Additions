@@ -6,7 +6,7 @@
 # dropped item and clears any copy still in the inventory, so nothing is left
 # lying on the floor.
 
-tellraw @s [{text:"[RA Input] ",color:"gold"},{text:"Input cancelled.",color:"gray"}]
+tellraw @s [{text:"[RA Input] ",color:"gold"},{text:"Input cancelled — the form was found on the ground (req ",color:"gray"},{score:{name:"@s",objective:"ra.input.req"},color:"gray"},{text:").",color:"gray"}]
 playsound minecraft:block.note_block.bass block @s[scores={ra.u.snd=1..}] ~ ~ ~ 0.5 0.8
 
 function ra_lib:input/cancel

@@ -8,7 +8,7 @@
 # and without it a finished answer would be thrown away on the very tick it
 # arrived.
 
-execute unless entity @s[tag=ra.input.active] unless score @s ra.input.state matches 2 run tellraw @s [{text:"[Settings] ",color:"gold"},{text:"Input cancelled — nothing was changed.",color:"gray"}]
+execute unless entity @s[tag=ra.input.active] unless score @s ra.input.state matches 2 run tellraw @s [{text:"[Settings] ",color:"gold"},{text:"Session gone before an answer arrived — mine ",color:"gray"},{score:{name:"@s",objective:"ra.settings.req"},color:"gray"},{text:", live ",color:"gray"},{score:{name:"@s",objective:"ra.input.req"},color:"gray"},{text:", state ",color:"gray"},{score:{name:"@s",objective:"ra.input.state"},color:"gray"}]
 execute unless entity @s[tag=ra.input.active] unless score @s ra.input.state matches 2 run scoreboard players set @s ra.settings.pend 0
 execute unless entity @s[tag=ra.input.active] unless score @s ra.input.state matches 2 run return 0
 

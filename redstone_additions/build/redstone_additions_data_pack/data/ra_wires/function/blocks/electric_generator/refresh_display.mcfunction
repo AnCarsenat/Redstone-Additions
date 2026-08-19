@@ -11,6 +11,28 @@
 # furnace does. It goes through apply_lit rather than apply: a block state cannot
 # ride along in the block's NAME, and putting it there is what made this skin
 # disappear entirely rather than fail loudly.
+#
+# Changing lit on the display that is already there beats rebuilding it -- see
+# ra_lib:skin/set_lit for why a kill-and-respawn blinks and z-fights. apply_lit
+# is the fallback for when there is no display to edit yet.
+#
+# LIT COMES FROM THE gen_lit TAG, NOT FROM data.data.burn
+# It used to read data.data.burn, which is the SOLID FUEL countdown. A generator
+# running on steam never sets that field -- generator_tick raises #gen.burning
+# from the steam path directly -- so a steam generator produced EU while drawn
+# permanently unlit. `lit` is a question about whether the block is generating,
+# and data.data.burn only answers "is it burning an item", which is a different
+# question that happens to coincide for one of the two fuels.
+#
+# running/idle already maintain gen_lit for BOTH fuel paths, so that tag is the
+# honest answer. idle must therefore clear gen_lit BEFORE calling this.
 
-execute if data entity @s data.data.burn run function ra_lib:skin/apply_lit {real:"minecraft:barrel",skin:"minecraft:furnace",id:"electric_generator",lit:"true"}
-execute unless data entity @s data.data.burn run function ra_lib:skin/apply_lit {real:"minecraft:barrel",skin:"minecraft:furnace",id:"electric_generator",lit:"false"}
+data modify storage ra:wires gen.skin.id set value "electric_generator"
+data modify storage ra:wires gen.skin.lit set value "false"
+execute if entity @s[tag=ra.wires.gen_lit] run data modify storage ra:wires gen.skin.lit set value "true"
+
+execute store result score #gen.skinned ra.wires.tmp run function ra_lib:skin/set_lit with storage ra:wires gen.skin
+execute if score #gen.skinned ra.wires.tmp matches 1.. run return 0
+
+execute if entity @s[tag=ra.wires.gen_lit] run function ra_lib:skin/apply_lit {real:"minecraft:barrel",skin:"minecraft:furnace",id:"electric_generator",lit:"true"}
+execute unless entity @s[tag=ra.wires.gen_lit] run function ra_lib:skin/apply_lit {real:"minecraft:barrel",skin:"minecraft:furnace",id:"electric_generator",lit:"false"}

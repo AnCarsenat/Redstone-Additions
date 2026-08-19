@@ -10,8 +10,6 @@
 
 function ra_lib:input/cancel
 
-scoreboard players set @s ra.settings.pend -1
-
 execute if data storage ra:settings admin_edit{type:"str"} run scoreboard players set @s ra.input.mode 2
 execute if data storage ra:settings admin_edit{type:"str"} run scoreboard players set @s ra.input.min 0
 execute if data storage ra:settings admin_edit{type:"str"} run scoreboard players set @s ra.input.max 120
@@ -26,6 +24,12 @@ execute if data storage ra:settings admin_edit{type:"int"} store result score @s
 function ra_lib:input/session/create
 function ra_lib:input/router/select_backend
 function ra_lib:input/router/open
+
+# Start waiting ONLY now, and only if a backend actually opened. Setting it before
+# meant that a request which never opened anything still left us waiting for an
+# answer, and the next tick reported it as cancelled -- a failure to ask looked
+# identical to the player changing their mind.
+execute if score @s ra.input.backend matches 1..2 run scoreboard players set @s ra.settings.pend -1
 
 # Reported AFTER the backend is chosen, not before, so the numbers are the ones
 # that were actually used. mode 2 is text and should pick backend 2 (the writable

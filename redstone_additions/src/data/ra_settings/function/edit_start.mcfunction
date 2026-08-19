@@ -12,9 +12,6 @@
 function ra_lib:input/cancel
 
 # Row index + 1: 0 is the "nothing pending" state that apply_pending waits on.
-scoreboard players operation @s ra.settings.pend = #v ra.set.tmp
-scoreboard players add @s ra.settings.pend 1
-
 # mode 2 is free text, mode 3 is a number. The bounds are the row's own, so the
 # form refuses out-of-range input instead of accepting it and clamping silently.
 execute if data storage ra:settings cur{type:"str"} run scoreboard players set @s ra.input.mode 2
@@ -31,6 +28,11 @@ execute if data storage ra:settings cur{type:"int"} store result score @s ra.inp
 function ra_lib:input/session/create
 function ra_lib:input/router/select_backend
 function ra_lib:input/router/open
+
+# Start waiting ONLY now, and only if a backend actually opened -- see
+# ra_settings:admin_edit_start. Row index + 1, because 0 is "nothing pending".
+execute if score @s ra.input.backend matches 1..2 run scoreboard players operation @s ra.settings.pend = #v ra.set.tmp
+execute if score @s ra.input.backend matches 1..2 run scoreboard players add @s ra.settings.pend 1
 
 # Reported AFTER the backend is chosen, not before, so the numbers are the ones
 # that were actually used. mode 2 is text and should pick backend 2 (the writable

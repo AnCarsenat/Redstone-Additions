@@ -14,9 +14,15 @@ execute if score #input_dropped ra.temp matches 1 run return 0
 # Keep the request book available while waiting without overwriting the current hand.
 $execute unless data entity @s Inventory[{id:"minecraft:writable_book",components:{"minecraft:custom_data":{ra:{input_book:1b,input_req:$(req)}}}}] run function ra_lib:input/backend/writable_book/give_book_safe {req:$(req)}
 
-# Submit when page 1 exists at all, whatever shape it is in.
+# Submit when page 1 exists AND has something on it.
 #
-# THIS USED TO TEST pages:[{}] AND NEVER FIRED
+# "Exists" alone is not enough: a book can carry an empty page, and submitting on
+# that fires the instant it is handed over -- the request completes with an empty
+# string before the player has typed anything, which looks exactly like it
+# cancelled itself. Both empty shapes are excluded, the bare "" and the {raw:""}
+# a filtering server produces.
+#
+# AND IT USED TO TEST pages:[{}], WHICH NEVER FIRED
 # A book page is a *filterable* string. With chat filtering off -- which is to say
 # on nearly every server -- the page is written as a bare string, and `{}` in an
 # NBT predicate matches a COMPOUND. So the guard only recognised a page on a
@@ -26,4 +32,4 @@ $execute unless data entity @s Inventory[{id:"minecraft:writable_book",component
 # submit already reads both shapes -- pages[0].raw first, pages[0] second -- so
 # only this test was wrong. Reaching the page as a PATH rather than as part of the
 # item predicate matches a string and a compound alike.
-$execute if data entity @s Inventory[{id:"minecraft:writable_book",components:{"minecraft:custom_data":{ra:{input_book:1b,input_req:$(req)}}}}].components."minecraft:writable_book_content".pages[0] run function ra_lib:input/backend/writable_book/submit {req:$(req)}
+$execute if data entity @s Inventory[{id:"minecraft:writable_book",components:{"minecraft:custom_data":{ra:{input_book:1b,input_req:$(req)}}}}].components."minecraft:writable_book_content".pages[0] unless data entity @s Inventory[{id:"minecraft:writable_book",components:{"minecraft:custom_data":{ra:{input_book:1b,input_req:$(req)}},"minecraft:writable_book_content":{pages:[""]}}}] unless data entity @s Inventory[{id:"minecraft:writable_book",components:{"minecraft:custom_data":{ra:{input_book:1b,input_req:$(req)}},"minecraft:writable_book_content":{pages:[{raw:""}]}}}] run function ra_lib:input/backend/writable_book/submit {req:$(req)}

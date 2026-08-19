@@ -46,6 +46,11 @@
   kit that uses this thrust model — and enchant crafting can be switched off. The jetpack values are read
   once per tick rather than per flying player, because `ra_settings:get` is a
   macro and the flight path runs for everyone in the air.
+- **`/function ra:settings`** opens the server settings without tabbing through
+  the tree.
+- **[Apply to placed]** on every block-default row, pushing the configured value
+  onto blocks already in the world and reporting how many changed. Defaults still
+  apply only to new blocks by default; this is the explicit opt-out.
 - [Settings](settings.md) documentation page.
 
 ### Fixed

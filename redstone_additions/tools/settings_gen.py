@@ -174,6 +174,31 @@ def beet_default(ctx: Context):
                     f"data modify storage ra:settings {path} set value {dflt}",
                     report(label, path, note),
                 ])
+                # Push the configured value onto blocks that already exist.
+                #
+                # The normal rule is that a default applies to blocks placed from
+                # now on, so that retuning does not silently re-balance a build
+                # around the player. That is right as a default and wrong as the
+                # only option -- an admin who has just changed a number usually
+                # wants their existing machines to follow it. This is that, asked
+                # for explicitly, and it says how many it changed.
+                #
+                # Addressed by the marker tag rather than data.type: the tag is
+                # what every block carries and what every other sweep in the pack
+                # selects on.
+                ctx.data.functions[f"{base}/apply_to_existing"] = Function([
+                    f"# {label}: copy the configured value onto every {block} already placed.",
+                    f"# Overwrites any per-block value set with the wrench.",
+                    f"scoreboard players set #n ra.set.tmp 0",
+                    f"execute store result score #n ra.set.tmp if entity @e[type=marker,tag=ra.custom_block.{block}]",
+                    f"execute as @e[type=marker,tag=ra.custom_block.{block}] run "
+                    f'data modify entity @s data.properties.{prop} set from storage ra:settings {path}',
+                    f'tellraw @s [{{text:"[Settings] ",color:"gold"}},{{text:"Updated ",color:"gray"}},'
+                    f'{{score:{{name:"#n",objective:"ra.set.tmp"}},color:"aqua"}},'
+                    f'{{text:" existing {block}: {prop} = ",color:"gray"}},'
+                    f'{{nbt:"{esc(path)}",storage:"ra:settings",color:"aqua"}}]',
+                ])
+
                 # Stepping alone is not enough for a wide range: moving a
                 # generator from 60 to 500 EU would be forty-four clicks.
                 ctx.data.functions[f"{base}/edit"] = Function([
@@ -467,7 +492,11 @@ def _show_line(row, base, act):
         btns = (_btn("-", f"{slug}/down", "red", f'Down by {row["step"]}', act(f"{slug}/down")) + ',{text:" "},'
                 + _btn("+", f"{slug}/up", "green", f'Up by {row["step"]}', act(f"{slug}/up")) + ',{text:" "},'
                 + _btn("Set", f"{slug}/edit", "yellow", "Type an exact value", act(f"{slug}/edit")) + ',{text:" "},'
-                + _btn("Reset", f"{slug}/reset", "gray", None, act(f"{slug}/reset")))
+                + _btn("Reset", f"{slug}/reset", "gray", None, act(f"{slug}/reset"))
+                + (',{text:" "},' + _btn("Apply to placed", f"{slug}/apply_to_existing", "gold",
+                                         "Push this onto blocks already in the world (overwrites wrench values)",
+                                         act(f"{slug}/apply_to_existing"))
+                   if t == "prop" else ""))
     elif t == "str":
         btns = (_btn("Set", f"{slug}/edit", "yellow", "Type a new value", act(f"{slug}/edit")) + ',{text:" "},'
                 + _btn("Reset", f"{slug}/reset", "gray", None, act(f"{slug}/reset")))

@@ -46,10 +46,10 @@ about how loud it is.
 ## Server settings
 
 ```
-/function ra_settings:admin/show
+/function ra:settings
 ```
 
-Requires permission level 2. The index is a row of buttons, one per module; each
+Short form of `/function ra_settings:admin/show`. Requires permission level 2. The index is a row of buttons, one per module; each
 opens a page where every value has buttons beside it.
 
 Everything also autocompletes. Type `/function ra_settings:admin/` and press tab
@@ -100,12 +100,18 @@ admin who wants them gone can break them.
 ### Changing defaults
 
 Rows marked *(new blocks only)* set the value a block is given **when it is
-placed**. Machines already standing keep what they have.
+placed**. Machines already standing keep what they have — until you press
+**[Apply to placed]**, which pushes the configured value onto every block of that
+type already in the world and reports how many it changed.
 
-That is deliberate. The alternative — reading the setting live — would put a
-lookup in `ra_lib:util/property`, which runs for every consumer, every bridge and
-every drain on every tick. It would also silently re-tune a build that was
-balanced around the old number. Wrench an existing block if you want it changed.
+The split is deliberate. Reading the setting live would put a lookup in
+`ra_lib:util/property`, which runs for every consumer, every bridge and every
+drain on every tick. Applying it automatically would silently re-tune a build
+balanced around the old number. So it is opt-in per change, with a button.
+
+!!! warning "[Apply to placed] overwrites wrench values"
+    A block whose property you tuned individually is set to the configured value
+    like every other. There is no record of what it was.
 
 ### Typing exact values
 

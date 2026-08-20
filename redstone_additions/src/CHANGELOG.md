@@ -58,6 +58,13 @@
   had a row in the editor on any block. It is now written on every load, like the
   wrench and readonly registries beside it, and a name added to it reaches an
   existing world on the next `/reload`.
+- **The Creative Fluid Source's medium could only be set with the wrench.** Its
+  `medium` property was never in the Data Handler's registry, so it had no row —
+  and neither did `enabled`, which the wrench toggles on emitters and multiblocks.
+  Both are registered now. A medium typed rather than cycled is checked against
+  the media registry before anything is pushed, because free text can name a
+  medium that does not exist and a junk key in a multi-medium network is one
+  nothing could ever drain.
 - **The Data Handler had no row for either filter.** It draws a row only for a
   property the block actually has, and Item Pipes were placed carrying none at
   all, while `filter_medium` was never added to the registry. Pipes are now

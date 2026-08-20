@@ -20,8 +20,14 @@
 # So: never guard this on the presence of one of its own lists. Every list below
 # is rewritten on every load, and a name added here reaches an existing world on
 # the next /reload.
+#
+# APPEND, DO NOT INSERT
+# A row's button carries 100 + its index, and those ids are baked into the chat
+# message a player is looking at. Inserting a name in the middle renumbers every
+# row after it, so a menu drawn before a /reload would edit the wrong property
+# when clicked. New names go on the end.
 
-data modify storage ra:dh registry set value ["inverted","mode","channel","target","tag","entity_selector","message_block","gate","gate_type","output","range","radius","delay","cooldown","power","distance","extend","pulse","chance","transfer_rate","generation_rate","eu_use","tier","tier_level","input1","output1","anchor_id","targets","rate","filter_item","filter_medium"]
+data modify storage ra:dh registry set value ["inverted","mode","channel","target","tag","entity_selector","message_block","gate","gate_type","output","range","radius","delay","cooldown","power","distance","extend","pulse","chance","transfer_rate","generation_rate","eu_use","tier","tier_level","input1","output1","anchor_id","targets","rate","filter_item","filter_medium","medium","enabled"]
 
 # Which of those names hold numbers, in one place beside the registry itself.
 #

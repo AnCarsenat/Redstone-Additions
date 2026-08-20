@@ -2,8 +2,11 @@
 # RA Jetpacks — chestplate upgrade kits
 
 # Players switch flight mode with /trigger ra.jp.mode.
+# The four jetpack triggers are NOT enabled here. flight/tick_player enables them
+# for anyone actually wearing a jetpack, every tick, so enabling them for everyone
+# at load only put four names in the /trigger completion of every player who has
+# never seen one.
 scoreboard objectives add ra.jp.mode trigger
-scoreboard players enable @a ra.jp.mode
 
 # 0 = classic, 1 = hover.
 scoreboard objectives add ra.jp.state dummy
@@ -29,7 +32,6 @@ scoreboard objectives add ra.jp.z dummy
 # The upgrade menu: /trigger ra.jp.kits opens it, and its buttons come back
 # through the same trigger with a value. See ra_jetpacks:kit/menu_action.
 scoreboard objectives add ra.jp.kits trigger
-scoreboard players enable @a ra.jp.kits
 
 scoreboard objectives add ra.jp.vx dummy
 scoreboard objectives add ra.jp.vz dummy
@@ -43,12 +45,10 @@ scoreboard objectives add ra.jp.air dummy
 # wears a jetpack that does nothing at all.
 scoreboard objectives add ra.jp.off dummy
 scoreboard objectives add ra.jp.power trigger
-scoreboard players enable @a ra.jp.power
 
 # Engine-loop timer, and the mute flag behind /trigger ra.jp.sound.
 scoreboard objectives add ra.jp.snd dummy
 scoreboard objectives add ra.jp.mute dummy
 scoreboard objectives add ra.jp.sound trigger
-scoreboard players enable @a ra.jp.sound
 
 tellraw @a [{text:"[",color:"dark_gray"},{text:"RA",color:"gold",bold:true},{text:"] ",color:"dark_gray"},{text:"Jetpacks loaded!",color:"aqua"}]

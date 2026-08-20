@@ -187,3 +187,9 @@ The tool reports each of these on stderr unless `--quiet` is passed.
 3. Paste `readme.bbcode` into the PMC submission's description field with
    **BBCode mode on**, and preview before saving — PMC turns every newline into
    a line break, so the preview is the only real check.
+
+Step 2 also happens on its own. `.github/workflows/bbcode.yml` runs that exact
+command whenever `readme.md` or the converter changes on `main`, commits the
+result back if it differs, and attaches it as a `readme-bbcode` build artifact —
+so `readme.bbcode` in the repo is never a release behind the readme. Run it by
+hand from the Actions tab with **Generate BBCode → Run workflow**.

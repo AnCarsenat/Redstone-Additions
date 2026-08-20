@@ -18,4 +18,4 @@ $execute if score #gen.cnt ra.wires.tmp matches 1.. store result block ~ ~ ~ Ite
 $data modify entity @s data.data.burn set value $(ticks)
 $data modify entity @s data.status.fuel set value "$(name)"
 
-playsound minecraft:block.furnace.fire_crackle block @a[distance=..12] ~ ~ ~ 0.4 1.2
+playsound minecraft:block.furnace.fire_crackle block @a[distance=..12,scores={ra.u.snd=1..}] ~ ~ ~ 0.4 1.2

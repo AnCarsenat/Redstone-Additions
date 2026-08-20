@@ -18,4 +18,4 @@ function ra_jetpacks:flight/stop
 
 execute if score @s ra.jp.state matches 1 run title @s actionbar [{text:"Jetpack: ",color:"gray"},{text:"hover",color:"aqua"},{text:" — sneak and look up or down",color:"dark_gray"}]
 execute unless score @s ra.jp.state matches 1 run title @s actionbar [{text:"Jetpack: ",color:"gray"},{text:"classic",color:"green"},{text:" — sneak to rise",color:"dark_gray"}]
-playsound minecraft:block.lever.click player @s ~ ~ ~ 0.6 1.4
+playsound minecraft:block.lever.click player @s[scores={ra.u.snd=1..}] ~ ~ ~ 0.6 1.4

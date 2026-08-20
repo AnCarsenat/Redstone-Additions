@@ -22,4 +22,4 @@ execute if score #ef.o ra.wires.tmp matches 3 run data modify entity @s data.pro
 # raycast and never touches the player, so anything addressed to a player-side
 # tag would reach nobody -- which is exactly how this once cycled in silence.
 tellraw @a[distance=..10] [{text:"[Wrench] ",color:"gold"},{text:"Furnace output: ",color:"gray"},{nbt:"data.properties.output",entity:"@s",color:"green"}]
-playsound minecraft:block.lever.click block @a[distance=..10] ~ ~ ~ 0.6 1.4
+playsound minecraft:block.lever.click block @a[distance=..10,scores={ra.u.snd=1..}] ~ ~ ~ 0.6 1.4

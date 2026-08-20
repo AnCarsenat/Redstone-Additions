@@ -20,5 +20,5 @@ function ra_ender:link/move_stack with storage ra:ender move
 function ra_ender:blocks/item_vault/mark
 
 scoreboard players set #ender.moved ra.temp 1
-playsound minecraft:entity.enderman.teleport block @a[distance=..8] ~ ~ ~ 0.25 1.6
-particle minecraft:portal ~ ~1 ~ 0.2 0.2 0.2 0.05 6
+playsound minecraft:entity.enderman.teleport block @a[distance=..8,scores={ra.u.snd=1..}] ~ ~ ~ 0.25 1.6
+particle minecraft:portal ~ ~1 ~ 0.2 0.2 0.2 0.05 6 normal @a[scores={ra.u.par=1..}]

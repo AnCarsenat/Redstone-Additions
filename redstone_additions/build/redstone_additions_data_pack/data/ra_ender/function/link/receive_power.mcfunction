@@ -14,5 +14,5 @@ execute store result score #ender.sent ra.temp run function ra_wires:electric/of
 
 execute if score #ender.sent ra.temp matches ..0 run return 0
 
-playsound minecraft:block.beacon.activate block @a[distance=..8] ~ ~ ~ 0.12 1.9
-particle minecraft:portal ~ ~1 ~ 0.2 0.2 0.2 0.05 3
+playsound minecraft:block.beacon.activate block @a[distance=..8,scores={ra.u.snd=1..}] ~ ~ ~ 0.12 1.9
+particle minecraft:portal ~ ~1 ~ 0.2 0.2 0.2 0.05 3 normal @a[scores={ra.u.par=1..}]

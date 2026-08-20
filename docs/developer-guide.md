@@ -1,6 +1,6 @@
 # Developer Guide
 
-This guide documents implementation architecture and contributor workflow for `v5.1.14`.
+This guide documents implementation architecture and contributor workflow for `v5.1.15`.
 
 If you want conceptual runtime flow first, start with [How It Works](how-it-works.md). This page is focused on engineering-level extension and maintenance work.
 
@@ -279,6 +279,92 @@ Runtime behavior:
 - `give_book_safe` only gives an Input Form when inventory has room.
 - Full inventory produces a red user warning and skips book give.
 - Dropped request books are cleaned through request-aware selectors.
+
+## 2b) Settings: `ra_settings`
+
+Values that are not a property of one placed block. Per-block properties already
+have a home — the marker's `data.properties`, edited with the wrench or the Data
+Handler. This is for the other two kinds: pack-wide balance, and per-player
+preference.
+
+### Two scopes, reached two ways
+
+`global` lives in `storage ra:settings global` and is reached **only** through
+`/function ra_settings:admin/...`, which needs permission level 2. Being a
+function tree is also what makes it discoverable: `/function` autocompletes, and a
+macro argument completes to nothing.
+
+`user` is per-player and reached **only** through `/trigger`, which needs no
+permission. The two never mix: the in-game menu contains nothing but user rows, so
+there is no operator setting on screen for a player to click and be refused.
+
+### Everything is generated
+
+One JSON file per page in `tools/settings/`. `tools/settings_gen.py` (a beet
+plugin) emits, at build time:
+
+| Generated function | What it is |
+|---|---|
+| `ra_settings:pages` | the menu registry — **user rows only** |
+| `ra_settings:defaults` | seeds any setting with no value, and creates user objectives |
+| `ra_settings:sync` | per-tick seeding for players who have no score yet |
+| `ra_settings:admin/**` | the whole operator function tree |
+| `ra_settings:admin_actions` | index → function, for button dispatch |
+| `ra_settings:admin_pages` | index → page, for the after-action redraw |
+| `ra_settings:blockmap` | block → label + enable code, for the disabled list |
+| `ra_settings:uninstall` | removes exactly what the system created |
+
+Because the generator knows every key, bound and step as a literal, the emitted
+tree contains **no macros at all** — none of the quoting fragility that shapes the
+rest of the library applies to it.
+
+### Reading a setting
+
+```mcfunction
+function ra_settings:get     {key:"welcome",default:1}
+function ra_settings:prop    {block:"electric_generator",prop:"generation_rate",default:60}
+function ra_settings:user    {obj:"ra.u.snd",default:1}
+function ra_settings:enabled {block:"electric_furnace"}
+```
+
+`get` **requires** a default. It used to answer 0 for a missing key, and zero is a
+real value — "off" for a flag, "disabled" for a gate — so a key that was missing
+for any reason read as a deliberate no and switched features off. Callers pass the
+value that keeps things working.
+
+### Where block defaults are applied
+
+`prop` rows are seeded into `data.properties` at **placement**
+(`ra_settings:placement/seed`), not read live. `ra_lib:util/property` runs for
+every consumer, bridge and drain on every tick and is deliberately four commands
+with no sub-calls; a settings lookup does not belong there. Applying at placement
+also stops a retune silently re-balancing a build. `[Apply to placed]` is the
+explicit opt-out.
+
+### Triggers
+
+`/trigger` is the only control surface a player without permissions has, so every
+button a non-operator can press goes through one. A `suggest_command` pointing at
+a `/function` is useless to them.
+
+An enabled trigger appears in everyone's `/trigger` completion whether it can do
+anything or not, so they are handed out where usable and taken back where not.
+**`scoreboard players reset` is what takes one back** — the enabled flag is stored
+with the score.
+
+Codes on `ra.settings.open`: `1` your preferences, `2` server settings, `3`
+disabled blocks, `N+4` menu pages. New entry points take a spare code rather than
+a new objective.
+
+### Ordering constraint
+
+A click that opens an input session must be handled **after** `ra_lib:input/tick`
+in `ra:tick`. Handled before it, the session is scanned in the same tick it was
+created, and the book backend is written on the assumption that a tick has passed.
+This is why `ra_settings:input_tick` sits beside the Data Handler's collector
+while `ra_settings:tick` (seeding only) runs early.
+
+---
 
 ## 3) Shared Multiblock Library: `ra_lib_multiblock`
 

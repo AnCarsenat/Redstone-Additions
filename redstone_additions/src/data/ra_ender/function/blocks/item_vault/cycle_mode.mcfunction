@@ -18,4 +18,4 @@ execute unless score #ender.mode ra.temp matches 1..2 run data modify entity @s 
 execute if score #ender.mode ra.temp matches 1 run tellraw @a[distance=..10] [{text:"[Wrench] ",color:"gold"},{text:"Ender Item Vault: ",color:"gray"},{text:"send",color:"green"}]
 execute if score #ender.mode ra.temp matches 2 run tellraw @a[distance=..10] [{text:"[Wrench] ",color:"gold"},{text:"Ender Item Vault: ",color:"gray"},{text:"receive",color:"aqua"}]
 execute unless score #ender.mode ra.temp matches 1..2 run tellraw @a[distance=..10] [{text:"[Wrench] ",color:"gold"},{text:"Ender Item Vault: ",color:"gray"},{text:"link (two-way)",color:"light_purple"}]
-playsound minecraft:block.lever.click block @a[distance=..10] ~ ~ ~ 0.6 1.4
+playsound minecraft:block.lever.click block @a[distance=..10,scores={ra.u.snd=1..}] ~ ~ ~ 0.6 1.4

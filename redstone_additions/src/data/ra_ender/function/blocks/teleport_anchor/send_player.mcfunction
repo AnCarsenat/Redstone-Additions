@@ -11,5 +11,5 @@ execute at @e[type=marker,tag=ra.ender.tp_dest,limit=1] run tp @s ~ ~1 ~
 # straight back, short enough to be usable as a two-way door.
 scoreboard players set @s ra.ender.grace 30
 
-playsound minecraft:entity.enderman.teleport player @s ~ ~ ~ 0.8 1
+playsound minecraft:entity.enderman.teleport player @s[scores={ra.u.snd=1..}] ~ ~ ~ 0.8 1
 execute at @s run particle minecraft:portal ~ ~1 ~ 0.4 0.8 0.4 0.3 40

@@ -1,0 +1,12 @@
+{
+  "id": "chunk_loader",
+  "title": "Chunk Loader",
+  "rows": [
+    {
+      "type": "block",
+      "block": "chunk_loader",
+      "label": "Chunk Loader"
+    }
+  ],
+  "namespace": "ra_chunk_loader"
+}

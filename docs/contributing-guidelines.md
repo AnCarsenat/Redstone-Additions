@@ -9,7 +9,7 @@
     written permission. Full terms in the
     [licence](https://github.com/AnCarsenat/Redstone-Additions/blob/main/LICENSE).
 
-**Version:** v5.1.14  
+**Version:** v5.1.15  
 **Minecraft:** 1.21.9 – 26.2 (data pack formats 88 – 107)
 
 ---

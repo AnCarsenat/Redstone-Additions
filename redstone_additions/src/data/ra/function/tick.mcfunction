@@ -22,6 +22,10 @@ tag @a[tag=ra.remote_clicked] remove ra.remote_clicked
 # Debug-only input handler clicked tag cleanup (commented by request)
 # tag @a[tag=ra.input_handler_clicked] remove ra.input_handler_clicked
 
+# Settings: seed per-player defaults and collect menu clicks. Early, because the
+# module ticks below emit sounds and particles that are filtered on those scores.
+function ra_settings:tick
+
 # Rebuild transport networks if any were placed or broken. Debounced, so this is
 # a single storage check on a tick where nothing changed.
 function ra_lib:transport/tick
@@ -31,6 +35,10 @@ function ra_lib:input/tick
 
 # Tick non-OP input data handler actions
 function ra:tools/data_handler/tick
+
+# Settings typed input, collected in the same place and for the same reason: this
+# is after ra_lib:input/tick, so a form finished this tick is seen this tick.
+function ra_settings:input_tick
 
 # Debug-only input handler tick (commented by request)
 # function ra:tools/input_data_handler/tick
@@ -80,6 +88,29 @@ function ra:tools/goggles/tick
 
 schedule function ra:tick 1t
 
-# Wrench menu buttons come back through /trigger ra.wrench.
-scoreboard players enable @a ra.wrench
+# TOOL MENU TRIGGERS, HANDED OUT WHILE THE TOOL IS HELD
+# ra.wrench and ra.dh.action carry which row of a menu was clicked. They are no
+# use to somebody who is not holding the tool that prints that menu, and an
+# enabled trigger shows up in everyone's /trigger completion regardless -- so they
+# are enabled while the tool is in hand and reset when the grace window runs out.
+#
+# The window exists because putting the tool away to read the menu it just printed
+# is a normal thing to do, and disarming the buttons the instant a player switches
+# slots would make the menus feel broken.
+#
+# Resetting the score is what actually takes a trigger back: the enabled flag is
+# stored with the score, so removing one removes the other.
+execute as @a if items entity @s weapon.mainhand *[minecraft:custom_data~{ra:{wrench:1b}}] run scoreboard players set @s ra.hold.wrench 200
+execute as @a if items entity @s weapon.mainhand *[minecraft:custom_data~{ra:{data_handler:1b}}] run scoreboard players set @s ra.hold.dh 200
+
+execute as @a[scores={ra.hold.wrench=1..}] run scoreboard players remove @s ra.hold.wrench 1
+execute as @a[scores={ra.hold.dh=1..}] run scoreboard players remove @s ra.hold.dh 1
+
+scoreboard players enable @a[scores={ra.hold.wrench=1..}] ra.wrench
+scoreboard players enable @a[scores={ra.hold.dh=1..}] ra.dh.action
+scoreboard players enable @a[scores={ra.hold.dh=1..}] ra.edit_type
+
+execute as @a[scores={ra.hold.wrench=..0}] run scoreboard players reset @s ra.wrench
+execute as @a[scores={ra.hold.dh=..0}] run scoreboard players reset @s ra.dh.action
+execute as @a[scores={ra.hold.dh=..0}] run scoreboard players reset @s ra.edit_type
 execute as @a[scores={ra.wrench=1..}] at @s run function ra:tools/wrench/menu_action

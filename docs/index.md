@@ -2,7 +2,7 @@
 
 <img src="images/icon.png" alt="Redstone Additions" width="128">
 
-**Version:** v5.1.14  
+**Version:** v5.1.15  
 **Minecraft:** 1.21.9 – 26.2  
 **Author:** [AnCarsenat](https://github.com/AnCarsenat)
 
@@ -74,15 +74,16 @@ is the shortcut: one sample per module, and where to read about it.
 | [Chunk Loader](chunk-loader.md) | 1 force-load block | ![Chunk Loader recipe](images/recipes/ra_chunk_loader/chunk_loader.png){ width="220" } |
 | [Multiblocks](multiblocks.md) | 5 base tiers + structures | ![Copper Base recipe](images/recipes/ra_multiblock/copper_base.png){ width="220" } |
 | [Enchant Crafting](enchant-crafting.md) | Sacrifice items on an enchanting table | No recipe — uses the vanilla table |
-| [Jetpacks](jetpacks.md) | 2 chestplate upgrade kits | ![Iron Jetpack Kit recipe](images/recipes/ra_jetpacks/iron_jetpack_kit.png){ width="220" } |
+| [Jetpacks](jetpacks.md) | 2 jetpacks + 3 upgrade kits | ![Iron Jetpack Kit recipe](images/recipes/ra_jetpacks/iron_jetpack_kit.png){ width="220" } |
 | [Infinite Generators](infinite-generators.md) | 3 self-growing blocks + casing | ![Mineral Generator recipe](images/recipes/ra_infinite/mineral_generator.png){ width="220" } |
 | [Ender Links](ender-links.md) | 3 remote vaults + teleport anchor | ![Teleport Anchor recipe](images/recipes/ra_ender/teleport_anchor.png){ width="220" } |
 
 Current pack totals:
 
-- 52 placeable custom blocks
-- 58 recipes, all of them in the [Recipe Atlas](recipe-atlas.md)
-- 5 tools (Wrench, Creative Data Handler, Data Handler, Goggles, Redstone Remote)
+- 57 placeable custom blocks
+- 66 recipes, all of them in the [Recipe Atlas](recipe-atlas.md)
+- 7 tools (Wrench, Goggles, Data Handler, Creative Data Handler, Clipboard,
+  Multimeter, Redstone Remote)
 
 ## Commands Most Players Need
 
@@ -110,7 +111,32 @@ Current pack totals:
 | Data Handler | `/function ra:tools/data_handler/give` | ![Data Handler recipe](images/recipes/ra/data_handler.png){ width="200" } | Edit nearby block `data.properties` |
 | Goggles | `/function ra:tools/goggles/give` | ![Goggles recipe](images/recipes/ra/goggles.png){ width="200" } | In-world status overlays |
 
-## What Is New In v5.1.14
+## What Is New In v5.1.15
+
+- **[Settings](settings.md).** Server settings autocomplete under
+  `/function ra_settings:admin/` or open with `/function ra:settings`; players
+  change their own with `/trigger ra.settings.open`. Turn blocks off, retune
+  defaults, mute sounds and particles.
+- **Blocks can be disabled**, with a page listing which and a warning on load.
+- **Block defaults can be retuned**, and pushed onto blocks already built with
+  **[Apply to placed]**.
+- **Per-player sound and particle switches**, honoured by all 118 `playsound` and
+  `particle` calls in the pack.
+- **Uninstall asks twice** and says exactly what it is about to destroy.
+
+### Fixed
+
+- **Ender vaults could not find each other.** The tags a sending vault searches for
+  were cleared every tick and never set — broken since v5.1.8, in all three vault
+  types.
+- **The Electric Furnace flickered and z-fought** while working, and a steam-fed
+  EU Generator ran while drawn permanently unlit.
+- **Jetpack upgrade kits fired with the jetpack off**, and on an empty tank.
+- **Text input never completed** on a server without chat filtering.
+- **`/trigger` completion is no longer cluttered** — nine blanket-enabled triggers
+  down to one.
+
+## What Was New In v5.1.14
 
 - **[Recipe Atlas](recipe-atlas.md)** — every recipe on one page, searchable by name.
 - **The Data Handler no longer mangles strings.** Editing a channel wrote a number,

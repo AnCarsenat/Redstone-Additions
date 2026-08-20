@@ -17,4 +17,4 @@ execute if score @s ra.jp.mute matches 1 at @s run function ra_jetpacks:flight/s
 
 execute if score @s ra.jp.mute matches 1 run title @s actionbar [{text:"Jetpack sound: ",color:"gray"},{text:"off",color:"red"}]
 execute unless score @s ra.jp.mute matches 1 run title @s actionbar [{text:"Jetpack sound: ",color:"gray"},{text:"on",color:"green"}]
-playsound minecraft:block.lever.click player @s ~ ~ ~ 0.6 1.4
+playsound minecraft:block.lever.click player @s[scores={ra.u.snd=1..}] ~ ~ ~ 0.6 1.4

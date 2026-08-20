@@ -24,4 +24,4 @@ $execute if score #jp.was ra.temp matches 0 run tag @s add $(mute)
 
 $execute if score #jp.was ra.temp matches 1 run title @s actionbar [{text:"$(label) switched on",color:"green"}]
 $execute if score #jp.was ra.temp matches 0 run title @s actionbar [{text:"$(label) switched off",color:"gray"}]
-playsound minecraft:block.lever.click player @s ~ ~ ~ 0.7 1.4
+playsound minecraft:block.lever.click player @s[scores={ra.u.snd=1..}] ~ ~ ~ 0.7 1.4

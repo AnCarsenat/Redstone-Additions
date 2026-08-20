@@ -1,0 +1,10 @@
+# /ra_settings:row/int {label,key,i,step,scope,obj}
+# Internal: a number row, changed with buttons rather than typed.
+#
+# Three buttons: step down, step up, and Modify for an exact value. Modify goes
+# through ra_lib:input, the same form the Data Handler opens for a clock's delay,
+# so a player types a number the same way everywhere in the pack. Stepping is
+# kept because it is one click and needs no form at all.
+
+$execute if data storage ra:settings cur{scope:"global"} run tellraw @s [{text:"  $(label): ",color:"white"},{text:"[",color:"dark_gray"},{nbt:"global.$(key)",storage:"ra:settings",color:"aqua"},{text:"]",color:"dark_gray"},{text:"  "},{text:"[ - ]",color:"red",bold:true,hover_event:{action:"show_text",value:"Down by $(step)"},click_event:{action:"run_command",command:"/trigger ra.settings.act set $(i)"}},{text:" "},{text:"[ + ]",color:"green",bold:true,hover_event:{action:"show_text",value:"Up by $(step)"},click_event:{action:"run_command",command:"/trigger ra.settings.act set $(ip)"}},{text:" "},{text:"[ Modify ]",color:"yellow",hover_event:{action:"show_text",value:"Type an exact value"},click_event:{action:"run_command",command:"/trigger ra.settings.act set $(ie)"}}]
+$execute if data storage ra:settings cur{scope:"user"} run tellraw @s [{text:"  $(label): ",color:"white"},{text:"[",color:"dark_gray"},{score:{name:"@s",objective:"$(obj)"},color:"aqua"},{text:"]",color:"dark_gray"},{text:" "},{text:"[you]",color:"aqua"},{text:"  "},{text:"[ - ]",color:"red",bold:true,hover_event:{action:"show_text",value:"Down by $(step)"},click_event:{action:"run_command",command:"/trigger ra.settings.act set $(i)"}},{text:" "},{text:"[ + ]",color:"green",bold:true,hover_event:{action:"show_text",value:"Up by $(step)"},click_event:{action:"run_command",command:"/trigger ra.settings.act set $(ip)"}},{text:" "},{text:"[ Modify ]",color:"yellow",hover_event:{action:"show_text",value:"Type an exact value"},click_event:{action:"run_command",command:"/trigger ra.settings.act set $(ie)"}}]

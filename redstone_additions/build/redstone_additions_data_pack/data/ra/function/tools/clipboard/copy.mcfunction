@@ -22,5 +22,5 @@ execute store result storage ra:temp clip.slot int 1 run scoreboard players get 
 function ra:tools/clipboard/store with storage ra:temp clip
 
 tellraw @a[tag=ra.clip_active,limit=1] [{text:"[Clipboard] ",color:"gold"},{text:"Origin set: ",color:"gray"},{nbt:"block_name",storage:"ra:temp",color:"yellow"},{text:". Click others of the same kind to match it.",color:"gray"}]
-playsound minecraft:item.book.page_turn block @a[tag=ra.clip_active,limit=1] ~ ~ ~ 0.8 1.6
+playsound minecraft:item.book.page_turn block @a[tag=ra.clip_active,limit=1,scores={ra.u.snd=1..}] ~ ~ ~ 0.8 1.6
 data remove storage ra:temp clip

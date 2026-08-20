@@ -1,6 +1,6 @@
 # Redstone Additions — Contributing Guidelines
 
-**Version:** v5.1.14  
+**Version:** v5.1.15  
 **Minecraft:** 1.21.9 – 26.2 (data pack formats 88 – 107)
 
 ---
@@ -92,6 +92,53 @@
 - **Library functions:** `ra_lib:{module}/{action}`
 
 ---
+
+## Settings Conventions
+
+Adding a setting is one JSON file in `tools/settings/`, never an edit to a shared
+list. `tools/settings_gen.py` generates the menu, the defaults, the per-player
+seeding and the operator function tree from it.
+
+- **Scope decides how it is reached, not just who may change it.** `global`
+  generates `/function ra_settings:admin/...` and never appears in the in-game
+  menu. `user` appears only in the menu and needs a short, stable `obj` — a
+  player's saved choice is found by objective name, so renaming one resets
+  everybody.
+- **Anything that alters game balance is `global`.** Anything that alters what one
+  person sees or hears is `user`. A per-player EU cost would let one player mine
+  cheaper than someone beside them.
+- **Reads must fail open.** `ra_settings:get` requires a default; pass the value
+  that keeps the feature working. A settings lookup must never be able to disable
+  a module.
+- **Block defaults apply at placement**, not live. Never put a settings lookup in
+  `ra_lib:util/property`.
+- **A setting that does nothing is worse than no setting.** If it cannot be wired,
+  do not declare it.
+
+### Triggers
+
+- `/trigger` is the only control surface a player without permissions has. Every
+  button a non-operator can press must **run** a trigger. Never `suggest_command`
+  a `/function` at a player — it fills their chat box with something the game
+  refuses.
+- **Enable a trigger only where it is usable.** Enabled triggers appear in every
+  player's `/trigger` completion whether or not they do anything: while the tool is
+  held, while the menu is drawn, while the jetpack is worn. `scoreboard players
+  reset` is what takes one back — the enabled flag lives with the score.
+- **Prefer a spare code on an existing trigger to a new objective.**
+- **Reserve code 1 for "show me the thing".** A bare `/trigger <obj>` adds 1, and
+  that is somebody asking to see the menu, not to perform whichever action happens
+  to be first in a list.
+
+### Input
+
+- Use `ra_lib:input` for typed values. Do not write a second input path.
+- **Open the session after `ra_lib:input/tick` in the tick order.** A session
+  opened before it is scanned in the tick it was created, which the book backend
+  does not expect.
+- **Check the request id before consuming.** The library is shared; `consume`
+  tears the session down as it reads, so consuming another tool's answer hands it
+  an empty result.
 
 ## New Block Checklist
 

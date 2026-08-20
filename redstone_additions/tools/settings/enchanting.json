@@ -1,0 +1,14 @@
+{
+  "id": "enchanting",
+  "title": "Enchant Crafting",
+  "namespace": "ra_enchanting",
+  "rows": [
+    {
+      "type": "bool",
+      "key": "enchanting",
+      "label": "Enchant crafting",
+      "scope": "global",
+      "default": 1
+    }
+  ]
+}

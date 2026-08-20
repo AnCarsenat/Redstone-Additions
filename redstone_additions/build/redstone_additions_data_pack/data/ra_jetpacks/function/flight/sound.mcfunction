@@ -16,4 +16,4 @@ execute unless score @s ra.jp.snd matches 20.. run return 0
 scoreboard players set @s ra.jp.snd 0
 
 stopsound @a[distance=..20] player minecraft:item.elytra.flying
-playsound minecraft:item.elytra.flying player @a[distance=..16] ~ ~ ~ 0.35 0.6
+playsound minecraft:item.elytra.flying player @a[distance=..16,scores={ra.u.snd=1..}] ~ ~ ~ 0.35 0.6

@@ -8,6 +8,16 @@
 
 # Kit right-click bookkeeping: a player who stopped clicking loses the held tag,
 # so the next click counts as a new one.
+# Flight tuning, read ONCE per tick rather than per flying player.
+# ra_settings:get is a macro, and a macro instantiation in a path that runs for
+# every player in the air three times over is a cost worth paying once instead.
+execute store result score #jp.cfg.k ra.temp run function ra_settings:get {key:"jetpack_thrust",default:80}
+execute store result score #jp.cfg.cap ra.temp run function ra_settings:get {key:"jetpack_speed_cap",default:350}
+execute store result score #jp.cfg.dead ra.temp run function ra_settings:get {key:"jetpack_deadzone",default:25}
+execute if score #jp.cfg.k ra.temp matches ..0 run scoreboard players set #jp.cfg.k ra.temp 80
+execute if score #jp.cfg.cap ra.temp matches ..0 run scoreboard players set #jp.cfg.cap ra.temp 350
+execute if score #jp.cfg.dead ra.temp matches ..-1 run scoreboard players set #jp.cfg.dead ra.temp 25
+
 tag @a[tag=ra.jp.kit_active,tag=!ra.jp.kit_clicked] remove ra.jp.kit_active
 tag @a[tag=ra.jp.kit_clicked] remove ra.jp.kit_clicked
 

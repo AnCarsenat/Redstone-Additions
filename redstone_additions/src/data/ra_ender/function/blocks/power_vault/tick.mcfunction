@@ -16,5 +16,17 @@ tag @e[type=marker,tag=ra.custom_block.ender_power_vault] add ra.wires.electric_
 
 tag @e[type=marker,tag=ra.ender.recv_power] remove ra.ender.recv_power
 
+# Who can receive this tick. Recomputed every tick rather than stored, so changing
+# the mode with the wrench takes effect immediately.
+#
+# THESE WERE LOST IN v5.1.8, AND THE VAULTS HAVE NOT LINKED SINCE
+# They used to carry an `unless data.properties{enabled:0b}` clause. When the
+# `enabled` property was removed from the module, the whole line went with it
+# instead of just that clause -- so the tags were still cleared every tick and
+# still required by link/send_items, but nothing ever added them again. A sending
+# vault searched for a receiver wearing a tag no vault could be wearing, found
+# nothing, and silently did nothing.
+execute as @e[type=marker,tag=ra.custom_block.ender_power_vault] unless data entity @s data.properties{mode:"send"} run tag @s add ra.ender.recv_power
+
 scoreboard players add @e[type=marker,tag=ra.custom_block.ender_power_vault] ra.ender.cd 1
 execute as @e[type=marker,tag=ra.custom_block.ender_power_vault,scores={ra.ender.cd=5..}] at @s run function ra_ender:blocks/power_vault/process

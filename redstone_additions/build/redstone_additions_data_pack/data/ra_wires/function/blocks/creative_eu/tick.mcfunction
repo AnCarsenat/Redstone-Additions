@@ -25,4 +25,4 @@ execute store result score #cr.made ra.wires.tmp run function ra_wires:electric/
 data modify entity @s data.status.state set value "Generating"
 execute store result entity @s data.status.filled int 1 run scoreboard players get #cr.made ra.wires.tmp
 
-particle minecraft:end_rod ~ ~0.8 ~ 0.25 0.15 0.25 0.01 3
+particle minecraft:end_rod ~ ~0.8 ~ 0.25 0.15 0.25 0.01 3 normal @a[scores={ra.u.par=1..}]

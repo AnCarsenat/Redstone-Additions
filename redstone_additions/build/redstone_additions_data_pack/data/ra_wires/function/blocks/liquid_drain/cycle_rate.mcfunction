@@ -19,4 +19,4 @@ execute if score #dr.rate ra.wires.tmp matches 2 run data modify entity @s data.
 execute if score #dr.rate ra.wires.tmp matches 0 run tellraw @a[distance=..10] [{text:"[Wrench] ",color:"gold"},{text:"Drain rate: ",color:"gray"},{text:"normal — 5 L/s",color:"yellow"}]
 execute if score #dr.rate ra.wires.tmp matches 1 run tellraw @a[distance=..10] [{text:"[Wrench] ",color:"gold"},{text:"Drain rate: ",color:"gray"},{text:"fast — 10 L/s",color:"green"}]
 execute if score #dr.rate ra.wires.tmp matches 2 run tellraw @a[distance=..10] [{text:"[Wrench] ",color:"gold"},{text:"Drain rate: ",color:"gray"},{text:"slow — 2.5 L/s",color:"aqua"}]
-playsound minecraft:block.lever.click block @a[distance=..10] ~ ~ ~ 0.6 1.4
+playsound minecraft:block.lever.click block @a[distance=..10,scores={ra.u.snd=1..}] ~ ~ ~ 0.6 1.4

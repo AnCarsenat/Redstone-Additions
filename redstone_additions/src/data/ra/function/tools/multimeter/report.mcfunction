@@ -32,4 +32,4 @@ execute if data entity @s data.properties.generation_rate run tellraw @a[tag=ra.
 execute if data entity @s data.properties.rate run tellraw @a[tag=ra.meter_active,limit=1] [{text:"  Moves ",color:"gray"},{nbt:"data.properties.rate",entity:"@s",color:"yellow"},{text:" per tick",color:"gray"}]
 execute if data entity @s data.status.trend run tellraw @a[tag=ra.meter_active,limit=1] [{text:"  Change ",color:"gray"},{nbt:"data.status.trend",entity:"@s",color:"aqua"},{text:" per second",color:"gray"}]
 
-playsound minecraft:block.note_block.bit block @a[tag=ra.meter_active,limit=1] ~ ~ ~ 0.6 1.8
+playsound minecraft:block.note_block.bit block @a[tag=ra.meter_active,limit=1,scores={ra.u.snd=1..}] ~ ~ ~ 0.6 1.8

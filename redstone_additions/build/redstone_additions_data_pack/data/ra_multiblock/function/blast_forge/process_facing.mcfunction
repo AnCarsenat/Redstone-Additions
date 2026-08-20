@@ -31,6 +31,6 @@ $execute positioned $(out1) run function ra_lib:inventory/insert_or_drop
 execute store result entity @s data.status.heat int 1 run scoreboard players get @s ra.heat
 
 # === Processing Effects ===
-$particle minecraft:flame $(smoke) 0.2 0.2 0.2 0.02 10
-playsound minecraft:block.furnace.fire_crackle block @a[distance=..8] ~ ~ ~ 0.5 1
-playsound minecraft:block.lava.extinguish block @a[distance=..8] ~ ~ ~ 0.2 1.5
+$particle minecraft:flame $(smoke) 0.2 0.2 0.2 0.02 10 normal @a[scores={ra.u.par=1..}]
+playsound minecraft:block.furnace.fire_crackle block @a[distance=..8,scores={ra.u.snd=1..}] ~ ~ ~ 0.5 1
+playsound minecraft:block.lava.extinguish block @a[distance=..8,scores={ra.u.snd=1..}] ~ ~ ~ 0.2 1.5

@@ -19,6 +19,18 @@ execute as @e[type=marker,tag=ra.custom_block.ender_fluid_vault,tag=!ra.tr.node]
 
 tag @e[type=marker,tag=ra.ender.recv_fluid] remove ra.ender.recv_fluid
 
+# Who can receive this tick. Recomputed every tick rather than stored, so changing
+# the mode with the wrench takes effect immediately.
+#
+# THESE WERE LOST IN v5.1.8, AND THE VAULTS HAVE NOT LINKED SINCE
+# They used to carry an `unless data.properties{enabled:0b}` clause. When the
+# `enabled` property was removed from the module, the whole line went with it
+# instead of just that clause -- so the tags were still cleared every tick and
+# still required by link/send_items, but nothing ever added them again. A sending
+# vault searched for a receiver wearing a tag no vault could be wearing, found
+# nothing, and silently did nothing.
+execute as @e[type=marker,tag=ra.custom_block.ender_fluid_vault] unless data entity @s data.properties{mode:"send"} run tag @s add ra.ender.recv_fluid
+
 # Every 10 ticks, so a link is a steady trickle rather than a spike.
 scoreboard players add @e[type=marker,tag=ra.custom_block.ender_fluid_vault] ra.ender.cd 1
 execute as @e[type=marker,tag=ra.custom_block.ender_fluid_vault,scores={ra.ender.cd=10..}] at @s run function ra_ender:blocks/fluid_vault/process

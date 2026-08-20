@@ -11,4 +11,4 @@ execute if score @s ra.temp matches 0 run data modify entity @s data.properties.
 # Feedback
 execute if data entity @s data.properties{enabled:1b} run tellraw @a[distance=..8] [{text:"[",color:"dark_gray"},{text:"Emitter",color:"yellow"},{text:"] ",color:"dark_gray"},{text:"Enabled",color:"green"}]
 execute if data entity @s data.properties{enabled:0b} run tellraw @a[distance=..8] [{text:"[",color:"dark_gray"},{text:"Emitter",color:"yellow"},{text:"] ",color:"dark_gray"},{text:"Disabled",color:"red"}]
-playsound minecraft:block.lever.click block @a[distance=..8] ~ ~ ~ 0.5 1.2
+playsound minecraft:block.lever.click block @a[distance=..8,scores={ra.u.snd=1..}] ~ ~ ~ 0.5 1.2

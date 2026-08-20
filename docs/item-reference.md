@@ -24,6 +24,7 @@ one page, A to Z and by module.
 | ra_interactive:infinite_lava_cauldron | Infinite Lava Cauldron   | ![Infinite Lava Cauldron recipe](images/recipes/ra_interactive/infinite_lava_cauldron.png){ width="220" } |
 | ra_interactive:infinite_snow_cauldron | Infinite Snow Cauldron   | ![Infinite Snow Cauldron recipe](images/recipes/ra_interactive/infinite_snow_cauldron.png){ width="220" } |
 | ra_interactive:message_block         | Message Block             | ![Message Block recipe](images/recipes/ra_interactive/message_block.png){ width="220" } |
+| ra_interactive:magic_crate           | Magic Crate               | ![Magic Crate recipe](images/recipes/ra_interactive/magic_crate.png){ width="220" } |
 | ra_storage:boxer                     | Boxer                     | ![Boxer recipe](images/recipes/ra_storage/boxer.png){ width="220" } |
 | ra_storage:unboxer                   | Unboxer                   | ![Unboxer recipe](images/recipes/ra_storage/unboxer.png){ width="220" } |
 | ra_sensors:entity_detector           | Entity Detector           | ![Entity Detector recipe](images/recipes/ra_sensors/entity_detector.png){ width="220" } |
@@ -48,6 +49,9 @@ one page, A to Z and by module.
 | ra_wires:battery                     | Battery                   | ![Battery recipe](images/recipes/ra_wires/battery.png){ width="220" } |
 | ra_wires:electric_breaker            | EU Breaker                | ![EU Breaker recipe](images/recipes/ra_wires/electric_breaker.png){ width="220" } |
 | ra_wires:industrial_light            | Industrial Light          | ![Industrial Light recipe](images/recipes/ra_wires/industrial_light.png){ width="220" } |
+| ra_wires:electric_furnace            | Electric Furnace          | ![Electric Furnace recipe](images/recipes/ra_wires/electric_furnace.png){ width="220" } |
+| ra_wires:creative_eu                 | Creative EU Source        | No recipe — `ra_wires:items/give_creative` |
+| ra_wires:creative_fluid              | Creative Fluid Source     | No recipe — `ra_wires:items/give_creative` |
 | ra_ender:ender_item_vault            | Ender Item Vault          | ![Ender Item Vault recipe](images/recipes/ra_ender/ender_item_vault.png){ width="220" } |
 | ra_ender:ender_fluid_vault           | Ender Fluid Vault         | ![Ender Fluid Vault recipe](images/recipes/ra_ender/ender_fluid_vault.png){ width="220" } |
 | ra_ender:ender_power_vault           | Ender Power Vault         | ![Ender Power Vault recipe](images/recipes/ra_ender/ender_power_vault.png){ width="220" } |
@@ -88,4 +92,5 @@ each other and from ordinary materials.
 | ra     | Goggles               | `ra:tools/goggles/give`               | ![Goggles recipe](images/recipes/ra/goggles.png){ width="220" } |
 | ra     | Clipboard             | `ra:tools/clipboard/give`             | ![Clipboard recipe](images/recipes/ra/clipboard.png){ width="220" } |
 | ra     | Multimeter            | `ra:tools/multimeter/give`            | ![Multimeter recipe](images/recipes/ra/multimeter.png){ width="220" } |
+| ra_wireless | Redstone Remote  | `ra_wireless:tools/remote/give`       | ![Redstone Remote recipe](images/recipes/ra_wireless/remote.png){ width="220" } |
 

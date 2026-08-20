@@ -52,5 +52,5 @@ execute if score #mover_inserted ra.temp matches 0 run return 0
 $execute positioned $(input1) run data remove block ~ ~ ~ Items
 
 scoreboard players set @s ra.cooldown 0
-playsound minecraft:block.wood.place block @a[distance=..16] ~ ~ ~ 0.8 1.2
-particle minecraft:cloud ~ ~0.2 ~ 0.2 0.2 0.2 0.01 5
+playsound minecraft:block.wood.place block @a[distance=..16,scores={ra.u.snd=1..}] ~ ~ ~ 0.8 1.2
+particle minecraft:cloud ~ ~0.2 ~ 0.2 0.2 0.2 0.01 5 normal @a[scores={ra.u.par=1..}]

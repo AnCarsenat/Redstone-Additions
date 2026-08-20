@@ -1,0 +1,31 @@
+{
+  "id": "you",
+  "title": "Your Preferences",
+  "rows": [
+    {
+      "type": "bool",
+      "key": "snd",
+      "label": "Machine sounds",
+      "scope": "user",
+      "obj": "ra.u.snd",
+      "default": 1
+    },
+    {
+      "type": "bool",
+      "key": "par",
+      "label": "Machine particles",
+      "scope": "user",
+      "obj": "ra.u.par",
+      "default": 1
+    },
+    {
+      "type": "bool",
+      "key": "dbg",
+      "label": "Debug messages",
+      "scope": "user",
+      "obj": "ra.u.dbg",
+      "default": 0
+    }
+  ],
+  "namespace": "ra"
+}

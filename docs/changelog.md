@@ -2,6 +2,40 @@
 
 This page mirrors key datapack milestones from the main project changelog.
 
+## v5.1.15 (2026-08-19) — Settings
+
+### Added
+
+- **[Settings](settings.md).** Two kinds, reached two ways. Server settings live
+  under `/function ra_settings:admin/` and autocomplete — a function path is the
+  only command surface that does. Player preferences are
+  `/trigger ra.settings.open`, which needs no permissions. `/function ra:settings`
+  is the short way in.
+- **Blocks can be turned off**, per type, with a page listing which and a warning
+  on load. The item is handed back rather than swallowed, and anything already
+  built keeps working.
+- **Defaults can be retuned** — generator EU/tick, clock interval, vault rates,
+  crate radius. Applied at placement, with **[Apply to placed]** to push a change
+  onto blocks already standing.
+- **Sound and particle switches, per player.** All 118 `playsound` and `particle`
+  calls respect them.
+- **Uninstall warns twice** and says what it is about to destroy.
+
+### Fixed
+
+- **Ender vaults could not find each other** — the tag a sending vault searches
+  for was cleared every tick and never set. Broken since v5.1.8, in all three
+  vault types.
+- **The Electric Furnace flickered and z-fought** while working; a working furnace
+  was drawn as switched off for four ticks in five on superpowered; a steam-fed EU
+  Generator ran while drawn permanently unlit.
+- **Jetpack upgrade kits fired with the jetpack off** — in normal mode, jumping and
+  sprinting gave you the Thruster for free — and kept working on an empty tank.
+- **Text input never completed anywhere it was used by the settings**, because the
+  session was opened at the wrong point in the tick.
+- **`/trigger` completion is no longer cluttered**: nine blanket-enabled triggers
+  down to one.
+
 ## v5.1.14 (2026-08-18) — Pictures
 
 ### Added

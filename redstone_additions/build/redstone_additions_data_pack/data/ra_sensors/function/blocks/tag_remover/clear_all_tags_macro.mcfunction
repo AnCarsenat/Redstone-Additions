@@ -5,4 +5,4 @@
 # Anchor position to armor stand for distance calculations in selector
 $execute at @s as $(entity_selector) if entity @s[tag=!ra.custom_block] run data modify entity @s Tags set value []
 
-playsound minecraft:block.note_block.bit block @a[distance=..16] ~ ~ ~ 0.5 0.5
+playsound minecraft:block.note_block.bit block @a[distance=..16,scores={ra.u.snd=1..}] ~ ~ ~ 0.5 0.5

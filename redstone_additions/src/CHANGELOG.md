@@ -1,5 +1,91 @@
 # Changelog
 
+## [v5.1.15] - 2026-08-19 - Settings
+
+**Supported versions:** 1.21.9 - 26.2 (data pack formats 88 - 107).
+
+### Added
+
+- **A settings system, `ra_settings`.** Two scopes, reached two ways on purpose.
+  Server settings are `/function ra_settings:admin/...` and nothing else, because
+  `/function` autocompletes and that is the only way an operator finds a setting
+  without being told its name. Player preferences are `/trigger ra.settings.open`
+  and nothing else, so somebody with no permissions can change what they see and
+  hear. `/function ra:settings` is the short way into the operator panel.
+- **Blocks can be turned off.** Every placeable block has enable/disable. A
+  disabled block cannot be placed and the item is handed back; anything already
+  built keeps working, and the item can still be crafted and held.
+- **A disabled-blocks page**, listing every switched-off block in red with a button
+  to re-enable each, plus a warning on every load when the list is not empty —
+  shown whether or not the load message is.
+- **Block defaults can be retuned** — generator EU/tick, clock interval, vault
+  transfer rates, crate radius and the rest. Applied when a block is placed, so a
+  build balanced around the old numbers is not changed underneath it, with
+  **[Apply to placed]** as the explicit opt-out.
+- **Per-player sound and particle switches**, honoured by all 118 `playsound` and
+  `particle` calls in the pack, plus a debug switch wired through the existing
+  `ra.debug` tag.
+- **Jetpacks and Enchant Crafting settings pages.** Thruster Kit thrust, speed cap
+  and deadzone are tunable; enchant crafting can be switched off. The jetpack
+  values are read once per tick rather than per flying player.
+- Numeric and text settings can be **typed**, through the same input form the Data
+  Handler opens for a clock's delay, instead of only stepped.
+- The goggles redraw interval and scan range are settings.
+- **`ra.admin` grants server-settings access** and persists, so a tagged player
+  opens the panel straight from the button. Managed with
+  `ra_settings:admin/grant` and `/revoke`.
+- **Uninstall warns twice**, the second time listing exactly what is about to be
+  destroyed, and is reachable from the settings index. Its own buttons keep the
+  confirmation dialog on purpose. It also cleans up what the original missed, and
+  the settings half is generated so it cannot drift again.
+- [Settings](settings.md) documentation, covering both scopes, the trigger table
+  and the JSON contract for adding a page.
+
+### Fixed
+
+- **Ender vaults could not find each other.** `link/send_items` looks for a partner
+  wearing `ra.ender.recv_item`; `item_vault/tick` cleared that tag every tick and
+  nothing anywhere set it, so a sending vault searched for a tag no vault could be
+  wearing. Broken since v5.1.8, when the lines that set it were deleted along with
+  the `enabled` property they mentioned. All three vault types were affected.
+- **The Electric Furnace skin flickered, vanished and z-fought while working.**
+  `apply_lit` killed the old `block_display` and summoned a replacement, but `kill`
+  does not remove an entity until the end of the tick — so two identical displays
+  overlapped for the rest of it. State changes now edit the display already there.
+- **A working furnace was drawn as switched off**, one tick in five on
+  superpowered. Whether it looks like it is cooking is now decided by whether it
+  can cook, with the cooldown deciding only which tick an item comes out on.
+- **A steam-fed EU Generator produced power while drawn permanently unlit** — it
+  read `data.data.burn`, the solid-fuel countdown, which the steam path never sets.
+- **Jetpack upgrade kits fired with the jetpack switched off.** The Thruster and
+  Scorch ran on "wearing the kit and off the ground", so in normal mode — where the
+  jetpack only runs while you sneak — jump, sprint, jump gave a forward boost for
+  free. They were also called above the fuel check, so they worked on an empty tank.
+- **Text input never completed.** A settings text edit opened its input session
+  before `ra_lib:input/tick` in the tick order, so the book was scanned in the same
+  tick it was handed over — a state the Data Handler cannot reach, which is why its
+  text input worked throughout and this did not.
+- **Settings could consume another tool's input session**, handing the Data Handler
+  an empty answer and leaving it waiting for one already taken.
+- **A failed settings read disabled the module that asked.** `ra_settings:get`
+  answered 0 for a missing key, and zero is a real value — "off" for a flag,
+  "disabled" for a gate. It now requires the caller to say what missing means.
+- **The debug setting fought the `ra.debug` tag**, stripping it every tick from
+  anyone who had added it by hand.
+- **A bare `/trigger ra.settings.admin` performed an arbitrary action** instead of
+  opening the index.
+- **Back redrew the page you had just left** on top of the index.
+- **`/trigger` completion was cluttered** with nine blanket-enabled triggers. They
+  are now handed out where usable — a tool's while it is in hand, the jetpack's
+  while one is worn, the settings menu's while a menu is drawn — leaving one.
+
+### Changed
+
+- Settings pages are buttons rather than a wall of text, grouped tunables then
+  block switches, one namespace per line on the index.
+- Player-facing links **run** a trigger rather than suggesting a function: a
+  suggested `/function` is useless to somebody who cannot run one.
+
 ## [v5.1.14] - 2026-08-18 - Pictures
 
 **Supported versions:** 1.21.9 - 26.2 (data pack formats 88 - 107).

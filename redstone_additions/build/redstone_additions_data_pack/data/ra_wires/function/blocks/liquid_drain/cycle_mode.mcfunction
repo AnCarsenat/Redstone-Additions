@@ -14,4 +14,4 @@ execute if score #wr.was ra.temp matches 1 run data modify entity @s data.proper
 execute if score #wr.was ra.temp matches 0 run data modify entity @s data.properties.mode set value "drain"
 
 tellraw @a[distance=..10] [{text:"[Wrench] ",color:"gold"},{text:"Drain mode: ",color:"gray"},{nbt:"data.properties.mode",entity:"@s",color:"aqua"}]
-playsound minecraft:block.lever.click block @a[distance=..10] ~ ~ ~ 0.6 1.4
+playsound minecraft:block.lever.click block @a[distance=..10,scores={ra.u.snd=1..}] ~ ~ ~ 0.6 1.4

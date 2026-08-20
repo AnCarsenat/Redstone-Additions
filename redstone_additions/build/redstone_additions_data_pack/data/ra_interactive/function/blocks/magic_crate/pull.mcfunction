@@ -22,8 +22,8 @@ execute store result storage ra:interactive mh.stack.Slot byte 1 run scoreboard 
 data modify block ~ ~ ~ Items append from storage ra:interactive mh.stack
 
 execute at @s run particle minecraft:portal ~ ~0.2 ~ 0.2 0.2 0.2 0.05 12
-particle minecraft:enchant ~ ~1 ~ 0.3 0.3 0.3 0.4 8
-playsound minecraft:entity.enderman.teleport block @a[distance=..12] ~ ~ ~ 0.2 1.8
+particle minecraft:enchant ~ ~1 ~ 0.3 0.3 0.3 0.4 8 normal @a[scores={ra.u.par=1..}]
+playsound minecraft:entity.enderman.teleport block @a[distance=..12,scores={ra.u.snd=1..}] ~ ~ ~ 0.2 1.8
 
 scoreboard players add #mh.pulled ra.temp 1
 kill @s

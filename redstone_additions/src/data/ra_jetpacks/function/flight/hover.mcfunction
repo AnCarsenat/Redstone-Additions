@@ -72,8 +72,8 @@ function ra_jetpacks:flight/gravity
 # Idle wash: the thrusters are holding the player's weight even standing still,
 # so the smoke never stops. Count 0 turns the delta into a velocity, which is the
 # only way to make campfire smoke fall instead of rise.
-particle minecraft:campfire_cosy_smoke ~0.15 ~-0.2 ~0.15 0 -1 0 0.08 0
-particle minecraft:campfire_cosy_smoke ~-0.15 ~-0.2 ~-0.15 0 -1 0 0.08 0
+particle minecraft:campfire_cosy_smoke ~0.15 ~-0.2 ~0.15 0 -1 0 0.08 0 normal @a[scores={ra.u.par=1..}]
+particle minecraft:campfire_cosy_smoke ~-0.15 ~-0.2 ~-0.15 0 -1 0 0.08 0 normal @a[scores={ra.u.par=1..}]
 
 # Under thrust: the same smoke, more of it and pushed harder. No end rods — the
 # white streaks read as glitch geometry rather than exhaust.

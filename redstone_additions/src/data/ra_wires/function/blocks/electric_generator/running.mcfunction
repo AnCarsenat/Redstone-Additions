@@ -13,8 +13,8 @@ execute unless entity @s[tag=ra.wires.gen_lit] run tag @s add ra.wires.gen_lit
 execute unless entity @s[tag=ra.wires.gen_was_lit] run function ra_wires:blocks/electric_generator/refresh_display
 tag @s add ra.wires.gen_was_lit
 
-particle minecraft:smoke ~ ~1.1 ~ 0.15 0.05 0.15 0.01 2
-particle minecraft:flame ~ ~0.6 ~ 0.25 0.1 0.25 0.005 1
+particle minecraft:smoke ~ ~1.1 ~ 0.15 0.05 0.15 0.01 2 normal @a[scores={ra.u.par=1..}]
+particle minecraft:flame ~ ~0.6 ~ 0.25 0.1 0.25 0.005 1 normal @a[scores={ra.u.par=1..}]
 
 # One block of light above it. Only ever placed into air and only ever removed
 # again if it is still the light this put there -- the same discipline the

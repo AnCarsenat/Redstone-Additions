@@ -1,0 +1,41 @@
+{
+  "id": "jetpacks",
+  "title": "Jetpacks",
+  "namespace": "ra_jetpacks",
+  "rows": [
+    {
+      "type": "note",
+      "label": "Thruster Kit only \u2014 other kits are unaffected"
+    },
+    {
+      "type": "int",
+      "key": "jetpack_thrust",
+      "label": "Thruster thrust (% of speed)",
+      "scope": "global",
+      "default": 80,
+      "min": 10,
+      "max": 300,
+      "step": 10
+    },
+    {
+      "type": "int",
+      "key": "jetpack_speed_cap",
+      "label": "Thruster speed cap (cm/tick)",
+      "scope": "global",
+      "default": 350,
+      "min": 50,
+      "max": 2000,
+      "step": 25
+    },
+    {
+      "type": "int",
+      "key": "jetpack_deadzone",
+      "label": "Thruster deadzone (cm/tick)",
+      "scope": "global",
+      "default": 25,
+      "min": 0,
+      "max": 200,
+      "step": 5
+    }
+  ]
+}

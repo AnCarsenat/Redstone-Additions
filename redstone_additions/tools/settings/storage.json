@@ -1,0 +1,17 @@
+{
+  "id": "storage",
+  "title": "Storage",
+  "rows": [
+    {
+      "type": "block",
+      "block": "boxer",
+      "label": "Boxer"
+    },
+    {
+      "type": "block",
+      "block": "unboxer",
+      "label": "Unboxer"
+    }
+  ],
+  "namespace": "ra_storage"
+}

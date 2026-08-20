@@ -20,4 +20,4 @@ execute if score @s ra.jp.off matches 1 run function ra_jetpacks:flight/stop
 
 execute if score @s ra.jp.off matches 1 run title @s actionbar [{text:"Jetpack: ",color:"gray"},{text:"off",color:"red"},{text:" — /trigger ra.jp.power to switch it back on",color:"dark_gray"}]
 execute unless score @s ra.jp.off matches 1 run title @s actionbar [{text:"Jetpack: ",color:"gray"},{text:"on",color:"green"}]
-playsound minecraft:block.lever.click player @s ~ ~ ~ 0.6 1.4
+playsound minecraft:block.lever.click player @s[scores={ra.u.snd=1..}] ~ ~ ~ 0.6 1.4

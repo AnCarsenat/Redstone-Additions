@@ -1,0 +1,47 @@
+{
+  "id": "ender",
+  "title": "Ender Vaults",
+  "rows": [
+    {
+      "type": "prop",
+      "block": "ender_power_vault",
+      "prop": "transfer_rate",
+      "label": "Power Vault EU/tick",
+      "default": 80,
+      "min": 1,
+      "max": 10000,
+      "step": 10
+    },
+    {
+      "type": "prop",
+      "block": "ender_fluid_vault",
+      "prop": "transfer_rate",
+      "label": "Fluid Vault mB/tick",
+      "default": 200,
+      "min": 1,
+      "max": 10000,
+      "step": 50
+    },
+    {
+      "type": "block",
+      "block": "ender_item_vault",
+      "label": "Ender Item Vault"
+    },
+    {
+      "type": "block",
+      "block": "ender_fluid_vault",
+      "label": "Ender Fluid Vault"
+    },
+    {
+      "type": "block",
+      "block": "ender_power_vault",
+      "label": "Ender Power Vault"
+    },
+    {
+      "type": "block",
+      "block": "teleport_anchor",
+      "label": "Teleport Anchor"
+    }
+  ],
+  "namespace": "ra_ender"
+}

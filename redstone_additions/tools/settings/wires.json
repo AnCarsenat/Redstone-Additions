@@ -1,0 +1,117 @@
+{
+  "id": "wires",
+  "title": "Power & Fluids",
+  "rows": [
+    {
+      "type": "prop",
+      "block": "electric_generator",
+      "prop": "generation_rate",
+      "label": "Generator EU/tick",
+      "default": 60,
+      "min": 1,
+      "max": 10000,
+      "step": 10
+    },
+    {
+      "type": "prop",
+      "block": "electric_consumer",
+      "prop": "cooldown",
+      "label": "Consumer interval",
+      "default": 20,
+      "min": 1,
+      "max": 1200,
+      "step": 5
+    },
+    {
+      "type": "prop",
+      "block": "industrial_light",
+      "prop": "eu_use",
+      "label": "Industrial Light EU",
+      "default": 10,
+      "min": 0,
+      "max": 1000,
+      "step": 5
+    },
+    {
+      "type": "prop",
+      "block": "liquid_drain",
+      "prop": "cooldown",
+      "label": "Liquid Drain interval",
+      "default": 20,
+      "min": 1,
+      "max": 1200,
+      "step": 5
+    },
+    {
+      "type": "block",
+      "block": "electric_generator",
+      "label": "EU Generator"
+    },
+    {
+      "type": "block",
+      "block": "electric_furnace",
+      "label": "Electric Furnace"
+    },
+    {
+      "type": "block",
+      "block": "solar_panel",
+      "label": "Solar Panel"
+    },
+    {
+      "type": "block",
+      "block": "battery",
+      "label": "Battery"
+    },
+    {
+      "type": "block",
+      "block": "industrial_light",
+      "label": "Industrial Light"
+    },
+    {
+      "type": "block",
+      "block": "electric_switch",
+      "label": "EU Switch"
+    },
+    {
+      "type": "block",
+      "block": "electric_breaker",
+      "label": "EU Breaker"
+    },
+    {
+      "type": "block",
+      "block": "electric_consumer",
+      "label": "EU Consumer"
+    },
+    {
+      "type": "block",
+      "block": "boiler",
+      "label": "Boiler"
+    },
+    {
+      "type": "block",
+      "block": "liquid_drain",
+      "label": "Liquid Drain"
+    },
+    {
+      "type": "block",
+      "block": "liquid_pump",
+      "label": "Liquid Pump"
+    },
+    {
+      "type": "block",
+      "block": "gas_pump",
+      "label": "Gas Pump"
+    },
+    {
+      "type": "block",
+      "block": "creative_eu",
+      "label": "Creative EU Source"
+    },
+    {
+      "type": "block",
+      "block": "creative_fluid",
+      "label": "Creative Fluid Source"
+    }
+  ],
+  "namespace": "ra_wires"
+}

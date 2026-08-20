@@ -41,4 +41,4 @@ data modify entity @e[type=marker,tag=ra.new,distance=..0.1,sort=nearest,limit=1
 # the marker always ends up with a facing score even when no player was found.
 execute store result score @e[type=marker,tag=ra.new,distance=..0.1,sort=nearest,limit=1] ra.facing run scoreboard players get #facing ra.temp
 
-playsound minecraft:block.stone.place block @a[distance=..16] ~ ~ ~ 1 1
+playsound minecraft:block.stone.place block @a[distance=..16,scores={ra.u.snd=1..}] ~ ~ ~ 1 1

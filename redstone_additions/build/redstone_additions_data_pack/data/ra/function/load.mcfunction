@@ -1,5 +1,5 @@
 # /data/ra/function/load.mcfunction
-# Redstone Additions v5.1.14 - Core Load
+# Redstone Additions v5.1.15 - Core Load
 # Initializes all scoreboards, libraries, and sub-modules
 
 # ========================== SCOREBOARDS ==========================
@@ -8,12 +8,18 @@
 scoreboard objectives add ra.edit_type trigger
 scoreboard objectives add ra.dh.action trigger
 scoreboard objectives add ra.dh.pending dummy
+
+# How long a tool's menu triggers stay usable after it was last in hand. An
+# enabled trigger appears in everyone's /trigger completion whether it can do
+# anything or not, so they are handed out while the tool is held and taken back
+# when it is not -- with a grace window, because putting the wrench away to read
+# the menu it just printed should not disarm the buttons.
+scoreboard objectives add ra.hold.wrench dummy
+scoreboard objectives add ra.hold.dh dummy
 # Clipboard slot number, assigned on first use. See ra:tools/clipboard/ensure_id.
 scoreboard objectives add ra.clip.id dummy
 # Debug-only input handler objective (commented by request)
 # scoreboard objectives add ra.input_handler.action trigger
-scoreboard players enable @a ra.edit_type
-scoreboard players enable @a ra.dh.action
 # Debug-only input handler objective enable (commented by request)
 # scoreboard players enable @a ra.input_handler.action
 
@@ -54,10 +60,13 @@ function ra_lib_multiblock:init
 # Bring a world saved by an older version up to date. See ra_migrations:run.
 # The wrench menu: which row was clicked, and which block it belongs to.
 scoreboard objectives add ra.wrench trigger
-scoreboard players enable @a ra.wrench
 scoreboard objectives add ra.wr.x dummy
 scoreboard objectives add ra.wr.y dummy
 scoreboard objectives add ra.wr.z dummy
+
+# Settings. After the modules have loaded, because each module registers its own
+# page through #ra_settings:register and cannot do that before it exists.
+function ra_settings:init
 
 function ra:tools/wrench/init_registry
 function ra:tools/readonly/init_registry
@@ -66,10 +75,36 @@ function ra_migrations:run
 
 schedule function ra:tick 1t
 
+# ========================== DISABLED BLOCKS ==========================
+# Said before the welcome gate, and not subject to it. A disabled block leaves no
+# trace anywhere a player looks -- it just refuses to place -- so a server that
+# has some needs to be told on every load, whether or not it wants the greeting.
+execute store result score #dis ra.set.tmp run data get storage ra:settings disabled
+execute if score #dis ra.set.tmp matches 1.. run tellraw @a [{text:"[",color:"dark_gray"},{text:"RA",color:"gold",bold:true},{text:"] ",color:"dark_gray"},{score:{name:"#dis",objective:"ra.set.tmp"},color:"red",bold:true},{text:" block type(s) are disabled and cannot be placed.",color:"red"}]
+execute if score #dis ra.set.tmp matches 1.. run tellraw @a [{text:"  "},{text:"[ Which ones? ]",color:"yellow",hover_event:{action:"show_text",value:"List them, with a button to re-enable each"},click_event:{action:"run_command",command:"/trigger ra.settings.open set 3"}}]
+
 # ========================== WELCOME MESSAGE ==========================
+# Gated on a setting, because a server that has run this pack for a year does not
+# need to tell everyone about it on every reload. Read into a score first: the
+# messages below are plain tellraw lines and `execute if data` on each would be
+# the same test written six times.
+execute store result score #welcome ra.temp run function ra_settings:get {key:"welcome",default:1}
+execute if score #welcome ra.temp matches ..0 run return 0
 # Load message_block
-tellraw @a [{text:"[RA_Lib] ",color:"gold"},{text:"v5.1.14 loaded",color:"green"}]
+tellraw @a [{text:"[RA_Lib] ",color:"gold"},{text:"v5.1.15 loaded",color:"green"}]
 
 # Welcome message_block
-tellraw @a [{text:"[",color:"dark_gray"},{text:"RA",color:"gold",bold:true},{text:"] ",color:"dark_gray"},{text:"Redstone Additions v5.1.14 loaded!",color:"green"}]
+tellraw @a [{text:"[",color:"dark_gray"},{text:"RA",color:"gold",bold:true},{text:"] ",color:"dark_gray"},{text:"Redstone Additions v5.1.15 loaded!",color:"green"}]
+# The server button fires a TRIGGER, not the function. A /function link raises a
+# confirmation dialog and then fails for anyone without permission; the trigger
+# opens the panel for an operator who already has a session, and hands everyone
+# else the command unrun so the game can refuse them properly.
+# See ra_settings:server_open.
+tellraw @a [{text:"Server settings: ",color:"gray"},{text:"[ Open ]",color:"yellow",bold:true,hover_event:{action:"show_text",value:"World-wide settings — needs permission level 2"},click_event:{action:"run_command",command:"/trigger ra.settings.open set 2"}}]
+
+# User settings are SUGGESTED rather than run, so the command lands in the chat
+# box and the player reads it before pressing enter. This one has to be
+# remembered -- it is the only way back into the menu once this message has
+# scrolled away -- and a button that silently works teaches nobody its name.
+tellraw @a [{text:"Your settings: ",color:"gray"},{text:"/trigger ra.settings.open",color:"yellow",bold:true,hover_event:{action:"show_text",value:"Click to put this in your chat box — then press enter"},click_event:{action:"suggest_command",command:"/trigger ra.settings.open"}}]
 tellraw @a [{text:"Use ",color:"gray"},{text:"/function ra:give_all_items",color:"yellow",hover_event:{action:"show_text",value:"Give all items"},click_event:{action:"suggest_command",command:"/function ra:give_all_items"}},{text:" to get items",color:"gray"}]

@@ -67,6 +67,16 @@ scoreboard objectives remove ra.wr.x
 scoreboard objectives remove ra.wr.y
 scoreboard objectives remove ra.wr.z
 
+# === Settings ===
+# Generated, so it lists exactly what ra_settings created. The hand-written list
+# above is why this is not another hand-written list.
+function ra_settings:uninstall
+
+# === Objectives added after the original list was written ===
+scoreboard objectives remove ra.clip.id
+scoreboard objectives remove ra.dh.pending
+scoreboard objectives remove ra.edit_type
+
 # === Clear data storage ===
 data remove storage ra:multiblock {}
 data remove storage ra:temp {}
@@ -75,6 +85,9 @@ data remove storage ra:cdh {}
 data remove storage ra:dh {}
 data remove storage ra:input {}
 data remove storage ra:wires {}
+data remove storage ra:wrench {}
+data remove storage ra:transport {}
+data remove storage ra:inventory {}
 
 # === Cancel scheduled ticks ===
 schedule clear ra:tick
@@ -103,6 +116,8 @@ tag @e[type=marker,tag=ra.wires.gas_node] remove ra.wires.gas_node
 tag @e[type=marker,tag=ra.wires.electric_node] remove ra.wires.electric_node
 tag @e[type=marker,tag=ra.wires.legacy_gas_pipe] remove ra.wires.legacy_gas_pipe
 kill @e[type=block_display,tag=ra.skin]
+tag @a remove ra.settings_admin
+tag @a remove ra.admin
 kill @e[type=block_display,tag=ra.wires.pipe_display]
 kill @e[type=block_display,tag=ra.wires.wire_display]
 

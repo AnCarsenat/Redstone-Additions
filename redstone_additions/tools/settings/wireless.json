@@ -1,0 +1,17 @@
+{
+  "id": "wireless",
+  "title": "Wireless Redstone",
+  "rows": [
+    {
+      "type": "block",
+      "block": "emitter",
+      "label": "Emitter"
+    },
+    {
+      "type": "block",
+      "block": "receiver",
+      "label": "Receiver"
+    }
+  ],
+  "namespace": "ra_wireless"
+}

@@ -18,5 +18,5 @@ $execute if entity @s[tag=ra.jp.mute_$(kit)] run tag @s remove ra.jp.mute_$(kit)
 $function ra_jetpacks:items/give_$(kit)_kit
 
 $title @s actionbar [{text:"$(label) kit removed",color:"yellow"}]
-particle minecraft:enchant ~ ~1 ~ 0.4 0.6 0.4 0.4 25
-playsound minecraft:block.grindstone.use player @s ~ ~ ~ 0.7 1.2
+particle minecraft:enchant ~ ~1 ~ 0.4 0.6 0.4 0.4 25 normal @a[scores={ra.u.par=1..}]
+playsound minecraft:block.grindstone.use player @s[scores={ra.u.snd=1..}] ~ ~ ~ 0.7 1.2

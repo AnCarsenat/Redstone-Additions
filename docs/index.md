@@ -74,15 +74,16 @@ is the shortcut: one sample per module, and where to read about it.
 | [Chunk Loader](chunk-loader.md) | 1 force-load block | ![Chunk Loader recipe](images/recipes/ra_chunk_loader/chunk_loader.png){ width="220" } |
 | [Multiblocks](multiblocks.md) | 5 base tiers + structures | ![Copper Base recipe](images/recipes/ra_multiblock/copper_base.png){ width="220" } |
 | [Enchant Crafting](enchant-crafting.md) | Sacrifice items on an enchanting table | No recipe — uses the vanilla table |
-| [Jetpacks](jetpacks.md) | 2 chestplate upgrade kits | ![Iron Jetpack Kit recipe](images/recipes/ra_jetpacks/iron_jetpack_kit.png){ width="220" } |
+| [Jetpacks](jetpacks.md) | 2 jetpacks + 3 upgrade kits | ![Iron Jetpack Kit recipe](images/recipes/ra_jetpacks/iron_jetpack_kit.png){ width="220" } |
 | [Infinite Generators](infinite-generators.md) | 3 self-growing blocks + casing | ![Mineral Generator recipe](images/recipes/ra_infinite/mineral_generator.png){ width="220" } |
 | [Ender Links](ender-links.md) | 3 remote vaults + teleport anchor | ![Teleport Anchor recipe](images/recipes/ra_ender/teleport_anchor.png){ width="220" } |
 
 Current pack totals:
 
-- 52 placeable custom blocks
-- 58 recipes, all of them in the [Recipe Atlas](recipe-atlas.md)
-- 5 tools (Wrench, Creative Data Handler, Data Handler, Goggles, Redstone Remote)
+- 57 placeable custom blocks
+- 66 recipes, all of them in the [Recipe Atlas](recipe-atlas.md)
+- 7 tools (Wrench, Goggles, Data Handler, Creative Data Handler, Clipboard,
+  Multimeter, Redstone Remote)
 
 ## Commands Most Players Need
 

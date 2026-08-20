@@ -1,0 +1,59 @@
+name: Generate BBCode
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - readme.md
+      - redstone_additions/tools/md_to_bbcode.py
+      - .github/workflows/bbcode.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: bbcode-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+
+      # md_to_bbcode.py is pure standard library, so there is nothing to install.
+      - name: Convert readme.md to readme.bbcode
+        working-directory: redstone_additions
+        run: |
+          python3 tools/md_to_bbcode.py ../readme.md \
+            --base-url https://github.com/AnCarsenat/Redstone-Additions/raw/main/ \
+            -o ../readme.bbcode
+
+      - name: Upload readme.bbcode
+        uses: actions/upload-artifact@v4
+        with:
+          name: readme-bbcode
+          path: readme.bbcode
+
+      - name: Commit if it changed
+        run: |
+          if git diff --quiet -- readme.bbcode; then
+            echo "readme.bbcode already up to date"
+            exit 0
+          fi
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add readme.bbcode
+          git commit -m "docs: regenerate readme.bbcode from readme.md"
+          git push

@@ -5,7 +5,7 @@
 <h1 align="center">Redstone Additions</h1>
 
 <p align="center">
-  <strong>52 custom blocks. 2 jetpack kits. 5 tools. 58 recipes. Vanilla datapack for Minecraft 1.21.9–26.2.</strong>
+  <strong>57 custom blocks. 7 tools. 66 recipes. 2 jetpacks and 3 upgrade kits. Vanilla datapack for Minecraft 1.21.9–26.2.</strong>
 </p>
 
 <p align="center">
@@ -189,14 +189,17 @@ netherrack or poppies on an enchanting table.
 - Diamond Multiblock Base
 - Netherite Multiblock Base
 
-### Items (8)
+### Items (10)
 - Iron Jetpack Kit — right-click while wearing any chestplate to fit it
 - Infinite Iron Jetpack Kit — won on an enchanting table; burns no fuel
 - Thruster Kit — hold sprint while airborne to accelerate
 - Lift Kit — climbs and sinks about twice as fast
 - Scorch Kit — sets fire to what flies under you
 - Generator Casing
-- Mineral / Nether / Poppy Core
+- Mineral Core
+- Nether Core
+- Poppy Core
+- Item Crate — what the Boxer packs a chest into, and the Unboxer unpacks
 
 Fitted kits live on the chestplate and are listed in its lore.
 `/trigger ra.jp.kits` switches one off or takes it back as an item.

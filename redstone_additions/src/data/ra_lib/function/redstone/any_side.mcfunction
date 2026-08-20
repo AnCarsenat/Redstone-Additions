@@ -1,4 +1,4 @@
-# /ra_lib:redstone/any_side {dx:0,dy:0,dz:-1,side:"north",back:"south",torch:"side"}
+# /ra_lib:redstone/any_side {dx:0,dy:0,dz:-1,side:"north",back:"south",torch:"side",dust:"side"}
 # Internal: is this one neighbour powering us at all? Returns 1 or 0.
 #
 # Same sources as ra_lib:redstone/side, but every test bails out the moment it
@@ -16,8 +16,10 @@ scoreboard players set #rs ra.temp 0
 $execute if block ~$(dx) ~$(dy) ~$(dz) #ra_lib:redstone/binary_sources[powered=true] run return 1
 $execute unless entity @s[tag=ra.redstone.ignore_blocks] if block ~$(dx) ~$(dy) ~$(dz) minecraft:redstone_block run return 1
 
-$execute if block ~$(dx) ~$(dy) ~$(dz) minecraft:redstone_wire[$(back)=side] unless block ~$(dx) ~$(dy) ~$(dz) minecraft:redstone_wire[power=0] run return 1
-$execute if block ~$(dx) ~$(dy) ~$(dz) minecraft:redstone_wire[$(back)=up] unless block ~$(dx) ~$(dy) ~$(dz) minecraft:redstone_wire[power=0] run return 1
+# Dust rules are per-side and already written down once; reuse them. `execute if
+# function` cannot carry macro arguments, so the answer comes back as a score.
+$execute store result score #rs.dust ra.temp run function ra_lib:redstone/dust_any/$(dust) {dx:$(dx),dy:$(dy),dz:$(dz),back:"$(back)"}
+execute if score #rs.dust ra.temp matches 1.. run return 1
 
 $execute if block ~$(dx) ~$(dy) ~$(dz) #ra_lib:redstone/directional_sources[facing=$(back),powered=true] run return 1
 

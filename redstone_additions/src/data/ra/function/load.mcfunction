@@ -1,5 +1,5 @@
 # /data/ra/function/load.mcfunction
-# Redstone Additions v5.1.15 - Core Load
+# Redstone Additions v5.1.16 - Core Load
 # Initializes all scoreboards, libraries, and sub-modules
 
 # ========================== SCOREBOARDS ==========================
@@ -91,10 +91,10 @@ execute if score #dis ra.set.tmp matches 1.. run tellraw @a [{text:"  "},{text:"
 execute store result score #welcome ra.temp run function ra_settings:get {key:"welcome",default:1}
 execute if score #welcome ra.temp matches ..0 run return 0
 # Load message_block
-tellraw @a [{text:"[RA_Lib] ",color:"gold"},{text:"v5.1.15 loaded",color:"green"}]
+tellraw @a [{text:"[RA_Lib] ",color:"gold"},{text:"v5.1.16 loaded",color:"green"}]
 
 # Welcome message_block
-tellraw @a [{text:"[",color:"dark_gray"},{text:"RA",color:"gold",bold:true},{text:"] ",color:"dark_gray"},{text:"Redstone Additions v5.1.15 loaded!",color:"green"}]
+tellraw @a [{text:"[",color:"dark_gray"},{text:"RA",color:"gold",bold:true},{text:"] ",color:"dark_gray"},{text:"Redstone Additions v5.1.16 loaded!",color:"green"}]
 # The server button fires a TRIGGER, not the function. A /function link raises a
 # confirmation dialog and then fails for anyone without permission; the trigger
 # opens the panel for an operator who already has a session, and hands everyone

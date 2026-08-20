@@ -6,6 +6,20 @@
 # means adding its name here, and nothing else: the row, the type and the editor are
 # all worked out at runtime. Position matters only in that it decides the action id
 # a row's button carries (100 + index).
+#
+# CALLED UNCONDITIONALLY FROM ra:load, LIKE THE WRENCH AND READONLY REGISTRIES
+# This is configuration, not world state: it is the same on every world and it
+# must match the build that is running. It used to be seeded lazily instead,
+# `unless data storage ra:dh numeric`, from three call sites -- and that guard is
+# exactly what broke the two filter properties. A world upgraded from an earlier
+# version already had `numeric`, so the guard passed, this function never ran
+# again, and the world kept an old `registry` with no filter_item or
+# filter_medium in it and no item_names list at all. Neither filter had a row in
+# the editor, on any block, for ever.
+#
+# So: never guard this on the presence of one of its own lists. Every list below
+# is rewritten on every load, and a name added here reaches an existing world on
+# the next /reload.
 
 data modify storage ra:dh registry set value ["inverted","mode","channel","target","tag","entity_selector","message_block","gate","gate_type","output","range","radius","delay","cooldown","power","distance","extend","pulse","chance","transfer_rate","generation_rate","eu_use","tier","tier_level","input1","output1","anchor_id","targets","rate","filter_item","filter_medium"]
 

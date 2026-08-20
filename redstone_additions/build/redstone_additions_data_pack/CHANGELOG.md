@@ -50,6 +50,14 @@
 
 ### Fixed
 
+- **The Data Handler's registry never reached an existing world.** It was seeded
+  lazily, `unless data storage ra:dh numeric`, from three call sites — so a world
+  upgraded from an earlier version already had `numeric`, the guard passed, and
+  the registry was never rewritten. It kept the old list, with no `filter_item`
+  and no `filter_medium` in it and no `item_names` list at all, so neither filter
+  had a row in the editor on any block. It is now written on every load, like the
+  wrench and readonly registries beside it, and a name added to it reaches an
+  existing world on the next `/reload`.
 - **The Data Handler had no row for either filter.** It draws a row only for a
   property the block actually has, and Item Pipes were placed carrying none at
   all, while `filter_medium` was never added to the registry. Pipes are now

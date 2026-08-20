@@ -70,6 +70,7 @@ function ra_settings:init
 
 function ra:tools/wrench/init_registry
 function ra:tools/readonly/init_registry
+function ra:tools/data_handler/init_registry
 
 function ra_migrations:run
 

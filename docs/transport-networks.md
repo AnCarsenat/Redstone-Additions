@@ -297,17 +297,23 @@ Smelts using EU instead of fuel. There is no fuel slot, because there is no fuel
 
 ![Electric Furnace recipe](images/recipes/ra_wires/electric_furnace.png){ width="260" }
 
-| Mode | Ticks per item | EU per item |
-| --- | --- | --- |
-| low | 100 | 40 |
-| medium | 50 | 100 |
-| high | 20 | 300 |
-| superpowered | 5 | 1000 |
+| Mode | Ticks per item | EU per item | EU per tick |
+| --- | --- | --- | --- |
+| low | 100 | 40 | 0.4 |
+| medium | 50 | 80 | 1.6 |
+| high | 20 | 160 | 8 |
+| superpowered | 5 | 300 | 60 |
 
 Cycle the mode with the wrench. EU per item rises faster than speed does on
 purpose: four times quicker for four times the power would leave no reason to
 run anything but superpowered, and "low" would never be a real choice on a small
 grid.
+
+The scale is anchored on the generators the pack ships. One **EU Generator**
+makes 60 EU/t, so superpowered is one generator running flat out. A **Solar
+Panel** peaks at 50 EU/t, so it is a couple of panels at noon, or a handful plus
+a **Battery** to carry the night. Low is still 7.5x cheaper per item than
+superpowered, which is what keeps it worth using for bulk smelting.
 
 ### How input and output are split
 

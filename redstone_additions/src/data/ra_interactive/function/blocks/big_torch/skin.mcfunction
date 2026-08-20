@@ -36,8 +36,18 @@
 # pass. Both ends of an ownership test have to agree on the anchor.
 execute align xyz positioned ~0.5 ~0.5 ~0.5 if entity @e[type=block_display,tag=ra.skin.big_torch,distance=..0.4] run return 0
 
-execute positioned ~ ~1 ~ run function ra_lib:skin/light_here
-
-data modify storage ra:temp bt set value {}
-execute store result storage ra:temp bt.block_light int 1 run scoreboard players get #skin_light ra.temp
-function ra_interactive:blocks/big_torch/skin_spawn with storage ra:temp bt
+# Summoned straight from here rather than through a macro function. There is
+# nothing to substitute: a torch is a light source and is drawn at full
+# brightness whatever the light around it, so there is no sampled value to pass.
+# It WAS a macro, with a `$` line carrying no `$(...)` in it at all, and Minecraft
+# rejects that outright -- "No variables in macro" -- so the function failed to
+# load and no torch was ever drawn. tools/lint_macros.py now fails the build on
+# that rather than leaving it to be found in game.
+#
+# Centre-anchored, the same place the ownership test above looks, so the two
+# agree about which display belongs to this block.
+#
+# Lit as a torch rather than sampled from the world: this IS the light, and a
+# display that dimmed at night would be the one thing in the build that looked
+# switched off.
+execute align xyz positioned ~0.5 ~0.5 ~0.5 run summon block_display ~ ~ ~ {Tags:["ra","ra.display","ra.skin","ra.skin.big_torch"],brightness:{sky:15,block:15},block_state:{Name:"minecraft:torch"},transformation:{left_rotation:[0f,0f,0f,1f],right_rotation:[0f,0f,0f,1f],translation:[-1.1f,-0.51f,-1.1f],scale:[2.2f,1.632f,2.2f]}}

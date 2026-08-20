@@ -8,7 +8,8 @@
     },
     "pipeline": [
         "tools.settings_gen",
-        "tools.keep_loose_files"
+        "tools.keep_loose_files",
+        "tools.lint_macros"
     ],
     "output": "build"
 }

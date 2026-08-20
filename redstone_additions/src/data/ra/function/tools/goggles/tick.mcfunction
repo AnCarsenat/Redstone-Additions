@@ -33,8 +33,11 @@ execute if score #goggles_want ra.temp matches ..0 run scoreboard players set #g
 execute if score #goggles_timer ra.temp < #goggles_want ra.temp run return 0
 scoreboard players set #goggles_timer ra.temp 0
 
-# Remove old billboards
+# Remove old billboards. Item displays as well as text ones since blocks can draw
+# an item into their readout -- see billboard/item_line. A display left behind by
+# this sweep is a display nothing will ever clean up.
 kill @e[type=text_display,tag=ra.billboard]
+kill @e[type=item_display,tag=ra.billboard]
 
 # Collect everything in range of any goggles wearer first, then draw each marker
 # exactly once. Drawing per player meant every billboard was summoned twice when

@@ -19,3 +19,11 @@ function ra:tools/goggles/billboard/stack_reset {top:80,step:22}
 execute unless data entity @s data.properties.filter_item run function ra:tools/goggles/billboard/text_line {label:"Filter: ",value:"None",color:"gray",suffix:"",y:0.55}
 execute if data entity @s data.properties{filter_item:""} run function ra:tools/goggles/billboard/text_line {label:"Filter: ",value:"None",color:"gray",suffix:"",y:0.55}
 execute if data entity @s data.properties.filter_item unless data entity @s data.properties{filter_item:""} run function ra:tools/goggles/billboard/stacked_prop_line {path:"filter_item",label:"Filter: ",color:"aqua",suffix:""}
+
+# And the item itself, above the text. The id names it; this shows it, which is
+# the difference between reading "minecraft:polished_blackstone_slab" and
+# recognising a sorting wall at a glance.
+data remove storage ra:temp pipefilter
+execute unless data entity @s data.properties{filter_item:""} run data modify storage ra:temp pipefilter.id set from entity @s data.properties.filter_item
+data modify storage ra:temp pipefilter.y set value 0.55
+execute if data storage ra:temp pipefilter.id run function ra:tools/goggles/billboard/item_line with storage ra:temp pipefilter

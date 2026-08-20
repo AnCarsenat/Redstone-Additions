@@ -24,6 +24,18 @@ execute as @e[type=marker,tag=ra.custom_block.item_pipe] run data remove entity 
 # way to set a filter at all.
 execute as @e[type=marker,tag=ra.custom_block.item_pipe] unless data entity @s data.properties.filter_item run data modify entity @s data.properties.filter_item set value ""
 
+# A pre-release build of 5.1.16 drew the filter as a permanent item_display beside
+# the pipe and selected it back with a radius that could not reach it, so every
+# refresh added another and none was ever removed. The filter is drawn by the
+# goggles now and cleaned up by their own sweep; these are the leftovers.
+kill @e[type=item_display,tag=ra.pipe_filter]
+
+# Big Torches from a pre-release build of 5.1.16 stand on a shroomlight. The
+# block is swapped in place rather than rebuilt, so the marker, its radius and
+# its running total all survive; the tick draws the torch over it on the next
+# pass because the display will be missing.
+execute as @e[type=marker,tag=ra.custom_block.big_torch] at @s if block ~ ~ ~ minecraft:shroomlight run setblock ~ ~ ~ minecraft:end_rod[facing=up] replace
+
 # Transport networks gained a per-medium breakdown. Nothing is done here: the
 # networks cannot be enumerated by id from a function, so each one migrates the
 # first time it is read -- see ra_lib:transport/net/read_run. This comment is

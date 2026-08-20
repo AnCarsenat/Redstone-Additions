@@ -22,7 +22,8 @@
 - **`item_name` properties, and [Set from hand].** A property holding an item id
   gets a second button that copies whatever you are holding. Nobody should have to
   spell `minecraft:polished_blackstone_slab` to configure a sorter.
-- **Big Torch.** Denies hostile spawns within 1-100 blocks, set with the Data
+- **Big Torch.** An end rod wearing a torch scaled to a full block tall, always
+  standing up. Denies hostile spawns within 1-100 blocks, set with the Data
   Handler. It removes what **spawned** inside the radius and leaves what walked in,
   by remembering every mob in a band 16 blocks past it. Built from Enchanted Coal
   — sacrifice coal on an enchanting table at 1% — nine of which make an Enchanted
@@ -31,7 +32,7 @@
 ### Changed
 
 - **Item Pipe filters are a property, not an item frame.** Set with [Set from
-  hand]; the pipe draws the item it is filtering for. Reading a filter used to
+  hand]; the goggles draw the item it is filtering for, above the id. Reading a filter used to
   mean an entity selector per pipe plus a `block_pos` comparison per candidate
   frame, cached and rescanned every 20 ticks — so a frame you had just hung did
   nothing for up to a second. It is now one `data modify` with no selector, no

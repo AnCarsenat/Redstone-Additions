@@ -2,10 +2,11 @@
 # Tick all Big Torches. Called once per game tick from ra_interactive:tick.
 
 # Break detection.
-execute as @e[type=marker,tag=ra.custom_block.big_torch] at @s unless block ~ ~ ~ shroomlight run tag @s add ra.broken
-kill @e[type=item,nbt={Item:{id:"minecraft:shroomlight"}},distance=..2,limit=1,sort=nearest]
+execute as @e[type=marker,tag=ra.custom_block.big_torch] at @s unless block ~ ~ ~ end_rod run tag @s add ra.broken
+kill @e[type=item,nbt={Item:{id:"minecraft:end_rod"}},distance=..2,limit=1,sort=nearest]
 execute as @e[type=marker,tag=ra.broken,tag=ra.custom_block.big_torch] at @s run summon item ~ ~ ~ {Item:{id:"minecraft:bat_spawn_egg",count:1,components:{"minecraft:item_model":"minecraft:torch","minecraft:item_name":'Big Torch',"minecraft:lore":[{text:"Stops hostile mobs spawning nearby",color:"gray",italic:false},{text:"Set the radius with the Data Handler",color:"dark_gray",italic:false}],"minecraft:custom_data":{ra:{big_torch:1b}},"minecraft:entity_data":{id:"minecraft:bat",Tags:["ra","ra.spawned","ra.place.big_torch"],Silent:1b,NoAI:1b,Invulnerable:1b}}}}
 execute as @e[type=marker,tag=ra.broken,tag=ra.custom_block.big_torch] at @s run playsound minecraft:block.stone.break block @a[distance=..16,scores={ra.u.snd=1..}] ~ ~ ~ 1 1
+execute as @e[type=marker,tag=ra.broken,tag=ra.custom_block.big_torch] at @s run function ra_lib:skin/clear {id:"big_torch"}
 execute as @e[type=marker,tag=ra.broken,tag=ra.custom_block.big_torch] at @s run kill @s
 tag @e[type=marker,tag=ra.broken,tag=ra.custom_block.big_torch] remove ra.broken
 
@@ -15,6 +16,11 @@ tag @e[type=marker,tag=ra.broken,tag=ra.custom_block.big_torch] remove ra.broken
 # being denied is indistinguishable from one that never spawned. Paying a
 # 100-block entity selector per torch per tick to shorten that would be the most
 # expensive thing in the pack.
+# Redraw a skin that has gone -- a chunk reloaded, a display killed by hand, or a
+# torch built by the build that used a shroomlight. Cheap: skin.mcfunction leaves
+# after one selector when the display is already there.
+execute as @e[type=marker,tag=ra.custom_block.big_torch] at @s run function ra_interactive:blocks/big_torch/skin
+
 scoreboard players add #big_torch.scan ra.temp 1
 execute unless score #big_torch.scan ra.temp matches 10.. run return 0
 scoreboard players set #big_torch.scan ra.temp 0

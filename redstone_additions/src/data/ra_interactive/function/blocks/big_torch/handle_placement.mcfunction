@@ -4,16 +4,20 @@
 
 execute unless entity @s[tag=ra.place.big_torch] run return 0
 
-# dir_type 0: it works in every direction, so which way it was placed means
-# nothing.
+# An end rod, and always standing up.
 #
-# Shroomlight rather than a real torch: the marker needs a full block to sit in
-# and to test for when it checks whether it has been broken, and a torch is
-# neither full nor solid. It glows on its own, which is what a torch should do,
-# and the item still shows as a torch.
-function ra_lib:placement/place {block_id:"minecraft:shroomlight",block_tag:"big_torch",dir_type:0}
+# dir_type 0 places the block plain, and an end rod's default facing is `up`, so
+# vertical is what you get without a facing to resolve -- which is the whole
+# requirement. A torch lying on its side would also put its flame inside the
+# block beside it.
+#
+# The end rod is the light: it gives off level 14 on its own, so the block lights
+# its area whether or not the display over it ever renders.
+function ra_lib:placement/place {block_id:"minecraft:end_rod",block_tag:"big_torch",dir_type:0}
 
 data modify entity @e[type=marker,tag=ra.custom_block.big_torch,tag=ra.new,limit=1,sort=nearest] data.properties set value {radius:16}
+
+function ra_interactive:blocks/big_torch/skin
 
 tag @e[type=marker,tag=ra.custom_block.big_torch,tag=ra.new] remove ra.new
 

@@ -17,19 +17,9 @@ execute as @e[type=marker,tag=ra.broken,tag=ra.custom_block.item_pipe] at @s run
 execute as @e[type=marker,tag=ra.broken,tag=ra.custom_block.item_pipe] at @s run kill @s
 tag @e[type=marker,tag=ra.broken,tag=ra.custom_block.item_pipe] remove ra.broken
 
-# The filter display goes with the pipe.
-execute as @e[type=marker,tag=ra.broken,tag=ra.custom_block.item_pipe] at @s run kill @e[type=item_display,tag=ra.pipe_filter,distance=..0.6]
-
 # Clear per-tick chain traversal tags.
 tag @e[type=marker,tag=ra.custom_block.item_pipe,tag=ra.pipe_chain_visited] remove ra.pipe_chain_visited
 
 # Process each item pipe
-# Filter displays are upkeep, not logic -- every 20 ticks is plenty, and it keeps
-# a wall of sorting pipes off the per-tick budget. ra.filter_cd used to pace the
-# item frame rescan and now paces this instead.
-scoreboard players add #pipe_disp ra.filter_cd 1
-execute if score #pipe_disp ra.filter_cd matches 20.. run scoreboard players set #pipe_disp ra.filter_cd 0
-execute if score #pipe_disp ra.filter_cd matches 0 as @e[type=marker,tag=ra.custom_block.item_pipe] at @s run function ra_interactive:blocks/item_pipe/refresh_display
-
 execute as @e[type=marker,tag=ra.custom_block.item_pipe] at @s run function ra_interactive:blocks/item_pipe/process
 

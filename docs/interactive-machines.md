@@ -20,7 +20,7 @@ The `ra_interactive` module provides 10 utility machines for automation and map 
 | Infinite Lava Cauldron | `minecraft:cauldron` | ![Infinite Lava Cauldron recipe](images/recipes/ra_interactive/infinite_lava_cauldron.png){ width="220" } | Continuous | Keeps `lava_cauldron` |
 | Infinite Snow Cauldron | `minecraft:cauldron` | ![Infinite Snow Cauldron recipe](images/recipes/ra_interactive/infinite_snow_cauldron.png){ width="220" } | Continuous | Keeps `powder_snow_cauldron[level=3]` |
 | Magic Crate | `minecraft:barrel` | ![Magic Crate recipe](images/recipes/ra_interactive/magic_crate.png){ width="220" } | Continuous | Teleports dropped items in from 5-20 blocks |
-| Big Torch | `minecraft:shroomlight` | ![Big Torch recipe](images/recipes/ra_interactive/big_torch.png){ width="220" } | Continuous | Denies hostile spawns within 1-100 blocks |
+| Big Torch | `minecraft:end_rod` + torch skin | ![Big Torch recipe](images/recipes/ra_interactive/big_torch.png){ width="220" } | Continuous | Denies hostile spawns within 1-100 blocks |
 | Message Block | `minecraft:note_block` | ![Message Block recipe](images/recipes/ra_interactive/message_block.png){ width="220" } | Rising edge | Sends text to players in range |
 
 ## Behavior Notes
@@ -132,8 +132,12 @@ actually has. Empty means no filter, and everything carries on forward. An item 
 container is on a side rather than carried forward; a pipe with no filter passes
 everything along.
 
-The pipe draws the item it is filtering for as a small floating label, so a
-sorting wall is still readable at a glance.
+**Put the goggles on to see what a pipe is sorting.** The readout names the id and
+draws the item itself above it, so a sorting wall reads at a glance without
+walking up to each pipe. It is part of the goggles rather than a permanent
+display on purpose: the world is not cluttered when nobody is looking, and the
+item is torn down and redrawn by the goggles' own sweep instead of needing upkeep
+of its own.
 
 **This used to be an item frame stuck to the pipe.** Reading it meant selecting
 every item frame within 1.6 blocks of every pipe and comparing each one's
@@ -150,9 +154,20 @@ ourselves is not a migration's business.
 
 ### Big Torch
 
-A shroomlight carrying a marker, shown as a torch in the inventory. Every ten
-ticks it sweeps for hostile mobs within `radius` and removes the ones that
-**spawned** there.
+An **end rod** wearing an oversized torch, always standing up. Every ten ticks it
+sweeps for hostile mobs within `radius` and removes the ones that **spawned**
+there.
+
+The end rod is the light — it gives off level 14 by itself, so the block lights
+its area whether or not the display over it has rendered. The torch drawn on top
+is a `block_display` scaled so it stands **one block tall** instead of the ten
+sixteenths a vanilla torch manages.
+
+It is scaled **wider** as well as taller, and that is not decoration: an end rod's
+shaft is exactly as wide as a torch, so a torch drawn at its own size would share
+a plane with it all the way up and z-fight. At 2.2 across it encloses the end rod
+entirely — the rod is inside the torch, not behind it — with the same hundredth
+of a block of clearance `ra_lib:skin/spawn` uses everywhere else in the pack.
 
 | Property | Default | Range | Meaning |
 | --- | --- | --- | --- |

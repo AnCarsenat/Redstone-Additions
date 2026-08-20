@@ -16,14 +16,14 @@
 # Only front and back are unambiguous for a vertically placed block.
 
 
-execute if score @s ra.facing matches 0 run return run function ra_lib:redstone/side {dx:0,dy:0,dz:1,side:"south",back:"north",torch:"side"}
-execute if score @s ra.facing matches 1 run return run function ra_lib:redstone/side {dx:0,dy:0,dz:-1,side:"north",back:"south",torch:"side"}
-execute if score @s ra.facing matches 2 run return run function ra_lib:redstone/side {dx:0,dy:1,dz:0,side:"up",back:"down",torch:"none"}
-execute if score @s ra.facing matches 3 run return run function ra_lib:redstone/side {dx:0,dy:1,dz:0,side:"up",back:"down",torch:"none"}
-execute if score @s ra.facing matches 4 run return run function ra_lib:redstone/side {dx:0,dy:1,dz:0,side:"up",back:"down",torch:"none"}
-execute if score @s ra.facing matches 5 run return run function ra_lib:redstone/side {dx:0,dy:1,dz:0,side:"up",back:"down",torch:"none"}
+execute if score @s ra.facing matches 0 run return run function ra_lib:redstone/side {dx:0,dy:0,dz:1,side:"south",back:"north",torch:"side",dust:"side"}
+execute if score @s ra.facing matches 1 run return run function ra_lib:redstone/side {dx:0,dy:0,dz:-1,side:"north",back:"south",torch:"side",dust:"side"}
+execute if score @s ra.facing matches 2 run return run function ra_lib:redstone/side {dx:0,dy:1,dz:0,side:"up",back:"down",torch:"none",dust:"above"}
+execute if score @s ra.facing matches 3 run return run function ra_lib:redstone/side {dx:0,dy:1,dz:0,side:"up",back:"down",torch:"none",dust:"above"}
+execute if score @s ra.facing matches 4 run return run function ra_lib:redstone/side {dx:0,dy:1,dz:0,side:"up",back:"down",torch:"none",dust:"above"}
+execute if score @s ra.facing matches 5 run return run function ra_lib:redstone/side {dx:0,dy:1,dz:0,side:"up",back:"down",torch:"none",dust:"above"}
 
 # No facing score at all -- treat the block as if it faced south, which is the
 # default ra_lib:placement/place seeds when there was no placer to read.
-execute unless score @s ra.facing matches 0..5 run return run function ra_lib:redstone/side {dx:0,dy:1,dz:0,side:"up",back:"down",torch:"none"}
+execute unless score @s ra.facing matches 0..5 run return run function ra_lib:redstone/side {dx:0,dy:1,dz:0,side:"up",back:"down",torch:"none",dust:"above"}
 return 0

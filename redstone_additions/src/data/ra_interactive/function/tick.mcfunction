@@ -12,3 +12,4 @@ function ra_interactive:blocks/infinite_snow_cauldron/tick
 function ra_interactive:blocks/message_block/tick
 function ra_interactive:blocks/item_mover/tick
 function ra_interactive:blocks/magic_crate/tick
+function ra_interactive:blocks/big_torch/tick

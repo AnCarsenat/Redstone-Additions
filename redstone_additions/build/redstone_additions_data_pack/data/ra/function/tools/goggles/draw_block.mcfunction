@@ -15,6 +15,7 @@ execute if entity @s[tag=ra.custom_block.infinite_lava_cauldron] run function ra
 execute if entity @s[tag=ra.custom_block.infinite_snow_cauldron] run function ra_interactive:blocks/infinite_snow_cauldron/goggles
 execute if entity @s[tag=ra.custom_block.item_mover] run function ra_interactive:blocks/item_mover/goggles
 execute if entity @s[tag=ra.custom_block.magic_crate] run function ra_interactive:blocks/magic_crate/goggles
+execute if entity @s[tag=ra.custom_block.big_torch] run function ra_interactive:blocks/big_torch/goggles
 execute if entity @s[tag=ra.custom_block.item_pipe] run function ra_interactive:blocks/item_pipe/goggles
 execute if entity @s[tag=ra.custom_block.message_block] run function ra_interactive:blocks/message_block/goggles
 execute if entity @s[tag=ra.custom_block.spitter] run function ra_interactive:blocks/spitter/goggles

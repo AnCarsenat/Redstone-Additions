@@ -20,22 +20,22 @@
 # #rs.any is a separate holder from the #rs that any_side works in, so reading the
 # answer cannot disturb how it was reached.
 
-execute store result score #rs.any ra.temp run function ra_lib:redstone/any_side {dx:0,dy:0,dz:-1,side:"north",back:"south",torch:"side"}
+execute store result score #rs.any ra.temp run function ra_lib:redstone/any_side {dx:0,dy:0,dz:-1,side:"north",back:"south",torch:"side",dust:"side"}
 execute if score #rs.any ra.temp matches 1.. run return 1
 
-execute store result score #rs.any ra.temp run function ra_lib:redstone/any_side {dx:0,dy:0,dz:1,side:"south",back:"north",torch:"side"}
+execute store result score #rs.any ra.temp run function ra_lib:redstone/any_side {dx:0,dy:0,dz:1,side:"south",back:"north",torch:"side",dust:"side"}
 execute if score #rs.any ra.temp matches 1.. run return 1
 
-execute store result score #rs.any ra.temp run function ra_lib:redstone/any_side {dx:-1,dy:0,dz:0,side:"west",back:"east",torch:"side"}
+execute store result score #rs.any ra.temp run function ra_lib:redstone/any_side {dx:-1,dy:0,dz:0,side:"west",back:"east",torch:"side",dust:"side"}
 execute if score #rs.any ra.temp matches 1.. run return 1
 
-execute store result score #rs.any ra.temp run function ra_lib:redstone/any_side {dx:1,dy:0,dz:0,side:"east",back:"west",torch:"side"}
+execute store result score #rs.any ra.temp run function ra_lib:redstone/any_side {dx:1,dy:0,dz:0,side:"east",back:"west",torch:"side",dust:"side"}
 execute if score #rs.any ra.temp matches 1.. run return 1
 
-execute store result score #rs.any ra.temp run function ra_lib:redstone/any_side {dx:0,dy:-1,dz:0,side:"down",back:"up",torch:"below"}
+execute store result score #rs.any ra.temp run function ra_lib:redstone/any_side {dx:0,dy:-1,dz:0,side:"down",back:"up",torch:"below",dust:"none"}
 execute if score #rs.any ra.temp matches 1.. run return 1
 
-execute store result score #rs.any ra.temp run function ra_lib:redstone/any_side {dx:0,dy:1,dz:0,side:"up",back:"down",torch:"none"}
+execute store result score #rs.any ra.temp run function ra_lib:redstone/any_side {dx:0,dy:1,dz:0,side:"up",back:"down",torch:"none",dust:"above"}
 execute if score #rs.any ra.temp matches 1.. run return 1
 
 return 0

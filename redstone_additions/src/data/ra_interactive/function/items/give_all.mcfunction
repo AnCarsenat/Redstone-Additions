@@ -12,5 +12,6 @@ function ra_interactive:blocks/infinite_snow_cauldron/give
 function ra_interactive:blocks/message_block/give
 function ra_interactive:blocks/item_mover/give
 function ra_interactive:blocks/magic_crate/give
+function ra_interactive:blocks/big_torch/give
 
 tellraw @s [{text:"[",color:"dark_gray"},{text:"RA",color:"gold",bold:true},{text:"] ",color:"dark_gray"},{text:"Given all custom blocks!",color:"green"}]

@@ -11,6 +11,7 @@
     "ra_interactive:blocks/message_block/handle_placement",
     "ra_interactive:blocks/item_mover/handle_placement",
     "ra_interactive:blocks/magic_crate/handle_placement",
+    "ra_interactive:blocks/big_torch/handle_placement",
     "ra_storage:blocks/boxer/handle_placement",
     "ra_storage:blocks/unboxer/handle_placement",
     "ra_sensors:blocks/entity_detector/handle_placement",

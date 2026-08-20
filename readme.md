@@ -5,7 +5,7 @@
 <h1 align="center">Redstone Additions</h1>
 
 <p align="center">
-  <strong>57 custom blocks. 7 tools. 66 recipes. 2 jetpacks and 3 upgrade kits. Vanilla datapack for Minecraft 1.21.9–26.2.</strong>
+  <strong>58 custom blocks. 7 tools. 68 recipes. 2 jetpacks and 3 upgrade kits. Vanilla datapack for Minecraft 1.21.9–26.2.</strong>
 </p>
 
 <p align="center">
@@ -16,9 +16,9 @@
 <p align="center">
   <img src="https://img.shields.io/badge/Minecraft-1.21.9--26.2-2EA44F" alt="Minecraft 1.21.9-26.2">
   <img src="https://img.shields.io/badge/Version-v5.1.16-blue" alt="Version v5.1.16">
-  <img src="https://img.shields.io/badge/Blocks-57-red" alt="57 blocks">
+  <img src="https://img.shields.io/badge/Blocks-58-red" alt="58 blocks">
   <img src="https://img.shields.io/badge/Tools-7-lightgrey" alt="7 tools">
-  <img src="https://img.shields.io/badge/Recipes-66-8A2BE2" alt="66 recipes">
+  <img src="https://img.shields.io/badge/Recipes-68-8A2BE2" alt="68 recipes">
 </p>
 
 ---
@@ -105,7 +105,7 @@ listed A to Z and grouped by module.
 - Randomizer
 - Shortener
 
-### Interactive Machines (11)
+### Interactive Machines (12)
 - Block Breaker
 - Block Placer
 - Item Pipe
@@ -113,6 +113,7 @@ listed A to Z and grouped by module.
 - Spitter
 - Breeder
 - Magic Crate — pulls dropped items in from 5-20 blocks
+- Big Torch — denies hostile spawns within 1-100 blocks
 - Infinite Water Cauldron
 - Infinite Lava Cauldron
 - Infinite Snow Cauldron
@@ -189,7 +190,7 @@ netherrack or poppies on an enchanting table.
 - Diamond Multiblock Base
 - Netherite Multiblock Base
 
-### Items (10)
+### Items (12)
 - Iron Jetpack Kit — right-click while wearing any chestplate to fit it
 - Infinite Iron Jetpack Kit — won on an enchanting table; burns no fuel
 - Thruster Kit — hold sprint while airborne to accelerate
@@ -199,6 +200,8 @@ netherrack or poppies on an enchanting table.
 - Mineral Core
 - Nether Core
 - Poppy Core
+- Enchanted Coal — won by sacrificing coal on an enchanting table
+- Enchanted Coal Block — nine of them, plus a stick, make a Big Torch
 - Item Crate — what the Boxer packs a chest into, and the Unboxer unpacks
 
 Fitted kits live on the chestplate and are listed in its lore.

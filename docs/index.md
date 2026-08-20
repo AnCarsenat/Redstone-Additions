@@ -80,8 +80,8 @@ is the shortcut: one sample per module, and where to read about it.
 
 Current pack totals:
 
-- 57 placeable custom blocks
-- 66 recipes, all of them in the [Recipe Atlas](recipe-atlas.md)
+- 58 placeable custom blocks
+- 68 recipes, all of them in the [Recipe Atlas](recipe-atlas.md)
 - 7 tools (Wrench, Goggles, Data Handler, Creative Data Handler, Clipboard,
   Multimeter, Redstone Remote)
 

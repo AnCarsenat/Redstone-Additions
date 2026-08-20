@@ -20,6 +20,7 @@ The `ra_interactive` module provides 10 utility machines for automation and map 
 | Infinite Lava Cauldron | `minecraft:cauldron` | ![Infinite Lava Cauldron recipe](images/recipes/ra_interactive/infinite_lava_cauldron.png){ width="220" } | Continuous | Keeps `lava_cauldron` |
 | Infinite Snow Cauldron | `minecraft:cauldron` | ![Infinite Snow Cauldron recipe](images/recipes/ra_interactive/infinite_snow_cauldron.png){ width="220" } | Continuous | Keeps `powder_snow_cauldron[level=3]` |
 | Magic Crate | `minecraft:barrel` | ![Magic Crate recipe](images/recipes/ra_interactive/magic_crate.png){ width="220" } | Continuous | Teleports dropped items in from 5-20 blocks |
+| Big Torch | `minecraft:shroomlight` | ![Big Torch recipe](images/recipes/ra_interactive/big_torch.png){ width="220" } | Continuous | Denies hostile spawns within 1-100 blocks |
 | Message Block | `minecraft:note_block` | ![Message Block recipe](images/recipes/ra_interactive/message_block.png){ width="220" } | Rising edge | Sends text to players in range |
 
 ## Behavior Notes
@@ -117,6 +118,46 @@ it finds first.
 - Internal ID uses `message_block` (placement tag and custom_data).
 - Folder path remains `blocks/message`.
 - Default properties initialized to message text and range.
+
+### Big Torch
+
+A shroomlight carrying a marker, shown as a torch in the inventory. Every ten
+ticks it sweeps for hostile mobs within `radius` and removes the ones that
+**spawned** there.
+
+| Property | Default | Range | Meaning |
+| --- | --- | --- | --- |
+| `radius` | `16` | 1–100 | How far the denial reaches |
+
+Set the radius with the [Data Handler](tools.md#data-handler). The 100-block
+ceiling is enforced in code, not just documented: `distance` describes a sphere,
+so doubling the radius is eight times the volume to search.
+
+#### Spawned in versus walked in
+
+A data pack cannot stop a spawn from happening — it can only remove what
+appeared. Removing every hostile mob inside the radius would make this a mob
+grinder rather than a torch, because it would also clear anything that wandered
+in from outside.
+
+So the sweep remembers every mob in a band reaching **16 blocks past** the
+radius, and removes only mobs inside the radius that it has never seen. Anything
+approaching on foot crosses the band first and is remembered there, so it lives.
+Anything that spawns inside appears untagged and is denied on the next sweep,
+with a puff of smoke where it stood.
+
+The band is sized against the sweep interval: the fastest mob covers about five
+blocks in ten ticks, so nothing crosses sixteen blocks unseen.
+
+The sweep runs every ten ticks rather than every tick because its selector
+reaches as far as the radius does. A mob that exists for half a second before
+being denied is indistinguishable from one that never spawned, and paying a
+100-block entity selector per torch per tick to shorten that would be the most
+expensive thing in the pack.
+
+Which mobs count is the `#ra_interactive:spawn_blocked` entity type tag — the
+naturally spawning hostiles. Edit the tag to change the list; no code reads a
+hard-coded mob name.
 
 ### Magic Crate
 

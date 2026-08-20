@@ -1,0 +1,32 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "redstone",
+  "pattern": [
+    "B",
+    "S"
+  ],
+  "key": {
+    "B": "minecraft:barrier",
+    "S": "minecraft:stick"
+  },
+  "result": {
+    "id": "minecraft:bat_spawn_egg",
+    "count": 1,
+    "components": {
+      "minecraft:item_model": "minecraft:torch",
+      "minecraft:item_name": "Big Torch",
+      "minecraft:lore": [
+        { "text": "Stops hostile mobs spawning nearby", "color": "gray", "italic": false },
+        { "text": "Set the radius with the Data Handler", "color": "dark_gray", "italic": false }
+      ],
+      "minecraft:custom_data": { "ra": { "big_torch": true } },
+      "minecraft:entity_data": {
+        "id": "minecraft:bat",
+        "Tags": ["ra", "ra.spawned", "ra.place.big_torch"],
+        "Silent": true,
+        "NoAI": true,
+        "Invulnerable": true
+      }
+    }
+  }
+}

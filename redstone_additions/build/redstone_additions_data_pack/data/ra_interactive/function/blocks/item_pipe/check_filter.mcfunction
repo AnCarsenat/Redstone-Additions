@@ -21,6 +21,10 @@
 
 execute unless data entity @s data.properties.filter_item run return 0
 
+# Seeded empty at placement so the Handler has a row to show. Empty means the
+# pipe filters nothing and everything carries on forward.
+execute if data entity @s data.properties{filter_item:""} run return 0
+
 data modify storage ra:temp filter_item set from entity @s data.properties.filter_item
 
 # Compare item IDs. `data modify ... set from` reports success only when it

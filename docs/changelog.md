@@ -38,6 +38,11 @@ This page mirrors key datapack milestones from the main project changelog.
   frame, cached and rescanned every 20 ticks — so a frame you had just hung did
   nothing for up to a second. It is now one `data modify` with no selector, no
   cache and no stale second. Existing pipes migrate; their frames are left alone.
+- **Tools no longer stack.** Every tool is `max_stack_size=1`. They carry
+  per-tool state — the Clipboard's origin, the Remote's channel — and two in one
+  slot is a stack whose state belongs to whichever was picked up last. The
+  bundles still hold the full set: `bundle_contents` set by a command is not
+  subject to the weight limit that applies to inserting by hand.
 - **The Electric Furnace's top mode cost three EU Generators to run.** 1000 EU an
   item at five ticks an item is 200 EU/t, or about twenty Solar Panels across a
   daylight cycle — priced out of the game rather than expensive. The table is now
@@ -47,6 +52,20 @@ This page mirrors key datapack milestones from the main project changelog.
 
 ### Fixed
 
+- **The Data Handler had no row for either filter.** It draws a row only for a
+  property the block actually has, and Item Pipes were placed carrying none at
+  all, while `filter_medium` was never added to the registry. Pipes are now
+  placed with an empty `filter_item`, existing ones get it from the migration,
+  and both names are registered.
+- **The same item came out different depending on where it came from.** Twenty
+  items had lore that disagreed between the recipe, the give function, the
+  namespace bundle and the block's own break drop — so a crafted Liquid Filter
+  and a broken one were different items and would not stack. All four sources now
+  agree, from the recipe.
+- **The Redstone Remote's recipe claimed `Channel: default` for ever.** The lore
+  line was static and `set_channel` is a `copy_custom_data` modifier that never
+  touches lore, so a remote switched to another channel went on saying default.
+  The line is gone.
 - **The up and down sides read every redstone source as 0.** `ra_lib:redstone/side`
   substituted the back direction into a `redstone_wire` connection state, which
   has no `up` or `down` — so the macro line failed to parse and stopped the whole

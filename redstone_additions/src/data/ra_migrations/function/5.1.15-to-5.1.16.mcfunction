@@ -19,6 +19,11 @@
 execute as @e[type=marker,tag=ra.custom_block.item_pipe] unless data entity @s data.properties.filter_item if data entity @s data.data.filter.id run data modify entity @s data.properties.filter_item set from entity @s data.data.filter.id
 execute as @e[type=marker,tag=ra.custom_block.item_pipe] run data remove entity @s data.data.filter
 
+# Every pipe gets the field, frame or no frame. The Data Handler draws a row only
+# for a property the block actually has, so a pipe left without one would have no
+# way to set a filter at all.
+execute as @e[type=marker,tag=ra.custom_block.item_pipe] unless data entity @s data.properties.filter_item run data modify entity @s data.properties.filter_item set value ""
+
 # Transport networks gained a per-medium breakdown. Nothing is done here: the
 # networks cannot be enumerated by id from a function, so each one migrates the
 # first time it is read -- see ra_lib:transport/net/read_run. This comment is

@@ -17,4 +17,5 @@ function ra:tools/goggles/billboard/handle_billboard with storage ra:temp billbo
 
 function ra:tools/goggles/billboard/stack_reset {top:80,step:22}
 execute unless data entity @s data.properties.filter_item run function ra:tools/goggles/billboard/text_line {label:"Filter: ",value:"None",color:"gray",suffix:"",y:0.55}
-execute if data entity @s data.properties.filter_item run function ra:tools/goggles/billboard/stacked_prop_line {path:"filter_item",label:"Filter: ",color:"aqua",suffix:""}
+execute if data entity @s data.properties{filter_item:""} run function ra:tools/goggles/billboard/text_line {label:"Filter: ",value:"None",color:"gray",suffix:"",y:0.55}
+execute if data entity @s data.properties.filter_item unless data entity @s data.properties{filter_item:""} run function ra:tools/goggles/billboard/stacked_prop_line {path:"filter_item",label:"Filter: ",color:"aqua",suffix:""}

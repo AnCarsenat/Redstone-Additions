@@ -85,6 +85,13 @@ There is also a **Creative Data Handler**, which edits anything including the
 locked fields, adds and removes properties, and views a block's raw internal
 data. That one is for building the pack, not for playing with it.
 
+**Tools do not stack.** Each one is `max_stack_size=1`, so a second wrench sits
+in its own slot rather than merging with the first. They carry per-tool state —
+the Clipboard's origin, the Remote's channel — and two of them in one slot is a
+stack whose state belongs to whichever was picked up last. The bundles still hold
+the whole set, because `bundle_contents` set by a command is not subject to the
+weight limit that applies when a player inserts items by hand.
+
 ### Item properties and [Set from hand]
 
 A property that holds an **item id** — the Item Pipe's `filter_item` is the one

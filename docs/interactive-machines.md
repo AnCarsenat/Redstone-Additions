@@ -121,9 +121,14 @@ it finds first.
 
 ### Item Pipe filters
 
-A pipe's filter is `filter_item`, an item id on the pipe itself. Point the
-[Data Handler](tools.md#data-handler) at the pipe, hold the item you want sorted
-and press **[Set from hand]**. An item matching the filter is pushed into whichever
+A pipe's filter is `filter_item`, an item id on the pipe itself. **Shift+RMB the
+pipe with the [Data Handler](tools.md#data-handler)**, then on the `filter_item`
+row hold the item you want sorted and press **[Set from hand]**. Typing an id
+into **[Modify]** works too.
+
+Every pipe is placed with the field already present and empty, which is what puts
+the row in the editor — the Handler draws a row only for a property the block
+actually has. Empty means no filter, and everything carries on forward. An item matching the filter is pushed into whichever
 container is on a side rather than carried forward; a pipe with no filter passes
 everything along.
 

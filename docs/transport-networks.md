@@ -278,6 +278,10 @@ pipe carrying water and lava together sorts itself into two.
 | `filter_medium` | `water` | The only medium it will pass |
 | `rate` | `2000` | Millilitres per tick, the block's own |
 
+Set `filter_medium` by **shift+RMB with the [Data Handler](tools.md#data-handler)**
+and using **[Modify]** on that row. It takes a medium name — `water`, `lava`,
+`steam`, `potion` and the rest of the [Media](#media) table — not an item id.
+
 Like every bridge it belongs to neither network, breaks connectivity by existing,
 needs redstone to run, and finds its two sides itself whichever way round it was
 placed. It levels **per medium**: two runs each holding 5000 mL are not level to a

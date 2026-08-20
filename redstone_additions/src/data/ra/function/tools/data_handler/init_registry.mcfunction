@@ -7,7 +7,7 @@
 # all worked out at runtime. Position matters only in that it decides the action id
 # a row's button carries (100 + index).
 
-data modify storage ra:dh registry set value ["inverted","mode","channel","target","tag","entity_selector","message_block","gate","gate_type","output","range","radius","delay","cooldown","power","distance","extend","pulse","chance","transfer_rate","generation_rate","eu_use","tier","tier_level","input1","output1","anchor_id","targets","rate","filter_item"]
+data modify storage ra:dh registry set value ["inverted","mode","channel","target","tag","entity_selector","message_block","gate","gate_type","output","range","radius","delay","cooldown","power","distance","extend","pulse","chance","transfer_rate","generation_rate","eu_use","tier","tier_level","input1","output1","anchor_id","targets","rate","filter_item","filter_medium"]
 
 # Which of those names hold numbers, in one place beside the registry itself.
 #

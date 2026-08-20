@@ -13,6 +13,10 @@
 data remove storage ra:temp fdisp
 execute if data entity @s data.properties.filter_item run data modify storage ra:temp fdisp.id set from entity @s data.properties.filter_item
 
+# The seeded "no filter" value is an empty string, which is not an item id --
+# summoning a display holding {id:""} is a command error, not an empty display.
+execute if data storage ra:temp {fdisp:{id:""}} run data remove storage ra:temp fdisp.id
+
 # No filter: no display.
 execute unless data storage ra:temp fdisp.id run kill @e[type=item_display,tag=ra.pipe_filter,distance=..0.6]
 execute unless data storage ra:temp fdisp.id run return 0

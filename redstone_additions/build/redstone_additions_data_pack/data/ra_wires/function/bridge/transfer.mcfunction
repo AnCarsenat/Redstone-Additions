@@ -15,6 +15,12 @@ data remove storage ra:wires bridge
 function ra_lib:util/property {name:"rate",default:1000,min:1}
 scoreboard players operation #br.rate ra.wires.tmp = #prop ra.temp
 
+# A Liquid Filter carries filter_medium and moves only that. Resolved here rather
+# than in read_src because read_src runs `as` the neighbouring node, and the
+# property is on the bridge -- by then @s is somebody else.
+data remove storage ra:wires filter
+execute if data entity @s data.properties.filter_medium run data modify storage ra:wires filter.medium set from entity @s data.properties.filter_medium
+
 $execute positioned ~$(sx) ~$(sy) ~$(sz) as @e[type=marker,tag=ra.tr.node,distance=..0.75,limit=1] run function ra_wires:bridge/read_src
 $execute positioned ~$(dx) ~$(dy) ~$(dz) as @e[type=marker,tag=ra.tr.node,distance=..0.75,limit=1] run function ra_wires:bridge/read_dst
 
@@ -48,3 +54,5 @@ $execute positioned ~$(dx) ~$(dy) ~$(dz) as @e[type=marker,tag=ra.tr.node,distan
 
 data modify entity @s data.status.bridge_state set value "transferring"
 execute store result entity @s data.status.moved int 1 run scoreboard players get #br.move ra.wires.tmp
+data modify entity @s data.status.moving set from storage ra:wires bridge.medium
+data remove storage ra:wires filter

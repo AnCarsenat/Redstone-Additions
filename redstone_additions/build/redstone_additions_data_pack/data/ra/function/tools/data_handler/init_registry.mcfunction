@@ -7,7 +7,7 @@
 # all worked out at runtime. Position matters only in that it decides the action id
 # a row's button carries (100 + index).
 
-data modify storage ra:dh registry set value ["inverted","mode","channel","target","tag","entity_selector","message_block","gate","gate_type","output","range","radius","delay","cooldown","power","distance","extend","pulse","chance","transfer_rate","generation_rate","eu_use","tier","tier_level","input1","output1","anchor_id","targets","rate"]
+data modify storage ra:dh registry set value ["inverted","mode","channel","target","tag","entity_selector","message_block","gate","gate_type","output","range","radius","delay","cooldown","power","distance","extend","pulse","chance","transfer_rate","generation_rate","eu_use","tier","tier_level","input1","output1","anchor_id","targets","rate","filter_item"]
 
 # Which of those names hold numbers, in one place beside the registry itself.
 #
@@ -24,3 +24,10 @@ data modify storage ra:dh registry set value ["inverted","mode","channel","targe
 # "5" must stay the text 5 -- turning one into a number is the v5.1.6 bug that
 # stopped a vault matching its partner.
 data modify storage ra:dh numeric set value ["range","delay","cooldown","power","distance","extend","pulse","chance","transfer_rate","generation_rate","eu_use","tier_level","rate","radius"]
+
+# Which of those names hold an item id, beside the registry for the same reason
+# `numeric` is. An item_name is a string as far as storage is concerned, so it
+# would probe as one and get a plain text row -- and the player would be typing
+# item ids out by hand. Naming it here is what gets it the [Set from hand]
+# button, which is the only way anyone would actually want to fill one in.
+data modify storage ra:dh item_names set value ["filter_item"]

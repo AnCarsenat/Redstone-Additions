@@ -85,6 +85,21 @@ There is also a **Creative Data Handler**, which edits anything including the
 locked fields, adds and removes properties, and views a block's raw internal
 data. That one is for building the pack, not for playing with it.
 
+### Item properties and [Set from hand]
+
+A property that holds an **item id** — the Item Pipe's `filter_item` is the one
+you will meet — gets a second button, **[Set from hand]**. Hold the item and
+press it, and the id of what you are holding is written straight in.
+
+The row still has its ordinary **[Modify]** button for typing an id out, which is
+what you want when your hands are full or the item is somewhere else. But nobody
+should have to remember how to spell `minecraft:polished_blackstone_slab` to
+configure a sorter, which is the whole reason the type exists.
+
+Which properties are item ids is declared in the Handler's registry, not guessed
+from the value: an item id is a string as far as storage is concerned, so a
+property left to probe itself would come out as plain text and lose the button.
+
 ---
 
 ## Clipboard

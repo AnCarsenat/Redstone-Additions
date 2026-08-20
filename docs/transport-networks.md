@@ -243,6 +243,71 @@ water network → [Boiler over a heat source] → steam network → [EU Generato
   vanilla daylight detector's own light reading — so night, rain, roofs and snow
   cover all reduce it automatically.
 
+## Mixing media in one run
+
+A network holds **several media at once**. Water, lava and steam can share a pipe
+run, each with its own entry, and the run clogs only when the **sum** of
+everything in it reaches the capacity — not when any one medium does. A pipe run
+is one pool of volume that several media share, and you budget it as one number.
+
+This is what changed: a network used to refuse any medium that was not the one it
+already held, so a run was single-purpose for as long as it held anything at all,
+and switching it over meant draining it first. Nothing refuses an offer now
+except a lack of room.
+
+The **primary medium** is whichever arrived first and has not run out. It is what
+a Valve or a Breaker moves when nobody told it otherwise, what a Drain places, and
+what the Goggles name. A medium drained to nothing leaves the network entirely, so
+a run that once carried lava stops claiming to.
+
+Networks saved by an earlier version migrate the first time they are read. They
+cannot be enumerated by id from a function, so there is no sweep on load — the
+whole amount moves into the key of whatever medium the network was recorded as
+holding, and nothing is lost.
+
+## Liquid Filter
+
+![Liquid Filter recipe](images/recipes/ra_wires/liquid_filter.png){ width="260" }
+
+A Valve that passes only one medium. It is what turns a mixed run back into
+single-medium runs: put one on each branch, set each to a different medium, and a
+pipe carrying water and lava together sorts itself into two.
+
+| Property | Default | Meaning |
+| --- | --- | --- |
+| `filter_medium` | `water` | The only medium it will pass |
+| `rate` | `2000` | Millilitres per tick, the block's own |
+
+Like every bridge it belongs to neither network, breaks connectivity by existing,
+needs redstone to run, and finds its two sides itself whichever way round it was
+placed. It levels **per medium**: two runs each holding 5000 mL are not level to a
+water filter if one of them is all lava.
+
+The Goggles name the medium it is set to in that medium's own colour, and say so
+in red if the name is not one the pack knows — a filter set to a misspelt medium
+would otherwise look identical to one working correctly and passing nothing.
+
+## Potions keep their effects
+
+A potion emptied into a Drain is 1000 mL of the `potion` medium, and the network
+remembers **which** potion. A Drain set to output pours it over everyone within
+four blocks rather than placing it as a block, because a potion has no block.
+
+The duration follows the volume: the potion's own duration is what a full bottle
+gives, and a partial draw is a proportional share of it. 250 mL of a three-minute
+Strength potion is forty-five seconds. The level is the potion's own and is not
+scaled — half a bottle of Strength II is still Strength II, for less time.
+
+Preset potions get their effects from a table in `ra_wires:media/potions`, because
+a preset potion carries only its id and nothing that says Strength lasts three
+minutes. A potion brewed with commands carries `custom_effects` on the item and is
+read straight off it.
+
+**The first potion in wins.** A network already holding one potion keeps that
+identity when a different one is poured in. The alternatives were refusing the
+second pour — the single-medium behaviour this release removes — or averaging two
+effect lists, which means nothing.
+
 ## Valves
 
 A valve genuinely **splits the network in two**. The halves

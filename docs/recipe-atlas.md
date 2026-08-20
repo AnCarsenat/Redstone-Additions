@@ -1,6 +1,6 @@
 # Recipe Atlas
 
-Every recipe in the pack, in one place: 68 of them.
+Every recipe in the pack, in one place: 69 of them.
 
 !!! tip "Finding one"
     Use the search box with the item's name — every recipe below is indexed by
@@ -58,6 +58,7 @@ what the pack actually contains rather than what someone remembered to add.
 | [Item Pipe](#interactive-machines) | [Interactive Machines](interactive-machines.md) | Crafting table |
 | [Lift Kit](#jetpacks) | [Jetpacks](jetpacks.md) | Crafting table |
 | [Liquid Drain](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
+| [Liquid Filter](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
 | [Liquid Pump](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
 | [Liquid Tank](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
 | [Liquid Valve](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
@@ -224,6 +225,7 @@ Module page: [Transport Networks](transport-networks.md) — give everything: `/
 | **Gas Valve** | ![Gas Valve recipe](images/recipes/ra_wires/gas_valve.png){ width="220" } | Crafting table | `ra_wires:gas_valve` |
 | **Industrial Light** | ![Industrial Light recipe](images/recipes/ra_wires/industrial_light.png){ width="220" } | Crafting table | `ra_wires:industrial_light` |
 | **Liquid Drain** | ![Liquid Drain recipe](images/recipes/ra_wires/liquid_drain.png){ width="220" } | Crafting table | `ra_wires:liquid_drain` |
+| **Liquid Filter** | ![Liquid Filter recipe](images/recipes/ra_wires/liquid_filter.png){ width="220" } | Crafting table | `ra_wires:liquid_filter` |
 | **Liquid Pump** | ![Liquid Pump recipe](images/recipes/ra_wires/liquid_pump.png){ width="220" } | Crafting table | `ra_wires:liquid_pump` |
 | **Liquid Tank** | ![Liquid Tank recipe](images/recipes/ra_wires/liquid_tank.png){ width="220" } | Crafting table | `ra_wires:liquid_tank` |
 | **Liquid Valve** | ![Liquid Valve recipe](images/recipes/ra_wires/liquid_valve.png){ width="220" } | Crafting table | `ra_wires:liquid_valve` |

@@ -1,8 +1,11 @@
 # /ra_lib:transport/net/read
 # Load this node's network state into scratch.
 # Context: as a node marker.
-# Output: #net_amount / #net_capacity ra.tr.tmp, storage ra:transport cur.medium
-#         (absent when the network is empty).
+# Output: #net_amount / #net_capacity ra.tr.tmp — the TOTAL across every medium —
+#         and storage ra:transport cur:
+#           cur.medium   the primary medium (absent when the network is empty)
+#           cur.amounts  {water:5000,lava:2000}
+#           cur.media    [{m:"water"},{m:"lava"}]
 
 scoreboard players set #net_amount ra.tr.tmp 0
 scoreboard players set #net_capacity ra.tr.tmp 0

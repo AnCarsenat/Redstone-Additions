@@ -9,7 +9,8 @@ execute unless entity @e[type=marker,tag=ra.dh_target,limit=1] run return 0
 
 # Property rows carry 100 + their registry index, so one handler serves every
 # property instead of a branch per name. Everything below 100 is a menu action.
-execute if score @s ra.dh.action matches 100.. run function ra:tools/data_handler/generic_action
+execute if score @s ra.dh.action matches 200.. run function ra:tools/data_handler/props/hand_action
+execute if score @s ra.dh.action matches 100..199 run function ra:tools/data_handler/generic_action
 
 # View and refresh actions
 execute if score @s ra.dh.action matches 90 run function ra:tools/data_handler/show_internal_data

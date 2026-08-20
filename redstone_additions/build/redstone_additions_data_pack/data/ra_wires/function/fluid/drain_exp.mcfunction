@@ -19,8 +19,10 @@ execute if score #dr.pts ra.wires.tmp matches ..0 run return run function ra_wir
 
 # A network holding something else will not take experience.
 function ra_lib:transport/net/read
-execute if score #net_amount ra.tr.tmp matches 1.. unless data storage ra:transport cur{medium:"experience"} run data modify entity @s data.status.drain_state set value "wrong_medium"
-execute if score #net_amount ra.tr.tmp matches 1.. unless data storage ra:transport cur{medium:"experience"} run return run function ra_wires:fluid/drain_exp_clear
+# Is there EXPERIENCE here, whatever else shares the run.
+execute store result score #dx.have ra.wires.tmp run data get storage ra:transport cur.amounts.experience
+execute if score #net_amount ra.tr.tmp matches 1.. if score #dx.have ra.wires.tmp matches ..0 run data modify entity @s data.status.drain_state set value "wrong_medium"
+execute if score #net_amount ra.tr.tmp matches 1.. if score #dx.have ra.wires.tmp matches ..0 run return run function ra_wires:fluid/drain_exp_clear
 
 # Ten points a cycle, or as much of that as the player has and the grid will hold.
 scoreboard players set #dr.mul ra.wires.tmp 100

@@ -12,7 +12,7 @@ The `ra_interactive` module provides 10 utility machines for automation and map 
 |---|---|---|---|---|
 | Block Breaker | `minecraft:dispenser` | ![Block Breaker recipe](images/recipes/ra_interactive/block_breaker.png){ width="220" } | While powered | 40 tick action cooldown |
 | Block Placer | `minecraft:dispenser` | ![Block Placer recipe](images/recipes/ra_interactive/block_placer.png){ width="220" } | While powered | Places from inventory into air in front |
-| Item Pipe | `minecraft:dispenser` | ![Item Pipe recipe](images/recipes/ra_interactive/item_pipe.png){ width="220" } | Continuous | Moves whole stacks; filter via item frame |
+| Item Pipe | `minecraft:dispenser` | ![Item Pipe recipe](images/recipes/ra_interactive/item_pipe.png){ width="220" } | Continuous | Moves whole stacks; filter set from your hand |
 | Item Mover | `minecraft:observer` | ![Item Mover recipe](images/recipes/ra_interactive/item_mover.png){ width="220" } | Continuous | Rear container to front container |
 | Spitter | `minecraft:dropper` | ![Spitter recipe](images/recipes/ra_interactive/spitter.png){ width="220" } | Continuous | Throws item entities forward |
 | Breeder | `minecraft:barrel` (dispenser skin) | ![Breeder recipe](images/recipes/ra_interactive/breeder.png){ width="220" } | While powered | Feeds animals from its own inventory |
@@ -118,6 +118,30 @@ it finds first.
 - Internal ID uses `message_block` (placement tag and custom_data).
 - Folder path remains `blocks/message`.
 - Default properties initialized to message text and range.
+
+### Item Pipe filters
+
+A pipe's filter is `filter_item`, an item id on the pipe itself. Point the
+[Data Handler](tools.md#data-handler) at the pipe, hold the item you want sorted
+and press **[Set from hand]**. An item matching the filter is pushed into whichever
+container is on a side rather than carried forward; a pipe with no filter passes
+everything along.
+
+The pipe draws the item it is filtering for as a small floating label, so a
+sorting wall is still readable at a glance.
+
+**This used to be an item frame stuck to the pipe.** Reading it meant selecting
+every item frame within 1.6 blocks of every pipe and comparing each one's
+`block_pos` against the pipe's own coordinates — an entity selector per pipe per
+check, expensive enough that it had to be cached and rescanned only every 20
+ticks, which meant a frame you had just hung did nothing for up to a second.
+Reading a property is one `data modify` against a marker that is already the
+execution context: no selector, no cache, no stale second.
+
+Pipes built before this keep working. The migration copies the cached frame item
+into `filter_item` on the first load, and leaves the frames themselves alone —
+they are somebody's build, and deleting a player's item frames to tidy up after
+ourselves is not a migration's business.
 
 ### Big Torch
 

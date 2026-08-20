@@ -49,6 +49,9 @@ execute if entity @s[tag=ra.place.liquid_pump] run data modify storage ra:wires 
 execute if entity @s[tag=ra.place.gas_pump] run data modify storage ra:wires spec set value {block:"minecraft:smoker",marker:"gas_pump",dir:1,fluid:1b,net:"fluid",capacity:5000,props:{}}
 
 execute if entity @s[tag=ra.place.liquid_valve] run data modify storage ra:wires spec set value {block:"minecraft:waxed_cut_copper",marker:"liquid_valve",bridge:1b,props:{rate:2000}}
+# A filter is a valve that only passes one medium. Same bridge machinery, one
+# extra property -- see ra_wires:bridge/read_src for where filter_medium is read.
+execute if entity @s[tag=ra.place.liquid_filter] run data modify storage ra:wires spec set value {block:"minecraft:waxed_exposed_cut_copper",marker:"liquid_filter",bridge:1b,props:{rate:2000,filter_medium:"water"}}
 execute if entity @s[tag=ra.place.gas_valve] run data modify storage ra:wires spec set value {block:"minecraft:smooth_basalt",marker:"gas_valve",bridge:1b,props:{rate:2000}}
 
 execute if entity @s[tag=ra.place.liquid_drain] run data modify storage ra:wires spec set value {block:"minecraft:dropper",marker:"liquid_drain",dir:2,fluid:1b,net:"fluid",capacity:5000,props:{mode:"drain",cooldown:20}}

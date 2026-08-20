@@ -27,6 +27,10 @@ $execute store result score #dr.got ra.wires.tmp run function ra_lib:transport/n
 execute if score #dr.got ra.wires.tmp < #dr.need ra.wires.tmp run data modify entity @s data.status.drain_state set value "wrong_medium"
 execute if score #dr.got ra.wires.tmp < #dr.need ra.wires.tmp run return run tag @a[tag=ra.wires.emptying] remove ra.wires.emptying
 
+# A potion is the medium `potion` by volume, but which potion it is has to be
+# remembered before the bottle leaves the player's hand.
+$execute if data storage ra:wires media.$(medium).effect run function ra_wires:fluid/potion_store
+
 # Paid for, so now take the container and leave the empty behind.
 $item replace entity @a[tag=ra.wires.emptying,limit=1] weapon.mainhand with $(empty)
 tag @a[tag=ra.wires.emptying] remove ra.wires.emptying

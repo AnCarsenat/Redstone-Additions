@@ -1,0 +1,34 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "redstone",
+  "pattern": [
+    "CIC",
+    "CHC",
+    "CIC"
+  ],
+  "key": {
+    "C": "minecraft:copper_ingot",
+    "I": "minecraft:iron_ingot",
+    "H": "minecraft:hopper"
+  },
+  "result": {
+    "id": "minecraft:bat_spawn_egg",
+    "count": 1,
+    "components": {
+      "minecraft:item_model": "minecraft:waxed_exposed_cut_copper",
+      "minecraft:item_name": "Liquid Filter",
+      "minecraft:lore": [
+        { "text": "Passes only the medium it is set to", "color": "gray", "italic": false },
+        { "text": "Set filter_medium with the Data Handler", "color": "dark_gray", "italic": false }
+      ],
+      "minecraft:custom_data": { "ra": { "liquid_filter": true } },
+      "minecraft:entity_data": {
+        "id": "minecraft:bat",
+        "Tags": ["ra", "ra.spawned", "ra.place.liquid_filter"],
+        "Silent": true,
+        "NoAI": true,
+        "Invulnerable": true
+      }
+    }
+  }
+}

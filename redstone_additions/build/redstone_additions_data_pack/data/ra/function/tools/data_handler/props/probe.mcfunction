@@ -1,6 +1,6 @@
 # /ra:tools/data_handler/props/probe {name}
 # Internal: what type is this property? Result in #dh.type ra.temp.
-#   0 string   1 number   2 bool   3 list
+#   0 string   1 number   2 bool   3 list   4 item id
 #
 # There is no "type of" operator, so each answer is a test only that type passes.
 #
@@ -29,5 +29,10 @@ $execute if data storage ra:dh properties{$(name):1b} run scoreboard players set
 # bad write; see init_registry for why the list lives there and what is kept off
 # it on purpose.
 $execute if data storage ra:dh {numeric:["$(name)"]} run scoreboard players set #dh.type ra.temp 1
+
+# An item id last, so it wins over the string it would otherwise probe as. Same
+# reasoning as `numeric` above: the registry knows what the field means, and the
+# value sitting in it does not.
+$execute if data storage ra:dh {item_names:["$(name)"]} run scoreboard players set #dh.type ra.temp 4
 
 data remove storage ra:dh probe

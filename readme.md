@@ -5,7 +5,7 @@
 <h1 align="center">Redstone Additions</h1>
 
 <p align="center">
-  <strong>58 custom blocks. 7 tools. 68 recipes. 2 jetpacks and 3 upgrade kits. Vanilla datapack for Minecraft 1.21.9–26.2.</strong>
+  <strong>59 custom blocks. 7 tools. 69 recipes. 2 jetpacks and 3 upgrade kits. Vanilla datapack for Minecraft 1.21.9–26.2.</strong>
 </p>
 
 <p align="center">
@@ -16,9 +16,9 @@
 <p align="center">
   <img src="https://img.shields.io/badge/Minecraft-1.21.9--26.2-2EA44F" alt="Minecraft 1.21.9-26.2">
   <img src="https://img.shields.io/badge/Version-v5.1.16-blue" alt="Version v5.1.16">
-  <img src="https://img.shields.io/badge/Blocks-58-red" alt="58 blocks">
+  <img src="https://img.shields.io/badge/Blocks-59-red" alt="59 blocks">
   <img src="https://img.shields.io/badge/Tools-7-lightgrey" alt="7 tools">
-  <img src="https://img.shields.io/badge/Recipes-68-8A2BE2" alt="68 recipes">
+  <img src="https://img.shields.io/badge/Recipes-69-8A2BE2" alt="69 recipes">
 </p>
 
 ---
@@ -108,7 +108,7 @@ listed A to Z and grouped by module.
 ### Interactive Machines (12)
 - Block Breaker
 - Block Placer
-- Item Pipe
+- Item Pipe — filters by an item id set from your hand, no item frame
 - Item Mover
 - Spitter
 - Breeder
@@ -132,7 +132,7 @@ listed A to Z and grouped by module.
 - Wireless Emitter
 - Wireless Receiver
 
-### Transport Networks (20)
+### Transport Networks (21)
 
 Fluids, in millilitres:
 
@@ -140,6 +140,7 @@ Fluids, in millilitres:
 - Liquid Tank
 - Liquid Pump
 - Liquid Valve — moves contents between the two networks it separates
+- Liquid Filter — passes only the one medium it is set to
 - Liquid Drain — world source in, or network contents back out
 - Gas Tank
 - Gas Pump

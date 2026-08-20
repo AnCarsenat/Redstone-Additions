@@ -26,6 +26,7 @@ execute as @e[type=marker,tag=ra.custom_block.liquid_pipe] at @s unless block ~ 
 execute as @e[type=marker,tag=ra.custom_block.liquid_tank] at @s unless block ~ ~ ~ waxed_copper_block run function ra_wires:liquid/break/tank
 execute as @e[type=marker,tag=ra.custom_block.liquid_pump] at @s unless block ~ ~ ~ dispenser run function ra_wires:liquid/break/pump
 execute as @e[type=marker,tag=ra.custom_block.liquid_valve] at @s unless block ~ ~ ~ waxed_cut_copper run function ra_wires:liquid/break/valve
+execute as @e[type=marker,tag=ra.custom_block.liquid_filter] at @s unless block ~ ~ ~ waxed_exposed_cut_copper run function ra_wires:liquid/break/filter
 execute as @e[type=marker,tag=ra.custom_block.liquid_drain] at @s unless block ~ ~ ~ dropper run function ra_wires:liquid/break/drain
 execute as @e[type=marker,tag=ra.custom_block.gas_tank] at @s unless block ~ ~ ~ iron_block run function ra_wires:liquid/break/gas_tank
 execute as @e[type=marker,tag=ra.custom_block.gas_pump] at @s unless block ~ ~ ~ smoker run function ra_wires:liquid/break/gas_pump
@@ -40,11 +41,13 @@ execute as @e[type=marker,tag=ra.custom_block.boiler] at @s unless block ~ ~ ~ f
 # network on both sides and refuse to move anything.
 execute as @e[type=marker,tag=ra.custom_block.liquid_valve,tag=ra.tr.node] run function ra_lib:transport/net/leave
 execute as @e[type=marker,tag=ra.custom_block.gas_valve,tag=ra.tr.node] run function ra_lib:transport/net/leave
+execute as @e[type=marker,tag=ra.custom_block.liquid_filter,tag=ra.tr.node] run function ra_lib:transport/net/leave
 
 # And it must be tagged as a bridge so ra_wires:tick drives it at all. Idempotent,
 # so this costs one tag write on a set that is almost always empty.
 tag @e[type=marker,tag=ra.custom_block.liquid_valve,tag=!ra.wires.bridge] add ra.wires.bridge
 tag @e[type=marker,tag=ra.custom_block.gas_valve,tag=!ra.wires.bridge] add ra.wires.bridge
+tag @e[type=marker,tag=ra.custom_block.liquid_filter,tag=!ra.wires.bridge] add ra.wires.bridge
 
 # --- World <-> network ---
 execute as @e[type=marker,tag=ra.custom_block.liquid_pump] at @s run function ra_wires:fluid/pump_tick

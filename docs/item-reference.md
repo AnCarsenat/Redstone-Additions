@@ -37,6 +37,7 @@ one page, A to Z and by module.
 | ra_wires:liquid_tank                 | Liquid Tank               | ![Liquid Tank recipe](images/recipes/ra_wires/liquid_tank.png){ width="220" } |
 | ra_wires:liquid_pump                 | Liquid Pump               | ![Liquid Pump recipe](images/recipes/ra_wires/liquid_pump.png){ width="220" } |
 | ra_wires:liquid_valve                | Liquid Valve              | ![Liquid Valve recipe](images/recipes/ra_wires/liquid_valve.png){ width="220" } |
+| ra_wires:liquid_filter               | Liquid Filter             | ![Liquid Filter recipe](images/recipes/ra_wires/liquid_filter.png){ width="220" } |
 | ra_wires:liquid_drain                | Liquid Drain              | ![Liquid Drain recipe](images/recipes/ra_wires/liquid_drain.png){ width="220" } |
 | ra_wires:gas_tank                    | Gas Tank                  | ![Gas Tank recipe](images/recipes/ra_wires/gas_tank.png){ width="220" } |
 | ra_wires:gas_pump                    | Gas Pump                  | ![Gas Pump recipe](images/recipes/ra_wires/gas_pump.png){ width="220" } |

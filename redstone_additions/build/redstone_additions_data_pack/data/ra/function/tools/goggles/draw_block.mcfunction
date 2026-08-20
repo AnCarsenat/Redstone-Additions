@@ -43,6 +43,7 @@ execute if entity @s[tag=ra.custom_block.liquid_pipe] run function ra_wires:bloc
 execute if entity @s[tag=ra.custom_block.liquid_tank] run function ra_wires:blocks/liquid_tank/goggles
 execute if entity @s[tag=ra.custom_block.liquid_pump] run function ra_wires:blocks/liquid_pump/goggles
 execute if entity @s[tag=ra.custom_block.liquid_valve] run function ra_wires:blocks/liquid_valve/goggles
+execute if entity @s[tag=ra.custom_block.liquid_filter] run function ra_wires:blocks/liquid_filter/goggles
 execute if entity @s[tag=ra.custom_block.liquid_drain] run function ra_wires:blocks/liquid_drain/goggles
 execute if entity @s[tag=ra.custom_block.gas_tank] run function ra_wires:blocks/gas_tank/goggles
 execute if entity @s[tag=ra.custom_block.gas_pump] run function ra_wires:blocks/gas_pump/goggles

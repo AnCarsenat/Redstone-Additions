@@ -9,7 +9,9 @@ execute if entity @s[tag=ra.wires.boil_src] run return 0
 execute if score @s ra.tr.net = #boil_src_net ra.wires.tmp run return 0
 
 function ra_lib:transport/net/read
-execute if score #net_amount ra.tr.tmp matches 1000.. unless data storage ra:transport cur{medium:"steam"} run return 0
+# No medium test at all. A network holding something else is not a refusal any
+# more -- steam has its own entry alongside whatever is already in there, and the
+# only thing that can turn the boiler away is having no room for 1000 mL.
 
 scoreboard players operation #boil_free ra.wires.tmp = #net_capacity ra.tr.tmp
 scoreboard players operation #boil_free ra.wires.tmp -= #net_amount ra.tr.tmp

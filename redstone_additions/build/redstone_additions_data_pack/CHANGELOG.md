@@ -1,5 +1,60 @@
 # Changelog
 
+## [v5.1.16] - 2026-08-20 - Mixed pipes
+
+**Supported versions:** 1.21.9 - 26.2 (data pack formats 88 - 107).
+
+### Added
+
+- **Networks hold several media at once.** Water, lava and steam can share a pipe
+  run, each with its own entry, and the run clogs on the **sum** rather than on
+  any one medium. A network used to refuse anything but what it already held, so
+  a run was single-purpose for as long as it held anything at all. Nothing refuses
+  an offer now except a lack of room.
+- **Liquid Filter.** A Valve that passes only the medium it is set to, so a mixed
+  run can be sorted back into single-medium branches. It levels per medium: two
+  runs each holding 5000 mL are not level to a water filter if one is all lava.
+- **Potions keep their effects.** A potion poured into a Drain is 1000 mL of the
+  `potion` medium and the network remembers which potion. A Drain set to output
+  applies it to everyone within four blocks, with the duration scaled by how much
+  was drawn and the level the potion says it has. The first potion into a network
+  keeps its identity.
+- **`item_name` properties, and [Set from hand].** A property holding an item id
+  gets a second button that copies whatever you are holding. Nobody should have to
+  spell `minecraft:polished_blackstone_slab` to configure a sorter.
+- **Big Torch.** Denies hostile spawns within 1-100 blocks, set with the Data
+  Handler. It removes what **spawned** inside the radius and leaves what walked in,
+  by remembering every mob in a band 16 blocks past it. Built from Enchanted Coal
+  — sacrifice coal on an enchanting table at 1% — nine of which make an Enchanted
+  Coal Block, which over a stick makes the torch.
+
+### Changed
+
+- **Item Pipe filters are a property, not an item frame.** Set with [Set from
+  hand]; the pipe draws the item it is filtering for. Reading a filter used to
+  mean an entity selector per pipe plus a `block_pos` comparison per candidate
+  frame, cached and rescanned every 20 ticks — so a frame you had just hung did
+  nothing for up to a second. It is now one `data modify` with no selector, no
+  cache and no stale second. Existing pipes migrate; their frames are left alone.
+- **The Electric Furnace's top mode cost three EU Generators to run.** 1000 EU an
+  item at five ticks an item is 200 EU/t, or about twenty Solar Panels across a
+  daylight cycle — priced out of the game rather than expensive. The table is now
+  anchored on one EU Generator at 60 EU/t: 40/80/160/300 EU per item for
+  low/medium/high/superpowered. Each step still costs more per unit of speed than
+  the one below it.
+
+### Fixed
+
+- **The up and down sides read every redstone source as 0.** `ra_lib:redstone/side`
+  substituted the back direction into a `redstone_wire` connection state, which
+  has no `up` or `down` — so the macro line failed to parse and stopped the whole
+  function before it ran. A lever sitting directly on a block never turned it on,
+  and neither did a torch underneath or a redstone block on top. Every block using
+  the library was blind above and below.
+- **The readme's counts.** The subtitle claimed 52 blocks, 5 tools and 58 recipes
+  while the badges beside it said 57, 7 and 66; the badges were right. The block
+  and tool reference tables were short by four blocks and the Redstone Remote.
+
 ## [v5.1.15] - 2026-08-19 - Settings
 
 **Supported versions:** 1.21.9 - 26.2 (data pack formats 88 - 107).

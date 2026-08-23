@@ -19,10 +19,12 @@ function ra_lib:transport/net/read
 tellraw @a[tag=ra.meter_active,limit=1] [{text:"  Network ",color:"gray"},{score:{name:"@s",objective:"ra.tr.net"},color:"aqua"},{text:"   this block adds ",color:"gray"},{score:{name:"@s",objective:"ra.tr.cap"},color:"yellow"}]
 tellraw @a[tag=ra.meter_active,limit=1] [{text:"  Stored ",color:"gray"},{score:{name:"#net_amount",objective:"ra.tr.tmp"},color:"green"},{text:" of ",color:"gray"},{score:{name:"#net_capacity",objective:"ra.tr.tmp"},color:"green"}]
 
-# Electric grids are EU and fluid networks are millilitres; the medium name is
-# the only thing that tells them apart from here, and an electric grid's medium
-# is always "eu".
-execute if data storage ra:transport cur.medium run tellraw @a[tag=ra.meter_active,limit=1] [{text:"  Holding ",color:"gray"},{nbt:"cur.medium",storage:"ra:transport",color:"aqua"}]
+# EVERY medium, not just the primary. A network can hold several at once, and
+# this used to print `cur.medium` alone -- which is media[0], the one that got
+# there first. A run holding 5000 water and 5000 lava read "Stored 10000" over
+# "Holding water", so the tool for answering "what is actually in this pipe"
+# was the one place that could not say.
+execute if data storage ra:transport cur.medium run function ra:tools/multimeter/media
 execute unless data storage ra:transport cur.medium run tellraw @a[tag=ra.meter_active,limit=1] [{text:"  Holding ",color:"gray"},{text:"nothing",color:"dark_gray"}]
 
 # Whatever the block itself publishes for the goggles is worth repeating here:

@@ -26,10 +26,12 @@ This page mirrors key datapack milestones from the main project changelog.
   spell `minecraft:polished_blackstone_slab` to configure a sorter.
 - **Big Torch.** An end rod wearing a torch scaled to a full block tall, always
   standing up. Denies hostile spawns within 1-100 blocks, set with the Data
-  Handler. It removes what **spawned** inside the radius and leaves what walked in,
-  by remembering every mob in a band 16 blocks past it. Built from Enchanted Coal
-  — sacrifice coal on an enchanting table at 1% — nine of which make an Enchanted
-  Coal Block, which over a stick makes the torch.
+  Handler. It drops what **spawned** inside the radius into the void and leaves
+  what walked in, by remembering every mob in a band 16 blocks past it — dropping
+  rather than killing is what stops it being a mob farm that also lights the
+  room. Built from Enchanted Coal — sacrifice coal on an enchanting table at 1%
+  — nine of which make an Enchanted Coal Block, which over a stick makes the
+  torch.
 
 ### Changed
 

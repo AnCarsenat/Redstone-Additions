@@ -20,7 +20,7 @@ The `ra_interactive` module provides 10 utility machines for automation and map 
 | Infinite Lava Cauldron | `minecraft:cauldron` | ![Infinite Lava Cauldron recipe](images/recipes/ra_interactive/infinite_lava_cauldron.png){ width="220" } | Continuous | Keeps `lava_cauldron` |
 | Infinite Snow Cauldron | `minecraft:cauldron` | ![Infinite Snow Cauldron recipe](images/recipes/ra_interactive/infinite_snow_cauldron.png){ width="220" } | Continuous | Keeps `powder_snow_cauldron[level=3]` |
 | Magic Crate | `minecraft:barrel` | ![Magic Crate recipe](images/recipes/ra_interactive/magic_crate.png){ width="220" } | Continuous | Teleports dropped items in from 5-20 blocks |
-| Big Torch | `minecraft:end_rod` + torch skin | ![Big Torch recipe](images/recipes/ra_interactive/big_torch.png){ width="220" } | Continuous | Denies hostile spawns within 1-100 blocks |
+| Big Torch | `minecraft:end_rod` + torch skin | ![Big Torch recipe](images/recipes/ra_interactive/big_torch.png){ width="220" } | Continuous | Drops mobs that spawn within 1-100 blocks into the void |
 | Message Block | `minecraft:note_block` | ![Message Block recipe](images/recipes/ra_interactive/message_block.png){ width="220" } | Rising edge | Sends text to players in range |
 
 ## Behavior Notes

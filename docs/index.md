@@ -121,8 +121,9 @@ Current pack totals:
 - **[Potions keep their effects](transport-networks.md#potions-keep-their-effects).**
   A Drain pours one over whoever is standing there, with the duration scaled by
   how much was drawn.
-- **[Big Torch](interactive-machines.md#big-torch).** Denies hostile spawns within
-  1-100 blocks, and can tell what spawned inside from what walked in.
+- **[Big Torch](interactive-machines.md#big-torch).** Drops mobs that spawn within
+  1-100 blocks into the void, and can tell what spawned inside from what walked
+  in. It does not kill them, so nothing drops and nobody farms it.
 - **[Set from hand](tools.md#item-properties-and-set-from-hand).** Item-id
   properties are filled by holding the item, not by typing its id.
 - **[Item Pipe filters are a property](interactive-machines.md#item-pipe-filters)**

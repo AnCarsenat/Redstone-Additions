@@ -32,7 +32,19 @@ execute if score #dr.got ra.wires.tmp < #dr.need ra.wires.tmp run return run tag
 $execute if data storage ra:wires media.$(medium).effect run function ra_wires:fluid/potion_store
 
 # Paid for, so now take the container and leave the empty behind.
-$item replace entity @a[tag=ra.wires.emptying,limit=1] weapon.mainhand with $(empty)
+#
+# ONE ITEM OFF THE STACK, NOT THE STACK
+# Buckets do not stack, but experience bottles and potions-in-hand can, and
+# `item replace` overwrites the whole slot: emptying one of sixteen experience
+# bottles used to destroy the other fifteen and hand back a single empty. A
+# stack is decremented and the empty given separately; a single item still goes
+# through `item replace`, which cannot fail on a full inventory.
+$execute store result score #dr.hand ra.wires.tmp run execute if items entity @p[tag=ra.wires.emptying] weapon.mainhand $(item)
+
+execute if score #dr.hand ra.wires.tmp matches 2.. run item modify entity @p[tag=ra.wires.emptying] weapon.mainhand ra_wires:take_one
+$execute if score #dr.hand ra.wires.tmp matches 2.. run give @a[tag=ra.wires.emptying] $(empty)
+$execute if score #dr.hand ra.wires.tmp matches ..1 run item replace entity @a[tag=ra.wires.emptying,limit=1] weapon.mainhand with $(empty)
+
 tag @a[tag=ra.wires.emptying] remove ra.wires.emptying
 
 scoreboard players set #dr.took ra.wires.tmp 1

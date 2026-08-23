@@ -22,7 +22,17 @@ $execute store result score #dr.got ra.wires.tmp run function ra_lib:transport/n
 execute if score #dr.got ra.wires.tmp < #dr.need ra.wires.tmp run return run data modify entity @s data.status.drain_state set value "wrong_medium"
 
 # Paid for, so now take the full container and leave the empty behind.
-$execute positioned ~ ~1 ~ run function ra_lib:inventory/remove {id:"$(item)",count:1}
+#
+# The removal is CHECKED. `if items` sees the whole container, ra_lib:inventory
+# /remove reads the `Items` list, and the two do not agree on every block that
+# accepts items -- and when the removal quietly failed, the empty was handed out
+# anyway. That is one empty bucket per cycle, forever, out of a full one that
+# never left the container, with the network being charged for water each time.
+# Nothing is minted unless the full container actually came out.
+$execute positioned ~ ~1 ~ store result score #dr.rm ra.wires.tmp run function ra_lib:inventory/remove {id:"$(item)",count:1}
+$execute if score #dr.rm ra.wires.tmp matches ..0 run function ra_lib:transport/net/take {amount:$(volume),medium:"$(medium)"}
+execute if score #dr.rm ra.wires.tmp matches ..0 run return run data modify entity @s data.status.drain_state set value "nothing_to_empty"
+
 $execute positioned ~ ~1 ~ store result score #dr.put ra.wires.tmp run function ra_lib:inventory/insert {id:"$(empty)",count:1,components:{}}
 
 # Removing one item does not guarantee a slot for the empty: the full stack may

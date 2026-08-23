@@ -194,8 +194,9 @@ Current pack totals:
 ## Older: v5.1.4
 
 - **Fluid and gas rebuilt on a network model.** A connected run of pipes is one
-  network with one medium; fluid no longer crawls a block per tick, and pipes cost
-  nothing to keep running.
+  network with one pool of contents — several media at once, each with its own
+  entry; fluid no longer crawls a block per tick, and pipes cost nothing to keep
+  running.
 - **Boiler and Solar Panel.** Water over a heat source makes steam; steam drives
   the EU Generator, which no longer produces power from nothing. The Solar Panel
   generates EU from sky light.

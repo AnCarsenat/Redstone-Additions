@@ -48,8 +48,46 @@
   anchored on one EU Generator at 60 EU/t: 40/80/160/300 EU per item for
   low/medium/high/superpowered. Each step still costs more per unit of speed than
   the one below it.
+- **The Creative Fluid Source tops up at a rate instead of claiming the run.** It
+  offered the whole of the network's free space every tick, which is what a
+  single-medium source wanted and exactly the wrong thing now that a run can hold
+  several media: one source took the entire network on the tick it was placed —
+  100000 mL of water in one go — and every other source, Pump and Drain on that
+  run then found a full network for ever. A mixed run could not be built anywhere
+  one was attached, and it looked like the run refusing the new medium rather
+  than like the source having already taken the room. It now adds `rate` mL per
+  tick, 1000 by default and settable on the Data Handler, so sources sharing a
+  run interleave.
 
 ### Fixed
+
+- **A nameless total survived every rebuild, and renamed itself to whatever came
+  next.** `rebuild/snapshot_read` would carry a network's bare `amount` across a
+  rebuild when it had no breakdown to carry, on the grounds that losing the
+  contents silently was worse than losing their name. It is worse. The carried
+  total had nothing to reconstruct `amounts` from, so the next rebuild carried it
+  again, and the first medium offered afterwards became the only entry in `media`
+  and therefore the name of all of it — 15000 mL of nothing reporting itself as
+  15000 mL of the next thing you poured in. Networks reached a state holding a
+  five-figure amount with no medium at all, which neither migration could repair
+  because both are gated on a `medium` those networks did not have. A rebuild now
+  carries the breakdown and nothing else, and the total is summed back from it,
+  so `amount` is always exactly the sum of `amounts`.
+- **The read-time migration could never fire on a network that needed it.** It
+  tested `unless data ... media`, and `rebuild/reset_net` writes `media:[]` — an
+  empty list is present as far as `if data` is concerned, so a network holding an
+  amount with an empty breakdown was never migrated. `rebuild/snapshot_read` made
+  the same test as `media[0]` and got the right answer; the two disagreeing is
+  what let the state persist.
+- **The Big Torch, the Magic Crate and the Breeder each duplicated their own
+  block.** All three killed the vanilla drop with a bare `kill @e[type=item,
+  ...,distance=..2]` — no `execute as @e[tag=ra.broken,...] at @s run` in front of
+  it — so the distance was measured from wherever the module's tick function
+  stood rather than from the block that had just been broken. The end rod or
+  barrel survived and was handed back alongside the custom item. Every other
+  block in the pack already wrapped this correctly. The bare form also ran every
+  tick, so any end rod or barrel item that drifted near the tick position was
+  deleted.
 
 - **The Data Handler's registry never reached an existing world.** It was seeded
   lazily, `unless data storage ra:dh numeric`, from three call sites — so a world

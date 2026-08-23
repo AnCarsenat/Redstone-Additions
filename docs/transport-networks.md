@@ -34,10 +34,11 @@ consumer at the end of a line was fed by whatever leaked past the wires in front
 of it. Electric now runs on the same engine as fluids, and everything below
 applies to it word for word.
 
-A connected run of pipes, tanks, pumps, valves and drains is one *network* with a
-single medium, a single amount and a capacity equal to the sum of its members.
-Adding a pipe adds capacity; it does not add another buffer that fluid has to be
-pushed through.
+A connected run of pipes, tanks, pumps, valves and drains is one *network* with
+one pool of contents and a capacity equal to the sum of its members. Adding a
+pipe adds capacity; it does not add another buffer that fluid has to be pushed
+through. That pool can hold several media at once — see
+[Mixing media in one run](#mixing-media-in-one-run).
 
 That means:
 
@@ -50,6 +51,17 @@ That means:
   run is free to keep running.
 - Network membership is recomputed only when a node is placed or broken, and is
   debounced so laying a long run costs one rebuild rather than one per block.
+- **A network keeps its number.** The id the Multimeter shows is an identity, not
+  a position in a list: extending a run, or tearing out an unrelated one
+  somewhere else in the world, leaves it alone. A run split in two keeps the
+  number on one half and the other half gets a fresh one; a run whose blocks are
+  all broken loses its number for good, and it is never issued again.
+
+  It did not used to work that way. Ids were handed out 1, 2, 3… on every
+  rebuild, so breaking one run slid every higher-numbered run down one. The
+  Multimeter would say "Network 22", the run would be torn out, and `nets.n22`
+  would still be sitting in `storage ra:transport` afterwards holding a different
+  run's water — which reads exactly like a network that refused to die.
 
 Network state:
 
@@ -64,17 +76,24 @@ buffer. Fluids are measured in **millilitres**; a bucket is 5000 mL.
 | Block | Holds |
 |---|---|
 | Pipe (either tier) | 1000 mL |
-| Pump, Drain | 2000 mL |
-| Tank | 100000 mL (20 buckets) |
-| Wire, EU Switch, EU Breaker | **0 EU** |
-| EU Generator, Consumer, Solar Panel | 50 EU |
+| Pump, Drain | 5000 mL |
+| Tank, Gas Tank | 100000 mL (20 buckets) |
+| Creative Fluid Source | 100000 mL |
+| Ender Fluid Vault | 1000 mL |
+| Wire, EU Switch, EU Breaker, Ender Power Vault | **0 EU** |
+| EU Generator, Consumer, Solar Panel, Electric Furnace | 50 EU |
 | **Battery** | 10000 EU |
+| Creative EU Source | 100000 EU |
 
 Network totals live in `storage ra:transport nets.n<id>` rather than on a
 scoreboard fake player. A scoreboard gives one number per network, which is
 exactly the shape that has to change when a network can hold several media at
 once; a compound already has room for the per-medium map. Arithmetic still goes
 through scoreboards, because commands have no other way to add two numbers.
+
+Valves and Liquid Filters are **bridges**, not members: they move contents
+between two networks and hold nothing themselves, so they add no capacity to
+either side and never appear in this table.
 
 Wire stores nothing. A grid with no battery on it holds only the small working
 buffers of its generators and consumers, so whatever is generated has to be spent
@@ -98,10 +117,13 @@ smoke, oxygen.
 what a player pours into a drain is exactly what a drain set to *place* gives
 back, as orbs.
 
-!!! warning "One medium at a time, still"
-    A network holds a single medium until it is emptied. `potion` is therefore one
-    medium covering every variety: a network cannot yet tell a healing potion from
-    a swiftness one. Filters wait on the same change.
+!!! note "`potion` is one medium, whichever potion it is"
+    A network holds [several media at once](#mixing-media-in-one-run), but every
+    potion is the same medium — `potion` — because the variety lives beside the
+    amount rather than in the media list. The first potion into a network is the
+    one it keeps; a second, different potion poured in adds to the same
+    `potion` entry and arrives as the first one. A Liquid Filter set to `potion`
+    passes potions as a group, not one kind of potion.
 
 ## The Drain's Three Roles
 
@@ -198,21 +220,25 @@ Media are named, not numbered:
 | `smoke` | Smoke | gas | — |
 | `oxygen` | Oxygen | gas | — |
 
-A network holds one medium at a time. It forgets its medium when drained to
-empty, so a different one can be pumped in without breaking anything.
+A network holds any number of these at once and clogs on the **sum** — see
+[Mixing media in one run](#mixing-media-in-one-run). A medium drained to nothing
+leaves the network entirely, so a run that once carried lava stops claiming to,
+and a network drained to empty forgets everything.
 
 ## Pumps and Drains
 
 **Liquid Pump** — pulls a world fluid source into the network. It checks all six
 adjacent blocks, so it works whichever way you place it. A source block is
-all-or-nothing: the pump only takes it if the whole 1000 units fit, so a nearly
-full network cannot delete a lake a partial bucket at a time.
+all-or-nothing: the pump only takes it if the whole **5000 mL** fits, so a
+nearly full network cannot delete a lake a partial bucket at a time. Cauldrons go
+in thirds — 1667, 1667, 1666 mL — because a third of 5000 does not divide.
 
 **Liquid Drain** has two modes, cycled from the wrench menu:
 
 - `drain` — takes a world source into the network (like a pump, on a slower cycle).
-- `place` — spends 1000 units putting a source block of the network's medium back
-  into the world, on the first free side.
+- `place` — spends **5000 mL** putting a source block of the network's primary
+  medium back into the world, on the first free side. Below 5000 mL it says
+  `not_enough` rather than placing a partial block.
 
 `place` mode is what makes a network worth building: carry lava from a pool to
 wherever you want it, or refill cauldrons across a base.
@@ -226,8 +252,12 @@ smaller is genuinely consumed, so small pools empty out.
 ## Boiler and the EU Chain
 
 The Boiler sits **between two networks** — it is deliberately not a member of
-either, because a network holds one medium and it needs water on one side and
-steam on the other.
+either. A node belongs to exactly one network, so a Boiler that joined would put
+its water side and its steam side into the same one. A network can hold both now,
+but that is precisely what you do not want here: the two would share one pool of
+volume, the steam would be drawn back through the Boiler's own inlet, and the EU
+Generator on the far side would be reading a run that is half water. Keeping it
+outside is what makes the chain directional.
 
 ```text
 water network → [Boiler over a heat source] → steam network → [EU Generator] → EU
@@ -235,13 +265,17 @@ water network → [Boiler over a heat source] → steam network → [EU Generato
 
 - Any block in `#ra_wires:heat_sources` under the Boiler will do: lava, fire,
   soul fire, magma block, campfire, soul campfire, lava cauldron.
-- Consumes 100 water and produces 100 steam per cycle.
+- Consumes 1000 mL of water and produces 1000 mL of steam per cycle, once every
+  20 ticks.
 - The **EU Generator burns steam**, or solid fuel dropped straight into it — it
   is a barrel wearing a furnace skin, so loading it is just putting coal in a box.
   Either way it does not generate power from nothing.
 - The **Solar Panel** generates EU from sky light instead, scaling with the
   vanilla daylight detector's own light reading — so night, rain, roofs and snow
-  cover all reduce it automatically.
+  cover all reduce it automatically. It offers what it makes **every tick**,
+  10 EU/t at the dimmest light it registers up to 50 EU/t in full noon sun, which
+  is a shade under one EU Generator. It stores nothing overnight by itself:
+  a panel contributes 50 EU of capacity, so a solar base wants Batteries.
 
 ## Mixing media in one run
 
@@ -256,14 +290,38 @@ and switching it over meant draining it first. Nothing refuses an offer now
 except a lack of room.
 
 The **primary medium** is whichever arrived first and has not run out. It is what
-a Valve or a Breaker moves when nobody told it otherwise, what a Drain places, and
-what the Goggles name. A medium drained to nothing leaves the network entirely, so
-a run that once carried lava stops claiming to.
+a Valve or a Breaker moves when nobody told it otherwise, and what a Drain places
+when nobody named a medium. A medium drained to nothing leaves the network
+entirely, so a run that once carried lava stops claiming to.
 
 Networks saved by an earlier version migrate the first time they are read. They
 cannot be enumerated by id from a function, so there is no sweep on load — the
 whole amount moves into the key of whatever medium the network was recorded as
 holding, and nothing is lost.
+
+### Reading a mixed run
+
+The **Goggles** name a single-medium run — `Medium: Water` — and say
+`Medium: Multimedium` for anything holding two or more, over the usual `Amount:`
+line for the total. They do not list the breakdown: a billboard is one short line
+read from across the room, and `Water 5000 mL, Lava 5000 mL, Steam 2000 mL` is
+neither short nor legible at that distance.
+
+The **Multimeter** is where the breakdown lives, because chat has room for a line
+per medium:
+
+```
+── Copper Pipe ──
+  Network 22   this block adds 1000
+  Stored 10000 of 20000
+  Holding
+    Water  5000 mL
+    Lava  5000 mL
+```
+
+A run holding one medium keeps it on a single line — `Holding  Water  5000 mL`.
+The media are listed in the order they arrived, so the first line is the primary.
+EU grids read the same way, in EU.
 
 ## Liquid Filter
 
@@ -432,14 +490,36 @@ module, or `/function ra_wires:items/give_creative` for just the two.
 | Block | Real block | What it does |
 | --- | --- | --- |
 | Creative EU Source | `minecraft:beacon` | Refills its grid to capacity every tick |
-| Creative Fluid Source | `minecraft:beacon` | Fills its network with one medium, cycled with the wrench |
+| Creative Fluid Source | `minecraft:beacon` | Tops its network up with one medium, at `rate` per tick |
 
 The EU source fills to capacity rather than producing a fixed rate, so it does
 not matter how much the grid draws: whatever was spent last tick is back this
 tick and a machine on a creative grid never sees a brownout.
 
-The fluid source's medium is a property rather than a fixed choice because a
-fluid network holds exactly one medium at a time — a source stuck on water could
-not be used to test a lava line at all. If the network already holds something
-else the offer is refused and the goggles say so, which is correct behaviour
-rather than a fault.
+The fluid source's medium is a property rather than a fixed choice, so one source
+can be used to test a water line and then a lava line. Cycle it with the wrench,
+which can only land on a medium that exists, or type it on the `medium` row of
+the Data Handler — free text is checked against the media registry first, because
+a junk key in a network is one nothing could ever drain.
+
+### Why the fluid source has a rate and the EU source does not
+
+The fluid source adds **`rate` mL per tick**, 1000 by default, and stops when the
+network is full. The EU source has no rate because a grid is emptied every tick
+by whatever is drawing on it; a pipe run is not.
+
+Filling a run to the brim in one tick is what a single-medium source wanted, and
+it is exactly wrong now that [a run can hold several media](#mixing-media-in-one-run).
+A source offering the whole of the free space took the entire network on the tick
+it was placed, and every other source, Pump and Drain feeding that run then found
+a full network for ever. A mixed run could not be built anywhere a Creative Fluid
+Source was attached, and the failure looked like the run refusing the new medium
+rather than like the source having already claimed it.
+
+With a rate, sources sharing a run interleave and the run ends up holding all of
+them. Set `rate` high on the Data Handler for a single-medium test rig where
+instant refill is what you want.
+
+A full network still refuses everything, correctly — mixing needs headroom. If
+you are building a mixed run to try it out, leave the creative source off it and
+fill from Drains, or give the run more tanks than one source will fill.

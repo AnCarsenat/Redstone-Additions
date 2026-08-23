@@ -133,8 +133,15 @@ else. Only `data.properties` travels — a block's private working state stays p
 grid stores, its capacity, what this block contributes, and what it draws or
 makes.
 
-Useful for the question the goggles cannot answer at a glance — *why* a grid is
-full, or which of two adjacent runs a block actually joined.
+On a run holding more than one medium it lists **every** medium with its own
+amount, which is the one place in the pack that shows the breakdown — the Goggles
+only have room to say `Multimedium`. See
+[Reading a mixed run](transport-networks.md#reading-a-mixed-run).
+
+Useful for the questions the goggles cannot answer at a glance — *why* a grid is
+full, which of two adjacent runs a block actually joined, or what is really in a
+pipe that says it is mixed. The network number it prints is stable, so two blocks
+you believe are connected reporting different numbers is the whole diagnosis.
 
 ---
 

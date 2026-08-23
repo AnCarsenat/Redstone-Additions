@@ -21,6 +21,14 @@
   <img src="https://img.shields.io/badge/Recipes-69-8A2BE2" alt="69 recipes">
 </p>
 
+<p align="center">
+  <a href="https://github.com/AnCarsenat/Redstone-Additions/raw/main/docs/images/gallery/with-shader-2026-08-20_19.23.57.png"><img src="https://github.com/AnCarsenat/Redstone-Additions/raw/main/docs/images/gallery/with-shader-2026-08-20_19.23.57.png" alt="Every custom block in Redstone Additions, laid out on pillars" width="900"></a>
+</p>
+
+<p align="center">
+  <em>Every block the pack adds, in one place. Click to enlarge.</em>
+</p>
+
 ---
 
 Redstone Additions expands vanilla redstone with logic gates, automation machines, storage, sensors, wireless signaling, chunk loading, multiblocks, and liquid/gas/electric transport networks.
@@ -162,7 +170,7 @@ Electricity, in EU:
 Creative, for building and testing:
 
 - Creative EU Source — refills its grid to capacity every tick
-- Creative Fluid Source — fills with a medium cycled by the wrench
+- Creative Fluid Source — tops its network up with one medium, at a settable rate
 
 There are no tiers. A netherite pipe was a more expensive way to buy the same
 block, so the tiered items now place the single version.

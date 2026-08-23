@@ -21,3 +21,4 @@ function ra:tools/goggles/billboard/handle_billboard with storage ra:temp billbo
 function ra:tools/goggles/billboard/data_line {path:"available_eu",label:"EU: ",color:"aqua",suffix:" EU",y:0.7}
 function ra:tools/goggles/billboard/data_line {path:"grid",label:"",color:"yellow",suffix:"",y:0.45}
 function ra:tools/goggles/billboard/data_line {path:"fuel",label:"Sun: ",color:"gold",suffix:"",y:0.2}
+function ra:tools/goggles/billboard/data_line {path:"output",label:"Making: ",color:"green",suffix:" EU/t",y:-0.05}

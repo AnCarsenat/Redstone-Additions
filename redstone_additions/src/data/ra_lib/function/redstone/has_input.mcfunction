@@ -1,4 +1,4 @@
-# /ra_lib:redstone/has_input {dx:0,dy:0,dz:-1,side:"north",back:"south",torch:"side"}
+# /ra_lib:redstone/has_input {dx:0,dy:0,dz:-1,side:"north",back:"south",torch:"side",dust:"side"}
 # Internal: is there a redstone component on this side that could power us,
 # whether or not it currently is? Returns 1 or 0.
 #
@@ -12,8 +12,8 @@
 $execute if block ~$(dx) ~$(dy) ~$(dz) #ra_lib:redstone/binary_sources run return 1
 $execute unless entity @s[tag=ra.redstone.ignore_blocks] if block ~$(dx) ~$(dy) ~$(dz) minecraft:redstone_block run return 1
 
-$execute if block ~$(dx) ~$(dy) ~$(dz) minecraft:redstone_wire[$(back)=side] run return 1
-$execute if block ~$(dx) ~$(dy) ~$(dz) minecraft:redstone_wire[$(back)=up] run return 1
+$execute store result score #rs.dust ra.temp run function ra_lib:redstone/dust_present/$(dust) {dx:$(dx),dy:$(dy),dz:$(dz),back:"$(back)"}
+execute if score #rs.dust ra.temp matches 1.. run return 1
 
 $execute if block ~$(dx) ~$(dy) ~$(dz) #ra_lib:redstone/directional_sources[facing=$(back)] run return 1
 

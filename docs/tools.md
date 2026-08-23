@@ -85,6 +85,28 @@ There is also a **Creative Data Handler**, which edits anything including the
 locked fields, adds and removes properties, and views a block's raw internal
 data. That one is for building the pack, not for playing with it.
 
+**Tools do not stack.** Each one is `max_stack_size=1`, so a second wrench sits
+in its own slot rather than merging with the first. They carry per-tool state —
+the Clipboard's origin, the Remote's channel — and two of them in one slot is a
+stack whose state belongs to whichever was picked up last. The bundles still hold
+the whole set, because `bundle_contents` set by a command is not subject to the
+weight limit that applies when a player inserts items by hand.
+
+### Item properties and [Set from hand]
+
+A property that holds an **item id** — the Item Pipe's `filter_item` is the one
+you will meet — gets a second button, **[Set from hand]**. Hold the item and
+press it, and the id of what you are holding is written straight in.
+
+The row still has its ordinary **[Modify]** button for typing an id out, which is
+what you want when your hands are full or the item is somewhere else. But nobody
+should have to remember how to spell `minecraft:polished_blackstone_slab` to
+configure a sorter, which is the whole reason the type exists.
+
+Which properties are item ids is declared in the Handler's registry, not guessed
+from the value: an item id is a string as far as storage is concerned, so a
+property left to probe itself would come out as plain text and lose the button.
+
 ---
 
 ## Clipboard
@@ -111,8 +133,15 @@ else. Only `data.properties` travels — a block's private working state stays p
 grid stores, its capacity, what this block contributes, and what it draws or
 makes.
 
-Useful for the question the goggles cannot answer at a glance — *why* a grid is
-full, or which of two adjacent runs a block actually joined.
+On a run holding more than one medium it lists **every** medium with its own
+amount, which is the one place in the pack that shows the breakdown — the Goggles
+only have room to say `Multimedium`. See
+[Reading a mixed run](transport-networks.md#reading-a-mixed-run).
+
+Useful for the questions the goggles cannot answer at a glance — *why* a grid is
+full, which of two adjacent runs a block actually joined, or what is really in a
+pipe that says it is mixed. The network number it prints is stable, so two blocks
+you believe are connected reporting different numbers is the whole diagnosis.
 
 ---
 

@@ -2,7 +2,7 @@
 # Context: as the sending vault marker.
 
 # Take our slice out of the local network first.
-$function ra_lib:transport/net/take {amount:$(rate)}
+$function ra_lib:transport/net/take {amount:$(rate),medium:"$(medium)"}
 scoreboard players operation #ender.carry ra.temp = #net_moved ra.tr.tmp
 execute if score #ender.carry ra.temp matches ..0 run return 0
 

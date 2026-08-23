@@ -18,14 +18,35 @@
     "components": {
       "minecraft:item_model": "minecraft:clock",
       "minecraft:item_name": "Multimeter",
-      "minecraft:custom_data": { "ra": { "multimeter": true } },
+      "minecraft:max_stack_size": 1,
+      "minecraft:custom_data": {
+        "ra": {
+          "multimeter": true
+        }
+      },
       "minecraft:enchantment_glint_override": true,
       "minecraft:lore": [
-        { "text": "RMB a block: read its network", "color": "gray", "italic": false },
-        { "text": "Stored, capacity, and what this block adds", "color": "gray", "italic": false }
+        {
+          "text": "RMB a block: read its network",
+          "color": "gray",
+          "italic": false
+        },
+        {
+          "text": "Stored, capacity, and what this block adds",
+          "color": "gray",
+          "italic": false
+        }
       ],
-      "minecraft:food": { "nutrition": 0, "saturation": 0, "can_always_eat": true },
-      "minecraft:consumable": { "consume_seconds": 1000000, "animation": "none", "has_consume_particles": false }
+      "minecraft:food": {
+        "nutrition": 0,
+        "saturation": 0,
+        "can_always_eat": true
+      },
+      "minecraft:consumable": {
+        "consume_seconds": 1000000,
+        "animation": "none",
+        "has_consume_particles": false
+      }
     }
   },
   "show_notification": true

@@ -2,6 +2,192 @@
 
 This page mirrors key datapack milestones from the main project changelog.
 
+## v5.1.16 (2026-08-20) — Mixed pipes
+
+**Supported versions:** 1.21.9 - 26.2 (data pack formats 88 - 107).
+
+### Added
+
+- **Networks hold several media at once.** Water, lava and steam can share a pipe
+  run, each with its own entry, and the run clogs on the **sum** rather than on
+  any one medium. A network used to refuse anything but what it already held, so
+  a run was single-purpose for as long as it held anything at all. Nothing refuses
+  an offer now except a lack of room.
+- **Liquid Filter.** A Valve that passes only the medium it is set to, so a mixed
+  run can be sorted back into single-medium branches. It levels per medium: two
+  runs each holding 5000 mL are not level to a water filter if one is all lava.
+- **Potions keep their effects.** A potion poured into a Drain is 1000 mL of the
+  `potion` medium and the network remembers which potion. A Drain set to output
+  applies it to everyone within four blocks, with the duration scaled by how much
+  was drawn and the level the potion says it has. The first potion into a network
+  keeps its identity.
+- **`item_name` properties, and [Set from hand].** A property holding an item id
+  gets a second button that copies whatever you are holding. Nobody should have to
+  spell `minecraft:polished_blackstone_slab` to configure a sorter.
+- **Big Torch.** An end rod wearing a torch scaled to a full block tall, always
+  standing up. Denies hostile spawns within 1-100 blocks, set with the Data
+  Handler. It drops what **spawned** inside the radius into the void and leaves
+  what walked in, by remembering every mob in a band 16 blocks past it — dropping
+  rather than killing is what stops it being a mob farm that also lights the
+  room. Built from Enchanted Coal — sacrifice coal on an enchanting table at 1%
+  — nine of which make an Enchanted Coal Block, which over a stick makes the
+  torch.
+
+### Changed
+
+- **The Big Torch drops mobs into the void instead of killing them, and its
+  radius stops advertising a reach it does not have.** A kill fires the death,
+  so a torch in a dark room was a passive mob farm that also lit the room; a
+  denied mob is now teleported out of the bottom of the world and nobody
+  collects anything. The destination is deliberately not derived from `min_y` —
+  void damage starts some distance below it and that distance is not the same
+  across the versions this pack supports, so it goes far enough down that no
+  supported dimension reaches it. The 100-block ceiling was applied to the
+  working value but not written back, so a torch set to 500 swept 100 while the
+  goggles and the Data Handler both said 500.
+
+- **Item Pipe filters are a property, not an item frame.** Set with [Set from
+  hand]; the goggles draw the item it is filtering for, above the id. Reading a filter used to
+  mean an entity selector per pipe plus a `block_pos` comparison per candidate
+  frame, cached and rescanned every 20 ticks — so a frame you had just hung did
+  nothing for up to a second. It is now one `data modify` with no selector, no
+  cache and no stale second. Existing pipes migrate; their frames are left alone.
+- **Tools no longer stack.** Every tool is `max_stack_size=1`. They carry
+  per-tool state — the Clipboard's origin, the Remote's channel — and two in one
+  slot is a stack whose state belongs to whichever was picked up last. The
+  bundles still hold the full set: `bundle_contents` set by a command is not
+  subject to the weight limit that applies to inserting by hand.
+- **A network keeps its number.** Ids used to be handed out 1, 2, 3… on every
+  rebuild, so they said nothing about identity: break one run and every run
+  numbered above it slid down one. The Multimeter would report "Network 22", the
+  run would be torn out, and `nets.n22` would still be sitting in storage
+  afterwards holding somebody else's water — which reads exactly like a network
+  that refused to die. A component that still contains the old network's root now
+  inherits its number, anything genuinely new takes the next number a counter has
+  never issued, and a retired number is never issued again.
+- **The Goggles say `Multimedium`; the Multimeter says what is in there.** A
+  billboard is one short line read from across the room, and
+  `Water 5000 mL, Lava 5000 mL, Steam 2000 mL` is neither short nor legible at
+  that distance — so a mixed run reads as `Multimedium` on the Goggles over the
+  usual total, and the Multimeter prints a line per medium in chat, where there
+  is room. A single-medium run still reads as its plain name, which is what the
+  Data Handler and every single-medium block expect to read back.
+- **The Electric Furnace's top mode cost three EU Generators to run.** 1000 EU an
+  item at five ticks an item is 200 EU/t, or about twenty Solar Panels across a
+  daylight cycle — priced out of the game rather than expensive. The table is now
+  anchored on one EU Generator at 60 EU/t: 40/80/160/300 EU per item for
+  low/medium/high/superpowered. Each step still costs more per unit of speed than
+  the one below it.
+- **The Creative Fluid Source tops up at a rate instead of claiming the run.** It
+  offered the whole of the network's free space every tick, which is what a
+  single-medium source wanted and exactly the wrong thing now that a run can hold
+  several media: one source took the entire network on the tick it was placed —
+  100000 mL of water in one go — and every other source, Pump and Drain on that
+  run then found a full network for ever. A mixed run could not be built anywhere
+  one was attached, and it looked like the run refusing the new medium rather
+  than like the source having already taken the room. It now adds `rate` mL per
+  tick, 1000 by default and settable on the Data Handler, so sources sharing a
+  run interleave.
+
+### Fixed
+
+- **A nameless total survived every rebuild, and renamed itself to whatever came
+  next.** `rebuild/snapshot_read` would carry a network's bare `amount` across a
+  rebuild when it had no breakdown to carry, on the grounds that losing the
+  contents silently was worse than losing their name. It is worse. The carried
+  total had nothing to reconstruct `amounts` from, so the next rebuild carried it
+  again, and the first medium offered afterwards became the only entry in `media`
+  and therefore the name of all of it — 15000 mL of nothing reporting itself as
+  15000 mL of the next thing you poured in. Networks reached a state holding a
+  five-figure amount with no medium at all, which neither migration could repair
+  because both are gated on a `medium` those networks did not have. A rebuild now
+  carries the breakdown and nothing else, and the total is summed back from it,
+  so `amount` is always exactly the sum of `amounts`.
+- **The read-time migration could never fire on a network that needed it.** It
+  tested `unless data ... media`, and `rebuild/reset_net` writes `media:[]` — an
+  empty list is present as far as `if data` is concerned, so a network holding an
+  amount with an empty breakdown was never migrated. `rebuild/snapshot_read` made
+  the same test as `media[0]` and got the right answer; the two disagreeing is
+  what let the state persist.
+- **The Big Torch, the Magic Crate and the Breeder each duplicated their own
+  block.** All three killed the vanilla drop with a bare `kill @e[type=item,
+  ...,distance=..2]` — no `execute as @e[tag=ra.broken,...] at @s run` in front of
+  it — so the distance was measured from wherever the module's tick function
+  stood rather than from the block that had just been broken. The end rod or
+  barrel survived and was handed back alongside the custom item. Every other
+  block in the pack already wrapped this correctly. The bare form also ran every
+  tick, so any end rod or barrel item that drifted near the tick position was
+  deleted.
+
+- **A rebuild collapsed a mixed run into one medium.** Pour 5000 mL of water into
+  a network, place a block — any block, anywhere on the run — then pour 5000 mL
+  of lava in, and it reported 10000 mL of Lava. The rebuild that runs when the
+  topology changes parked only the total and the primary medium's name on the
+  network's root node; the per-medium breakdown was dropped, and because a fresh
+  network is written with an empty `media` list rather than none at all, the
+  read-time migration never fired to repair it either. Whatever was offered next
+  became the front of the list and so became the name on the whole total. The
+  breakdown is now carried through the rebuild in full, and the total is summed
+  from it rather than read separately, so the two cannot disagree.
+- **A rebuild forgot which potion a network held.** Same cause: `potion` lives on
+  the network next to the amounts, and nothing carried it across. A potion run
+  lost its effects the moment a block was placed anywhere on it.
+- **The Solar Panel made a twentieth of its stated output.** It generated on a
+  20-tick duty cycle but kept the per-tick amount, so a panel peaked at 2.5 EU/t
+  rather than the 50 EU/t the Electric Furnace's whole mode table is priced
+  against. Twenty panels came to 50 EU/t at absolute noon, which an Electric
+  Furnace on superpowered (60 EU/t) outruns for ever — so a base with twenty
+  panels and two Batteries sat pinned at zero stored EU in full sun, with nothing
+  visibly wrong. It offers what it makes every tick now. Batching it up instead
+  would average the same and behave worse: a 1000 EU burst needs somewhere to
+  land on the tick it arrives, and a panel contributes only 50 of capacity.
+- **The Solar Panel never showed its own output.** Its readout was the grid's
+  total, so there was no way to see the rate above from in game. It publishes
+  `Making: N EU/t` beside the sun line, as the EU Generator already did.
+- **Transport Networks' figures.** The Boiler was documented as 100 water to 100
+  steam per cycle; it moves 1000 mL each way, every 20 ticks. The capacity table
+  put Pumps and Drains at 2000 mL when they hold 5000, and had no row at all for
+  the Gas Tank, either Ender vault, the Electric Furnace or the Creative EU
+  Source.
+- **The Data Handler's registry never reached an existing world.** It was seeded
+  lazily, `unless data storage ra:dh numeric`, from three call sites — so a world
+  upgraded from an earlier version already had `numeric`, the guard passed, and
+  the registry was never rewritten. It kept the old list, with no `filter_item`
+  and no `filter_medium` in it and no `item_names` list at all, so neither filter
+  had a row in the editor on any block. It is now written on every load, like the
+  wrench and readonly registries beside it, and a name added to it reaches an
+  existing world on the next `/reload`.
+- **The Creative Fluid Source's medium could only be set with the wrench.** Its
+  `medium` property was never in the Data Handler's registry, so it had no row —
+  and neither did `enabled`, which the wrench toggles on emitters and multiblocks.
+  Both are registered now. A medium typed rather than cycled is checked against
+  the media registry before anything is pushed, because free text can name a
+  medium that does not exist and a junk key in a multi-medium network is one
+  nothing could ever drain.
+- **The Data Handler had no row for either filter.** It draws a row only for a
+  property the block actually has, and Item Pipes were placed carrying none at
+  all, while `filter_medium` was never added to the registry. Pipes are now
+  placed with an empty `filter_item`, existing ones get it from the migration,
+  and both names are registered.
+- **The same item came out different depending on where it came from.** Twenty
+  items had lore that disagreed between the recipe, the give function, the
+  namespace bundle and the block's own break drop — so a crafted Liquid Filter
+  and a broken one were different items and would not stack. All four sources now
+  agree, from the recipe.
+- **The Redstone Remote's recipe claimed `Channel: default` for ever.** The lore
+  line was static and `set_channel` is a `copy_custom_data` modifier that never
+  touches lore, so a remote switched to another channel went on saying default.
+  The line is gone.
+- **The up and down sides read every redstone source as 0.** `ra_lib:redstone/side`
+  substituted the back direction into a `redstone_wire` connection state, which
+  has no `up` or `down` — so the macro line failed to parse and stopped the whole
+  function before it ran. A lever sitting directly on a block never turned it on,
+  and neither did a torch underneath or a redstone block on top. Every block using
+  the library was blind above and below.
+- **The readme's counts.** The subtitle claimed 52 blocks, 5 tools and 58 recipes
+  while the badges beside it said 57, 7 and 66; the badges were right. The block
+  and tool reference tables were short by four blocks and the Redstone Remote.
+
 ## v5.1.15 (2026-08-19) — Settings
 
 ### Added

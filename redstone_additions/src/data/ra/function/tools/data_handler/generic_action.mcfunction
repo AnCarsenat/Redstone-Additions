@@ -7,11 +7,6 @@
 scoreboard players operation #dh.idx ra.temp = @s ra.dh.action
 scoreboard players remove #dh.idx ra.temp 100
 
-# Seeded on `numeric` as well as `registry`: a world that ran an older build
-# already has a registry, so guarding on that alone would leave the numeric
-# list permanently absent and every number back to being probed as text.
-execute unless data storage ra:dh numeric run function ra:tools/data_handler/init_registry
-
 data modify storage ra:dh q set value {}
 execute store result storage ra:dh q.i int 1 run scoreboard players get #dh.idx ra.temp
 function ra:tools/data_handler/props/pick_name with storage ra:dh q

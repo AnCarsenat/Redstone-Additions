@@ -1,4 +1,4 @@
-# /ra_lib:redstone/side {dx:0,dy:0,dz:-1,side:"north",back:"south",torch:"side"}
+# /ra_lib:redstone/side {dx:0,dy:0,dz:-1,side:"north",back:"south",torch:"side",dust:"side"}
 # Read the power one neighbour delivers into this block. 0-16.
 # Context: as the block's marker, at the block position.
 # Returns the level, and leaves it in #rs ra.temp.
@@ -13,6 +13,17 @@
 #   side      name of the direction from us towards it
 #   back      the opposite name, i.e. the direction from it back to us
 #   torch     which torch rule applies on this side: "below", "side" or "none"
+#   dust      which dust rule applies on this side: "side", "above" or "none"
+#
+# WHY dust AND torch ARE BOTH NAMED BY THE CALLER
+# This function used to substitute $(back) straight into a redstone_wire block
+# state on every side. redstone_wire has north, south, east and west connection
+# states and nothing else, so the two vertical sides asked it for `up` and
+# `down`. A macro line is parsed after substitution and before the function
+# runs, so that one unparseable line stopped the whole function from executing
+# -- and the up and down sides therefore read 0 for EVERY source, not just for
+# dust. A lever sitting directly on a block never turned it on. Naming the rule
+# per side is what stops a vertical side being handed a horizontal test again.
 #
 # LEVELS
 #   0       nothing
@@ -29,11 +40,11 @@
 
 scoreboard players set #rs ra.temp 0
 
-# Dust only counts when it is pointing at us: a line running past the side does
-# not power what it passes. `$(back)` is the connection state on the neighbour's
-# side that faces us, and `up` is the same connection climbing a block.
-$execute if block ~$(dx) ~$(dy) ~$(dz) minecraft:redstone_wire[$(back)=side] run function ra_lib:redstone/analog {dx:$(dx),dy:$(dy),dz:$(dz)}
-$execute if block ~$(dx) ~$(dy) ~$(dz) minecraft:redstone_wire[$(back)=up] run function ra_lib:redstone/analog {dx:$(dx),dy:$(dy),dz:$(dz)}
+# Dust rules differ by side, so the side names which one applies -- exactly as
+# the torch rules below do. Horizontal neighbours are gated on the connection
+# state facing us; dust above powers us whatever shape it is in; dust below
+# never does.
+$function ra_lib:redstone/dust/$(dust) {dx:$(dx),dy:$(dy),dz:$(dz),back:"$(back)"}
 
 # Analog sources that power every neighbour regardless of orientation: the two
 # weighted pressure plates and the daylight detector. No connection test needed.

@@ -3,25 +3,34 @@
 # Input: storage ra:temp pipe_item = item to check
 # Output: returns 1 if the item was sent to a side container
 #
-# The filter is cached on the marker. Finding it means scanning for item frame
-# entities, and doing that on every pipe on every tick was the most expensive
-# thing left in the item pipe path once whole-stack moves landed. A frame only
-# changes when a player puts one up, takes one down or rotates it, so a rescan
-# every 20 ticks is far more often than it needs to be and costs a twentieth as
-# much.
+# THE FILTER IS A PROPERTY NOW, NOT AN ITEM FRAME
+# It used to be an item frame stuck to the pipe. Reading it meant selecting every
+# item_frame and glow_item_frame within 1.6 blocks of every pipe, then comparing
+# each one's `block_pos` against the pipe's own coordinates -- an entity selector
+# and three score comparisons per candidate, per pipe. That was expensive enough
+# that it had to be cached and rescanned only every 20 ticks, which in turn meant
+# a frame you had just put up did nothing for up to a second.
+#
+# The filter is now `filter_item`, an item id on the pipe's own properties, set
+# with the Data Handler's [Set from hand] button. Reading it is one `data modify`
+# against the marker that is already @s. No entity selector, no cache, no
+# cooldown, and no stale second after a change.
+#
+# A pipe built before this carries its frame's item in data.data.filter; the
+# migration copies it across and the frame becomes decoration.
 
-scoreboard players remove @s ra.filter_cd 1
-execute if score @s ra.filter_cd matches ..0 run function ra_interactive:blocks/item_pipe/refresh_filter
+execute unless data entity @s data.properties.filter_item run return 0
 
-# No filter on this pipe: the item carries on forward.
-execute unless data entity @s data.data.filter.id run return 0
+# Seeded empty at placement so the Handler has a row to show. Empty means the
+# pipe filters nothing and everything carries on forward.
+execute if data entity @s data.properties{filter_item:""} run return 0
 
-data modify storage ra:temp filter_item set from entity @s data.data.filter
+data modify storage ra:temp filter_item set from entity @s data.properties.filter_item
 
 # Compare item IDs. `data modify ... set from` reports success only when it
 # actually changed something, so success 0 means the two ids were already equal.
 data modify storage ra:temp check_id set from storage ra:temp pipe_item.id
-execute store success score @s ra.temp run data modify storage ra:temp check_id set from storage ra:temp filter_item.id
+execute store success score @s ra.temp run data modify storage ra:temp check_id set from storage ra:temp filter_item
 
 # Different item: not ours to divert.
 execute if score @s ra.temp matches 1 run return 0

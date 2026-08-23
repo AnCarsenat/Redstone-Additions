@@ -12,7 +12,7 @@ The `ra_interactive` module provides 10 utility machines for automation and map 
 |---|---|---|---|---|
 | Block Breaker | `minecraft:dispenser` | ![Block Breaker recipe](images/recipes/ra_interactive/block_breaker.png){ width="220" } | While powered | 40 tick action cooldown |
 | Block Placer | `minecraft:dispenser` | ![Block Placer recipe](images/recipes/ra_interactive/block_placer.png){ width="220" } | While powered | Places from inventory into air in front |
-| Item Pipe | `minecraft:dispenser` | ![Item Pipe recipe](images/recipes/ra_interactive/item_pipe.png){ width="220" } | Continuous | Moves whole stacks; filter via item frame |
+| Item Pipe | `minecraft:dispenser` | ![Item Pipe recipe](images/recipes/ra_interactive/item_pipe.png){ width="220" } | Continuous | Moves whole stacks; filter set from your hand |
 | Item Mover | `minecraft:observer` | ![Item Mover recipe](images/recipes/ra_interactive/item_mover.png){ width="220" } | Continuous | Rear container to front container |
 | Spitter | `minecraft:dropper` | ![Spitter recipe](images/recipes/ra_interactive/spitter.png){ width="220" } | Continuous | Throws item entities forward |
 | Breeder | `minecraft:barrel` (dispenser skin) | ![Breeder recipe](images/recipes/ra_interactive/breeder.png){ width="220" } | While powered | Feeds animals from its own inventory |
@@ -20,6 +20,7 @@ The `ra_interactive` module provides 10 utility machines for automation and map 
 | Infinite Lava Cauldron | `minecraft:cauldron` | ![Infinite Lava Cauldron recipe](images/recipes/ra_interactive/infinite_lava_cauldron.png){ width="220" } | Continuous | Keeps `lava_cauldron` |
 | Infinite Snow Cauldron | `minecraft:cauldron` | ![Infinite Snow Cauldron recipe](images/recipes/ra_interactive/infinite_snow_cauldron.png){ width="220" } | Continuous | Keeps `powder_snow_cauldron[level=3]` |
 | Magic Crate | `minecraft:barrel` | ![Magic Crate recipe](images/recipes/ra_interactive/magic_crate.png){ width="220" } | Continuous | Teleports dropped items in from 5-20 blocks |
+| Big Torch | `minecraft:end_rod` + torch skin | ![Big Torch recipe](images/recipes/ra_interactive/big_torch.png){ width="220" } | Continuous | Drops mobs that spawn within 1-100 blocks into the void |
 | Message Block | `minecraft:note_block` | ![Message Block recipe](images/recipes/ra_interactive/message_block.png){ width="220" } | Rising edge | Sends text to players in range |
 
 ## Behavior Notes
@@ -117,6 +118,106 @@ it finds first.
 - Internal ID uses `message_block` (placement tag and custom_data).
 - Folder path remains `blocks/message`.
 - Default properties initialized to message text and range.
+
+### Item Pipe filters
+
+A pipe's filter is `filter_item`, an item id on the pipe itself. **Shift+RMB the
+pipe with the [Data Handler](tools.md#data-handler)**, then on the `filter_item`
+row hold the item you want sorted and press **[Set from hand]**. Typing an id
+into **[Modify]** works too.
+
+Every pipe is placed with the field already present and empty, which is what puts
+the row in the editor — the Handler draws a row only for a property the block
+actually has. Empty means no filter, and everything carries on forward. An item matching the filter is pushed into whichever
+container is on a side rather than carried forward; a pipe with no filter passes
+everything along.
+
+**Put the goggles on to see what a pipe is sorting.** The readout names the id and
+draws the item itself above it, so a sorting wall reads at a glance without
+walking up to each pipe. It is part of the goggles rather than a permanent
+display on purpose: the world is not cluttered when nobody is looking, and the
+item is torn down and redrawn by the goggles' own sweep instead of needing upkeep
+of its own.
+
+**This used to be an item frame stuck to the pipe.** Reading it meant selecting
+every item frame within 1.6 blocks of every pipe and comparing each one's
+`block_pos` against the pipe's own coordinates — an entity selector per pipe per
+check, expensive enough that it had to be cached and rescanned only every 20
+ticks, which meant a frame you had just hung did nothing for up to a second.
+Reading a property is one `data modify` against a marker that is already the
+execution context: no selector, no cache, no stale second.
+
+Pipes built before this keep working. The migration copies the cached frame item
+into `filter_item` on the first load, and leaves the frames themselves alone —
+they are somebody's build, and deleting a player's item frames to tidy up after
+ourselves is not a migration's business.
+
+### Big Torch
+
+An **end rod** wearing an oversized torch, always standing up. Every ten ticks it
+sweeps for hostile mobs within `radius` and drops the ones that **spawned** there
+into the void.
+
+The end rod is the light — it gives off level 14 by itself, so the block lights
+its area whether or not the display over it has rendered. The torch drawn on top
+is a `block_display` scaled so it stands **one block tall** instead of the ten
+sixteenths a vanilla torch manages.
+
+It is scaled **wider** as well as taller, and that is not decoration: an end rod's
+shaft is exactly as wide as a torch, so a torch drawn at its own size would share
+a plane with it all the way up and z-fight. At 2.2 across it encloses the end rod
+entirely — the rod is inside the torch, not behind it — with the same hundredth
+of a block of clearance `ra_lib:skin/spawn` uses everywhere else in the pack.
+
+| Property | Default | Range | Meaning |
+| --- | --- | --- | --- |
+| `radius` | `16` | 1–100 | How far the denial reaches |
+
+Set the radius with the [Data Handler](tools.md#data-handler). The 100-block
+ceiling is enforced in code, not just documented: `distance` describes a sphere,
+so doubling the radius is eight times the volume to search. A larger value is
+**written back as 100** rather than merely treated as 100, so the goggles and the
+Data Handler never advertise a reach the torch does not have.
+
+#### Spawned in versus walked in
+
+A data pack cannot stop a spawn from happening — it can only remove what
+appeared. Removing every hostile mob inside the radius would make this a mob
+grinder rather than a torch, because it would also clear anything that wandered
+in from outside.
+
+So the sweep remembers every mob in a band reaching **16 blocks past** the
+radius, and removes only mobs inside the radius that it has never seen. Anything
+approaching on foot crosses the band first and is remembered there, so it lives.
+Anything that spawns inside appears untagged and is denied on the next sweep,
+with a puff of smoke where it stood.
+
+#### Into the void, not killed
+
+A denied mob is teleported straight down and out of the world rather than killed.
+Killing one fires its death, which means drops and experience at the foot of the
+torch — a Big Torch in a dark room was a passive mob farm that also lit the room.
+Dropping it out of the world takes the mob without paying anybody for it.
+
+The destination is far below any dimension in any supported version, and
+deliberately not derived from the world bottom. Void damage begins some distance
+under a dimension's `min_y`, and that depth is not the same across the versions
+this pack supports; overshooting costs nothing, whereas tracking the number means
+being wrong on whichever version nobody tested. X and Z are unchanged, so the
+mob leaves through the chunk it was already standing in.
+
+The band is sized against the sweep interval: the fastest mob covers about five
+blocks in ten ticks, so nothing crosses sixteen blocks unseen.
+
+The sweep runs every ten ticks rather than every tick because its selector
+reaches as far as the radius does. A mob that exists for half a second before
+being denied is indistinguishable from one that never spawned, and paying a
+100-block entity selector per torch per tick to shorten that would be the most
+expensive thing in the pack.
+
+Which mobs count is the `#ra_interactive:spawn_blocked` entity type tag — the
+naturally spawning hostiles. Edit the tag to change the list; no code reads a
+hard-coded mob name.
 
 ### Magic Crate
 

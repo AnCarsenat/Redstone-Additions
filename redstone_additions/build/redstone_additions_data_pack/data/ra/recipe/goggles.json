@@ -15,7 +15,12 @@
     "count": 1,
     "components": {
       "minecraft:item_name": "Goggles",
-      "minecraft:custom_data": { "ra": { "goggles": true } },
+      "minecraft:max_stack_size": 1,
+      "minecraft:custom_data": {
+        "ra": {
+          "goggles": true
+        }
+      },
       "minecraft:dyed_color": 16750848,
       "minecraft:enchantment_glint_override": true,
       "minecraft:lore": [

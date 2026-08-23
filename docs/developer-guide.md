@@ -1,6 +1,6 @@
 # Developer Guide
 
-This guide documents implementation architecture and contributor workflow for `v5.1.15`.
+This guide documents implementation architecture and contributor workflow for `v5.1.16`.
 
 If you want conceptual runtime flow first, start with [How It Works](how-it-works.md). This page is focused on engineering-level extension and maintenance work.
 
@@ -256,6 +256,118 @@ placement or break, debounced to at most one every 5 ticks.
 
 Classes (`fluid`, `item`, `electric`) never merge, so an item pipe and a fluid
 pipe can share a block line without interacting.
+
+#### Multi-medium networks
+
+A network holds **several media at once**. Everything below exists to keep one
+invariant true:
+
+> `amount` is exactly the sum of `amounts`, `media` holds exactly one entry per
+> key in `amounts`, and `medium` is `media[0].m` — absent when the network is
+> empty.
+
+Every bug this system has had was that invariant breaking somewhere.
+
+**The shape.** One compound per network, at `storage ra:transport nets.n<id>`:
+
+| Field | Example | What it is |
+| --- | --- | --- |
+| `amount` | `10000` | The total across every medium. Capacity is checked against **this**, so a run clogs on the sum and not on any one medium. |
+| `capacity` | `20000` | Summed from `ra.tr.cap` on every node at rebuild. |
+| `amounts` | `{water:5000,lava:5000}` | The per-medium breakdown. |
+| `media` | `[{m:"water"},{m:"lava"}]` | The same keys as a list, in arrival order. |
+| `medium` | `"water"` | A copy of `media[0].m`, because every display and every bridge already reads it. |
+| `potion` | *(optional)* | A potion network's effect list. It belongs to the network, not to any node. |
+
+`amounts` and `media` are the same data indexed twice, and both are needed. A
+function cannot enumerate a compound's keys, so the walk has to go over a list;
+lookups by name have to go through a compound. The list holds **compounds**
+rather than bare strings so that a medium can be removed by value when it runs
+out — `data remove storage ... media[{m:"water"}]` only works on compound
+elements.
+
+Totals live in storage rather than in scoreboards because a scoreboard gives one
+number per network and a compound gave `amounts` a place to go without moving
+anything that was already there. Arithmetic still goes through scoreboards,
+because commands have no other way to add two numbers; storage is where values
+live between operations, not where they are computed.
+
+**Writing.** `net/offer` and `net/take` read the network, work out how much
+actually moves, then hand the id and the medium to `net/offer_write` /
+`net/take_write`, which are macro functions because the path contains the id and
+the medium name.
+
+- **Space is the sum.** An offer is refused only for lack of room. A network no
+  longer turns away an unfamiliar medium — that is what made a run single-purpose
+  for as long as it held anything.
+- **A take is per medium and the name is required.** "Take 1000" has no answer on
+  a mixed run. `net/take_any` takes the primary and parks its name in
+  `storage ra:transport took.medium`, for callers like a Valve that move contents
+  without caring what they are but must tell the far side what arrived.
+- **First arrival.** `data get` on a path that is not there fails, a failed
+  command stores 0, and 0 is the right starting value for a medium arriving for
+  the first time. That is the test for "append to `media`".
+- **Drained to nothing.** The key goes from `amounts`, the entry goes from
+  `media`, and `medium` is recomputed from the new `media[0]` — removed first, so
+  an emptied network is left with no medium at all rather than a stale one, since
+  `set from` fails silently on an empty list and would leave the old value
+  standing.
+
+**The rebuild is where it gets hard.** Contents belong to the network, and a
+rebuild discards every network, so the contents have to survive outside one:
+
+1. `rebuild/snapshot` — each network's root marker parks the **whole breakdown**
+   as `data.data.carry`, a list of `{m,a}`, and `ra.tr.carry` is summed from
+   those entries rather than read off `amount`. Summing it is what keeps the
+   total and the breakdown from disagreeing on the way back.
+2. `nets` is wiped. Ids are reissued, old roots first, so a component containing
+   an old root inherits its number and a retired number is never reissued.
+3. `rebuild/accumulate_node` — capacity and carried total per new network.
+4. `rebuild/absorb` — folds each carrier's `{m,a}` list back in, medium by
+   medium, so two runs joined by a new pipe arrive as two breakdowns that add up.
+5. `rebuild/clamp` — a network that lost a tank can be over capacity. The excess
+   comes off the **newest** medium first, walked from `media[-1]`, which is the
+   same rule the primary follows from the other end.
+
+Two rules in there are load-bearing and were both learned the hard way:
+
+- **Nothing travels that cannot be named.** A total with no breakdown behind it
+  used to be carried across anyway, on the grounds that dropping it silently was
+  worse. It is worse: the carried total has nothing to rebuild `amounts` from, so
+  the next rebuild carries it again, and the next medium offered becomes the only
+  entry in `media` and therefore the name of the whole thing.
+- **A list element is built whole in storage, then appended.** The obvious
+  version appends `{m:"water",a:0}` and fills the amount in with
+  `execute store result entity @s data.data.carry[-1].a`. That silently does
+  nothing. A write to entity data is applied by building a compound from the path
+  and merging it, and there is nothing for a list *index* to merge into. Reading
+  through an index is fine; only writing is not.
+
+**Migration.** A network saved before multi-medium has `amount` and `medium` and
+no breakdown. Ids cannot be enumerated from a function, so there is no sweep on
+load: `net/migrate_pick` runs lazily, the first time such a network is read and
+again at snapshot time, and moves the whole amount into the key of the medium it
+was recorded as holding.
+
+The guard is `unless data ... media[0]`, **not** `unless data ... media`.
+`rebuild/reset_net` writes `media:[]`, and an empty list is present as far as
+`if data` is concerned — so the shorter test never fires on the networks that
+most need it.
+
+**Reading and display.** `net/read` loads `cur.medium`, `cur.amounts` and
+`cur.media` into `storage ra:transport`, plus `#net_amount` / `#net_capacity` as
+the totals. It is **read-only**: it is called many times a tick, by every block's
+tick and every goggles refresh, so anything that writes back from here mutates
+live state at an arbitrary moment.
+
+- The **Goggles** show the plain name for one medium and `Multimedium` for two or
+  more. The test is `cur.media[1]` — cheaper than counting, and exactly "two or
+  more". A billboard is one short line read from across the room.
+- The **Multimeter** walks `cur.media` and prints a line per medium, in arrival
+  order, because chat has room for it.
+- A **bridge** moves `cur.medium` by default; a Liquid Filter substitutes its
+  `filter_medium` and moves only that, which is what lets a mixed run be sorted
+  back into single-medium branches.
 
 ### input
 

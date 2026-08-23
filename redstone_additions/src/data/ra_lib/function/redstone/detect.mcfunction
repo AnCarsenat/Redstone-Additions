@@ -35,12 +35,12 @@
 # note block `powered`, redstone lamp `lit` — should read the block state and call
 # nothing at all.
 
-execute store result score @s ra.power.north run function ra_lib:redstone/side {dx:0,dy:0,dz:-1,side:"north",back:"south",torch:"side"}
-execute store result score @s ra.power.south run function ra_lib:redstone/side {dx:0,dy:0,dz:1,side:"south",back:"north",torch:"side"}
-execute store result score @s ra.power.west run function ra_lib:redstone/side {dx:-1,dy:0,dz:0,side:"west",back:"east",torch:"side"}
-execute store result score @s ra.power.east run function ra_lib:redstone/side {dx:1,dy:0,dz:0,side:"east",back:"west",torch:"side"}
-execute store result score @s ra.power.down run function ra_lib:redstone/side {dx:0,dy:-1,dz:0,side:"down",back:"up",torch:"below"}
-execute store result score @s ra.power.up run function ra_lib:redstone/side {dx:0,dy:1,dz:0,side:"up",back:"down",torch:"none"}
+execute store result score @s ra.power.north run function ra_lib:redstone/side {dx:0,dy:0,dz:-1,side:"north",back:"south",torch:"side",dust:"side"}
+execute store result score @s ra.power.south run function ra_lib:redstone/side {dx:0,dy:0,dz:1,side:"south",back:"north",torch:"side",dust:"side"}
+execute store result score @s ra.power.west run function ra_lib:redstone/side {dx:-1,dy:0,dz:0,side:"west",back:"east",torch:"side",dust:"side"}
+execute store result score @s ra.power.east run function ra_lib:redstone/side {dx:1,dy:0,dz:0,side:"east",back:"west",torch:"side",dust:"side"}
+execute store result score @s ra.power.down run function ra_lib:redstone/side {dx:0,dy:-1,dz:0,side:"down",back:"up",torch:"below",dust:"none"}
+execute store result score @s ra.power.up run function ra_lib:redstone/side {dx:0,dy:1,dz:0,side:"up",back:"down",torch:"none",dust:"above"}
 
 # Aggregate: the strongest side wins.
 scoreboard players operation @s ra.power = @s ra.power.north

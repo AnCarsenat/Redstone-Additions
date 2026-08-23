@@ -14,22 +14,22 @@
 
 scoreboard players set @s ra.rs_inputs 0
 
-execute store result score #rs.in ra.temp run function ra_lib:redstone/has_input {dx:0,dy:0,dz:-1,side:"north",back:"south",torch:"side"}
+execute store result score #rs.in ra.temp run function ra_lib:redstone/has_input {dx:0,dy:0,dz:-1,side:"north",back:"south",torch:"side",dust:"side"}
 scoreboard players operation @s ra.rs_inputs += #rs.in ra.temp
 
-execute store result score #rs.in ra.temp run function ra_lib:redstone/has_input {dx:0,dy:0,dz:1,side:"south",back:"north",torch:"side"}
+execute store result score #rs.in ra.temp run function ra_lib:redstone/has_input {dx:0,dy:0,dz:1,side:"south",back:"north",torch:"side",dust:"side"}
 scoreboard players operation @s ra.rs_inputs += #rs.in ra.temp
 
-execute store result score #rs.in ra.temp run function ra_lib:redstone/has_input {dx:-1,dy:0,dz:0,side:"west",back:"east",torch:"side"}
+execute store result score #rs.in ra.temp run function ra_lib:redstone/has_input {dx:-1,dy:0,dz:0,side:"west",back:"east",torch:"side",dust:"side"}
 scoreboard players operation @s ra.rs_inputs += #rs.in ra.temp
 
-execute store result score #rs.in ra.temp run function ra_lib:redstone/has_input {dx:1,dy:0,dz:0,side:"east",back:"west",torch:"side"}
+execute store result score #rs.in ra.temp run function ra_lib:redstone/has_input {dx:1,dy:0,dz:0,side:"east",back:"west",torch:"side",dust:"side"}
 scoreboard players operation @s ra.rs_inputs += #rs.in ra.temp
 
-execute store result score #rs.in ra.temp run function ra_lib:redstone/has_input {dx:0,dy:-1,dz:0,side:"down",back:"up",torch:"below"}
+execute store result score #rs.in ra.temp run function ra_lib:redstone/has_input {dx:0,dy:-1,dz:0,side:"down",back:"up",torch:"below",dust:"none"}
 scoreboard players operation @s ra.rs_inputs += #rs.in ra.temp
 
-execute store result score #rs.in ra.temp run function ra_lib:redstone/has_input {dx:0,dy:1,dz:0,side:"up",back:"down",torch:"none"}
+execute store result score #rs.in ra.temp run function ra_lib:redstone/has_input {dx:0,dy:1,dz:0,side:"up",back:"down",torch:"none",dust:"above"}
 scoreboard players operation @s ra.rs_inputs += #rs.in ra.temp
 
 return run scoreboard players get @s ra.rs_inputs

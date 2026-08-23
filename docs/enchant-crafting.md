@@ -35,6 +35,7 @@ stack back up at any point to stop.
 | `minecraft:stone` | Mineral Core | 1% |
 | `minecraft:netherrack` | Nether Core | 1% |
 | `minecraft:poppy` | Poppy Core | 1% |
+| `minecraft:coal` | Enchanted Coal | 1% |
 | Iron Jetpack Kit | Infinite Iron Jetpack Kit | 10% |
 
 Cores are half of an [Infinite Generator](infinite-generators.md) — the other

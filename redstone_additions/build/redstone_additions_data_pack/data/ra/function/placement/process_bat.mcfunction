@@ -11,9 +11,23 @@ tag @p add ra.placer
 execute align xyz positioned ~0.5 ~0.5 ~0.5 if entity @e[type=marker,tag=ra.custom_block,distance=..0.9,limit=1] run kill @s
 execute align xyz positioned ~0.5 ~0.5 ~0.5 if entity @e[type=marker,tag=ra.custom_block,distance=..0.9,limit=1] run return 0
 
-# If block is occupied, stop
-execute unless block ~ ~ ~ #air run kill @s
-execute unless block ~ ~ ~ #air run return 0
+# If the space is occupied, stop.
+#
+# REPLACEABLE, NOT AIR
+# This asked for #air, which is air, cave air and void air and nothing else. That
+# is not where a spawn egg puts its mob. Vanilla spawns at the clicked block's own
+# position when that block has an EMPTY COLLISION SHAPE, and only at the adjacent
+# position otherwise -- so clicking tall grass, a flower, a rail, a pressure plate
+# or a carpet put the bat inside that block rather than beside it, the test found
+# something that was not air, and the placement was refused. Every custom block in
+# the pack was unplaceable onto anything soft, which is most of a grassy field.
+#
+# #minecraft:replaceable is the tag that means exactly "a placed block may take
+# this space" -- the same set vanilla itself overwrites when you place a stone on
+# grass -- so it is the right question, and set_block's `replace` mode then does
+# what the name says.
+execute unless block ~ ~ ~ #minecraft:replaceable run kill @s
+execute unless block ~ ~ ~ #minecraft:replaceable run return 0
 
 
 # Is this block type switched off in the settings? Checked before the handlers

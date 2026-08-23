@@ -5,7 +5,7 @@
 <h1 align="center">Redstone Additions</h1>
 
 <p align="center">
-  <strong>57 custom blocks. 7 tools. 66 recipes. 2 jetpacks and 3 upgrade kits. Vanilla datapack for Minecraft 1.21.9–26.2.</strong>
+  <strong>59 custom blocks. 7 tools. 69 recipes. 2 jetpacks and 3 upgrade kits. Vanilla datapack for Minecraft 1.21.9–26.2.</strong>
 </p>
 
 <p align="center">
@@ -15,10 +15,18 @@
 
 <p align="center">
   <img src="https://img.shields.io/badge/Minecraft-1.21.9--26.2-2EA44F" alt="Minecraft 1.21.9-26.2">
-  <img src="https://img.shields.io/badge/Version-v5.1.15-blue" alt="Version v5.1.15">
-  <img src="https://img.shields.io/badge/Blocks-57-red" alt="57 blocks">
+  <img src="https://img.shields.io/badge/Version-v5.1.16-blue" alt="Version v5.1.16">
+  <img src="https://img.shields.io/badge/Blocks-59-red" alt="59 blocks">
   <img src="https://img.shields.io/badge/Tools-7-lightgrey" alt="7 tools">
-  <img src="https://img.shields.io/badge/Recipes-66-8A2BE2" alt="66 recipes">
+  <img src="https://img.shields.io/badge/Recipes-69-8A2BE2" alt="69 recipes">
+</p>
+
+<p align="center">
+  <a href="https://github.com/AnCarsenat/Redstone-Additions/raw/main/docs/images/gallery/with-shader-2026-08-20_19.23.57.png"><img src="https://github.com/AnCarsenat/Redstone-Additions/raw/main/docs/images/gallery/with-shader-2026-08-20_19.23.57.png" alt="Every custom block in Redstone Additions, laid out on pillars" width="900"></a>
+</p>
+
+<p align="center">
+  <em>Every block the pack adds, in one place. Click to enlarge.</em>
 </p>
 
 ---
@@ -105,14 +113,15 @@ listed A to Z and grouped by module.
 - Randomizer
 - Shortener
 
-### Interactive Machines (11)
+### Interactive Machines (12)
 - Block Breaker
 - Block Placer
-- Item Pipe
+- Item Pipe — filters by an item id set from your hand, no item frame
 - Item Mover
 - Spitter
 - Breeder
 - Magic Crate — pulls dropped items in from 5-20 blocks
+- Big Torch — drops mobs that spawn within 1-100 blocks into the void
 - Infinite Water Cauldron
 - Infinite Lava Cauldron
 - Infinite Snow Cauldron
@@ -131,7 +140,7 @@ listed A to Z and grouped by module.
 - Wireless Emitter
 - Wireless Receiver
 
-### Transport Networks (20)
+### Transport Networks (21)
 
 Fluids, in millilitres:
 
@@ -139,6 +148,7 @@ Fluids, in millilitres:
 - Liquid Tank
 - Liquid Pump
 - Liquid Valve — moves contents between the two networks it separates
+- Liquid Filter — passes only the one medium it is set to
 - Liquid Drain — world source in, or network contents back out
 - Gas Tank
 - Gas Pump
@@ -160,7 +170,7 @@ Electricity, in EU:
 Creative, for building and testing:
 
 - Creative EU Source — refills its grid to capacity every tick
-- Creative Fluid Source — fills with a medium cycled by the wrench
+- Creative Fluid Source — tops its network up with one medium, at a settable rate
 
 There are no tiers. A netherite pipe was a more expensive way to buy the same
 block, so the tiered items now place the single version.
@@ -189,7 +199,7 @@ netherrack or poppies on an enchanting table.
 - Diamond Multiblock Base
 - Netherite Multiblock Base
 
-### Items (10)
+### Items (12)
 - Iron Jetpack Kit — right-click while wearing any chestplate to fit it
 - Infinite Iron Jetpack Kit — won on an enchanting table; burns no fuel
 - Thruster Kit — hold sprint while airborne to accelerate
@@ -199,6 +209,8 @@ netherrack or poppies on an enchanting table.
 - Mineral Core
 - Nether Core
 - Poppy Core
+- Enchanted Coal — won by sacrificing coal on an enchanting table
+- Enchanted Coal Block — nine of them, plus a stick, make a Big Torch
 - Item Crate — what the Boxer packs a chest into, and the Unboxer unpacks
 
 Fitted kits live on the chestplate and are listed in its lore.

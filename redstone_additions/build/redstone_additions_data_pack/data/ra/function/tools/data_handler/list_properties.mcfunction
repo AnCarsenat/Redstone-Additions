@@ -6,11 +6,6 @@
 # anchor's id. Now it walks the registry, skips the names this block does not have,
 # and picks the editor from the value's actual type.
 
-# Seeded on `numeric` as well as `registry`: a world that ran an older build
-# already has a registry, so guarding on that alone would leave the numeric
-# list permanently absent and every number back to being probed as text.
-execute unless data storage ra:dh numeric run function ra:tools/data_handler/init_registry
-
 execute unless data storage ra:dh properties run return run tellraw @s [{text:"  (no properties)",color:"dark_gray",italic:true}]
 
 # A working copy is consumed from the front, since a list cannot be indexed by a

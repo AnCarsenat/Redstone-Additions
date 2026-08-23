@@ -2,7 +2,7 @@
 
 <img src="images/icon.png" alt="Redstone Additions" width="128">
 
-**Version:** v5.1.15  
+**Version:** v5.1.16  
 **Minecraft:** 1.21.9 – 26.2  
 **Author:** [AnCarsenat](https://github.com/AnCarsenat)
 
@@ -80,8 +80,8 @@ is the shortcut: one sample per module, and where to read about it.
 
 Current pack totals:
 
-- 57 placeable custom blocks
-- 66 recipes, all of them in the [Recipe Atlas](recipe-atlas.md)
+- 59 placeable custom blocks
+- 69 recipes, all of them in the [Recipe Atlas](recipe-atlas.md)
 - 7 tools (Wrench, Goggles, Data Handler, Creative Data Handler, Clipboard,
   Multimeter, Redstone Remote)
 
@@ -111,7 +111,35 @@ Current pack totals:
 | Data Handler | `/function ra:tools/data_handler/give` | ![Data Handler recipe](images/recipes/ra/data_handler.png){ width="200" } | Edit nearby block `data.properties` |
 | Goggles | `/function ra:tools/goggles/give` | ![Goggles recipe](images/recipes/ra/goggles.png){ width="200" } | In-world status overlays |
 
-## What Is New In v5.1.15
+## What Is New In v5.1.16
+
+- **[Pipes carry several media at once](transport-networks.md#mixing-media-in-one-run).**
+  A run clogs on the sum of what is in it, not on any one medium, and nothing
+  refuses an offer except a lack of room.
+- **[Liquid Filter](transport-networks.md#liquid-filter)**, a Valve that passes
+  only the medium it is set to — which is how a mixed run gets sorted back out.
+- **[Potions keep their effects](transport-networks.md#potions-keep-their-effects).**
+  A Drain pours one over whoever is standing there, with the duration scaled by
+  how much was drawn.
+- **[Big Torch](interactive-machines.md#big-torch).** Drops mobs that spawn within
+  1-100 blocks into the void, and can tell what spawned inside from what walked
+  in. It does not kill them, so nothing drops and nobody farms it.
+- **[Set from hand](tools.md#item-properties-and-set-from-hand).** Item-id
+  properties are filled by holding the item, not by typing its id.
+- **[Item Pipe filters are a property](interactive-machines.md#item-pipe-filters)**
+  rather than an item frame — no entity selector per pipe, and no stale second
+  after a change.
+
+### Fixed
+
+- **A powered lever directly on a block never turned it on.** The redstone
+  library's up and down sides read every source as 0, because a macro line asked
+  `redstone_wire` for a connection state it does not have and stopped the whole
+  function before it ran. Every block using the library was blind above and below.
+- **The Electric Furnace's top mode** cost three EU Generators to run. It is one
+  now.
+
+## What Was New In v5.1.15
 
 - **[Settings](settings.md).** Server settings autocomplete under
   `/function ra_settings:admin/` or open with `/function ra:settings`; players
@@ -167,8 +195,9 @@ Current pack totals:
 ## Older: v5.1.4
 
 - **Fluid and gas rebuilt on a network model.** A connected run of pipes is one
-  network with one medium; fluid no longer crawls a block per tick, and pipes cost
-  nothing to keep running.
+  network with one pool of contents — several media at once, each with its own
+  entry; fluid no longer crawls a block per tick, and pipes cost nothing to keep
+  running.
 - **Boiler and Solar Panel.** Water over a heat source makes steam; steam drives
   the EU Generator, which no longer produces power from nothing. The Solar Panel
   generates EU from sky light.

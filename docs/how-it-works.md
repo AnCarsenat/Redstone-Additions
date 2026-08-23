@@ -185,8 +185,13 @@ The shared network engine used by fluids and item pipes.
 - Adjacent nodes of the same class are grouped into networks by flood fill.
 - Rebuilt only when a node is placed or broken, debounced to at most one rebuild
   every 5 ticks.
-- Per-network amount and capacity live in scoreboards on a `net<id>` fake player;
-  the medium is a readable string in `storage ra:transport`.
+- Per-network totals live in `storage ra:transport nets.n<id>` — a compound
+  holding `amount`, `capacity`, and the per-medium breakdown. They used to be
+  scoreboards on a `net<id>` fake player; a scoreboard is a flat namespace of one
+  number per network, which is the wrong shape for a network that holds several
+  media at once.
+- A network holds **several media at once** and clogs on the sum. See
+  *Multi-medium networks* in the Developer Guide for the data model.
 - `net/join`, `net/rejoin`, `net/leave`, `net/offer`, `net/take`, `net/read`.
 
 ### skin/

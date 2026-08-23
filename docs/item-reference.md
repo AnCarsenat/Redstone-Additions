@@ -25,6 +25,7 @@ one page, A to Z and by module.
 | ra_interactive:infinite_snow_cauldron | Infinite Snow Cauldron   | ![Infinite Snow Cauldron recipe](images/recipes/ra_interactive/infinite_snow_cauldron.png){ width="220" } |
 | ra_interactive:message_block         | Message Block             | ![Message Block recipe](images/recipes/ra_interactive/message_block.png){ width="220" } |
 | ra_interactive:magic_crate           | Magic Crate               | ![Magic Crate recipe](images/recipes/ra_interactive/magic_crate.png){ width="220" } |
+| ra_interactive:big_torch             | Big Torch                 | ![Big Torch recipe](images/recipes/ra_interactive/big_torch.png){ width="220" } |
 | ra_storage:boxer                     | Boxer                     | ![Boxer recipe](images/recipes/ra_storage/boxer.png){ width="220" } |
 | ra_storage:unboxer                   | Unboxer                   | ![Unboxer recipe](images/recipes/ra_storage/unboxer.png){ width="220" } |
 | ra_sensors:entity_detector           | Entity Detector           | ![Entity Detector recipe](images/recipes/ra_sensors/entity_detector.png){ width="220" } |
@@ -36,6 +37,7 @@ one page, A to Z and by module.
 | ra_wires:liquid_tank                 | Liquid Tank               | ![Liquid Tank recipe](images/recipes/ra_wires/liquid_tank.png){ width="220" } |
 | ra_wires:liquid_pump                 | Liquid Pump               | ![Liquid Pump recipe](images/recipes/ra_wires/liquid_pump.png){ width="220" } |
 | ra_wires:liquid_valve                | Liquid Valve              | ![Liquid Valve recipe](images/recipes/ra_wires/liquid_valve.png){ width="220" } |
+| ra_wires:liquid_filter               | Liquid Filter             | ![Liquid Filter recipe](images/recipes/ra_wires/liquid_filter.png){ width="220" } |
 | ra_wires:liquid_drain                | Liquid Drain              | ![Liquid Drain recipe](images/recipes/ra_wires/liquid_drain.png){ width="220" } |
 | ra_wires:gas_tank                    | Gas Tank                  | ![Gas Tank recipe](images/recipes/ra_wires/gas_tank.png){ width="220" } |
 | ra_wires:gas_pump                    | Gas Pump                  | ![Gas Pump recipe](images/recipes/ra_wires/gas_pump.png){ width="220" } |
@@ -74,6 +76,8 @@ one page, A to Z and by module.
 | ra_infinite:mineral_core | Mineral Core | Sacrifice `minecraft:stone` on an enchanting table (1%) |
 | ra_infinite:nether_core | Nether Core | Sacrifice `minecraft:netherrack` on an enchanting table (1%) |
 | ra_infinite:poppy_core | Poppy Core | Sacrifice `minecraft:poppy` on an enchanting table (1%) |
+| ra_interactive:enchanted_coal | Enchanted Coal | Sacrifice `minecraft:coal` on an enchanting table (1%) |
+| ra_interactive:enchanted_coal_block | Enchanted Coal Block | Nine Enchanted Coal |
 
 The casing and cores are built on unplaceable block items — repeating command
 block, jigsaw, structure block and chain command block respectively — so that

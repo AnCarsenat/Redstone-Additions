@@ -2,15 +2,22 @@
 # Push contents into this node's network.
 # Context: as a node marker.
 # Returns how much was actually accepted, which may be less than asked for, or 0
-# when the network is full or already holds a different medium.
+# when the network is full.
+#
+# A NETWORK NO LONGER REFUSES AN UNFAMILIAR MEDIUM
+# It used to: anything already holding water turned lava away at the door, so a
+# pipe run was single-purpose for as long as it held anything at all. Now every
+# medium has its own entry and the only thing that can refuse an offer is space.
+#
+# Space is the SUM. A network clogs when water plus lava plus steam reaches its
+# capacity, not when any one of them does -- which is the whole point of mixing:
+# a pipe run is one pool of volume that several media share, and the player
+# budgets it as one number.
 
 scoreboard players set #net_moved ra.tr.tmp 0
 execute if score @s ra.tr.net matches ..0 run return 0
 
 function ra_lib:transport/net/read
-
-# A network holding something else will not take this.
-$execute if score #net_amount ra.tr.tmp matches 1.. unless data storage ra:transport cur{medium:"$(medium)"} run return 0
 
 $scoreboard players set #net_want ra.tr.tmp $(amount)
 scoreboard players operation #net_free ra.tr.tmp = #net_capacity ra.tr.tmp

@@ -22,3 +22,4 @@ function ra_migrations:5.1.7-to-5.1.8
 function ra_migrations:5.1.8-to-5.1.9
 function ra_migrations:5.1.9-to-5.1.10
 function ra_migrations:5.1.11-to-5.1.12
+function ra_migrations:5.1.15-to-5.1.16

@@ -6,11 +6,13 @@
     "no entry: their minecraft:item_model component is read straight off the",
     "recipe. Keep this in step with the give functions.",
     "",
-    "minecraft:command_block is deliberately absent — the Item Crate keeps that",
+    "minecraft:command_block is deliberately absent \u2014 the Item Crate keeps that",
     "one and is never a recipe ingredient."
   ],
   "minecraft:repeating_command_block": "minecraft:copper_grate",
   "minecraft:jigsaw": "minecraft:deepslate_diamond_ore",
   "minecraft:structure_block": "minecraft:ancient_debris",
-  "minecraft:chain_command_block": "minecraft:flowering_azalea"
+  "minecraft:chain_command_block": "minecraft:flowering_azalea",
+  "minecraft:structure_void": "minecraft:coal",
+  "minecraft:barrier": "minecraft:coal_block"
 }

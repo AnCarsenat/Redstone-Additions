@@ -1,6 +1,7 @@
 {
   "values": [
     "ra_infinite:enchant_recipes",
-    "ra_jetpacks:enchant_recipes"
+    "ra_jetpacks:enchant_recipes",
+    "ra_interactive:enchant_recipes"
   ]
 }

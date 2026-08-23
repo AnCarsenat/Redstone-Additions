@@ -3,7 +3,11 @@
 
 # Break detection.
 execute as @e[type=marker,tag=ra.custom_block.big_torch] at @s unless block ~ ~ ~ end_rod run tag @s add ra.broken
-kill @e[type=item,nbt={Item:{id:"minecraft:end_rod"}},distance=..2,limit=1,sort=nearest]
+# The vanilla drop goes, and the Big Torch item is summoned in its place. This
+# ran bare, so it killed whatever end rod happened to be within two blocks of
+# wherever the tick function stood -- never the one that had just dropped out of
+# the torch. Breaking a Big Torch handed back both the item and an end rod.
+execute as @e[type=marker,tag=ra.broken,tag=ra.custom_block.big_torch] at @s run kill @e[type=item,nbt={Item:{id:"minecraft:end_rod"}},distance=..2,limit=1,sort=nearest]
 execute as @e[type=marker,tag=ra.broken,tag=ra.custom_block.big_torch] at @s run summon item ~ ~ ~ {Item:{id:"minecraft:bat_spawn_egg",count:1,components:{"minecraft:item_model":"minecraft:torch","minecraft:item_name":'Big Torch',"minecraft:lore":[{text:"Stops hostile mobs spawning nearby",color:"gray",italic:false},{text:"Set the radius with the Data Handler",color:"dark_gray",italic:false}],"minecraft:custom_data":{ra:{big_torch:1b}},"minecraft:entity_data":{id:"minecraft:bat",Tags:["ra","ra.spawned","ra.place.big_torch"],Silent:1b,NoAI:1b,Invulnerable:1b}}}}
 execute as @e[type=marker,tag=ra.broken,tag=ra.custom_block.big_torch] at @s run playsound minecraft:block.stone.break block @a[distance=..16,scores={ra.u.snd=1..}] ~ ~ ~ 1 1
 execute as @e[type=marker,tag=ra.broken,tag=ra.custom_block.big_torch] at @s run function ra_lib:skin/clear {id:"big_torch"}

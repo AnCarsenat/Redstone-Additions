@@ -16,6 +16,11 @@ scoreboard objectives add ra.tr.cap dummy
 scoreboard objectives add ra.tr.carry dummy
 scoreboard objectives add ra.tr.class dummy
 
+# The id of the network a node was the ROOT of, set only for the duration of a
+# rebuild. It is what lets a component that still contains an old root be given
+# that network's number back instead of a freshly minted one.
+scoreboard objectives add ra.tr.old dummy
+
 # Per network totals live in storage under nets.n<id>, not on a fake player.
 # A scoreboard gives one number per network; a compound gives a place to put the
 # per-medium map that multi-medium will need, without moving anything that is
@@ -28,6 +33,11 @@ scoreboard objectives add ra.tr.tmp dummy
 
 scoreboard players set #next_net ra.tr.tmp 0
 scoreboard players set #rebuild_cd ra.tr.tmp 0
+
+# The id allocator, and the one number here that must NOT be reset on load: it is
+# what stops a retired network id from being handed to a different network later.
+# `add 0` creates it at 0 the first time and leaves it alone every time after.
+scoreboard players add #net_seq ra.tr.tmp 0
 
 # Class ids. Networks only join nodes that share one.
 data modify storage ra:transport classes set value {fluid:1,item:2,electric:3}

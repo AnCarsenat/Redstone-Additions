@@ -22,8 +22,19 @@
 
 function ra_lib:util/property {name:"radius",default:16,min:1}
 
-# The issue asks for a 100-block ceiling, and the selector cost is why: distance
-# is a sphere, so doubling the radius is eight times the volume to search.
+# THE 100-BLOCK CEILING IS WRITTEN BACK, NOT ONLY APPLIED
+# The selector cost is the reason for it: `distance` describes a sphere, so
+# doubling the radius is eight times the volume to search, and this runs per
+# torch every ten ticks.
+#
+# Clamping the working value alone was not enough. `data.properties.radius` kept
+# whatever was typed, and the goggles read that path directly -- so a torch set
+# to 500 advertised `Radius: 500 blocks` while sweeping 100, and the Data Handler
+# offered the same 500 back for editing. The stored value is corrected here so
+# every reader of it agrees with what the block actually does.
+# The write-back goes first: it tests the value as typed, and the clamp below is
+# what would otherwise have already hidden it.
+execute if score #prop ra.temp matches 101.. run data modify entity @s data.properties.radius set value 100
 execute if score #prop ra.temp matches 101.. run scoreboard players set #prop ra.temp 100
 
 execute store result storage ra:temp big_torch.radius int 1 run scoreboard players get #prop ra.temp

@@ -121,7 +121,7 @@ listed A to Z and grouped by module.
 - Spitter
 - Breeder
 - Magic Crate — pulls dropped items in from 5-20 blocks
-- Big Torch — denies hostile spawns within 1-100 blocks
+- Big Torch — drops mobs that spawn within 1-100 blocks into the void
 - Infinite Water Cauldron
 - Infinite Lava Cauldron
 - Infinite Snow Cauldron

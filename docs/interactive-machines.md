@@ -155,8 +155,8 @@ ourselves is not a migration's business.
 ### Big Torch
 
 An **end rod** wearing an oversized torch, always standing up. Every ten ticks it
-sweeps for hostile mobs within `radius` and removes the ones that **spawned**
-there.
+sweeps for hostile mobs within `radius` and drops the ones that **spawned** there
+into the void.
 
 The end rod is the light — it gives off level 14 by itself, so the block lights
 its area whether or not the display over it has rendered. The torch drawn on top
@@ -175,7 +175,9 @@ of a block of clearance `ra_lib:skin/spawn` uses everywhere else in the pack.
 
 Set the radius with the [Data Handler](tools.md#data-handler). The 100-block
 ceiling is enforced in code, not just documented: `distance` describes a sphere,
-so doubling the radius is eight times the volume to search.
+so doubling the radius is eight times the volume to search. A larger value is
+**written back as 100** rather than merely treated as 100, so the goggles and the
+Data Handler never advertise a reach the torch does not have.
 
 #### Spawned in versus walked in
 
@@ -189,6 +191,20 @@ radius, and removes only mobs inside the radius that it has never seen. Anything
 approaching on foot crosses the band first and is remembered there, so it lives.
 Anything that spawns inside appears untagged and is denied on the next sweep,
 with a puff of smoke where it stood.
+
+#### Into the void, not killed
+
+A denied mob is teleported straight down and out of the world rather than killed.
+Killing one fires its death, which means drops and experience at the foot of the
+torch — a Big Torch in a dark room was a passive mob farm that also lit the room.
+Dropping it out of the world takes the mob without paying anybody for it.
+
+The destination is far below any dimension in any supported version, and
+deliberately not derived from the world bottom. Void damage begins some distance
+under a dimension's `min_y`, and that depth is not the same across the versions
+this pack supports; overshooting costs nothing, whereas tracking the number means
+being wrong on whichever version nobody tested. X and Z are unchanged, so the
+mob leaves through the chunk it was already standing in.
 
 The band is sized against the sweep interval: the fastest mob covers about five
 blocks in ten ticks, so nothing crosses sixteen blocks unseen.

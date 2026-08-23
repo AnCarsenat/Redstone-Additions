@@ -33,6 +33,17 @@ This page mirrors key datapack milestones from the main project changelog.
 
 ### Changed
 
+- **The Big Torch drops mobs into the void instead of killing them, and its
+  radius stops advertising a reach it does not have.** A kill fires the death,
+  so a torch in a dark room was a passive mob farm that also lit the room; a
+  denied mob is now teleported out of the bottom of the world and nobody
+  collects anything. The destination is deliberately not derived from `min_y` —
+  void damage starts some distance below it and that distance is not the same
+  across the versions this pack supports, so it goes far enough down that no
+  supported dimension reaches it. The 100-block ceiling was applied to the
+  working value but not written back, so a torch set to 500 swept 100 while the
+  goggles and the Data Handler both said 500.
+
 - **Item Pipe filters are a property, not an item frame.** Set with [Set from
   hand]; the goggles draw the item it is filtering for, above the id. Reading a filter used to
   mean an entity selector per pipe plus a `block_pos` comparison per candidate

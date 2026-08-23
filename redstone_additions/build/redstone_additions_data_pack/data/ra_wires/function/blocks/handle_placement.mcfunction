@@ -69,7 +69,7 @@ execute if entity @s[tag=ra.place.electric_switch] run data modify storage ra:wi
 
 execute if entity @s[tag=ra.place.battery] run data modify storage ra:wires spec set value {block:"minecraft:waxed_copper_grate",marker:"battery",electric:1b,net:"electric",capacity:10000,props:{}}
 execute if entity @s[tag=ra.place.creative_eu] run data modify storage ra:wires spec set value {block:"minecraft:beacon",marker:"creative_eu",electric:1b,net:"electric",capacity:100000,props:{}}
-execute if entity @s[tag=ra.place.creative_fluid] run data modify storage ra:wires spec set value {block:"minecraft:beacon",marker:"creative_fluid",fluid:1b,net:"fluid",capacity:100000,props:{medium:"water"}}
+execute if entity @s[tag=ra.place.creative_fluid] run data modify storage ra:wires spec set value {block:"minecraft:beacon",marker:"creative_fluid",fluid:1b,net:"fluid",capacity:100000,props:{medium:"water",rate:1000}}
 execute if entity @s[tag=ra.place.electric_furnace] run data modify storage ra:wires spec set value {block:"minecraft:barrel",marker:"electric_furnace",electric:1b,net:"electric",dir:1,capacity:50,props:{mode:"low"}}
 execute if entity @s[tag=ra.place.industrial_light] run data modify storage ra:wires spec set value {block:"minecraft:sea_lantern",marker:"industrial_light",electric:1b,net:"electric",capacity:0,dir:3,props:{eu_use:10}}
 execute if entity @s[tag=ra.place.electric_breaker] run data modify storage ra:wires spec set value {block:"minecraft:waxed_copper_bulb",marker:"electric_breaker",bridge:1b,props:{rate:200}}

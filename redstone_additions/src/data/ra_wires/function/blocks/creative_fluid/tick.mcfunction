@@ -35,6 +35,23 @@ execute if score #cr.fill ra.wires.tmp matches ..0 run return run data modify en
 # A network holding something else takes this alongside it now -- the run clogs on
 # the sum rather than on any one medium -- so the fill above is the room left
 # across everything in there.
+#
+# IT FILLS AT A RATE, IT DOES NOT CLAIM THE RUN
+# The room left is not the amount to offer. Offering it whole meant one source
+# took the entire network on the tick it was placed -- 100000 mL of water in one
+# go -- and every other source on that run, and every Pump and Drain feeding it,
+# then found a full network for ever. A second medium could not be got in at all,
+# which made a mixed run impossible to build anywhere a Creative Fluid Source was
+# attached, and reported itself as the run simply refusing the new medium.
+#
+# So it tops up at `rate` per tick, like every other thing that moves fluid here.
+# Sources sharing a run now interleave and the run ends up holding all of them.
+# The rate is a property: set it back up with the Data Handler for the old
+# behaviour on a single-medium test rig.
+execute unless data entity @s data.properties.rate run data modify entity @s data.properties.rate set value 1000
+execute store result score #cr.rate ra.wires.tmp run data get entity @s data.properties.rate
+execute if score #cr.fill ra.wires.tmp > #cr.rate ra.wires.tmp run scoreboard players operation #cr.fill ra.wires.tmp = #cr.rate ra.wires.tmp
+
 execute store result storage ra:wires cf.amount int 1 run scoreboard players get #cr.fill ra.wires.tmp
 data modify storage ra:wires cf.medium set from entity @s data.properties.medium
 function ra_wires:blocks/creative_fluid/push with storage ra:wires cf

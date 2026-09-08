@@ -40,8 +40,9 @@ Markdown in, and what comes out:
     a YouTube link       [yt]video_id[/yt]
 
 A picture keeps the size the source gave it — `[img width=220 height=101]` — with
-the height read out of the image file, since Markdown only ever writes a width and
-a width on its own squashes the picture. `--source-dir` says where those files are.
+the height read out of the image file, since Markdown only ever writes a width.
+`--source-dir` says where those files are. A picture with no file to measure — a
+remote URL, say — keeps the width alone, which PMC scales the height to.
 
 Anchor links (`[text](#section)`) lose their target — PMC has no anchors — and
 come out as plain text. Anything else the file leaves behind is reported on
@@ -215,15 +216,14 @@ def image_tag(
         return f"[img]{url}[/img]"
 
     # PMC sizes a picture on the tag itself: [img width=200 height=200]. A source
-    # that gave only a width gets the matching height off the file, so nothing is
-    # squashed; without the file there is no honest height to write.
+    # that gave only a width gets the matching height off the file when the file
+    # is there to measure; a lone width imports fine too, PMC scales the height
+    # to match.
     if width and not height:
         path = local_path(src, opts)
         size = image_size(path) if path else None
         if size and size[0]:
             height = str(round(int(width) * size[1] / size[0]))
-        else:
-            opts.warn(f"height guessed from no file, width only: {url}")
     attributes = "".join(
         f" {name}={value}"
         for name, value in (("width", width), ("height", height))
@@ -266,9 +266,21 @@ def code_span(text: str, opts: Options) -> str:
     return f"`{text}`"
 
 
+def emphasize(text: str, tag: str = "b") -> str:
+    """Wrap already-converted text in one pair of [tag], never two.
+
+    A heading and a table's first column are written bold, and `code` inside
+    them is bold too (--inline-code), so the pairs would nest. PMC's parser
+    closes the outer tag on the first [/b] it meets and the rest of the line
+    keeps the leftovers, so the tags have to be flattened here instead.
+    """
+    inner = re.sub(rf"\[/?{tag}\]", "", text)
+    return f"[{tag}]{inner}[/{tag}]" if inner else ""
+
+
 def heading_bbcode(level: int, text: str, opts: Options) -> str:
     size = opts.heading_sizes[min(level, len(opts.heading_sizes)) - 1]
-    body = f"[b]{text}[/b]"
+    body = emphasize(text)
     if size and size != BODY_SIZE:
         body = f"[size={size}]{body}[/size]"
     return body
@@ -547,10 +559,13 @@ def convert(text: str, opts: Options) -> str:
         kept_lines.append(line)
 
     body = render_blocks(kept_lines, opts, refs)
-    # `code` inside **bold**, or a bold first table column holding `code`, ends
-    # up wrapped twice in the same tag.
+    # `code` inside **bold** ends up wrapped twice in the same tag. The inner
+    # run may not hold the tag itself, or an unbalanced pair further down the
+    # page would be taken for this one's closing half.
     for tag in ("b", "i", "u", "s"):
-        pattern = re.compile(rf"\[{tag}\]\[{tag}\](.*?)\[/{tag}\]\[/{tag}\]", re.S)
+        pattern = re.compile(
+            rf"\[{tag}\]\[{tag}\]((?:(?!\[/?{tag}\]).)*)\[/{tag}\]\[/{tag}\]", re.S
+        )
         while True:
             body, count = pattern.subn(rf"[{tag}]\1[/{tag}]", body)
             if not count:
@@ -707,7 +722,7 @@ def read_admonition(
     inner = render_blocks(body, opts, refs)
     if marker.startswith("???"):
         return f"[spoiler={title}]\n{inner}\n[/spoiler]", index
-    heading = f"[b]{inline(title, opts, refs)}[/b]" if title else ""
+    heading = emphasize(inline(title, opts, refs)) if title else ""
     return f"[quote]\n{heading}\n{inner}\n[/quote]".replace("\n\n\n", "\n\n"), index
 
 
@@ -853,7 +868,7 @@ def table_as_blocks(rows: list[list[str]]) -> str:
     for cells in rows:
         if not cells:
             continue
-        lines = [f"[b]{cells[0]}[/b]"] if cells[0] else []
+        lines = [emphasize(cells[0])] if cells[0] else []
         lines += [cell for cell in cells[1:] if cell]
         blocks.append("\n".join(lines))
     return "\n\n".join(blocks)
@@ -882,7 +897,7 @@ def table_as_list(
         if len(cells) == 1:
             items.append("[*]" + cells[0])
         elif len(cells) == 2:
-            items.append(f"[*][b]{cells[0]}[/b] — {cells[1]}")
+            items.append(f"[*]{emphasize(cells[0])} — {cells[1]}")
         else:
             titles = [inline(cell, opts, refs) for cell in header[1:]]
             details = []
@@ -890,7 +905,7 @@ def table_as_list(
                 label = titles[position] if position < len(titles) else ""
                 details.append(f"[*]{label}: {cell}" if label else f"[*]{cell}")
             items.append(
-                f"[*][b]{cells[0]}[/b]\n[list]\n" + "\n".join(details) + "\n[/list]"
+                f"[*]{emphasize(cells[0])}\n[list]\n" + "\n".join(details) + "\n[/list]"
             )
     return "[list]\n" + "\n".join(items) + "\n[/list]"
 

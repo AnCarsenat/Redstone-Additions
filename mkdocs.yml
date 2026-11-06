@@ -64,5 +64,12 @@ nav:
       - Markdown to BBCode: markdown-to-bbcode.md
       - Extension Examples: extension-examples.md
       - Contributing Guidelines: contributing-guidelines.md
+  - Kore Rewrite:
+      - Overview: kore/index.md
+      - Getting Started: kore/getting-started.md
+      - Architecture: kore/architecture.md
+      - Custom Blocks: kore/custom-blocks.md
+      - Conventions: kore/conventions.md
+      - Porting Guide: kore/porting.md
   - Project:
       - Changelog: changelog.md

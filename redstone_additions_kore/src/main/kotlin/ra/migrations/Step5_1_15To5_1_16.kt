@@ -6,9 +6,12 @@ import io.github.ayfri.kore.arguments.types.literals.self
 import io.github.ayfri.kore.commands.data
 import io.github.ayfri.kore.commands.execute.execute
 import io.github.ayfri.kore.commands.kill
+import io.github.ayfri.kore.commands.SetBlockMode
+import io.github.ayfri.kore.commands.setBlock
+import io.github.ayfri.kore.arguments.maths.vec3
+import io.github.ayfri.kore.generated.Blocks
 import io.github.ayfri.kore.generated.EntityTypes
 import ra.core.define
-import ra.core.raw
 
 /**
  * Carry item pipe filters off their item frames and onto the pipe itself.
@@ -58,7 +61,12 @@ internal fun DataPack.migrate5_1_15() = define(step("5.1.15", "5.1.16")) {
 	// Big Torches from a pre-release build of 5.1.16 stand on a shroomlight. The block is swapped
 	// in place rather than rebuilt, so the marker, its radius and its running total all survive;
 	// the tick draws the torch over it on the next pass because the display will be missing.
-	raw("execute as @e[type=marker,tag=ra.custom_block.big_torch] at @s if block ~ ~ ~ minecraft:shroomlight run setblock ~ ~ ~ minecraft:end_rod[facing=up] replace")
+	execute {
+		asTarget(blockMarkers("big_torch"))
+		at(self())
+		ifCondition { block(vec3(), Blocks.SHROOMLIGHT) }
+		run { setBlock(vec3(), Blocks.END_ROD(mapOf("facing" to "up")), SetBlockMode.REPLACE) }
+	}
 
 	// Transport networks gained a per-medium breakdown. Nothing is done here: the networks cannot
 	// be enumerated by id from a function, so each one migrates the first time it is read -- see

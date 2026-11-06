@@ -255,6 +255,13 @@ Before releasing a new version:
 - [ ] Remove all debug/test items and functions
 - [ ] Verify no broken function calls (`/reload` and check logs)
 - [ ] Run `/function ra:give_all_items` and verify all items are given
+- [ ] Rebuild with `beet build` and commit `build/` — the publish workflow fails if
+      the committed build is older than `src/`
+- [ ] If the supported Minecraft range changed, update `GAME_VERSIONS` in
+      `.github/workflows/publish.yml`
+- [ ] Tag and push (`git tag v5.x.y && git push origin v5.x.y`). The tag runs
+      `.github/workflows/publish.yml`, which uploads the data pack and the `+mod`
+      jar to Modrinth with the `CHANGELOG.md` section as release notes
 
 ---
 

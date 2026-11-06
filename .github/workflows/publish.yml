@@ -1,0 +1,84 @@
+# Publishes a release to Modrinth: the data pack zip, and the same pack as a
+# Fabric / Quilt / Forge / NeoForge jar (the "+mod" version).
+#
+# Triggered by pushing a tag like "v5.1.17", or manually from the Actions tab.
+# Needs a MODRINTH_TOKEN repository secret with the "Create versions" scope. The
+# Modrinth project (52z5jQjy) already exists; this only adds versions to it.
+
+name: Publish to Modrinth
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+  # Every Minecraft version the pack supports, as Modrinth names them.
+  # Keep in sync with min_format / max_format in redstone_additions/src/pack.mcmeta.
+  GAME_VERSIONS: "1.21.9 1.21.10 1.21.11 26.1 26.1.1 26.1.2 26.2 26.3"
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to publish, without the leading "v"'
+        required: true
+
+permissions:
+  contents: read
+
+concurrency:
+  group: modrinth-publish
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+
+      # A tag push carries the version in the ref, a manual run in the input.
+      # Both go through the environment rather than being interpolated into the
+      # script, so the value cannot break out into the shell.
+      - name: Resolve version
+        id: version
+        env:
+          INPUT_VERSION: ${{ inputs.version }}
+        run: |
+          version="${INPUT_VERSION:-$GITHUB_REF_NAME}"
+          version="${version#v}"
+          case "$version" in
+            '' | *[!0-9a-zA-Z.-]* )
+              echo "::error::refusing to publish version '$version'; expected only letters, digits, dots and hyphens" >&2
+              exit 1 ;;
+          esac
+          echo "value=$version" >> "$GITHUB_OUTPUT"
+
+      # Rebuild from src and require the result to match the committed build, so
+      # a release can never ship a build/ that is older than its sources.
+      - name: Build with beet
+        working-directory: redstone_additions
+        run: |
+          pip install beet==0.116.0
+          beet build
+          if [ -n "$(git status --porcelain -- build)" ]; then
+            git status --short -- build
+            echo "::error::committed build/ is out of date with src/; run 'beet build' and commit the result" >&2
+            exit 1
+          fi
+
+      - name: Publish
+        env:
+          MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
+          VERSION: ${{ steps.version.outputs.value }}
+        run: python3 .github/scripts/modrinth_publish.py "$VERSION" --out dist
+
+      - name: Upload packages
+        uses: actions/upload-artifact@v4
+        with:
+          name: redstone-additions-${{ steps.version.outputs.value }}
+          path: dist/

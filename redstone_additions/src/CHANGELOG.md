@@ -1,5 +1,37 @@
 # Changelog
 
+## [v5.1.17] - 2026-11-06 - 26.3
+
+**Supported versions:** 1.21.9 - 26.3 (data pack formats 88 - 121).
+
+Hotfix: the pack did not load on 26.3 at all. 26.3 changed the shape of files
+the pack ships everywhere, and an old shape in any one of them stops the world
+from opening, so it took the whole pack down with it.
+
+### Fixed
+
+- **The pack loads on 26.3.** Every predicate and item modifier now names its
+  type with `type` (was `condition` / `function`), and every recipe unlock
+  advancement uses the `recipe_unlocked` trigger's new `recipes` field (was
+  `recipe`). That is 17 predicates, 18 item modifiers and 67 advancements.
+- **Inserting into containers on 26.3.** `ra_lib:inventory/insert` builds an
+  inline loot table, whose `functions` list became `modifier` with typed entries.
+  Every machine that pushes items into a container goes through it.
+- **Block skins, wires and pipes are visible on 26.3.** Block states in NBT
+  renamed `Name`/`Properties` to `id`/`properties`; a block display summoned
+  with the old keys loads without an error and shows air.
+
+### Changed
+
+- **26.3 gets its own overlay, `overlay_121`, generated at build time.** The old
+  shapes are the only ones 1.21.9 - 26.2 understand, so the base pack keeps them
+  and `tools/port_26_3.py` writes a converted copy of every affected file into
+  the build. New recipes, predicates and modifiers are ported automatically, and
+  a shape the plugin cannot convert fails the build instead of shipping.
+- `overlay_102` now runs up to format 120 so the two overlays never overlap.
+  Formats 108 - 120 (the 26.3 snapshots and pre-releases) are declared but not
+  supported.
+
 ## [v5.1.16] - 2026-08-20 - Mixed pipes
 
 **Supported versions:** 1.21.9 - 26.2 (data pack formats 88 - 107).

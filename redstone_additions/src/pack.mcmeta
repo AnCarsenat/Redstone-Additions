@@ -12,7 +12,7 @@
         "bold": true
       },
       {
-        "text": " v5.1.16\n",
+        "text": " v5.1.17\n",
         "color": "yellow"
       },
       {
@@ -42,14 +42,19 @@
     ],
     "pack_format": 88,
     "min_format": 88,
-    "max_format": 107
+    "max_format": 121
   },
   "overlays": {
     "entries": [
       {
         "directory": "overlay_102",
         "min_format": 102,
-        "max_format": 107
+        "max_format": 120
+      },
+      {
+        "directory": "overlay_121",
+        "min_format": 121,
+        "max_format": 121
       }
     ]
   }

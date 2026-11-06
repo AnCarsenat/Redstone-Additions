@@ -2,8 +2,8 @@
 
 <img src="images/icon.png" alt="Redstone Additions" width="128">
 
-**Version:** v5.1.16  
-**Minecraft:** 1.21.9 – 26.2  
+**Version:** v5.1.17  
+**Minecraft:** 1.21.9 – 26.3  
 **Author:** [AnCarsenat](https://github.com/AnCarsenat)
 
 ---
@@ -15,17 +15,30 @@ Redstone Additions is a vanilla datapack with automation, storage, wireless sign
 
 ## Version Compatibility
 
-**Supported: Minecraft 1.21.9 – 26.2** (data pack formats 88 – 107).
+**Supported: Minecraft 1.21.9 – 26.3** (data pack formats 88 – 121).
 
-The pack declares and loads across that whole span. Exactly one thing inside it
-genuinely changes shape: format 102 (`26.2-snapshot-3`) rewrote entity
-predicates into component-map form, so `ra:is_sneaking` — which gates the
-wrench's shift action (see [Tools](tools.md)) and the Redstone Remote's
-channel prompt — needs both spellings. The pack ships both: the base file uses
-the pre-102 form and `overlay_102/` carries the component-map form, applied
-automatically from `26.2-snapshot-3` onward. Nothing else in the pack touches a
-feature that broke between 88 and 107 — no `filtered` loot function, no
-`contents` dynamic entry, no renamed game rules, no special crafting recipes.
+The pack declares and loads across that whole span. Two versions change the
+shape of files it ships, and each gets an overlay the game applies on its own:
+
+- **Format 102 (`26.2-snapshot-3`)** rewrote entity predicates into
+  component-map form, so `ra:is_sneaking` — which gates the
+  wrench's shift action (see [Tools](tools.md)) and the Redstone Remote's
+  channel prompt — needs both spellings. The base file uses the pre-102 form
+  and `overlay_102/` carries the component-map form.
+- **Format 121 (26.3)** renamed the type key of every predicate and item
+  modifier (`condition` / `function` became `type`), the `recipe_unlocked`
+  advancement trigger's `recipe` field (now `recipes`), and the keys of block
+  states in NBT (`Name` / `Properties` became `id` / `properties`). The old
+  shapes stop a 26.3 world from opening, and the new ones do not exist before
+  26.3, so `overlay_121/` carries a 26.3 copy of every recipe unlock, predicate,
+  item modifier and block-display function. It is generated when the pack is
+  built, never edited by hand.
+
+Nothing else in the pack touches a feature that broke between 88 and 121 — no
+`filtered` loot function, no `contents` dynamic entry, no renamed game rules,
+no special crafting recipes, no cooking recipes, no number providers. The 26.3
+snapshots and pre-releases (formats 108 – 120) fall inside the declared range
+but are not supported.
 
 Earlier versions are **not supported**, but most of the pack does not actually
 need 1.21.9 — the hard floor is the `pack.mcmeta` schema. If you edit
@@ -111,7 +124,15 @@ Current pack totals:
 | Data Handler | `/function ra:tools/data_handler/give` | ![Data Handler recipe](images/recipes/ra/data_handler.png){ width="200" } | Edit nearby block `data.properties` |
 | Goggles | `/function ra:tools/goggles/give` | ![Goggles recipe](images/recipes/ra/goggles.png){ width="200" } | In-world status overlays |
 
-## What Is New In v5.1.16
+## What Is New In v5.1.17
+
+- **The pack loads on 26.3.** 26.3 changed the shape of every predicate, item
+  modifier and recipe unlock, and of block states in NBT; any one of the old
+  shapes stopped the world from opening. 26.3 now gets a converted copy of each
+  as an overlay, built automatically — see
+  [Version Compatibility](#version-compatibility).
+
+## What Was New In v5.1.16
 
 - **[Pipes carry several media at once](transport-networks.md#mixing-media-in-one-run).**
   A run clogs on the sum of what is in it, not on any one medium, and nothing

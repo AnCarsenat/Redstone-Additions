@@ -1,6 +1,6 @@
 # Developer Guide
 
-This guide documents implementation architecture and contributor workflow for `v5.1.16`.
+This guide documents implementation architecture and contributor workflow for `v5.1.17`.
 
 If you want conceptual runtime flow first, start with [How It Works](how-it-works.md). This page is focused on engineering-level extension and maintenance work.
 
@@ -61,7 +61,7 @@ beet link --minecraft /path/to/minecraft <world_name>
 
 **Example with PrismLauncher:**
 ```bash
-beet link --minecraft "~/.local/share/PrismLauncher/instances/26.2 Fabric/minecraft" DevWorld
+beet link --minecraft "~/.local/share/PrismLauncher/instances/26.3 Fabric/minecraft" DevWorld
 ```
 
 #### 6. Build and Test
@@ -531,41 +531,79 @@ Keep IDs consistent across:
 
 ### Pack format overlays
 
-`src/pack.mcmeta` declares `min_format` 88 through `max_format` 107, i.e.
-Minecraft 1.21.9 through 26.2. When a vanilla schema changes shape inside that
+`src/pack.mcmeta` declares `min_format` 88 through `max_format` 121, i.e.
+Minecraft 1.21.9 through 26.3. When a vanilla schema changes shape inside that
 span, the fix is an **overlay**, not a version bump: an overlay directory sits
-next to `data/` in `src/`, mirrors the same paths, and the game swaps its files
+next to `data/` in the pack, mirrors the same paths, and the game swaps its files
 in for the format range the overlay declares.
 
-There is one today:
+There are two today, and their ranges never overlap, so no version ever has two
+overlays supplying the same file and their order in the list never matters:
+
+```json
+"overlays": {
+  "entries": [
+    { "directory": "overlay_102", "min_format": 102, "max_format": 120 },
+    { "directory": "overlay_121", "min_format": 121, "max_format": 121 }
+  ]
+}
+```
+
+**`overlay_102` is hand-written, in `src/`.** Format 102 (`26.2-snapshot-3`)
+rewrote entity predicates into component-map form:
 
 ```
 src/
-  pack.mcmeta                                  min_format 88, max_format 107
   data/ra/predicate/is_sneaking.json           {"flags": {"is_sneaking": true}}
   overlay_102/
     data/ra/predicate/is_sneaking.json         {"minecraft:flags": {"is_sneaking": true}}
 ```
 
-```json
-"overlays": {
-  "entries": [
-    { "directory": "overlay_102", "min_format": 102, "max_format": 107 }
-  ]
-}
-```
+The base file keeps the pre-102 spelling and the overlay carries the new one; the
+game picks whichever matches the running version, so both work from a single
+build. beet copies hand-written overlay directories through untouched.
 
-Format 102 (`26.2-snapshot-3`) rewrote entity predicates into component-map
-form. The base file keeps the pre-102 spelling and the overlay carries the new
-one; the game picks whichever matches the running version, so both work from a
-single build. beet copies overlay directories through untouched — no plugin, no
-extra config.
+**`overlay_121` is generated, and does not exist in `src/`.** Format 121 (26.3)
+changed four shapes the pack uses all over, and every one of the old shapes is
+fatal — the world refuses to open, not just the one file:
 
-Reach for this when a vanilla format changes under a file the pack already
-ships. Do **not** reach for it for mcfunction differences: an overlay replaces
-whole files, so duplicating a function into an overlay means maintaining two
-copies of live logic forever. If a *command* changes across the range, prefer
-narrowing the declared range over forking the function.
+| What | Before 26.3 | 26.3 |
+|---|---|---|
+| Predicate / loot condition type | `"condition": "minecraft:…"` | `"type": "minecraft:…"` |
+| Item modifier / loot function type | `"function": "minecraft:…"` | `"type": "minecraft:…"` |
+| `conditions` / `functions` lists on functions, pools, entries | `conditions: [...]`, `functions: [...]` | `condition: …`, `modifier: …` |
+| `recipe_unlocked` advancement trigger | `"recipe": "ra:wrench"` | `"recipes": "ra:wrench"` |
+| Block states in NBT (`block_display`) | `{Name:…, Properties:{…}}` | `{id:…, properties:{…}}` |
+
+The block-state rename is the exception to "fatal": a display summoned with the
+old keys loads fine and shows air, so every skin, wire and pipe would vanish
+without an error.
+
+That touches every recipe unlock, every predicate and every item modifier, so a
+hand-written copy would be ~100 duplicated files that drift the moment someone
+adds a recipe. Instead `tools/port_26_3.py` runs in the beet pipeline and writes
+`overlay_121/` into the build from the base pack (with `overlay_102` already
+applied, since 121 is past 102). It rewrites:
+
+- every predicate, item modifier and advancement whose shape changed
+- every function that inlines loot SNBT (`loot … loot {...}`, `item modify … {...}`,
+  `if predicate {...}`) or spells out a `block_state`
+
+Anything it cannot rewrite mechanically — an inline `conditions:[...]` list, a
+block state with its keys in an unusual order — **fails the build** with the file
+and line, rather than shipping something that will not load. Write new content in
+the pre-26.3 shape as usual; the plugin ports it.
+
+Formats 108 – 120 are the 26.3 snapshots and pre-releases. The range declares
+them, but they are not supported: the shapes above changed one snapshot at a
+time, and neither the base pack nor `overlay_121` matches the ones in between.
+
+Reach for a hand-written overlay when a vanilla format changes under one or two
+files the pack already ships. Do **not** hand-fork mcfunctions into an overlay:
+an overlay replaces whole files, so a copied function is two copies of live logic
+forever. When a *command* or inline SNBT changes across the range, either make the
+change mechanical in a build plugin, as `port_26_3` does, or narrow the declared
+range.
 
 ## 5) Tooling Integration
 

@@ -9,6 +9,7 @@
     "pipeline": [
         "tools.settings_gen",
         "tools.keep_loose_files",
+        "tools.port_26_3",
         "tools.lint_macros"
     ],
     "output": "build"

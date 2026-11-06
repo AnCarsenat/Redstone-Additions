@@ -1,7 +1,7 @@
 # Redstone Additions — Contributing Guidelines
 
-**Version:** v5.1.16  
-**Minecraft:** 1.21.9 – 26.2 (data pack formats 88 – 107)
+**Version:** v5.1.17  
+**Minecraft:** 1.21.9 – 26.3 (data pack formats 88 – 121)
 
 ---
 

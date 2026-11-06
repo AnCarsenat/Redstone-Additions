@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_the_recipe": {
+      "conditions": {
+        "recipes": "ra_sensors:entity_detector"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    },
+    "has_sculk_sensor": {
+      "conditions": {
+        "items": [
+          {
+            "items": "minecraft:sculk_sensor"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_sculk_sensor"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "ra_sensors:entity_detector"
+    ]
+  }
+}

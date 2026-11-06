@@ -5,7 +5,7 @@
 <h1 align="center">Redstone Additions</h1>
 
 <p align="center">
-  <strong>59 custom blocks. 7 tools. 69 recipes. 2 jetpacks and 3 upgrade kits. Vanilla datapack for Minecraft 1.21.9–26.2.</strong>
+  <strong>59 custom blocks. 7 tools. 69 recipes. 2 jetpacks and 3 upgrade kits. Vanilla datapack for Minecraft 1.21.9–26.3.</strong>
 </p>
 
 <p align="center">
@@ -14,8 +14,8 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Minecraft-1.21.9--26.2-2EA44F" alt="Minecraft 1.21.9-26.2">
-  <img src="https://img.shields.io/badge/Version-v5.1.16-blue" alt="Version v5.1.16">
+  <img src="https://img.shields.io/badge/Minecraft-1.21.9--26.3-2EA44F" alt="Minecraft 1.21.9-26.3">
+  <img src="https://img.shields.io/badge/Version-v5.1.17-blue" alt="Version v5.1.17">
   <img src="https://img.shields.io/badge/Blocks-59-red" alt="59 blocks">
   <img src="https://img.shields.io/badge/Tools-7-lightgrey" alt="7 tools">
   <img src="https://img.shields.io/badge/Recipes-69-8A2BE2" alt="69 recipes">
@@ -39,17 +39,30 @@ All systems run as a pure datapack using marker entities and function-driven run
 
 ## Version Compatibility
 
-**Supported: Minecraft 1.21.9 – 26.2** (data pack formats 88 – 107).
+**Supported: Minecraft 1.21.9 – 26.3** (data pack formats 88 – 121).
 
-The pack declares and loads across that whole span. Exactly one thing inside it
-genuinely changes shape: format 102 (`26.2-snapshot-3`) rewrote entity
-predicates into component-map form, so `ra:is_sneaking` — which gates the
-wrench's shift action, the goggles' tinker action and the Redstone Remote's
-channel prompt — needs both spellings. The pack ships both: the base file uses
-the pre-102 form and `overlay_102/` carries the component-map form, applied
-automatically from `26.2-snapshot-3` onward. Nothing else in the pack touches a
-feature that broke between 88 and 107 — no `filtered` loot function, no
-`contents` dynamic entry, no renamed game rules, no special crafting recipes.
+The pack declares and loads across that whole span. Two versions change the
+shape of files it ships, and each gets an overlay the game applies on its own:
+
+- **Format 102 (`26.2-snapshot-3`)** rewrote entity predicates into
+  component-map form, so `ra:is_sneaking` — which gates the
+  wrench's shift action, the goggles' tinker action and the Redstone Remote's
+  channel prompt — needs both spellings. The base file uses the pre-102 form
+  and `overlay_102/` carries the component-map form.
+- **Format 121 (26.3)** renamed the type key of every predicate and item
+  modifier (`condition` / `function` became `type`), the `recipe_unlocked`
+  advancement trigger's `recipe` field (now `recipes`), and the keys of block
+  states in NBT (`Name` / `Properties` became `id` / `properties`). The old
+  shapes stop a 26.3 world from opening, and the new ones do not exist before
+  26.3, so `overlay_121/` carries a 26.3 copy of every recipe unlock, predicate,
+  item modifier and block-display function. It is generated when the pack is
+  built, never edited by hand.
+
+Nothing else in the pack touches a feature that broke between 88 and 121 — no
+`filtered` loot function, no `contents` dynamic entry, no renamed game rules,
+no special crafting recipes, no cooking recipes, no number providers. The 26.3
+snapshots and pre-releases (formats 108 – 120) fall inside the declared range
+but are not supported.
 
 Earlier versions are **not supported**, but most of the pack does not actually
 need 1.21.9 — the hard floor is the `pack.mcmeta` schema. If you edit
@@ -286,7 +299,7 @@ beet link --minecraft /path/to/minecraft <world_name>
 
 **Example with PrismLauncher:**
 ```bash
-beet link --minecraft "~/.local/share/PrismLauncher/instances/26.2 Fabric/minecraft" DevWorld
+beet link --minecraft "~/.local/share/PrismLauncher/instances/26.3 Fabric/minecraft" DevWorld
 ```
 
 This creates a symbolic link between the built datapack and your world's datapacks folder.

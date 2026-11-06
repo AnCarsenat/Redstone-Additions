@@ -1,12 +1,21 @@
 package ra.modules.gates
 
 import io.github.ayfri.kore.commands.function
+import io.github.ayfri.kore.commands.returnValue
 import ra.core.GameplayModule
+import ra.core.GiveBundle
 import ra.core.Ns
 import ra.core.Ra
 import ra.core.define
 import ra.core.raw
+import ra.core.ref
 import ra.modules.gates.Clock.registerClock
+import ra.modules.gates.Delayer.registerDelayer
+import ra.modules.gates.Extender.registerExtender
+import ra.modules.gates.Randomizer.registerRandomizer
+import ra.modules.gates.Shortener.registerShortener
+import ra.modules.gates.UniGate.registerUniGate
+import ra.modules.gates.debug.ClockDebug.registerClockDebug
 
 /**
  * Logic Gates (`ra_gates`): the UNI Gate and the timing blocks (Clock, Delayer, Extender,
@@ -16,17 +25,37 @@ object GatesModule : GameplayModule {
 	override val ns = Ns.GATES
 	override val title = "Logic Gates"
 
+	/** Every block, in the order load, tick, give_all and the bundle list them. */
+	private val blocks = listOf(UniGate.block, Clock.block, Delayer.block, Extender.block, Randomizer.block, Shortener.block)
+
 	override fun Ra.register() {
+		// Registration order is the placement-handler order of the beet #ra:placement_handlers.
+		registerUniGate()
 		registerClock()
-		// TODO(port): uni_gate, delayer, extender, randomizer, shortener, items/give_all, debug/*, check_signals.
+		registerDelayer()
+		registerExtender()
+		registerRandomizer()
+		registerShortener()
+		registerClockDebug()
 
 		pack.define(load) {
-			function(Clock.block.fn("register_block"))
+			for (b in blocks) function(b.fn("register_block"))
 			raw("""tellraw @a [{text:"[",color:"dark_gray"},{text:"RA",color:"gold",bold:true},{text:"] ",color:"dark_gray"},{text:"Logic Gates loaded!",color:"aqua"}]""")
 		}
 		pack.define(tick!!) {
 			// Per-block redstone detection runs in each block's process function.
-			function(Clock.block.tick)
+			for (b in blocks) function(b.tick)
 		}
+
+		// /function ra_gates:items/give_all
+		pack.define(ref(ns, "items/give_all")) {
+			for (b in blocks) function(b.give)
+		}
+
+		// Deprecated compatibility entry point: gates now run per-entity redstone detection
+		// directly in their process functions. Kept because other packs may still call it.
+		pack.define(ref(ns, "check_signals")) { returnValue(1) }
+
+		bundles += GiveBundle("gates", "Gates Bundle", "UNI Gate + timing utility blocks", ns, blocks.map { it.itemStackNbt() })
 	}
 }

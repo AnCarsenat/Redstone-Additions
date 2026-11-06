@@ -4,6 +4,7 @@ import io.github.ayfri.kore.arguments.types.literals.literal
 import io.github.ayfri.kore.arguments.types.literals.self
 import io.github.ayfri.kore.commands.data
 import io.github.ayfri.kore.commands.function
+import io.github.ayfri.kore.commands.scoreboard.Operation
 import io.github.ayfri.kore.commands.scoreboard.scoreboard
 import io.github.ayfri.kore.commands.tag
 import io.github.ayfri.kore.utils.nbt
@@ -82,7 +83,7 @@ object Electric : PackPart {
 			// Guarded: an unguarded read of a missing eu_use writes zero, and a consumer
 			// that costs nothing runs for free off an empty grid.
 			function(RaLib.Util.property, nbt { this["name"] = "eu_use"; this["default"] = 40; this["min"] = 1 })
-			raw("scoreboard players operation #use ra.wires.tmp2 = #prop ra.temp")
+			scoreboard.players.operation(literal("#use"), "ra.wires.tmp2", Operation.SET, literal("#prop"), "ra.temp")
 
 			// Check the grid can cover the whole draw before taking any of it.
 			function(RaLib.Transport.Net.read)
@@ -215,8 +216,8 @@ object Electric : PackPart {
 			// Trend against this node's own last reading.
 			raw("execute unless data entity @s data.data.last_eu run data modify entity @s data.data.last_eu set value 0")
 			raw("execute store result score #eu.prev ra.wires.tmp run data get entity @s data.data.last_eu 1")
-			raw("scoreboard players operation #eu.delta ra.wires.tmp = #net_amount ra.tr.tmp")
-			raw("scoreboard players operation #eu.delta ra.wires.tmp -= #eu.prev ra.wires.tmp")
+			scoreboard.players.operation(literal("#eu.delta"), "ra.wires.tmp", Operation.SET, literal("#net_amount"), "ra.tr.tmp")
+			scoreboard.players.operation(literal("#eu.delta"), "ra.wires.tmp", Operation.REMOVE, literal("#eu.prev"), "ra.wires.tmp")
 			raw("execute store result entity @s data.data.last_eu int 1 run scoreboard players get #net_amount ra.tr.tmp")
 			raw("execute store result entity @s data.status.trend int 1 run scoreboard players get #eu.delta ra.wires.tmp")
 

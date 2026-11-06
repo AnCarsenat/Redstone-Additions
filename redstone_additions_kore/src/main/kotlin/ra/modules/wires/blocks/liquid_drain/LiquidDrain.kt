@@ -5,12 +5,13 @@ import io.github.ayfri.kore.commands.data
 import io.github.ayfri.kore.commands.function
 import io.github.ayfri.kore.commands.scoreboard.scoreboard
 import io.github.ayfri.kore.utils.nbt
-import io.github.ayfri.kore.utils.set
 import ra.api.Goggles
 import ra.core.Ns
 import ra.core.PackPart
 import ra.core.Ra
-import ra.core.Storage
+import ra.core.block.dataLine
+import ra.core.block.gogglesHeader
+import ra.core.block.propLine
 import ra.core.define
 import ra.core.raw
 import ra.core.ref
@@ -74,19 +75,14 @@ object LiquidDrain : PackPart {
 			// the same dispatch to answer the Data Handlers, which used to carry two
 			// separate hand-written name tables that had already drifted apart.
 
-			raw("data modify storage ra:temp block_name set value \"Liquid Drain\"")
-			raw("execute if data storage ra:temp name_only run return 0")
-
-			raw("data modify storage ra:temp billboard set value {show_name:1b,name_y:1.0}")
-			raw("data modify storage ra:temp billboard.name set from storage ra:temp block_name")
-			function(Goggles.Billboard.handleBillboard, Storage.TEMP, "billboard")
+			gogglesHeader("Liquid Drain", nameY = 1.0)
 
 			// Contents belong to the network, not this node; refresh_status copies them here.
-			function(Goggles.Billboard.dataLine, nbt { this["path"] = "medium"; this["label"] = "Medium: "; this["color"] = "aqua"; this["suffix"] = ""; this["y"] = 0.8 })
-			function(Goggles.Billboard.dataLine, nbt { this["path"] = "amount"; this["label"] = "Amount: "; this["color"] = "yellow"; this["suffix"] = " mL"; this["y"] = 0.55 })
-			function(Goggles.Billboard.dataLine, nbt { this["path"] = "drain_state"; this["label"] = "Drain: "; this["color"] = "gray"; this["suffix"] = ""; this["y"] = 0.3 })
-			function(Goggles.Billboard.propLine, nbt { this["path"] = "mode"; this["label"] = "Mode: "; this["color"] = "aqua"; this["suffix"] = ""; this["y"] = 0.05 })
-			function(Goggles.Billboard.propLine, nbt { this["path"] = "cooldown"; this["label"] = "Cooldown: "; this["color"] = "gray"; this["suffix"] = "t"; this["y"] = -0.2 })
+			dataLine("medium", "Medium: ", "aqua", y = 0.8)
+			dataLine("amount", "Amount: ", "yellow", y = 0.55, suffix = " mL")
+			dataLine("drain_state", "Drain: ", "gray", y = 0.3)
+			propLine("mode", "Mode: ", "aqua", y = 0.05)
+			propLine("cooldown", "Cooldown: ", "gray", y = -0.2, suffix = "t")
 		}
 	}
 }

@@ -1,8 +1,10 @@
 package ra.modules.wires.fluid
 
+import io.github.ayfri.kore.arguments.types.literals.literal
 import io.github.ayfri.kore.arguments.types.literals.self
 import io.github.ayfri.kore.commands.data
 import io.github.ayfri.kore.commands.function
+import io.github.ayfri.kore.commands.scoreboard.Operation
 import io.github.ayfri.kore.commands.scoreboard.scoreboard
 import io.github.ayfri.kore.commands.tag
 import ra.api.RaLib
@@ -30,8 +32,8 @@ object Pump : PackPart {
 			// the block anyway is how a nearly full network would quietly delete a lake.
 			function(RaLib.Transport.Net.read)
 			raw("\$scoreboard players set #need ra.wires.tmp \$(volume)")
-			raw("scoreboard players operation #free ra.wires.tmp = #net_capacity ra.tr.tmp")
-			raw("scoreboard players operation #free ra.wires.tmp -= #net_amount ra.tr.tmp")
+			scoreboard.players.operation(literal("#free"), "ra.wires.tmp", Operation.SET, literal("#net_capacity"), "ra.tr.tmp")
+			scoreboard.players.operation(literal("#free"), "ra.wires.tmp", Operation.REMOVE, literal("#net_amount"), "ra.tr.tmp")
 
 			// A network smaller than one source block can never take one, however long you
 			// wait. That is a different problem from a network that happens to be full, and

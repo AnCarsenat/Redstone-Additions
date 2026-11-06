@@ -3,6 +3,7 @@ package ra.modules.wires.blocks.electric_furnace
 import io.github.ayfri.kore.arguments.types.literals.literal
 import io.github.ayfri.kore.commands.data
 import io.github.ayfri.kore.commands.function
+import io.github.ayfri.kore.commands.scoreboard.Operation
 import io.github.ayfri.kore.commands.scoreboard.scoreboard
 import ra.api.RaLib
 import ra.core.Ns
@@ -33,12 +34,12 @@ object ElectricFurnaceSmelting : PackPart {
 
 			scoreboard.players.set(literal("#ef.can"), "ra.wires.tmp", 0)
 			raw("data modify storage ra:temp inv_item set value {}")
-			raw("data modify storage ra:temp inv_item.id set from storage ra:wires ef.hit.result")
-			raw("data modify storage ra:temp inv_item.count set value 1")
+			data(Storage.TEMP) { modify("inv_item.id", Storage.WIRES, "ef.hit.result") }
+			data(Storage.TEMP) { modify("inv_item.count", 1) }
 
 			raw("\$execute positioned ~\$(dx) ~\$(dy) ~\$(dz) unless block ~ ~ ~ #ra_lib:containers run return 0")
 			raw("\$execute positioned ~\$(dx) ~\$(dy) ~\$(dz) run function ${RaLib.Inventory.canAcceptOne.asId()}")
-			raw("scoreboard players operation #ef.can ra.wires.tmp = #inv_can_insert ra.temp")
+			scoreboard.players.operation(literal("#ef.can"), "ra.wires.tmp", Operation.SET, literal("#inv_can_insert"), "ra.temp")
 		}
 
 		pack.define(ElectricFurnaceSmelting.deliver) {
@@ -78,8 +79,8 @@ object ElectricFurnaceSmelting : PackPart {
 			raw("execute if score #ef.slot ra.wires.tmp matches 0.. run return 0")
 			raw("execute unless data storage ra:wires ef.scan[0] run return 0")
 
-			raw("data modify storage ra:wires ef.q.id set from storage ra:wires ef.scan[0].id")
-			raw("data modify storage ra:wires ef.q.slot set from storage ra:wires ef.scan[0].Slot")
+			data(Storage.WIRES) { modify("ef.q.id", Storage.WIRES, "ef.scan[0].id") }
+			data(Storage.WIRES) { modify("ef.q.slot", Storage.WIRES, "ef.scan[0].Slot") }
 			function(ElectricFurnaceSmelting.findTry, Storage.WIRES, "ef.q")
 
 			data(Storage.WIRES) { remove("ef.scan[0]") }

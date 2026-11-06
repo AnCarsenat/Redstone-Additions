@@ -1,18 +1,18 @@
 package ra.modules.wires.blocks.electric_switch
 
+import io.github.ayfri.kore.arguments.types.literals.self
 import io.github.ayfri.kore.commands.data
+import io.github.ayfri.kore.commands.execute.execute
 import io.github.ayfri.kore.commands.function
-import io.github.ayfri.kore.utils.nbt
-import io.github.ayfri.kore.utils.set
 import ra.api.Goggles
 import ra.core.Ns
 import ra.core.PackPart
 import ra.core.Ra
-import ra.core.Storage
+import ra.core.block.dataLine
+import ra.core.block.gogglesHeader
+import ra.core.block.textLine
 import ra.core.define
-import ra.core.raw
 import ra.core.ref
-import ra.modules.wires.common.line
 
 object ElectricSwitch : PackPart {
 	val goggles = ref(Ns.WIRES, "blocks/electric_switch/goggles")
@@ -28,16 +28,11 @@ object ElectricSwitch : PackPart {
 			// the same dispatch to answer the Data Handlers, which used to carry two
 			// separate hand-written name tables that had already drifted apart.
 
-			raw("data modify storage ra:temp block_name set value \"EU Switch\"")
-			raw("execute if data storage ra:temp name_only run return 0")
+			gogglesHeader("EU Switch", nameY = 1.0)
 
-			raw("data modify storage ra:temp billboard set value {show_name:1b,name_y:1.0}")
-			raw("data modify storage ra:temp billboard.name set from storage ra:temp block_name")
-			function(Goggles.Billboard.handleBillboard, Storage.TEMP, "billboard")
-
-			function(Goggles.Billboard.dataLine, nbt { this["path"] = "available_eu"; this["label"] = "EU: "; this["color"] = "aqua"; this["suffix"] = " EU"; this["y"] = 0.8 })
-			line("execute if data entity @s data.status{active:1b} run function", Goggles.Billboard.textLine, """{label:"Active: ",value:"On",color:"green",suffix:"",y:0.55}""")
-			line("execute unless data entity @s data.status{active:1b} run function", Goggles.Billboard.textLine, """{label:"Active: ",value:"Off",color:"gray",suffix:"",y:0.55}""")
+			dataLine("available_eu", "EU: ", "aqua", y = 0.8, suffix = " EU")
+			execute { ifCondition { data(self(), "data.status{active:1b}") }; run { textLine("Active: ", "On", "green", y = 0.55) } }
+			execute { unlessCondition { data(self(), "data.status{active:1b}") }; run { textLine("Active: ", "Off", "gray", y = 0.55) } }
 		}
 	}
 }

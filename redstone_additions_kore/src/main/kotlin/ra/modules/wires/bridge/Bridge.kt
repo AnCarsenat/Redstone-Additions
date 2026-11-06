@@ -1,8 +1,10 @@
 package ra.modules.wires.bridge
 
 import io.github.ayfri.kore.arguments.types.literals.literal
+import io.github.ayfri.kore.arguments.types.literals.self
 import io.github.ayfri.kore.commands.data
 import io.github.ayfri.kore.commands.function
+import io.github.ayfri.kore.commands.scoreboard.Operation
 import io.github.ayfri.kore.commands.scoreboard.scoreboard
 import io.github.ayfri.kore.commands.tag
 import io.github.ayfri.kore.utils.nbt
@@ -34,7 +36,7 @@ object Bridge : PackPart {
 			// Internal: the two sides already hold the same amount. Context: as the bridge.
 
 			raw("data modify entity @s data.status.bridge_state set value \"level\"")
-			raw("data modify entity @s data.status.moved set value 0")
+			data(self()) { modify("data.status.moved", 0) }
 		}
 
 		pack.define(Bridge.consider) {
@@ -98,19 +100,19 @@ object Bridge : PackPart {
 
 			function(RaLib.Transport.Net.read)
 
-			raw("scoreboard players operation #br.dst_free ra.wires.tmp = #net_capacity ra.tr.tmp")
-			raw("scoreboard players operation #br.dst_free ra.wires.tmp -= #net_amount ra.tr.tmp")
+			scoreboard.players.operation(literal("#br.dst_free"), "ra.wires.tmp", Operation.SET, literal("#net_capacity"), "ra.tr.tmp")
+			scoreboard.players.operation(literal("#br.dst_free"), "ra.wires.tmp", Operation.REMOVE, literal("#net_amount"), "ra.tr.tmp")
 			raw("execute if score #br.dst_free ra.wires.tmp matches ..0 run return 0")
 
 			// Compared per medium, so the half-the-gap convergence in bridge/transfer levels
 			// the thing being moved rather than the totals. Two runs each holding 5000, one
 			// all water and one all lava, are not level from a water valve's point of view.
 			raw("data modify storage ra:wires amtq set value {}")
-			raw("data modify storage ra:wires amtq.medium set from storage ra:wires bridge.medium")
+			data(Storage.WIRES) { modify("amtq.medium", Storage.WIRES, "bridge.medium") }
 			line("execute store result score #br.dst_amount ra.wires.tmp run function", Bridge.readAmount, "with storage ra:wires amtq")
 
 			scoreboard.players.set(literal("#br.dst"), "ra.wires.tmp", 1)
-			raw("scoreboard players operation #br.dst_net ra.wires.tmp = @s ra.tr.net")
+			scoreboard.players.operation(literal("#br.dst_net"), "ra.wires.tmp", Operation.SET, self(), "ra.tr.net")
 		}
 
 		pack.define(Bridge.readSrc) {
@@ -127,19 +129,19 @@ object Bridge : PackPart {
 			// front of its media list. A Liquid Filter moves only the medium it is set to,
 			// and is the reason this is a choice at all: it is the block that lets a mixed
 			// pipe run be separated back out into single-medium runs.
-			raw("data modify storage ra:wires bridge.medium set from storage ra:transport cur.medium")
+			data(Storage.WIRES) { modify("bridge.medium", Storage.TRANSPORT, "cur.medium") }
 			raw("execute if data storage ra:wires filter.medium run data modify storage ra:wires bridge.medium set from storage ra:wires filter.medium")
 
 			// How much of THAT medium is here, not how much the network holds in total. A
 			// filter set to lava on a run holding 9000 water and 1000 lava has 1000 to move.
 			raw("data modify storage ra:wires amtq set value {}")
-			raw("data modify storage ra:wires amtq.medium set from storage ra:wires bridge.medium")
+			data(Storage.WIRES) { modify("amtq.medium", Storage.WIRES, "bridge.medium") }
 			line("execute store result score #br.src_amount ra.wires.tmp run function", Bridge.readAmount, "with storage ra:wires amtq")
 
 			raw("execute if score #br.src_amount ra.wires.tmp matches ..0 run return 0")
 
 			scoreboard.players.set(literal("#br.src"), "ra.wires.tmp", 1)
-			raw("scoreboard players operation #br.src_net ra.wires.tmp = @s ra.tr.net")
+			scoreboard.players.operation(literal("#br.src_net"), "ra.wires.tmp", Operation.SET, self(), "ra.tr.net")
 		}
 
 		pack.define(Bridge.scan) {
@@ -175,12 +177,12 @@ object Bridge : PackPart {
 			line("execute if score #br.hi ra.wires.tmp = #br.lo ra.wires.tmp run return run function", Bridge.balanced)
 
 			raw("data modify storage ra:wires move set value {}")
-			raw("data modify storage ra:wires move.sx set from storage ra:wires bridge.src.dx")
-			raw("data modify storage ra:wires move.sy set from storage ra:wires bridge.src.dy")
-			raw("data modify storage ra:wires move.sz set from storage ra:wires bridge.src.dz")
-			raw("data modify storage ra:wires move.dx set from storage ra:wires bridge.dst.dx")
-			raw("data modify storage ra:wires move.dy set from storage ra:wires bridge.dst.dy")
-			raw("data modify storage ra:wires move.dz set from storage ra:wires bridge.dst.dz")
+			data(Storage.WIRES) { modify("move.sx", Storage.WIRES, "bridge.src.dx") }
+			data(Storage.WIRES) { modify("move.sy", Storage.WIRES, "bridge.src.dy") }
+			data(Storage.WIRES) { modify("move.sz", Storage.WIRES, "bridge.src.dz") }
+			data(Storage.WIRES) { modify("move.dx", Storage.WIRES, "bridge.dst.dx") }
+			data(Storage.WIRES) { modify("move.dy", Storage.WIRES, "bridge.dst.dy") }
+			data(Storage.WIRES) { modify("move.dz", Storage.WIRES, "bridge.dst.dz") }
 			function(Bridge.transfer, Storage.WIRES, "move")
 			data(Storage.WIRES) { remove("move") }
 		}
@@ -233,7 +235,7 @@ object Bridge : PackPart {
 			data(Storage.WIRES) { remove("bridge") }
 
 			function(RaLib.Util.property, nbt { this["name"] = "rate"; this["default"] = 1000; this["min"] = 1 })
-			raw("scoreboard players operation #br.rate ra.wires.tmp = #prop ra.temp")
+			scoreboard.players.operation(literal("#br.rate"), "ra.wires.tmp", Operation.SET, literal("#prop"), "ra.temp")
 
 			// A Liquid Filter carries filter_medium and moves only that. Resolved here rather
 			// than in read_src because read_src runs `as` the neighbouring node, and the
@@ -246,7 +248,7 @@ object Bridge : PackPart {
 
 			raw("execute if score #br.dst ra.wires.tmp matches 0 run return run data modify entity @s data.status.bridge_state set value \"blocked\"")
 
-			raw("scoreboard players operation #br.move ra.wires.tmp = #br.rate ra.wires.tmp")
+			scoreboard.players.operation(literal("#br.move"), "ra.wires.tmp", Operation.SET, literal("#br.rate"), "ra.wires.tmp")
 			raw("execute if score #br.src_amount ra.wires.tmp < #br.move ra.wires.tmp run scoreboard players operation #br.move ra.wires.tmp = #br.src_amount ra.wires.tmp")
 			raw("execute if score #br.dst_free ra.wires.tmp < #br.move ra.wires.tmp run scoreboard players operation #br.move ra.wires.tmp = #br.dst_free ra.wires.tmp")
 
@@ -259,10 +261,10 @@ object Bridge : PackPart {
 			//
 			// Half converges instead, and once the two are within one unit the halved gap
 			// rounds to zero and nothing moves at all.
-			raw("scoreboard players operation #br.gap ra.wires.tmp = #br.src_amount ra.wires.tmp")
-			raw("scoreboard players operation #br.gap ra.wires.tmp -= #br.dst_amount ra.wires.tmp")
+			scoreboard.players.operation(literal("#br.gap"), "ra.wires.tmp", Operation.SET, literal("#br.src_amount"), "ra.wires.tmp")
+			scoreboard.players.operation(literal("#br.gap"), "ra.wires.tmp", Operation.REMOVE, literal("#br.dst_amount"), "ra.wires.tmp")
 			scoreboard.players.set(literal("#br.two"), "ra.wires.tmp", 2)
-			raw("scoreboard players operation #br.gap ra.wires.tmp /= #br.two ra.wires.tmp")
+			scoreboard.players.operation(literal("#br.gap"), "ra.wires.tmp", Operation.DIVIDE, literal("#br.two"), "ra.wires.tmp")
 			raw("execute if score #br.gap ra.wires.tmp < #br.move ra.wires.tmp run scoreboard players operation #br.move ra.wires.tmp = #br.gap ra.wires.tmp")
 
 			raw("execute if score #br.move ra.wires.tmp matches ..0 run return run data modify entity @s data.status.bridge_state set value \"blocked\"")
@@ -274,7 +276,7 @@ object Bridge : PackPart {
 
 			raw("data modify entity @s data.status.bridge_state set value \"transferring\"")
 			raw("execute store result entity @s data.status.moved int 1 run scoreboard players get #br.move ra.wires.tmp")
-			raw("data modify entity @s data.status.moving set from storage ra:wires bridge.medium")
+			data(self()) { modify("data.status.moving", Storage.WIRES, "bridge.medium") }
 			data(Storage.WIRES) { remove("filter") }
 		}
 	}

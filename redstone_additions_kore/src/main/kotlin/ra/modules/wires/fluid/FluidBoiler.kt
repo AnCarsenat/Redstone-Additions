@@ -4,6 +4,7 @@ import io.github.ayfri.kore.arguments.types.literals.literal
 import io.github.ayfri.kore.arguments.types.literals.self
 import io.github.ayfri.kore.commands.data
 import io.github.ayfri.kore.commands.function
+import io.github.ayfri.kore.commands.scoreboard.Operation
 import io.github.ayfri.kore.commands.scoreboard.scoreboard
 import io.github.ayfri.kore.commands.tag
 import ra.api.RaLib
@@ -44,8 +45,8 @@ object FluidBoiler : PackPart {
 			// more -- steam has its own entry alongside whatever is already in there, and the
 			// only thing that can turn the boiler away is having no room for 1000 mL.
 
-			raw("scoreboard players operation #boil_free ra.wires.tmp = #net_capacity ra.tr.tmp")
-			raw("scoreboard players operation #boil_free ra.wires.tmp -= #net_amount ra.tr.tmp")
+			scoreboard.players.operation(literal("#boil_free"), "ra.wires.tmp", Operation.SET, literal("#net_capacity"), "ra.tr.tmp")
+			scoreboard.players.operation(literal("#boil_free"), "ra.wires.tmp", Operation.REMOVE, literal("#net_amount"), "ra.tr.tmp")
 			raw("execute unless score #boil_free ra.wires.tmp matches 1000.. run return 0")
 
 			scoreboard.players.set(literal("#boil_dst"), "ra.wires.tmp", 1)
@@ -64,7 +65,7 @@ object FluidBoiler : PackPart {
 			raw("execute unless score #boil_water ra.wires.tmp matches 1000.. run return 0")
 
 			scoreboard.players.set(literal("#boil_src"), "ra.wires.tmp", 1)
-			raw("scoreboard players operation #boil_src_net ra.wires.tmp = @s ra.tr.net")
+			scoreboard.players.operation(literal("#boil_src_net"), "ra.wires.tmp", Operation.SET, self(), "ra.tr.net")
 			tag(self()) { add("ra.wires.boil_src") }
 		}
 

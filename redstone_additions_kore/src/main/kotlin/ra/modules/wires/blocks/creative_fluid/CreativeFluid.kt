@@ -1,18 +1,22 @@
 package ra.modules.wires.blocks.creative_fluid
 
 import io.github.ayfri.kore.arguments.types.literals.literal
+import io.github.ayfri.kore.arguments.types.literals.self
 import io.github.ayfri.kore.commands.data
 import io.github.ayfri.kore.commands.function
 import io.github.ayfri.kore.commands.returnValue
+import io.github.ayfri.kore.commands.scoreboard.Operation
 import io.github.ayfri.kore.commands.scoreboard.scoreboard
 import io.github.ayfri.kore.utils.nbt
-import io.github.ayfri.kore.utils.set
 import ra.api.Goggles
 import ra.api.RaLib
 import ra.core.Ns
 import ra.core.PackPart
 import ra.core.Ra
 import ra.core.Storage
+import ra.core.block.gogglesHeader
+import ra.core.block.stackReset
+import ra.core.block.stackedStatusLine
 import ra.core.define
 import ra.core.raw
 import ra.core.ref
@@ -66,17 +70,12 @@ object CreativeFluid : PackPart {
 			// Goggles readout, and the block's display name.
 			// Context: as the block's marker, at the block position.
 
-			raw("data modify storage ra:temp block_name set value \"Creative Fluid Source\"")
-			raw("execute if data storage ra:temp name_only run return 0")
+			gogglesHeader("Creative Fluid Source", nameY = 1.0)
 
-			raw("data modify storage ra:temp billboard set value {show_name:1b,name_y:1.0}")
-			raw("data modify storage ra:temp billboard.name set from storage ra:temp block_name")
-			function(Goggles.Billboard.handleBillboard, Storage.TEMP, "billboard")
-
-			function(Goggles.Billboard.stackReset, nbt { this["top"] = 80; this["step"] = 22 })
-			function(Goggles.Billboard.stackedStatusLine, nbt { this["path"] = "state"; this["label"] = ""; this["color"] = "light_purple"; this["suffix"] = "" })
-			function(Goggles.Billboard.stackedStatusLine, nbt { this["path"] = "medium"; this["label"] = "Medium: "; this["color"] = "aqua"; this["suffix"] = "" })
-			function(Goggles.Billboard.stackedStatusLine, nbt { this["path"] = "filled"; this["label"] = "Filled: "; this["color"] = "yellow"; this["suffix"] = " mL" })
+			stackReset(80, 22)
+			stackedStatusLine("state", "", "light_purple")
+			stackedStatusLine("medium", "Medium: ", "aqua")
+			stackedStatusLine("filled", "Filled: ", "yellow", suffix = " mL")
 		}
 
 		pack.define(CreativeFluid.known) {
@@ -122,16 +121,16 @@ object CreativeFluid : PackPart {
 
 			raw("execute unless data entity @s data.properties.medium run data modify entity @s data.properties.medium set value \"water\"")
 
-			raw("data modify entity @s data.status.medium set from entity @s data.properties.medium")
+			data(self()) { modify("data.status.medium", self(), "data.properties.medium") }
 
 			raw("data modify storage ra:wires cfv set value {}")
-			raw("data modify storage ra:wires cfv.medium set from entity @s data.properties.medium")
+			data(Storage.WIRES) { modify("cfv.medium", self(), "data.properties.medium") }
 			line("execute store result score #cr.known ra.wires.tmp run function", CreativeFluid.known, "with storage ra:wires cfv")
 			raw("execute if score #cr.known ra.wires.tmp matches ..0 run return run data modify entity @s data.status.state set value \"Unknown medium\"")
 
 			function(RaLib.Transport.Net.read)
-			raw("scoreboard players operation #cr.fill ra.wires.tmp = #net_capacity ra.tr.tmp")
-			raw("scoreboard players operation #cr.fill ra.wires.tmp -= #net_amount ra.tr.tmp")
+			scoreboard.players.operation(literal("#cr.fill"), "ra.wires.tmp", Operation.SET, literal("#net_capacity"), "ra.tr.tmp")
+			scoreboard.players.operation(literal("#cr.fill"), "ra.wires.tmp", Operation.REMOVE, literal("#net_amount"), "ra.tr.tmp")
 
 			raw("execute if score #cr.fill ra.wires.tmp matches ..0 run return run data modify entity @s data.status.state set value \"Network full\"")
 
@@ -156,7 +155,7 @@ object CreativeFluid : PackPart {
 			raw("execute if score #cr.fill ra.wires.tmp > #cr.rate ra.wires.tmp run scoreboard players operation #cr.fill ra.wires.tmp = #cr.rate ra.wires.tmp")
 
 			raw("execute store result storage ra:wires cf.amount int 1 run scoreboard players get #cr.fill ra.wires.tmp")
-			raw("data modify storage ra:wires cf.medium set from entity @s data.properties.medium")
+			data(Storage.WIRES) { modify("cf.medium", self(), "data.properties.medium") }
 			function(CreativeFluid.push, Storage.WIRES, "cf")
 		}
 	}

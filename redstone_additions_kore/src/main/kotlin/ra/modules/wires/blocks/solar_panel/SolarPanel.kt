@@ -4,13 +4,12 @@ import io.github.ayfri.kore.arguments.types.literals.literal
 import io.github.ayfri.kore.commands.data
 import io.github.ayfri.kore.commands.function
 import io.github.ayfri.kore.commands.scoreboard.scoreboard
-import io.github.ayfri.kore.utils.nbt
-import io.github.ayfri.kore.utils.set
 import ra.api.Goggles
 import ra.core.Ns
 import ra.core.PackPart
 import ra.core.Ra
-import ra.core.Storage
+import ra.core.block.dataLine
+import ra.core.block.gogglesHeader
 import ra.core.define
 import ra.core.raw
 import ra.core.ref
@@ -32,20 +31,15 @@ object SolarPanel : PackPart {
 			// the same dispatch to answer the Data Handlers, which used to carry two
 			// separate hand-written name tables that had already drifted apart.
 
-			raw("data modify storage ra:temp block_name set value \"Solar Panel\"")
-			raw("execute if data storage ra:temp name_only run return 0")
-
-			raw("data modify storage ra:temp billboard set value {show_name:1b,name_y:0.7}")
-			raw("data modify storage ra:temp billboard.name set from storage ra:temp block_name")
-			function(Goggles.Billboard.handleBillboard, Storage.TEMP, "billboard")
+			gogglesHeader("Solar Panel", nameY = 0.7)
 
 			// `fuel` says "Sunlight", "No sunlight" or "Grid full", so labelling it "Light:"
 			// read as nonsense the moment the grid backed up. The grid line answers that
 			// question properly and the sun line only ever talks about the sun.
-			function(Goggles.Billboard.dataLine, nbt { this["path"] = "available_eu"; this["label"] = "EU: "; this["color"] = "aqua"; this["suffix"] = " EU"; this["y"] = 0.7 })
-			function(Goggles.Billboard.dataLine, nbt { this["path"] = "grid"; this["label"] = ""; this["color"] = "yellow"; this["suffix"] = ""; this["y"] = 0.45 })
-			function(Goggles.Billboard.dataLine, nbt { this["path"] = "fuel"; this["label"] = "Sun: "; this["color"] = "gold"; this["suffix"] = ""; this["y"] = 0.2 })
-			function(Goggles.Billboard.dataLine, nbt { this["path"] = "output"; this["label"] = "Making: "; this["color"] = "green"; this["suffix"] = " EU/t"; this["y"] = -0.05 })
+			dataLine("available_eu", "EU: ", "aqua", y = 0.7, suffix = " EU")
+			dataLine("grid", "", "yellow", y = 0.45)
+			dataLine("fuel", "Sun: ", "gold", y = 0.2)
+			dataLine("output", "Making: ", "green", y = -0.05, suffix = " EU/t")
 		}
 
 		pack.define(SolarPanel.tick) {

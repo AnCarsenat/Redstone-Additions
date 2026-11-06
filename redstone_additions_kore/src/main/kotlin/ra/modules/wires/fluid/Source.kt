@@ -71,7 +71,7 @@ object Source : PackPart {
 
 			raw("execute if data storage ra:wires found run return 0")
 
-			raw("data modify storage ra:wires probe.queue set from storage ra:wires source_blocks")
+			data(Storage.WIRES) { modify("probe.queue", Storage.WIRES, "source_blocks") }
 			raw("\$data modify storage ra:wires probe.dx set value \$(dx)")
 			raw("\$data modify storage ra:wires probe.dy set value \$(dy)")
 			raw("\$data modify storage ra:wires probe.dz set value \$(dz)")
@@ -86,7 +86,7 @@ object Source : PackPart {
 			raw("execute if data storage ra:wires found run return 0")
 			raw("execute unless data storage ra:wires probe.queue[0] run return 0")
 
-			raw("data modify storage ra:wires probe.cur set from storage ra:wires probe.queue[0]")
+			data(Storage.WIRES) { modify("probe.cur", Storage.WIRES, "probe.queue[0]") }
 			data(Storage.WIRES) { remove("probe.queue[0]") }
 
 			function(Source.probeTest, Storage.WIRES, "probe.cur")
@@ -98,10 +98,10 @@ object Source : PackPart {
 
 			raw("\$execute unless block ~ ~ ~ \$(match) run return 0")
 
-			raw("data modify storage ra:wires found set from storage ra:wires probe.cur")
-			raw("data modify storage ra:wires found.dx set from storage ra:wires probe.dx")
-			raw("data modify storage ra:wires found.dy set from storage ra:wires probe.dy")
-			raw("data modify storage ra:wires found.dz set from storage ra:wires probe.dz")
+			data(Storage.WIRES) { modify("found", Storage.WIRES, "probe.cur") }
+			data(Storage.WIRES) { modify("found.dx", Storage.WIRES, "probe.dx") }
+			data(Storage.WIRES) { modify("found.dy", Storage.WIRES, "probe.dy") }
+			data(Storage.WIRES) { modify("found.dz", Storage.WIRES, "probe.dz") }
 		}
 
 		pack.define(Source.scan) {

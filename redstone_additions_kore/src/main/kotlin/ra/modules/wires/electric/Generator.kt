@@ -3,6 +3,7 @@ package ra.modules.wires.electric
 import io.github.ayfri.kore.arguments.types.literals.literal
 import io.github.ayfri.kore.commands.data
 import io.github.ayfri.kore.commands.function
+import io.github.ayfri.kore.commands.scoreboard.Operation
 import io.github.ayfri.kore.commands.scoreboard.scoreboard
 import io.github.ayfri.kore.commands.tag
 import io.github.ayfri.kore.utils.nbt
@@ -56,7 +57,7 @@ object Generator : PackPart {
 			// the direct route, steam is the built one.
 
 			function(RaLib.Util.property, nbt { this["name"] = "generation_rate"; this["default"] = 60; this["min"] = 1 })
-			raw("scoreboard players operation #gen.rate ra.wires.tmp = #prop ra.temp")
+			scoreboard.players.operation(literal("#gen.rate"), "ra.wires.tmp", Operation.SET, literal("#prop"), "ra.temp")
 
 			// --- Solid fuel, out of the barrel ---
 			scoreboard.players.set(literal("#gen.burning"), "ra.wires.tmp", 0)

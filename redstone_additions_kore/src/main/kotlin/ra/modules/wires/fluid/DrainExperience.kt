@@ -4,6 +4,7 @@ import io.github.ayfri.kore.arguments.types.literals.literal
 import io.github.ayfri.kore.commands.data
 import io.github.ayfri.kore.commands.function
 import io.github.ayfri.kore.commands.returnValue
+import io.github.ayfri.kore.commands.scoreboard.Operation
 import io.github.ayfri.kore.commands.scoreboard.scoreboard
 import io.github.ayfri.kore.commands.tag
 import io.github.ayfri.kore.utils.nbt
@@ -62,9 +63,9 @@ object DrainExperience : PackPart {
 			scoreboard.players.set(literal("#dr.cap"), "ra.wires.tmp", 10)
 			raw("execute if score #dr.pts ra.wires.tmp > #dr.cap ra.wires.tmp run scoreboard players operation #dr.pts ra.wires.tmp = #dr.cap ra.wires.tmp")
 
-			raw("scoreboard players operation #dr.free ra.wires.tmp = #net_capacity ra.tr.tmp")
-			raw("scoreboard players operation #dr.free ra.wires.tmp -= #net_amount ra.tr.tmp")
-			raw("scoreboard players operation #dr.free ra.wires.tmp /= #dr.mul ra.wires.tmp")
+			scoreboard.players.operation(literal("#dr.free"), "ra.wires.tmp", Operation.SET, literal("#net_capacity"), "ra.tr.tmp")
+			scoreboard.players.operation(literal("#dr.free"), "ra.wires.tmp", Operation.REMOVE, literal("#net_amount"), "ra.tr.tmp")
+			scoreboard.players.operation(literal("#dr.free"), "ra.wires.tmp", Operation.DIVIDE, literal("#dr.mul"), "ra.wires.tmp")
 			raw("execute if score #dr.free ra.wires.tmp < #dr.pts ra.wires.tmp run scoreboard players operation #dr.pts ra.wires.tmp = #dr.free ra.wires.tmp")
 
 			raw("execute if score #dr.pts ra.wires.tmp matches ..0 run data modify entity @s data.status.drain_state set value \"network_full\"")
@@ -72,8 +73,8 @@ object DrainExperience : PackPart {
 
 			// Charge the grid for exactly the points about to be taken, so neither side can
 			// end up owing the other a fraction of a point.
-			raw("scoreboard players operation #dr.ml ra.wires.tmp = #dr.pts ra.wires.tmp")
-			raw("scoreboard players operation #dr.ml ra.wires.tmp *= #dr.mul ra.wires.tmp")
+			scoreboard.players.operation(literal("#dr.ml"), "ra.wires.tmp", Operation.SET, literal("#dr.pts"), "ra.wires.tmp")
+			scoreboard.players.operation(literal("#dr.ml"), "ra.wires.tmp", Operation.MULTIPLY, literal("#dr.mul"), "ra.wires.tmp")
 			raw("execute store result storage ra:wires xp.amount int 1 run scoreboard players get #dr.ml ra.wires.tmp")
 			function(DrainExperience.drainExpOffer, Storage.WIRES, "xp")
 
@@ -142,13 +143,13 @@ object DrainExperience : PackPart {
 			scoreboard.players.set(literal("#dr.pts"), "ra.wires.tmp", 10)
 
 			// Whole points only, and never more than the network holds.
-			raw("scoreboard players operation #dr.have ra.wires.tmp = #net_amount ra.tr.tmp")
-			raw("scoreboard players operation #dr.have ra.wires.tmp /= #dr.mul ra.wires.tmp")
+			scoreboard.players.operation(literal("#dr.have"), "ra.wires.tmp", Operation.SET, literal("#net_amount"), "ra.tr.tmp")
+			scoreboard.players.operation(literal("#dr.have"), "ra.wires.tmp", Operation.DIVIDE, literal("#dr.mul"), "ra.wires.tmp")
 			raw("execute if score #dr.have ra.wires.tmp < #dr.pts ra.wires.tmp run scoreboard players operation #dr.pts ra.wires.tmp = #dr.have ra.wires.tmp")
 			raw("execute if score #dr.pts ra.wires.tmp matches ..0 run return run data modify entity @s data.status.drain_state set value \"not_enough\"")
 
-			raw("scoreboard players operation #dr.ml ra.wires.tmp = #dr.pts ra.wires.tmp")
-			raw("scoreboard players operation #dr.ml ra.wires.tmp *= #dr.mul ra.wires.tmp")
+			scoreboard.players.operation(literal("#dr.ml"), "ra.wires.tmp", Operation.SET, literal("#dr.pts"), "ra.wires.tmp")
+			scoreboard.players.operation(literal("#dr.ml"), "ra.wires.tmp", Operation.MULTIPLY, literal("#dr.mul"), "ra.wires.tmp")
 
 			raw("execute store result storage ra:wires xp.amount int 1 run scoreboard players get #dr.ml ra.wires.tmp")
 			function(DrainExperience.drainExpPull, Storage.WIRES, "xp")

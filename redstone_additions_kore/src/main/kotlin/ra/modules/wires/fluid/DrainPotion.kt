@@ -3,6 +3,7 @@ package ra.modules.wires.fluid
 import io.github.ayfri.kore.arguments.types.literals.literal
 import io.github.ayfri.kore.commands.data
 import io.github.ayfri.kore.commands.function
+import io.github.ayfri.kore.commands.scoreboard.Operation
 import io.github.ayfri.kore.commands.scoreboard.scoreboard
 import ra.api.RaLib
 import ra.core.Ns
@@ -88,12 +89,12 @@ object DrainPotion : PackPart {
 			raw("execute unless data storage ra:wires eff.list[0] run return 0")
 
 			data(Storage.WIRES) { remove("one") }
-			raw("data modify storage ra:wires one.id set from storage ra:wires eff.list[0].id")
-			raw("data modify storage ra:wires one.dur set from storage ra:wires eff.list[0].duration")
-			raw("data modify storage ra:wires one.amp set from storage ra:wires eff.list[0].amplifier")
-			raw("data modify storage ra:wires one.id set from storage ra:wires eff.list[0].e")
-			raw("data modify storage ra:wires one.dur set from storage ra:wires eff.list[0].d")
-			raw("data modify storage ra:wires one.amp set from storage ra:wires eff.list[0].a")
+			data(Storage.WIRES) { modify("one.id", Storage.WIRES, "eff.list[0].id") }
+			data(Storage.WIRES) { modify("one.dur", Storage.WIRES, "eff.list[0].duration") }
+			data(Storage.WIRES) { modify("one.amp", Storage.WIRES, "eff.list[0].amplifier") }
+			data(Storage.WIRES) { modify("one.id", Storage.WIRES, "eff.list[0].e") }
+			data(Storage.WIRES) { modify("one.dur", Storage.WIRES, "eff.list[0].d") }
+			data(Storage.WIRES) { modify("one.amp", Storage.WIRES, "eff.list[0].a") }
 
 			// An amplifier of 0 is legal and common, and an absent one means the same thing,
 			// so it is seeded rather than guarded.
@@ -164,9 +165,9 @@ object DrainPotion : PackPart {
 			raw("execute store result score #pt.dur ra.wires.tmp run data get storage ra:wires one.dur")
 			raw("execute if score #pt.dur ra.wires.tmp matches ..0 run return 0")
 
-			raw("scoreboard players operation #pt.dur ra.wires.tmp *= #pt.vol ra.wires.tmp")
+			scoreboard.players.operation(literal("#pt.dur"), "ra.wires.tmp", Operation.MULTIPLY, literal("#pt.vol"), "ra.wires.tmp")
 			scoreboard.players.set(literal("#pt.bottle"), "ra.wires.tmp", 1000)
-			raw("scoreboard players operation #pt.dur ra.wires.tmp /= #pt.bottle ra.wires.tmp")
+			scoreboard.players.operation(literal("#pt.dur"), "ra.wires.tmp", Operation.DIVIDE, literal("#pt.bottle"), "ra.wires.tmp")
 
 			// A draw too small to earn a whole tick still earns one: the player paid volume
 			// for it, and an effect of zero ticks is a command error rather than a no-op.
@@ -176,8 +177,8 @@ object DrainPotion : PackPart {
 			// less than a second would vanish. Ticks are what the table and the scaling work
 			// in, so the conversion is done here and floored to one second.
 			scoreboard.players.set(literal("#pt.tps"), "ra.wires.tmp", 20)
-			raw("scoreboard players operation #pt.secs ra.wires.tmp = #pt.dur ra.wires.tmp")
-			raw("scoreboard players operation #pt.secs ra.wires.tmp /= #pt.tps ra.wires.tmp")
+			scoreboard.players.operation(literal("#pt.secs"), "ra.wires.tmp", Operation.SET, literal("#pt.dur"), "ra.wires.tmp")
+			scoreboard.players.operation(literal("#pt.secs"), "ra.wires.tmp", Operation.DIVIDE, literal("#pt.tps"), "ra.wires.tmp")
 			raw("execute if score #pt.secs ra.wires.tmp matches ..0 run scoreboard players set #pt.secs ra.wires.tmp 1")
 
 			raw("execute store result storage ra:wires one.secs int 1 run scoreboard players get #pt.secs ra.wires.tmp")

@@ -1,8 +1,10 @@
 package ra.modules.wires.blocks.electric_furnace
 
+import io.github.ayfri.kore.arguments.types.literals.literal
 import io.github.ayfri.kore.arguments.types.literals.self
 import io.github.ayfri.kore.commands.data
 import io.github.ayfri.kore.commands.function
+import io.github.ayfri.kore.commands.scoreboard.Operation
 import io.github.ayfri.kore.commands.scoreboard.scoreboard
 import io.github.ayfri.kore.commands.tag
 import ra.api.RaLib
@@ -219,7 +221,7 @@ object ElectricFurnace : PackPart {
 			line("execute store result score #ef.got ra.wires.tmp run function", EuApi.takeEu, "with storage ra:wires eu")
 			line("execute if score #ef.got ra.wires.tmp matches ..0 run return run function", ElectricFurnace.idleNopower)
 
-			raw("scoreboard players operation @s ra.cooldown = #ef.speed ra.wires.tmp")
+			scoreboard.players.operation(self(), "ra.cooldown", Operation.SET, literal("#ef.speed"), "ra.wires.tmp")
 			function(ElectricFurnaceSmelting.smeltOne)
 		}
 	}

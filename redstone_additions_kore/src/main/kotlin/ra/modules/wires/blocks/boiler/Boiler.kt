@@ -1,16 +1,13 @@
 package ra.modules.wires.blocks.boiler
 
-import io.github.ayfri.kore.commands.data
 import io.github.ayfri.kore.commands.function
-import io.github.ayfri.kore.utils.nbt
-import io.github.ayfri.kore.utils.set
 import ra.api.Goggles
 import ra.core.Ns
 import ra.core.PackPart
 import ra.core.Ra
-import ra.core.Storage
+import ra.core.block.dataLine
+import ra.core.block.gogglesHeader
 import ra.core.define
-import ra.core.raw
 import ra.core.ref
 
 object Boiler : PackPart {
@@ -27,14 +24,9 @@ object Boiler : PackPart {
 			// the same dispatch to answer the Data Handlers, which used to carry two
 			// separate hand-written name tables that had already drifted apart.
 
-			raw("data modify storage ra:temp block_name set value \"Boiler\"")
-			raw("execute if data storage ra:temp name_only run return 0")
+			gogglesHeader("Boiler", nameY = 1.0)
 
-			raw("data modify storage ra:temp billboard set value {show_name:1b,name_y:1.0}")
-			raw("data modify storage ra:temp billboard.name set from storage ra:temp block_name")
-			function(Goggles.Billboard.handleBillboard, Storage.TEMP, "billboard")
-
-			function(Goggles.Billboard.dataLine, nbt { this["path"] = "boiler_state"; this["label"] = "Boiler: "; this["color"] = "gold"; this["suffix"] = ""; this["y"] = 0.8 })
+			dataLine("boiler_state", "Boiler: ", "gold", y = 0.8)
 		}
 	}
 }

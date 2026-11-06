@@ -1,14 +1,17 @@
 package ra.modules.wires.blocks.liquid_filter
 
+import io.github.ayfri.kore.arguments.types.literals.self
 import io.github.ayfri.kore.commands.data
+import io.github.ayfri.kore.commands.execute.execute
 import io.github.ayfri.kore.commands.function
-import io.github.ayfri.kore.utils.nbt
-import io.github.ayfri.kore.utils.set
 import ra.api.Goggles
 import ra.core.Ns
 import ra.core.PackPart
 import ra.core.Ra
 import ra.core.Storage
+import ra.core.block.dataLine
+import ra.core.block.gogglesHeader
+import ra.core.block.textLine
 import ra.core.define
 import ra.core.raw
 import ra.core.ref
@@ -24,25 +27,20 @@ object LiquidFilter : PackPart {
 			// Goggles readout for this block, and the block's display name.
 			// Context: as the block's marker, at the block position.
 
-			raw("data modify storage ra:temp block_name set value \"Liquid Filter\"")
-			raw("execute if data storage ra:temp name_only run return 0")
-
-			raw("data modify storage ra:temp billboard set value {show_name:1b,name_y:1.0}")
-			raw("data modify storage ra:temp billboard.name set from storage ra:temp block_name")
-			function(Goggles.Billboard.handleBillboard, Storage.TEMP, "billboard")
+			gogglesHeader("Liquid Filter", nameY = 1.0)
 
 			// What it is set to let through, said in the medium's own name and colour rather
 			// than as the registry key -- ra_wires:media/label is what every other fluid
 			// block uses for this and it is why `water` reads as Water.
 			function(LiquidFilter.gogglesMedium)
 
-			function(Goggles.Billboard.dataLine, nbt { this["path"] = "moved"; this["label"] = "Moving: "; this["color"] = "aqua"; this["suffix"] = " mL"; this["y"] = 0.55 })
-			line("""execute if data entity @s data.status{bridge_state:"transferring"} run function""", Goggles.Billboard.textLine, """{label:"State: ",value:"Passing",color:"green",suffix:"",y:0.3}""")
-			line("""execute if data entity @s data.status{bridge_state:"level"} run function""", Goggles.Billboard.textLine, """{label:"State: ",value:"Balanced",color:"aqua",suffix:"",y:0.3}""")
-			line("""execute if data entity @s data.status{bridge_state:"unpowered"} run function""", Goggles.Billboard.textLine, """{label:"State: ",value:"No redstone",color:"gray",suffix:"",y:0.3}""")
-			line("""execute if data entity @s data.status{bridge_state:"needs_two_networks"} run function""", Goggles.Billboard.textLine, """{label:"State: ",value:"Needs a pipe on two sides",color:"red",suffix:"",y:0.3}""")
-			line("""execute if data entity @s data.status{bridge_state:"same_network"} run function""", Goggles.Billboard.textLine, """{label:"State: ",value:"Both sides one network",color:"red",suffix:"",y:0.3}""")
-			line("""execute if data entity @s data.status{bridge_state:"blocked"} run function""", Goggles.Billboard.textLine, """{label:"State: ",value:"Nothing of that medium to pass",color:"yellow",suffix:"",y:0.3}""")
+			dataLine("moved", "Moving: ", "aqua", y = 0.55, suffix = " mL")
+			execute { ifCondition { data(self(), "data.status{bridge_state:\"transferring\"}") }; run { textLine("State: ", "Passing", "green", y = 0.3) } }
+			execute { ifCondition { data(self(), "data.status{bridge_state:\"level\"}") }; run { textLine("State: ", "Balanced", "aqua", y = 0.3) } }
+			execute { ifCondition { data(self(), "data.status{bridge_state:\"unpowered\"}") }; run { textLine("State: ", "No redstone", "gray", y = 0.3) } }
+			execute { ifCondition { data(self(), "data.status{bridge_state:\"needs_two_networks\"}") }; run { textLine("State: ", "Needs a pipe on two sides", "red", y = 0.3) } }
+			execute { ifCondition { data(self(), "data.status{bridge_state:\"same_network\"}") }; run { textLine("State: ", "Both sides one network", "red", y = 0.3) } }
+			execute { ifCondition { data(self(), "data.status{bridge_state:\"blocked\"}") }; run { textLine("State: ", "Nothing of that medium to pass", "yellow", y = 0.3) } }
 		}
 
 		pack.define(LiquidFilter.gogglesMedium) {
@@ -52,7 +50,7 @@ object LiquidFilter : PackPart {
 			line("execute unless data entity @s data.properties.filter_medium run return run function", Goggles.Billboard.textLine, """{label:"Passing: ",value:"Anything",color:"gray",suffix:"",y:0.8}""")
 
 			raw("data modify storage ra:wires lq set value {}")
-			raw("data modify storage ra:wires lq.medium set from entity @s data.properties.filter_medium")
+			data(Storage.WIRES) { modify("lq.medium", self(), "data.properties.filter_medium") }
 			function(LiquidFilter.gogglesMediumRun, Storage.WIRES, "lq")
 		}
 

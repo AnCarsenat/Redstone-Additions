@@ -4,6 +4,7 @@ import io.github.ayfri.kore.arguments.types.literals.literal
 import io.github.ayfri.kore.commands.data
 import io.github.ayfri.kore.commands.function
 import io.github.ayfri.kore.commands.kill
+import io.github.ayfri.kore.commands.scoreboard.Operation
 import io.github.ayfri.kore.commands.scoreboard.scoreboard
 import io.github.ayfri.kore.commands.tag
 import io.github.ayfri.kore.utils.nbt
@@ -33,7 +34,7 @@ object DrainItems : PackPart {
 			raw("execute if score #dr.took ra.wires.tmp matches 1 run return 0")
 			raw("execute unless data storage ra:wires iq.queue[0] run return 0")
 
-			raw("data modify storage ra:wires iq.cur set from storage ra:wires iq.queue[0]")
+			data(Storage.WIRES) { modify("iq.cur", Storage.WIRES, "iq.queue[0]") }
 			data(Storage.WIRES) { remove("iq.queue[0]") }
 
 			function(DrainItems.drainItemTry, Storage.WIRES, "iq.cur")
@@ -60,8 +61,8 @@ object DrainItems : PackPart {
 			// Room for the whole container, or nothing happens.
 			function(RaLib.Transport.Net.read)
 			raw("\$scoreboard players set #dr.need ra.wires.tmp \$(volume)")
-			raw("scoreboard players operation #dr.free ra.wires.tmp = #net_capacity ra.tr.tmp")
-			raw("scoreboard players operation #dr.free ra.wires.tmp -= #net_amount ra.tr.tmp")
+			scoreboard.players.operation(literal("#dr.free"), "ra.wires.tmp", Operation.SET, literal("#net_capacity"), "ra.tr.tmp")
+			scoreboard.players.operation(literal("#dr.free"), "ra.wires.tmp", Operation.REMOVE, literal("#net_amount"), "ra.tr.tmp")
 			raw("execute if score #dr.free ra.wires.tmp < #dr.need ra.wires.tmp run data modify entity @s data.status.drain_state set value \"network_full\"")
 			raw("execute if score #dr.free ra.wires.tmp < #dr.need ra.wires.tmp run return run tag @a[tag=ra.wires.emptying] remove ra.wires.emptying")
 
@@ -125,7 +126,7 @@ object DrainItems : PackPart {
 			scoreboard.players.set(literal("#dr.took"), "ra.wires.tmp", 0)
 
 			data(Storage.WIRES) { remove("iq") }
-			raw("data modify storage ra:wires iq.queue set from storage ra:wires item_sources")
+			data(Storage.WIRES) { modify("iq.queue", Storage.WIRES, "item_sources") }
 			line("execute if entity @a[distance=..2.5,predicate=ra:is_sneaking,limit=1] run function", DrainItems.drainItemNext)
 
 			line("execute if score #dr.took ra.wires.tmp matches 0 run function", Drain.drainAbove)
@@ -150,7 +151,7 @@ object DrainItems : PackPart {
 			raw("execute unless entity @e[type=item,distance=..2.5] run return 0")
 
 			data(Storage.WIRES) { remove("iq") }
-			raw("data modify storage ra:wires iq.queue set from storage ra:wires item_sources")
+			data(Storage.WIRES) { modify("iq.queue", Storage.WIRES, "item_sources") }
 			function(DrainItems.drainLooseNext)
 		}
 
@@ -161,7 +162,7 @@ object DrainItems : PackPart {
 			raw("execute if score #dr.took ra.wires.tmp matches 1 run return 0")
 			raw("execute unless data storage ra:wires iq.queue[0] run return 0")
 
-			raw("data modify storage ra:wires iq.cur set from storage ra:wires iq.queue[0]")
+			data(Storage.WIRES) { modify("iq.cur", Storage.WIRES, "iq.queue[0]") }
 			data(Storage.WIRES) { remove("iq.queue[0]") }
 
 			function(DrainItems.drainLooseTry, Storage.WIRES, "iq.cur")
@@ -184,8 +185,8 @@ object DrainItems : PackPart {
 
 			function(RaLib.Transport.Net.read)
 			raw("\$scoreboard players set #dr.need ra.wires.tmp \$(volume)")
-			raw("scoreboard players operation #dr.free ra.wires.tmp = #net_capacity ra.tr.tmp")
-			raw("scoreboard players operation #dr.free ra.wires.tmp -= #net_amount ra.tr.tmp")
+			scoreboard.players.operation(literal("#dr.free"), "ra.wires.tmp", Operation.SET, literal("#net_capacity"), "ra.tr.tmp")
+			scoreboard.players.operation(literal("#dr.free"), "ra.wires.tmp", Operation.REMOVE, literal("#net_amount"), "ra.tr.tmp")
 			raw("execute if score #dr.free ra.wires.tmp < #dr.need ra.wires.tmp run data modify entity @s data.status.drain_state set value \"network_full\"")
 			raw("execute if score #dr.free ra.wires.tmp < #dr.need ra.wires.tmp run return run tag @e[type=item,tag=ra.wires.draining_item] remove ra.wires.draining_item")
 

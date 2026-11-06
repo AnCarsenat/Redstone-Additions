@@ -1,17 +1,18 @@
 package ra.modules.wires.blocks.electric_furnace
 
 import io.github.ayfri.kore.arguments.types.literals.literal
+import io.github.ayfri.kore.arguments.types.literals.self
 import io.github.ayfri.kore.commands.data
-import io.github.ayfri.kore.commands.function
 import io.github.ayfri.kore.commands.scoreboard.scoreboard
 import io.github.ayfri.kore.commands.tag
 import io.github.ayfri.kore.utils.nbt
-import io.github.ayfri.kore.utils.set
 import ra.api.Goggles
 import ra.core.Ns
 import ra.core.PackPart
 import ra.core.Ra
-import ra.core.Storage
+import ra.core.block.gogglesHeader
+import ra.core.block.stackReset
+import ra.core.block.stackedStatusLine
 import ra.core.define
 import ra.core.raw
 import ra.core.ref
@@ -80,18 +81,13 @@ object ElectricFurnaceSettings : PackPart {
 			// Goggles readout, and the block's display name.
 			// Context: as the block's marker, at the block position.
 
-			raw("data modify storage ra:temp block_name set value \"Electric Furnace\"")
-			raw("execute if data storage ra:temp name_only run return 0")
+			gogglesHeader("Electric Furnace", nameY = 1.0)
 
-			raw("data modify storage ra:temp billboard set value {show_name:1b,name_y:1.0}")
-			raw("data modify storage ra:temp billboard.name set from storage ra:temp block_name")
-			function(Goggles.Billboard.handleBillboard, Storage.TEMP, "billboard")
-
-			function(Goggles.Billboard.stackReset, nbt { this["top"] = 80; this["step"] = 22 })
-			function(Goggles.Billboard.stackedStatusLine, nbt { this["path"] = "state"; this["label"] = ""; this["color"] = "aqua"; this["suffix"] = "" })
-			function(Goggles.Billboard.stackedStatusLine, nbt { this["path"] = "mode"; this["label"] = "Mode: "; this["color"] = "gold"; this["suffix"] = "" })
-			function(Goggles.Billboard.stackedStatusLine, nbt { this["path"] = "draw"; this["label"] = "Draw: "; this["color"] = "yellow"; this["suffix"] = " EU/item" })
-			function(Goggles.Billboard.stackedStatusLine, nbt { this["path"] = "output"; this["label"] = "Out: "; this["color"] = "green"; this["suffix"] = "" })
+			stackReset(80, 22)
+			stackedStatusLine("state", "", "aqua")
+			stackedStatusLine("mode", "Mode: ", "gold")
+			stackedStatusLine("draw", "Draw: ", "yellow", suffix = " EU/item")
+			stackedStatusLine("output", "Out: ", "green")
 		}
 
 		pack.define(ElectricFurnaceSettings.initRecipes) {
@@ -159,7 +155,7 @@ object ElectricFurnaceSettings : PackPart {
 			raw("""execute if data entity @s data.properties{mode:"superpowered"} run scoreboard players set #ef.speed ra.wires.tmp 5""")
 			raw("""execute if data entity @s data.properties{mode:"superpowered"} run scoreboard players set #ef.cost ra.wires.tmp 300""")
 
-			raw("data modify entity @s data.status.mode set from entity @s data.properties.mode")
+			data(self()) { modify("data.status.mode", self(), "data.properties.mode") }
 			raw("execute store result entity @s data.status.draw int 1 run scoreboard players get #ef.cost ra.wires.tmp")
 		}
 
@@ -190,7 +186,7 @@ object ElectricFurnaceSettings : PackPart {
 			raw("""execute if data entity @s data.properties{output:"back"} if score @s ra.facing matches 4 run data modify storage ra:wires ef.out set value {dx:1,dy:0,dz:0}""")
 			raw("""execute if data entity @s data.properties{output:"back"} if score @s ra.facing matches 5 run data modify storage ra:wires ef.out set value {dx:-1,dy:0,dz:0}""")
 
-			raw("data modify entity @s data.status.output set from entity @s data.properties.output")
+			data(self()) { modify("data.status.output", self(), "data.properties.output") }
 		}
 	}
 }

@@ -1,16 +1,18 @@
 package ra.modules.wires.blocks.creative_eu
 
+import io.github.ayfri.kore.arguments.types.literals.literal
 import io.github.ayfri.kore.commands.data
 import io.github.ayfri.kore.commands.function
+import io.github.ayfri.kore.commands.scoreboard.Operation
 import io.github.ayfri.kore.commands.scoreboard.scoreboard
-import io.github.ayfri.kore.utils.nbt
-import io.github.ayfri.kore.utils.set
 import ra.api.Goggles
 import ra.api.RaLib
 import ra.core.Ns
 import ra.core.PackPart
 import ra.core.Ra
-import ra.core.Storage
+import ra.core.block.gogglesHeader
+import ra.core.block.stackReset
+import ra.core.block.stackedStatusLine
 import ra.core.define
 import ra.core.raw
 import ra.core.ref
@@ -34,16 +36,11 @@ object CreativeEu : PackPart {
 			// Goggles readout, and the block's display name.
 			// Context: as the block's marker, at the block position.
 
-			raw("data modify storage ra:temp block_name set value \"Creative EU Source\"")
-			raw("execute if data storage ra:temp name_only run return 0")
+			gogglesHeader("Creative EU Source", nameY = 1.0)
 
-			raw("data modify storage ra:temp billboard set value {show_name:1b,name_y:1.0}")
-			raw("data modify storage ra:temp billboard.name set from storage ra:temp block_name")
-			function(Goggles.Billboard.handleBillboard, Storage.TEMP, "billboard")
-
-			function(Goggles.Billboard.stackReset, nbt { this["top"] = 80; this["step"] = 22 })
-			function(Goggles.Billboard.stackedStatusLine, nbt { this["path"] = "state"; this["label"] = ""; this["color"] = "light_purple"; this["suffix"] = "" })
-			function(Goggles.Billboard.stackedStatusLine, nbt { this["path"] = "filled"; this["label"] = "Filled: "; this["color"] = "yellow"; this["suffix"] = " EU" })
+			stackReset(80, 22)
+			stackedStatusLine("state", "", "light_purple")
+			stackedStatusLine("filled", "Filled: ", "yellow", suffix = " EU")
 		}
 
 		pack.define(CreativeEu.tick) {
@@ -61,8 +58,8 @@ object CreativeEu : PackPart {
 			// here.
 
 			function(RaLib.Transport.Net.read)
-			raw("scoreboard players operation #cr.fill ra.wires.tmp = #net_capacity ra.tr.tmp")
-			raw("scoreboard players operation #cr.fill ra.wires.tmp -= #net_amount ra.tr.tmp")
+			scoreboard.players.operation(literal("#cr.fill"), "ra.wires.tmp", Operation.SET, literal("#net_capacity"), "ra.tr.tmp")
+			scoreboard.players.operation(literal("#cr.fill"), "ra.wires.tmp", Operation.REMOVE, literal("#net_amount"), "ra.tr.tmp")
 
 			raw("execute if score #cr.fill ra.wires.tmp matches ..0 run return run data modify entity @s data.status.state set value \"Grid full\"")
 

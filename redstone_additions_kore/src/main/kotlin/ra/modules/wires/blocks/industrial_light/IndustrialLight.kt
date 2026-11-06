@@ -4,6 +4,7 @@ import io.github.ayfri.kore.arguments.types.literals.literal
 import io.github.ayfri.kore.arguments.types.literals.self
 import io.github.ayfri.kore.commands.data
 import io.github.ayfri.kore.commands.function
+import io.github.ayfri.kore.commands.scoreboard.Operation
 import io.github.ayfri.kore.commands.scoreboard.scoreboard
 import io.github.ayfri.kore.commands.tag
 import io.github.ayfri.kore.utils.nbt
@@ -14,6 +15,8 @@ import ra.core.Ns
 import ra.core.PackPart
 import ra.core.Ra
 import ra.core.Storage
+import ra.core.block.dataLine
+import ra.core.block.gogglesHeader
 import ra.core.define
 import ra.core.raw
 import ra.core.ref
@@ -96,16 +99,11 @@ object IndustrialLight : PackPart {
 			// Goggles readout for this block, and the block's display name.
 			// Context: as the block's marker, at the block position.
 
-			raw("data modify storage ra:temp block_name set value \"Industrial Light\"")
-			raw("execute if data storage ra:temp name_only run return 0")
+			gogglesHeader("Industrial Light", nameY = 1.0)
 
-			raw("data modify storage ra:temp billboard set value {show_name:1b,name_y:1.0}")
-			raw("data modify storage ra:temp billboard.name set from storage ra:temp block_name")
-			function(Goggles.Billboard.handleBillboard, Storage.TEMP, "billboard")
-
-			function(Goggles.Billboard.dataLine, nbt { this["path"] = "beam"; this["label"] = "Beam: "; this["color"] = "yellow"; this["suffix"] = ""; this["y"] = 0.8 })
-			function(Goggles.Billboard.dataLine, nbt { this["path"] = "available_eu"; this["label"] = "EU: "; this["color"] = "aqua"; this["suffix"] = " EU"; this["y"] = 0.55 })
-			function(Goggles.Billboard.dataLine, nbt { this["path"] = "grid"; this["label"] = ""; this["color"] = "gray"; this["suffix"] = ""; this["y"] = 0.3 })
+			dataLine("beam", "Beam: ", "yellow", y = 0.8)
+			dataLine("available_eu", "EU: ", "aqua", y = 0.55, suffix = " EU")
+			dataLine("grid", "", "gray", y = 0.3)
 		}
 
 		pack.define(IndustrialLight.off) {
@@ -185,7 +183,7 @@ object IndustrialLight : PackPart {
 			// Pay for this tick before lighting it. A grid that cannot cover the draw leaves
 			// the beam dark rather than running it for free.
 			function(RaLib.Util.property, nbt { this["name"] = "eu_use"; this["default"] = 10; this["min"] = 0 })
-			raw("scoreboard players operation #il.use ra.wires.tmp = #prop ra.temp")
+			scoreboard.players.operation(literal("#il.use"), "ra.wires.tmp", Operation.SET, literal("#prop"), "ra.temp")
 
 			// A light configured to draw nothing is free, and must not be made to prove it
 			// can pay -- taking 0 always returns 0, which is the refusal value.

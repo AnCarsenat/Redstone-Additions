@@ -64,7 +64,7 @@ object Fuel : PackPart {
 			raw("execute if data entity @s data.data.burn run return 0")
 			raw("execute unless data storage ra:wires fq.scan[0] run return 0")
 
-			raw("data modify storage ra:wires fq.q.id set from storage ra:wires fq.scan[0].id")
+			data(Storage.WIRES) { modify("fq.q.id", Storage.WIRES, "fq.scan[0].id") }
 			raw("execute store result storage ra:wires fq.q.n int 1 run scoreboard players get #gen.i ra.wires.tmp")
 			function(Fuel.slotTry, Storage.WIRES, "fq.q")
 

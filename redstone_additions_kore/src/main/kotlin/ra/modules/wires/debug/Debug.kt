@@ -1,5 +1,6 @@
 package ra.modules.wires.debug
 
+import io.github.ayfri.kore.arguments.types.literals.self
 import io.github.ayfri.kore.commands.data
 import io.github.ayfri.kore.commands.function
 import io.github.ayfri.kore.commands.tag
@@ -46,8 +47,8 @@ object Debug : PackPart {
 			// connected, and that is the failure this is for.
 
 			raw("data modify storage ra:wires dbg set value {}")
-			raw("data modify storage ra:wires dbg.pos set from entity @s Pos")
-			raw("data modify storage ra:wires dbg.props set from entity @s data.properties")
+			data(Storage.WIRES) { modify("dbg.pos", self(), "Pos") }
+			data(Storage.WIRES) { modify("dbg.props", self(), "data.properties") }
 
 			function(RaLib.Transport.Net.read)
 
@@ -98,7 +99,7 @@ object Debug : PackPart {
 			// worth having, because the Breeder and the Liquid Drain still use the old one.
 
 			raw("data modify storage ra:wires dbg set value {}")
-			raw("data modify storage ra:wires dbg.pos set from entity @s Pos")
+			data(Storage.WIRES) { modify("dbg.pos", self(), "Pos") }
 			raw("""tellraw @s [{text:"— ",color:"gray"},{nbt:"dbg.pos",storage:"ra:wires",color:"white"}]""")
 
 			raw("""execute unless block ~ ~ ~ minecraft:barrel run tellraw @s [{text:"   NOT a barrel — placed by an older build. Break and replace it.",color:"red"}]""")
@@ -147,7 +148,7 @@ object Debug : PackPart {
 			// outside: enabled, redstone, EU it can actually take, and air to shine into.
 
 			raw("data modify storage ra:wires dbg set value {}")
-			raw("data modify storage ra:wires dbg.pos set from entity @s Pos")
+			data(Storage.WIRES) { modify("dbg.pos", self(), "Pos") }
 			raw("""tellraw @s [{text:"— ",color:"gray"},{nbt:"dbg.pos",storage:"ra:wires",color:"white"},{text:"  facing ",color:"gray"},{score:{name:"@s",objective:"ra.facing"},color:"aqua"}]""")
 
 			line("execute if function", RaLib.Redstone.any, """run tellraw @s [{text:"   redstone: powered",color:"green"}]""")

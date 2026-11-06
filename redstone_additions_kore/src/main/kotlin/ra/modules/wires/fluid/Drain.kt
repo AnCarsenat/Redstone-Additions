@@ -4,6 +4,7 @@ import io.github.ayfri.kore.arguments.types.literals.literal
 import io.github.ayfri.kore.arguments.types.literals.self
 import io.github.ayfri.kore.commands.data
 import io.github.ayfri.kore.commands.function
+import io.github.ayfri.kore.commands.scoreboard.Operation
 import io.github.ayfri.kore.commands.scoreboard.scoreboard
 import io.github.ayfri.kore.utils.nbt
 import io.github.ayfri.kore.utils.set
@@ -35,7 +36,7 @@ object Drain : PackPart {
 			raw("execute unless data block ~ ~1 ~ Items[0] run return 0")
 
 			data(Storage.WIRES) { remove("iq") }
-			raw("data modify storage ra:wires iq.queue set from storage ra:wires item_sources")
+			data(Storage.WIRES) { modify("iq.queue", Storage.WIRES, "item_sources") }
 			function(Drain.drainAboveNext)
 		}
 
@@ -46,7 +47,7 @@ object Drain : PackPart {
 			raw("execute if score #dr.took ra.wires.tmp matches 1 run return 0")
 			raw("execute unless data storage ra:wires iq.queue[0] run return 0")
 
-			raw("data modify storage ra:wires iq.cur set from storage ra:wires iq.queue[0]")
+			data(Storage.WIRES) { modify("iq.cur", Storage.WIRES, "iq.queue[0]") }
 			data(Storage.WIRES) { remove("iq.queue[0]") }
 
 			function(Drain.drainAboveTry, Storage.WIRES, "iq.cur")
@@ -69,8 +70,8 @@ object Drain : PackPart {
 
 			function(RaLib.Transport.Net.read)
 			raw("\$scoreboard players set #dr.need ra.wires.tmp \$(volume)")
-			raw("scoreboard players operation #dr.free ra.wires.tmp = #net_capacity ra.tr.tmp")
-			raw("scoreboard players operation #dr.free ra.wires.tmp -= #net_amount ra.tr.tmp")
+			scoreboard.players.operation(literal("#dr.free"), "ra.wires.tmp", Operation.SET, literal("#net_capacity"), "ra.tr.tmp")
+			scoreboard.players.operation(literal("#dr.free"), "ra.wires.tmp", Operation.REMOVE, literal("#net_amount"), "ra.tr.tmp")
 			raw("execute if score #dr.free ra.wires.tmp < #dr.need ra.wires.tmp run return run data modify entity @s data.status.drain_state set value \"network_full\"")
 
 			raw("\$execute store result score #dr.got ra.wires.tmp run function ${RaLib.Transport.Net.offer.asId()} {amount:\$(volume),medium:\"\$(medium)\"}")
@@ -128,7 +129,7 @@ object Drain : PackPart {
 			// takes effect the moment it is changed.
 			scoreboard.players.add(self(), "ra.cooldown", 1)
 			function(RaLib.Util.property, nbt { this["name"] = "cooldown"; this["default"] = 20; this["min"] = 1 })
-			raw("scoreboard players operation #dr.cooldown ra.wires.tmp = #prop ra.temp")
+			scoreboard.players.operation(literal("#dr.cooldown"), "ra.wires.tmp", Operation.SET, literal("#prop"), "ra.temp")
 			raw("execute if score @s ra.cooldown < #dr.cooldown ra.wires.tmp run return 0")
 			scoreboard.players.set(self(), "ra.cooldown", 0)
 
@@ -146,7 +147,7 @@ object Drain : PackPart {
 			raw("execute unless data storage ra:wires found run return 0")
 
 			function(Pump.pumpExtract, Storage.WIRES, "found")
-			raw("data modify entity @s data.status.drain_state set from entity @s data.status.pump_state")
+			data(self()) { modify("data.status.drain_state", self(), "data.status.pump_state") }
 			data(Storage.WIRES) { remove("found") }
 		}
 	}

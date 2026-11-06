@@ -39,7 +39,8 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v6
         with:
-          python-version: "3.12"
+          # beet 0.113+ requires Python 3.14.
+          python-version: "3.14"
 
       # A tag push carries the version in the ref, a manual run in the input.
       # Both go through the environment rather than being interpolated into the

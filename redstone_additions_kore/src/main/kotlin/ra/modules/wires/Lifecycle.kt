@@ -4,9 +4,11 @@ import io.github.ayfri.kore.commands.data
 import io.github.ayfri.kore.commands.function
 import io.github.ayfri.kore.commands.scoreboard.scoreboard
 import io.github.ayfri.kore.commands.tag
+import net.benwoodworth.knbt.NbtByte
 import ra.core.Ns
 import ra.core.PackPart
 import ra.core.Ra
+import ra.core.Storage
 import ra.core.define
 import ra.core.raw
 import ra.core.ref
@@ -41,14 +43,14 @@ object WiresLifecycle : PackPart {
 		pack.define(WiresLifecycle.load) {
 			// RA Wires - load entrypoint for merged fluid and electric networks
 
-			raw("scoreboard objectives add ra.wires.tmp dummy")
-			raw("scoreboard objectives add ra.wires.tmp2 dummy")
+			scoreboard.objectives.add("ra.wires.tmp")
+			scoreboard.objectives.add("ra.wires.tmp2")
 
 			function(Media.init)
 			function(Media.potions)
 			function(ElectricFurnaceSettings.initRecipes)
 
-			raw("data modify storage ra:wires initialized set value 1b")
+			data(Storage.WIRES) { modify("initialized", NbtByte(1)) }
 
 			function(Placement.registerAll)
 

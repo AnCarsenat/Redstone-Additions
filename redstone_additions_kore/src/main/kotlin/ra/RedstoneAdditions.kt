@@ -35,7 +35,16 @@ import ra.tools.ToolsPart
 
 /** The whole pack: which parts it is made of, in which order, and its metadata. */
 object RedstoneAdditions {
-	const val VERSION = "5.1.17"
+	/**
+	 * The pack version, e.g. `5.1.17`. Single source of truth: `version` in
+	 * `redstone_additions_kore/gradle.properties`, passed in by the Kore Gradle plugin as the
+	 * `ra.version` system property. A run without the plugin (the IDE's `MainKt`) reads the same
+	 * file from the working directory, so the version is never written down twice.
+	 */
+	val VERSION: String = System.getProperty("ra.version")
+		?: java.io.File("gradle.properties").takeIf { it.isFile }?.readLines()
+			?.firstNotNullOfOrNull { Regex("""^\s*version\s*=\s*(\S+)""").find(it)?.groupValues?.get(1) }
+		?: "dev"
 	const val PACK_NAME = "redstone_additions"
 
 	/**

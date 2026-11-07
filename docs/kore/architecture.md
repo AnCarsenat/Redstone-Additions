@@ -1,56 +1,57 @@
 # Architecture
 
-Kore is a generator: the Kotlin runs once on your machine and writes ordinary `.mcfunction`
-and JSON files. A Kotlin `val` is never a scoreboard, and a Kotlin `if` decides what is
-*written*, not what the game evaluates. Everything below is about organising the code that
-writes the pack; the runtime model is the one described in [How It Works](../how-it-works.md).
+Kore is a **generator**. The Kotlin runs once, on your machine or in CI, and writes ordinary
+`.mcfunction` and JSON files; nothing of it exists in game afterwards. A Kotlin `val` is never a
+scoreboard, and a Kotlin `if` decides what is **written** into a function, not what the game
+evaluates when it runs. The runtime model (markers, placement, tick loop) is unchanged from the
+beet pack and is described in [How It Works](../how-it-works.md). This page is about the code
+that writes it.
 
-## Project layout
-
-```
-redstone_additions_kore/
-├── build.gradle.kts             Kore plugin config (packName, mainClass, worlds)
-├── pack.png
-├── tools/compare_reference.py   diff against the beet build
-└── src/main/kotlin/ra/
-    ├── Main.kt                  entry point: build + generate
-    ├── RedstoneAdditions.kt     pack metadata, the list of parts, module order
-    ├── core/                    the foundation every part uses
-    │   ├── Ns.kt                every namespace
-    │   ├── Ids.kt               shared objectives (Obj), entity tags (Tag), storages (Storage)
-    │   ├── Fn.kt                ref / define / fn / raw / hook
-    │   ├── Ra.kt                PackPart, GameplayModule, the Ra registry
-    │   ├── PackValidator.kt     undefined-call check
-    │   └── block/               CustomBlock and the helpers built on it
-    ├── api/                     typed references to cross-namespace entry points
-    │   ├── LibApi.kt            RaLib (ra_lib), MultiblockLib (ra_lib_multiblock)
-    │   └── ToolsApi.kt          Goggles, Settings, ModulesApi
-    ├── lib/                     ra_lib
-    ├── multiblocklib/           ra_lib_multiblock
-    ├── settings/                ra_settings
-    ├── migrations/              ra_migrations
-    ├── advancements/            ra_advancements
-    ├── example/                 ra_example
-    ├── tools/                   ra:tools/* (wrench, goggles, data handlers, clipboard, multimeter)
-    ├── hub/                     ra:load, ra:tick, placement router, give bundles, uninstall
-    └── modules/<module>/        one package per gameplay namespace
+```mermaid
+flowchart LR
+    A[Main.kt] --> B[RedstoneAdditions.build]
+    B --> C[pack.mcmeta + icon]
+    B --> D["Ra registry"]
+    D --> E["parts, in order: register()"]
+    E --> F["afterAllParts actions"]
+    F --> G[PackValidator]
+    G --> H["generate() → build/kore/redstone_additions"]
 ```
 
-**Kotlin packages mirror generated paths.** `ra_gates:blocks/clock/process` is written by
-`ra/modules/gates/Clock.kt`; `ra_lib:redstone/detect` by a file under `ra/lib/redstone/`. A
-function seen in game maps back to a file without searching.
+## Entry point
 
-**No file over ~300 lines.** A block is one file. A library sub-system (`redstone`,
-`transport`, `input`…) is a folder of files, one per concern. When a file grows past the limit,
-split it along the generated paths it writes.
+`ra/Main.kt` builds the pack and writes it:
+
+```kotlin
+fun main() {
+	val output = System.getProperty("kore.output") ?: "out"
+	RedstoneAdditions.build(output).generate()
+}
+```
+
+`ra/RedstoneAdditions.kt` is the whole pack in one place:
+
+| Member | What it is |
+| --- | --- |
+| `VERSION` | The pack version, read from `gradle.properties` (see [Release and Versioning](release.md)) |
+| `PACK_NAME` | `"redstone_additions"`: the output folder name. Must equal `packName` in `build.gradle.kts`. |
+| `modules` | The gameplay modules, in load and tick order |
+| `parts` | Every part, in registration order |
+| `build(output)` | Creates the `DataPack`: output path, icon, JSON style, `pack.mcmeta`, then runs the parts, the deferred actions and the validator |
+
+`build` sets `prettyPrint = true` with two-space indents, so generated JSON is readable and
+diffs cleanly. `pack.mcmeta` leaves `min_format` / `max_format` at Kore's default, the format of
+the Minecraft version Kore targets (121 for 26.3); the description is the beet one, with the
+version filled in from `VERSION`.
 
 ## Parts
 
-The pack is a list of **parts**. Each implements `PackPart` and registers everything it owns
-in `register()`:
+Everything the pack contains is written by a **part**: an `object` implementing `PackPart`
+(`ra/core/Ra.kt`).
 
 ```kotlin
 interface PackPart {
+	/** Declares this part's functions and resources, and registers what it shares. */
 	fun Ra.register()
 }
 
@@ -62,76 +63,180 @@ interface GameplayModule : PackPart {
 }
 ```
 
-`RedstoneAdditions.parts` fixes the order:
+A gameplay module must define its `<ns>:load` and, unless it overrides `tick` to `null`, its
+`<ns>:tick`. The hub calls them; nothing else has to know they exist.
 
-| Order | Part | Namespace | Package |
-|---|---|---|---|
+`RedstoneAdditions.parts` fixes the registration order:
+
+| # | Part | Namespace | Package |
+| --- | --- | --- | --- |
 | 1 | `RaLibPart` | `ra_lib` | `ra.lib` |
 | 2 | `MultiblockLibPart` | `ra_lib_multiblock` | `ra.multiblocklib` |
 | 3 | `SettingsPart` | `ra_settings` | `ra.settings` |
 | 4 | `MigrationsPart` | `ra_migrations` | `ra.migrations` |
-| 5 | the gameplay modules, in `RedstoneAdditions.modules` order | `ra_interactive` … `ra_ender` | `ra.modules.*` |
+| 5 | `InteractiveModule` … `EnderModule` (the 12 entries of `modules`) | `ra_interactive` … `ra_ender` | `ra.modules.*` |
 | 6 | `ExamplePart` | `ra_example` | `ra.example` |
 | 7 | `AdvancementsPart` | `ra_advancements` | `ra.advancements` |
-| 8 | `ToolsPart` | `ra` (`tools/*`) | `ra.tools` |
-| 9 | `HubPart` | `ra` (load, tick, placement, items, uninstall) | `ra.hub` |
+| 8 | `ToolsPart` | `ra` (`tools/*`, tool recipes, predicates, advancements) | `ra.tools` |
+| 9 | `HubPart` | `ra` (load, tick, placement, items, uninstall, `settings`), `minecraft` | `ra.hub` |
 
-`RedstoneAdditions.modules` is also the order `ra:load` and `ra:tick` call module `load` /
-`tick` functions in, which is the order the beet `ra:load` / `ra:tick` hard-coded.
+`modules` is:
+
+```
+InteractiveModule, StorageModule, SensorsModule, GatesModule, WirelessModule, WiresModule,
+ChunkLoaderModule, MultiblockModule, EnchantingModule, InfiniteModule, JetpacksModule, EnderModule
+```
+
+That is the order the beet `ra:load` and `ra:tick` hard-coded, and `ra:load` / `ra:tick` still
+follow it. Change it only knowing that module ticks run in this sequence every game tick.
+
+**Why tools and hub come last.** `ToolsPart` builds `draw_block`, the wrench and read-only
+registries and the toggle dispatch from what modules registered; `HubPart` builds
+`#ra:placement_handlers`, the give bundles and the load / tick dispatch. Both read the registry,
+so everything must have registered before they run.
 
 ## The registry
 
-Parts never edit each other's files. When a part must tell the rest of the pack about
-something, it registers it on `Ra`, and the part that owns the shared function builds it from
-the registry. `ToolsPart` and `HubPart` run last for exactly that reason.
+`Ra` (`ra/core/Ra.kt`) is passed to every part's `register()`. It holds the `DataPack`
+(`ra.pack`) and the lists parts use to tell the rest of the pack about themselves. **Parts never
+edit each other's files.** A part registers; the part that owns the shared output builds it.
 
-| Registry | Registered by | Built into |
-|---|---|---|
-| `blocks` | `ra.block(...)` | `ra:give_all_items` bundles (via the block's module), docs |
-| function tag `#ra:placement_handlers` | `ra.block(...)` (or `pack.hook`) | the placement router |
-| `goggles` | `ra.block(...)` | `ra:tools/goggles/draw_block`, `ra:tools/block_name` |
-| `multiblockGoggles` | multiblock types | `ra:tools/goggles/draw_multiblock` |
-| `wrenchCycles` | `ra.wrenchCycle(type, rows…)` | `storage ra:wrench cyclables` |
-| `wrenchToggles` | `ra.wrenchToggles += …` | wrench plain-RMB dispatch |
-| `readonly` | `ra.readonly(type, props…)` | `storage ra:dh readonly` |
-| `dataHandlerProperties` | `ra.dataHandlerProperties(…)` | `storage ra:dh registry` |
-| `bundles` | each module's `GiveBundle` | `ra:items/bundles/*` |
+| Field / call | Holds | Registered by | Built into, by |
+| --- | --- | --- | --- |
+| `blocks` | every `CustomBlock` | `ra.block(b)` | (kept for reference; bundles use their own lists) |
+| `placementHandlers` | `handle_placement` functions | `ra.block(b)` (`placement = true`), or `placementHandlers += fn` for a shared handler | `#ra:placement_handlers`, by Hub |
+| `goggles` | `TagRoute(markerTag, readout)` | `ra.block(b)` (`goggles = true`), or `goggles += …` | `ra:tools/goggles/draw_block`, by Tools |
+| `multiblockGoggles` | `TagRoute(multiblockTag, readout)` | `multiblockGoggles += …` | `ra:tools/goggles/draw_multiblock`, by Tools |
+| `wrenchCycles` | `type → [WrenchCycle(label, prop, fn)]` | `ra.wrenchCycle(type, rows…)` | `storage ra:wrench cyclables` in `ra:tools/wrench/init_registry`, by Tools |
+| `wrenchToggles` | `TagRoute(markerTag, toggle)` | `wrenchToggles += …` | the plain-RMB dispatch in `ra:tools/wrench/found_block`, by Tools |
+| `readonly` | `type → {props}` | `ra.readonly(type, props…)` | `storage ra:dh readonly` in `ra:tools/readonly/init_registry`, by Tools |
+| `dataHandlerProperties` | property names | `ra.dataHandlerProperties(…)` (append only) | `storage ra:dh registry` in `ra:tools/data_handler/init_registry`, by Tools |
+| `bundles` | `GiveBundle(id, title, lore, ns, items)` | `bundles += GiveBundle(…)` | `ra:items/bundles/give_<id>_bundle` and `give_all`, by Hub |
 
-Function tags (`#ra_lib_multiblock:validate`, `#ra_enchanting:recipes`…) do not need a
-registry: `pack.hook(ns, tag, fn)` appends to the tag file, so the part that owns a hook
-function registers it itself.
+Order is preserved everywhere, because several of these become functions whose order is
+observable: `#ra:placement_handlers` runs handlers in list order, and the Data Handler's buttons
+carry `100 + index`. The two maps the tools write as storage (`wrenchCycles`, `readonly`) are
+sorted by key, as the hand-written beet maps were.
+
+[Tools and Registries](tools-and-registries.md) covers each tool's side in detail.
+
+### Function tags: `pack.hook`
+
+Function tags need no registry. `pack.hook(ns, tag, fn)` (`ra/core/Fn.kt`) appends `fn` to
+`data/<ns>/tags/function/<tag>.json`; every part appending to the same tag writes into the same
+file, in registration order. The part that **owns the hooked function** registers it:
+
+```kotlin
+// ra/modules/multiblock/blastforge/BlastForge.kt
+pack.hook(Ns.LIB_MULTIBLOCK, MultiblockLib.Hooks.VALIDATE, validate)
+pack.hook(Ns.LIB_MULTIBLOCK, MultiblockLib.Hooks.TICK, tickDispatch)
+```
+
+| Tag | Owner (declares it) | Who appends |
+| --- | --- | --- |
+| `#minecraft:load` | — | Hub (`ra:load`) |
+| `#ra:placement_handlers` | Hub | built from `placementHandlers` |
+| `#ra_lib_multiblock:load` / `tick` / `validate` / `setup_type` / `check_structure` / `on_break` | Multiblock library (empty tags declared up front) | `ra_multiblock` structures; the library's own `generic/*` last |
+| `#ra_enchanting:recipes` | Enchanting | `ra_infinite`, `ra_jetpacks`, `ra_interactive` (each its own `enchant_recipes`) |
+
+### After all parts: `afterAllParts`
+
+Some entries must come **after** everything other parts append. `ra.afterAllParts { … }` queues
+an action that `RedstoneAdditions.build` runs once the last part has registered, in the order
+queued. The multiblock library uses it to put its `generic/check_structure`, `generic/setup_type`
+and `generic/validate` at the end of their tags, after every structure's own hook, as the beet tags
+listed them: the generic versions only cover types nobody else handled.
 
 ## Function references
 
-A function is named once, as a value, and that value is used both to define it and to call
-it:
+A function is named **once**, as a `FunctionArgument`, and that value is used for both its
+definition and every call (`ra/core/Fn.kt`):
+
+| Helper | Does |
+| --- | --- |
+| `ref(Ns.X, "a/b")` | A reference to `ra_x:a/b`. Creates nothing. |
+| `pack.define(ref) { … }` | Writes the body of `ref`. Returns `ref`. |
+| `pack.fn(Ns.X, "a/b") { … }` | `ref` + `define` in one, for functions only this file calls. |
+| `Function.fn(Ns.X, "a/b") { … }` | The same, while building another function. |
+| `block.fn("process")` | `ns:blocks/<dir>/process` of a `CustomBlock`. |
+| `pack.hook(ns, tag, fn)` | Appends `fn` to `#ns:tag`. |
 
 ```kotlin
-// api/LibApi.kt -- the contract
+// ra/api/LibApi.kt: the contract
 object RaLib { object Redstone { val detect = ref(Ns.LIB, "redstone/detect") } }
 
-// lib/redstone/Detect.kt -- the definition
+// ra/lib/...: the definition
 pack.define(RaLib.Redstone.detect) { /* ... */ }
 
-// modules/gates/UniGate.kt -- a caller
+// any caller
 function(RaLib.Redstone.detect)
+function(RaLib.Util.property, nbt { this["name"] = "delay"; this["default"] = 20; this["min"] = 1 })
 ```
 
-Entry points other namespaces call live in `ra/api/`. Functions only their own part calls are
-declared next to their definition (`val process = block.fn("process")`). Either way, never
-write a call as a string: `PackValidator` checks string calls too, but a typo in a value is a
-compile error, not a build-time one.
+**Where a reference lives:**
+
+| Called from | Declared in |
+| --- | --- |
+| Other namespaces, part of a library's public surface | `ra/api/LibApi.kt` (`RaLib`, `MultiblockLib`) or `ra/api/ToolsApi.kt` (`Goggles`, `Settings`, `ModulesApi`) |
+| Only the owning part | Next to its definition (`val process = block.fn("process")`, `GogglesRefs`, `WrenchRegistry`) |
+| Another part, but not worth a public API | That part keeps a private `ref` to the same path (e.g. `ra.hub.ToolsRefs`). The owner must define it at exactly that path; `PackValidator` catches it if not. |
 
 ## Lifecycle
 
-```
-minecraft:load ─► ra:load ─► ra_lib:init, module loads (in order), ra_lib_multiblock:init,
-                             settings, registries, ra_migrations:run, schedule ra:tick
-ra:tick (rescheduled every tick) ─► tool tag cleanup, ra_settings:tick, ra_lib:transport/tick,
-                             ra_lib:input/tick, data handler, placement router, module ticks,
-                             goggles
-```
+### `ra:load`
 
-`ra:tick` reschedules itself rather than sitting in `#minecraft:tick`, as in the beet version.
-The order inside `ra:tick` is load-bearing (input sessions must be scanned before the clicks
-that open them are handled); [How It Works](../how-it-works.md#2-tick-orchestration) explains why.
+Hooked into `#minecraft:load` by Hub (`ra/hub/Load.kt`). In order:
+
+1. Scoreboards for the tools (`ra.edit_type`, `ra.dh.action`, `ra.dh.pending`, `ra.hold.wrench`,
+   `ra.hold.dh`, `ra.clip.id`).
+2. `data merge storage ra:temp {…}`: the shared scratch roots.
+3. `ra:tools/goggles/billboard/init_offsets`.
+4. `ra_lib:init`.
+5. `ra_lib:redstone/clear` as every custom-block marker (one-off sweep of pre-5.1.16 tags).
+6. Every module's `load`, in `modules` order.
+7. `ra_lib_multiblock:init`.
+8. Wrench menu objectives (`ra.wrench`, `ra.wr.x/y/z`).
+9. `ra_settings:init`: after the modules, which register their settings pages.
+10. `ra:tools/wrench/init_registry`, `ra:tools/readonly/init_registry`,
+    `ra:tools/data_handler/init_registry`: configuration, rewritten on every load.
+11. `ra_migrations:run`.
+12. `schedule function ra:tick 1t replace`.
+13. The disabled-blocks notice, then (if the `welcome` setting is on) the welcome messages.
+
+### `ra:tick`
+
+Rescheduled every tick by itself, not run from `#minecraft:tick` (`ra/hub/Tick.kt`). In order:
+
+1. Tool "active" tag cleanup (`cdh`, `dh`, `wrench`, `clip`, `meter`, `remote`).
+2. `ra_settings:tick`: per-player defaults, menu clicks. Early, because module ticks filter
+   sounds and particles on those scores.
+3. `ra_lib:transport/tick`: debounced network rebuild.
+4. `ra_lib:input/tick`: input sessions.
+5. `ra:tools/data_handler/tick`.
+6. `ra_settings:input_tick`: **after** `input/tick`, so a form finished this tick is seen this tick.
+7. `ra:placement/detect_bats`: the placement router.
+8. Re-centre every custom-block marker on its block.
+9. Every module's `tick`, in `modules` order.
+10. `ra:tools/goggles/tick`.
+11. `schedule function ra:tick 1t replace`.
+12. Tool menu triggers: hold timers, `enable` / `reset` of `ra.wrench`, `ra.dh.action`,
+    `ra.edit_type`, then `ra:tools/wrench/menu_action` for players who clicked.
+
+The order is load-bearing; [How It Works](../how-it-works.md#2-tick-orchestration) explains the
+constraints. When you add a step, put it where the beet `ra:tick` would have, and write down why
+in a comment.
+
+## Shared identifiers
+
+`ra/core/Ns.kt` lists every namespace. `ra/core/Ids.kt` holds identifiers more than one part
+uses:
+
+| Object | Holds | Examples |
+| --- | --- | --- |
+| `Obj` | scoreboard objectives | `TEMP` = `ra.temp`, `FACING`, `POWER*`, `TR_*`, `USER_SOUND` = `ra.u.snd` |
+| `Tag` | entity tags | `RA`, `CUSTOM_BLOCK`, `NEW`, `BROKEN`, `SPAWNED`, `customBlock(id)`, `place(id)` |
+| `Storage` | `storage ra:<name>` arguments | `TEMP`, `SETTINGS`, `TRANSPORT`, `MULTIBLOCK`, `WRENCH`, `DH` |
+
+An identifier used by one module only stays in that module (`ra.jp.*` in `ra.modules.jetpacks`,
+`ra.clock_on` in `Clock.kt`). Every one of these strings is written into saved worlds; renaming
+one orphans existing blocks.

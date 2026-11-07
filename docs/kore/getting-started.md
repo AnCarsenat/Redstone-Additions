@@ -2,8 +2,20 @@
 
 ## Prerequisites
 
-- **JDK 25.** The Gradle toolchain asks for 25 and the Kore plugin uses its AOT cache.
-- Nothing else: the Gradle wrapper downloads Gradle, Kotlin and Kore.
+| Tool | Version | Why |
+| --- | --- | --- |
+| JDK | **25** | `build.gradle.kts` sets `jvmToolchain(25)`, and the Kore plugin's AOT cache needs 25+. |
+| Python | 3.10+ | Only for `tools/compare_reference.py`. Not needed to build. |
+
+Nothing else needs installing. The Gradle wrapper (`gradlew`, `gradle/wrapper/`) downloads
+Gradle, and Gradle downloads Kotlin, Kore and the Kore Gradle plugin, at the versions pinned in
+`gradle/libs.versions.toml`:
+
+```toml
+[versions]
+kore = "2.28.0-26.3"   # Kore 2.28.0, targeting Minecraft 26.3
+kotlin = "2.4.20"
+```
 
 ## Building
 
@@ -12,20 +24,41 @@ cd redstone_additions_kore
 ./gradlew koreBuild
 ```
 
-The pack is written to `build/kore/redstone_additions/`. Generation also runs
-`PackValidator`, which fails the build on a call to a function the pack never defines.
+| Output | Where |
+| --- | --- |
+| The pack | `build/kore/redstone_additions/` (`pack.mcmeta`, `pack.png`, `data/`) |
+| AOT cache | `build/kore-aot/` (speeds up later generations; safe to delete) |
 
-While only part of the pack is ported, other parts are missing and their calls cannot resolve.
-Turn the failure into a printed list with:
+`koreBuild` compiles the Kotlin, runs `ra.MainKt` with the output directory in the `kore.output`
+system property, and wipes the output folder first (`cleanBeforeBuild`), so a function removed
+from the Kotlin also disappears from the pack.
+
+Gradle skips `koreBuild` when nothing it tracks changed. To force a fresh generation, for
+example to see the validator's output again:
 
 ```bash
-./gradlew koreBuild -Pra.strict=false
+./gradlew koreBuild --rerun
 ```
 
-## Playing it
+### Strict mode
 
-List the worlds the plugin can see, then name the ones to install into in
-`build.gradle.kts`:
+Every generation ends with `PackValidator` (`ra/core/PackValidator.kt`). It reads every line of
+every generated function and checks that each `function ns:path` and `function #ns:path` into
+one of the pack's namespaces points at a function or function tag the pack defines. Calls whose
+path contains a macro (`give_$(kit)_kit`) are skipped, since only the game can resolve them.
+
+| Mode | Command | On an unresolved call |
+| --- | --- | --- |
+| strict (default) | `./gradlew koreBuild` | generation fails, listing every caller and missing target |
+| report | `./gradlew koreBuild -Pra.strict=false` | prints `[ra] N unresolved call(s), strict mode off:` and the list, then writes the pack |
+
+`-Pra.strict` reaches the generator as the `ra.strict` system property (see `build.gradle.kts`).
+Report mode exists only so a partly ported tree can be generated and compared. A release is
+always built strict.
+
+## Putting it in a world
+
+List the worlds the plugin can find, then name the ones to install into in `build.gradle.kts`:
 
 ```bash
 ./gradlew koreWorlds
@@ -37,38 +70,73 @@ kore {
 }
 ```
 
-```bash
-./gradlew koreRun                # build + copy into every listed world
-./gradlew koreRun --continuous   # rebuild and recopy on every save
-```
+| Task | Does |
+| --- | --- |
+| `./gradlew koreRun` | `koreBuild`, then copies the pack into each listed world's `datapacks/`, then sends `/reload` over RCON if configured |
+| `./gradlew koreRun --continuous` | the same on every source save |
+| `./gradlew koreClean` | deletes the output and removes the pack from every world it was copied to |
 
-Then `/reload` in game. A dedicated server with RCON enabled reloads by itself; see the Kore
-[Gradle plugin](https://kore.ayfri.com/docs/guides/gradle-plugin) page for the `rcon { }` block.
+In single player, type `/reload` after `koreRun`. A dedicated server with RCON enabled reloads
+on its own; the `RCON_PASSWORD` environment variable is read by default. See the Kore
+[Gradle plugin](https://kore.ayfri.com/docs/guides/gradle-plugin) page for the `rcon { }` block,
+custom Minecraft directories and symlink mode.
 
-!!! warning "Remove the beet pack first"
-    Both packs use the same namespaces. Loading the beet build and the Kore build in one world
-    runs every function twice.
+!!! warning "Never load the beet build and the Kore build together"
+    Both write the same namespaces. With both enabled every function exists twice, the pack
+    that loads last wins file by file, and `ra:tick` is scheduled by both: you get a mix of two
+    versions running at once. Remove `redstone_additions_data_pack` from the world first.
 
 ## Comparing against the beet build
 
-`tools/compare_reference.py` diffs the Kore output against the committed beet build
-(`redstone_additions/build/redstone_additions_data_pack/`, with its 26.3 overlays applied):
+`tools/compare_reference.py` diffs the Kore output against the committed beet build. The
+reference is what 26.3 actually loaded:
+`redstone_additions/build/redstone_additions_data_pack/data/`, with `overlay_102/` and then
+`overlay_121/` laid over it file by file.
 
 ```bash
 ./gradlew koreBuild -Pra.strict=false
-python3 tools/compare_reference.py ra_gates          # summary for one namespace
-python3 tools/compare_reference.py ra_gates --diff   # with a diff per mismatch
+python3 tools/compare_reference.py ra_gates            # summary for one namespace
+python3 tools/compare_reference.py ra_gates ra_sensors # several
+python3 tools/compare_reference.py ra_gates --diff     # plus a unified diff per mismatch
 python3 tools/compare_reference.py --all
+python3 tools/compare_reference.py ra_gates --strict   # no normalisation (see below)
 ```
 
-It ignores differences that never change behaviour: comments and blank lines, selector
-argument order, `minecraft:` prefixes, optional SNBT quotes, the `d` suffix on doubles, and
-Kore's `generated_scopes/` indirection (a call to a generated scope is expanded back into the
-lines it holds). `--strict` turns all of that off.
+Output:
 
-See the [Porting Guide](porting.md#reading-the-comparison) for how to read the result.
+```
+reference files: 56  kore files: 61
+identical: 49  different: 7  missing: 0  extra: 5
+  EXTRA    ra_gates/function/blocks/clock/on_break.mcfunction
+  DIFFERS  ra_gates/function/blocks/clock/tick.mcfunction
+```
+
+It exits 0 only when nothing is missing, extra or different.
+
+### What it ignores
+
+The comparison removes differences that never change what the game does. `--strict` turns all
+of them off except the first two.
+
+| Normalisation | Example |
+| --- | --- |
+| Comment and blank lines are dropped | `# Tick all clocks` |
+| Runs of whitespace collapse to one space | |
+| `minecraft:` is removed everywhere (commands, JSON values, JSON keys) | `minecraft:iron_block` = `iron_block` |
+| Selector arguments are sorted | `@e[type=marker,tag=x]` = `@e[tag=x,type=marker]` |
+| Quotes around a bare SNBT word are removed | `{block_tag:"clock"}` = `{block_tag:clock}` |
+| The `d` suffix on a double is removed | `y:0.45d` = `y:0.45` |
+| SNBT booleans become bytes | `italic:false` = `italic:0b` |
+| A one-element list of ids equals the bare id (JSON) | `"items": ["x"]` = `"items": "x"` |
+| `"replace": false` on tags and `"frame": "task"` on advancements are dropped (JSON) | the game's own defaults |
+| A call to a `generated_scopes/` function is expanded back into its lines, each prefixed with the calling `execute … run` | Kore moving a multi-command `run { }` into its own function |
+
+What is left after that is a real difference. The [Porting Guide](porting.md#reading-the-comparison)
+explains how to read it.
 
 ## IDE
 
-Open `redstone_additions_kore/` in IntelliJ IDEA. The `ra.MainKt` run configuration generates
-into `out/` (the plugin's `kore.output` property is absent there, so `Main.kt` falls back to it).
+Open `redstone_additions_kore/` in IntelliJ IDEA and let it import the Gradle project. Running
+`ra.MainKt` directly works: without the plugin's `kore.output` property, `Main.kt` writes to
+`out/` in the working directory, and `RedstoneAdditions.VERSION` reads `version` from
+`gradle.properties` in that same directory (see [Release and Versioning](release.md)).

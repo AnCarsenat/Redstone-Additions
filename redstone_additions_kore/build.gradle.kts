@@ -24,6 +24,10 @@ kore {
 	// `gradlew koreWorlds` lists what the plugin can see.
 	worlds = listOf()
 
-	// `-Pra.strict=false` lets a partly ported tree generate; see RedstoneAdditions.strict.
-	systemProperties = mapOf("ra.strict" to (findProperty("ra.strict")?.toString() ?: "true"))
+	systemProperties = mapOf(
+		// `-Pra.strict=false` lets a partly ported tree generate; see RedstoneAdditions.strict.
+		"ra.strict" to (findProperty("ra.strict")?.toString() ?: "true"),
+		// The pack version, from `version` in gradle.properties; read by RedstoneAdditions.VERSION.
+		"ra.version" to project.version.toString(),
+	)
 }

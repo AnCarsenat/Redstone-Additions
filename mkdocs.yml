@@ -68,8 +68,14 @@ nav:
       - Overview: kore/index.md
       - Getting Started: kore/getting-started.md
       - Architecture: kore/architecture.md
+      - Project Reference: kore/project-reference.md
       - Custom Blocks: kore/custom-blocks.md
+      - Tools and Registries: kore/tools-and-registries.md
+      - Settings: kore/settings.md
+      - Multiblocks: kore/multiblocks.md
       - Conventions: kore/conventions.md
       - Porting Guide: kore/porting.md
+      - Release and Versioning: kore/release.md
+      - Kore Gotchas: kore/gotchas.md
   - Project:
       - Changelog: changelog.md

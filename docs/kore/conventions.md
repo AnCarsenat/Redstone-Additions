@@ -1,69 +1,111 @@
 # Conventions
 
+Rules for every Kotlin file in `redstone_additions_kore/`. They exist for the same reason the old
+[Contributing Guidelines](../contributing-guidelines.md) did: most data pack bugs are one
+identifier spelled two ways, or one rule applied in nine places but forgotten in the tenth.
+
 ## Structure
 
-- **Kotlin path mirrors generated path.** `ns:blocks/<id>/*` is written by one file,
-  `ra/modules/<module>/<Block>.kt`; a library folder `ra_lib:redstone/*` by files under
-  `ra/lib/redstone/`.
-- **Files stay under ~300 lines.** Split along generated paths, never by "misc".
-- **`DataPack` extensions register, `Function` extensions emit.** `fun Ra.registerClock()`
-  declares functions and resources; `private fun Function.process()` writes commands into the
-  function being built.
-- **Inline by default, extract a real function when something must reference it** (a tag,
-  `schedule`, a macro call, another file, or the beet version had it as a function players or
-  other packs may call). Inlined Kotlin helpers cost nothing at runtime.
+- **The Kotlin path mirrors the generated path.** `ns:blocks/<id>/*` is written by one file,
+  `ra/modules/<module>/<Block>.kt` (or a `blocks/<block>/` folder when a block needs several
+  files, as in Wires). `ra_lib:redstone/*` is written by files under `ra/lib/redstone/`. A
+  function seen in game must map back to a file without searching.
+- **Files stay under about 300 lines.** Split along generated paths (`ElectricFurnace.kt`,
+  `ElectricFurnaceSmelting.kt`, `ElectricFurnaceSettings.kt`), never into a "misc" file.
+- **Registration is separate from emission.** Extensions on `Ra` (`fun Ra.registerClock()`)
+  declare functions and resources and talk to the registry. `private fun Function.process()`
+  writes commands into the function being built.
+- **Inline by default; make a real function only when something must reference it**: a tag,
+  `schedule`, a macro call, another file, a chat button, or because the beet pack had it as a
+  function players or other packs may call. A Kotlin helper that writes commands into its caller
+  costs nothing at runtime.
+- **One object per block, one object per module.** `object Clock { val block = CustomBlock(...) }`;
+  `object GatesModule : GameplayModule`. Module objects hold order and wiring, not logic.
 
-## Names and identifiers
+## Identifiers
 
-- Namespaces come from `Ns`. Shared objectives, tags and storages from `Obj`, `Tag`, `Storage`
-  in `core/Ids.kt`; module-private ones as `private const val` in the module's own file.
+- Namespaces come from `Ns`. Never write `"ra_gates"` as a string.
+- Shared objectives, tags and storages come from `Obj`, `Tag`, `Storage` (`core/Ids.kt`).
+  An identifier used by one module is a `private const val` in that module (`ra.clock_on` in
+  `Clock.kt`, the `ra.jp.*` set in `jetpacks/Jp.kt`, settings-only objectives in
+  `settings/SettingsObjectives.kt`).
 - Every identifier written into a world (tag, objective, storage path, `data.*` key, item
-  component) is a compatibility contract. Keep the beet spelling exactly.
-- Functions are values (`ref`, `block.fn`, `api` objects). **Never** write a call to one of the
-  pack's own functions as a string inside `raw()`; use `function(ref)` /
-  `function(ref, nbt { … })`. Kotlin catches the typo; `PackValidator` catches the missing
-  definition.
+  component, function path a player may type) is a compatibility contract. Keep the beet
+  spelling exactly; a rename needs a migration in `ra.migrations`.
+- Version-step names in `ra_migrations` (`5.1.7-to-5.1.8`) are identifiers, not the pack version.
+  A version bump never touches them ([Release and Versioning](release.md)).
 
-## Commands: typed DSL first
+## Function references
 
-Use the Kore builders — `execute { }`, `scoreboard.players.*`, `tag(...)`, `data(...) { }`,
-`function(...)`, `summon`, `kill`, `fill`, `give`, `tellraw` with `textComponent` — wherever they
-express the command at least as clearly as vanilla.
+- A function is a value: `ref(...)`, `block.fn(...)`, or an object in `ra/api/`.
+- **Never** spell a call to one of the pack's own functions inside a string. Use
+  `function(ref)`, `function(ref, nbt { … })`, `function(ref, Storage.X, "path")`. Where the
+  surrounding command must stay vanilla text, take the function as a value anyway:
 
-`raw("…")` is allowed for:
+  | Helper | Package | Writes |
+  | --- | --- | --- |
+  | `executeRun(chain, fn, args)`, `executeReturnRun`, `callWith` | `ra.tools` (`ToolsDsl.kt`) | `execute <chain> run function <fn>` |
+  | `line(text, fn, rest…)` | `ra.modules.wires.common` (`Line.kt`) | any command with typed function arguments |
+
+  In a macro line, build the path from the reference: `"\$function ${ref.asId()} …"`.
+- The owner of a reference defines it at **exactly** that path. Another part may keep a private
+  `ref` to the same path (`ra.hub.ToolsRefs`); `PackValidator` fails the build if the owner never
+  defines it.
+
+## Commands: typed first
+
+Use Kore's builders wherever they read at least as clearly as vanilla: `execute { }`,
+`scoreboard.players.*`, `scoreboard.objectives.add`, `tag(...)`, `data(...) { }`, `function(...)`,
+`summon`, `kill`, `fill`, `give`, `schedule`, `returnValue`. Selectors through `allEntities { }`
+or the helpers in `core/block/Selectors.kt`.
+
+`raw("…")` is accepted for:
 
 - macro lines (`$execute … $(x) …`);
-- long SNBT literals copied from the game (display transformations, item stacks);
-- commands Kore has no builder for, or selectors/conditions the builder makes markedly longer
-  than the vanilla text.
+- long SNBT literals copied from the game (display transformations, item stacks, text components);
+- `execute` chains the builder makes markedly longer than vanilla (`anchored eyes positioned ^ ^ ^2 …`);
+- commands Kore has no builder for.
 
-Each `raw` is exactly one complete 26.3 command (it rejects newlines). If a raw command repeats
-across files, it is a helper waiting to be written — add it to the part's package, or to
-`core/` if several parts need it.
+`raw` takes exactly one complete 26.3 command and rejects newlines. A raw command repeated across
+files is a helper waiting to be written: put it in the part's package, or in `core/` if several
+parts need it.
 
-## Comments
-
-The beet source is heavily commented with **why** a line is the way it is ("`store result`
-writes zero when the read fails, and zero means every tick"). Those comments are the most
-valuable thing in it. Carry them over as Kotlin comments next to the code they explain; drop
-comments that only restate the command. Do not emit them into the `.mcfunction` output.
+Ported modules today lean on `raw` more than these rules aim for (several hundred lines in Wires,
+mostly long `execute if score … run` chains). That is allowed by the rules above, and a later pass
+can convert chains to typed builders file by file, with `compare_reference.py` proving each
+conversion changes nothing.
 
 ## Data-driven files
 
-Use Kore's typed builders (`recipesBuilder`, `advancement`, `predicate`, `itemModifier`,
-`lootTable`, tags). Generate families from data — one `listOf(...)` of tiers, one loop — instead
-of one Kotlin block per near-identical file (`ra_lib:light/at_least_1..15`, jetpack
-`fit_iron_0..7`, the recipe unlock advancements).
+Use the typed builders (`recipesBuilder`, `advancement`, `predicate`, `itemModifier`,
+`lootTable`, `functionTag`, `blockTag`). Generate families of near-identical files from data with
+one loop:
 
-## Kore gotchas
+| Family | Generated by |
+| --- | --- |
+| `ra_jetpacks:fit_<tier>_<n>` item modifiers | `modules/jetpacks/kit/FitModifiers.kt` |
+| `ra_advancements` trees | data lists in `advancements/CoreTrees.kt`, `ResourceTrees.kt`; one `unlock(...)` per entry |
+| recipe unlock advancements | `blockRecipe` / `recipeUnlock` |
+| settings admin tree | `ra.settings.gen` |
+| tool and block items | `ToolItem`, `CustomBlock`, `ItemSpec`, `WiresItem`, `BaseTier` |
 
-- Generated registries and argument types (`Items`, `Blocks`, `EntityTypes`, `Tags`,
-  `RecipeArgument`, `AdvancementArgument`…) live in `io.github.ayfri.kore.generated.*` and are
-  only in the Kore jar, not in its source tree.
-- Typed `itemName` / `customData` / `entityData` components break JSON output; use
-  `CustomComponent(nbt)` for items that appear in data files. See
-  [Custom Blocks](custom-blocks.md#item-components-gotcha).
-- `execute { run { … } }` with more than one command writes a `generated_scopes/` function.
-  That is fine; give it a real name with `fn(...)` when it is worth finding in game.
-- Selector filters set twice append (`tag = A; tag = B` → `tag=A,tag=B`).
-- `fill(from, to, block, filter)` is the replace form; `vec3(x, y, z).relative` gives `~x ~y ~z`.
+## Comments
+
+The beet source is commented with **why** a line is the way it is ("`store result` writes zero
+when the read fails, and zero means every tick"). Those comments are the most valuable thing in
+it. Keep them as Kotlin comments beside the code they explain, and write new ones the same way:
+
+- say why, not what; the command already says what;
+- name the bug a line prevents, when there was one;
+- block-capital headings (`THE SHAPE THAT MATTERS`) for the one rule a reader must not miss.
+
+Comments stay in Kotlin. They are not emitted into the `.mcfunction` output.
+
+## Before you push
+
+1. `./gradlew koreBuild` (strict) passes. While other parts are unported, use
+   `-Pra.strict=false` and check that no unresolved call points into **your** namespaces.
+2. `python3 tools/compare_reference.py <your namespaces> --diff` shows only
+   [expected differences](porting.md#differences-that-are-expected), or ones you can explain in
+   the commit message.
+3. No file over ~300 lines; no string calls to the pack's own functions.

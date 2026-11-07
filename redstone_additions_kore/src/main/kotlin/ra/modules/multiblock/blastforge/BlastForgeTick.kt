@@ -1,18 +1,21 @@
 package ra.modules.multiblock.blastforge
 
-import io.github.ayfri.kore.commands.data
-import io.github.ayfri.kore.commands.returnValue
-import io.github.ayfri.kore.commands.scoreboard.scoreboard
 import io.github.ayfri.kore.arguments.types.literals.literal
 import io.github.ayfri.kore.arguments.types.literals.self
+import io.github.ayfri.kore.arguments.types.resources.FunctionArgument
+import io.github.ayfri.kore.commands.data
 import io.github.ayfri.kore.commands.execute.execute
 import io.github.ayfri.kore.commands.function
+import io.github.ayfri.kore.commands.returnValue
+import io.github.ayfri.kore.commands.scoreboard.scoreboard
 import io.github.ayfri.kore.functions.Function
 import ra.api.RaLib
 import ra.core.Ns
 import ra.core.Obj
 import ra.core.Ra
 import ra.core.Storage
+import ra.core.block.particleViewersSel
+import ra.core.block.soundListenersSel
 import ra.core.define
 import ra.core.raw
 import ra.core.ref
@@ -48,8 +51,8 @@ object BlastForgeTick {
 			raw("execute unless data entity @s data.properties{enabled:1b} run return 0")
 			dispatch(tickFacing)
 		}
-		// Manual entry point (debug / external calls); in normal operation tick_facing calls
-		// process_facing directly.
+		// kept: beet contract. Manual entry point (debug / external calls); in normal operation
+		// tick_facing calls process_facing directly.
 		pack.define(process) { dispatch(processFacing) }
 		pack.define(tickFacing) { tickFacing() }
 		pack.define(processFacing) { processFacing() }
@@ -58,7 +61,7 @@ object BlastForgeTick {
 		with(BlastForgeRecipes) { registerRecipes() }
 	}
 
-	private fun Function.dispatch(target: io.github.ayfri.kore.arguments.types.resources.FunctionArgument) {
+	private fun Function.dispatch(target: FunctionArgument) {
 		for (f in facings) execute {
 			ifCondition { data(self(), """data{facing:"$f"}""") }
 			run { function(target, Storage.MULTIBLOCK, path(f)) }
@@ -134,9 +137,9 @@ object BlastForgeTick {
 
 		raw("execute store result entity @s data.status.heat int 1 run scoreboard players get @s ${Obj.HEAT}")
 
-		raw("\$particle minecraft:flame $(smoke) 0.2 0.2 0.2 0.02 10 normal @a[scores={ra.u.par=1..}]")
-		raw("playsound minecraft:block.furnace.fire_crackle block @a[distance=..8,scores={ra.u.snd=1..}] ~ ~ ~ 0.5 1")
-		raw("playsound minecraft:block.lava.extinguish block @a[distance=..8,scores={ra.u.snd=1..}] ~ ~ ~ 0.2 1.5")
+		raw("\$particle minecraft:flame $(smoke) 0.2 0.2 0.2 0.02 10 normal ${particleViewersSel()}")
+		raw("playsound minecraft:block.furnace.fire_crackle block ${soundListenersSel(8)} ~ ~ ~ 0.5 1")
+		raw("playsound minecraft:block.lava.extinguish block ${soundListenersSel(8)} ~ ~ ~ 0.2 1.5")
 	}
 
 	/**

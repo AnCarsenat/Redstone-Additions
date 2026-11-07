@@ -29,6 +29,7 @@ import ra.modules.multiblock.blastforge.BlastForgeData.facings
 import ra.modules.multiblock.blastforge.BlastForgeData.floor
 import ra.modules.multiblock.blastforge.BlastForgeData.path
 import ra.modules.multiblock.blastforge.BlastForgeTick.registerBlastForgeTick
+import ra.modules.multiblock.forEachMarker
 import ra.modules.multiblock.goggles.ShowIoLabel
 
 /**
@@ -81,16 +82,7 @@ object BlastForge {
 			raw("execute unless entity @s[tag=$TAG] run return 0")
 			// No cleanup needed: items stay in the barrels, where players can reach them.
 		}
-		pack.define(tickDispatch) {
-			execute {
-				asTarget(io.github.ayfri.kore.arguments.types.literals.allEntities {
-					type = io.github.ayfri.kore.generated.EntityTypes.MARKER
-					tag = TAG
-				})
-				at(self())
-				run { function(tick) }
-			}
-		}
+		pack.define(tickDispatch) { forEachMarker(TAG, tick) }
 		pack.define(BlastForge.goggles) { goggles() }
 
 		registerBlastForgeTick()

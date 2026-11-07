@@ -1,6 +1,7 @@
 package ra.example
 
 import io.github.ayfri.kore.arguments.types.literals.self
+import io.github.ayfri.kore.arguments.types.resources.FunctionArgument
 import io.github.ayfri.kore.commands.function
 import io.github.ayfri.kore.commands.returnValue
 import io.github.ayfri.kore.commands.tag
@@ -9,6 +10,7 @@ import ra.core.PackPart
 import ra.core.Ra
 import ra.core.Storage
 import ra.core.define
+import ra.core.moduleLoaded
 import ra.core.raw
 import ra.core.ref
 import ra.modules.multiblock.MultiblockModule
@@ -43,7 +45,7 @@ object ExamplePart : PackPart {
 	override fun Ra.register() {
 		pack.define(ref(ns, "load")) {
 			function(MultiblockModule.load)
-			raw("""tellraw @a [{text:"[",color:"dark_gray"},{text:"RA",color:"gold",bold:true},{text:"] ",color:"dark_gray"},{text:"Example multiblocks loaded!",color:"aqua"}]""")
+			moduleLoaded("Example multiblocks loaded!", "aqua")
 		}
 		pack.define(ref(ns, "tick")) { function(MultiblockModule.tick!!) }
 
@@ -73,11 +75,11 @@ object ExamplePart : PackPart {
 
 	private fun Ra.hooks(
 		dir: String,
-		checkStructure: io.github.ayfri.kore.arguments.types.resources.FunctionArgument,
-		onBreak: io.github.ayfri.kore.arguments.types.resources.FunctionArgument,
-		setupType: io.github.ayfri.kore.arguments.types.resources.FunctionArgument,
-		tickDispatch: io.github.ayfri.kore.arguments.types.resources.FunctionArgument,
-		validate: io.github.ayfri.kore.arguments.types.resources.FunctionArgument,
+		checkStructure: FunctionArgument,
+		onBreak: FunctionArgument,
+		setupType: FunctionArgument,
+		tickDispatch: FunctionArgument,
+		validate: FunctionArgument,
 	) {
 		pack.define(ref(ns, "$dir/check_structure")) { function(checkStructure) }
 		pack.define(ref(ns, "$dir/on_break")) { function(onBreak) }

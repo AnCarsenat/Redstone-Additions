@@ -1,28 +1,30 @@
 package ra.modules.multiblock.upgradeplatform
 
-import io.github.ayfri.kore.commands.data
-import io.github.ayfri.kore.commands.returnValue
-import io.github.ayfri.kore.commands.scoreboard.scoreboard
-import io.github.ayfri.kore.commands.tag
-import ra.core.Storage
 import io.github.ayfri.kore.arguments.maths.vec3
 import io.github.ayfri.kore.arguments.selector.Sort
 import io.github.ayfri.kore.arguments.types.literals.allEntities
 import io.github.ayfri.kore.arguments.types.literals.literal
 import io.github.ayfri.kore.arguments.types.literals.self
+import io.github.ayfri.kore.commands.data
 import io.github.ayfri.kore.commands.execute.execute
 import io.github.ayfri.kore.commands.function
+import io.github.ayfri.kore.commands.returnValue
+import io.github.ayfri.kore.commands.scoreboard.scoreboard
+import io.github.ayfri.kore.commands.tag
 import io.github.ayfri.kore.functions.Function
 import io.github.ayfri.kore.generated.EntityTypes
 import ra.api.MultiblockLib
 import ra.core.Ns
 import ra.core.Obj
 import ra.core.Ra
+import ra.core.Storage
 import ra.core.TagRoute
+import ra.core.block.particleViewersSel
 import ra.core.define
 import ra.core.hook
 import ra.core.raw
 import ra.core.ref
+import ra.modules.multiblock.forEachMarker
 
 /**
  * Upgrade Platform (`ra_multiblock:upgrade_platform/...`): a 3x1x3 smooth stone platform around a
@@ -83,13 +85,7 @@ object UpgradePlatform {
 			raw("execute unless entity @s[tag=$TAG] run return 0")
 			// No cleanup needed: the platform has no containers.
 		}
-		pack.define(tickDispatch) {
-			execute {
-				asTarget(allEntities { type = EntityTypes.MARKER; tag = TAG })
-				at(self())
-				run { function(tick) }
-			}
-		}
+		pack.define(tickDispatch) { forEachMarker(TAG, tick) }
 		pack.define(tick) { tick() }
 		pack.define(tryUpgrade) { tryUpgrade() }
 
@@ -113,7 +109,7 @@ object UpgradePlatform {
 		raw("execute unless data entity @s data.properties{enabled:1b} run return 0")
 
 		// Ambient particles, whenever enabled.
-		raw("particle minecraft:enchant ~ ~1.5 ~ 1 0.5 1 1 3 normal @a[scores={ra.u.par=1..}]")
+		raw("particle minecraft:enchant ~ ~1.5 ~ 1 0.5 1 1 3 normal ${particleViewersSel()}")
 
 		// A redstone block under the centre locks the platform.
 		raw("execute if block ~ ~-1 ~ minecraft:redstone_block run return 0")

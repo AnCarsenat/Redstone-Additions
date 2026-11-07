@@ -5,12 +5,8 @@ import io.github.ayfri.kore.arguments.types.literals.self
 import io.github.ayfri.kore.commands.execute.execute
 import io.github.ayfri.kore.commands.function
 import io.github.ayfri.kore.commands.tag
-import io.github.ayfri.kore.features.recipes.recipesBuilder
-import io.github.ayfri.kore.features.recipes.types.RecipeCategory
-import io.github.ayfri.kore.features.recipes.types.craftingShaped
 import io.github.ayfri.kore.features.recipes.types.key
 import io.github.ayfri.kore.features.recipes.types.pattern
-import io.github.ayfri.kore.features.recipes.types.result
 import io.github.ayfri.kore.functions.Function
 import io.github.ayfri.kore.generated.Blocks
 import io.github.ayfri.kore.generated.EntityTypes
@@ -22,7 +18,11 @@ import ra.core.Tag
 import ra.core.block.CustomBlock
 import ra.core.block.gogglesHeader
 import ra.core.block.placeBlock
-import ra.core.block.recipeUnlock
+import ra.core.block.Unlock
+import ra.core.block.markerSel
+import ra.core.block.placementGuard
+import ra.core.block.recipeResult
+import ra.core.block.shapedRecipe
 import ra.core.block.textLine
 import ra.core.define
 import ra.core.raw
@@ -57,17 +57,13 @@ object ChunkLoader {
 
 		pack.define(block.give) { raw("give @s ${item.giveArg()}") }
 
-		val recipe = pack.recipesBuilder.craftingShaped(block.id, block.ns.id) {
-			category = RecipeCategory.REDSTONE
+		pack.shapedRecipe(block.ns, block.id, item.recipeResult(), Unlock(Items.LODESTONE)) {
 			pattern("ISI", "RLR", "IRI")
 			key("I", Items.IRON_INGOT)
 			key("R", Items.REDSTONE)
 			key("L", Items.LODESTONE)
 			key("S", Items.NETHER_STAR)
-			result(Items.BAT_SPAWN_EGG, 1) { item.applyTo(this) }
-			showNotification = true
 		}
-		pack.recipeUnlock(block.id, block.ns.id, recipe, Items.LODESTONE)
 
 		pack.define(block.handlePlacement) { handlePlacement() }
 		pack.define(block.goggles) { goggles() }
@@ -88,7 +84,7 @@ object ChunkLoader {
 			}
 
 			// Load chunk on rising edge
-			raw("execute as @e[type=marker,tag=${block.tag},tag=!$WAS_POWERED,tag=${Tag.POWERED}] at @s run execute at @s run forceload add ~ ~")
+			raw("execute as ${block.markerSel("tag=!$WAS_POWERED", "tag=${Tag.POWERED}")} at @s run execute at @s run forceload add ~ ~")
 
 			// Unload chunk on falling edge
 			execute {
@@ -111,7 +107,7 @@ object ChunkLoader {
 
 	/** As the spawned bat, at its position. */
 	private fun Function.handlePlacement() {
-		raw("execute unless entity @s[tag=${block.placeTag}] run return 0")
+		placementGuard(block, checkExisting = false)
 		// Lodestone with a marker (dir_type 0 = no direction).
 		placeBlock(block)
 		finishPlacement(block, removePlaceTag = false, withinBlock = false)

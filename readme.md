@@ -37,6 +37,9 @@ It also goes beyond redstone: **jetpacks** that fit onto any chestplate, **encha
 
 All systems run as a pure datapack using marker entities and function-driven runtime logic. No mods required.
 
+Any system / block can be disabled or configured in the new settings panel. (Admin only)
+There is also client side settings.
+
 ## Version Compatibility
 
 **Supported: Minecraft 26.3** (data pack format 121).

@@ -10,9 +10,9 @@ import ra.api.RaLib
 import ra.core.Obj
 import ra.core.Ra
 import ra.core.define
+import ra.core.executeRun
 import ra.core.raw
 import ra.tools.ToolItems
-import ra.tools.executeRun
 import ra.tools.tool
 
 /**
@@ -34,7 +34,7 @@ object InputDataHandler {
 
 	fun Ra.registerInputDataHandler() {
 		pack.define(give) {
-			raw("give @s ${ToolItems.inputDataHandler.argument}")
+			raw("give @s ${ToolItems.inputDataHandler.spec.giveArg()}")
 			raw("""tellraw @s [{text:"[RA] ",color:"gold"},{text:"Received ",color:"gray"},{text:"Input Data Handler",color:"aqua"}]""")
 		}
 

@@ -9,18 +9,18 @@ import io.github.ayfri.kore.commands.scoreboard.scoreboard
 import io.github.ayfri.kore.commands.tag
 import io.github.ayfri.kore.generated.arguments.types.AdvancementArgument
 import net.benwoodworth.knbt.NbtByte
+import ra.api.Goggles
 import ra.api.RaLib
 import ra.core.Obj
 import ra.core.Ra
 import ra.core.Storage
+import ra.core.callWith
 import ra.core.define
+import ra.core.executeReturnRun
+import ra.core.executeRun
 import ra.core.raw
 import ra.tools.REACH_4
 import ra.tools.ToolItems
-import ra.tools.callWith
-import ra.tools.executeReturnRun
-import ra.tools.executeRun
-import ra.tools.goggles.GogglesRefs
 import ra.tools.raycast
 import ra.tools.tool
 
@@ -44,7 +44,7 @@ object Multimeter {
 
 	fun Ra.registerMultimeter() {
 		pack.define(give) {
-			raw("give @s ${ToolItems.multimeter.argument}")
+			raw("give @s ${ToolItems.multimeter.spec.giveArg()}")
 			raw("""tellraw @s [{text:"[RA] ",color:"gold"},{text:"Received ",color:"gray"},{text:"Multimeter",color:"gold"}]""")
 		}
 
@@ -64,7 +64,7 @@ object Multimeter {
 		pack.define(report) {
 			data(Storage.TEMP) { modify("meter_found", NbtByte(1)) }
 			data(Storage.TEMP) { modify("name_only", NbtByte(1)) }
-			function(GogglesRefs.drawBlock)
+			function(Goggles.drawBlock)
 			data(Storage.TEMP) { remove("name_only") }
 			raw("""tellraw $HOLDER [{text:"── ",color:"dark_gray"},{nbt:"block_name",storage:"ra:temp",color:"gold",bold:true},{text:" ──",color:"dark_gray"}]""")
 
@@ -141,7 +141,7 @@ object Multimeter {
 			raw("execute unless data storage ra:temp meterq.queue[0] run return 0")
 			raw("data modify storage ra:temp meterq.m set from storage ra:temp meterq.queue[0].m")
 			raw("data remove storage ra:temp meterq.queue[0]")
-			callWith(mediaOne, "temp", "meterq")
+			callWith(mediaOne, "storage ra:temp meterq")
 			function(mediaNext)
 		}
 

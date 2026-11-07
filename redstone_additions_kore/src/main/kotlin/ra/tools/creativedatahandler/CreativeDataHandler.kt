@@ -7,16 +7,16 @@ import io.github.ayfri.kore.commands.function
 import io.github.ayfri.kore.commands.tag
 import io.github.ayfri.kore.generated.arguments.types.AdvancementArgument
 import net.benwoodworth.knbt.NbtByte
+import ra.api.Goggles
 import ra.core.Ra
 import ra.core.Storage
 import ra.core.define
+import ra.core.executeRun
 import ra.core.raw
 import ra.tools.REACH_4
 import ra.tools.ToolItems
 import ra.tools.creativedatahandler.props.CdhProps
 import ra.tools.creativedatahandler.props.CdhProps.registerCdhProps
-import ra.tools.executeRun
-import ra.tools.goggles.GogglesRefs
 import ra.tools.raycast
 import ra.tools.tool
 
@@ -49,7 +49,7 @@ object CreativeDataHandler {
 
 	fun Ra.registerCreativeDataHandler() {
 		pack.define(give) {
-			raw("give @s ${ToolItems.creativeDataHandler.argument}")
+			raw("give @s ${ToolItems.creativeDataHandler.spec.giveArg()}")
 			raw("""tellraw @s [{text:"[RA] ",color:"gold"},{text:"Received ",color:"gray"},{text:"Creative Data Handler",color:"aqua"}]""")
 		}
 
@@ -75,7 +75,7 @@ object CreativeDataHandler {
 			raw("data modify storage ra:cdh target set from entity @s UUID")
 			// The name comes from the block's own goggles function (see ra:tools/block_name), not
 			// from a table here that could drift from the Data Handler's.
-			function(GogglesRefs.blockName)
+			function(Goggles.blockName)
 			raw("data modify storage ra:cdh block_type set from storage ra:temp block_name")
 			raw("data modify storage ra:cdh properties set from entity @s data.properties")
 			raw("data modify storage ra:cdh internal_data set from entity @s data.data")

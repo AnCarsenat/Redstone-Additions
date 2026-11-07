@@ -7,9 +7,9 @@ import ra.core.Obj
 import ra.core.Ra
 import ra.core.Storage
 import ra.core.define
+import ra.core.executeReturnRun
+import ra.core.executeRun
 import ra.core.raw
-import ra.tools.executeReturnRun
-import ra.tools.executeRun
 import ra.tools.tool
 
 /** Wrench RMB on multiblocks: assemble a structure on its base, or toggle an assembled one. */
@@ -99,7 +99,7 @@ object WrenchMultiblock {
 				// ...then anything registered for this tier. Adding a structure means registering it
 				// in ra_multiblock:register_types -- this file does not change.
 				executeRun(
-					"if score #mb_assembled ra.temp matches 0 store result score #mb_assembled ra.temp",
+					"if score #mb_assembled ${Obj.TEMP} matches 0 store result score #mb_assembled ${Obj.TEMP}",
 					MultiblockLib.tryTier, "{tier:\"${t.name}\"}",
 				)
 				raw("""execute if score #mb_assembled ${Obj.TEMP} matches 0 run tellraw @a[distance=..8] [{text:"[Wrench] ",color:"gold"},{text:"No ${t.name}-tier multiblock matches the structure here.",color:"red"}]""")

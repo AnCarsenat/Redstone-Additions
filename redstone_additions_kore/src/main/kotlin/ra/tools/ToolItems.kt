@@ -1,43 +1,24 @@
 package ra.tools
 
-import io.github.ayfri.kore.arguments.components.ComponentsScope
-import io.github.ayfri.kore.arguments.components.item.CustomComponent
-import io.github.ayfri.kore.utils.nbt
-import io.github.ayfri.kore.utils.set
-import net.benwoodworth.knbt.NbtCompound
-import ra.core.item.parseSnbt
+import ra.core.item.ItemSpec
 
 /**
  * One hand-held tool item, described once: its `give`, its recipe result and its give-bundle
- * entry are all derived from this value, as [ra.core.block.CustomBlock] does for blocks.
+ * entry are all derived from [spec], as [ra.core.block.CustomBlock] does for blocks. [id] is the
+ * tool's own name (`wrench`, `data_handler`...), used for its recipe, its `using_item`
+ * advancement and its `custom_data` flag.
  *
- * [components] are `name -> SNBT value` in the order the beet `give` command wrote them; that
- * order is what the generated `give` keeps.
+ * [spec]'s components are SNBT text in the order the beet `give` command wrote them; that order
+ * is what the generated `give` keeps ([ItemSpec.fromSnbt]).
  *
  * Most tools are a food item with an endless `consumable`: `using_item` is the only advancement
  * trigger that fires reliably on right-click whatever is being looked at, and it only fires for
  * an item you can start using. The consume time is long enough that it never actually finishes.
  */
-data class ToolItem(val id: String, val item: String, val components: List<Pair<String, String>>) {
-	/** `minecraft:<item>[k=v,...]`, for `give`. */
-	val argument get() = "$item[${components.joinToString(",") { (k, v) -> "$k=$v" }}]"
-
-	/** Recipe results: the same components as raw NBT (Kore's typed ones cannot serialize to JSON). */
-	fun ComponentsScope.toolComponents() {
-		for ((k, v) in this@ToolItem.components) this[k] = CustomComponent(parseSnbt(v))
-	}
-
-	/** `{id, count, components}`, for bundle contents. */
-	fun stackNbt(): NbtCompound = nbt {
-		this["id"] = item
-		this["count"] = 1
-		this["components"] = nbt { for ((k, v) in components) this["minecraft:$k"] = parseSnbt(v) }
-	}
-
-}
+data class ToolItem(val id: String, val spec: ItemSpec)
 
 /** The endless-use food that makes right-click detectable (see [ToolItem]). */
-private val CLICKABLE = listOf(
+private val CLICKABLE = arrayOf(
 	"food" to "{nutrition:0,saturation:0,can_always_eat:true}",
 	"consumable" to """{consume_seconds:1000000,animation:"none",has_consume_particles:false}""",
 )
@@ -45,14 +26,16 @@ private val CLICKABLE = listOf(
 private fun lore(vararg lines: String) = lines.joinToString(",", "[", "]") { """{text:"$it",italic:false,color:"gray"}""" }
 
 private fun clickTool(id: String, item: String, model: String, name: String, lore: String) = ToolItem(
-	id, item, listOf(
+	id, ItemSpec.fromSnbt(
+		item,
 		"item_model" to "\"$model\"",
 		"item_name" to "\"$name\"",
 		"lore" to lore,
 		"max_stack_size" to "1",
 		"custom_data" to "{ra:{$id:1b}}",
 		"enchantment_glint_override" to "true",
-	) + CLICKABLE
+		*CLICKABLE,
+	)
 )
 
 object ToolItems {
@@ -83,7 +66,8 @@ object ToolItems {
 
 	/** Worn, not used: no food trick. Dyed copper-orange so it reads as goggles. */
 	val goggles = ToolItem(
-		"goggles", "minecraft:leather_helmet", listOf(
+		"goggles", ItemSpec.fromSnbt(
+			"minecraft:leather_helmet",
 			"item_name" to "\"Goggles\"",
 			"max_stack_size" to "1",
 			"custom_data" to "{ra:{goggles:1b}}",

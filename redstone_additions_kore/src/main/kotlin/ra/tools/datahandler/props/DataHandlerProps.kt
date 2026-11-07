@@ -10,13 +10,14 @@ import net.benwoodworth.knbt.NbtByte
 import ra.core.Obj
 import ra.core.Ra
 import ra.core.Storage
+import ra.core.callWith
 import ra.core.define
+import ra.core.executeRun
+import ra.core.macroCall
 import ra.core.raw
-import ra.tools.callWith
 import ra.tools.datahandler.DataHandler
 import ra.tools.datahandler.DataHandlerActions
 import ra.tools.datahandler.props.PropRows.registerPropRows
-import ra.tools.executeRun
 import ra.tools.tool
 
 /** The Data Handler's per-property machinery: walking the registry, typing a value, editing it. */
@@ -46,7 +47,7 @@ object DataHandlerProps {
 			raw("data modify storage ra:dh q set value {}")
 			raw("data modify storage ra:dh q.name set from storage ra:dh iter[0]")
 			raw("execute store result storage ra:dh q.action int 1 run scoreboard players get #dh.act ${Obj.TEMP}")
-			callWith(render, "dh", "q")
+			callWith(render, "storage ra:dh q")
 			raw("data remove storage ra:dh iter[0]")
 			scoreboard.players.add(literal("#dh.act"), Obj.TEMP, 1)
 			function(next)
@@ -113,13 +114,13 @@ object DataHandlerProps {
 			scoreboard.players.remove(literal("#dh.idx"), Obj.TEMP, 200)
 			raw("data modify storage ra:dh q set value {}")
 			raw("execute store result storage ra:dh q.i int 1 run scoreboard players get #dh.idx ${Obj.TEMP}")
-			callWith(pickName, "dh", "q")
+			callWith(pickName, "storage ra:dh q")
 			raw("execute unless data storage ra:dh pending_name run return 0")
 			raw("data modify storage ra:dh q.name set from storage ra:dh pending_name")
 			function(DataHandler.collectHidden)
-			callWith(deny, "dh", "q")
+			callWith(deny, "storage ra:dh q")
 			raw("execute if data storage ra:dh denied run return run data remove storage ra:dh denied")
-			callWith(setFromHand, "dh", "q")
+			callWith(setFromHand, "storage ra:dh q")
 			function(DataHandler.refresh)
 		}
 
@@ -182,10 +183,10 @@ object DataHandlerProps {
 		// No gamemode test. Creative players use the Creative Data Handler, which shows and edits
 		// everything -- so this tool does not need a second mode.
 		raw("\$execute if data storage ra:dh hidden.\$(name) run scoreboard players add #dh.shown ${Obj.TEMP} 1")
-		raw("\$execute if data storage ra:dh hidden.\$(name) run return run function ${PropRows.rowLocked.asId()} with storage ra:dh q")
+		raw("\$execute if data storage ra:dh hidden.\$(name) run return run ${macroCall(PropRows.rowLocked, "with storage ra:dh q")}")
 
 		scoreboard.players.add(literal("#dh.shown"), Obj.TEMP, 1)
-		callWith(probe, "dh", "q")
+		callWith(probe, "storage ra:dh q")
 
 		for ((type, row) in listOf(1 to PropRows.rowNumber, 2 to PropRows.rowBool, 3 to PropRows.rowList, 0 to PropRows.rowString))
 			executeRun("if score #dh.type ${Obj.TEMP} matches $type", row, "with storage ra:dh q")

@@ -9,18 +9,18 @@ import io.github.ayfri.kore.commands.scoreboard.scoreboard
 import io.github.ayfri.kore.commands.tag
 import io.github.ayfri.kore.generated.arguments.types.AdvancementArgument
 import net.benwoodworth.knbt.NbtByte
+import ra.api.Goggles
 import ra.core.Obj
 import ra.core.Ra
 import ra.core.Storage
 import ra.core.define
+import ra.core.executeRun
 import ra.core.raw
 import ra.tools.REACH_4
 import ra.tools.ToolItems
 import ra.tools.datahandler.DataHandlerActions.registerDataHandlerActions
 import ra.tools.datahandler.props.DataHandlerProps
 import ra.tools.datahandler.props.DataHandlerProps.registerDataHandlerProps
-import ra.tools.executeRun
-import ra.tools.goggles.GogglesRefs
 import ra.tools.raycast
 import ra.tools.tool
 
@@ -49,7 +49,7 @@ object DataHandler {
 
 	fun Ra.registerDataHandler() {
 		pack.define(give) {
-			raw("give @s ${ToolItems.dataHandler.argument}")
+			raw("give @s ${ToolItems.dataHandler.spec.giveArg()}")
 			raw("""tellraw @s [{text:"[RA] ",color:"gold"},{text:"Received ",color:"gray"},{text:"Data Handler",color:"aqua"}]""")
 		}
 
@@ -82,7 +82,7 @@ object DataHandler {
 			// Data Handlers, and blocks missing from it -- every RA Wires block here -- showed as
 			// "Unknown Block" while their properties were read out correctly, which is what made it
 			// look as though unknown blocks had an `enabled` property of their own.
-			function(GogglesRefs.blockName)
+			function(Goggles.blockName)
 			raw("data modify storage ra:dh block_type set from storage ra:temp block_name")
 			// Clock compatibility runs in ra_gates:blocks/clock/tick, which folds the old property
 			// name into the current one every tick. Nothing is needed here -- this used to migrate

@@ -1,6 +1,6 @@
-.idea
-.gradle
-build
-out
-.kotlin
+/.idea
+/.gradle
+/build
+/out
+/.kotlin
 __pycache__

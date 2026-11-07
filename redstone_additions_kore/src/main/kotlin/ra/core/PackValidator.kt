@@ -11,7 +11,9 @@ import io.github.ayfri.kore.DataPack
  * a function tag) declared in this pack, or generation fails with the caller's path.
  */
 object PackValidator {
-	private val call = Regex("""function (#?)([a-z0-9_.-]+):([a-z0-9_./-]+)""")
+	// `$` and parentheses are captured so a macro inside the path (`give_$(kit)_kit`) is seen
+	// whole and skipped, rather than read as a call to `give_`.
+	private val call = Regex("""function (#?)([a-z0-9_.-]+):([a-z0-9_./$()-]+)""")
 	private val ownNamespaces = Ns.entries.filter { it != Ns.MINECRAFT }.map { it.id }.toSet()
 
 	/** Fails generation listing every unresolved call. */
@@ -40,7 +42,7 @@ object PackValidator {
 				if (line.startsWith("#")) continue
 				for (m in call.findAll(line)) {
 					val (isTag, ns, path) = m.destructured
-					if (ns !in ownNamespaces || "$(" in path) continue
+					if (ns !in ownNamespaces || "$" in path) continue
 					val id = "$ns:$path"
 					val ok = if (isTag.isNotEmpty()) id in tags else id in defined
 					if (!ok) add("${fn.asId()}: calls ${isTag}$id, which this pack never defines")

@@ -72,7 +72,7 @@ is [Installing into a world](contributing-guidelines.md#installing-into-a-world)
 !!! warning "Never load the old beet release and the Kore build together"
     Both write the same namespaces. With both enabled every function exists twice, the pack
     that loads last wins file by file, and `ra:tick` is scheduled by both: you get a mix of two
-    versions running at once. Remove `redstone_additions_data_pack` from the world first.
+    versions running at once. Remove the old pack from the world first (`redstone_additions_data_pack`, or a release zip named `redstone_additions_v5.x…`).
 
 ## Comparing against a reference pack
 

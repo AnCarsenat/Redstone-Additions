@@ -8,7 +8,7 @@ Pure standard library — no install step, no dependencies.
 
 ## Quick commands
 
-Run from `redstone_additions/`.
+Run from the repository root.
 
 ```bash
 # readme.md -> readme.bbcode, next to the input

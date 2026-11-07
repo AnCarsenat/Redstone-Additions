@@ -155,8 +155,7 @@ Creative, for building and testing:
 - Creative EU Source — refills its grid to capacity every tick
 - Creative Fluid Source — tops its network up with one medium, at a settable rate
 
-There are no tiers. A netherite pipe was a more expensive way to buy the same
-block, so the tiered items now place the single version.
+Pipes and wires have a single tier.
 
 ### Chunk Loader (1)
 - Chunk Loader
@@ -193,7 +192,7 @@ netherrack or poppies on an enchanting table.
 - Nether Core
 - Poppy Core
 - Enchanted Coal — won by sacrificing coal on an enchanting table
-- Enchanted Coal Block — nine of them, plus a stick, make a Big Torch
+- Enchanted Coal Block — nine Enchanted Coal make one; one block plus a stick makes a Big Torch
 - Item Crate — what the Boxer packs a chest into, and the Unboxer unpacks
 
 Fitted kits live on the chestplate and are listed in its lore.
@@ -289,8 +288,8 @@ Starter command:
 | Jetpacks | https://ancarsenat.github.io/Redstone-Additions/jetpacks/ |
 | Infinite Generators | https://ancarsenat.github.io/Redstone-Additions/infinite-generators/ |
 | Ender Links | https://ancarsenat.github.io/Redstone-Additions/ender-links/ |
-| Block Reference | https://ancarsenat.github.io/Redstone-Additions/block-reference/ |
-| Recipe Reference | https://ancarsenat.github.io/Redstone-Additions/recipe-reference/ |
+| Item Reference | https://ancarsenat.github.io/Redstone-Additions/item-reference/ |
+| Recipe Atlas | https://ancarsenat.github.io/Redstone-Additions/recipe-atlas/ |
 | Changelog | https://ancarsenat.github.io/Redstone-Additions/changelog/ |
 
 ---

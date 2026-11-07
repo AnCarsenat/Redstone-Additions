@@ -118,7 +118,7 @@ possible values in a comment.
 
 An old beet release (v5.1.17 and earlier) and the Kore build write the same namespaces. With
 both in a world, every function exists twice, the later pack wins file by file, and `ra:tick` is
-scheduled by both. Remove the old `redstone_additions_data_pack` before testing the Kore build.
+scheduled by both. Remove the old pack (`redstone_additions_data_pack`, or a release zip named `redstone_additions_v5.x…`) before testing the Kore build.
 
 ## A module property named like a registry list resolves to the registry
 

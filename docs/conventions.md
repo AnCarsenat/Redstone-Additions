@@ -91,7 +91,7 @@ one loop:
 
 ## Comments
 
-The beet source is commented with **why** a line is the way it is ("`store result` writes zero
+The original hand-written source (beet, before the port) was commented with **why** a line is the way it is ("`store result` writes zero
 when the read fails, and zero means every tick"). Those comments are the most valuable thing in
 it. Keep them as Kotlin comments beside the code they explain, and write new ones the same way:
 

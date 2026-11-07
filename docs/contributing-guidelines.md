@@ -66,7 +66,7 @@ Add `--continuous` to rebuild and reinstall on every save:
 ./gradlew koreRun -Pworld --continuous
 ```
 
-Then type `/reload` in game. `koreLink` copies without building again, and `koreClean` deletes
+Then type `/reload` in game. `koreLink` copies (it still runs `koreBuild` first, which Gradle skips when nothing changed), and `koreClean` deletes
 the output and removes the pack from every place it was copied to.
 
 ### `local.properties`
@@ -79,12 +79,13 @@ cp local.properties.example local.properties
 ```
 
 ```properties
-# The world a bare `-Pworld` installs into: a name under <minecraft dir>/saves, or a full path.
+# The world `./gradlew koreRun -Pworld` installs into when -Pworld has no value:
+# a world name under <minecraft dir>/saves, or a full path to a world folder.
 ra.world=Redstone Test
 
-# Optional: a Minecraft directory other than the OS default
-# (~/.minecraft, %APPDATA%\.minecraft, ~/Library/Application Support/minecraft).
-ra.minecraftDir=/home/me/.local/share/PrismLauncher/instances/26.3/minecraft
+# Optional: a Minecraft directory other than the OS default (~/.minecraft, %APPDATA%\.minecraft),
+# e.g. a Prism Launcher instance.
+#ra.minecraftDir=/home/me/.local/share/PrismLauncher/instances/26.3/minecraft
 ```
 
 | Key | Used when | Effect |

@@ -17,7 +17,7 @@ object NetherGenerator {
 	)
 
 	/**
-	 * 1% ancient debris on a 120-tick period is one scrap's worth every ten minutes or so.
+	 * 1% ancient debris on the default 100-tick period is one scrap's worth every ten minutes or so.
 	 * Netherite blocks are deliberately not on the table -- four ingots out of a single cycle
 	 * would undo the whole material.
 	 */

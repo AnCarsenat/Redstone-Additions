@@ -6,7 +6,7 @@ import ra.core.GiveBundle
 import ra.core.Ns
 import ra.core.Ra
 import ra.core.define
-import ra.core.hook
+import ra.modules.enchanting.hookEnchantRecipes
 import ra.core.ref
 import ra.modules.infinite.InfiniteItems.registerInfiniteItems
 import ra.modules.infinite.InfiniteTags.registerInfiniteTags
@@ -30,7 +30,8 @@ object InfiniteModule : GameplayModule {
 		registerPoppyGenerator()
 		registerPoppyDebug()
 
-		pack.hook(Ns.ENCHANTING, "recipes", InfiniteItems.enchantRecipes)
+		// Ahead of ra_interactive's list, as in the beet tag: see hookEnchantRecipes.
+		pack.hookEnchantRecipes(InfiniteItems.enchantRecipes)
 
 		pack.define(ref(ns, "items/give_all")) {
 			function(InfiniteItems.giveCasing)

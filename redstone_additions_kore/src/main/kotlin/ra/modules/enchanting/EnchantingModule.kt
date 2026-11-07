@@ -59,7 +59,8 @@ object EnchantingModule : GameplayModule {
 	val match = ref(Ns.ENCHANTING, "recipes/match")
 
 	override fun Ra.register() {
-		// Owned here; ra_infinite, ra_jetpacks and ra_interactive append their own enchant_recipes.
+		// Owned here; ra_infinite, ra_jetpacks and ra_interactive add their own enchant_recipes. The
+		// order matters (the last list sets every chance), see hookEnchantRecipes.
 		pack.functionTag(recipesTag.name, recipesTag.namespace)
 
 		registerSacrifice()

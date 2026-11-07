@@ -28,7 +28,7 @@ import ra.core.Ns
 import ra.core.Obj
 import ra.core.Ra
 import ra.core.define
-import ra.core.hook
+import ra.modules.enchanting.hookEnchantRecipes
 import ra.core.raw
 import ra.core.ref
 import ra.modules.infinite.loadMessage
@@ -79,7 +79,8 @@ object JetpacksModule : GameplayModule {
 		registerScorch()
 		registerTickPlayer()
 
-		pack.hook(Ns.ENCHANTING, "recipes", Kits.enchantRecipes)
+		// After ra_infinite's list and ahead of ra_interactive's, as in the beet tag: see hookEnchantRecipes.
+		pack.hookEnchantRecipes(Kits.enchantRecipes)
 
 		// Right-clicking any kit. The kit is a consumable, so this fires while the button is held.
 		pack.advancement("kit_use") {

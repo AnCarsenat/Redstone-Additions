@@ -3,6 +3,7 @@ package ra.modules.wireless
 import io.github.ayfri.kore.functions.Function
 import ra.core.Obj
 import ra.core.raw
+import ra.core.block.soundListenersSel
 
 /** What the emitter and receiver share: their two defaults and the wrench's enabled toggle. */
 
@@ -25,5 +26,5 @@ internal fun Function.toggleEnabled(label: String, color: String) {
 	val head = """{text:"[",color:"dark_gray"},{text:"$label",color:"$color"},{text:"] ",color:"dark_gray"}"""
 	raw("""execute if data entity @s data.properties{enabled:1b} run tellraw @a[distance=..8] [$head,{text:"Enabled",color:"green"}]""")
 	raw("""execute if data entity @s data.properties{enabled:0b} run tellraw @a[distance=..8] [$head,{text:"Disabled",color:"red"}]""")
-	raw("playsound minecraft:block.lever.click block @a[distance=..8,scores={${Obj.USER_SOUND}=1..}] ~ ~ ~ 0.5 1.2")
+	raw("playsound minecraft:block.lever.click block ${soundListenersSel(8)} ~ ~ ~ 0.5 1.2")
 }

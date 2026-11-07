@@ -1,9 +1,6 @@
 package ra.modules.wireless
 
 import io.github.ayfri.kore.arguments.types.literals.self
-import io.github.ayfri.kore.commands.execute.execute
-import io.github.ayfri.kore.commands.function
-import io.github.ayfri.kore.commands.returnValue
 import io.github.ayfri.kore.commands.tag
 import io.github.ayfri.kore.features.recipes.types.key
 import io.github.ayfri.kore.features.recipes.types.pattern
@@ -16,7 +13,6 @@ import ra.core.TagRoute
 import ra.core.block.CustomBlock
 import ra.core.block.blockGive
 import ra.core.block.gogglesHeader
-import ra.core.block.markers
 import ra.core.block.placeBlock
 import ra.core.block.propLine
 import ra.core.define
@@ -29,12 +25,16 @@ import ra.core.block.blockOnBreak
 import ra.core.block.dropItem
 import ra.core.block.STONE_BREAK_SOUND
 import ra.core.block.outputShell
-import ra.core.block.breakCheck
 import ra.core.blockRegisterMessage
 import ra.core.executeRun
 import ra.core.block.placementGuard
 import ra.core.block.setOnNew
-import ra.core.block.clearNewTag
+import ra.core.block.finishPlacement
+import ra.core.block.blockTick
+import ra.core.block.BreakTest
+import ra.core.block.forEachMarker
+import io.github.ayfri.kore.functions.Function
+import ra.core.block.markerSel
 
 /**
  * Wireless Receiver: powers its shell while an emitter on its `channel` string transmits, or for a
@@ -55,7 +55,6 @@ object Receiver {
 	private val process = block.fn("process")
 	private val checkEmitterChannel = block.fn("check_emitter_channel")
 	val toggle = block.fn("toggle")
-	val registerBlock = block.fn("register_block")
 
 	fun Ra.registerReceiver() {
 		block(block)
@@ -77,9 +76,7 @@ object Receiver {
 			// Default channel (a string) and enabled state.
 			setOnNew(block, "data.properties.channel", "\"default\"")
 			setOnNew(block, "data.properties.enabled", "1b")
-			clearNewTag(block)
-			tag(self()) { remove(block.placeTag) }
-			returnValue(1)
+			finishPlacement(block)
 		}
 
 		pack.define(process) { process() }
@@ -107,19 +104,12 @@ object Receiver {
 
 		// A broken receiver puts its shell out, or whatever it touched stays powered.
 		val onBreak = pack.blockOnBreak(block, drop = { dropItem(item) }, sound = STONE_BREAK_SOUND, cloud = true, afterVanillaKill = { outputShell(on = false) })
-		pack.define(block.tick) {
-			// Break detection: the receiver is a purpur block, anything else means it is gone.
-			breakCheck(block, Blocks.PURPUR_BLOCK, onBreak)
-			execute {
-				asTarget(markers(block))
-				at(self())
-				run { function(process) }
-			}
-		}
+		// Break detection: the receiver is a purpur block, anything else means it is gone.
+		pack.blockTick(block, onBreak, BreakTest.NotBlock(Blocks.PURPUR_BLOCK)) { forEachMarker(block, process) }
 	}
 
 	/** As the marker, at its position. */
-	private fun io.github.ayfri.kore.functions.Function.process() {
+	private fun Function.process() {
 		defaultsChannelEnabled()
 
 		// Only receive if enabled.
@@ -138,7 +128,7 @@ object Receiver {
 		raw("data modify storage ra:temp receiver_channel set from entity @s data.properties.channel")
 		tag(self()) { add(CHECKING) }
 
-		executeRun("as @e[type=marker,tag=${Emitter.block.tag},tag=${Emitter.TRANSMITTING}]", checkEmitterChannel)
+		executeRun("as ${Emitter.block.markerSel("tag=${Emitter.TRANSMITTING}")}", checkEmitterChannel)
 
 		// Output based on receiving state.
 		raw("execute if entity @s[tag=$RECEIVING] at @s run fill ~-1 ~-1 ~-1 ~1 ~1 ~1 redstone_block replace iron_block")

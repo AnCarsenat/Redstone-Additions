@@ -39,6 +39,8 @@ import ra.core.block.shapedRecipe
 import ra.core.block.recipeResult
 import ra.core.block.Unlock
 import ra.core.executeRun
+import ra.core.executeStoreRun
+import ra.core.block.markerSel
 
 /**
  * Redstone Remote: RMB pulses every receiver on the remote's channel, Shift+RMB asks for a new
@@ -70,7 +72,11 @@ object Remote {
 		Items.CRIMSON_BUTTON, Items.WARPED_BUTTON, Items.STONE_BUTTON, Items.POLISHED_BLACKSTONE_BUTTON,
 	)
 
-	private fun loreLine(text: String) = comp("text" to SStr(text), "italic" to SBool(false), "color" to SStr("gray"))
+	/**
+	 * A gray lore line. Not core `loreLine`: the beet item wrote `italic` before `color`, and the
+	 * key order is part of the item's give/bundle text.
+	 */
+	private fun grayLoreLine(text: String) = comp("text" to SStr(text), "italic" to SBool(false), "color" to SStr("gray"))
 
 	/**
 	 * The item. The lore deliberately does not name the current channel. Lore is baked into the
@@ -84,7 +90,7 @@ object Remote {
 		name("Redstone Remote")
 		add("max_stack_size", SInt(1))
 		customData(raData("remote" to SByte(true), "channel" to SStr("default")))
-		lore(loreLine("RMB: Pulse receivers"), loreLine("Shift+RMB: Set channel (book)"))
+		lore(grayLoreLine("RMB: Pulse receivers"), grayLoreLine("Shift+RMB: Set channel (book)"))
 		// `true` in the give command, `1b` in the bundle: the same byte.
 		add("enchantment_glint_override", SBool(true), SByte(true))
 		add("food", comp("nutrition" to SInt(0), "saturation" to SInt(0), "can_always_eat" to SBool(true)))
@@ -148,7 +154,7 @@ object Remote {
 			// Channel from the held item, into storage.
 			raw("data modify storage ra:temp remote_channel set from entity @s SelectedItem.components.\"minecraft:custom_data\".ra.channel")
 
-			executeRun("as @e[type=marker,tag=${Receiver.block.tag}]", checkReceiverChannel)
+			executeRun("as ${Receiver.block.markerSel()}", checkReceiverChannel)
 
 			// Feedback.
 			raw("""tellraw @s [{text:"[Remote] ",color:"red"},{text:"Pulsed receivers on channel ",color:"gray"},{nbt:"remote_channel",storage:"ra:temp",color:"yellow"}]""")
@@ -220,10 +226,10 @@ object Remote {
 			raw("execute unless entity @s[tag=ra.input.active] unless score @s ra.input.state matches 2 run scoreboard players set @s $PENDING 0")
 			raw("execute unless entity @s[tag=ra.input.active] unless score @s ra.input.state matches 2 run return 0")
 
-			executeRun("store result score #remote_state ${Obj.TEMP}", RaLib.Input.poll)
+			executeStoreRun("", "#remote_state", RaLib.Input.poll)
 			raw("execute unless score #remote_state ${Obj.TEMP} matches 2 run return 0")
 
-			executeRun("store result score #remote_state ${Obj.TEMP}", RaLib.Input.consume)
+			executeStoreRun("", "#remote_state", RaLib.Input.consume)
 			raw("execute unless score #remote_state ${Obj.TEMP} matches 1 run return 0")
 
 			scoreboard.players.set(self(), PENDING, 0)
@@ -238,7 +244,7 @@ object Remote {
 			raw("data modify storage ra_wireless:remote channel set from storage ra:input consume.text")
 
 			raw("execute store result storage ra_wireless:remote slot int 1 run scoreboard players get @s $SLOT")
-			executeRun("store result score #remote_state ${Obj.TEMP}", applyToSlot, "with storage ra_wireless:remote")
+			executeStoreRun("", "#remote_state", applyToSlot, "with storage ra_wireless:remote")
 
 			raw("""execute if score #remote_state ${Obj.TEMP} matches 0 run tellraw @s [{text:"[Remote] ",color:"red"},{text:"Remote moved out of its slot; channel not applied.",color:"gray"}]""")
 			raw("execute if score #remote_state ${Obj.TEMP} matches 0 run return 0")
@@ -264,7 +270,8 @@ object Remote {
 			returnValue(1)
 		}
 
-		// Macro {slot}: stamp the channel onto a remote sitting in hotbar slot N, unchecked.
+		// kept: beet contract. Macro {slot}: stamp the channel onto a remote sitting in hotbar
+		// slot N, unchecked. Nothing in the pack calls it any more.
 		pack.define(fn("apply_hotbar")) {
 			raw("\$item modify entity @s hotbar.\$(slot) ra_wireless:set_channel")
 		}

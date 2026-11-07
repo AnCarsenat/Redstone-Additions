@@ -25,6 +25,9 @@ import ra.core.block.newMarker
 import ra.core.block.placeBlock
 import ra.core.define
 import ra.core.raw
+import ra.core.blockRegisterMessage
+import ra.core.block.outputShell
+import ra.core.block.readProperty
 
 /** Randomizer: on each rising edge, turns its output on with probability `chance` percent. */
 object Randomizer {
@@ -40,7 +43,7 @@ object Randomizer {
 			key("B", Items.BOOKSHELF)
 			key("R", Items.REPEATER)
 		}
-		pack.registerBlockMessage(block)
+		pack.blockRegisterMessage(block)
 		pack.define(block.handlePlacement) { handlePlacement() }
 		pack.define(process) { process() }
 		pack.define(trigger) { trigger() }
@@ -84,7 +87,7 @@ object Randomizer {
 		execute {
 			unlessCondition { entity(powered) }
 			at(self())
-			run { shell(on = false) }
+			run { outputShell(on = false) }
 		}
 	}
 

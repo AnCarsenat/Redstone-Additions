@@ -24,7 +24,7 @@ import ra.core.raw
 import ra.core.ref
 import ra.modules.enchanting.sacrifice.Sacrifice
 import ra.modules.enchanting.sacrifice.Sacrifice.registerSacrifice
-import ra.modules.infinite.loadMessage
+import ra.core.moduleLoaded
 
 /**
  * Enchant Crafting (`ra_enchanting`): sacrifice crafting on a vanilla enchanting table.
@@ -83,7 +83,7 @@ object EnchantingModule : GameplayModule {
 			data(Storage.ENCHANT) { merge(nbt { this["input"] = nbt {}; this["chance"] = 0 }) }
 			data(Storage.ENCHANT) { remove("result") }
 
-			loadMessage("Enchant crafting loaded!", "light_purple")
+			moduleLoaded("Enchant crafting loaded!", "light_purple")
 		}
 
 		pack.define(tick!!) { tick() }

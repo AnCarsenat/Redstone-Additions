@@ -16,10 +16,10 @@ import ra.core.block.killVanillaDrop
 import ra.core.block.placeBlock
 import ra.core.define
 import ra.core.raw
-import ra.modules.infinite.breakCheck
-import ra.modules.infinite.finishLorePlacement
-import ra.modules.infinite.loreItem
-import ra.modules.infinite.registerBlockMessage
+import ra.core.item.loreItem
+import ra.core.block.breakCheck
+import ra.core.block.finishPlacement
+import ra.core.blockRegisterMessage
 
 /** Spitter: a dropper that throws its contents out in front, one item every 4 ticks. */
 object Spitter {
@@ -32,7 +32,7 @@ object Spitter {
 
 	fun Ra.registerSpitter() {
 		block(block)
-		pack.registerBlockMessage(block)
+		pack.blockRegisterMessage(block)
 		pack.specGive(block, item)
 		pack.shapedRecipe(
 			block.ns.id, block.id, item,
@@ -45,7 +45,7 @@ object Spitter {
 			placeGuard(block)
 			// Dropper with full 6-directional facing.
 			placeBlock(block)
-			finishLorePlacement(block)
+			finishPlacement(block, removePlaceTag = false, withinBlock = false)
 		}
 		pack.define(block.goggles) { gogglesHeader(block, nameY = 1.0) }
 		pack.define(process) { process() }

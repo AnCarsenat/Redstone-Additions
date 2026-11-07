@@ -19,10 +19,8 @@ import ra.core.block.gogglesHeader
 import ra.core.block.killVanillaDrop
 import ra.core.define
 import ra.core.raw
-import ra.modules.infinite.breakCheck
-import ra.modules.infinite.loreItem
-import ra.modules.infinite.loreLine
-import ra.modules.infinite.registerBlockMessage
+import ra.core.item.loreItem
+import ra.core.item.loreLine
 import ra.modules.interactive.CHEST_HALVES
 import ra.modules.interactive.breakCloud
 import ra.modules.interactive.breakSound
@@ -33,6 +31,8 @@ import ra.modules.interactive.shapedRecipe
 import ra.modules.interactive.specGive
 import io.github.ayfri.kore.arguments.types.literals.literal
 import io.github.ayfri.kore.commands.scoreboard.scoreboard
+import ra.core.block.breakCheck
+import ra.core.blockRegisterMessage
 
 /**
  * Unboxer: while powered, empties one Item Crate from `input1` into `output1`, completely.
@@ -52,7 +52,7 @@ object Unboxer {
 
 	fun Ra.registerUnboxer() {
 		block(block)
-		pack.registerBlockMessage(block)
+		pack.blockRegisterMessage(block)
 		pack.specGive(block, item)
 		pack.shapedRecipe(
 			block.ns.id, block.id, item,

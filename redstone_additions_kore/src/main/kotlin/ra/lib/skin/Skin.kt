@@ -10,8 +10,8 @@ import ra.core.Obj
 import ra.core.Ra
 import ra.core.define
 import ra.core.raw
-import ra.lib.macroCall
 import ra.lib.skin.Spawn.registerSpawn
+import ra.core.macroCall
 
 /**
  * `ra_lib:skin/...`: draw one block's look over another block's mechanics.

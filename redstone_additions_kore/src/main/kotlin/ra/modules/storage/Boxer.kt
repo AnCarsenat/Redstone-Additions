@@ -17,11 +17,8 @@ import ra.core.block.killVanillaDrop
 import ra.core.block.placeBlock
 import ra.core.define
 import ra.core.raw
-import ra.modules.infinite.breakCheck
-import ra.modules.infinite.finishLorePlacement
-import ra.modules.infinite.loreItem
-import ra.modules.infinite.loreLine
-import ra.modules.infinite.registerBlockMessage
+import ra.core.item.loreItem
+import ra.core.item.loreLine
 import ra.modules.interactive.breakCloud
 import ra.modules.interactive.breakSound
 import ra.modules.interactive.dropSpec
@@ -31,6 +28,9 @@ import ra.modules.interactive.placeGuard
 import ra.modules.interactive.shapedRecipe
 import ra.modules.interactive.specGive
 import io.github.ayfri.kore.commands.scoreboard.scoreboard
+import ra.core.block.breakCheck
+import ra.core.block.finishPlacement
+import ra.core.blockRegisterMessage
 
 /**
  * Boxer: while powered, packs the whole of its `input1` container into one Item Crate and puts
@@ -46,7 +46,7 @@ object Boxer {
 
 	fun Ra.registerBoxer() {
 		block(block)
-		pack.registerBlockMessage(block)
+		pack.blockRegisterMessage(block)
 		pack.specGive(block, item)
 		pack.shapedRecipe(
 			block.ns.id, block.id, item,
@@ -130,7 +130,7 @@ internal fun Function.handlePlacement(block: CustomBlock, input: String, afterSe
 	raw("data modify entity $fresh data.properties.input1 set value \"$input\"")
 	raw("data modify entity $fresh data.properties.output1 set value \"^ ^ ^1\"")
 	afterSeed()
-	finishLorePlacement(block)
+	finishPlacement(block, removePlaceTag = false, withinBlock = false)
 }
 
 /**

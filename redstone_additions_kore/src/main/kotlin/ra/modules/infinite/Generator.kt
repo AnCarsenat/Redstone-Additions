@@ -37,11 +37,19 @@ import ra.core.Ns
 import ra.core.Obj
 import ra.core.Ra
 import ra.core.block.CustomBlock
+import ra.core.block.STONE_BREAK_SOUND
+import ra.core.block.blockOnBreak
+import ra.core.block.dropItem
 import ra.core.block.markers
 import ra.core.block.newMarker
 import ra.core.block.placeBlock
 import ra.core.define
 import ra.core.raw
+import ra.core.item.SComp
+import ra.core.item.loreItem
+import ra.core.block.breakCheck
+import ra.core.block.finishPlacement
+import ra.core.blockRegisterMessage
 
 /**
  * What every Infinite generator shares: a real DROPPER, the item, the shapeless casing + core
@@ -78,7 +86,7 @@ class Generator(
 	fun Ra.registerGenerator(extraTick: Function.() -> Unit = {}) {
 		block(block)
 		readonly(block.id, "cooldown")
-		pack.registerBlockMessage(block)
+		pack.blockRegisterMessage(block)
 		pack.define(block.give) { raw("give @s ${item.giveArg()}") }
 
 		val recipe = pack.recipesBuilder.craftingShapeless(block.id, block.ns.id) {
@@ -111,10 +119,10 @@ class Generator(
 			raw("execute unless entity @s[tag=${block.placeTag}] run return 0")
 			placeBlock(block)
 			data(newMarker(block)) { modify("data.properties.cooldown") { set(defaultCooldown) } }
-			finishLorePlacement(block)
+			finishPlacement(block, removePlaceTag = false, withinBlock = false)
 		}
 
-		val onBreak = pack.loreBlockOnBreak(block, item)
+		val onBreak = pack.blockOnBreak(block, drop = { dropItem(item) }, sound = STONE_BREAK_SOUND, cloud = true)
 
 		pack.define(block.tick) {
 			breakCheck(block, Blocks.DROPPER, onBreak)

@@ -26,12 +26,14 @@ import ra.core.block.recipeUnlock
 import ra.core.block.textLine
 import ra.core.define
 import ra.core.raw
-import ra.modules.infinite.breakCheck
-import ra.modules.infinite.finishLorePlacement
-import ra.modules.infinite.loreBlockOnBreak
-import ra.modules.infinite.loreItem
-import ra.modules.infinite.loreLine
-import ra.modules.infinite.registerBlockMessage
+import ra.core.block.STONE_BREAK_SOUND
+import ra.core.block.blockOnBreak
+import ra.core.block.dropItem
+import ra.core.item.loreItem
+import ra.core.item.loreLine
+import ra.core.block.breakCheck
+import ra.core.block.finishPlacement
+import ra.core.blockRegisterMessage
 
 /**
  * Chunk Loader: force-loads its own chunk while it is powered.
@@ -51,7 +53,7 @@ object ChunkLoader {
 
 	fun Ra.registerChunkLoader() {
 		block(block)
-		pack.registerBlockMessage(block)
+		pack.blockRegisterMessage(block)
 
 		pack.define(block.give) { raw("give @s ${item.giveArg()}") }
 
@@ -73,7 +75,7 @@ object ChunkLoader {
 		// Remove force-load from the chunk containing this marker. As the marker, at its position.
 		pack.define(onUnpowered) { raw("execute at @s run forceload remove ~ ~") }
 
-		val onBreak = pack.loreBlockOnBreak(block, item) { function(onUnpowered) }
+		val onBreak = pack.blockOnBreak(block, drop = { dropItem(item) }, sound = STONE_BREAK_SOUND, cloud = true) { function(onUnpowered) }
 
 		pack.define(block.tick) {
 			breakCheck(block, Blocks.LODESTONE, onBreak, skipNew = true)
@@ -112,7 +114,7 @@ object ChunkLoader {
 		raw("execute unless entity @s[tag=${block.placeTag}] run return 0")
 		// Lodestone with a marker (dir_type 0 = no direction).
 		placeBlock(block)
-		finishLorePlacement(block)
+		finishPlacement(block, removePlaceTag = false, withinBlock = false)
 	}
 
 	private fun Function.goggles() {

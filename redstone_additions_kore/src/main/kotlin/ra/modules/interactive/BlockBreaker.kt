@@ -15,10 +15,10 @@ import ra.core.block.killVanillaDrop
 import ra.core.block.placeBlock
 import ra.core.define
 import ra.core.raw
-import ra.modules.infinite.breakCheck
-import ra.modules.infinite.finishLorePlacement
-import ra.modules.infinite.loreItem
-import ra.modules.infinite.registerBlockMessage
+import ra.core.item.loreItem
+import ra.core.block.breakCheck
+import ra.core.block.finishPlacement
+import ra.core.blockRegisterMessage
 
 /**
  * Block Breaker: a dispenser that breaks the block in front of it when powered, at most once a
@@ -34,7 +34,7 @@ object BlockBreaker {
 		block(block)
 		// The cooldown is the block's own clock, not a setting.
 		readonly(block.id, "cooldown")
-		pack.registerBlockMessage(block)
+		pack.blockRegisterMessage(block)
 		pack.specGive(block, item)
 		pack.shapedRecipe(
 			block.ns.id, block.id, item,
@@ -46,7 +46,7 @@ object BlockBreaker {
 		pack.define(block.handlePlacement) {
 			placeGuard(block)
 			placeBlock(block)
-			finishLorePlacement(block)
+			finishPlacement(block, removePlaceTag = false, withinBlock = false)
 		}
 		pack.define(block.goggles) { gogglesHeader(block, nameY = 1.0) }
 		pack.define(fire) { fire() }

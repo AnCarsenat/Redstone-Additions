@@ -24,6 +24,9 @@ import ra.core.block.newMarker
 import ra.core.block.placeBlock
 import ra.core.define
 import ra.core.raw
+import ra.core.blockRegisterMessage
+import ra.core.block.outputShell
+import ra.core.block.readProperty
 
 /** Extender: keeps its output on for `extend` ticks after its input drops. */
 object Extender {
@@ -40,7 +43,7 @@ object Extender {
 			key("C", Items.QUARTZ_BLOCK)
 			key("R", Items.REPEATER)
 		}
-		pack.registerBlockMessage(block)
+		pack.blockRegisterMessage(block)
 		pack.define(block.handlePlacement) { handlePlacement() }
 		pack.define(process) { process() }
 		pack.gateGoggles(block, nameY = 1.0, prop = "extend", label = "Extend: ", suffix = "t", y = 0.8)
@@ -103,12 +106,12 @@ object Extender {
 		execute {
 			ifCondition { entity(extending) }
 			at(self())
-			run { shell(on = true) }
+			run { outputShell(on = true) }
 		}
 		execute {
 			ifCondition { entity(powered) }
 			at(self())
-			run { shell(on = true) }
+			run { outputShell(on = true) }
 		}
 
 		// Count down when not powered.
@@ -137,13 +140,13 @@ object Extender {
 			ifCondition { entity(extending) }
 			ifCondition { score(self(), Obj.TEMP, rangeOrIntEnd(0)) }
 			at(self())
-			run { shell(on = false) }
+			run { outputShell(on = false) }
 		}
 		execute {
 			unlessCondition { entity(powered) }
 			unlessCondition { entity(extending) }
 			at(self())
-			run { shell(on = false) }
+			run { outputShell(on = false) }
 		}
 	}
 }

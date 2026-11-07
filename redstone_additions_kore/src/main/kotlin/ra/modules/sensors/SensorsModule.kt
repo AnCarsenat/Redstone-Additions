@@ -8,10 +8,10 @@ import ra.core.Ra
 import ra.core.define
 import ra.core.raw
 import ra.core.ref
-import ra.modules.infinite.loadMessage
 import ra.modules.sensors.EntityDetector.registerEntityDetector
 import ra.modules.sensors.TagAdder.registerTagAdder
 import ra.modules.sensors.TagRemover.registerTagRemover
+import ra.core.moduleLoaded
 
 /** Sensors (`ra_sensors`): entity detection and tag manipulation blocks. */
 object SensorsModule : GameplayModule {
@@ -30,7 +30,7 @@ object SensorsModule : GameplayModule {
 			function(EntityDetector.registerBlock)
 			function(TagAdder.registerBlock)
 			function(TagRemover.registerBlock)
-			loadMessage("Sensors loaded!", "aqua")
+			moduleLoaded("Sensors loaded!", "aqua")
 		}
 
 		// Called every game tick from ra:tick.

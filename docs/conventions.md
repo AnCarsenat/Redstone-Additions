@@ -44,7 +44,7 @@ identifier spelled two ways, or one rule applied in nine places but forgotten in
 
   | Helper | Package | Writes |
   | --- | --- | --- |
-  | `executeRun(chain, fn, args)`, `executeReturnRun`, `callWith` | `ra.tools` (`ToolsDsl.kt`) | `execute <chain> run function <fn>` |
+  | `executeRun(chain, fn, args)`, `executeReturnRun`, `executeStoreRun`, `callWith(fn, source)`, `returnRun`, `macroCall` | `ra.core` (`Exec.kt`) | `execute <chain> run function <fn>`, `function <fn> with <source>` |
   | `line(text, fn, rest…)` | `ra.modules.wires.common` (`Line.kt`) | any command with typed function arguments |
 
   In a macro line, build the path from the reference: `"\$function ${ref.asId()} …"`.
@@ -85,7 +85,7 @@ one loop:
 | --- | --- |
 | `ra_jetpacks:fit_<tier>_<n>` item modifiers | `modules/jetpacks/kit/FitModifiers.kt` |
 | `ra_advancements` trees | data lists in `advancements/CoreTrees.kt`, `ResourceTrees.kt`; one `unlock(...)` per entry |
-| recipe unlock advancements | `blockRecipe` / `recipeUnlock` |
+| recipes and their unlock advancements | `shapedRecipe` / `blockRecipe` / `recipeUnlock` (`core/block/Recipes.kt`) |
 | settings admin tree | `ra.settings.gen` |
 | tool and block items | `ToolItem`, `CustomBlock`, `ItemSpec`, `WiresItem`, `BaseTier` |
 

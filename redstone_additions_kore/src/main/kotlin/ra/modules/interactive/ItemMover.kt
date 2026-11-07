@@ -14,17 +14,17 @@ import ra.core.block.killVanillaDrop
 import ra.core.block.placeBlock
 import ra.core.define
 import ra.core.raw
-import ra.modules.infinite.breakCheck
-import ra.modules.infinite.finishLorePlacement
-import ra.modules.infinite.loreItem
-import ra.modules.infinite.loreLine
-import ra.modules.infinite.registerBlockMessage
+import ra.core.item.loreItem
+import ra.core.item.loreLine
 import ra.modules.interactive.ItemMoverIo.checkOutputCapacity
 import ra.modules.interactive.ItemMoverIo.consumeSelectedInput
 import ra.modules.interactive.ItemMoverIo.registerItemMoverIo
 import ra.modules.interactive.ItemMoverIo.selectInput
 import ra.modules.interactive.ItemMoverIo.tryInsert
 import io.github.ayfri.kore.commands.scoreboard.scoreboard
+import ra.core.block.breakCheck
+import ra.core.block.finishPlacement
+import ra.core.blockRegisterMessage
 
 /**
  * Item Mover: moves the first stack of the container behind it (`^ ^ ^-1`) into the container in
@@ -40,7 +40,7 @@ object ItemMover {
 
 	fun Ra.registerItemMover() {
 		block(block)
-		pack.registerBlockMessage(block)
+		pack.blockRegisterMessage(block)
 		pack.specGive(block, item)
 		pack.shapedRecipe(
 			block.ns.id, block.id, item,
@@ -56,7 +56,7 @@ object ItemMover {
 			placeGuard(block)
 			// Dispenser with full 6-directional facing (same block family as the item pipe).
 			placeBlock(block)
-			finishLorePlacement(block)
+			finishPlacement(block, removePlaceTag = false, withinBlock = false)
 		}
 		pack.define(block.goggles) { gogglesHeader(block, nameY = 1.0) }
 		registerItemMoverIo()

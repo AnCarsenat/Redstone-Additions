@@ -7,6 +7,7 @@ import ra.core.block.gogglesHeader
 import ra.core.block.propLine
 import ra.core.define
 import ra.core.raw
+import ra.core.item.loreLine
 
 /** Mineral Generator: grows one block of ore in front of itself every `cooldown` ticks. */
 object MineralGenerator {

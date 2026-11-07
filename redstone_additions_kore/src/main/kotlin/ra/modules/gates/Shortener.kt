@@ -24,6 +24,9 @@ import ra.core.block.newMarker
 import ra.core.block.placeBlock
 import ra.core.define
 import ra.core.raw
+import ra.core.blockRegisterMessage
+import ra.core.block.outputShell
+import ra.core.block.readProperty
 
 /** Shortener: turns a rising edge into a pulse of `pulse` ticks, however long the input stays on. */
 object Shortener {
@@ -40,7 +43,7 @@ object Shortener {
 			key("C", Items.QUARTZ_BLOCK)
 			key("R", Items.REPEATER)
 		}
-		pack.registerBlockMessage(block)
+		pack.blockRegisterMessage(block)
 		pack.define(block.handlePlacement) { handlePlacement() }
 		pack.define(process) { process() }
 		pack.gateGoggles(block, nameY = 1.0, prop = "pulse", label = "Pulse: ", suffix = "t", y = 0.8)
@@ -96,7 +99,7 @@ object Shortener {
 		execute {
 			ifCondition { entity(pulsing) }
 			at(self())
-			run { shell(on = true) }
+			run { outputShell(on = true) }
 		}
 
 		// Count the pulse down.
@@ -121,12 +124,12 @@ object Shortener {
 			ifCondition { entity(pulsing) }
 			ifCondition { score(self(), Obj.TEMP, rangeOrIntEnd(0)) }
 			at(self())
-			run { shell(on = false) }
+			run { outputShell(on = false) }
 		}
 		execute {
 			unlessCondition { entity(pulsing) }
 			at(self())
-			run { shell(on = false) }
+			run { outputShell(on = false) }
 		}
 	}
 }

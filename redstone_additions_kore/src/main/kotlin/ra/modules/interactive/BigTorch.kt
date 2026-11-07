@@ -24,14 +24,14 @@ import ra.core.block.stackedDataLine
 import ra.core.block.stackedPropLine
 import ra.core.define
 import ra.core.raw
-import ra.modules.infinite.breakCheck
-import ra.modules.infinite.finishLorePlacement
-import ra.modules.infinite.loreItem
-import ra.modules.infinite.loreLine
-import ra.modules.infinite.registerBlockMessage
+import ra.core.item.loreItem
+import ra.core.item.loreLine
 import ra.modules.interactive.BigTorchSweep.registerBigTorchSweep
 import io.github.ayfri.kore.arguments.types.literals.literal
 import io.github.ayfri.kore.commands.scoreboard.scoreboard
+import ra.core.block.breakCheck
+import ra.core.block.finishPlacement
+import ra.core.blockRegisterMessage
 
 /**
  * Big Torch: an end rod drawn as an oversized torch that denies its area to hostile mobs that
@@ -50,7 +50,7 @@ object BigTorch {
 
 	fun Ra.registerBigTorch() {
 		block(block)
-		pack.registerBlockMessage(block)
+		pack.blockRegisterMessage(block)
 		pack.specGive(block, item)
 		// Crafted from the Enchanted Coal Block (a barrier, see EnchantedCoal) and a stick. The beet
 		// pack gave it no unlock advancement and no recipe notification; kept that way.
@@ -127,7 +127,7 @@ object BigTorch {
 		placeBlock(block)
 		raw("data modify entity @e[type=marker,tag=${block.tag},tag=${Tag.NEW},limit=1,sort=nearest] data.properties set value {radius:16}")
 		function(skin)
-		finishLorePlacement(block)
+		finishPlacement(block, removePlaceTag = false, withinBlock = false)
 	}
 
 	private fun Function.goggles() {

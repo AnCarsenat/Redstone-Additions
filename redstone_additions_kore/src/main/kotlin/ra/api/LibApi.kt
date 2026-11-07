@@ -116,6 +116,8 @@ object MultiblockLib {
 	object Io {
 		val at = ref(Ns.LIB_MULTIBLOCK, "io/at")
 		val isBlock = ref(Ns.LIB_MULTIBLOCK, "io/is_block")
+		/** Inserts `storage ra:multiblock io_item` into the container here (insert_or_drop); passed by id as `io/at`'s `run` argument. */
+		val insertHere = ref(Ns.LIB_MULTIBLOCK, "io/insert_here")
 	}
 
 	/** Function tags other modules add hooks to, as `ns:path` of `#ns:path`. */

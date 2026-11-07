@@ -23,8 +23,18 @@ import ra.core.block.placeBlock
 import ra.core.block.propLine
 import ra.core.define
 import ra.core.raw
-import ra.modules.infinite.loreItem
-import ra.modules.infinite.registerBlockMessage
+import ra.core.item.loreItem
+import ra.core.block.shapedRecipe
+import ra.core.block.recipeResult
+import ra.core.block.Unlock
+import ra.core.block.blockOnBreak
+import ra.core.block.dropItem
+import ra.core.block.STONE_BREAK_SOUND
+import ra.core.blockRegisterMessage
+import ra.core.block.placementGuard
+import ra.core.block.setOnNew
+import ra.core.block.clearNewTag
+import ra.core.block.outputShell
 
 /**
  * Entity Detector: powers its shell while any entity matches its `entity_selector` property.
@@ -43,9 +53,9 @@ object EntityDetector {
 
 	fun Ra.registerEntityDetector() {
 		block(block)
-		pack.registerBlockMessage(block)
+		pack.blockRegisterMessage(block)
 		pack.blockGive(block)
-		pack.shapedRecipe(block.ns, block.id, item, unlockedBy = Items.SCULK_SENSOR, count = null) {
+		pack.shapedRecipe(block.ns, block.id, item.recipeResult(), Unlock(Items.SCULK_SENSOR), count = null) {
 			pattern("CCC", "ROR", "CCC")
 			key("C", Items.COBBLESTONE)
 			key("R", Items.REDSTONE)
@@ -54,13 +64,13 @@ object EntityDetector {
 
 		// As bat, at bat position.
 		pack.define(block.handlePlacement) {
-			batGuard(block)
+			placementGuard(block, checkExisting = false)
 			// Waxed chiseled copper with a marker (dir_type 0 = non-directional).
 			placeBlock(block)
 			// Initialize default properties first.
 			setOnNew(block, "data.properties", """{entity_selector:"@e[type=minecraft:pig,distance=..5]"}""")
 			// Remove ra.new now that setup is complete.
-			clearNew(block)
+			clearNewTag(block)
 			returnValue(1)
 		}
 
@@ -82,13 +92,13 @@ object EntityDetector {
 			tag(self()) { remove(CHECKING) }
 
 			// Output redstone signal based on detection.
-			shell(on = false)
+			outputShell(on = false)
 			raw("execute if score @s ${Obj.TEMP} matches 1 at @s run return run fill ~-1 ~-1 ~-1 ~1 ~1 ~1 redstone_block replace iron_block")
 		}
 
 		pack.define(block.goggles) { goggles() }
 
-		val onBreak = pack.plainOnBreak(block, item, particle = true)
+		val onBreak = pack.blockOnBreak(block, drop = { dropItem(item) }, sound = STONE_BREAK_SOUND, cloud = true)
 		pack.blockTick(block, onBreak) {
 			// Check for entities in range.
 			execute {

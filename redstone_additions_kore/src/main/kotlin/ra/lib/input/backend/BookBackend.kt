@@ -18,7 +18,7 @@ import ra.lib.input.InputObj
 import ra.lib.input.inputMessage
 import ra.lib.input.storeReq
 import ra.lib.lib
-import ra.lib.macroCall
+import ra.core.macroCall
 
 /**
  * `ra_lib:input/backend/writable_book/...`: free text, written on page 1 of an "Input Form"

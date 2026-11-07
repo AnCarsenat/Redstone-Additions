@@ -16,8 +16,8 @@ import ra.modules.ender.TeleportAnchor.registerTeleportAnchor
 import ra.modules.ender.debug.EnderDebug.registerEnderDebug
 import ra.modules.ender.link.Link.registerLink
 import ra.modules.ender.tools.Anchor.registerAnchorTools
-import ra.modules.infinite.loadMessage
-import ra.modules.sensors.exec
+import ra.core.moduleLoaded
+import ra.core.executeRun
 
 /**
  * Ender Links (`ra_ender`): remote vaults (items, fluid, EU) and teleport anchors.
@@ -47,7 +47,7 @@ object EnderModule : GameplayModule {
 
 			for (b in blocks) function(b.fn("register_block"))
 
-			loadMessage("Ender links loaded!", "light_purple")
+			moduleLoaded("Ender links loaded!", "light_purple")
 		}
 
 		pack.define(tick!!) {
@@ -60,7 +60,7 @@ object EnderModule : GameplayModule {
 			// Each block's tick opens with several @e scans over its own markers, so a world with
 			// none of them still paid for the scans. One existence check each is cheaper than the
 			// four or five selectors behind it.
-			for (b in blocks) exec("if entity @e[type=marker,tag=${b.tag},limit=1]", b.tick)
+			for (b in blocks) executeRun("if entity @e[type=marker,tag=${b.tag},limit=1]", b.tick)
 
 			// Arrival grace, so a player landing on an anchor that is itself powered is not bounced
 			// straight back.

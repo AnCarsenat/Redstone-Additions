@@ -8,13 +8,17 @@ import io.github.ayfri.kore.features.recipes.types.CraftingShaped
 import io.github.ayfri.kore.features.recipes.types.RecipeCategory
 import ra.core.Obj
 import ra.core.block.CustomBlock
+import ra.core.block.STONE_BREAK_SOUND
+import ra.core.block.Unlock
+import ra.core.block.blockOnBreak
+import ra.core.block.dropItem
+import ra.core.block.recipeResult
+import ra.core.block.shapedRecipe
 import ra.core.define
 import ra.core.raw
-import ra.modules.infinite.ItemSpec
-import ra.modules.infinite.SComp
-import ra.modules.infinite.loreItem
-import ra.modules.sensors.plainOnBreak
-import ra.modules.sensors.shapedRecipe
+import ra.core.item.ItemSpec
+import ra.core.item.SComp
+import ra.core.item.loreItem
 
 /**
  * What every `ra_ender` block shares: identifiers, the item shape, the recipe and the break.
@@ -69,16 +73,11 @@ internal fun CustomBlock.enderItem(rarity: String, vararg lore: SComp): ItemSpec
  * discovered by holding an ender pearl.
  */
 internal fun DataPack.enderRecipe(block: CustomBlock, item: ItemSpec, category: RecipeCategory, shape: CraftingShaped.() -> Unit) =
-	shapedRecipe(block.ns, block.id, item, unlockedBy = Items.ENDER_PEARL, category = category, trigger = "has_pearl", shape = shape)
+	shapedRecipe(block.ns, block.id, item.recipeResult(), Unlock(Items.ENDER_PEARL, "has_pearl"), category, shape = shape)
 
 /** `on_break` of an ender block: [cleanup], drop swap, stone break sound, marker removed. No cloud. */
 internal fun DataPack.enderOnBreak(block: CustomBlock, item: ItemSpec, cleanup: Function.() -> Unit = {}): FunctionArgument =
-	plainOnBreak(block, item, particle = false, cleanup = cleanup)
-
-/** `blocks/<dir>/register_block`: the debug line of `ra_ender:load`. */
-internal fun DataPack.enderRegisterBlock(block: CustomBlock): FunctionArgument = define(block.fn("register_block")) {
-	raw("""tellraw @a[tag=ra.debug] [{text:"[RA] ",color:"gold"},{text:"${block.name} registered",color:"gray"}]""")
-}
+	blockOnBreak(block, drop = { dropItem(item) }, sound = STONE_BREAK_SOUND, cleanup = cleanup)
 
 /** `blocks/<dir>/give`: the item, then a one-line hint in chat. */
 internal fun DataPack.enderGive(block: CustomBlock, item: ItemSpec, hint: String) = define(block.give) {
@@ -110,10 +109,6 @@ internal fun DataPack.cycleLinkSendReceive(block: CustomBlock) = define(block.fn
 	raw("execute if score #ender.mode ${Obj.TEMP} matches 2 run ${wrenchSay(block.name, "link (two-way)", "light_purple")}")
 	raw(WRENCH_CLICK)
 }
-
-/** `execute as <every marker of block> unless data entity @s data.properties.<key> run ... set value <snbt>`. */
-internal fun Function.enderDefault(block: CustomBlock, key: String, snbt: String) =
-	raw("execute as @e[type=marker,tag=${block.tag}] unless data entity @s data.properties.$key run data modify entity @s data.properties.$key set value $snbt")
 
 /**
  * Who can receive this tick: every marker of [block] not in [notMode] gets [tag]. Recomputed

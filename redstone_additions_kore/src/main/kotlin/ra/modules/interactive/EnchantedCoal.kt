@@ -10,10 +10,10 @@ import ra.core.hook
 import ra.core.ref
 import ra.modules.enchanting.EnchantingModule
 import ra.modules.enchanting.sacrificeRecipe
-import ra.modules.infinite.flag
-import ra.modules.infinite.itemSpec
-import ra.modules.infinite.loreLine
-import ra.modules.infinite.raData
+import ra.core.item.flag
+import ra.core.item.itemSpec
+import ra.core.item.loreLine
+import ra.core.item.raData
 
 /**
  * Enchanted Coal and the Enchanted Coal Block, the way to the Big Torch: coal sacrificed at an

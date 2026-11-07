@@ -20,10 +20,3 @@ internal fun fake(name: String) = literal(name)
 
 /** `scoreboard objectives add <name> dummy`, once per name. */
 internal fun Function.dummyObjectives(vararg names: String) = names.forEach { scoreboard.objectives.add(it) }
-
-/**
- * The text a macro line uses to call [ref] with a literal argument block -- for the lines that
- * must stay macros (`$function ra_lib:redstone/dust/$(dust) {...}`), where the typed `function()`
- * cannot be used. Built from the ref so a rename still reaches the call.
- */
-internal fun macroCall(ref: FunctionArgument, args: String = "") = "function ${ref.asId()}" + if (args.isEmpty()) "" else " $args"

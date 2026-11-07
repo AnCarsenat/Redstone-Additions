@@ -16,6 +16,10 @@ import ra.core.define
 import ra.core.raw
 import ra.core.ref
 import ra.modules.enchanting.sacrificeRecipe
+import ra.core.item.itemSpec
+import ra.core.item.loreLine
+import ra.core.item.raData
+import ra.core.item.flag
 
 /**
  * The Generator Casing and the three cores, the crafting items behind the generators.

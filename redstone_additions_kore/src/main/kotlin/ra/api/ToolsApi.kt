@@ -8,6 +8,20 @@ import ra.core.ref
  * See [RaLib] for how these reference objects are meant to be used.
  */
 object Goggles {
+	/** Called every tick from ra:tick. */
+	val tick = ref(Ns.RA, "tools/goggles/tick")
+	val give = ref(Ns.RA, "tools/goggles/give")
+	val scanRange = ref(Ns.RA, "tools/goggles/scan_range")
+
+	/** Built from `Ra.goggles`: runs the readout of whichever block this marker is. */
+	val drawBlock = ref(Ns.RA, "tools/goggles/draw_block")
+
+	/** Built from `Ra.multiblockGoggles`. */
+	val drawMultiblock = ref(Ns.RA, "tools/goggles/draw_multiblock")
+
+	/** Name of the block this marker is, into `storage ra:temp block_name` (via [drawBlock]). */
+	val blockName = ref(Ns.RA, "tools/block_name")
+
 	/**
 	 * Billboard line writers, called from a block's `goggles` function as the marker.
 	 * `prop_line` reads `data.properties`, `data_line` reads `data.status`; the `stacked_*`
@@ -27,11 +41,45 @@ object Goggles {
 		val stackedStatusLine = ref(Ns.RA, "tools/goggles/billboard/stacked_status_line")
 		val stackedDataLine = ref(Ns.RA, "tools/goggles/billboard/stacked_data_line")
 		val stackedTextLine = ref(Ns.RA, "tools/goggles/billboard/stacked_text_line")
+
+		/** Macro `{name}`, as a multiblock marker: name billboard + I/O indicators. */
+		val handleMultiblock = ref(Ns.RA, "tools/goggles/billboard/handle_multiblock")
+		val showInput = ref(Ns.RA, "tools/goggles/billboard/show_input")
+		val showOutput = ref(Ns.RA, "tools/goggles/billboard/show_output")
+		val showControl = ref(Ns.RA, "tools/goggles/billboard/show_control")
+		val showLiteralLine = ref(Ns.RA, "tools/goggles/billboard/show_literal_line")
+		val renderName = ref(Ns.RA, "tools/goggles/billboard/render_name")
+		val renderLiteralLine = ref(Ns.RA, "tools/goggles/billboard/render_literal_line")
+		val renderIoLine = ref(Ns.RA, "tools/goggles/billboard/render_io_line")
+		val stackNext = ref(Ns.RA, "tools/goggles/billboard/stack_next")
 	}
 
 	object Status {
 		val readStatusMultiblock = ref(Ns.RA, "tools/goggles/status/read_status_multiblock")
 	}
+}
+
+/** The tools' registries and per-tick entry points, called by the Hub's `ra:load` / `ra:tick`. */
+object Tools {
+	object Wrench {
+		val initRegistry = ref(Ns.RA, "tools/wrench/init_registry")
+		val menuAction = ref(Ns.RA, "tools/wrench/menu_action")
+	}
+
+	object DataHandler {
+		val tick = ref(Ns.RA, "tools/data_handler/tick")
+		val initRegistry = ref(Ns.RA, "tools/data_handler/init_registry")
+	}
+
+	object Readonly {
+		val initRegistry = ref(Ns.RA, "tools/readonly/init_registry")
+	}
+}
+
+/** Entry points of the Hub (`ra:*` outside `tools/`). */
+object Hub {
+	/** `/function ra:uninstall`: asks twice, then removes the pack's entities and data. */
+	val uninstall = ref(Ns.RA, "uninstall")
 }
 
 /** `ra_settings`: pack-wide (global) and per-player (user) settings. Reads must fail open. */
@@ -78,6 +126,9 @@ object ModulesApi {
 		val itemMoverSelectInput = ref(Ns.INTERACTIVE, "blocks/item_mover/select_input")
 		val itemMoverTryInsert = ref(Ns.INTERACTIVE, "blocks/item_mover/try_insert")
 		val itemMoverCheckOutputCapacity = ref(Ns.INTERACTIVE, "blocks/item_mover/check_output_capacity")
+
+		/** ra_interactive's list in `#ra_enchanting:recipes`; ra_enchanting keeps it last in the tag. */
+		val enchantRecipes = ref(Ns.INTERACTIVE, "enchant_recipes")
 	}
 
 	object Migrations {

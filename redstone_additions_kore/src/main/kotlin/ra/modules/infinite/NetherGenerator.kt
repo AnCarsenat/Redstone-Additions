@@ -5,6 +5,7 @@ import io.github.ayfri.kore.generated.Blocks
 import ra.core.Ra
 import ra.core.define
 import ra.core.raw
+import ra.core.item.loreLine
 
 /** Nether Generator: grows one block of nether stone in front of itself. A real dropper, no skin -- see [Generator]. */
 object NetherGenerator {

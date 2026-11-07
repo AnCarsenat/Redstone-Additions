@@ -28,13 +28,20 @@ grep -rn '"wrench/init_registry"\|"tools/wrench/init_registry"' src/main/kotlin
 | `core/Fn.kt` | `ref`, `define`, `fn`, `raw`, `hook` |
 | `core/Ra.kt` | `PackPart`, `GameplayModule`, `TagRoute`, `WrenchCycle`, `GiveBundle`, the `Ra` registry, `afterAllParts` |
 | `core/PackValidator.kt` | Generation-time check for calls to undefined functions |
+| `core/Exec.kt` | `executeRun`, `executeReturnRun`, `executeStoreRun`, `callWith`, `returnRun`, `macroCall`: calls behind a vanilla-text chain, the function still a value |
+| `core/Messages.kt` | `RA_CHAT_PREFIX`, `raMessage`, `moduleLoaded`, `registeredLine`, `blockRegisterMessage` |
+| `core/Scores.kt` | `ensureScore` (start a score only when it has none) |
+| `core/item/` | `ItemSpec` (+ `fromSnbt`), `itemSpec { }`, the `Snbt` value classes (`SStr`, `SBool`, `SByte`, `SRaw`...), `loreLine`, `raData`, `flag`, `parseSnbt`; `CustomBlock.loreItem`, `entityDataSnbt` |
 | `core/block/CustomBlock.kt` | `CustomBlock`: one placeable block described once |
-| `core/block/BlockFunctions.kt` | `blockGive`, `dropBlockItem`, `killVanillaDrop`, `blockRecipe`, `recipeUnlock`, `blockOnBreak`, `blockTick` |
-| `core/block/Placement.kt` | `placementGuard`, `placeBlock`, `finishPlacement` |
-| `core/block/Selectors.kt` | `markers`, `brokenMarkers`, `newMarker`, `soundListeners` |
+| `core/block/BlockFunctions.kt` | `blockGive` |
+| `core/block/BlockBreak.kt` | `BreakTest`, `breakCheck`, `forEachMarker`, `blockTick`, `blockOnBreak`, `dropBlockItem`, `dropItem`, `killVanillaDrop`, `breakSound`, `breakCloud`, `STONE_BREAK_SOUND` |
+| `core/block/Recipes.kt` | `RecipeResult`, `Unlock`, `shapedRecipe`, `recipeUnlock`, `blockRecipe` |
+| `core/block/Placement.kt` | `placementGuard`, `placeBlock`, `clearNewTag`, `finishPlacement`, `setOnNew`, `defaultProperty` |
+| `core/block/Redstone.kt` | `outputShell`, `readProperty` |
+| `core/block/Selectors.kt` | `markers`, `brokenMarkers`, `newMarker`, `soundListeners`; as text: `markerSel`, `newMarkerSel`, `soundListenersSel`, `particleViewersSel` |
 | `core/block/GogglesLines.kt` | `gogglesHeader`, `propLine`, `dataLine`, `textLine`, `stackReset`, `stacked*Line` |
 | `api/LibApi.kt` | `RaLib` (every public `ra_lib` entry point), `MultiblockLib` (+ `Hooks` tag names) |
-| `api/ToolsApi.kt` | `Goggles` (billboard writers), `Settings` (read API, lifecycle), `ModulesApi` (cross-module calls) |
+| `api/ToolsApi.kt` | `Goggles` (tick, dispatch, billboard writers), `Tools` (registries, per-tick), `Hub` (`ra:uninstall`), `Settings` (read API, lifecycle), `ModulesApi` (cross-module calls) |
 
 ## `ra_lib` → `lib/`
 
@@ -139,11 +146,11 @@ Each module has `<Name>Module.kt` (the `GameplayModule` object: registration ord
 
 | Package | Notable files |
 | --- | --- |
-| `modules/gates` | `Clock.kt` (the reference block), `UniGate.kt`, `Delayer.kt`, `Extender.kt`, `Randomizer.kt`, `Shortener.kt`, `GateCommon.kt` (output shell, `timingOnBreak`, `gateGoggles`), `debug/` |
+| `modules/gates` | `Clock.kt` (the reference block), `UniGate.kt`, `Delayer.kt`, `Extender.kt`, `Randomizer.kt`, `Shortener.kt`, `GateCommon.kt` (`timingOnBreak`, `timingTick`, `gateGoggles`), `debug/` |
 | `modules/wires` | `WiresBlocks.kt` (every item, recipe, bundle, wrench rows, read-only), `blocks/Placement.kt` + `PlacementSpecs.kt` (one shared handler), `blocks/<block>/`, `electric/`, `fluid/`, `liquid/`, `bridge/`, `media/`, `common/` (`Line.kt`, `ConduitModel.kt`), `Lifecycle.kt` |
 | `modules/multiblock` | `blocks/Bases.kt` + `BaseTier.kt`, `blastforge/`, `upgradeplatform/`, `drills/RockMetallicDrill.kt`, `goggles/ShowIoLabel.kt` |
 | `modules/jetpacks` | `Jp.kt` (identifiers), `Kits.kt`, `kit/` (`FitModifiers.kt` generates `fit_<tier>_<n>`), `flight/`, `mode/` |
-| `modules/infinite` | `Generator.kt` (shared generator shape), one file per generator, `ItemSpec.kt`, `BlockLifecycle.kt`, `InfiniteItems.kt`, `InfiniteTags.kt` |
+| `modules/infinite` | `Generator.kt` (shared generator shape), one file per generator, `InfiniteItems.kt`, `InfiniteTags.kt` |
 | `modules/enchanting` | `EnchantingModule.kt`, `RecipesTag.kt` (`#ra_enchanting:recipes`), `SacrificeRecipe.kt`, `sacrifice/` |
 | `modules/chunkloader` | `ChunkLoader.kt` |
 | `modules/interactive` | one file per block (`BlockBreaker.kt`, `BlockPlacer.kt`, `Breeder.kt` + `BreederBreeds.kt`, `ItemPipe.kt` + `ItemPipeTransfer.kt`, `ItemMover.kt` + `ItemMoverIo.kt`, `BigTorch.kt` + `BigTorchSweep.kt`, `Cauldrons.kt`, `MagicCrate.kt`, `MessageBlock.kt`, `Spitter.kt`), `EnchantedCoal.kt`, `InteractiveCommon.kt` |

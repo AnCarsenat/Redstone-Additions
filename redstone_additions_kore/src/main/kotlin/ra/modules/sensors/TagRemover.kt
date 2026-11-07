@@ -14,8 +14,18 @@ import ra.core.block.placeBlock
 import ra.core.block.propLine
 import ra.core.define
 import ra.core.raw
-import ra.modules.infinite.loreItem
-import ra.modules.infinite.registerBlockMessage
+import ra.core.item.loreItem
+import ra.core.block.shapedRecipe
+import ra.core.block.recipeResult
+import ra.core.block.Unlock
+import ra.core.block.blockOnBreak
+import ra.core.block.dropItem
+import ra.core.block.STONE_BREAK_SOUND
+import ra.core.blockRegisterMessage
+import ra.core.executeRun
+import ra.core.block.placementGuard
+import ra.core.block.setOnNew
+import ra.core.block.clearNewTag
 
 /**
  * Tag Remover: on a rising redstone edge, removes `tag` from every entity matching
@@ -32,9 +42,9 @@ object TagRemover {
 
 	fun Ra.registerTagRemover() {
 		block(block)
-		pack.registerBlockMessage(block)
+		pack.blockRegisterMessage(block)
 		pack.blockGive(block)
-		pack.shapedRecipe(block.ns, block.id, item, unlockedBy = Items.NAME_TAG, count = null) {
+		pack.shapedRecipe(block.ns, block.id, item.recipeResult(), Unlock(Items.NAME_TAG), count = null) {
 			pattern("CCC", "CWC", "CCC")
 			key("C", Items.COBBLESTONE)
 			key("W", Items.WATER_BUCKET)
@@ -42,11 +52,11 @@ object TagRemover {
 
 		// As bat, at bat position.
 		pack.define(block.handlePlacement) {
-			batGuard(block)
+			placementGuard(block, checkExisting = false)
 			// Red glazed terracotta with a marker (dir_type 0 = non-directional).
 			placeBlock(block)
 			setOnNew(block, "data.properties", """{entity_selector:"@e[distance=..3]",tag:"custom_tag"}""")
-			clearNew(block)
+			clearNewTag(block)
 			returnValue(1)
 		}
 
@@ -68,7 +78,7 @@ object TagRemover {
 			propLine("tag", "Tag: ", "aqua", y = 0.8)
 		}
 
-		val onBreak = pack.plainOnBreak(block, item, particle = true)
+		val onBreak = pack.blockOnBreak(block, drop = { dropItem(item) }, sound = STONE_BREAK_SOUND, cloud = true)
 		pack.blockTick(block, onBreak) {
 			detectAll(block)
 
@@ -77,9 +87,9 @@ object TagRemover {
 			raw("execute as ${risingEdge(block)} at @s run data modify storage ra:temp tag set from entity @s data.properties.tag")
 			raw("execute as ${risingEdge(block)} at @s run data modify storage ra:temp entity_selector set from entity @s data.properties.entity_selector")
 			// A named tag removes that tag; an empty or missing one clears them all.
-			exec("$rising if data entity @s data.properties.tag run execute unless data entity @s {data:{properties:{tag:\"\"}}}", removeTagMacro, "with storage ra:temp")
-			exec("$rising if data entity @s {data:{properties:{tag:\"\"}}}", clearAllTagsMacro, "with storage ra:temp")
-			exec("$rising unless data entity @s data.properties.tag", clearAllTagsMacro, "with storage ra:temp")
+			executeRun("$rising if data entity @s data.properties.tag run execute unless data entity @s {data:{properties:{tag:\"\"}}}", removeTagMacro, "with storage ra:temp")
+			executeRun("$rising if data entity @s {data:{properties:{tag:\"\"}}}", clearAllTagsMacro, "with storage ra:temp")
+			executeRun("$rising unless data entity @s data.properties.tag", clearAllTagsMacro, "with storage ra:temp")
 
 			trackPower(block)
 		}

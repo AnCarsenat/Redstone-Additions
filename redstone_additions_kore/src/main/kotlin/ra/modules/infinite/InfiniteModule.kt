@@ -14,6 +14,7 @@ import ra.modules.infinite.MineralGenerator.registerMineralGenerator
 import ra.modules.infinite.NetherGenerator.registerNetherGenerator
 import ra.modules.infinite.PoppyGenerator.registerPoppyGenerator
 import ra.modules.infinite.debug.PoppyDebug.registerPoppyDebug
+import ra.core.moduleLoaded
 
 /** Infinite Generators (`ra_infinite`): generators that grow their own material, forever. */
 object InfiniteModule : GameplayModule {
@@ -52,7 +53,7 @@ object InfiniteModule : GameplayModule {
 
 		pack.define(load) {
 			for (g in generators) function(g.registerBlock)
-			loadMessage("Infinite generators loaded!", "aqua")
+			moduleLoaded("Infinite generators loaded!", "aqua")
 		}
 		pack.define(tick!!) {
 			for (g in generators) function(g.block.tick)

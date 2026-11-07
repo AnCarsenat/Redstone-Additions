@@ -24,13 +24,13 @@ import ra.core.block.killVanillaDrop
 import ra.core.block.placeBlock
 import ra.core.define
 import ra.core.raw
-import ra.modules.infinite.breakCheck
-import ra.modules.infinite.finishLorePlacement
-import ra.modules.infinite.loreItem
-import ra.modules.infinite.registerBlockMessage
+import ra.core.item.loreItem
 import ra.modules.interactive.BreederBreeds.registerBreederBreeds
 import ra.modules.interactive.BreederBreeds.tryBreed
 import io.github.ayfri.kore.commands.scoreboard.scoreboard
+import ra.core.block.breakCheck
+import ra.core.block.finishPlacement
+import ra.core.blockRegisterMessage
 
 /**
  * Breeder: feeds the animals in front of it from its own inventory while powered.
@@ -57,7 +57,7 @@ object Breeder {
 
 	fun Ra.registerBreeder() {
 		block(block)
-		pack.registerBlockMessage(block)
+		pack.blockRegisterMessage(block)
 		pack.specGive(block, item)
 		pack.shapedRecipe(
 			block.ns.id, block.id, item,
@@ -126,7 +126,7 @@ object Breeder {
 		placeGuard(block)
 		placeBlock(block)
 		executeRun("at @e[type=marker,tag=${block.tag},tag=${Tag.NEW},limit=1,sort=nearest]", refreshDisplay)
-		finishLorePlacement(block)
+		finishPlacement(block, removePlaceTag = false, withinBlock = false)
 	}
 
 	/**

@@ -27,14 +27,16 @@ import ra.core.block.stackedPropLine
 import ra.core.define
 import ra.core.raw
 import ra.modules.ender.link.Link
-import ra.modules.infinite.breakCheck
-import ra.modules.infinite.loreLine
-import ra.modules.sensors.batGuard
-import ra.modules.sensors.clearNew
-import ra.modules.sensors.exec
-import ra.modules.sensors.execReturn
-import ra.modules.sensors.newSel
-import ra.modules.sensors.setOnNew
+import ra.core.item.loreLine
+import ra.core.block.breakCheck
+import ra.core.blockRegisterMessage
+import ra.core.executeRun
+import ra.core.executeReturnRun
+import ra.core.block.newMarkerSel
+import ra.core.block.placementGuard
+import ra.core.block.setOnNew
+import ra.core.block.clearNewTag
+import ra.core.block.defaultProperty
 
 /**
  * Ender Fluid Vault: an ordinary fluid node with a small buffer, so pipes, pumps and tanks
@@ -61,7 +63,7 @@ object FluidVault {
 		block(block)
 		wrenchCycle(block.id, WrenchCycle("Mode", "mode", cycleMode))
 		readonly(block.id, "transfer_rate")
-		pack.enderRegisterBlock(block)
+		pack.blockRegisterMessage(block)
 		pack.enderGive(block, item, """{text:" — pipe into it like a tank",color:"gray"}""")
 		pack.enderRecipe(block, item, RecipeCategory.MISC) {
 			pattern("CPC", "UKU", "CUC")
@@ -73,7 +75,7 @@ object FluidVault {
 
 		// As bat, at bat position.
 		pack.define(block.handlePlacement) {
-			batGuard(block)
+			placementGuard(block, checkExisting = false)
 			placeBlock(block)
 			setOnNew(block, "data.properties.channel", "\"default\"")
 			setOnNew(block, "data.properties.mode", "\"link\"")
@@ -81,9 +83,9 @@ object FluidVault {
 
 			// Fluid network membership, and the fluid flag the wires status readouts look for.
 			raw("tag @e[type=marker,tag=${block.tag},tag=ra.new,distance=..0.5] add ${EnderIds.FLUID_NODE}")
-			exec("as ${block.newSel()}", RaLib.Transport.Net.join, "{class:\"fluid\",capacity:1000}")
+			executeRun("as ${block.newMarkerSel()}", RaLib.Transport.Net.join, "{class:\"fluid\",capacity:1000}")
 
-			clearNew(block)
+			clearNewTag(block)
 			tag(self()) { remove(block.placeTag) }
 			returnValue(1)
 		}
@@ -101,17 +103,17 @@ object FluidVault {
 			breakCheck(block, Blocks.PURPUR_BLOCK, onBreak)
 
 			// Defaults, and a node that lost its network membership on reload rejoins.
-			enderDefault(block, "channel", "\"default\"")
-			enderDefault(block, "mode", "\"link\"")
-			enderDefault(block, "transfer_rate", "200")
-			exec("as @e[type=marker,tag=${block.tag},tag=!ra.tr.node]", RaLib.Transport.Net.rejoin, "{class:\"fluid\"}")
+			defaultProperty(block, "channel", "\"default\"")
+			defaultProperty(block, "mode", "\"link\"")
+			defaultProperty(block, "transfer_rate", "200")
+			executeRun("as @e[type=marker,tag=${block.tag},tag=!ra.tr.node]", RaLib.Transport.Net.rejoin, "{class:\"fluid\"}")
 
 			raw("tag @e[type=marker,tag=${EnderIds.RECV_FLUID}] remove ${EnderIds.RECV_FLUID}")
 			tagUnlessMode(block, "send", EnderIds.RECV_FLUID)
 
 			// Every 10 ticks, so a link is a steady trickle rather than a spike.
 			raw("scoreboard players add @e[type=marker,tag=${block.tag}] ${EnderIds.CD} 1")
-			exec("as @e[type=marker,tag=${block.tag},scores={${EnderIds.CD}=10..}] at @s", process)
+			executeRun("as @e[type=marker,tag=${block.tag},scores={${EnderIds.CD}=10..}] at @s", process)
 		}
 	}
 
@@ -130,11 +132,11 @@ object FluidVault {
 		scoreboard.players.set(self(), EnderIds.CD, 0)
 		tag(self()) { add(EnderIds.SELF) }
 
-		execReturn("if data entity @s data.properties{mode:\"receive\"}", Link.done)
+		executeReturnRun("if data entity @s data.properties{mode:\"receive\"}", Link.done)
 
 		function(RaLib.Transport.Net.read)
-		execReturn("if score #net_amount ra.tr.tmp matches ..0", Link.done)
-		execReturn("unless data storage ra:transport cur.medium", Link.done)
+		executeReturnRun("if score #net_amount ra.tr.tmp matches ..0", Link.done)
+		executeReturnRun("unless data storage ra:transport cur.medium", Link.done)
 
 		raw("scoreboard players operation #ender.mine $T = #net_amount ra.tr.tmp")
 		function(RaLib.Util.property, nbt { this["name"] = "transfer_rate"; this["default"] = 200; this["min"] = 1 })
@@ -148,9 +150,9 @@ object FluidVault {
 		raw("scoreboard players operation #ender.want $T = #ender.rate $T")
 
 		// A two-way link moves half the gap instead, and only when it is the fuller side.
-		exec("if data entity @s data.properties{mode:\"link\"}", level)
+		executeRun("if data entity @s data.properties{mode:\"link\"}", level)
 
-		execReturn("if score #ender.want $T matches ..0", Link.done)
+		executeReturnRun("if score #ender.want $T matches ..0", Link.done)
 		raw("execute if score #ender.want $T > #ender.rate $T run scoreboard players operation #ender.want $T = #ender.rate $T")
 		raw("execute store result storage ra:ender fluid.rate int 1 run scoreboard players get #ender.want $T")
 

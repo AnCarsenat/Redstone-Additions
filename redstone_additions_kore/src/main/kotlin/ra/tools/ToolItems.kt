@@ -5,8 +5,7 @@ import io.github.ayfri.kore.arguments.components.item.CustomComponent
 import io.github.ayfri.kore.utils.nbt
 import io.github.ayfri.kore.utils.set
 import net.benwoodworth.knbt.NbtCompound
-import net.benwoodworth.knbt.NbtTag
-import net.benwoodworth.knbt.StringifiedNbt
+import ra.core.item.parseSnbt
 
 /**
  * One hand-held tool item, described once: its `give`, its recipe result and its give-bundle
@@ -25,24 +24,16 @@ data class ToolItem(val id: String, val item: String, val components: List<Pair<
 
 	/** Recipe results: the same components as raw NBT (Kore's typed ones cannot serialize to JSON). */
 	fun ComponentsScope.toolComponents() {
-		for ((k, v) in this@ToolItem.components) this[k] = CustomComponent(parse(v))
+		for ((k, v) in this@ToolItem.components) this[k] = CustomComponent(parseSnbt(v))
 	}
 
 	/** `{id, count, components}`, for bundle contents. */
 	fun stackNbt(): NbtCompound = nbt {
 		this["id"] = item
 		this["count"] = 1
-		this["components"] = nbt { for ((k, v) in components) this["minecraft:$k"] = parse(v) }
+		this["components"] = nbt { for ((k, v) in components) this["minecraft:$k"] = parseSnbt(v) }
 	}
 
-	companion object {
-		private val snbt = StringifiedNbt { }
-		private val bool = Regex("""(?<=[:\[,=]|^)(true|false)(?=[,}\]]|$)""")
-
-		/** SNBT as the game reads it; knbt does not know `true` / `false`, which are bytes in SNBT. */
-		fun parse(text: String): NbtTag =
-			snbt.decodeFromString(NbtTag.serializer(), bool.replace(text) { if (it.value == "true") "1b" else "0b" })
-	}
 }
 
 /** The endless-use food that makes right-click detectable (see [ToolItem]). */

@@ -6,7 +6,7 @@ import ra.core.Ra
 import ra.core.define
 import ra.core.raw
 import ra.lib.lib
-import ra.lib.macroCall
+import ra.core.macroCall
 
 /**
  * The per-side dust and torch rules, in their three flavours: the level (`dust/`, `torch/`), the

@@ -17,6 +17,7 @@ import ra.core.block.stackedPropLine
 import ra.core.block.stackedTextLine
 import ra.core.define
 import ra.core.raw
+import ra.core.item.loreLine
 
 /** Poppy Generator: plants one flower in front of itself. A real dropper, no skin -- see [Generator]. */
 object PoppyGenerator {

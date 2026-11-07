@@ -8,7 +8,7 @@ import ra.core.Ra
 import ra.core.define
 import ra.core.ref
 import ra.modules.chunkloader.ChunkLoader.registerChunkLoader
-import ra.modules.infinite.loadMessage
+import ra.core.moduleLoaded
 
 /** Chunk Loader (`ra_chunk_loader`): one block, the Chunk Loader. */
 object ChunkLoaderModule : GameplayModule {
@@ -30,7 +30,7 @@ object ChunkLoaderModule : GameplayModule {
 
 		pack.define(load) {
 			function(ChunkLoader.registerBlock)
-			loadMessage("Chunk Loader loaded!", "aqua")
+			moduleLoaded("Chunk Loader loaded!", "aqua")
 		}
 		pack.define(tick!!) { function(ChunkLoader.block.tick) }
 	}

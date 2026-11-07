@@ -21,16 +21,20 @@ import ra.core.block.placeBlock
 import ra.core.block.propLine
 import ra.core.define
 import ra.core.raw
-import ra.modules.infinite.breakCheck
-import ra.modules.infinite.loreItem
-import ra.modules.infinite.registerBlockMessage
-import ra.modules.sensors.batGuard
-import ra.modules.sensors.clearNew
-import ra.modules.sensors.exec
-import ra.modules.sensors.plainOnBreak
-import ra.modules.sensors.setOnNew
-import ra.modules.sensors.shapedRecipe
-import ra.modules.sensors.shell
+import ra.core.item.loreItem
+import ra.core.block.shapedRecipe
+import ra.core.block.recipeResult
+import ra.core.block.Unlock
+import ra.core.block.blockOnBreak
+import ra.core.block.dropItem
+import ra.core.block.STONE_BREAK_SOUND
+import ra.core.block.outputShell
+import ra.core.block.breakCheck
+import ra.core.blockRegisterMessage
+import ra.core.executeRun
+import ra.core.block.placementGuard
+import ra.core.block.setOnNew
+import ra.core.block.clearNewTag
 
 /**
  * Wireless Receiver: powers its shell while an emitter on its `channel` string transmits, or for a
@@ -56,9 +60,9 @@ object Receiver {
 	fun Ra.registerReceiver() {
 		block(block)
 		wrenchToggles += TagRoute(block.tag, toggle)
-		pack.registerBlockMessage(block)
+		pack.blockRegisterMessage(block)
 		pack.blockGive(block)
-		pack.shapedRecipe(block.ns, block.id, item, unlockedBy = Items.PURPUR_BLOCK) {
+		pack.shapedRecipe(block.ns, block.id, item.recipeResult(), Unlock(Items.PURPUR_BLOCK)) {
 			pattern("GPG", "PRP", "GPG")
 			key("G", Items.GOLD_INGOT)
 			key("P", Items.PURPUR_BLOCK)
@@ -67,13 +71,13 @@ object Receiver {
 
 		// As bat, at bat position.
 		pack.define(block.handlePlacement) {
-			batGuard(block)
+			placementGuard(block, checkExisting = false)
 			// Purpur block with a marker.
 			placeBlock(block)
 			// Default channel (a string) and enabled state.
 			setOnNew(block, "data.properties.channel", "\"default\"")
 			setOnNew(block, "data.properties.enabled", "1b")
-			clearNew(block)
+			clearNewTag(block)
 			tag(self()) { remove(block.placeTag) }
 			returnValue(1)
 		}
@@ -102,7 +106,7 @@ object Receiver {
 		}
 
 		// A broken receiver puts its shell out, or whatever it touched stays powered.
-		val onBreak = pack.plainOnBreak(block, item, particle = true, afterKill = { shell(on = false) })
+		val onBreak = pack.blockOnBreak(block, drop = { dropItem(item) }, sound = STONE_BREAK_SOUND, cloud = true, afterVanillaKill = { outputShell(on = false) })
 		pack.define(block.tick) {
 			// Break detection: the receiver is a purpur block, anything else means it is gone.
 			breakCheck(block, Blocks.PURPUR_BLOCK, onBreak)
@@ -134,7 +138,7 @@ object Receiver {
 		raw("data modify storage ra:temp receiver_channel set from entity @s data.properties.channel")
 		tag(self()) { add(CHECKING) }
 
-		exec("as @e[type=marker,tag=${Emitter.block.tag},tag=${Emitter.TRANSMITTING}]", checkEmitterChannel)
+		executeRun("as @e[type=marker,tag=${Emitter.block.tag},tag=${Emitter.TRANSMITTING}]", checkEmitterChannel)
 
 		// Output based on receiving state.
 		raw("execute if entity @s[tag=$RECEIVING] at @s run fill ~-1 ~-1 ~-1 ~1 ~1 ~1 redstone_block replace iron_block")

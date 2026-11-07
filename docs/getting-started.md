@@ -53,33 +53,21 @@ path contains a macro (`give_$(kit)_kit`) are skipped, since only the game can r
 | report | `./gradlew koreBuild -Pra.strict=false` | prints `[ra] N unresolved call(s), strict mode off:` and the list, then writes the pack |
 
 `-Pra.strict` reaches the generator as the `ra.strict` system property (see `build.gradle.kts`).
-Report mode exists only so a partly ported tree can be generated and compared. A release is
-always built strict.
+Report mode is for work in progress: a half-written part can still be generated and compared.
+A release is always built strict.
 
 ## Putting it in a world
 
-List the worlds the plugin can find, then name the ones to install into in `build.gradle.kts`:
-
 ```bash
-./gradlew koreWorlds
+./gradlew koreRun -Pworld="Redstone Test"        # a world under <minecraft dir>/saves
+./gradlew koreRun -Pworld="/path/to/saves/My World"
+./gradlew koreRun -Pworld                        # ra.world from local.properties
+./gradlew koreRun -Pworld --continuous           # rebuild and reinstall on every save
 ```
 
-```kotlin
-kore {
-	worlds = listOf("Redstone Test")
-}
-```
-
-| Task | Does |
-| --- | --- |
-| `./gradlew koreRun` | `koreBuild`, then copies the pack into each listed world's `datapacks/`, then sends `/reload` over RCON if configured |
-| `./gradlew koreRun --continuous` | the same on every source save |
-| `./gradlew koreClean` | deletes the output and removes the pack from every world it was copied to |
-
-In single player, type `/reload` after `koreRun`. A dedicated server with RCON enabled reloads
-on its own; the `RCON_PASSWORD` environment variable is read by default. See the Kore
-[Gradle plugin](https://kore.ayfri.com/docs/guides/gradle-plugin) page for the `rcon { }` block,
-custom Minecraft directories and symlink mode.
+Then `/reload` in game. Without `-Pworld`, `koreRun` builds but installs nowhere. The full
+reference (the untracked `local.properties`, launcher instances, RCON, removing the pack again)
+is [Installing into a world](contributing-guidelines.md#installing-into-a-world).
 
 !!! warning "Never load the beet build and the Kore build together"
     Both write the same namespaces. With both enabled every function exists twice, the pack
@@ -131,7 +119,7 @@ of them off except the first two.
 | `"replace": false` on tags and `"frame": "task"` on advancements are dropped (JSON) | the game's own defaults |
 | A call to a `generated_scopes/` function is expanded back into its lines, each prefixed with the calling `execute … run` | Kore moving a multi-command `run { }` into its own function |
 
-What is left after that is a real difference. The [Porting Guide](porting.md#reading-the-comparison)
+What is left after that is a real difference. The [Porting Guide](porting-history.md#reading-the-comparison)
 explains how to read it.
 
 ## IDE

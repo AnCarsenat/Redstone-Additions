@@ -1,7 +1,7 @@
-# Settings (Kore)
+# Settings Internals
 
 How `ra_settings` is built. What the settings do in game, and the rules for choosing a scope,
-are in [Settings](../settings.md); they are unchanged.
+are in [Settings](settings.md); they are unchanged.
 
 In the beet pack, each page was a JSON file in `tools/settings/`, and `tools/settings_gen.py` (a
 beet plugin) generated the functions that depend on which settings exist. In the rewrite the

@@ -5,7 +5,7 @@ A placeable block is a **bat spawn egg**. Placing it spawns a bat tagged `ra`, `
 bat, checks the spot, and runs `#ra:placement_handlers` as the bat at the block centre. The
 block's own `handle_placement` returns 1 for its own bat: it places the vanilla block and summons
 a marker tagged `ra.custom_block.<id>`, which carries the block's state from then on. The full
-runtime flow is in [How It Works](../how-it-works.md#3-placement-lifecycle-item-block-marker);
+runtime flow is in [How It Works](how-it-works.md#3-placement-lifecycle-item-block-marker);
 this page is the Kotlin side.
 
 ## `CustomBlock`
@@ -152,7 +152,7 @@ tag @e[type=marker,tag=ra.broken,tag=ra.custom_block.clock] remove ra.broken
 `blockTick` + `blockOnBreak` route each broken marker through one `on_break` function instead:
 the same work, the cleanup in one place, no `ra.broken` tag carried between lines.
 `compare_reference.py` reports these ticks as **DIFFERS** and `on_break` as **EXTRA**; that is
-[expected](porting.md#differences-that-are-expected).
+[expected](porting-history.md#differences-that-are-expected).
 
 Not every beet block broke the same way, and where the difference is observable the port keeps
 it with a module-local variant rather than bending the core helpers:
@@ -224,7 +224,7 @@ wants `nameY` around `0.7`. A missing value renders "N/A" in red; asking the wro
 7. Add it to the module's `load` / `tick` / `items/give_all` list and its `GiveBundle`.
 8. Wrench rows, read-only properties, Data Handler names: see
    [Tools and Registries](tools-and-registries.md).
-9. A settings `BlockRow` (and `PropRow` defaults) on the module's page: see [Settings](settings.md).
+9. A settings `BlockRow` (and `PropRow` defaults) on the module's page: see [Settings](settings-internals.md).
 10. `./gradlew koreBuild`: the validator catches any call left dangling.
 
 Nothing shared is edited: no placement tag, no goggles dispatch, no bundle function.

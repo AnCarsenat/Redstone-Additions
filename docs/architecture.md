@@ -4,7 +4,7 @@ Kore is a **generator**. The Kotlin runs once, on your machine or in CI, and wri
 `.mcfunction` and JSON files; nothing of it exists in game afterwards. A Kotlin `val` is never a
 scoreboard, and a Kotlin `if` decides what is **written** into a function, not what the game
 evaluates when it runs. The runtime model (markers, placement, tick loop) is unchanged from the
-beet pack and is described in [How It Works](../how-it-works.md). This page is about the code
+beet pack and is described in [How It Works](how-it-works.md). This page is about the code
 that writes it.
 
 ```mermaid
@@ -222,7 +222,7 @@ Rescheduled every tick by itself, not run from `#minecraft:tick` (`ra/hub/Tick.k
 12. Tool menu triggers: hold timers, `enable` / `reset` of `ra.wrench`, `ra.dh.action`,
     `ra.edit_type`, then `ra:tools/wrench/menu_action` for players who clicked.
 
-The order is load-bearing; [How It Works](../how-it-works.md#2-tick-orchestration) explains the
+The order is load-bearing; [How It Works](how-it-works.md#2-tick-orchestration) explains the
 constraints. When you add a step, put it where the beet `ra:tick` would have, and write down why
 in a comment.
 

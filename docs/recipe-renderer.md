@@ -6,6 +6,14 @@ which meant opening the game for every new item.
 
 Needs Pillow (`pip install pillow`) and, on the first run only, network access.
 
+!!! note "Where it reads recipes"
+    `--all` and `--atlas` scan the beet source tree, `redstone_additions/src/data/*/recipe/`,
+    which still holds every recipe as of the move to Kotlin. The pack's recipes are now written
+    by Kotlin into `redstone_additions_kore/build/kore/redstone_additions/data/<ns>/recipe/`
+    (run `./gradlew koreBuild` first); pass one of those files to render a recipe added or
+    changed since. The output name only depends on the `<ns>/recipe/<name>.json` end of the
+    path, so it lands in the same `docs/images/recipes/<ns>/<name>.png`.
+
 ## Quick commands
 
 Run from `redstone_additions/`.

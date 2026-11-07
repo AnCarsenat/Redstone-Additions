@@ -38,11 +38,22 @@ grep -rn '"wrench/init_registry"\|"tools/wrench/init_registry"' src/main/kotlin
 
 ## `ra_lib` → `lib/`
 
-**Being ported.** `lib/RaLibPart.kt` is a stub. The finished package defines every reference in
-`RaLib`, in one folder per sub-system mirroring `ra_lib:<sub-system>/…`: `placement`,
-`orientation`, `redstone`, `inventory`, `transport` (`net`, `rebuild`), `skin`, `input`
-(`backend`, `router`, `session`), `util`, plus the `light/at_least_1..15` predicates and the
-`redstone/*` source block tags.
+`lib/RaLibPart.kt` calls each sub-system's registration; the package defines every reference in
+`RaLib` ([`api/LibApi.kt`](#foundation-core-and-api)), in one folder per sub-system mirroring
+`ra_lib:<sub-system>/…`.
+
+| Folder | Writes | Notable files |
+| --- | --- | --- |
+| `placement/` | `placement/place`, `set_block*`, `init` | `Placement.kt` |
+| `orientation/` | `orientation/get_facing`, `set_facing`, `init` | `Orientation.kt` |
+| `redstone/` | `redstone/*` readers, `facing/*`, `local/*`, dust/torch rules, the four `#ra_lib:redstone/*` block tags | `Sides.kt` (side data tables), `SideReaders.kt`, `Rules.kt`, `Detect.kt`, `Local.kt`, `RedstoneTags.kt` |
+| `inventory/` | `inventory/*` | `Inventory.kt`, `InsertOrDrop.kt`, `Remove.kt` |
+| `transport/` | `transport/*`, `net/*`, `rebuild/*` | `Transport.kt`, `TransportCommands.kt`, `net/`, `rebuild/` |
+| `skin/` | `skin/*` | `Skin.kt`, `Spawn.kt` (26.3 `block_state` `{id, properties}`) |
+| `input/` | `input/*`, trigger and writable-book backends | `Input.kt`, `InputIds.kt`, `backend/`, `router/`, `session/` |
+| `util/` | `util/property` | `Property.kt` |
+| `light/` | `predicate/light/at_least_1..15`, generated from one loop | `LightPredicates.kt` |
+| (root) | `#ra_lib:containers`, `passable`, `unbreakable`; macro-line helper | `BlockTags.kt`, `LibCommands.kt` |
 
 ## `ra` → `tools/` and `hub/`
 
@@ -103,7 +114,7 @@ The `ra` namespace is split between two parts by path.
 | `settings/placement/PlacementFns.kt` | `placement/check`, `refuse`, `seed` |
 | `settings/Fns.kt`, `SetCommands.kt`, `SettingsObjectives.kt` | Shared references, command helpers, private objectives |
 
-See [Settings](settings.md).
+See [Settings](settings-internals.md).
 
 ## `ra_lib_multiblock` → `multiblocklib/`
 
@@ -119,7 +130,7 @@ See [Settings](settings.md).
 | `multiblocklib/io/Io.kt` | `io/*`: named IO positions |
 | `multiblocklib/MbCommands.kt` | Helpers for `storage ra:multiblock` |
 
-See [Multiblocks](multiblocks.md).
+See [Multiblocks](multiblock-library.md).
 
 ## Gameplay modules → `modules/<module>/`
 
@@ -135,7 +146,11 @@ Each module has `<Name>Module.kt` (the `GameplayModule` object: registration ord
 | `modules/infinite` | `Generator.kt` (shared generator shape), one file per generator, `ItemSpec.kt`, `BlockLifecycle.kt`, `InfiniteItems.kt`, `InfiniteTags.kt` |
 | `modules/enchanting` | `EnchantingModule.kt`, `RecipesTag.kt` (`#ra_enchanting:recipes`), `SacrificeRecipe.kt`, `sacrifice/` |
 | `modules/chunkloader` | `ChunkLoader.kt` |
-| `modules/interactive`, `storage`, `sensors`, `wireless`, `ender` | **Being ported** (stubs) |
+| `modules/interactive` | one file per block (`BlockBreaker.kt`, `BlockPlacer.kt`, `Breeder.kt` + `BreederBreeds.kt`, `ItemPipe.kt` + `ItemPipeTransfer.kt`, `ItemMover.kt` + `ItemMoverIo.kt`, `BigTorch.kt` + `BigTorchSweep.kt`, `Cauldrons.kt`, `MagicCrate.kt`, `MessageBlock.kt`, `Spitter.kt`), `EnchantedCoal.kt`, `InteractiveCommon.kt` |
+| `modules/storage` | `Boxer.kt`, `Unboxer.kt`, `StorageBox.kt` |
+| `modules/sensors` | `EntityDetector.kt`, `TagAdder.kt`, `TagRemover.kt`, `SimpleBlock.kt`, `EdgeTrigger.kt` |
+| `modules/wireless` | `Emitter.kt`, `Receiver.kt`, `WirelessCommon.kt`, `tools/Remote.kt` |
+| `modules/ender` | `ItemVault.kt`, `FluidVault.kt`, `PowerVault.kt`, `TeleportAnchor.kt`, `EnderCommon.kt`, `link/Link.kt`, `tools/Anchor.kt`, `debug/` |
 
 ## Others
 
@@ -143,13 +158,14 @@ Each module has `<Name>Module.kt` (the `GameplayModule` object: registration ord
 | --- | --- |
 | `migrations/` | `ra_migrations:run` and one function per version step (`5.1.7-to-5.1.8`…) |
 | `advancements/` | The `ra_advancements` tab: `CoreTrees.kt`, `ResourceTrees.kt` as data, `Unlock.kt` turns each entry into a file |
-| `example/ExamplePart.kt` | `ra_example`: the worked example behind [Extension Examples](../extension-examples.md) |
+| `example/ExamplePart.kt` | `ra_example`: the worked example behind [Extension Examples](extension-examples.md) |
 
 ## Outside `src/`
 
 | Path | What |
 | --- | --- |
-| `build.gradle.kts` | Kore plugin config: `packName`, `mainClass`, `worlds`, system properties (`ra.strict`, `ra.version`) |
+| `build.gradle.kts` | Kore plugin config: `packName`, `mainClass`, the `-Pworld` install target, system properties (`ra.strict`, `ra.version`) |
+| `local.properties.example` | Template for the untracked `local.properties` (`ra.world`, `ra.minecraftDir`) |
 | `gradle.properties` | `version` (the pack version) and Gradle flags |
 | `gradle/libs.versions.toml` | Kore and Kotlin versions |
 | `pack.png` | The pack icon |

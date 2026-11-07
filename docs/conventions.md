@@ -1,7 +1,7 @@
 # Conventions
 
 Rules for every Kotlin file in `redstone_additions_kore/`. They exist for the same reason the old
-[Contributing Guidelines](../contributing-guidelines.md) did: most data pack bugs are one
+[Contributing Guidelines](contributing-guidelines.md) did: most data pack bugs are one
 identifier spelled two ways, or one rule applied in nine places but forgotten in the tenth.
 
 ## Structure
@@ -106,6 +106,6 @@ Comments stay in Kotlin. They are not emitted into the `.mcfunction` output.
 1. `./gradlew koreBuild` (strict) passes. While other parts are unported, use
    `-Pra.strict=false` and check that no unresolved call points into **your** namespaces.
 2. `python3 tools/compare_reference.py <your namespaces> --diff` shows only
-   [expected differences](porting.md#differences-that-are-expected), or ones you can explain in
+   [expected differences](porting-history.md#differences-that-are-expected), or ones you can explain in
    the commit message.
 3. No file over ~300 lines; no string calls to the pack's own functions.

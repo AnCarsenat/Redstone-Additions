@@ -1,34 +1,27 @@
 # Chunk Loader
 
-The `ra_chunk_loader` module contains one block that force-loads its chunk while powered.
+One block that keeps its chunk loaded while it is powered — farms keep running when you walk away.
 
-- Namespace: `ra_chunk_loader`
-- Give all: `/function ra_chunk_loader:items/give_all`
-- Runtime architecture: [How It Works](how-it-works.md)
+## Getting it
 
-## Block Summary
+| Block | Looks like | Recipe |
+| --- | --- | --- |
+| Chunk Loader | lodestone | ![Chunk Loader recipe](images/recipes/ra_chunk_loader/chunk_loader.png){ width="220" } |
 
-| Block        | Item model            | Recipe                                                                                 |
-| ------------ | --------------------- | -------------------------------------------------------------------------------------- |
-| Chunk Loader | `minecraft:lodestone` | ![Chunk Loader recipe](images/recipes/ra_chunk_loader/chunk_loader.png){ width="220" } |
+Operators: `/function ra_chunk_loader:items/give_all`.
 
-## Runtime Behavior
+## Using it
 
-Chunk Loader tick logic:
+1. Place one Chunk Loader in each chunk you want loaded (press F3 + G to see chunk borders).
+2. Power it with redstone (a lever is enough). The chunk is now force-loaded.
+3. Remove the power to let the chunk unload again.
 
-1. Break detection verifies the lodestone still exists.
-2. Redstone state is read with `ra_lib:redstone/detect`.
-3. Rising edge (`!ra.was_powered` and powered) runs `forceload add ~ ~`.
-4. Falling edge (`ra.was_powered` and unpowered) runs `forceload remove ~ ~`.
+Breaking the Chunk Loader also releases its chunk.
 
-State tags used:
+---
 
-- `ra.custom_block.chunk_loader`
-- `ra.was_powered`
+## Advanced
 
-## Usage Notes
-
-- Place one per chunk you want controlled. (use F3+G)
-- Power on to lock the chunk loaded.
-- Power off to release it.
-- Recommended for farms.
+- Turning on runs `forceload add ~ ~`, turning off runs `forceload remove ~ ~`, on the power edge
+  (`ra.powered` / `ra.was_powered`).
+- Marker tag: `ra.custom_block.chunk_loader`.

@@ -1,8 +1,9 @@
-# Multiblocks (Kore)
+# Multiblock Library
 
-How to add a multiblock structure from Kotlin. The gameplay side is in [Multiblocks](../multiblocks.md);
+How to add a multiblock structure from Kotlin. The gameplay side is in [Multiblocks](multiblocks.md);
 the library's runtime (assembly, rotation, validation, disassembly) is unchanged from the beet
-pack and its contract is in `redstone_additions/src/data/ra_lib_multiblock/README.md`.
+pack, and its contract — coordinates, IO helpers, hooks — is at the
+[end of this page](#runtime-contract).
 
 Two parts are involved:
 
@@ -145,3 +146,50 @@ in `GogglesRefs.Billboard` (`handle_multiblock`, `show_input`, `show_output`, `s
 1. Break detection for every base tier (`Bases.checkBreak`).
 2. Every 40 ticks, `ra_lib_multiblock:validate_all`.
 3. `function #ra_lib_multiblock:tick`: every structure's dispatcher, in hook order.
+
+## Runtime contract
+
+What the generated `ra_lib_multiblock` functions promise, for anyone calling them from Kotlin or from an addon pack.
+
+### Coordinates
+
+Offsets are relative to the base block, for a structure facing **north**, where
+"in front of the base" is `-Z`. the library's `build/*` functions produce south, east
+and west by quarter turns about the vertical axis.
+
+This is the part that used to be manual. The Blast Forge still carries four
+hand-written coordinate tables of 26 positions each — 104 offsets rotated by
+hand, every one of them a chance to transpose a sign.
+
+### IO helpers
+
+All of these take the marker as `@s`, positioned at the base, and resolve names
+against the marker's own `data.inputs` / `data.outputs` / `data.controls`. They
+work for any multiblock that went through `setup_marker`, including the
+hand-written ones — a tick function never needs to branch on facing.
+
+| Function | Purpose |
+|---|---|
+| `io/at {name,run}` | Run a function positioned at the named IO block. |
+| `io/insert {name,id,count,components}` | Insert an item into the named container. |
+| `io/extract {name,id,count}` | Remove items; returns 1 only if the full amount was taken. |
+| `io/peek {name}` | Copy the first stack to `storage ra:multiblock io_item`; returns 1 if present. |
+| `io/count {name}` | Number of occupied slots. |
+| `io/is_block {name,block}` | Test the block at that position; returns 1 on a match. |
+
+For items with components, build `storage ra:multiblock io_item` yourself and
+call `io/at {name:"...",run:"ra_lib_multiblock:io/insert_here"}` — that avoids
+quoting a component compound through a macro argument.
+
+### Hooks
+
+| Tag | When |
+|---|---|
+| `#ra_lib_multiblock:load` | Register types. |
+| `#ra_lib_multiblock:tick` | Per-type tick dispatch. |
+| `#ra_lib_multiblock:validate` | Assembly. Registered types are covered by `generic/validate`. |
+| `#ra_lib_multiblock:check_structure` | Periodic integrity check. Registered types are covered by `generic/check_structure`. |
+| `#ra_lib_multiblock:setup_type` | Marker tagging. Registered types are covered by `generic/setup_type`. |
+| `#ra_lib_multiblock:on_break` | Optional cleanup on disassembly. |
+
+Only `load` and `tick` need an entry for a registered type.

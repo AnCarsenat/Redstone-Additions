@@ -1,93 +1,18 @@
 # Developer Guide
 
-This guide documents implementation architecture and contributor workflow for `v5.1.17`.
+This guide documents the runtime systems of the pack — the contracts each library and tool
+keeps, and why they are built the way they are — and where each lives in the Kotlin source.
 
-If you want conceptual runtime flow first, start with [How It Works](how-it-works.md). This page is focused on engineering-level extension and maintenance work.
+- Conceptual runtime flow first: [How It Works](how-it-works.md).
+- Building, installing into a world, strict mode: [Getting Started](getting-started.md) and
+  [Contributing Guidelines](contributing-guidelines.md#installing-into-a-world).
+- How the Kotlin is organised: [Architecture](architecture.md) and
+  [Project Reference](project-reference.md).
 
-If you want to contribute and write somewhat correct addons / fixes see [Contributing Guidelines](contributing-guidelines.md)
-
-## Development Setup
-
-This project uses **[Beet](https://github.com/mcbeet/beet)** to build the datapack from source.
-
-### Prerequisites
-- Python 3.10 or higher
-- Git
-
-### Quick Start
-
-#### 1. Clone the Repository
-```bash
-git clone https://github.com/AnCarsenat/Redstone-Additions.git
-cd Redstone-Additions
-git checkout beet_rewrite
-```
-
-#### 2. Set Up the Virtual Environment
-Navigate to the `redstone_additions/` directory and create a Python virtual environment:
-
-```bash
-cd redstone_additions
-python3 -m venv .venv
-```
-
-#### 3. Activate the Virtual Environment
-**On Linux/macOS:**
-```bash
-source .venv/bin/activate
-```
-
-**On Windows (CMD):**
-```bash
-.venv\Scripts\activate.bat
-```
-
-**On Windows (PowerShell):**
-```bash
-.venv\Scripts\Activate.ps1
-```
-
-#### 4. Install Dependencies
-```bash
-pip install -r requirements.txt
-```
-
-#### 5. Link to Your Minecraft World
-Use beet's `link` command to connect to your Minecraft world. Specify the path to your Minecraft installation and the world name:
-
-```bash
-beet link --minecraft /path/to/minecraft <world_name>
-```
-
-**Example with PrismLauncher:**
-```bash
-beet link --minecraft "~/.local/share/PrismLauncher/instances/26.3 Fabric/minecraft" DevWorld
-```
-
-#### 6. Build and Test
-Build the datapack from source:
-
-```bash
-beet build
-```
-
-To enable auto-rebuild when you make changes, use watch mode:
-
-```bash
-beet watch
-```
-
-Then use `/reload` in-game to apply changes immediately.
-
-### Development Workflow
-
-1. Navigate to the `redstone_additions/` directory
-2. Ensure the virtual environment is activated: `source .venv/bin/activate`
-3. Edit files in the `src/` directory
-4. Use `beet watch` for automatic rebuilding on file changes
-5. Use `/reload` in-game to apply changes
-
----
+The pack is Kotlin in `redstone_additions_kore/src/main/kotlin/ra/`, turned into the data pack by
+[Kore](https://kore.ayfri.com). Function paths below (`ra_lib:redstone/detect`) are what the game
+runs; the Kotlin that writes `<ns>:<path>` sits in the package that mirrors it, and every public
+library entry point has a typed reference in `ra/api/` (`RaLib.Redstone.detect`).
 
 ## 1) Core Entrypoints (`ra`)
 
@@ -412,8 +337,8 @@ there is no operator setting on screen for a player to click and be refused.
 
 ### Everything is generated
 
-One JSON file per page in `tools/settings/`. `tools/settings_gen.py` (a beet
-plugin) emits, at build time:
+One Kotlin file per page in `ra/settings/pages/` (typed rows: key, label, scope, default,
+bounds, step). The generator in `ra/settings/gen/` writes, at build time:
 
 | Generated function | What it is |
 |---|---|
@@ -529,81 +454,13 @@ Keep IDs consistent across:
 - recipe result custom_data
 - on-break drop item data
 
-### Pack format overlays
+### Minecraft versions
 
-`src/pack.mcmeta` declares `min_format` 88 through `max_format` 121, i.e.
-Minecraft 1.21.9 through 26.3. When a vanilla schema changes shape inside that
-span, the fix is an **overlay**, not a version bump: an overlay directory sits
-next to `data/` in the pack, mirrors the same paths, and the game swaps its files
-in for the format range the overlay declares.
-
-There are two today, and their ranges never overlap, so no version ever has two
-overlays supplying the same file and their order in the list never matters:
-
-```json
-"overlays": {
-  "entries": [
-    { "directory": "overlay_102", "min_format": 102, "max_format": 120 },
-    { "directory": "overlay_121", "min_format": 121, "max_format": 121 }
-  ]
-}
-```
-
-**`overlay_102` is hand-written, in `src/`.** Format 102 (`26.2-snapshot-3`)
-rewrote entity predicates into component-map form:
-
-```
-src/
-  data/ra/predicate/is_sneaking.json           {"flags": {"is_sneaking": true}}
-  overlay_102/
-    data/ra/predicate/is_sneaking.json         {"minecraft:flags": {"is_sneaking": true}}
-```
-
-The base file keeps the pre-102 spelling and the overlay carries the new one; the
-game picks whichever matches the running version, so both work from a single
-build. beet copies hand-written overlay directories through untouched.
-
-**`overlay_121` is generated, and does not exist in `src/`.** Format 121 (26.3)
-changed four shapes the pack uses all over, and every one of the old shapes is
-fatal — the world refuses to open, not just the one file:
-
-| What | Before 26.3 | 26.3 |
-|---|---|---|
-| Predicate / loot condition type | `"condition": "minecraft:…"` | `"type": "minecraft:…"` |
-| Item modifier / loot function type | `"function": "minecraft:…"` | `"type": "minecraft:…"` |
-| `conditions` / `functions` lists on functions, pools, entries | `conditions: [...]`, `functions: [...]` | `condition: …`, `modifier: …` |
-| `recipe_unlocked` advancement trigger | `"recipe": "ra:wrench"` | `"recipes": "ra:wrench"` |
-| Block states in NBT (`block_display`) | `{Name:…, Properties:{…}}` | `{id:…, properties:{…}}` |
-
-The block-state rename is the exception to "fatal": a display summoned with the
-old keys loads fine and shows air, so every skin, wire and pipe would vanish
-without an error.
-
-That touches every recipe unlock, every predicate and every item modifier, so a
-hand-written copy would be ~100 duplicated files that drift the moment someone
-adds a recipe. Instead `tools/port_26_3.py` runs in the beet pipeline and writes
-`overlay_121/` into the build from the base pack (with `overlay_102` already
-applied, since 121 is past 102). It rewrites:
-
-- every predicate, item modifier and advancement whose shape changed
-- every function that inlines loot SNBT (`loot … loot {...}`, `item modify … {...}`,
-  `if predicate {...}`) or spells out a `block_state`
-
-Anything it cannot rewrite mechanically — an inline `conditions:[...]` list, a
-block state with its keys in an unusual order — **fails the build** with the file
-and line, rather than shipping something that will not load. Write new content in
-the pre-26.3 shape as usual; the plugin ports it.
-
-Formats 108 – 120 are the 26.3 snapshots and pre-releases. The range declares
-them, but they are not supported: the shapes above changed one snapshot at a
-time, and neither the base pack nor `overlay_121` matches the ones in between.
-
-Reach for a hand-written overlay when a vanilla format changes under one or two
-files the pack already ships. Do **not** hand-fork mcfunctions into an overlay:
-an overlay replaces whole files, so a copied function is two copies of live logic
-forever. When a *command* or inline SNBT changes across the range, either make the
-change mechanical in a build plugin, as `port_26_3` does, or narrow the declared
-range.
+The pack targets **26.3 only** (data pack format 121). Kore writes every resource in the shape
+26.3 reads, and `pack.mcmeta` declares `min_format` = `max_format` = 121, so there are no
+overlays. The beet build covered 1.21.9 – 26.3 with a hand-written `overlay_102` and an
+`overlay_121` generated by `tools/port_26_3.py`; both are gone. See
+[Porting History](porting-history.md#what-changes).
 
 ## 5) Tooling Integration
 
@@ -678,6 +535,15 @@ floor. It is now a barrel wearing a dispenser skin.
 
 ### Using it
 
+In Kotlin, through the typed references:
+
+```kotlin
+function(RaLib.Skin.apply, nbt { this["real"] = "minecraft:barrel"; this["skin"] = "minecraft:dispenser"; this["id"] = "unboxer" })
+function(RaLib.Skin.clear, nbt { this["id"] = "unboxer" })
+```
+
+which generate:
+
 ```mcfunction
 # on placement, and to repair a missing skin
 function ra_lib:skin/apply {real:"minecraft:barrel",skin:"minecraft:dispenser",id:"unboxer"}
@@ -741,7 +607,7 @@ Do **not** use it for Block Breaker, Block Placer or the Breeder: those read
 
 Block-defined billboard contract:
 
-Each block owns `blocks/<name>/goggles.mcfunction`. It must:
+Each block owns `blocks/<name>/goggles`, defined next to the block in its Kotlin file. It must:
 
 1. publish its display name to `storage ra:temp block_name`
 2. `execute if data storage ra:temp name_only run return 0`
@@ -758,6 +624,11 @@ function ra:tools/goggles/billboard/handle_billboard with storage ra:temp billbo
 
 function ra:tools/goggles/billboard/data_line {path:"medium",label:"Medium: ",color:"aqua",suffix:"",y:0.8}
 ```
+
+In Kotlin, `gogglesHeader(block, nameY)` writes steps 1–3 and the line helpers
+(`propLine`, `dataLine`, `textLine`, `stackReset`, `stacked*Line`, in
+`ra/core/block/GogglesLines.kt`) write step 4. See
+[Custom Blocks](custom-blocks.md#goggles-readout).
 
 The `name_only` early return is what lets `ra:tools/block_name` reuse this
 dispatch to resolve names for the Data Handlers, so a block's name is written
@@ -796,8 +667,13 @@ worked example.
 
 ### Read-only properties
 
-A property the block owns and the player must not edit goes in
-`ra:tools/readonly/init_registry`, keyed by block type:
+A property the block owns and the player must not edit is registered with
+`ra.readonly(type, props…)`, keyed by block type. The Tools part builds
+`ra:tools/readonly/init_registry` from every registration:
+
+```kotlin
+ra.readonly("electric_generator", "generation_rate")
+```
 
 ```mcfunction
 data modify storage ra:dh readonly set value {"electric_generator":{generation_rate:1b}}
@@ -827,8 +703,9 @@ A world saved by an older version is brought up to date by `ra_migrations`, run
 from `ra:load` before anything else touches the world.
 
 - One function per version step, named for the step it bridges:
-  `ra_migrations:5.1.8-to-5.1.9`.
-- `ra_migrations:run` calls them oldest-first. Add new ones to the end.
+  `ra_migrations:5.1.8-to-5.1.9`. They live in `ra/migrations/`.
+- `ra_migrations:run` calls them oldest-first, from the `steps` list in
+  `MigrationsPart.kt`. Add new ones to the end.
 - **Every migration runs on every load**, so each must be safe to run twice. Fill
   in what a newer version expects; never overwrite or destroy state.
 
@@ -837,7 +714,7 @@ contain `[a-z0-9_.-/]`, and a file the loader skips is a migration that silently
 never runs.
 
 They are also **identifiers, not the pack version**. A find-and-replace that
-bumps the version across the repo must skip `ra_migrations/`, or the chain
+bumps the version across the repo must skip `ra/migrations/`, or the chain
 renames itself to nonsense like `5.1.9-to-5.1.9`.
 
 What has needed one so far: tagging every entity `ra` so `/kill @e[tag=ra]`
@@ -847,27 +724,33 @@ with a wider anti-z-fighting margin.
 
 ## 6) Contributor Workflow
 
-Use this sequence for safe feature delivery.
+The step-by-step checklists live in [Contributing Guidelines](contributing-guidelines.md):
+[new block](contributing-guidelines.md#new-block-checklist) and
+[multiblock](contributing-guidelines.md#multiblock-checklist). In short:
 
-1. Define block/multiblock ID and naming.
-2. Implement give item, placement handler, tick, and break cleanup.
-3. Register placement handler and namespace load/tick hooks.
-4. Add recipe and advancement unlock path.
-5. Add CDH property support for editable settings.
-6. Add goggles status support for visible diagnostics.
-7. Update docs and changelog.
-8. Render the recipe picture (see below) and reference it from the module page.
-9. Run in-world validation pass.
+1. Describe the block once as a [`CustomBlock`](custom-blocks.md); its item, recipe result,
+   drop, bundle entry, placement tag and goggles route all derive from it.
+2. Write its placement handler, tick and break cleanup with the block helpers.
+3. Register what tools need (wrench rows, read-only properties) on the `Ra` registry.
+4. Add its settings row, advancement, docs and changelog entry.
+5. Render its recipe picture (below).
+6. Build strict, install with `./gradlew koreRun -Pworld`, and play it.
 
 ### Recipe pictures
 
-`docs/images/recipes/{namespace}/{name}.png` used to be a screenshot per recipe.
-They are generated now — full details in [Recipe Renderer](recipe-renderer.md):
+`docs/images/recipes/{namespace}/{name}.png` are generated — full details in
+[Recipe Renderer](recipe-renderer.md):
 
 ```bash
-python3 tools/recipe_render/render.py src/data/<namespace>/recipe/<name>.json
-python3 tools/recipe_render/render.py --all          # the whole pack
+python3 redstone_additions/tools/recipe_render/render.py <recipe.json>
+python3 redstone_additions/tools/recipe_render/render.py --all
 ```
+
+!!! note
+    The renderer still reads recipes from the beet source tree
+    (`redstone_additions/src/data/*/recipe/`). A recipe added or changed only in Kotlin can be
+    rendered by passing the generated file,
+    `redstone_additions_kore/build/kore/redstone_additions/data/<ns>/recipe/<name>.json`.
 
 The renderer reads the recipe the way the game does, so a result's
 `minecraft:item_model` component is honoured. Ingredients carry no components, so
@@ -880,30 +763,12 @@ a disguised RA item used *as* an ingredient needs an entry in
 in [Markdown to BBCode](markdown-to-bbcode.md):
 
 ```bash
-python3 tools/md_to_bbcode.py ../readme.md \
+python3 redstone_additions/tools/md_to_bbcode.py readme.md \
     --base-url https://github.com/AnCarsenat/Redstone-Additions/raw/main/
 ```
 
 PMC has no heading or table tag, so headings become sized bold text and tables are
 flattened; relative links need the `--base-url` above to survive.
-
-### New Block Checklist (Practical)
-
-1. Item custom_data and `ra.place.*` tags are correct.
-2. Placement handler returns `1` only for matching bats.
-3. Block tick includes break detection and cleanup.
-4. On-break drop reproduces the same item signature.
-5. Block appears in module `give_all` and in the correct namespace bundle from `ra:give_all_items`.
-6. Recipe and advancement IDs align.
-
-### New Multiblock Checklist (Practical)
-
-1. Validation hook registered in `#ra_lib_multiblock:validate`.
-2. Setup hook registered in `#ra_lib_multiblock:setup_type`.
-3. Periodic check hook registered in `#ra_lib_multiblock:check_structure`.
-4. Cleanup hook registered in `#ra_lib_multiblock:on_break`.
-5. Wrench assembly flow can stage required data in `storage ra:multiblock`.
-6. Marker stores `type`, `facing`, `properties`, IO/control metadata.
 
 ## 7) Validation and Debug
 
@@ -925,13 +790,16 @@ Useful selectors:
 
 ## 8) Common Failure Modes
 
-- ID mismatch between recipe result and placement handler tag.
-- Missing placement handler registration.
-- Forgetting to remove one-time tags (for example `ra.new`).
-- Not updating CDH/goggles when adding new properties.
-- Not updating Data Handler input mapping when adding editable properties.
+Several failures the beet pack listed here cannot happen any more: a block's ids are derived
+from one `CustomBlock`, placement handlers and goggles routes come from `ra.block(...)`, and
+strict mode fails the build on a call to an undefined function. What is left:
+
+- Forgetting to remove one-time tags (for example `ra.new`) — use `finishPlacement(block)`.
+- A property the Data Handlers should list but `DataHandlerRegistry` does not name.
 - Multiblock setup data missing required fields in storage before assembly.
 - Assuming numeric wireless channels; runtime channels are string values.
+- A module-level collection named like a registry list (`blocks`) inside `Ra.register()`
+  resolving to the registry — see [Kore Gotchas](gotchas.md).
 
 ---
 

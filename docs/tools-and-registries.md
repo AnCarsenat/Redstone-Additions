@@ -4,7 +4,7 @@ The tools (`ra.tools`, namespace `ra`) read and edit blocks they know nothing ab
 time. They learn about blocks through the [`Ra` registry](architecture.md#the-registry): a block
 registers what it offers, and `ToolsPart`, which runs after every module, builds the shared
 functions from what was registered. This page is the contract on both sides. For what each tool
-does in game, see [Tools](../tools.md).
+does in game, see [Tools](tools.md).
 
 ## Goggles
 
@@ -149,7 +149,7 @@ function is still a `FunctionArgument`, so `PackValidator` sees it.
 ## Give bundles
 
 ```kotlin
-bundles += GiveBundle("gates", "Gates Bundle", "UNI Gate + timing utility blocks", ns, blocks.map { it.itemStackNbt() })
+bundles += GiveBundle("gates", "Gates Bundle", "UNI Gate + timing utility blocks", ns, gateBlocks.map { it.itemStackNbt() })
 ```
 
 | Field | Becomes |

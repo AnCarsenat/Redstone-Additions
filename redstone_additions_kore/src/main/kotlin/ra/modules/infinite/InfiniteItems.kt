@@ -1,6 +1,5 @@
 package ra.modules.infinite
 
-import io.github.ayfri.kore.commands.execute.execute
 import io.github.ayfri.kore.commands.returnValue
 import io.github.ayfri.kore.features.recipes.recipesBuilder
 import io.github.ayfri.kore.features.recipes.types.RecipeCategory
@@ -9,15 +8,14 @@ import io.github.ayfri.kore.features.recipes.types.key
 import io.github.ayfri.kore.features.recipes.types.pattern
 import io.github.ayfri.kore.features.recipes.types.result
 import io.github.ayfri.kore.generated.Items
-import io.github.ayfri.kore.commands.data
 import io.github.ayfri.kore.arguments.types.resources.ItemArgument
 import ra.core.Ns
 import ra.core.Ra
-import ra.core.Storage
 import ra.core.block.recipeUnlock
 import ra.core.define
 import ra.core.raw
 import ra.core.ref
+import ra.modules.enchanting.sacrificeRecipe
 
 /**
  * The Generator Casing and the three cores, the crafting items behind the generators.
@@ -81,17 +79,7 @@ object InfiniteItems {
 		// Sacrifice recipes for the cores, listed in #ra_enchanting:recipes. Input: storage
 		// ra:enchant input. The first recipe that writes `result` wins, so each returns once matched.
 		pack.define(enchantRecipes) {
-			for (core in cores) {
-				raw("execute if data storage ra:enchant input{id:\"${core.sacrifice}\"} run data modify storage ra:enchant result set value ${core.item.stackSnbt()}")
-				execute {
-					ifCondition { data(Storage.ENCHANT, "result") }
-					run { data(Storage.ENCHANT) { modify("chance") { set(1) } } }
-				}
-				execute {
-					ifCondition { data(Storage.ENCHANT, "result") }
-					run { returnValue(1) }
-				}
-			}
+			for (core in cores) sacrificeRecipe("{id:\"${core.sacrifice}\"}", core.item.stackSnbt(), chance = 1)
 			returnValue(0)
 		}
 	}

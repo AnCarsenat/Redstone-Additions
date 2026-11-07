@@ -9,6 +9,8 @@ import ra.core.Obj
 import ra.core.Ra
 import ra.core.define
 import ra.core.raw
+import io.github.ayfri.kore.arguments.types.literals.self
+import io.github.ayfri.kore.commands.tag
 
 /**
  * How an Item Pipe moves a stack: forward (`transfer`), or sideways after a filter match
@@ -111,13 +113,13 @@ object ItemPipeTransfer {
 		executeRun("", RaLib.Inventory.canAcceptOne, "with storage ra:temp inv_item")
 		raw("execute if score #inv_can_insert ${Obj.TEMP} matches 0 run return 0")
 
-		raw("tag @s remove $MOVED")
+		tag(self()) { remove(MOVED) }
 		// Move the stack one by one until blocked or the source is empty.
 		function(loop)
 
 		// Nothing moved: the insert failed.
 		raw("execute unless entity @s[tag=$MOVED] run return 0")
-		raw("tag @s remove $MOVED")
+		tag(self()) { remove(MOVED) }
 
 		// A destination that is another item pipe processes on its own tick.
 		returnValue(1)
@@ -143,7 +145,7 @@ object ItemPipeTransfer {
 		executeStoreRun(source, "@s", RaLib.Inventory.consumeEntry0)
 		raw("execute if score @s ${Obj.TEMP} matches 0 run return 0")
 
-		raw("tag @s add $MOVED")
+		tag(self()) { add(MOVED) }
 		function(self)
 	}
 

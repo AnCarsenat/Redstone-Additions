@@ -33,6 +33,7 @@ import ra.core.block.markers
 import ra.core.define
 import ra.core.raw
 import ra.modules.infinite.ItemSpec
+import io.github.ayfri.kore.commands.scoreboard.scoreboard
 
 /**
  * What the ra_interactive and ra_storage blocks share: the give / drop item, the pieces of their
@@ -121,7 +122,7 @@ fun Function.hopperCooldown() {
 	// score is false. `matches -2147483648..` is true for any value at all, so `unless` on it is
 	// the test for "no score yet".
 	raw("execute unless score @s ${Obj.COOLDOWN} matches -2147483648.. run scoreboard players set @s ${Obj.COOLDOWN} 0")
-	raw("scoreboard players add @s ${Obj.COOLDOWN} 1")
+	scoreboard.players.add(self(), Obj.COOLDOWN, 1)
 	raw("execute if score @s ${Obj.COOLDOWN} matches ..3 run return 0")
 }
 

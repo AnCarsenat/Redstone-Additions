@@ -28,6 +28,8 @@ import ra.modules.infinite.finishLorePlacement
 import ra.modules.infinite.loreItem
 import ra.modules.infinite.loreLine
 import ra.modules.infinite.registerBlockMessage
+import io.github.ayfri.kore.arguments.types.literals.literal
+import io.github.ayfri.kore.commands.scoreboard.scoreboard
 
 /** Magic Crate: a barrel that pulls dropped items in from around it, every `cooldown` ticks. */
 object MagicCrate {
@@ -143,7 +145,7 @@ object MagicCrate {
 		raw("particle minecraft:enchant ~ ~1 ~ 0.3 0.3 0.3 0.4 8 normal @a[scores={${Obj.USER_PARTICLES}=1..}]")
 		raw("playsound minecraft:entity.enderman.teleport block @a[distance=..12,scores={${Obj.USER_SOUND}=1..}] ~ ~ ~ 0.2 1.8")
 
-		raw("scoreboard players add #mh.pulled ${Obj.TEMP} 1")
+		scoreboard.players.add(literal("#mh.pulled"), Obj.TEMP, 1)
 		kill(self())
 	}
 
@@ -173,7 +175,7 @@ object MagicCrate {
 	 */
 	private fun Function.tickOne() {
 		raw("execute unless score @s ${Obj.COOLDOWN} matches -2147483648.. run scoreboard players set @s ${Obj.COOLDOWN} 0")
-		raw("scoreboard players remove @s ${Obj.COOLDOWN} 1")
+		scoreboard.players.remove(self(), Obj.COOLDOWN, 1)
 		raw("execute if score @s ${Obj.COOLDOWN} matches 1.. run return 0")
 
 		function(RaLib.Util.property, nbt { this["name"] = "cooldown"; this["default"] = 20; this["min"] = 1 })
@@ -183,10 +185,10 @@ object MagicCrate {
 		// because a radius the player could raise without limit would turn one block into a
 		// server-wide entity selector.
 		function(RaLib.Util.property, nbt { this["name"] = "radius"; this["default"] = 8; this["min"] = 5 })
-		raw("scoreboard players set #mh.max ${Obj.TEMP} 20")
+		scoreboard.players.set(literal("#mh.max"), Obj.TEMP, 20)
 		raw("execute if score #prop ${Obj.TEMP} > #mh.max ${Obj.TEMP} run scoreboard players operation #prop ${Obj.TEMP} = #mh.max ${Obj.TEMP}")
 
-		raw("scoreboard players set #mh.pulled ${Obj.TEMP} 0")
+		scoreboard.players.set(literal("#mh.pulled"), Obj.TEMP, 0)
 		raw("execute store result storage ra:interactive mh.r int 1 run scoreboard players get #prop ${Obj.TEMP}")
 		callWith(sweep, "storage ra:interactive mh")
 

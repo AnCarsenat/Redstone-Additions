@@ -24,6 +24,7 @@ import ra.modules.interactive.ItemMoverIo.consumeSelectedInput
 import ra.modules.interactive.ItemMoverIo.registerItemMoverIo
 import ra.modules.interactive.ItemMoverIo.selectInput
 import ra.modules.interactive.ItemMoverIo.tryInsert
+import io.github.ayfri.kore.commands.scoreboard.scoreboard
 
 /**
  * Item Mover: moves the first stack of the container behind it (`^ ^ ^-1`) into the container in
@@ -88,7 +89,7 @@ object ItemMover {
 		raw("execute if score #mover_has_input ${Obj.TEMP} matches 0 run return 0")
 
 		// There is work to do.
-		raw("scoreboard players set @s ${Obj.COOLDOWN} 0")
+		scoreboard.players.set(self(), Obj.COOLDOWN, 0)
 
 		// The whole selected stack moves (the insert may still be partial if the output has
 		// limited space). The macro needs a components field.

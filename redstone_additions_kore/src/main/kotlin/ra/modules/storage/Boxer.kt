@@ -30,6 +30,7 @@ import ra.modules.interactive.has
 import ra.modules.interactive.placeGuard
 import ra.modules.interactive.shapedRecipe
 import ra.modules.interactive.specGive
+import io.github.ayfri.kore.commands.scoreboard.scoreboard
 
 /**
  * Boxer: while powered, packs the whole of its `input1` container into one Item Crate and puts
@@ -81,7 +82,7 @@ object Boxer {
 	private fun Function.process() {
 		// Hopper-like cooldown.
 		raw("execute unless score @s ${Obj.COOLDOWN} matches -2147483648.. run scoreboard players set @s ${Obj.COOLDOWN} 0")
-		raw("scoreboard players add @s ${Obj.COOLDOWN} 1")
+		scoreboard.players.add(self(), Obj.COOLDOWN, 1)
 		raw("execute if score @s ${Obj.COOLDOWN} matches ..3 run return 0")
 
 		// Valid input and output containers, and something in the input.
@@ -115,7 +116,7 @@ object Boxer {
 		// Empty the input only once the crate is in.
 		raw("\$execute positioned \$(input1) run data remove block ~ ~ ~ Items")
 
-		raw("scoreboard players set @s ${Obj.COOLDOWN} 0")
+		scoreboard.players.set(self(), Obj.COOLDOWN, 0)
 		raw("playsound minecraft:block.wood.place block @a[distance=..16,scores={${Obj.USER_SOUND}=1..}] ~ ~ ~ 0.8 1.2")
 		raw("particle minecraft:cloud ~ ~0.2 ~ 0.2 0.2 0.2 0.01 5 normal @a[scores={${Obj.USER_PARTICLES}=1..}]")
 	}

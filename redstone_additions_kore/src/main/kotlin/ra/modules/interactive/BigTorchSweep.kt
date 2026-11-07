@@ -11,6 +11,8 @@ import ra.core.Obj
 import ra.core.Ra
 import ra.core.define
 import ra.core.raw
+import io.github.ayfri.kore.arguments.types.literals.literal
+import io.github.ayfri.kore.commands.scoreboard.scoreboard
 
 /**
  * The Big Torch's mob denial: `blocks/big_torch/sweep` and `sweep_at`.
@@ -64,7 +66,7 @@ object BigTorchSweep {
 
 		raw("execute store result storage ra:temp big_torch.radius int 1 run scoreboard players get #prop ${Obj.TEMP}")
 		raw("scoreboard players operation #prop.outer ${Obj.TEMP} = #prop ${Obj.TEMP}")
-		raw("scoreboard players add #prop.outer ${Obj.TEMP} 16")
+		scoreboard.players.add(literal("#prop.outer"), Obj.TEMP, 16)
 		raw("execute store result storage ra:temp big_torch.outer int 1 run scoreboard players get #prop.outer ${Obj.TEMP}")
 
 		callWith(sweepAt, "storage ra:temp big_torch")

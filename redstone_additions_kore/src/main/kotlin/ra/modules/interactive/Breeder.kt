@@ -30,6 +30,7 @@ import ra.modules.infinite.loreItem
 import ra.modules.infinite.registerBlockMessage
 import ra.modules.interactive.BreederBreeds.registerBreederBreeds
 import ra.modules.interactive.BreederBreeds.tryBreed
+import io.github.ayfri.kore.commands.scoreboard.scoreboard
 
 /**
  * Breeder: feeds the animals in front of it from its own inventory while powered.
@@ -152,7 +153,7 @@ object Breeder {
 		if (bucket) raw("""data modify block ~ ~ ~ Items[{id:"minecraft:tropical_fish_bucket"}].id set value "minecraft:water_bucket"""")
 		else callWith(consumeItem, "storage ra:temp")
 		// Mark success: the rest of try_breed is skipped.
-		raw("scoreboard players set @s ${Obj.TEMP} 1")
+		scoreboard.players.set(self(), Obj.TEMP, 1)
 	}
 
 	/**

@@ -30,6 +30,8 @@ import ra.modules.infinite.loreItem
 import ra.modules.infinite.loreLine
 import ra.modules.infinite.registerBlockMessage
 import ra.modules.interactive.BigTorchSweep.registerBigTorchSweep
+import io.github.ayfri.kore.arguments.types.literals.literal
+import io.github.ayfri.kore.commands.scoreboard.scoreboard
 
 /**
  * Big Torch: an end rod drawn as an oversized torch that denies its area to hostile mobs that
@@ -104,9 +106,9 @@ object BigTorch {
 			// mob that lives half a second before being denied is indistinguishable from one that
 			// never spawned. Paying a 100-block entity selector per torch per tick to shorten that
 			// would be the most expensive thing in the pack.
-			raw("scoreboard players add #big_torch.scan ${Obj.TEMP} 1")
+			scoreboard.players.add(literal("#big_torch.scan"), Obj.TEMP, 1)
 			raw("execute unless score #big_torch.scan ${Obj.TEMP} matches 10.. run return 0")
-			raw("scoreboard players set #big_torch.scan ${Obj.TEMP} 0")
+			scoreboard.players.set(literal("#big_torch.scan"), Obj.TEMP, 0)
 			forEachMarker(block, sweep)
 		}
 	}

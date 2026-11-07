@@ -31,6 +31,8 @@ import ra.modules.interactive.executeRun
 import ra.modules.interactive.has
 import ra.modules.interactive.shapedRecipe
 import ra.modules.interactive.specGive
+import io.github.ayfri.kore.arguments.types.literals.literal
+import io.github.ayfri.kore.commands.scoreboard.scoreboard
 
 /**
  * Unboxer: while powered, empties one Item Crate from `input1` into `output1`, completely.
@@ -120,7 +122,7 @@ object Unboxer {
 	private fun Function.process() {
 		// Hopper-like cooldown.
 		raw("execute unless score @s ${Obj.COOLDOWN} matches -2147483648.. run scoreboard players set @s ${Obj.COOLDOWN} 0")
-		raw("scoreboard players add @s ${Obj.COOLDOWN} 1")
+		scoreboard.players.add(self(), Obj.COOLDOWN, 1)
 		raw("execute if score @s ${Obj.COOLDOWN} matches ..3 run return 0")
 
 		raw("\$execute positioned \$(input1) unless block ~ ~ ~ #ra_lib:containers run return 0")
@@ -138,7 +140,7 @@ object Unboxer {
 		// offset has to travel with it -- `at @s` inside resets to the marker before applying it,
 		// since caret offsets are relative to the current position.
 		raw("\$data modify storage ra:temp unboxer.output set value \"\$(output1)\"")
-		raw("scoreboard players set #unboxer_moved ${Obj.TEMP} 0")
+		scoreboard.players.set(literal("#unboxer_moved"), Obj.TEMP, 0)
 
 		raw("\$execute positioned \$(input1) run execute if score #mover_input_partner ${Obj.TEMP} matches 0 run function ${StorageBox.emptyCrateHere.asId()}")
 		raw("\$execute positioned \$(input1) if score #mover_input_partner ${Obj.TEMP} matches 1 run function ${partner.asId()}")
@@ -146,7 +148,7 @@ object Unboxer {
 		raw("data remove storage ra:temp unboxer")
 		raw("execute if score #unboxer_moved ${Obj.TEMP} matches 0 run return 0")
 
-		raw("scoreboard players set @s ${Obj.COOLDOWN} 0")
+		scoreboard.players.set(self(), Obj.COOLDOWN, 0)
 		raw("playsound minecraft:block.wood.break block @a[distance=..16,scores={${Obj.USER_SOUND}=1..}] ~ ~ ~ 0.8 1.1")
 		raw("particle minecraft:cloud ~ ~0.2 ~ 0.2 0.2 0.2 0.01 5 normal @a[scores={${Obj.USER_PARTICLES}=1..}]")
 	}

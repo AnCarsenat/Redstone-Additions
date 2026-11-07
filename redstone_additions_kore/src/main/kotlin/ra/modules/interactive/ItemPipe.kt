@@ -26,6 +26,7 @@ import ra.modules.infinite.finishLorePlacement
 import ra.modules.infinite.loreItem
 import ra.modules.infinite.registerBlockMessage
 import ra.modules.interactive.ItemPipeTransfer.registerItemPipeTransfer
+import io.github.ayfri.kore.commands.tag
 
 /**
  * Item Pipe: a dispenser that pushes its first stack into the container in front, or into a side
@@ -132,7 +133,7 @@ object ItemPipe {
 	private fun Function.process(checkFilter: FunctionArgument, transfer: FunctionArgument) {
 		// Never revisit the same pipe within one chain tick.
 		raw("execute if entity @s[tag=$VISITED] run return 0")
-		raw("tag @s add $VISITED")
+		tag(self()) { add(VISITED) }
 
 		raw("execute unless data block ~ ~ ~ Items[0] run return 0")
 		raw("data modify storage ra:temp pipe_item set from block ~ ~ ~ Items[0]")

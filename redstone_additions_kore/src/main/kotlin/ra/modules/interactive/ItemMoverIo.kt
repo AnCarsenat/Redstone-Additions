@@ -11,6 +11,9 @@ import ra.core.Ra
 import ra.core.Storage
 import ra.core.define
 import ra.core.raw
+import io.github.ayfri.kore.arguments.types.literals.literal
+import io.github.ayfri.kore.commands.scoreboard.scoreboard
+import io.github.ayfri.kore.arguments.types.literals.self
 
 /**
  * The Item Mover's container plumbing: pick an input stack, check and fill the output, consume
@@ -57,8 +60,8 @@ object ItemMoverIo {
 	 * #mover_has_input.
 	 */
 	private fun Function.selectInput() {
-		raw("scoreboard players set #mover_has_input ${Obj.TEMP} 0")
-		raw("scoreboard players set #mover_input_partner ${Obj.TEMP} 0")
+		scoreboard.players.set(literal("#mover_has_input"), Obj.TEMP, 0)
+		scoreboard.players.set(literal("#mover_input_partner"), Obj.TEMP, 0)
 
 		// The primary container first.
 		raw("execute if data block ~ ~ ~ Items[0] run data modify storage ra:temp mover_item set from block ~ ~ ~ Items[0]")
@@ -80,7 +83,7 @@ object ItemMoverIo {
 	 * Out: #mover_can_forward, also returned.
 	 */
 	private fun Function.checkOutputCapacity() {
-		raw("scoreboard players set #mover_can_forward ${Obj.TEMP} 0")
+		scoreboard.players.set(literal("#mover_can_forward"), Obj.TEMP, 0)
 
 		raw("execute $VANILLA_DISPENSER run return 0")
 
@@ -107,7 +110,7 @@ object ItemMoverIo {
 	 * At the primary output. Out: #mover_inserted, also returned.
 	 */
 	private fun Function.tryInsert() {
-		raw("scoreboard players set #mover_inserted ${Obj.TEMP} 0")
+		scoreboard.players.set(literal("#mover_inserted"), Obj.TEMP, 0)
 		raw("execute store result score @s ${Obj.INV_COUNT} run data get storage ra:temp mover_item.count")
 		raw("execute if score @s ${Obj.INV_COUNT} matches ..0 run return 0")
 
@@ -132,14 +135,14 @@ object ItemMoverIo {
 		// Stop when the output can no longer take one.
 		raw("execute if score @s ${Obj.TEMP} matches 0 run return 0")
 
-		raw("scoreboard players add #mover_inserted ${Obj.TEMP} 1")
-		raw("scoreboard players remove @s ${Obj.INV_COUNT} 1")
+		scoreboard.players.add(literal("#mover_inserted"), Obj.TEMP, 1)
+		scoreboard.players.remove(self(), Obj.INV_COUNT, 1)
 		function(tryInsertLoop)
 	}
 
 	/** Exactly one item into the container here. Out: `@s ra.temp` = 0 or 1. */
 	private fun Function.tryInsertOne() {
-		raw("scoreboard players set @s ${Obj.TEMP} 0")
+		scoreboard.players.set(self(), Obj.TEMP, 0)
 
 		raw("execute $VANILLA_DISPENSER run return 0")
 

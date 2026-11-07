@@ -23,6 +23,8 @@ import ra.modules.infinite.loreLine
 import ra.modules.infinite.raData
 import ra.modules.interactive.callWith
 import ra.modules.interactive.executeRun
+import io.github.ayfri.kore.arguments.types.literals.literal
+import io.github.ayfri.kore.commands.scoreboard.scoreboard
 
 /**
  * The Item Crate (the `storage_box/` functions): a whole container's contents packed into one item.
@@ -117,7 +119,7 @@ object StorageBox {
 		ensureListsAndRoom(ENTITY)
 		appendCachedInput(ENTITY)
 		function(updateLore)
-		raw("scoreboard players set #boxer_added ${Obj.TEMP} 1")
+		scoreboard.players.set(literal("#boxer_added"), Obj.TEMP, 1)
 		returnValue(1)
 	}
 
@@ -135,7 +137,7 @@ object StorageBox {
 		if (legacy) raw("data modify $TARGET.components.\"minecraft:custom_data\".ra.item_box set value 1b")
 		function(updateLoreStorageTarget)
 		raw("data modify block ~ ~ ~ $slot set from $TARGET")
-		raw("scoreboard players set #boxer_added ${Obj.TEMP} 1")
+		scoreboard.players.set(literal("#boxer_added"), Obj.TEMP, 1)
 		returnValue(1)
 	}
 
@@ -171,7 +173,7 @@ object StorageBox {
 
 		function(updateLore)
 
-		raw("scoreboard players set #unboxer_done ${Obj.TEMP} 1")
+		scoreboard.players.set(literal("#unboxer_done"), Obj.TEMP, 1)
 		returnValue(1)
 	}
 
@@ -182,7 +184,7 @@ object StorageBox {
 	private fun Function.emptyCrateHere() {
 		// The bound is a safety net, not a limit: a crate holds at most one container's worth of
 		// stacks, and a double chest is 54.
-		raw("scoreboard players set #unboxer_guard ${Obj.TEMP} 64")
+		scoreboard.players.set(literal("#unboxer_guard"), Obj.TEMP, 64)
 		function(emptyCrateLoop)
 
 		// The crate is consumed by unboxing. Removing it also clears the way for the next crate in
@@ -198,7 +200,7 @@ object StorageBox {
 	 */
 	private fun Function.emptyCrateLoop() {
 		raw("execute if score #unboxer_guard ${Obj.TEMP} matches ..0 run return 0")
-		raw("scoreboard players remove #unboxer_guard ${Obj.TEMP} 1")
+		scoreboard.players.remove(literal("#unboxer_guard"), Obj.TEMP, 1)
 
 		raw("execute unless data block ~ ~ ~ Items[0].$BOX.items[0] run return 0")
 
@@ -209,7 +211,7 @@ object StorageBox {
 		raw("execute if data block ~ ~ ~ Items[0].$BOX.preview[0] run data remove block ~ ~ ~ Items[0].$BOX.preview[0]")
 
 		callWith(deliverStack, "storage ra:temp unboxer")
-		raw("scoreboard players add #unboxer_moved ${Obj.TEMP} 1")
+		scoreboard.players.add(literal("#unboxer_moved"), Obj.TEMP, 1)
 
 		function(emptyCrateLoop)
 	}

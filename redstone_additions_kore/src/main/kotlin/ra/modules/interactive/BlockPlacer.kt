@@ -97,7 +97,7 @@ object BlockPlacer {
 		raw("\$setblock ~ ~ ~ \$(id)")
 		// Decrement the item count by 1 at the dispenser (^ ^ ^-1 from here).
 		raw("\$scoreboard players set @s ${Obj.TEMP} \$(count)")
-		raw("scoreboard players remove @s ${Obj.TEMP} 1")
+		scoreboard.players.remove(self(), Obj.TEMP, 1)
 		raw("execute if score @s ${Obj.TEMP} matches 1.. positioned ^ ^ ^-1 store result block ~ ~ ~ Items[0].count int 1 run scoreboard players get @s ${Obj.TEMP}")
 		raw("execute if score @s ${Obj.TEMP} matches ..0 positioned ^ ^ ^-1 run data remove block ~ ~ ~ Items[0]")
 	}

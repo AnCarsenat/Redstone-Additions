@@ -7,6 +7,8 @@ import ra.core.Obj
 import ra.core.Ra
 import ra.core.define
 import ra.core.raw
+import io.github.ayfri.kore.commands.scoreboard.scoreboard
+import io.github.ayfri.kore.arguments.types.literals.self
 
 /**
  * The Breeder's food table: `blocks/breeder/try_breed` and one `blocks/breeder/breed/<name>`
@@ -128,7 +130,7 @@ object BreederBreeds {
 	 * behind and the animal search back at this block. Kept as the beet pack wrote it.
 	 */
 	fun Function.tryBreed() {
-		raw("scoreboard players set @s ${Obj.TEMP} 0")
+		scoreboard.players.set(self(), Obj.TEMP, 0)
 
 		// ONE CHECK BEFORE THIRTY-FIVE. What follows is a line per (animal, food) pair, and every
 		// one of them runs an `if items ... container.*` against the same container before the

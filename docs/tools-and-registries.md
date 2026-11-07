@@ -107,7 +107,7 @@ lists into `storage ra:dh`:
 | `numeric` | Names that hold numbers: the editor forces a number, and never writes a string |
 | `item_names` | Names whose value is an item id (`filter_item`) |
 
-The list is kept **centrally** in `DataHandlerRegistry.PROPERTIES`, in the beet order. A
+The list is kept **centrally** in `DataHandlerRegistry.PROPERTIES`, in the order the original pack used. A
 module can add names with `ra.dataHandlerProperties("name")`; they go on the end.
 
 !!! danger "Append only"

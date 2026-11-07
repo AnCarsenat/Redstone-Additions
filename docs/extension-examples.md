@@ -12,7 +12,7 @@ There are two ways to build on Redstone Additions:
 
 | You are… | Write | Start from |
 | --- | --- | --- |
-| adding to the pack itself (a contribution) | Kotlin in `redstone_additions_kore/` | [Contributing Guidelines](contributing-guidelines.md#block-template), [Custom Blocks](custom-blocks.md) |
+| adding to the pack itself (a contribution) | Kotlin in `redstone_additions/` | [Contributing Guidelines](contributing-guidelines.md#block-template), [Custom Blocks](custom-blocks.md) |
 | shipping a separate **addon** data pack in your own namespace | plain `.mcfunction` / JSON (or your own Kore project) | this page |
 
 An addon talks to the pack only through its runtime contract — the `#ra:placement_handlers`

@@ -9,7 +9,7 @@ keeps, and why they are built the way they are — and where each lives in the K
 - How the Kotlin is organised: [Architecture](architecture.md) and
   [Project Reference](project-reference.md).
 
-The pack is Kotlin in `redstone_additions_kore/src/main/kotlin/ra/`, turned into the data pack by
+The pack is Kotlin in `redstone_additions/src/main/kotlin/ra/`, turned into the data pack by
 [Kore](https://kore.ayfri.com). Function paths below (`ra_lib:redstone/detect`) are what the game
 runs; the Kotlin that writes `<ns>:<path>` sits in the package that mirrors it, and every public
 library entry point has a typed reference in `ra/api/` (`RaLib.Redstone.detect`).
@@ -742,15 +742,10 @@ The step-by-step checklists live in [Contributing Guidelines](contributing-guide
 [Recipe Renderer](recipe-renderer.md):
 
 ```bash
-python3 redstone_additions/tools/recipe_render/render.py <recipe.json>
-python3 redstone_additions/tools/recipe_render/render.py --all
+(cd redstone_additions && ./gradlew koreBuild)   # the renderer reads the generated recipes
+python3 tools/recipe_render/render.py redstone_additions/build/kore/redstone_additions/data/<ns>/recipe/<name>.json
+python3 tools/recipe_render/render.py --all
 ```
-
-!!! note
-    The renderer still reads recipes from the beet source tree
-    (`redstone_additions/src/data/*/recipe/`). A recipe added or changed only in Kotlin can be
-    rendered by passing the generated file,
-    `redstone_additions_kore/build/kore/redstone_additions/data/<ns>/recipe/<name>.json`.
 
 The renderer reads the recipe the way the game does, so a result's
 `minecraft:item_model` component is honoured. Ingredients carry no components, so
@@ -763,8 +758,8 @@ a disguised RA item used *as* an ingredient needs an entry in
 in [Markdown to BBCode](markdown-to-bbcode.md):
 
 ```bash
-python3 redstone_additions/tools/md_to_bbcode.py readme.md \
-    --base-url https://github.com/AnCarsenat/Redstone-Additions/raw/main/
+python3 tools/md_to_bbcode.py readme.md \
+    --base-url https://github.com/AnCarsenat/Redstone-Additions/raw/main/ -o readme.bbcode
 ```
 
 PMC has no heading or table tag, so headings become sized bold text and tables are

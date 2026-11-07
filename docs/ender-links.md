@@ -45,7 +45,7 @@ There is never a copy: everything exists in exactly one vault at a time and move
 | --- | --- | --- |
 | Item Vault | every 4 ticks (hopper speed) | **one whole stack** into the first free slot of the partner. In `link` mode: put a stack in one end and it goes to the other; take a stack out and one is pulled back |
 | Fluid Vault | every 10 ticks | up to `transfer_rate` (default 200) one-way; in `link` mode, half the difference between the two ends, so they even out. Holds 1000 |
-| Power Vault | every 5 ticks | up to `transfer_rate` (default 80) EU one-way; in `link` mode, half the difference. Holds 400 EU |
+| Power Vault | every 5 ticks | up to `transfer_rate` (default 80) EU one-way; in `link` mode, half the difference. Stores nothing itself: it is a link, not a battery |
 
 !!! note "Item Vault counts stacks"
     Taking *part* of a stack out (32 of 64) does not count as taking it, so it does not pull a

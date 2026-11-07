@@ -50,7 +50,7 @@ Kotlin package `ra/lib/`. The Kore project's own `.gitignore` used to ignore a b
 also matched `ra/multiblocklib/build/`. The files existed on disk and were never committed.
 
 **Fix (in place):** the root `.gitignore` un-ignores
-`!redstone_additions_kore/src/main/kotlin/**/lib/`, and `redstone_additions_kore/.gitignore`
+`!redstone_additions/src/main/kotlin/**/lib/`, and `redstone_additions/.gitignore`
 anchors its entries (`/build`, `/out`, `/.gradle`). If you add a package named after a common
 build or cache folder, run `git status --ignored` before you commit.
 
@@ -96,18 +96,29 @@ knbt's SNBT parser does not accept `true` / `false`, which the game reads as `1b
 a file the generator reads from disk must be declared in `kore { additionalInputs.from(...) }`
 to trigger a rebuild.
 
-## Calls through function tags and macros are partly unchecked
+## Macro lines need a variable
 
-`PackValidator` checks `function #ns:tag` against the tags the pack declares, but not what is
-**in** the tag. It skips any path containing a macro (`function ra_jetpacks:items/give_$(kit)_kit`),
-since only the game can resolve those. A typo there is caught in game only. Keep macro-built
-paths to the cases that need them, and list their possible values in a comment.
+A line starting with `$` must contain at least one `$(name)`. One that does not raises
+"No variables in macro" at load and Minecraft rejects the **whole function**, not just the
+line — how the Big Torch once shipped without its torch (the macro's only variable was replaced
+by a constant and the leftover `$` took the function down). `PackValidator` fails generation on
+such a line in strict and report mode alike, naming the function and line. Fix it by dropping
+the `$` (the line no longer needs to be a macro) or by putting the variable back.
+
+## Calls through macros are unchecked
+
+`PackValidator` checks every `function ns:path` and `function #ns:tag` in the generated
+functions, every entry of the pack's function tags (unless marked `required: false`) and every
+advancement reward function. It skips any path containing a macro
+(`function ra_jetpacks:items/give_$(kit)_kit`), since only the game can resolve those. A typo
+there is caught in game only. Keep macro-built paths to the cases that need them, and list their
+possible values in a comment.
 
 ## Don't load two builds at once
 
-The beet build and the Kore build write the same namespaces. With both in a world, every
-function exists twice, the later pack wins file by file, and `ra:tick` is scheduled by both.
-Remove `redstone_additions_data_pack` before testing the Kore build.
+An old beet release (v5.1.17 and earlier) and the Kore build write the same namespaces. With
+both in a world, every function exists twice, the later pack wins file by file, and `ra:tick` is
+scheduled by both. Remove the old pack (`redstone_additions_data_pack`, or a release zip named `redstone_additions_v5.x…`) before testing the Kore build.
 
 ## A module property named like a registry list resolves to the registry
 

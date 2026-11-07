@@ -19,9 +19,15 @@ import ra.core.raw
  * and the last list in the tag (ra_interactive, 1%) decided the chance of every sacrifice.
  *
  * End the list function with `returnValue(0)`.
+ *
+ * [sacrificeName] names an input matched on more than its id (custom_data): it is written as a
+ * `# Sacrifice: <name>` comment above the recipe, which is where tools/recipe_render/atlas.py
+ * reads it for the Recipe Atlas. Inputs matched by id alone are named from the id.
  */
-fun Function.sacrificeRecipe(inputFilter: String, resultStack: String, chance: Int) {
+fun Function.sacrificeRecipe(inputFilter: String, resultStack: String, chance: Int, sacrificeName: String? = null) {
 	raw("execute if data storage ra:enchant result run return 0")
+	// Directly above the matching line: the atlas reads the comment just above it.
+	if (sacrificeName != null) comment("Sacrifice: $sacrificeName")
 	raw("execute if data storage ra:enchant input$inputFilter run data modify storage ra:enchant result set value $resultStack")
 	execute {
 		ifCondition { data(Storage.ENCHANT, "result") }

@@ -47,6 +47,12 @@ REPO = os.path.normpath(os.path.join(HERE, "..", ".."))
 PACK_SRC = os.path.join(REPO, "redstone_additions", "build", "kore", "redstone_additions", "data")
 DOCS_IMAGES = os.path.join(REPO, "docs", "images", "recipes")
 
+def component(components, name):
+    """A result component by bare name. The generated pack writes `item_model`; hand-written
+    and vanilla JSON spell it `minecraft:item_model`. Both are the same component."""
+    return components.get(name, components.get("minecraft:" + name))
+
+
 # Vanilla screen geometry, in GUI pixels. Every container window is 176x166;
 # cutting it off at 81 drops the player inventory and leaves the working area —
 # the same crop and the same slot coordinates misode.github.io uses for its recipe
@@ -308,7 +314,7 @@ def render_recipe(
         result_id = result["id"]
         draw_sprite(
             result_id,
-            components.get("minecraft:item_model", overrides.get(result_id)),
+            component(components, "item_model") or overrides.get(result_id),
             *gui["result"],
         )
 

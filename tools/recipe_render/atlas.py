@@ -13,7 +13,7 @@ import re
 # Module title and doc page per namespace. A namespace missing from here still gets
 # a section, titled after itself.
 MODULES = {
-    "ra": ("Tools", "index.md"),
+    "ra": ("Tools", "tools.md"),
     "ra_gates": ("Logic Gates", "logic-gates.md"),
     "ra_interactive": ("Interactive Machines", "interactive-machines.md"),
     "ra_storage": ("Storage", "storage.md"),
@@ -71,7 +71,7 @@ def collect(pack_src, images_root, docs_root):
             result = data.get("result")
             result = {"id": result} if isinstance(result, str) else (result or {})
             components = result.get("components") or {}
-            display = components.get("minecraft:item_name") or result.get("id", name).split(":")[-1].replace("_", " ").title()
+            display = components.get("item_name") or components.get("minecraft:item_name") or result.get("id", name).split(":")[-1].replace("_", " ").title()
             image = os.path.join("images", "recipes", namespace, name + ".png")
             if not os.path.isfile(os.path.join(docs_root, image)):
                 image = None
@@ -83,10 +83,10 @@ def collect_enchant(pack_src):
     """Items won on an enchanting table, read out of the enchant_recipes functions.
 
     Each recipe there is one `if data storage ra:enchant input{...}` line that writes
-    a result, then a `chance set value N` line, and by convention a `# Sacrifice ->
-    Result` comment above it. The sacrifice is taken from the comment because the
-    input can be matched on custom_data — "an iron jetpack kit" is not something to
-    reconstruct from `{ra:{jetpack_kit:1b,tier:"iron"}}`.
+    a result, then a `chance set value N` line. A recipe matched on custom_data carries
+    a `# Sacrifice: <name>` comment above it (written by sacrificeRecipe's
+    `sacrificeName`), because "Iron Jetpack Kit" is not something to reconstruct from
+    `{ra:{jetpack_kit:1b,tier:"iron"}}`; a plain `input{id:...}` is named from the id.
     """
     out = []
     for namespace in sorted(os.listdir(pack_src)):
@@ -107,12 +107,16 @@ def collect_enchant(pack_src):
                 comment = lines[back].strip()
                 if not comment.startswith("#"):
                     break
+                labelled = re.match(r"#\s*Sacrifice:\s*(.+)", comment)
+                if labelled:
+                    sacrifice = labelled.group(1).strip()
+                    break
                 if "\u2192" in comment or "->" in comment:
                     sacrifice = re.split(r"\u2192|->", comment.lstrip("# "))[0].strip()
                     break
             if not sacrifice:
                 plain = re.search(r'input\{id:"([^"]+)"\}', line)
-                sacrifice = plain.group(1) if plain else "a specific item"
+                sacrifice = plain.group(1).split(":")[-1].replace("_", " ").title() if plain else "a specific item"
 
             chance = None
             for ahead in lines[index + 1:index + 4]:

@@ -145,6 +145,7 @@ object Kits {
 				"{components:{\"minecraft:custom_data\":{ra:{jetpack_kit:1b,tier:\"iron\"}}}}",
 				withoutSoundHint(infiniteKit).stackSnbt(),
 				chance = 1,
+				sacrificeName = "Iron Jetpack Kit",
 			)
 			returnValue(0)
 		}

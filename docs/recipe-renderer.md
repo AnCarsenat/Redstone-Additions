@@ -43,7 +43,7 @@ python3 tools/recipe_render/render.py --all --refresh-assets
 
 | Flag | Meaning |
 | ---- | ------- |
-| `--all` | every `src/data/*/recipe/*.json` |
+| `--all` | every recipe in the generated pack, `redstone_additions/build/kore/redstone_additions/data/*/recipe/*.json` |
 | `--only <text>` | keep only paths containing `<text>` |
 | `-o <file>` | output path, single recipe only |
 | `--out-dir <dir>` | write `<namespace>/<name>.png` here instead of into the docs |

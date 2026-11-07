@@ -153,7 +153,7 @@ Each module has `<Name>Module.kt` (the `GameplayModule` object: registration ord
 | `modules/chunkloader` | `ChunkLoader.kt` |
 | `modules/interactive` | one file per block (`BlockBreaker.kt`, `BlockPlacer.kt`, `Breeder.kt` + `BreederBreeds.kt`, `ItemPipe.kt` + `ItemPipeTransfer.kt`, `ItemMover.kt` + `ItemMoverIo.kt`, `BigTorch.kt` + `BigTorchSweep.kt`, `Cauldrons.kt`, `MagicCrate.kt`, `MessageBlock.kt`, `Spitter.kt`), `EnchantedCoal.kt`, `InteractiveCommon.kt` |
 | `modules/storage` | `Boxer.kt`, `Unboxer.kt`, `StorageBox.kt` |
-| `modules/sensors` | `EntityDetector.kt`, `TagAdder.kt`, `TagRemover.kt`, `SimpleBlock.kt`, `EdgeTrigger.kt` |
+| `modules/sensors` | `EntityDetector.kt`, `TagAdder.kt`, `TagRemover.kt`, `EdgeTrigger.kt` |
 | `modules/wireless` | `Emitter.kt`, `Receiver.kt`, `WirelessCommon.kt`, `tools/Remote.kt` |
 | `modules/ender` | `ItemVault.kt`, `FluidVault.kt`, `PowerVault.kt`, `TeleportAnchor.kt`, `EnderCommon.kt`, `link/Link.kt`, `tools/Anchor.kt`, `debug/` |
 

@@ -108,3 +108,14 @@ paths to the cases that need them, and list their possible values in a comment.
 The beet build and the Kore build write the same namespaces. With both in a world, every
 function exists twice, the later pack wins file by file, and `ra:tick` is scheduled by both.
 Remove `redstone_additions_data_pack` before testing the Kore build.
+
+## A module property named like a registry list resolves to the registry
+
+Inside `fun Ra.register()` declared in a module `object`, an unqualified name is looked up on the
+extension receiver (`Ra`) **before** the enclosing object. A module's own
+`private val blocks = listOf(...)` was therefore silently replaced by the registry's list of
+every block registered so far, and `ra_gates:tick` / `load` / `give_all` ran every earlier
+module's blocks a second time. It compiled because both are lists of `CustomBlock`.
+
+The registry list is now `Ra.allBlocks`. Still: give module-level collections specific names
+(`gateBlocks`), or declare them as locals inside `register()`, where they shadow correctly.

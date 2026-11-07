@@ -103,7 +103,7 @@ edit each other's files.** A part registers; the part that owns the shared outpu
 
 | Field / call | Holds | Registered by | Built into, by |
 | --- | --- | --- | --- |
-| `blocks` | every `CustomBlock` | `ra.block(b)` | (kept for reference; bundles use their own lists) |
+| `allBlocks` | every `CustomBlock` | `ra.block(b)` | reference only; bundles use their own lists. Not named `blocks`: see [Kore Gotchas](gotchas.md) |
 | `placementHandlers` | `handle_placement` functions | `ra.block(b)` (`placement = true`), or `placementHandlers += fn` for a shared handler | `#ra:placement_handlers`, by Hub |
 | `goggles` | `TagRoute(markerTag, readout)` | `ra.block(b)` (`goggles = true`), or `goggles += …` | `ra:tools/goggles/draw_block`, by Tools |
 | `multiblockGoggles` | `TagRoute(multiblockTag, readout)` | `multiblockGoggles += …` | `ra:tools/goggles/draw_multiblock`, by Tools |

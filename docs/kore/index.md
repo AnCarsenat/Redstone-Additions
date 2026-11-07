@@ -101,13 +101,12 @@ it function by function. "Played in game" is a separate step and is not tracked 
 | Enchant Crafting | `ra_enchanting` | `ra.modules.enchanting` | Ported and reviewed |
 | Chunk Loader | `ra_chunk_loader` | `ra.modules.chunkloader` | Ported and reviewed |
 | Infinite Generators | `ra_infinite` | `ra.modules.infinite` | Ported and reviewed |
-| Shared library | `ra_lib` | `ra.lib` | **Being ported** |
-| Interactive Machines | `ra_interactive` | `ra.modules.interactive` | **Being ported** |
-| Storage | `ra_storage` | `ra.modules.storage` | **Being ported** |
-| Ender Links | `ra_ender` | `ra.modules.ender` | **Being ported** |
-| Wireless Redstone | `ra_wireless` | `ra.modules.wireless` | **Being ported** |
-| Sensors | `ra_sensors` | `ra.modules.sensors` | **Being ported** |
+| Shared library | `ra_lib` | `ra.lib` | Ported and reviewed |
+| Interactive Machines | `ra_interactive` | `ra.modules.interactive` | Ported and reviewed |
+| Storage | `ra_storage` | `ra.modules.storage` | Ported and reviewed |
+| Ender Links | `ra_ender` | `ra.modules.ender` | Ported and reviewed |
+| Wireless Redstone | `ra_wireless` | `ra.modules.wireless` | Ported and reviewed |
+| Sensors | `ra_sensors` | `ra.modules.sensors` | Ported and reviewed |
 
-Until the last six land, the pack only generates with `-Pra.strict=false`
-(see [Getting Started](getting-started.md#strict-mode)), and it is not playable: everything calls
-into `ra_lib`.
+Every part is ported, and the pack generates in strict mode: no call resolves to a missing
+function. None of it has been played in game yet.

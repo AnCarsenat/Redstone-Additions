@@ -52,8 +52,13 @@ data class GiveBundle(val id: String, val title: String, val lore: String, val n
  * functions whose order is observable (tick order, the order bundles are handed out).
  */
 class Ra(val pack: DataPack) {
-	/** Every placeable block, in registration order. */
-	val blocks = mutableListOf<CustomBlock>()
+	/**
+	 * Every placeable block, in registration order. Deliberately not called `blocks`: inside a
+	 * part's `fun Ra.register()`, a module's own `blocks` list would silently resolve to this
+	 * one instead (the extension receiver wins over the enclosing object), which once made
+	 * `ra_gates:tick` re-run every earlier module's block ticks.
+	 */
+	val allBlocks = mutableListOf<CustomBlock>()
 
 	/** Function tag `#ra:placement_handlers`, run as the spawned bat, at the block centre. */
 	val placementHandlers = mutableListOf<FunctionArgument>()
@@ -99,7 +104,7 @@ class Ra(val pack: DataPack) {
 
 	/** Registers a placeable block, its placement handler and its goggles readout. */
 	fun block(block: CustomBlock, placement: Boolean = true, goggles: Boolean = true): CustomBlock {
-		blocks += block
+		allBlocks += block
 		if (placement) placementHandlers += block.handlePlacement
 		if (goggles) this.goggles += TagRoute(block.tag, block.goggles)
 		return block

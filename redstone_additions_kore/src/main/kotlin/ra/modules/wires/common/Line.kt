@@ -6,16 +6,15 @@ import io.github.ayfri.kore.commands.command
 import io.github.ayfri.kore.functions.Function
 
 /**
- * One vanilla command whose function calls are typed values.
+ * One vanilla command with a typed function call in the MIDDLE of its chain.
  *
- * The wires pack is mostly `execute <chain> run function <fn>` with chains (`if score A < B`,
- * `unless function ra_lib:redstone/any`, `store result ... run function`) that the typed
- * `execute { }` builder can only write markedly longer than vanilla. The chain stays vanilla
- * text; every function in it is a [FunctionArgument], so a typo is a compile error and
- * `PackValidator` sees the call -- the same thing Kore's own `returnRun(function)` does.
+ * A call at the end (`execute <chain> run function <fn>`) is core `executeRun` /
+ * `executeReturnRun`. What is left here are the chains that test a function's result
+ * (`execute unless function ra_lib:redstone/any run ...`), which neither the typed `execute { }`
+ * builder nor `executeRun` can write. The chain stays vanilla text; every function in it is a
+ * [FunctionArgument], so a typo is a compile error and `PackValidator` sees the call.
  *
  * ```
- * line("execute if entity @s[tag=ra.wires.bridge] run function", Bridge.tick)
  * line("execute unless function", RaLib.Redstone.any, "run return 0")
  * ```
  */

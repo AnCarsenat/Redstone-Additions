@@ -1,13 +1,10 @@
 package ra.modules.multiblock
 
+import io.github.ayfri.kore.arguments.numbers.ranges.rangeOrIntStart
 import io.github.ayfri.kore.arguments.types.literals.literal
 import io.github.ayfri.kore.commands.execute.execute
 import io.github.ayfri.kore.commands.function
 import io.github.ayfri.kore.commands.scoreboard.scoreboard
-import io.github.ayfri.kore.arguments.numbers.ranges.rangeOrIntStart
-import io.github.ayfri.kore.arguments.types.literals.allEntities
-import io.github.ayfri.kore.arguments.types.literals.self
-import io.github.ayfri.kore.generated.EntityTypes
 import ra.api.MultiblockLib
 import ra.core.GameplayModule
 import ra.core.GiveBundle
@@ -75,11 +72,7 @@ object MultiblockModule : GameplayModule {
 
 		pack.define(tick!!) {
 			// Break detection for every base tier: one check, which dispatches the cleanup macro.
-			execute {
-				asTarget(allEntities { type = EntityTypes.MARKER; tag = Bases.BASE_TAG })
-				at(self())
-				run { function(Bases.checkBreak) }
-			}
+			forEachMarker(Bases.BASE_TAG, Bases.checkBreak)
 
 			// Periodic structure validation, every 40 ticks (2 s).
 			val timer = literal("#mb_validate_timer")

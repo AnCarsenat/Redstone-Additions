@@ -9,13 +9,18 @@ import io.github.ayfri.kore.commands.scoreboard.scoreboard
 import io.github.ayfri.kore.commands.tag
 import ra.api.RaLib
 import ra.core.Ns
+import ra.core.Obj
 import ra.core.PackPart
 import ra.core.Ra
 import ra.core.Storage
+import ra.core.block.particleViewersSel
+import ra.core.block.soundListenersSel
 import ra.core.define
+import ra.core.ensureScore
+import ra.core.executeReturnRun
+import ra.core.executeRun
 import ra.core.raw
 import ra.core.ref
-import ra.modules.wires.common.line
 import ra.modules.wires.electric.EuApi
 
 object ElectricFurnace : PackPart {
@@ -53,7 +58,7 @@ object ElectricFurnace : PackPart {
 			// one tag test rather than a skin rebuild every tick.
 
 			raw("execute if entity @s[tag=ra.wires.ef_was_lit] run tag @s remove ra.wires.ef_lit")
-			line("execute if entity @s[tag=ra.wires.ef_was_lit] run function", ElectricFurnace.refreshDisplay)
+			executeRun("if entity @s[tag=ra.wires.ef_was_lit]", ElectricFurnace.refreshDisplay)
 			tag(self()) { remove("ra.wires.ef_was_lit") }
 			raw("data modify entity @s data.status.active set value 0b")
 			raw("execute if block ~ ~1 ~ minecraft:light[level=10] run setblock ~ ~1 ~ minecraft:air")
@@ -106,11 +111,11 @@ object ElectricFurnace : PackPart {
 			raw("data modify storage ra:wires ef.skin.lit set value \"false\"")
 			raw("execute if entity @s[tag=ra.wires.ef_lit] run data modify storage ra:wires ef.skin.lit set value \"true\"")
 
-			line("execute store result score #ef.skinned ra.wires.tmp run function", RaLib.Skin.setLit, "with storage ra:wires ef.skin")
+			executeRun("store result score #ef.skinned ra.wires.tmp", RaLib.Skin.setLit, "with storage ra:wires ef.skin")
 			raw("execute if score #ef.skinned ra.wires.tmp matches 1.. run return 0")
 
-			line("execute if entity @s[tag=ra.wires.ef_lit] run function", RaLib.Skin.applyLit, """{real:"minecraft:barrel",skin:"minecraft:blast_furnace",id:"electric_furnace",lit:"true"}""")
-			line("execute unless entity @s[tag=ra.wires.ef_lit] run function", RaLib.Skin.applyLit, """{real:"minecraft:barrel",skin:"minecraft:blast_furnace",id:"electric_furnace",lit:"false"}""")
+			executeRun("if entity @s[tag=ra.wires.ef_lit]", RaLib.Skin.applyLit, """{real:"minecraft:barrel",skin:"minecraft:blast_furnace",id:"electric_furnace",lit:"true"}""")
+			executeRun("unless entity @s[tag=ra.wires.ef_lit]", RaLib.Skin.applyLit, """{real:"minecraft:barrel",skin:"minecraft:blast_furnace",id:"electric_furnace",lit:"false"}""")
 		}
 
 		pack.define(ElectricFurnace.running) {
@@ -122,9 +127,9 @@ object ElectricFurnace : PackPart {
 
 			function(ElectricFurnace.stayLit)
 
-			raw("particle minecraft:smoke ~ ~1.1 ~ 0.15 0.05 0.15 0.01 2 normal @a[scores={ra.u.par=1..}]")
-			raw("particle minecraft:flame ~ ~0.6 ~ 0.2 0.1 0.2 0.005 1 normal @a[scores={ra.u.par=1..}]")
-			raw("playsound minecraft:block.blastfurnace.fire_crackle block @a[distance=..10,scores={ra.u.snd=1..}] ~ ~ ~ 0.3 1.6")
+			raw("particle minecraft:smoke ~ ~1.1 ~ 0.15 0.05 0.15 0.01 2 normal ${particleViewersSel()}")
+			raw("particle minecraft:flame ~ ~0.6 ~ 0.2 0.1 0.2 0.005 1 normal ${particleViewersSel()}")
+			raw("playsound minecraft:block.blastfurnace.fire_crackle block ${soundListenersSel(10)} ~ ~ ~ 0.3 1.6")
 		}
 
 		pack.define(ElectricFurnace.stayLit) {
@@ -139,7 +144,7 @@ object ElectricFurnace : PackPart {
 			// every tick for every furnace in the world.
 
 			raw("execute unless entity @s[tag=ra.wires.ef_lit] run tag @s add ra.wires.ef_lit")
-			line("execute unless entity @s[tag=ra.wires.ef_was_lit] run function", ElectricFurnace.refreshDisplay)
+			executeRun("unless entity @s[tag=ra.wires.ef_was_lit]", ElectricFurnace.refreshDisplay)
 			tag(self()) { add("ra.wires.ef_was_lit") }
 
 			raw("data modify entity @s data.status.active set value 1b")
@@ -193,35 +198,35 @@ object ElectricFurnace : PackPart {
 
 			// Cooldown. A never-set score reads as ABSENT and every comparison against an
 			// absent score is false, so it has to be seeded before it can be counted.
-			raw("execute unless score @s ra.cooldown matches -2147483648.. run scoreboard players set @s ra.cooldown 0")
-			scoreboard.players.remove(self(), "ra.cooldown", 1)
+			ensureScore("@s", Obj.COOLDOWN)
+			scoreboard.players.remove(self(), Obj.COOLDOWN, 1)
 
-			line("execute unless data block ~ ~ ~ Items[0] run return run function", ElectricFurnace.idleEmpty)
+			executeReturnRun("unless data block ~ ~ ~ Items[0]", ElectricFurnace.idleEmpty)
 
 			function(ElectricFurnaceSmelting.findInput)
-			line("execute if score #ef.slot ra.wires.tmp matches ..-1 run return run function", ElectricFurnace.idleEmpty)
+			executeReturnRun("if score #ef.slot ra.wires.tmp matches ..-1", ElectricFurnace.idleEmpty)
 
 			// Where the result is going, and whether it will fit. Checked before the EU is
 			// spent and before the input is consumed.
 			function(ElectricFurnaceSettings.readOutput)
 			function(ElectricFurnaceSmelting.checkTarget, Storage.WIRES, "ef.out")
-			line("execute if score #ef.can ra.wires.tmp matches ..0 run return run function", ElectricFurnace.idleBlocked)
+			executeReturnRun("if score #ef.can ra.wires.tmp matches ..0", ElectricFurnace.idleBlocked)
 
 			// Is the grid holding enough for one operation? Asked WITHOUT taking any, because
 			// this runs on every tick of the cooldown too and a furnace that drained the grid
 			// merely by checking would starve everything else on the wire.
-			line("execute store result score #ef.bank ra.wires.tmp run function", EuApi.peekEu)
-			line("execute if score #ef.bank ra.wires.tmp < #ef.cost ra.wires.tmp run return run function", ElectricFurnace.idleNopower)
+			executeRun("store result score #ef.bank ra.wires.tmp", EuApi.peekEu)
+			executeReturnRun("if score #ef.bank ra.wires.tmp < #ef.cost ra.wires.tmp", ElectricFurnace.idleNopower)
 
 			// Something to cook and the power to cook it, so it looks like it is cooking --
 			// whether or not this is the tick an item actually comes out.
-			line("execute if score @s ra.cooldown matches 1.. run return run function", ElectricFurnace.cooking)
+			executeReturnRun("if score @s ${Obj.COOLDOWN} matches 1..", ElectricFurnace.cooking)
 
 			raw("execute store result storage ra:wires eu.amount int 1 run scoreboard players get #ef.cost ra.wires.tmp")
-			line("execute store result score #ef.got ra.wires.tmp run function", EuApi.takeEu, "with storage ra:wires eu")
-			line("execute if score #ef.got ra.wires.tmp matches ..0 run return run function", ElectricFurnace.idleNopower)
+			executeRun("store result score #ef.got ra.wires.tmp", EuApi.takeEu, "with storage ra:wires eu")
+			executeReturnRun("if score #ef.got ra.wires.tmp matches ..0", ElectricFurnace.idleNopower)
 
-			scoreboard.players.operation(self(), "ra.cooldown", Operation.SET, literal("#ef.speed"), "ra.wires.tmp")
+			scoreboard.players.operation(self(), Obj.COOLDOWN, Operation.SET, literal("#ef.speed"), "ra.wires.tmp")
 			function(ElectricFurnaceSmelting.smeltOne)
 		}
 	}

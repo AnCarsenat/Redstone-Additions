@@ -10,13 +10,16 @@ import io.github.ayfri.kore.utils.nbt
 import io.github.ayfri.kore.utils.set
 import ra.api.RaLib
 import ra.core.Ns
+import ra.core.Obj
 import ra.core.PackPart
 import ra.core.Ra
 import ra.core.Storage
+import ra.core.block.soundListenersSel
 import ra.core.define
+import ra.core.executeReturnRun
+import ra.core.executeRun
 import ra.core.raw
 import ra.core.ref
-import ra.modules.wires.common.line
 
 object Drain : PackPart {
 	val drainAbove = ref(Ns.WIRES, "fluid/drain_above")
@@ -99,7 +102,7 @@ object Drain : PackPart {
 			scoreboard.players.set(literal("#dr.took"), "ra.wires.tmp", 1)
 			raw("data modify entity @s data.status.drain_state set value \"emptied_container\"")
 			raw("\$function ${Fluid.particles.asId()} {medium:\"\$(medium)\"}")
-			raw("playsound minecraft:item.bucket_empty block @a[distance=..8,scores={ra.u.snd=1..}] ~ ~ ~ 0.7 1.2")
+			raw("playsound minecraft:item.bucket_empty block ${soundListenersSel(8)} ~ ~ ~ 0.7 1.2")
 		}
 
 		pack.define(Drain.drainTick) {
@@ -127,17 +130,17 @@ object Drain : PackPart {
 			// Throughput is the cooldown between actions, cycled through three steps with the
 			// wrench. Compared as a score rather than baked into the selector, so the setting
 			// takes effect the moment it is changed.
-			scoreboard.players.add(self(), "ra.cooldown", 1)
+			scoreboard.players.add(self(), Obj.COOLDOWN, 1)
 			function(RaLib.Util.property, nbt { this["name"] = "cooldown"; this["default"] = 20; this["min"] = 1 })
 			scoreboard.players.operation(literal("#dr.cooldown"), "ra.wires.tmp", Operation.SET, literal("#prop"), "ra.temp")
-			raw("execute if score @s ra.cooldown < #dr.cooldown ra.wires.tmp run return 0")
-			scoreboard.players.set(self(), "ra.cooldown", 0)
+			raw("execute if score @s ${Obj.COOLDOWN} < #dr.cooldown ra.wires.tmp run return 0")
+			scoreboard.players.set(self(), Obj.COOLDOWN, 0)
 
 			// ra.facing 0 is down and 1 is up: a drain on its end is the hand-loading point,
 			// whatever mode it is set to.
-			line("execute if score @s ra.facing matches 0..1 run return run function", DrainItems.drainItems)
+			executeReturnRun("if score @s ra.facing matches 0..1", DrainItems.drainItems)
 
-			line("""execute if data entity @s data.properties{mode:"place"} run function""", DrainExperience.drainPlace)
+			executeRun("""if data entity @s data.properties{mode:"place"}""", DrainExperience.drainPlace)
 			raw("""execute if data entity @s data.properties{mode:"place"} run return 0""")
 
 			function(Source.scan)

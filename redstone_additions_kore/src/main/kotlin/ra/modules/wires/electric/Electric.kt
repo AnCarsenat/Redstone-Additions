@@ -13,7 +13,9 @@ import ra.api.RaLib
 import ra.core.Ns
 import ra.core.PackPart
 import ra.core.Ra
+import ra.core.block.particleViewersSel
 import ra.core.define
+import ra.core.executeRun
 import ra.core.raw
 import ra.core.ref
 import ra.modules.wires.blocks.creative_eu.CreativeEu
@@ -51,13 +53,13 @@ object Electric : PackPart {
 			// it is gone. Generators, consumers and panels keep 50 only so they can function
 			// standing alone.
 
-			line("execute if entity @s[tag=ra.custom_block.electric_wire] run function", RaLib.Transport.Net.join, """{class:"electric",capacity:0}""")
-			line("execute if entity @s[tag=ra.custom_block.electric_generator] run function", RaLib.Transport.Net.join, """{class:"electric",capacity:50}""")
-			line("execute if entity @s[tag=ra.custom_block.electric_consumer] run function", RaLib.Transport.Net.join, """{class:"electric",capacity:50}""")
-			line("execute if entity @s[tag=ra.custom_block.solar_panel] run function", RaLib.Transport.Net.join, """{class:"electric",capacity:50}""")
-			line("execute if entity @s[tag=ra.custom_block.electric_switch] run function", RaLib.Transport.Net.join, """{class:"electric",capacity:0}""")
-			line("execute if entity @s[tag=ra.custom_block.battery] run function", RaLib.Transport.Net.join, """{class:"electric",capacity:10000}""")
-			line("execute if entity @s[tag=ra.custom_block.ender_power_vault] run function", RaLib.Transport.Net.join, """{class:"electric",capacity:0}""")
+			executeRun("if entity @s[tag=ra.custom_block.electric_wire]", RaLib.Transport.Net.join, """{class:"electric",capacity:0}""")
+			executeRun("if entity @s[tag=ra.custom_block.electric_generator]", RaLib.Transport.Net.join, """{class:"electric",capacity:50}""")
+			executeRun("if entity @s[tag=ra.custom_block.electric_consumer]", RaLib.Transport.Net.join, """{class:"electric",capacity:50}""")
+			executeRun("if entity @s[tag=ra.custom_block.solar_panel]", RaLib.Transport.Net.join, """{class:"electric",capacity:50}""")
+			executeRun("if entity @s[tag=ra.custom_block.electric_switch]", RaLib.Transport.Net.join, """{class:"electric",capacity:0}""")
+			executeRun("if entity @s[tag=ra.custom_block.battery]", RaLib.Transport.Net.join, """{class:"electric",capacity:10000}""")
+			executeRun("if entity @s[tag=ra.custom_block.ender_power_vault]", RaLib.Transport.Net.join, """{class:"electric",capacity:0}""")
 
 			// The per-node buffer is dead weight now: the charge lives on the network. Left
 			// behind it would show up in the Data Handler as an editable field that changes
@@ -91,13 +93,13 @@ object Electric : PackPart {
 			raw("execute if score #net_amount ra.tr.tmp < #use ra.wires.tmp2 run return 0")
 
 			raw("execute store result storage ra:wires eu.amount int 1 run scoreboard players get #use ra.wires.tmp2")
-			line("execute store result score #got ra.wires.tmp run function", EuApi.takeEu, "with storage ra:wires eu")
+			executeRun("store result score #got ra.wires.tmp", EuApi.takeEu, "with storage ra:wires eu")
 
 			raw("execute if score #got ra.wires.tmp < #use ra.wires.tmp2 run data modify entity @s data.status.active set value 0b")
 			raw("execute if score #got ra.wires.tmp < #use ra.wires.tmp2 run return 0")
 
 			raw("data modify entity @s data.status.active set value 1b")
-			raw("particle minecraft:electric_spark ~ ~0.9 ~ 0.25 0.25 0.25 0.01 2 normal @a[scores={ra.u.par=1..}]")
+			raw("particle minecraft:electric_spark ~ ~0.9 ~ 0.25 0.25 0.25 0.01 2 normal ${particleViewersSel()}")
 		}
 
 		pack.define(Electric.tick) {
@@ -125,20 +127,20 @@ object Electric : PackPart {
 			raw("execute as @e[type=marker,tag=ra.custom_block.electric_wire] at @s if block ~ ~ ~ conduit[waterlogged=true] run setblock ~ ~ ~ conduit[waterlogged=false]")
 
 			// Self-heal missing wire displays without forcing per-tick full rebuilds.
-			line("execute as @e[type=marker,tag=ra.custom_block.electric_wire] at @s if block ~ ~ ~ conduit unless entity @e[type=block_display,tag=ra.wires.wire_display.center,distance=..0.6,limit=1] run function", Common.updateModelLocalAndNeighbors)
+			executeRun("as @e[type=marker,tag=ra.custom_block.electric_wire] at @s if block ~ ~ ~ conduit unless entity @e[type=block_display,tag=ra.wires.wire_display.center,distance=..0.6,limit=1]", Common.updateModelLocalAndNeighbors)
 
 			// Break detection — straight to the cleanup handler, no ra.broken round-trip.
-			line("execute as @e[type=marker,tag=ra.custom_block.electric_wire] at @s unless block ~ ~ ~ conduit run function", ElectricBreak.wire)
-			line("execute as @e[type=marker,tag=ra.custom_block.electric_generator] at @s unless block ~ ~ ~ barrel run function", ElectricBreak.generator)
-			line("execute as @e[type=marker,tag=ra.custom_block.creative_eu] at @s unless block ~ ~ ~ beacon run function", ElectricBreak.creativeEu)
-			line("execute as @e[type=marker,tag=ra.custom_block.creative_fluid] at @s unless block ~ ~ ~ beacon run function", ElectricBreak.creativeFluid)
-			line("execute as @e[type=marker,tag=ra.custom_block.electric_furnace] at @s unless block ~ ~ ~ barrel run function", ElectricBreak.electricFurnace)
-			line("execute as @e[type=marker,tag=ra.custom_block.electric_consumer] at @s unless block ~ ~ ~ observer run function", ElectricBreak.consumer)
-			line("execute as @e[type=marker,tag=ra.custom_block.electric_switch] at @s unless block ~ ~ ~ waxed_cut_copper run function", ElectricBreak.switch)
-			line("execute as @e[type=marker,tag=ra.custom_block.solar_panel] at @s unless block ~ ~ ~ daylight_detector run function", ElectricBreak.solarPanel)
-			line("execute as @e[type=marker,tag=ra.custom_block.battery] at @s unless block ~ ~ ~ waxed_copper_grate run function", ElectricBreak.battery)
-			line("execute as @e[type=marker,tag=ra.custom_block.electric_breaker] at @s unless block ~ ~ ~ waxed_copper_bulb run function", ElectricBreak.breaker)
-			line("execute as @e[type=marker,tag=ra.custom_block.industrial_light] at @s unless block ~ ~ ~ sea_lantern run function", ElectricBreak.industrialLight)
+			executeRun("as @e[type=marker,tag=ra.custom_block.electric_wire] at @s unless block ~ ~ ~ conduit", ElectricBreak.wire)
+			executeRun("as @e[type=marker,tag=ra.custom_block.electric_generator] at @s unless block ~ ~ ~ barrel", ElectricBreak.generator)
+			executeRun("as @e[type=marker,tag=ra.custom_block.creative_eu] at @s unless block ~ ~ ~ beacon", ElectricBreak.creativeEu)
+			executeRun("as @e[type=marker,tag=ra.custom_block.creative_fluid] at @s unless block ~ ~ ~ beacon", ElectricBreak.creativeFluid)
+			executeRun("as @e[type=marker,tag=ra.custom_block.electric_furnace] at @s unless block ~ ~ ~ barrel", ElectricBreak.electricFurnace)
+			executeRun("as @e[type=marker,tag=ra.custom_block.electric_consumer] at @s unless block ~ ~ ~ observer", ElectricBreak.consumer)
+			executeRun("as @e[type=marker,tag=ra.custom_block.electric_switch] at @s unless block ~ ~ ~ waxed_cut_copper", ElectricBreak.switch)
+			executeRun("as @e[type=marker,tag=ra.custom_block.solar_panel] at @s unless block ~ ~ ~ daylight_detector", ElectricBreak.solarPanel)
+			executeRun("as @e[type=marker,tag=ra.custom_block.battery] at @s unless block ~ ~ ~ waxed_copper_grate", ElectricBreak.battery)
+			executeRun("as @e[type=marker,tag=ra.custom_block.electric_breaker] at @s unless block ~ ~ ~ waxed_copper_bulb", ElectricBreak.breaker)
+			executeRun("as @e[type=marker,tag=ra.custom_block.industrial_light] at @s unless block ~ ~ ~ sea_lantern", ElectricBreak.industrialLight)
 
 			// Membership. Every one of these lines only fires when a node's membership
 			// disagrees with what it should be, which matters more than it looks: joining and
@@ -147,11 +149,11 @@ object Electric : PackPart {
 			//
 			// Repaint a generator's furnace skin if it has gone missing. Anchored to the block
 			// centre, matching where ra_lib:skin/spawn stands its displays.
-			line("execute as @e[type=marker,tag=ra.custom_block.electric_generator] at @s align xyz positioned ~0.5 ~0.5 ~0.5 unless entity @e[type=block_display,tag=ra.skin.electric_generator,distance=..0.4,limit=1] run function", ElectricGenerator.refreshDisplay)
+			executeRun("as @e[type=marker,tag=ra.custom_block.electric_generator] at @s align xyz positioned ~0.5 ~0.5 ~0.5 unless entity @e[type=block_display,tag=ra.skin.electric_generator,distance=..0.4,limit=1]", ElectricGenerator.refreshDisplay)
 
 			// Enrols anything placed before electric moved onto the network engine, and costs
 			// one tag test per node on every tick after that.
-			line("execute as @e[type=marker,tag=ra.wires.electric_node,tag=!ra.tr.node,tag=!ra.custom_block.electric_switch] at @s run function", Electric.adopt)
+			executeRun("as @e[type=marker,tag=ra.wires.electric_node,tag=!ra.tr.node,tag=!ra.custom_block.electric_switch] at @s", Electric.adopt)
 
 			// A switch is the exception: its enabled state decides whether it conducts, so it
 			// joins and leaves as that changes, however it was changed — wrench, Data
@@ -175,23 +177,23 @@ object Electric : PackPart {
 			// spendable on the same tick it is made; nothing depends on which generator or
 			// which consumer the selector reaches first, because they all talk to the grid
 			// rather than to each other.
-			line("execute as @e[type=marker,tag=ra.custom_block.electric_generator] at @s run function", Generator.generatorTick)
-			line("execute as @e[type=marker,tag=ra.custom_block.solar_panel] at @s run function", SolarPanel.tick)
-			line("execute as @e[type=marker,tag=ra.custom_block.electric_consumer] at @s run function", Electric.consumerTick)
+			executeRun("as @e[type=marker,tag=ra.custom_block.electric_generator] at @s", Generator.generatorTick)
+			executeRun("as @e[type=marker,tag=ra.custom_block.solar_panel] at @s", SolarPanel.tick)
+			executeRun("as @e[type=marker,tag=ra.custom_block.electric_consumer] at @s", Electric.consumerTick)
 			// Orphan sweep for the Industrial Light. A light that goes out clears its own
 			// beam on that tick; this is only for beams whose marker vanished with a chunk,
 			// which have nothing left to notice. Once every ten seconds.
 			scoreboard.players.add(literal("#il.sweep"), "ra.wires.tmp2", 1)
 			raw("execute if score #il.sweep ra.wires.tmp2 matches 200.. run scoreboard players set #il.sweep ra.wires.tmp2 0")
 
-			line("execute as @e[type=marker,tag=ra.custom_block.electric_furnace] at @s align xyz positioned ~0.5 ~0.5 ~0.5 unless entity @e[type=block_display,tag=ra.skin.electric_furnace,distance=..0.4,limit=1] run function", ElectricFurnace.refreshDisplay)
-			line("execute as @e[type=marker,tag=ra.custom_block.creative_eu] at @s run function", CreativeEu.tick)
-			line("execute as @e[type=marker,tag=ra.custom_block.creative_fluid] at @s run function", CreativeFluid.tick)
-			line("execute as @e[type=marker,tag=ra.custom_block.electric_furnace] at @s run function", ElectricFurnace.tick)
-			line("execute as @e[type=marker,tag=ra.custom_block.industrial_light] at @s run function", IndustrialLight.tick)
+			executeRun("as @e[type=marker,tag=ra.custom_block.electric_furnace] at @s align xyz positioned ~0.5 ~0.5 ~0.5 unless entity @e[type=block_display,tag=ra.skin.electric_furnace,distance=..0.4,limit=1]", ElectricFurnace.refreshDisplay)
+			executeRun("as @e[type=marker,tag=ra.custom_block.creative_eu] at @s", CreativeEu.tick)
+			executeRun("as @e[type=marker,tag=ra.custom_block.creative_fluid] at @s", CreativeFluid.tick)
+			executeRun("as @e[type=marker,tag=ra.custom_block.electric_furnace] at @s", ElectricFurnace.tick)
+			executeRun("as @e[type=marker,tag=ra.custom_block.industrial_light] at @s", IndustrialLight.tick)
 
 			// Status refresh. Wires and switches do no other work.
-			line("execute as @e[type=marker,tag=ra.wires.electric_node] at @s run function", Electric.updateStatus)
+			executeRun("as @e[type=marker,tag=ra.wires.electric_node] at @s", Electric.updateStatus)
 		}
 
 		pack.define(Electric.updateStatus) {

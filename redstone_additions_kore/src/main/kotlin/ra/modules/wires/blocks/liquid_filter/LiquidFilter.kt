@@ -13,9 +13,9 @@ import ra.core.block.dataLine
 import ra.core.block.gogglesHeader
 import ra.core.block.textLine
 import ra.core.define
+import ra.core.executeReturnRun
 import ra.core.raw
 import ra.core.ref
-import ra.modules.wires.common.line
 
 object LiquidFilter : PackPart {
 	val goggles = ref(Ns.WIRES, "blocks/liquid_filter/goggles")
@@ -47,7 +47,7 @@ object LiquidFilter : PackPart {
 			// Internal: draw the "Passing:" line, in the medium's own display name.
 			// Context: as the filter marker.
 
-			line("execute unless data entity @s data.properties.filter_medium run return run function", Goggles.Billboard.textLine, """{label:"Passing: ",value:"Anything",color:"gray",suffix:"",y:0.8}""")
+			executeReturnRun("unless data entity @s data.properties.filter_medium", Goggles.Billboard.textLine, """{label:"Passing: ",value:"Anything",color:"gray",suffix:"",y:0.8}""")
 
 			raw("data modify storage ra:wires lq set value {}")
 			data(Storage.WIRES) { modify("lq.medium", self(), "data.properties.filter_medium") }

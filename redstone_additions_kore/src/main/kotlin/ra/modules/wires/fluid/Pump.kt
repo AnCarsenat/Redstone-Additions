@@ -9,6 +9,7 @@ import io.github.ayfri.kore.commands.scoreboard.scoreboard
 import io.github.ayfri.kore.commands.tag
 import ra.api.RaLib
 import ra.core.Ns
+import ra.core.Obj
 import ra.core.PackPart
 import ra.core.Ra
 import ra.core.Storage
@@ -65,9 +66,9 @@ object Pump : PackPart {
 			// units, so pulling one per tick per pump both trivialised supply and ran the
 			// adjacency scan sixty times a second for no reason.
 
-			scoreboard.players.add(self(), "ra.cooldown", 1)
-			raw("execute unless score @s ra.cooldown matches 20.. run return 0")
-			scoreboard.players.set(self(), "ra.cooldown", 0)
+			scoreboard.players.add(self(), Obj.COOLDOWN, 1)
+			raw("execute unless score @s ${Obj.COOLDOWN} matches 20.. run return 0")
+			scoreboard.players.set(self(), Obj.COOLDOWN, 0)
 
 			function(Source.scan)
 

@@ -1,12 +1,11 @@
 package ra.modules.multiblock.drills
 
-import io.github.ayfri.kore.commands.scoreboard.scoreboard
-import io.github.ayfri.kore.arguments.types.literals.allEntities
+import io.github.ayfri.kore.arguments.types.literals.literal
 import io.github.ayfri.kore.arguments.types.literals.self
 import io.github.ayfri.kore.commands.execute.execute
 import io.github.ayfri.kore.commands.function
+import io.github.ayfri.kore.commands.scoreboard.scoreboard
 import io.github.ayfri.kore.functions.Function
-import io.github.ayfri.kore.generated.EntityTypes
 import io.github.ayfri.kore.utils.nbt
 import io.github.ayfri.kore.utils.set
 import ra.api.MultiblockLib
@@ -14,10 +13,13 @@ import ra.core.Ns
 import ra.core.Obj
 import ra.core.Ra
 import ra.core.Tag
+import ra.core.block.particleViewersSel
+import ra.core.block.soundListenersSel
 import ra.core.define
 import ra.core.hook
 import ra.core.raw
 import ra.core.ref
+import ra.modules.multiblock.forEachMarker
 
 /**
  * Rock Metallic Drill, copper tier: the first multiblock on the structure-driven
@@ -36,9 +38,6 @@ object RockMetallicDrill {
 	val tick = ref(Ns.MULTIBLOCK, "drills/rock_metallic/tick")
 	val tickDispatch = ref(Ns.MULTIBLOCK, "drills/rock_metallic/tick_dispatch")
 
-	/** `ra_lib_multiblock:io/insert_here`, passed by id as io/at's `run` argument. */
-	private val insertHere = ref(Ns.LIB_MULTIBLOCK, "io/insert_here")
-
 	/**
 	 * The spec handed to ra_lib_multiblock:register. Offsets are written once for a NORTH-facing
 	 * structure, relative to the base; ra_lib_multiblock:build derives south/east/west, so there
@@ -49,13 +48,7 @@ object RockMetallicDrill {
 	fun Ra.registerRockMetallicDrill() {
 		// The tag comes from ra_lib_multiblock:generic/setup_type, derived from the registered
 		// id: ra.multiblock.<id>.
-		pack.define(tickDispatch) {
-			execute {
-				asTarget(allEntities { type = EntityTypes.MARKER; tag = Tag.multiblock(ID) })
-				at(self())
-				run { function(tick) }
-			}
-		}
+		pack.define(tickDispatch) { forEachMarker(Tag.multiblock(ID), tick) }
 		pack.define(tick) { tick() }
 		pack.hook(Ns.LIB_MULTIBLOCK, MultiblockLib.Hooks.TICK, tickDispatch)
 	}
@@ -70,7 +63,7 @@ object RockMetallicDrill {
 
 		// A redstone block on the control side halts the drill.
 		execute {
-			storeResult { score(io.github.ayfri.kore.arguments.types.literals.literal("#mb_ctrl"), Obj.MULTIBLOCK) }
+			storeResult { score(literal("#mb_ctrl"), Obj.MULTIBLOCK) }
 			run { function(MultiblockLib.Io.isBlock, nbt { this["name"] = "redstone_in"; this["block"] = "minecraft:redstone_block" }) }
 		}
 		raw("execute if score #mb_ctrl ${Obj.MULTIBLOCK} matches 1 run return 0")
@@ -80,12 +73,13 @@ object RockMetallicDrill {
 		raw("execute unless score @s ${Obj.COOLDOWN} matches 40.. run return 0")
 		scoreboard.players.set(self(), Obj.COOLDOWN, 0)
 
-		raw("particle minecraft:smoke ~ ~1 ~ 0.5 0.2 0.5 0.1 5 force @a[scores={ra.u.par=1..}]")
-		raw("playsound minecraft:block.stone.break block @a[distance=..12,scores={ra.u.snd=1..}] ~ ~ ~ 0.4 0.7")
+		raw("particle minecraft:smoke ~ ~1 ~ 0.5 0.2 0.5 0.1 5 force ${particleViewersSel()}")
+		raw("playsound minecraft:block.stone.break block ${soundListenersSel(12)} ~ ~ ~ 0.4 0.7")
 
 		// Build the item first, then let the library position the insert. Passing an item's
 		// components through macro arguments would mean quoting them twice.
 		raw("""data modify storage ra:multiblock io_item set value {id:"minecraft:command_block",count:1,components:{"minecraft:item_name":"Rock","minecraft:item_model":"dead_brain_coral_block","minecraft:rarity":"common"}}""")
-		function(MultiblockLib.Io.at, nbt { this["name"] = "output_1"; this["run"] = insertHere.asId() })
+		// io/insert_here is passed by id, as io/at's `run` argument.
+		function(MultiblockLib.Io.at, nbt { this["name"] = "output_1"; this["run"] = MultiblockLib.Io.insertHere.asId() })
 	}
 }

@@ -11,6 +11,7 @@ import ra.core.PackPart
 import ra.core.Ra
 import ra.core.Storage
 import ra.core.define
+import ra.core.executeRun
 import ra.core.raw
 import ra.core.ref
 import ra.modules.wires.common.line
@@ -33,7 +34,7 @@ object Debug : PackPart {
 
 			raw("""tellraw @s [{text:"[RA] ",color:"gold"},{text:"Electric nodes",color:"aqua"}]""")
 			raw("""execute unless entity @e[type=marker,tag=ra.wires.electric_node] run tellraw @s [{text:"  none loaded",color:"dark_gray"}]""")
-			line("execute as @e[type=marker,tag=ra.wires.electric_node] at @s run function", Debug.electricOne)
+			executeRun("as @e[type=marker,tag=ra.wires.electric_node] at @s", Debug.electricOne)
 		}
 
 		pack.define(Debug.electricOne) {
@@ -78,7 +79,7 @@ object Debug : PackPart {
 
 			raw("""tellraw @s [{text:"[RA] ",color:"gold"},{text:"EU Generators",color:"aqua"}]""")
 			raw("""execute unless entity @e[type=marker,tag=ra.custom_block.electric_generator] run tellraw @s [{text:"  none loaded",color:"dark_gray"}]""")
-			line("execute as @e[type=marker,tag=ra.custom_block.electric_generator] at @s run function", Debug.generatorOne)
+			executeRun("as @e[type=marker,tag=ra.custom_block.electric_generator] at @s", Debug.generatorOne)
 		}
 
 		pack.define(Debug.generatorLookup) {
@@ -114,7 +115,7 @@ object Debug : PackPart {
 			// The new path: is slot 0's id a key in fuel_map?
 			data(Storage.WIRES) { remove("dbg.hit") }
 			raw("execute if data block ~ ~ ~ Items[0] run data modify storage ra:wires dbg.id set from block ~ ~ ~ Items[0].id")
-			line("execute if data storage ra:wires dbg.id run function", Debug.generatorLookup, "with storage ra:wires dbg")
+			executeRun("if data storage ra:wires dbg.id", Debug.generatorLookup, "with storage ra:wires dbg")
 			raw("""execute if data storage ra:wires dbg.hit run tellraw @s [{text:"   slot 0 IS a fuel: ",color:"green"},{nbt:"dbg.hit.name",storage:"ra:wires",color:"yellow"},{text:"  ",color:"gray"},{nbt:"dbg.hit.ticks",storage:"ra:wires",color:"yellow"},{text:" ticks",color:"gray"}]""")
 			raw("""execute unless data storage ra:wires dbg.hit run tellraw @s [{text:"   slot 0 is not a fuel",color:"yellow"}]""")
 
@@ -138,7 +139,7 @@ object Debug : PackPart {
 
 			raw("""tellraw @s [{text:"[RA] ",color:"gold"},{text:"Industrial Lights",color:"aqua"}]""")
 			raw("""execute unless entity @e[type=marker,tag=ra.custom_block.industrial_light] run tellraw @s [{text:"  none loaded",color:"dark_gray"}]""")
-			line("execute as @e[type=marker,tag=ra.custom_block.industrial_light] at @s run function", Debug.lightOne)
+			executeRun("as @e[type=marker,tag=ra.custom_block.industrial_light] at @s", Debug.lightOne)
 		}
 
 		pack.define(Debug.lightOne) {

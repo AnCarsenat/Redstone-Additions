@@ -8,6 +8,7 @@ import ra.core.Ns
 import ra.core.PackPart
 import ra.core.Ra
 import ra.core.define
+import ra.core.executeRun
 import ra.core.raw
 import ra.core.ref
 
@@ -36,15 +37,15 @@ object Common : PackPart {
 
 			function(Common.updateModelSingle)
 
-			for (side in SIDES) line("execute positioned ${side.offset} as @e[type=marker,tag=ra.wires.node,distance=..0.99,limit=1] at @s run function", Common.updateModelSingle)
+			for (side in SIDES) executeRun("positioned ${side.offset} as @e[type=marker,tag=ra.wires.node,distance=..0.99,limit=1] at @s", Common.updateModelSingle)
 		}
 
 		pack.define(Common.updateModelSingle) {
 			// Update connection-derived status for a single node
 
 			function(RaLib.Transport.updateConnectionStatus)
-			line("execute if entity @s[tag=ra.custom_block.liquid_pipe] run function", Common.updatePipeDisplays)
-			line("execute if entity @s[tag=ra.custom_block.electric_wire] run function", Common.updateWireDisplays)
+			executeRun("if entity @s[tag=ra.custom_block.liquid_pipe]", Common.updatePipeDisplays)
+			executeRun("if entity @s[tag=ra.custom_block.electric_wire]", Common.updateWireDisplays)
 		}
 
 		pack.define(Common.updatePipeDisplays) {

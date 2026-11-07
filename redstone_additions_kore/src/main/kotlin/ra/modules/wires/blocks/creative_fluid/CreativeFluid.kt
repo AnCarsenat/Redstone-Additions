@@ -15,12 +15,13 @@ import ra.core.PackPart
 import ra.core.Ra
 import ra.core.Storage
 import ra.core.block.gogglesHeader
+import ra.core.block.soundListenersSel
 import ra.core.block.stackReset
 import ra.core.block.stackedStatusLine
 import ra.core.define
+import ra.core.executeRun
 import ra.core.raw
 import ra.core.ref
-import ra.modules.wires.common.line
 import ra.modules.wires.fluid.Fluid
 
 object CreativeFluid : PackPart {
@@ -56,7 +57,7 @@ object CreativeFluid : PackPart {
 			raw("execute if score #cr.m ra.wires.tmp matches 5 run data modify entity @s data.properties.medium set value \"smoke\"")
 
 			raw("""tellraw @a[distance=..10] [{text:"[Wrench] ",color:"gold"},{text:"Creative source: ",color:"gray"},{nbt:"data.properties.medium",entity:"@s",color:"aqua"}]""")
-			raw("playsound minecraft:block.lever.click block @a[distance=..10,scores={ra.u.snd=1..}] ~ ~ ~ 0.6 1.4")
+			raw("playsound minecraft:block.lever.click block ${soundListenersSel(10)} ~ ~ ~ 0.6 1.4")
 		}
 
 		pack.define(CreativeFluid.give) {
@@ -125,7 +126,7 @@ object CreativeFluid : PackPart {
 
 			raw("data modify storage ra:wires cfv set value {}")
 			data(Storage.WIRES) { modify("cfv.medium", self(), "data.properties.medium") }
-			line("execute store result score #cr.known ra.wires.tmp run function", CreativeFluid.known, "with storage ra:wires cfv")
+			executeRun("store result score #cr.known ra.wires.tmp", CreativeFluid.known, "with storage ra:wires cfv")
 			raw("execute if score #cr.known ra.wires.tmp matches ..0 run return run data modify entity @s data.status.state set value \"Unknown medium\"")
 
 			function(RaLib.Transport.Net.read)

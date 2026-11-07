@@ -12,6 +12,7 @@ import ra.core.PackPart
 import ra.core.Ra
 import ra.core.block.dataLine
 import ra.core.block.gogglesHeader
+import ra.core.block.soundListenersSel
 import ra.core.block.textLine
 import ra.core.define
 import ra.core.raw
@@ -44,7 +45,7 @@ object ElectricConsumer : PackPart {
 			raw("""execute if score #co.rate ra.wires.tmp matches 0 run tellraw @a[distance=..10] [{text:"[Wrench] ",color:"gold"},{text:"Consumer draw: ",color:"gray"},{text:"normal — 40 EU/t",color:"yellow"}]""")
 			raw("""execute if score #co.rate ra.wires.tmp matches 1 run tellraw @a[distance=..10] [{text:"[Wrench] ",color:"gold"},{text:"Consumer draw: ",color:"gray"},{text:"heavy — 80 EU/t",color:"red"}]""")
 			raw("""execute if score #co.rate ra.wires.tmp matches 2 run tellraw @a[distance=..10] [{text:"[Wrench] ",color:"gold"},{text:"Consumer draw: ",color:"gray"},{text:"light — 20 EU/t",color:"green"}]""")
-			raw("playsound minecraft:block.lever.click block @a[distance=..10,scores={ra.u.snd=1..}] ~ ~ ~ 0.6 1.4")
+			raw("playsound minecraft:block.lever.click block ${soundListenersSel(10)} ~ ~ ~ 0.6 1.4")
 		}
 
 		pack.define(ElectricConsumer.goggles) {

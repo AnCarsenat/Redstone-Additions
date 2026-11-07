@@ -13,11 +13,12 @@ import ra.core.PackPart
 import ra.core.Ra
 import ra.core.block.dataLine
 import ra.core.block.gogglesHeader
+import ra.core.block.particleViewersSel
 import ra.core.block.textLine
 import ra.core.define
+import ra.core.executeRun
 import ra.core.raw
 import ra.core.ref
-import ra.modules.wires.common.line
 
 object ElectricGenerator : PackPart {
 	val goggles = ref(Ns.WIRES, "blocks/electric_generator/goggles")
@@ -58,7 +59,7 @@ object ElectricGenerator : PackPart {
 			// lit?" while the tag still says yes, and the generator would go dark only on the
 			// NEXT stop -- one stop behind for ever.
 			raw("execute if entity @s[tag=ra.wires.gen_was_lit] run tag @s remove ra.wires.gen_lit")
-			line("execute if entity @s[tag=ra.wires.gen_was_lit] run function", ElectricGenerator.refreshDisplay)
+			executeRun("if entity @s[tag=ra.wires.gen_was_lit]", ElectricGenerator.refreshDisplay)
 			tag(self()) { remove("ra.wires.gen_was_lit") }
 			tag(self()) { remove("ra.wires.gen_lit") }
 
@@ -98,11 +99,11 @@ object ElectricGenerator : PackPart {
 			raw("data modify storage ra:wires gen.skin.lit set value \"false\"")
 			raw("execute if entity @s[tag=ra.wires.gen_lit] run data modify storage ra:wires gen.skin.lit set value \"true\"")
 
-			line("execute store result score #gen.skinned ra.wires.tmp run function", RaLib.Skin.setLit, "with storage ra:wires gen.skin")
+			executeRun("store result score #gen.skinned ra.wires.tmp", RaLib.Skin.setLit, "with storage ra:wires gen.skin")
 			raw("execute if score #gen.skinned ra.wires.tmp matches 1.. run return 0")
 
-			line("execute if entity @s[tag=ra.wires.gen_lit] run function", RaLib.Skin.applyLit, """{real:"minecraft:barrel",skin:"minecraft:furnace",id:"electric_generator",lit:"true"}""")
-			line("execute unless entity @s[tag=ra.wires.gen_lit] run function", RaLib.Skin.applyLit, """{real:"minecraft:barrel",skin:"minecraft:furnace",id:"electric_generator",lit:"false"}""")
+			executeRun("if entity @s[tag=ra.wires.gen_lit]", RaLib.Skin.applyLit, """{real:"minecraft:barrel",skin:"minecraft:furnace",id:"electric_generator",lit:"true"}""")
+			executeRun("unless entity @s[tag=ra.wires.gen_lit]", RaLib.Skin.applyLit, """{real:"minecraft:barrel",skin:"minecraft:furnace",id:"electric_generator",lit:"false"}""")
 		}
 
 		pack.define(ElectricGenerator.running) {
@@ -117,11 +118,11 @@ object ElectricGenerator : PackPart {
 			// Repaint only on the tick the state actually changes, so this is not a skin
 			// respawn every tick for every generator in the world.
 			raw("execute unless entity @s[tag=ra.wires.gen_lit] run tag @s add ra.wires.gen_lit")
-			line("execute unless entity @s[tag=ra.wires.gen_was_lit] run function", ElectricGenerator.refreshDisplay)
+			executeRun("unless entity @s[tag=ra.wires.gen_was_lit]", ElectricGenerator.refreshDisplay)
 			tag(self()) { add("ra.wires.gen_was_lit") }
 
-			raw("particle minecraft:smoke ~ ~1.1 ~ 0.15 0.05 0.15 0.01 2 normal @a[scores={ra.u.par=1..}]")
-			raw("particle minecraft:flame ~ ~0.6 ~ 0.25 0.1 0.25 0.005 1 normal @a[scores={ra.u.par=1..}]")
+			raw("particle minecraft:smoke ~ ~1.1 ~ 0.15 0.05 0.15 0.01 2 normal ${particleViewersSel()}")
+			raw("particle minecraft:flame ~ ~0.6 ~ 0.25 0.1 0.25 0.005 1 normal ${particleViewersSel()}")
 
 			// One block of light above it. Only ever placed into air and only ever removed
 			// again if it is still the light this put there -- the same discipline the

@@ -1,250 +1,161 @@
 # Interactive Machines
 
-The `ra_interactive` module provides 10 utility machines for automation and map logic.
+Machines for everyday automation: break and place blocks, move and sort items, breed animals,
+endless water, lava and powder snow, item magnets, mob-proof torches and message blocks.
 
-- Namespace: `ra_interactive`
-- Give all: `/function ra_interactive:items/give_all`
-- Runtime architecture: [How It Works](how-it-works.md)
+## Getting them
 
-## Block Summary
+| Block | Looks like | Recipe |
+| --- | --- | --- |
+| Block Breaker | dispenser | ![Block Breaker recipe](images/recipes/ra_interactive/block_breaker.png){ width="220" } |
+| Block Placer | dispenser | ![Block Placer recipe](images/recipes/ra_interactive/block_placer.png){ width="220" } |
+| Item Pipe | dispenser | ![Item Pipe recipe](images/recipes/ra_interactive/item_pipe.png){ width="220" } |
+| Item Mover | observer | ![Item Mover recipe](images/recipes/ra_interactive/item_mover.png){ width="220" } |
+| Spitter | dropper | ![Spitter recipe](images/recipes/ra_interactive/spitter.png){ width="220" } |
+| Breeder | dispenser | ![Breeder recipe](images/recipes/ra_interactive/breeder.png){ width="220" } |
+| Infinite Water Cauldron | cauldron | ![Infinite Water Cauldron recipe](images/recipes/ra_interactive/infinite_water_cauldron.png){ width="220" } |
+| Infinite Lava Cauldron | cauldron | ![Infinite Lava Cauldron recipe](images/recipes/ra_interactive/infinite_lava_cauldron.png){ width="220" } |
+| Infinite Snow Cauldron | cauldron | ![Infinite Snow Cauldron recipe](images/recipes/ra_interactive/infinite_snow_cauldron.png){ width="220" } |
+| Magic Crate | barrel | ![Magic Crate recipe](images/recipes/ra_interactive/magic_crate.png){ width="220" } |
+| Big Torch | a tall torch | ![Big Torch recipe](images/recipes/ra_interactive/big_torch.png){ width="220" } |
+| Message Block | note block | ![Message Block recipe](images/recipes/ra_interactive/message_block.png){ width="220" } |
 
-| Block | Item model | Recipe | Trigger model | Notes |
-|---|---|---|---|---|
-| Block Breaker | `minecraft:dispenser` | ![Block Breaker recipe](images/recipes/ra_interactive/block_breaker.png){ width="220" } | While powered | 40 tick action cooldown |
-| Block Placer | `minecraft:dispenser` | ![Block Placer recipe](images/recipes/ra_interactive/block_placer.png){ width="220" } | While powered | Places from inventory into air in front |
-| Item Pipe | `minecraft:dispenser` | ![Item Pipe recipe](images/recipes/ra_interactive/item_pipe.png){ width="220" } | Continuous | Moves whole stacks; filter set from your hand |
-| Item Mover | `minecraft:observer` | ![Item Mover recipe](images/recipes/ra_interactive/item_mover.png){ width="220" } | Continuous | Rear container to front container |
-| Spitter | `minecraft:dropper` | ![Spitter recipe](images/recipes/ra_interactive/spitter.png){ width="220" } | Continuous | Throws item entities forward |
-| Breeder | `minecraft:barrel` (dispenser skin) | ![Breeder recipe](images/recipes/ra_interactive/breeder.png){ width="220" } | While powered | Feeds animals from its own inventory |
-| Infinite Water Cauldron | `minecraft:cauldron` | ![Infinite Water Cauldron recipe](images/recipes/ra_interactive/infinite_water_cauldron.png){ width="220" } | Continuous | Keeps `water_cauldron[level=3]` |
-| Infinite Lava Cauldron | `minecraft:cauldron` | ![Infinite Lava Cauldron recipe](images/recipes/ra_interactive/infinite_lava_cauldron.png){ width="220" } | Continuous | Keeps `lava_cauldron` |
-| Infinite Snow Cauldron | `minecraft:cauldron` | ![Infinite Snow Cauldron recipe](images/recipes/ra_interactive/infinite_snow_cauldron.png){ width="220" } | Continuous | Keeps `powder_snow_cauldron[level=3]` |
-| Magic Crate | `minecraft:barrel` | ![Magic Crate recipe](images/recipes/ra_interactive/magic_crate.png){ width="220" } | Continuous | Teleports dropped items in from 5-20 blocks |
-| Big Torch | `minecraft:end_rod` + torch skin | ![Big Torch recipe](images/recipes/ra_interactive/big_torch.png){ width="220" } | Continuous | Drops mobs that spawn within 1-100 blocks into the void |
-| Message Block | `minecraft:note_block` | ![Message Block recipe](images/recipes/ra_interactive/message_block.png){ width="220" } | Rising edge | Sends text to players in range |
+Operators: `/function ra_interactive:items/give_all`.
 
-## Behavior Notes
+## At a glance
 
-### Block Breaker
+| Block | Needs redstone? | Does |
+| --- | --- | --- |
+| Block Breaker | while powered | Breaks the block in front of it, once a second; the block drops as an item |
+| Block Placer | while powered | Places a block from its inventory into the empty space in front, once a second |
+| Item Pipe | no | Carries items forward from container to container, and can sort them |
+| Item Mover | no | Moves items from the container behind it to the container in front |
+| Spitter | no | Throws its items out of its face as dropped items |
+| Breeder | while powered | Feeds the animals in front of it from its inventory |
+| Infinite Cauldrons | no | Always full of water, lava or powder snow |
+| Magic Crate | no | Pulls dropped items within range into itself |
+| Big Torch | no | Lights the area and removes hostile mobs that spawn nearby |
+| Message Block | when it gets powered | Sends a chat message to nearby players |
 
-- Uses dispenser-facing direction.
-- Breaks target block in front.
-- Uses `ra.cooldown` with a 40 tick threshold.
+"Front" is the direction the block faces when you place it.
 
-### Block Placer
+## Block Breaker and Block Placer
 
-- Uses dispenser-facing direction.
-- Attempts to place a valid block from its own inventory.
+- Face them at the spot to work on and power them (a lever keeps them running, a clock works too).
+- Each acts at most once a second (20 ticks).
+- The Block Breaker cannot break unbreakable blocks such as bedrock.
+- The Block Placer places the first block in its inventory, and only into air.
 
-### Item Pipe
+## Item Pipe
 
-- Runs continuously without requiring redstone pulses.
-- Moves a **whole stack** at a time when the destination has a free slot, falling
-  back to one item at a time to top up partial stacks.
-- A **filter** is an item frame attached to any face of the pipe. Matching items
-  are diverted to an adjacent container instead of going forward. The frame is
-  matched by the block it is attached to, so a frame on a neighbouring block is
-  never mistaken for this pipe's filter.
-- If the destination is full the item stays in the pipe. Pipes apply back
-  pressure rather than dropping their contents.
-- Moves items at a 4 tick cycle.
-- Intentionally has no recipe in current release path.
+Pipes move items forward from one container (or pipe) to the next, a whole stack at a time when
+there is room, every 4 ticks. When the next container is full, items wait in the pipe — nothing
+is dropped.
 
-### Item Mover
+**Sorting:** a pipe can have a **filter**. Items matching it are pushed into a container at the
+side of the pipe instead of continuing forward; everything else carries on.
 
-- Uses observer as the visual model.
-- Moves one item from back inventory to front inventory each cycle.
+1. Shift + right-click the pipe with the [Data Handler](tools.md).
+2. On the `filter_item` row, hold the item to sort and press **[Set from hand]** (or type an item
+   id with **[Modify]**).
+3. Clear the value to remove the filter.
 
-### Spitter
+Wear the [Goggles](tools.md) to see each pipe's filter item floating above it.
 
-- Uses dropper as visual/base block.
-- Emits inventory items as entities from its facing side.
+## Item Mover
 
-### Breeder
+Place it with its back against the source container and its face against the destination. It
+moves items across continuously, checking the destination has room first.
 
-Put food in it, power it, and it feeds whatever is standing in front of it.
+## Spitter
 
-- The block is a **barrel wearing a dispenser skin**. It used to be a real
-  dispenser, which throws its own inventory on any rising redstone edge — so a
-  breeder loaded with wheat scattered the wheat across the field the moment you
-  powered it. A barrel is the same inventory with none of that behaviour.
-- Powered by redstone directly, and it looks **one block in front** of itself for
-  an adult animal that is not already in love mode.
-- One item is consumed per pair bred, out of its own inventory.
+Put items in it; every 4 ticks it throws the first stack out of its face as a dropped item. No
+redstone needed.
 
-#### What it will breed, and on what
+## Breeder
 
-Two animals of the same kind must be in front of it, both adult, and the right
-food must be somewhere in the barrel.
+1. Put the right food in the Breeder (it has a chest-like inventory and never throws its items).
+2. Keep two adult animals of the same kind in the block in front of it.
+3. Power it. It uses one food per pair it feeds.
 
-| Animal | Feed it |
+| Animal | Food |
 |---|---|
-| Cow | `wheat` |
-| Mooshroom | `wheat` |
-| Sheep | `wheat` |
-| Pig | `carrot`, `potato`, `beetroot` |
-| Chicken | `wheat_seeds`, `melon_seeds`, `pumpkin_seeds`, `beetroot_seeds`, `torchflower_seeds`, `pitcher_pod` |
-| Goat | `wheat` |
-| Rabbit | `carrot`, `golden_carrot`, `dandelion` |
-| Horse | `golden_apple`, `golden_carrot`, `enchanted_golden_apple` |
-| Llama | `hay_block` |
-| Turtle | `seagrass` |
-| Panda | `bamboo` |
-| Fox | `sweet_berries`, `glow_berries` |
+| Cow, Mooshroom, Sheep, Goat | wheat |
+| Pig | carrot, potato, beetroot |
+| Chicken | wheat seeds, melon seeds, pumpkin seeds, beetroot seeds, torchflower seeds, pitcher pod |
+| Rabbit | carrot, golden carrot, dandelion |
+| Horse | golden apple, golden carrot, enchanted golden apple |
+| Llama | hay block |
+| Turtle | seagrass |
+| Panda | bamboo |
+| Fox | sweet berries, glow berries |
 | Bee | any flower |
-| Wolf | `beef`, `chicken`, `cooked_beef`, `cooked_chicken`, `cooked_mutton`, `cooked_porkchop`, `cooked_rabbit`, `mutton`, `porkchop`, `rabbit`, `rotten_flesh` |
-| Cat | `cod`, `salmon` |
-| Axolotl | `tropical_fish_bucket` |
-| Strider | `warped_fungus` |
-| Hoglin | `crimson_fungus` |
-| Camel | `cactus` |
-| Sniffer | `torchflower_seeds` |
-| Frog | `slime_ball` |
-| Armadillo | `spider_eye` |
+| Wolf | any raw or cooked meat, rotten flesh |
+| Cat | cod, salmon |
+| Axolotl | bucket of tropical fish |
+| Strider | warped fungus |
+| Hoglin | crimson fungus |
+| Camel | cactus |
+| Sniffer | torchflower seeds |
+| Frog | slime ball |
+| Armadillo | spider eye |
 
-Bees take any flower. Wolves take any raw or cooked meat, rotten flesh included.
-Chickens take any of the six seeds, and sniffers share torchflower seeds with
-them — a breeder holding torchflower seeds in front of both will feed whichever
-it finds first.
+## Infinite Cauldrons
 
-### Infinite Cauldrons
+Use them like normal cauldrons: fill buckets from them as often as you like. The water and snow
+versions stay at full level, the lava version stays full of lava.
 
-- Water and snow versions enforce level 3.
-- Lava version enforces lava state.
-- Designed to be self-healing utility sources.
+## Magic Crate
 
-### Message Block
+A barrel that pulls dropped items into itself.
 
-- Internal ID uses `message_block` (placement tag and custom_data).
-- Folder path remains `blocks/message`.
-- Default properties initialized to message text and range.
-
-### Item Pipe filters
-
-A pipe's filter is `filter_item`, an item id on the pipe itself. **Shift+RMB the
-pipe with the [Data Handler](tools.md#data-handler)**, then on the `filter_item`
-row hold the item you want sorted and press **[Set from hand]**. Typing an id
-into **[Modify]** works too.
-
-Every pipe is placed with the field already present and empty, which is what puts
-the row in the editor — the Handler draws a row only for a property the block
-actually has. Empty means no filter, and everything carries on forward. An item matching the filter is pushed into whichever
-container is on a side rather than carried forward; a pipe with no filter passes
-everything along.
-
-**Put the goggles on to see what a pipe is sorting.** The readout names the id and
-draws the item itself above it, so a sorting wall reads at a glance without
-walking up to each pipe. It is part of the goggles rather than a permanent
-display on purpose: the world is not cluttered when nobody is looking, and the
-item is torn down and redrawn by the goggles' own sweep instead of needing upkeep
-of its own.
-
-**This used to be an item frame stuck to the pipe.** Reading it meant selecting
-every item frame within 1.6 blocks of every pipe and comparing each one's
-`block_pos` against the pipe's own coordinates — an entity selector per pipe per
-check, expensive enough that it had to be cached and rescanned only every 20
-ticks, which meant a frame you had just hung did nothing for up to a second.
-Reading a property is one `data modify` against a marker that is already the
-execution context: no selector, no cache, no stale second.
-
-Pipes built before this keep working. The migration copies the cached frame item
-into `filter_item` on the first load, and leaves the frames themselves alone —
-they are somebody's build, and deleting a player's item frames to tidy up after
-ourselves is not a migration's business.
-
-### Big Torch
-
-An **end rod** wearing an oversized torch, always standing up. Every ten ticks it
-sweeps for hostile mobs within `radius` and drops the ones that **spawned** there
-into the void.
-
-The end rod is the light — it gives off level 14 by itself, so the block lights
-its area whether or not the display over it has rendered. The torch drawn on top
-is a `block_display` scaled so it stands **one block tall** instead of the ten
-sixteenths a vanilla torch manages.
-
-It is scaled **wider** as well as taller, and that is not decoration: an end rod's
-shaft is exactly as wide as a torch, so a torch drawn at its own size would share
-a plane with it all the way up and z-fight. At 2.2 across it encloses the end rod
-entirely — the rod is inside the torch, not behind it — with the same hundredth
-of a block of clearance `ra_lib:skin/spawn` uses everywhere else in the pack.
-
-| Property | Default | Range | Meaning |
+| Setting | Default | Range | Meaning |
 | --- | --- | --- | --- |
-| `radius` | `16` | 1–100 | How far the denial reaches |
+| `radius` | 8 | 5–20 | How far it reaches, in blocks |
+| `cooldown` | 20 | 1+ | Ticks between pulls |
 
-Set the radius with the [Data Handler](tools.md#data-handler). The 100-block
-ceiling is enforced in code, not just documented: `distance` describes a sphere,
-so doubling the radius is eight times the volume to search. A larger value is
-**written back as 100** rather than merely treated as 100, so the goggles and the
-Data Handler never advertise a reach the torch does not have.
+It takes up to eight items (whole stacks, enchantments and names kept) per pull, and stops when it
+has no empty slot left — the Goggles then show `Full`. Breaking it drops everything inside.
 
-#### Spawned in versus walked in
+## Big Torch
 
-A data pack cannot stop a spawn from happening — it can only remove what
-appeared. Removing every hostile mob inside the radius would make this a mob
-grinder rather than a torch, because it would also clear anything that wandered
-in from outside.
+A torch one block tall that lights its area (light level 14) and stops hostile mobs from
+**spawning** near it: any hostile mob that appears within `radius` blocks is removed — dropped out
+of the world, so it leaves no loot or experience. Mobs that **walk in** from outside are left alone.
 
-So the sweep remembers every mob in a band reaching **16 blocks past** the
-radius, and removes only mobs inside the radius that it has never seen. Anything
-approaching on foot crosses the band first and is remembered there, so it lives.
-Anything that spawns inside appears untagged and is denied on the next sweep,
-with a puff of smoke where it stood.
+| Setting | Default | Range |
+| --- | --- | --- |
+| `radius` | 16 | 1–100 |
 
-#### Into the void, not killed
+## Message Block
 
-A denied mob is teleported straight down and out of the world rather than killed.
-Killing one fires its death, which means drops and experience at the foot of the
-torch — a Big Torch in a dark room was a passive mob farm that also lit the room.
-Dropping it out of the world takes the mob without paying anybody for it.
+When it gets powered, it sends its message to the players picked by its selector.
 
-The destination is far below any dimension in any supported version, and
-deliberately not derived from the world bottom. Void damage begins some distance
-under a dimension's `min_y`, and that depth is not the same across the versions
-this pack supports; overshooting costs nothing, whereas tracking the number means
-being wrong on whichever version nobody tested. X and Z are unchanged, so the
-mob leaves through the chunk it was already standing in.
+| Setting | Default |
+| --- | --- |
+| `message_block` (the text) | `Hello World!` |
+| `entity_selector` (who reads it) | `@a[distance=..16]` |
 
-The band is sized against the sweep interval: the fastest mob covers about five
-blocks in ten ticks, so nothing crosses sixteen blocks unseen.
+## Changing settings
 
-The sweep runs every ten ticks rather than every tick because its selector
-reaches as far as the radius does. A mob that exists for half a second before
-being denied is indistinguishable from one that never spawned, and paying a
-100-block entity selector per torch per tick to shorten that would be the most
-expensive thing in the pack.
-
-Which mobs count is the `#ra_interactive:spawn_blocked` entity type tag — the
-naturally spawning hostiles. Edit the tag to change the list; no code reads a
-hard-coded mob name.
-
-### Magic Crate
-
-A plain barrel — no skin. It wore a hopper for a while, which was a lie in two
-directions: a hopper is five slots that push downwards, and this is twenty-seven
-slots that pull inwards. Every `cooldown` ticks it sweeps for item entities
-within `radius` and teleports them into itself.
-
-| Property | Default | Range | Meaning |
-| --- | --- | --- | --- |
-| `radius` | `8` | 5–20 | How far it reaches |
-| `cooldown` | `20` | 1+ | Ticks between sweeps |
-
-The ceiling on `radius` is enforced in code, not just documented: a radius the
-player could raise without limit turns one block into a server-wide entity
-selector. A sweep takes at most **eight items per pulse**, so a hopper standing
-over a mob farm clears the pile quickly without spiking a single tick.
-
-Items cross as whole stacks, copied verbatim from the item entity, so names,
-enchantments and damage survive. It skips items on a permanent pickup delay, and
-stops when it has no completely empty slot left — the goggles read `Full` rather
-than silently doing nothing. Breaking it drops all 27 slots.
-
-## Contributor Notes
-
-1. Keep machine-facing behavior tied to `dir_type` and orientation storage.
-2. For inventory machines, prefer `ra_lib:inventory/insert` and `ra_lib:inventory/remove` helpers.
-3. For redstone-triggered behavior, keep edge detection (`ra.was_powered`) explicit.
+Every setting above is edited with the [Data Handler](tools.md): Shift + right-click the block,
+then change the row. The [Goggles](tools.md) show the current values.
 
 ---
+
+## Advanced
+
+- **Physical blocks.** The Breeder is a barrel wearing a dispenser skin, so redstone never makes it
+  throw its food. The Block Breaker and Block Placer are real dispensers and react to
+  `dispenser[triggered=true]`. The Big Torch is an end rod (the light source) wearing an
+  enlarged torch display; the Magic Crate is a plain barrel.
+- **Big Torch.** Sweeps every 10 ticks. It remembers every hostile mob in a band reaching 16
+  blocks past the radius; a mob inside the radius that it never saw there is removed. Mobs are
+  teleported far below the world instead of killed. Values above 100 are written back as 100. The
+  mob list is the entity type tag `#ra_interactive:spawn_blocked`.
+- **Magic Crate.** Skips items with a permanent pickup delay. The radius limit is enforced, since
+  an unlimited radius would be a world-wide entity scan.
+- **Item Pipe.** The filter is `data.properties.filter_item` (an item id, empty = none). Pipes
+  built when filters were item frames are converted on load; the frames are left in place.
+- **Properties** live in each block marker's `data.properties`; machines pace themselves with the
+  `ra.cooldown` score.

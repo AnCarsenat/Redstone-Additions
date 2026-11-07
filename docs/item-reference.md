@@ -16,7 +16,7 @@ one page, A to Z and by module.
 | ra_gates:shortener                   | Shortener                 | ![Shortener recipe](images/recipes/ra_gates/shortener.png){ width="220" } |
 | ra_interactive:block_breaker         | Block Breaker             | ![Block Breaker recipe](images/recipes/ra_interactive/block_breaker.png){ width="220" } |
 | ra_interactive:block_placer          | Block Placer              | ![Block Placer recipe](images/recipes/ra_interactive/block_placer.png){ width="220" } |
-| ra_interactive:item_pipe             | Item Pipe                 | ![Item Pipe recipe](images/recipes/ra_interactive/item_pipe.png){ width="220" } (recipe currently disabled) |
+| ra_interactive:item_pipe             | Item Pipe                 | ![Item Pipe recipe](images/recipes/ra_interactive/item_pipe.png){ width="220" } |
 | ra_interactive:item_mover            | Item Mover                | ![Item Mover recipe](images/recipes/ra_interactive/item_mover.png){ width="220" } |
 | ra_interactive:spitter               | Spitter                   | ![Spitter recipe](images/recipes/ra_interactive/spitter.png){ width="220" } |
 | ra_interactive:breeder               | Breeder                   | ![Breeder recipe](images/recipes/ra_interactive/breeder.png){ width="220" } |
@@ -79,12 +79,9 @@ one page, A to Z and by module.
 | ra_interactive:enchanted_coal | Enchanted Coal | Sacrifice `minecraft:coal` on an enchanting table (1%) |
 | ra_interactive:enchanted_coal_block | Enchanted Coal Block | Nine Enchanted Coal |
 
-The casing and cores are built on unplaceable block items — repeating command
-block, jigsaw, structure block and chain command block respectively — so that
-vanilla recipes, which match ingredients by id alone, can tell them apart from
-each other and from ordinary materials.
+The Generator Casing and the Cores cannot be placed as blocks.
 | ra_jetpacks:iron_jetpack_kit | Iron Jetpack Kit | Blaze rod over iron ingots, a redstone block and a coal block |
-| ra_jetpacks:infinite_jetpack_kit | Infinite Iron Jetpack Kit | Sacrifice an Iron Jetpack Kit on an enchanting table (10%) |
+| ra_jetpacks:infinite_jetpack_kit | Infinite Iron Jetpack Kit | Sacrifice an Iron Jetpack Kit on an enchanting table (1%) |
 
 ## Tools
 

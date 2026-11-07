@@ -5,7 +5,7 @@
 <h1 align="center">Redstone Additions</h1>
 
 <p align="center">
-  <strong>59 custom blocks. 7 tools. 69 recipes. 2 jetpacks and 3 upgrade kits. Vanilla datapack for Minecraft 1.21.9–26.3.</strong>
+  <strong>59 custom blocks. 7 tools. 69 recipes. 2 jetpacks and 3 upgrade kits. Vanilla datapack for Minecraft 26.3.</strong>
 </p>
 
 <p align="center">
@@ -14,8 +14,8 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Minecraft-1.21.9--26.3-2EA44F" alt="Minecraft 1.21.9-26.3">
-  <img src="https://img.shields.io/badge/Version-v5.1.17-blue" alt="Version v5.1.17">
+  <img src="https://img.shields.io/badge/Minecraft-26.3-2EA44F" alt="Minecraft 26.3">
+  <img src="https://img.shields.io/badge/Version-v6.0.0-blue" alt="Version v6.0.0">
   <img src="https://img.shields.io/badge/Blocks-59-red" alt="59 blocks">
   <img src="https://img.shields.io/badge/Tools-7-lightgrey" alt="7 tools">
   <img src="https://img.shields.io/badge/Recipes-69-8A2BE2" alt="69 recipes">
@@ -37,49 +37,19 @@ It also goes beyond redstone: **jetpacks** that fit onto any chestplate, **encha
 
 All systems run as a pure datapack using marker entities and function-driven runtime logic. No mods required.
 
+Any system / block can be disabled or configured in the new settings panel. (Admin only)
+There is also client side settings.
+
 ## Version Compatibility
 
-**Supported: Minecraft 1.21.9 – 26.3** (data pack formats 88 – 121).
+**Supported: Minecraft 26.3** (data pack format 121).
 
-The pack declares and loads across that whole span. Two versions change the
-shape of files it ships, and each gets an overlay the game applies on its own:
+The pack is generated from Kotlin by [Kore](https://kore.ayfri.com), which writes every file in
+the exact shape 26.3 reads. `pack.mcmeta` declares format 121 only, so other versions refuse the
+pack rather than loading it half-broken.
 
-- **Format 102 (`26.2-snapshot-3`)** rewrote entity predicates into
-  component-map form, so `ra:is_sneaking` — which gates the
-  wrench's shift action, the goggles' tinker action and the Redstone Remote's
-  channel prompt — needs both spellings. The base file uses the pre-102 form
-  and `overlay_102/` carries the component-map form.
-- **Format 121 (26.3)** renamed the type key of every predicate and item
-  modifier (`condition` / `function` became `type`), the `recipe_unlocked`
-  advancement trigger's `recipe` field (now `recipes`), and the keys of block
-  states in NBT (`Name` / `Properties` became `id` / `properties`). The old
-  shapes stop a 26.3 world from opening, and the new ones do not exist before
-  26.3, so `overlay_121/` carries a 26.3 copy of every recipe unlock, predicate,
-  item modifier and block-display function. It is generated when the pack is
-  built, never edited by hand.
-
-Nothing else in the pack touches a feature that broke between 88 and 121 — no
-`filtered` loot function, no `contents` dynamic entry, no renamed game rules,
-no special crafting recipes, no cooking recipes, no number providers. The 26.3
-snapshots and pre-releases (formats 108 – 120) fall inside the declared range
-but are not supported.
-
-Earlier versions are **not supported**, but most of the pack does not actually
-need 1.21.9 — the hard floor is the `pack.mcmeta` schema. If you edit
-`pack.mcmeta` to a lower `pack_format` and drop `min_format`/`max_format`, this
-is what breaks and when:
-
-| Below | What stops working |
-|---|---|
-| 1.21.9 | Nothing in the content itself — only the `min_format`/`max_format` fields, which that version introduced |
-| 1.21.5 | Item Pipe **filters**, which identify their item frame by `block_pos` |
-| 1.21.2 | Almost every item's appearance and identity (`item_model`, `consumable`, component removal) |
-| 1.20.5 | Setting the Redstone Remote's channel (`copy_custom_data`) |
-| 1.20.2 | Everything — the pack is built on macro functions and `return run` |
-
-So in practice the content runs on 1.21.5+ with only the pipe filters missing,
-and on 1.21.2+ in a degraded state. None of that is declared or supported.
-
+On 1.21.9 – 26.2, use **v5.1.17**, the last release of the old build: it covers 1.21.9 – 26.3
+through overlays that the single-version build no longer needs.
 
 I recommend using [Bundles Beyond](https://modrinth.com/mod/bundles-beyond) for better bundle previews.
 
@@ -185,8 +155,7 @@ Creative, for building and testing:
 - Creative EU Source — refills its grid to capacity every tick
 - Creative Fluid Source — tops its network up with one medium, at a settable rate
 
-There are no tiers. A netherite pipe was a more expensive way to buy the same
-block, so the tiered items now place the single version.
+Pipes and wires have a single tier.
 
 ### Chunk Loader (1)
 - Chunk Loader
@@ -223,7 +192,7 @@ netherrack or poppies on an enchanting table.
 - Nether Core
 - Poppy Core
 - Enchanted Coal — won by sacrificing coal on an enchanting table
-- Enchanted Coal Block — nine of them, plus a stick, make a Big Torch
+- Enchanted Coal Block — nine Enchanted Coal make one; one block plus a stick makes a Big Torch
 - Item Crate — what the Boxer packs a chest into, and the Unboxer unpacks
 
 Fitted kits live on the chestplate and are listed in its lore.
@@ -246,88 +215,30 @@ recipes and usage.
 
 ## Development Setup
 
-This project uses **[Beet](https://github.com/mcbeet/beet)** to build the datapack from source.
+The pack is Kotlin in `redstone_additions/`, turned into the data pack by
+**[Kore](https://kore.ayfri.com)** with Gradle.
 
 ### Prerequisites
-- Python 3.10 or higher
+- JDK 25
 - Git
 
-### Quick Start
+### Build and install into a world
 
-#### 1. Clone the Repository
 ```bash
 git clone https://github.com/AnCarsenat/Redstone-Additions.git
-cd Redstone-Additions
-git checkout beet_rewrite
+cd Redstone-Additions/redstone_additions
+
+./gradlew koreBuild                                  # build into build/kore/redstone_additions/
+./gradlew koreRun -Pworld="My World"                 # build and install into a world
+./gradlew koreRun -Pworld --continuous               # rebuild on every save, world from local.properties
 ```
 
-#### 2. Set Up the Virtual Environment
-Navigate to the `redstone_additions/` directory and create a Python virtual environment:
+Then `/reload` in game. `-Pworld` takes a world name (under your Minecraft `saves/`) or a path;
+a bare `-Pworld` reads `ra.world` from an untracked `local.properties` (copy
+`local.properties.example`), which can also point `ra.minecraftDir` at a launcher instance.
 
-```bash
-cd redstone_additions
-python3 -m venv .venv
-```
-
-#### 3. Activate the Virtual Environment
-**On Linux/macOS:**
-```bash
-source .venv/bin/activate
-```
-
-**On Windows (CMD):**
-```bash
-.venv\Scripts\activate.bat
-```
-
-**On Windows (PowerShell):**
-```bash
-.venv\Scripts\Activate.ps1
-```
-
-#### 4. Install Dependencies
-```bash
-pip install -r requirements.txt
-```
-
-#### 5. Link to Your Minecraft World
-Use beet's `link` command to connect to your Minecraft world. Specify the path to your Minecraft installation and the world name:
-
-```bash
-beet link --minecraft /path/to/minecraft <world_name>
-```
-
-**Example with PrismLauncher:**
-```bash
-beet link --minecraft "~/.local/share/PrismLauncher/instances/26.3 Fabric/minecraft" DevWorld
-```
-
-This creates a symbolic link between the built datapack and your world's datapacks folder.
-
-#### 6. Build and Test
-Build the datapack from source:
-
-```bash
-beet build
-```
-
-The compiled datapack will be generated in the `build/` directory and automatically linked to your world.
-
-To enable auto-rebuild when you make changes, use watch mode:
-
-```bash
-beet watch
-```
-
-Then use `/reload` in-game to apply changes.
-
-### Development Workflow
-
-1. Navigate to the `redstone_additions/` directory
-2. Ensure the virtual environment is activated: `source .venv/bin/activate`
-3. Edit files in the `src/` directory
-4. Use `beet watch` for automatic rebuilding on file changes
-5. Use `/reload` in-game to apply changes immediately
+Full details: [Contributing Guidelines](https://ancarsenat.github.io/Redstone-Additions/contributing-guidelines/)
+and [Getting Started](https://ancarsenat.github.io/Redstone-Additions/getting-started/).
 
 ---
 
@@ -338,12 +249,18 @@ Then use `/reload` in-game to apply changes.
 2. Place it in `.minecraft/saves/<your_world>/datapacks/`.
 3. Run `/reload`.
 
-### Option B (GitHub)
+To update later, run `python updater.py` from inside the pack's folder in `datapacks/` (or
+next to the zip): it checks Modrinth and installs a newer version after asking.
+
+### Option B (from source)
+Build it with Gradle and install it straight into a world — see
+[Development Setup](#development-setup):
+
 ```bash
-git clone https://github.com/AnCarsenat/Redstone-Additions.git
+cd redstone_additions && ./gradlew koreRun -Pworld="<your world>"
 ```
 
-Copy `redstone_additions` into your world `datapacks/` directory, then run `/reload`.
+Then run `/reload`.
 
 Starter command:
 
@@ -371,8 +288,8 @@ Starter command:
 | Jetpacks | https://ancarsenat.github.io/Redstone-Additions/jetpacks/ |
 | Infinite Generators | https://ancarsenat.github.io/Redstone-Additions/infinite-generators/ |
 | Ender Links | https://ancarsenat.github.io/Redstone-Additions/ender-links/ |
-| Block Reference | https://ancarsenat.github.io/Redstone-Additions/block-reference/ |
-| Recipe Reference | https://ancarsenat.github.io/Redstone-Additions/recipe-reference/ |
+| Item Reference | https://ancarsenat.github.io/Redstone-Additions/item-reference/ |
+| Recipe Atlas | https://ancarsenat.github.io/Redstone-Additions/recipe-atlas/ |
 | Changelog | https://ancarsenat.github.io/Redstone-Additions/changelog/ |
 
 ---

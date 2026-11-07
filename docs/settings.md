@@ -1,22 +1,15 @@
 # Settings
 
-Redstone Additions has two kinds of settings, and they are reached in two
-different ways on purpose.
+Two kinds of settings:
 
-| | Server settings | Your settings |
+| | Your settings | Server settings |
 |---|---|---|
-| Who | Operators | Everyone |
-| Reached with | `/function ra_settings:admin/show` | `/trigger ra.settings.open` |
-| Affects | The whole world | Only you |
-| Examples | Generator EU/tick, which blocks may be placed | Machine sounds, particles |
+| Who | everyone | operators |
+| Open with | `/trigger ra.settings.open` | `/function ra:settings` |
+| Affects | only you | the whole world |
+| Examples | machine sounds, particles | generator output, which blocks may be placed |
 
-Both are printed once when the pack loads. The server one is a button. The player
-one is deliberately **not** a button — clicking it puts the command in your chat
-box instead of running it, because it is the only way back into the menu after
-that message has scrolled away, and a button that silently works teaches nobody
-its name.
-
----
+Both commands are shown in chat when the pack loads.
 
 ## Your settings
 
@@ -24,24 +17,15 @@ its name.
 /trigger ra.settings.open
 ```
 
-No arguments, no permissions. `/trigger` with no value adds one, which is exactly
-what the menu treats as "open".
+No permissions needed. Click a value to change it.
 
 | Setting | Default | What it does |
 |---|---|---|
-| Machine sounds | on | Every `playsound` the pack makes is filtered on this |
-| Machine particles | on | Every `particle` the pack makes is filtered on this |
-| Debug messages | off | Registration and diagnostic chat, via the `ra.debug` tag |
+| Machine sounds | on | Sounds made by Redstone Additions blocks |
+| Machine particles | on | Particles made by Redstone Additions blocks |
+| Debug messages | off | Extra diagnostic messages in chat |
 
-These are yours. Two players standing at the same wall of machines can disagree
-about how loud it is.
-
-!!! note "Why there is no 'mute chat' switch"
-    Most of the pack's chat is a direct answer to something you just clicked — a
-    wrench menu, a settings confirmation, an error. Muting those breaks the tools,
-    so the switch that exists is the one that can be honoured: debug messages.
-
----
+These only change what **you** see and hear.
 
 ## Server settings
 
@@ -49,94 +33,66 @@ about how loud it is.
 /function ra:settings
 ```
 
-Short form of `/function ra_settings:admin/show`. Requires permission level 2. The index is a row of buttons, one per module; each
-opens a page where every value has buttons beside it.
+Needs permission level 2 (operator). The first page is a row of buttons, one per module; each
+opens a page with buttons beside every value: step it up or down, or **edit** to type an exact
+number.
 
-Everything also autocompletes. Type `/function ra_settings:admin/` and press tab
-to walk the whole tree — that is the reason these are functions and not a menu.
+Every setting is also a command, so you can tab-complete your way through them:
 
 ```
 /function ra_settings:admin/wires/generator_eu_tick/up
-/function ra_settings:admin/wires/generator_eu_tick/edit     ← type an exact value
+/function ra_settings:admin/wires/generator_eu_tick/edit       (type an exact value)
 /function ra_settings:admin/wires/electric_furnace/disable
 ```
 
-### `ra.admin`, and why the buttons stopped asking
+### What you can change
 
-The buttons on every page fire a trigger rather than running their function. That
-is what stops Minecraft asking you to confirm each click — a `run_command` link
-prompts every time, a `/trigger` does not.
+| Page | Settings |
+| --- | --- |
+| General | show the load message; chat prefix (`RA`); Goggles range (16 blocks); Goggles refresh (20 ticks) |
+| Logic Gates | default Clock interval (20), Delayer delay (20), Extender duration (20), Shortener pulse (2), Randomizer chance (50%) |
+| Interactive | default Magic Crate radius (8) and interval (20), Message Block range (16) |
+| Power & Fluids | default Generator EU/tick (60), Consumer interval (20), Industrial Light EU use (10), Liquid Drain interval (20) |
+| Ender Links | default Power Vault EU/tick (80), Fluid Vault transfer (200) |
+| Infinite Generators | default interval of each generator (100) |
+| Jetpacks | Thruster Kit thrust (80%), speed cap (350), dead zone (25) |
+| Enchant Crafting | enchant crafting on/off |
+| every module | which of its blocks may be placed |
 
-A trigger does not check permissions, so the check is the **`ra.admin` tag**.
-Anyone holding it opens the panel straight from the button and can press
-everything on it. Anyone without it is handed the command unrun instead.
+### Defaults for new blocks
 
-```
-/function ra_settings:admin/grant     give the nearest player access
-/function ra_settings:admin/revoke    take it back
-```
+Settings marked *(new blocks only)* are the value a block gets **when it is placed**. Blocks
+already in the world keep their own value — press **[Apply to placed]** to push the new value onto
+every existing block of that type (it tells you how many it changed).
 
-Opening the index as an operator also grants it, so in practice you never have to
-run `grant` yourself.
-
-The tag **persists across reloads** — that is the point of tagging somebody. It
-can only be handed out by something that already needs permission level 2 (`/tag`,
-or either function above), so no player can give it to themselves.
-
-!!! warning "It is a role, not a session"
-    Because it persists, removing somebody's operator status does **not** remove
-    their settings access. Use `/function ra_settings:admin/revoke`, or
-    `/tag <player> remove ra.admin`, when you take someone's admin rights away.
+!!! warning "[Apply to placed] overwrites individual tuning"
+    A block you set by hand with the Wrench or Data Handler gets the new value too.
 
 ### Turning blocks off
 
-Every placeable block has an `enable` / `disable` pair. A disabled block cannot be
-placed, and the item is handed back rather than swallowed — the policy is the
-admin's, and it should not cost the player their block.
-
-**Disabling never removes blocks already in the world.** They keep working. An
-admin who wants them gone can break them. The item can still be crafted and held
-— only placement is refused.
-
-### Seeing what is off
+Every block has an enable / disable switch. A disabled block cannot be placed — the item is given
+back. Blocks already placed keep working, and the item can still be crafted.
 
 ```
 /function ra_settings:disabled
 ```
 
-Also a **[Disabled blocks]** button on the index. Lists every disabled block in
-red with an **[Enable]** button beside each.
+lists every disabled block with an **[Enable]** button (also the **[Disabled blocks]** button on
+the first page). While any block is disabled, the pack says so in chat on every load.
 
-The stored form is a list of what is *off*, so a disabled block leaves no trace
-anywhere a player looks — it simply refuses to place. For the same reason the
-pack says so on every load when the list is not empty, and that warning is not
-subject to the load-message setting.
+### Letting someone use the buttons
 
-### Changing defaults
+The buttons on the server pages work for players tagged `ra.admin`. Opening the pages as an
+operator gives you the tag automatically.
 
-Rows marked *(new blocks only)* set the value a block is given **when it is
-placed**. Machines already standing keep what they have — until you press
-**[Apply to placed]**, which pushes the configured value onto every block of that
-type already in the world and reports how many it changed.
+```
+/function ra_settings:admin/grant      give the nearest player access
+/function ra_settings:admin/revoke     take it away
+```
 
-The split is deliberate. Reading the setting live would put a lookup in
-`ra_lib:util/property`, which runs for every consumer, every bridge and every
-drain on every tick. Applying it automatically would silently re-tune a build
-balanced around the old number. So it is opt-in per change, with a button.
-
-!!! warning "[Apply to placed] overwrites wrench values"
-    A block whose property you tuned individually is set to the configured value
-    like every other. There is no record of what it was.
-
-### Typing exact values
-
-Stepping is one click, but moving a generator from 60 to 500 EU is forty-four of
-them. Every numeric setting also has `edit`, which opens the same input form the
-Data Handler uses for a clock's delay.
-
----
-
----
+!!! warning "Access stays until you revoke it"
+    The tag survives reloads and is **not** removed when someone loses operator status. Use
+    `/function ra_settings:admin/revoke` (or `/tag <player> remove ra.admin`).
 
 ## Uninstalling
 
@@ -144,118 +100,47 @@ Data Handler uses for a clock's delay.
 /function ra:uninstall
 ```
 
-Also a button at the bottom of the server settings index.
-
-It asks **twice**. The first prompt asks; the second lists exactly what is about
-to be destroyed — every machine becomes an ordinary block, every network,
-multiblock and display is removed, and every setting including your
-disabled-block list is erased.
-
-Both confirmations deliberately use ordinary command links rather than the
-triggers the rest of the panel uses, so Minecraft's own "run this command?"
-dialog stays in the way. This is the one place the extra friction is worth having.
-
-There is no backup. Copy the world first if you want one.
+(also a button at the bottom of the server settings). It asks **twice**; the second time it lists
+exactly what will be removed: every machine becomes an ordinary block, every network, multiblock
+and display is removed, and every setting is erased. There is no undo — copy the world first if
+you want a backup.
 
 ---
 
-## Triggers
+## Advanced
 
-`/trigger` is the only command surface a player without permissions has. Every
-button in this pack that a non-operator can press goes through one, because a
-`suggest_command` pointing at a `/function` is useless to somebody who cannot run
-one — it fills their chat box with something the game then refuses.
+### Triggers
 
-The three the settings system owns:
+`/trigger` is how players without permissions click buttons. Triggers are only enabled while they
+are usable, so your `/trigger` list stays short:
 
-| Trigger | You type | What it does |
+| Trigger | Used by | Enabled |
 |---|---|---|
-| `ra.settings.open` | `/trigger ra.settings.open` | **The way in.** Opens your own preferences. `set 2` opens the server settings, `set 3` the disabled-block list. Always available. |
-| `ra.settings.act` | never by hand | Carries *which row you clicked* in a menu. Enabled only while you have one open. |
-| `ra.settings.admin` | `/trigger ra.settings.admin` | Carries *which server-settings button you clicked*. Bare, it opens the index. Enabled only for `ra.admin`. |
+| `ra.settings.open` | Your settings (`set 2` = server settings, `set 3` = disabled blocks) | always |
+| `ra.settings.act` | which row of a settings menu you clicked | while a menu is open, for a minute after your last click |
+| `ra.settings.admin` | which server-settings button you clicked; bare, opens the index | for `ra.admin` holders |
+| `ra.wrench` | Wrench menu | while holding the Wrench, plus 10 seconds |
+| `ra.dh.action`, `ra.edit_type` | Data Handler menu | while holding the Data Handler, plus 10 seconds |
+| `ra.input.trigger` | number prompts when no book is used | during a prompt |
+| `ra.jp.mode`, `.sound`, `.power`, `.kits` | [Jetpacks](jetpacks.md) | while wearing a jetpack |
 
-`act` and `admin` are button plumbing — the number is a row index, not something
-to pick. Typing `admin` bare is understood and opens the index; typing `act` bare
-does nothing useful, which is why it only exists while a menu is on screen.
+The two uninstall confirmations use ordinary command links on purpose, so Minecraft's own
+"run this command?" dialog stays in the way.
 
-The rest of the pack's triggers, for reference:
+### Storage and reading settings
 
-| Trigger | Owner | What it does |
-|---|---|---|
-| `ra.wrench` | Wrench | Which row of the wrench menu you clicked. Enabled while the wrench is in hand. |
-| `ra.dh.action` | Data Handler | Which row of the property editor you clicked. Enabled while the Handler is in hand. |
-| `ra.edit_type` | Data Handler | Which property type you picked when adding one. Same. |
-| `ra.input.trigger` | Input library | How you answer a numeric prompt when the book backend is not used. |
-| `ra.jp.mode` / `.sound` / `.power` / `.kits` | Jetpacks | Flight mode, sound mute, power toggle, kit menu. |
+- Server values live in `storage ra:settings global`; per-player values are scoreboard objectives
+  (`ra.u.snd`, `ra.u.par`, `ra.u.dbg`).
+- From functions:
 
-### Why some are switched off
+  ```mcfunction
+  function ra_settings:get     {key:"welcome",default:1}
+  function ra_settings:prop    {block:"electric_generator",prop:"generation_rate",default:60}
+  function ra_settings:user    {obj:"ra.u.snd",default:1}
+  function ra_settings:enabled {block:"electric_furnace"}
+  ```
 
-An enabled trigger appears in everyone's `/trigger` completion whether or not it
-can do anything, so the list fills with names that are pure noise. A trigger is
-also per-player state the server re-enables every tick.
-
-So they are handed out where they are usable and taken back when they are not:
-
-- `ra.settings.act` — while a settings menu is drawn, lapsing a minute after your last click
-- `ra.settings.admin` — for holders of `ra.admin`
-- `ra.wrench`, `ra.dh.action`, `ra.edit_type` — while that tool is in your main hand, with a ten-second grace window so putting it away to read the menu it just printed does not disarm the buttons
-- `ra.jp.mode` / `.sound` / `.power` / `.kits` — while you are wearing a jetpack
-- `ra.settings.open` — always, because it is the door
-
-A player who has touched none of this sees exactly one name in their `/trigger`
-completion. Taking a trigger back means `scoreboard players reset`: the enabled
-flag is stored with the score, so removing one removes the other.
-
----
-
-## Adding a setting
-
-One JSON file per page, in `tools/settings/`. The build generates the menu, the
-defaults, the per-player seeding and the whole operator function tree from it —
-there is no list anywhere to keep in step.
-
-```json
-{
-  "id": "wires",
-  "title": "Power & Fluids",
-  "namespace": "ra_wires",
-  "rows": [
-    {"type": "prop", "block": "electric_generator", "prop": "generation_rate",
-     "label": "Generator EU/tick", "default": 60, "min": 1, "max": 10000, "step": 10},
-    {"type": "block", "block": "electric_furnace", "label": "Electric Furnace"}
-  ]
-}
-```
-
-| Row type | Meaning |
-|---|---|
-| `bool` | On/off |
-| `int` | A number, stepped or typed |
-| `str` | Text, typed |
-| `list` | A cycle through fixed choices; stores the **index**, so renaming a choice orphans nothing |
-| `block` | Whether a block may be placed |
-| `prop` | The default a newly placed block is given |
-
-`scope` is `global` or `user`, and it decides how the setting is reached, not just
-who may change it. A `global` row generates the operator function tree and never
-appears in the player menu. A `user` row appears only in the player menu, and
-needs an `obj` — a short, stable scoreboard objective name.
-
-!!! warning "`obj` is the setting's identity"
-    A player's saved choice is found by objective name. Renaming one silently
-    resets it for everybody. Keep it under 16 characters and do not change it.
-
-### Reading a setting
-
-```mcfunction
-function ra_settings:get     {key:"welcome"}
-function ra_settings:prop    {block:"electric_generator",prop:"generation_rate",default:60}
-function ra_settings:user    {obj:"ra.u.snd",default:1}
-function ra_settings:enabled {block:"electric_furnace"}
-```
-
-The first three leave the answer in `#setting ra.set.tmp` and also return it.
-`enabled` returns 1 when the block may be placed.
-
-`ra_settings:user` must run as the player. An absent score is not zero — it means
-the player has never chosen, so the default stands.
+  The first three leave the answer in `#setting ra.set.tmp` and also return it; `user` must run
+  as the player. `enabled` returns 1 when the block may be placed.
+- Settings pages are Kotlin data in `ra/settings/pages/`; adding a setting is described in
+  [Settings Internals](settings-internals.md).

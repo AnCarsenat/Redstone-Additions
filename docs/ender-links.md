@@ -1,155 +1,124 @@
 # Ender Links
 
-The `ra_ender` module moves things between two places that are nowhere near each
-other. Three **vaults** link a pair of endpoints by channel — items, fluids,
-power — and a **Teleport Anchor** moves the player.
+Move things between two places that are nowhere near each other. Three **vaults** link two
+endpoints by channel — items, fluids or power — and the **Teleport Anchor** moves players.
 
-- Namespace: `ra_ender`
-- Give all: `/function ra_ender:items/give_all`
-- Anchor help: `/function ra_ender:tools/anchor/help`
-- Runtime architecture: [How It Works](how-it-works.md)
+## Getting them
+
+| Block | Looks like | Carries | Recipe |
+| --- | --- | --- | --- |
+| Ender Item Vault | barrel | item stacks | ![Ender Item Vault recipe](images/recipes/ra_ender/ender_item_vault.png){ width="220" } |
+| Ender Fluid Vault | purpur block | liquids and gases | ![Ender Fluid Vault recipe](images/recipes/ra_ender/ender_fluid_vault.png){ width="220" } |
+| Ender Power Vault | purpur pillar | EU (electricity) | ![Ender Power Vault recipe](images/recipes/ra_ender/ender_power_vault.png){ width="220" } |
+| Teleport Anchor | crying obsidian | players | ![Teleport Anchor recipe](images/recipes/ra_ender/teleport_anchor.png){ width="220" } |
+
+Operators: `/function ra_ender:items/give_all`.
 
 ## Vaults
 
-| Block | Physical block | Carries | Recipe |
-| ----- | -------------- | ------- | ------ |
-| Ender Item Vault | `minecraft:barrel` | Item stacks | ![Ender Item Vault recipe](images/recipes/ra_ender/ender_item_vault.png){ width="220" } |
-| Ender Fluid Vault | `minecraft:purpur_block` | Liquid and gas | ![Ender Fluid Vault recipe](images/recipes/ra_ender/ender_fluid_vault.png){ width="220" } |
-| Ender Power Vault | `minecraft:purpur_pillar` | EU | ![Ender Power Vault recipe](images/recipes/ra_ender/ender_power_vault.png){ width="220" } |
+### Linking two vaults
 
-Every vault has two properties that matter:
+1. Place two vaults of the same kind, anywhere.
+2. Give both the same **channel** with the [Data Handler](tools.md). New vaults start on
+   `default`, so two fresh vaults are already linked.
+3. Use them like the block they look like: hoppers, Item Pipes and your hands work on the Item
+   Vault; [pipes, pumps, tanks and wires](transport-networks.md) connect to the Fluid and Power
+   Vaults.
 
-| Property | Meaning |
-| -------- | ------- |
-| `channel` | A string. Two vaults with the same channel are linked. Default `"default"` |
-| `mode` | `link` (default), or `send` / `receive` for a one-way pipe |
+A vault always pairs with the **nearest** vault on its channel, so use one channel per pair.
 
-Set the channel with the [Data Handler](interactive-machines.md); cycle the mode
-with **shift + right-click of the Wrench**. A channel is a pair in practice: a
-vault deals with the *nearest* eligible vault on its channel, so several on one
-channel means the closest wins.
+### Modes
 
-### Why there is no true mirror
+Shift + right-click a vault with the [Wrench](tools.md) to cycle its mode.
 
-The obvious ask — both barrels holding the same items, both usable — cannot be made
-safe. Mirroring one stack into two barrels gives it two extraction points: two
-players, or two hoppers, pulling in the same tick each walk away with a copy, and
-the duplication has already happened before any function runs. Container clicks are
-not interceptable from a data pack. So there is exactly one real copy of everything
-in a channel, always, and the modes differ in how it gets to where you want it.
+| Mode | Behaviour |
+| --- | --- |
+| `link` (default) | Two-way: put something in either end and it can be taken out of the other |
+| `send` | One-way: this vault empties itself into the channel |
+| `receive` | One-way: this vault only accepts from the channel |
 
-### `link` — two-way, and why each medium does it differently
+There is never a copy: everything exists in exactly one vault at a time and moves between them.
 
-`link` is the automation mode: put something in either end, take it out of the
-other, no player needed. The naive version of that shuffles forever — A hands its
-only stack to B, B now has more than A and hands it straight back — so each medium
-gets the rule that suits it.
+### What each vault does
 
-**Items follow the outside world.** Each vault remembers how many stacks it left
-behind (`data.data.last_used`) and compares that with what is there now:
+| Vault | How often | Moves |
+| --- | --- | --- |
+| Item Vault | every 4 ticks (hopper speed) | **one whole stack** into the first free slot of the partner. In `link` mode: put a stack in one end and it goes to the other; take a stack out and one is pulled back |
+| Fluid Vault | every 10 ticks | up to `transfer_rate` (default 200) one-way; in `link` mode, half the difference between the two ends, so they even out. Holds 1000 |
+| Power Vault | every 5 ticks | up to `transfer_rate` (default 80) EU one-way; in `link` mode, half the difference. Stores nothing itself: it is a link, not a battery |
 
-| Since last cycle | What happens |
-| ---------------- | ------------ |
-| More stacks — something was inserted | Push one stack to the partner |
-| Fewer stacks — something was taken out | Pull one stack back from the partner |
-| Unchanged | Nothing. A quiet pair costs nothing per tick |
+!!! note "Item Vault counts stacks"
+    Taking *part* of a stack out (32 of 64) does not count as taking it, so it does not pull a
+    refill. Take whole stacks.
 
-A delivery updates the receiver's mark immediately, so an arriving stack is never
-mistaken for an insert and bounced back.
-
-!!! note "It counts stacks, not items"
-    The mark is the number of stacks in the barrel, so taking *part* of a stack — 32
-    out of 64 — does not read as an extraction and does not pull a refill. Take a
-    whole stack. Pull is not a second copy of the move
-logic: the asking vault makes itself the only eligible receiver for one command
-and runs the partner's push.
-
-**Fluid and EU find their level,** since neither is made of discrete stacks. Only
-the fuller side pushes, and it pushes half the gap, so the two converge instead of
-trading the same charge back and forth. A dead zone — 20 units of fluid, 4 EU —
-stops the last few units oscillating.
-
-One-way `send` / `receive` is still there for automation that wants a definite
-direction: a `send` vault drains itself into the channel no matter what the far end
-is doing.
-
-### Item Vault
-
-A real barrel, so hoppers, Item Pipes, Boxers and your own hands all work on it
-with no special case. Every 4 ticks — hopper rate — a vault that owes a move sends
-**one whole stack** into the first free slot of its partner.
-
-The move is `/item replace … from block …` followed by clearing the source slot,
-via `ra_lib:inventory/move_slot`. The destination slot is checked empty first,
-because `item replace` overwrites whatever is in the way, and an overwrite would
-destroy items. A full partner means nothing moves at all.
-
-### Fluid Vault
-
-An ordinary fluid-network node with a 1000 buffer, so pipes, pumps, tanks and
-valves treat it like a tank. Every 10 ticks it moves fluid: up to `transfer_rate`
-in one-way mode, or half the gap between the two networks in `link` mode.
-
-Order matters: **take, then offer, then hand back the remainder.** A receiving
-network that is full, or that holds a different medium, accepts less than was
-offered, and whatever comes back is returned to the network it came from. The
-fluid is in exactly one network at every point.
-
-### Power Vault
-
-Tagged as an electric node with a 400 EU buffer, so wires, generators and
-consumers connect to it the way they connect to a switch. Every 5 ticks it moves
-EU: up to `transfer_rate` one-way, or half the gap in `link` mode, and always
-limited by the room actually available in the partner — the receiver reports what
-it took, and only that much leaves the sender.
+A full partner simply receives nothing; nothing is ever destroyed.
 
 ## Teleport Anchor
 
-`minecraft:crying_obsidian` with an id and a table of fifteen target ids, one per
-redstone signal strength.
+A pad that sends you to another anchor. Each anchor has an **id** and a table of up to fifteen
+**targets**, one per redstone signal strength.
 
-| Property | Meaning |
-| -------- | ------- |
-| `anchor_id` | A **string** — `"A"`, `"base"`, `"mine_2"`. What other anchors aim at |
-| `targets` | Fifteen ids: `targets[0]` is signal 1, `targets[14]` is signal 15. An empty string means unused |
+### Setting one up
 
-Power the anchor and stand within **2 blocks**: the strength of the signal picks a
-row of the table, and the nearest player is moved on top of the anchor whose
-`anchor_id` matches. A redstone block reads as strength 16 and is treated as 15,
-since the table stops there.
+1. Place two anchors and give each an id, e.g. `A` and `B`.
+2. On anchor `A`, set the target for signal strength 1 to `B`.
+3. Stand on or next to `A` (within 2 blocks) and power it with strength 1 (a lever on dust one
+   block away, for example). You arrive on top of `B`.
 
-```
-/function ra_ender:tools/anchor/set_id {id:"A"}
-/function ra_ender:tools/anchor/set_table {table:["A","B","C"]}
-/function ra_ender:tools/anchor/set_target {level:3,id:"B"}
-/function ra_ender:tools/anchor/show
-/function ra_ender:tools/anchor/help
-```
+Different signal strengths can send you to different anchors: strength 3 picks target 3, and so
+on up to 15 (a redstone block counts as 15). If several anchors share the target id, you go to
+the nearest one — never to the anchor you are standing on.
 
-Those act on the nearest anchor within 6 blocks. `set_table` takes the whole table
-as typed text — signal 1 first — and pads the rest with empty rows, so
-`{table:["A","B"]}` wires strengths 1 and 2 and nothing else.
+### Commands
 
-The Data Handler edits both properties directly now: `anchor_id` gets a text row and
-`targets` an `[Edit list]` row where you write the whole list — `["A","B","C"]` — in
-the input book. That works because the Handler picks its editor from the value's
-type rather than from a hand-written row per property name, which is why the table
-used to be visible but unchangeable. See
-[Creative Data Handler](developer-guide.md#creative-data-handler).
+These act on the nearest anchor within 6 blocks:
 
-The Goggles show the live picture: the anchor's id, the current signal, and the id
-that signal points at.
+| Command | Does |
+| --- | --- |
+| `/function ra_ender:tools/anchor/set_id {id:"A"}` | Set this anchor's id |
+| `/function ra_ender:tools/anchor/set_table {table:["A","B","C"]}` | Set targets for strengths 1, 2, 3…; the rest are cleared |
+| `/function ra_ender:tools/anchor/set_target {level:3,id:"B"}` | Set the target for one strength |
+| `/function ra_ender:tools/anchor/show` | Show the id and the table |
+| `/function ra_ender:tools/anchor/help` | Show this help in game |
 
-Guards worth knowing:
+The [Data Handler](tools.md) edits the same two values: `anchor_id` as text, and `targets` as a
+list written like `["A","B","C"]`.
 
-- An anchor pointed at its own id does nothing.
-- An arriving player gets 30 ticks of grace, so landing on an anchor that is
-  itself powered does not bounce them straight back. That also makes a two-way
-  door work: wire both ends, walk in, walk out.
-- Each anchor waits 20 ticks between teleports.
-- A target id with no anchor, or a disabled one, is a no-op rather than an error.
+Wear the [Goggles](tools.md) to see an anchor's id, the current signal and where it points.
 
-## Scoreboards and tags
+### Good to know
+
+- After arriving you have 1.5 seconds (30 ticks) before you can be teleported again, so landing
+  on a powered anchor does not bounce you straight back. A two-way door works: wire both ends,
+  walk in, walk out.
+- Each anchor waits 1 second (20 ticks) between teleports.
+- A target id with no anchor does nothing.
+
+---
+
+## Advanced
+
+### Properties
+
+| Block | Property | Meaning |
+| --- | --- | --- |
+| Vaults | `channel` | string; vaults with the same channel are linked. Default `"default"` |
+| Vaults | `mode` | `link`, `send` or `receive` |
+| Fluid, Power Vault | `transfer_rate` | units per move in one-way mode (200 fluid, 80 EU) |
+| Teleport Anchor | `anchor_id` | string, what other anchors aim at. Default `"A"` |
+| Teleport Anchor | `targets` | fifteen ids: `targets[0]` is signal 1, `targets[14]` is signal 15; `""` is unused |
+
+### How `link` decides
+
+- **Items:** each vault remembers how many stacks it held last cycle (`data.data.last_used`).
+  More stacks than before → push one stack to the partner; fewer → pull one back; unchanged →
+  nothing. A delivery updates the receiver's count straight away, so an arriving stack is not
+  bounced back. Stacks move with `ra_lib:inventory/move_slot` into a slot checked empty first.
+- **Fluid and EU:** only the fuller side pushes, half the gap, with a dead zone (20 fluid, 4 EU)
+  so the last few units do not oscillate. Fluid is taken, offered, and any remainder handed back,
+  so it is always in exactly one network.
+
+### Scoreboards and tags
 
 | Name | Meaning |
 | ---- | ------- |
@@ -158,14 +127,9 @@ Guards worth knowing:
 | `ra.ender.grace` | Ticks before a player may be teleported again |
 | `ra.ender.recv_item` / `recv_fluid` / `recv_power` | Recomputed each tick: this vault can accept |
 | `ra.ender.send_item` | Recomputed each tick: this vault can be pulled from |
-| `ra.ender.self` | Held for one cycle so a vault never links to itself |
+| `ra.ender.self` | Held for one cycle so a vault or anchor never links to itself |
 | `ra.ender.pull_target` | The vault a refill is being fetched for, for one command |
 | `ra.ender.tp_dest` | The anchor a teleport is aimed at, for one command |
 
-Channels are strings, and no selector can compare one entity's property with
-another's, so the match happens in a macro: the sender writes its channel into
-storage and the generated command carries it into the selector.
-
-A two-way vault wears the send *and* the receive tag, so every partner search has
-to exclude the vault doing the searching — that is what `ra.ender.self` is for, and
-why each vault's cycle exits through `ra_ender:link/done` even on an early return.
+Channels and anchor ids are matched in macro commands: the sender writes its channel into storage
+and the generated command carries it into the selector.

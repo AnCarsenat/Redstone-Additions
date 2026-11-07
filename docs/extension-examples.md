@@ -8,11 +8,26 @@
     permits addons and the snippets they need without asking; what it does not permit
     is redistributing Redstone Additions itself.
 
-This page contains copy-paste-ready examples for building on Redstone Additions.
+There are two ways to build on Redstone Additions:
 
-All examples follow conventions from `GUIDELINES.md` and current v4 runtime behavior.
+| You are… | Write | Start from |
+| --- | --- | --- |
+| adding to the pack itself (a contribution) | Kotlin in `redstone_additions/` | [Contributing Guidelines](contributing-guidelines.md#block-template), [Custom Blocks](custom-blocks.md) |
+| shipping a separate **addon** data pack in your own namespace | plain `.mcfunction` / JSON (or your own Kore project) | this page |
+
+An addon talks to the pack only through its runtime contract — the `#ra:placement_handlers`
+tag, `ra_lib:*` functions, entity tags, scoreboards and storages — and that contract is exactly
+what it was before the pack moved to Kotlin, so the snippets below are plain data pack files.
+They follow the [naming conventions](contributing-guidelines.md#naming-conventions). The
+`ra_example` namespace that ships with the pack (`ra/example/ExamplePart.kt`) is a complete
+worked example.
 
 Read [How It Works](how-it-works.md) first if you need lifecycle context for these snippets.
+
+!!! note "26.3 only"
+    The pack targets Minecraft 26.3 (data pack format 121). Write an addon's JSON in the 26.3
+    shapes: predicates and item modifiers name their type with `type`, and the
+    `recipe_unlocked` trigger takes `recipes`.
 
 ## Example 1: Simple Custom Block (Pulse Beacon)
 
@@ -164,11 +179,17 @@ kill @s
 
 ### Required Registration Hooks
 
-Add your placement handler into:
+Add your placement handler to the `#ra:placement_handlers` function tag **from your own pack**:
+a file `data/ra/tags/function/placement_handlers.json` in your addon with `"replace": false`
+and your handler as its only value. Tags from several packs merge, so this adds to the pack's
+list instead of replacing it:
 
-- `data/ra/tags/function/placement_handlers.json`
+```json
+{ "replace": false, "values": ["ra_myaddon:blocks/pulse_beacon/handle_placement"] }
+```
 
-Also call your namespace load/tick from your own entrypoints, and make sure your pack entrypoint is wired through tags if this is a standalone addon datapack.
+`ra:load` and `ra:tick` only call the pack's own modules. Run your namespace's load from
+`#minecraft:load` and your tick from `#minecraft:tick` (or your own `schedule` loop).
 
 ## Example 2: Addon Namespace Scaffold
 
@@ -270,6 +291,6 @@ Also ensure wrench assembly flow can set your intended type in `storage ra:multi
 3. Tick includes break cleanup.
 4. Recipe output entity tags exactly match give item tags.
 5. CDH and Goggles are extended if your block has properties/status.
-6. `ra:placement_handlers` includes your new handler.
+6. `#ra:placement_handlers` includes your new handler (a `"replace": false` tag file in your addon).
 
 ---

@@ -1,0 +1,9 @@
+# Copy to local.properties (untracked) and adjust. Read by build.gradle.kts.
+
+# The world `./gradlew koreRun -Pworld` installs into when -Pworld has no value:
+# a world name under <minecraft dir>/saves, or a full path to a world folder.
+ra.world=Redstone Test
+
+# Optional: a Minecraft directory other than the OS default (~/.minecraft, %APPDATA%\.minecraft),
+# e.g. a Prism Launcher instance.
+#ra.minecraftDir=/home/me/.local/share/PrismLauncher/instances/26.3/minecraft

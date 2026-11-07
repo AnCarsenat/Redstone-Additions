@@ -49,7 +49,7 @@ identifier spelled two ways, or one rule applied in nine places but forgotten in
 
   In a macro line, build the path from the reference: `"\$function ${ref.asId()} …"`.
 - The owner of a reference defines it at **exactly** that path. Another part may keep a private
-  `ref` to the same path (`ra.hub.ToolsRefs`); `PackValidator` fails the build if the owner never
+  `ref` to the same path; `PackValidator` fails the build if the owner never
   defines it.
 
 ## Commands: typed first

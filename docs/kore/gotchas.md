@@ -20,7 +20,7 @@ this["custom_data"] = CustomComponent(nbt { this["ra"] = nbt { this[id] = true }
 this["entity_data"] = CustomComponent(entityDataNbt())
 ```
 
-`CustomBlock.blockItemComponents()` and `ToolItem.toolComponents()` already do. Keys go
+`CustomBlock.blockItemComponents()` and `ItemSpec.applyTo()` already do. Keys go
 **without** the `minecraft:` prefix, or the same scope writes some components prefixed and some
 not.
 
@@ -84,7 +84,7 @@ way: those functions are invisible to `PackValidator` and impossible to find in 
 ## SNBT booleans when parsing
 
 knbt's SNBT parser does not accept `true` / `false`, which the game reads as `1b` / `0b`.
-`ToolItem.parse` rewrites them before parsing; do the same if you parse game-style SNBT.
+`ra.core.item.parseSnbt` rewrites them before parsing; do the same if you parse game-style SNBT.
 
 ## Gradle skips generation
 

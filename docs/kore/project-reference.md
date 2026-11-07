@@ -60,12 +60,11 @@ The `ra` namespace is split between two parts by path.
 | File | Writes |
 | --- | --- |
 | `tools/ToolsPart.kt` | Order of registration; the `tools` give bundle |
-| `tools/ToolItems.kt` | `ToolItem`: each tool item described once (give argument, recipe result, bundle NBT) |
+| `tools/ToolItems.kt` | `ToolItem`: each tool item described once, as an `ItemSpec` (give argument, recipe result, bundle NBT) |
 | `tools/ToolResources.kt` | Tool recipes + `recipes/unlock_*`, `tools/*_use` advancements, `is_sneaking` / `is_sprinting` predicates |
-| `tools/ToolsDsl.kt` | `tool(path)`, `executeRun`, `executeReturnRun`, `callWith`, `raycast`, `REACH_4` |
+| `tools/ToolsDsl.kt` | `tool(path)`, `RAY_TARGET`, `raycast`, `REACH_4` |
 | `tools/BlockName.kt` | `ra:tools/block_name` |
 | `tools/goggles/GogglesTool.kt` | `ra:tools/goggles/*` (tick, scan, `draw_block`, `draw_multiblock` from the registry) |
-| `tools/goggles/GogglesRefs.kt` | References to goggles functions outside `ra.api.Goggles` |
 | `tools/goggles/billboard/BillboardLines.kt` | `ra:tools/goggles/billboard/{prop,data,text,item,stacked_*}_line`, `stack_reset`, `stack_next` |
 | `tools/goggles/billboard/BillboardRender.kt` | `handle_billboard`, `handle_multiblock`, `show_io_line`, `show_input/output/control`, `render_*`, `init_offsets` |
 | `tools/goggles/status/Status.kt` | `ra:tools/goggles/status/read_status_multiblock` |
@@ -91,7 +90,6 @@ The `ra` namespace is split between two parts by path.
 | `hub/placement/Placement.kt` | `ra:placement/detect_bats`, `process_bat`, `#ra:placement_handlers`, `#ra:custom_blocks` |
 | `hub/items/Bundles.kt` | `ra:give_all_items`, `ra:items/bundles/*` from `ra.bundles` |
 | `hub/uninstall/Uninstall.kt`, `Confirm.kt` | `ra:uninstall`, `ra:uninstall/*` |
-| `hub/ToolsRefs.kt` | Private references to the tool functions `ra:load` / `ra:tick` call |
 
 ## `ra_settings` → `settings/`
 

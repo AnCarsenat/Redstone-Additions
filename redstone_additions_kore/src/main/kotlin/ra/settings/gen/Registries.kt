@@ -11,6 +11,7 @@ import io.github.ayfri.kore.commands.scoreboard.scoreboard
 import io.github.ayfri.kore.commands.tag
 import net.benwoodworth.knbt.buildNbtCompound
 import net.benwoodworth.knbt.buildNbtList
+import ra.api.Hub
 import ra.api.Settings
 import ra.core.Ns
 import ra.core.Obj
@@ -117,7 +118,7 @@ internal class Registries(private val pack: DataPack, private val gen: SettingsG
 			Text.btn(title, show, "yellow", "Open $title", gen.actions.act(show, nav = true))
 		}
 		val disabled = Text.btn("Disabled blocks", Fns.disabled, "red", "List every block that cannot be placed", gen.actions.act(Fns.disabled, nav = true))
-		val uninstall = Text.btn("Uninstall", Fns.raUninstall, "dark_red", "Remove Redstone Additions from this world", gen.actions.act(Fns.raUninstall, nav = true))
+		val uninstall = Text.btn("Uninstall", Hub.uninstall, "dark_red", "Remove Redstone Additions from this world", gen.actions.act(Hub.uninstall, nav = true))
 
 		pack.define(AdminTree.show) {
 			function(Fns.adminGrant)

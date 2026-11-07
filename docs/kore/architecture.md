@@ -177,9 +177,9 @@ function(RaLib.Util.property, nbt { this["name"] = "delay"; this["default"] = 20
 
 | Called from | Declared in |
 | --- | --- |
-| Other namespaces, part of a library's public surface | `ra/api/LibApi.kt` (`RaLib`, `MultiblockLib`) or `ra/api/ToolsApi.kt` (`Goggles`, `Settings`, `ModulesApi`) |
-| Only the owning part | Next to its definition (`val process = block.fn("process")`, `GogglesRefs`, `WrenchRegistry`) |
-| Another part, but not worth a public API | That part keeps a private `ref` to the same path (e.g. `ra.hub.ToolsRefs`). The owner must define it at exactly that path; `PackValidator` catches it if not. |
+| Other namespaces, part of a library's public surface | `ra/api/LibApi.kt` (`RaLib`, `MultiblockLib`) or `ra/api/ToolsApi.kt` (`Goggles`, `Tools`, `Hub`, `Settings`, `ModulesApi`) |
+| Only the owning part | Next to its definition (`val process = block.fn("process")`, `WrenchRegistry`) |
+| Another part, but not worth a public API | That part keeps a private `ref` to the same path. The owner must define it at exactly that path; `PackValidator` catches it if not. |
 
 ## Lifecycle
 

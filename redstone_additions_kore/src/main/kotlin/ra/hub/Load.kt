@@ -19,13 +19,16 @@ import ra.api.ModulesApi
 import ra.api.MultiblockLib
 import ra.api.RaLib
 import ra.api.Settings
+import ra.api.Tools
 import ra.core.Ns
 import ra.core.Obj
+import ra.core.RA_CHAT_PREFIX
 import ra.core.Ra
 import ra.core.Storage
 import ra.core.Tag
 import ra.core.define
 import ra.core.hook
+import ra.core.raMessage
 import ra.core.raw
 import ra.core.ref
 import ra.hub.items.giveAllItems
@@ -96,9 +99,9 @@ internal fun Ra.registerLoad() {
 		// through #ra_settings:register and cannot do that before it exists.
 		function(Settings.init)
 
-		function(ToolsRefs.wrenchInitRegistry)
-		function(ToolsRefs.readonlyInitRegistry)
-		function(ToolsRefs.dataHandlerInitRegistry)
+		function(Tools.Wrench.initRegistry)
+		function(Tools.Readonly.initRegistry)
+		function(Tools.DataHandler.initRegistry)
 
 		// Bring a world saved by an older version up to date. See ra_migrations:run.
 		function(ModulesApi.Migrations.run)
@@ -141,7 +144,7 @@ private fun Function.disabledBlocksNotice() {
 		storeResult { score(dis, Obj.SET_TMP) }
 		run { data(Storage.SETTINGS) { get("disabled") } }
 	}
-	raw("""execute if score #dis ${Obj.SET_TMP} matches 1.. run tellraw @a [{text:"[",color:"dark_gray"},{text:"RA",color:"gold",bold:true},{text:"] ",color:"dark_gray"},{score:{name:"#dis",objective:"${Obj.SET_TMP}"},color:"red",bold:true},{text:" block type(s) are disabled and cannot be placed.",color:"red"}]""")
+	raw("""execute if score #dis ${Obj.SET_TMP} matches 1.. run tellraw @a [$RA_CHAT_PREFIX,{score:{name:"#dis",objective:"${Obj.SET_TMP}"},color:"red",bold:true},{text:" block type(s) are disabled and cannot be placed.",color:"red"}]""")
 	raw("""execute if score #dis ${Obj.SET_TMP} matches 1.. run tellraw @a [{text:"  "},{text:"[ Which ones? ]",color:"yellow",hover_event:{action:"show_text",value:"List them, with a button to re-enable each"},click_event:{action:"run_command",command:"/trigger ra.settings.open set 3"}}]""")
 }
 
@@ -167,7 +170,7 @@ private fun Function.welcome() {
 	}
 	val v = RedstoneAdditions.VERSION
 	raw("""tellraw @a [{text:"[RA_Lib] ",color:"gold"},{text:"v$v loaded",color:"green"}]""")
-	raw("""tellraw @a [{text:"[",color:"dark_gray"},{text:"RA",color:"gold",bold:true},{text:"] ",color:"dark_gray"},{text:"Redstone Additions v$v loaded!",color:"green"}]""")
+	raMessage("@a", "Redstone Additions v$v loaded!", "green")
 	// The server button fires a TRIGGER, not the function. A /function link raises a
 	// confirmation dialog and then fails for anyone without permission; the trigger opens the
 	// panel for an operator who already has a session, and hands everyone else the command unrun

@@ -18,8 +18,10 @@ import io.github.ayfri.kore.commands.tp
 import io.github.ayfri.kore.functions.Function
 import io.github.ayfri.kore.generated.EntityTypes
 import ra.RedstoneAdditions
+import ra.api.Goggles
 import ra.api.RaLib
 import ra.api.Settings
+import ra.api.Tools
 import ra.core.Ra
 import ra.core.Tag
 import ra.core.define
@@ -48,7 +50,7 @@ internal fun Ra.registerTick() {
 		function(RaLib.Input.tick)
 
 		// Non-OP input data handler actions.
-		function(ToolsRefs.dataHandlerTick)
+		function(Tools.DataHandler.tick)
 
 		// Settings typed input, collected in the same place and for the same reason: this is after
 		// ra_lib:input/tick, so a form finished this tick is seen this tick.
@@ -67,7 +69,7 @@ internal fun Ra.registerTick() {
 
 		for (module in RedstoneAdditions.modules) module.tick?.let { function(it) }
 
-		function(ToolsRefs.gogglesTick)
+		function(Goggles.tick)
 
 		schedule(tick).replace(1.ticks)
 
@@ -118,6 +120,6 @@ private fun Function.menuTriggers() {
 	execute {
 		asTarget(allPlayers { scores { WRENCH greaterThanOrEqualTo 1 } })
 		at(self())
-		run { function(ToolsRefs.wrenchMenuAction) }
+		run { function(Tools.Wrench.menuAction) }
 	}
 }

@@ -4,3 +4,4 @@
 /out
 /.kotlin
 __pycache__
+/local.properties

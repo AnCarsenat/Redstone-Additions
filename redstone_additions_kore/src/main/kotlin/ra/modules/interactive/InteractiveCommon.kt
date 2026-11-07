@@ -32,7 +32,7 @@ import ra.core.block.CustomBlock
 import ra.core.block.markers
 import ra.core.define
 import ra.core.raw
-import ra.modules.infinite.ItemSpec
+import ra.core.item.ItemSpec
 import io.github.ayfri.kore.commands.scoreboard.scoreboard
 
 /**

@@ -10,9 +10,9 @@ import ra.core.Obj
 import ra.core.block.CustomBlock
 import ra.core.define
 import ra.core.raw
-import ra.modules.infinite.ItemSpec
-import ra.modules.infinite.SComp
-import ra.modules.infinite.loreItem
+import ra.core.item.ItemSpec
+import ra.core.item.SComp
+import ra.core.item.loreItem
 import ra.modules.sensors.plainOnBreak
 import ra.modules.sensors.shapedRecipe
 

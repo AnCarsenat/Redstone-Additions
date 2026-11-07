@@ -26,7 +26,7 @@ import ra.core.define
 import ra.core.raw
 import ra.modules.infinite.breakCheck
 import ra.modules.infinite.finishLorePlacement
-import ra.modules.infinite.loreItem
+import ra.core.item.loreItem
 import ra.modules.infinite.registerBlockMessage
 import ra.modules.interactive.BreederBreeds.registerBreederBreeds
 import ra.modules.interactive.BreederBreeds.tryBreed

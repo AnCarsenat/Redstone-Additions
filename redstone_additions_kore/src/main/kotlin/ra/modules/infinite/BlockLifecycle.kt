@@ -18,6 +18,7 @@ import ra.core.block.CustomBlock
 import ra.core.block.killVanillaDrop
 import ra.core.define
 import ra.core.raw
+import ra.core.item.ItemSpec
 
 /**
  * Break and placement handling for blocks whose item carries more than [CustomBlock] describes

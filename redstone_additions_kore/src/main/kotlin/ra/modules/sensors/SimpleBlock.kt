@@ -35,7 +35,7 @@ import ra.core.block.CustomBlock
 import ra.core.block.killVanillaDrop
 import ra.core.define
 import ra.core.raw
-import ra.modules.infinite.ItemSpec
+import ra.core.item.ItemSpec
 
 /**
  * The block lifecycle as `ra_sensors`, `ra_wireless` and `ra_ender` wrote it, shared by the three.

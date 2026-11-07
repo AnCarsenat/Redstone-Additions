@@ -5,12 +5,12 @@ import io.github.ayfri.kore.features.itemmodifiers.functions.setComponents
 import io.github.ayfri.kore.features.itemmodifiers.itemModifier
 import ra.core.Ns
 import ra.core.Ra
-import ra.modules.infinite.SByte
-import ra.modules.infinite.SList
-import ra.modules.infinite.SStr
-import ra.modules.infinite.flag
-import ra.modules.infinite.loreLine
-import ra.modules.infinite.raData
+import ra.core.item.SByte
+import ra.core.item.SList
+import ra.core.item.SStr
+import ra.core.item.flag
+import ra.core.item.loreLine
+import ra.core.item.raData
 import ra.modules.jetpacks.Kits
 
 /**

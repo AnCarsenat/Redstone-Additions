@@ -30,7 +30,7 @@ import ra.core.define
 import ra.core.raw
 import ra.modules.ender.link.Link
 import ra.modules.infinite.breakCheck
-import ra.modules.infinite.loreLine
+import ra.core.item.loreLine
 import ra.modules.sensors.batGuard
 import ra.modules.sensors.clearNew
 import ra.modules.sensors.exec

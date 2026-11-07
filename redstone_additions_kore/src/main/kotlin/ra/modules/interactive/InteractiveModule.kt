@@ -10,7 +10,7 @@ import ra.core.block.CustomBlock
 import ra.core.define
 import ra.core.raw
 import ra.core.ref
-import ra.modules.infinite.ItemSpec
+import ra.core.item.ItemSpec
 import ra.modules.infinite.loadMessage
 import ra.modules.interactive.BigTorch.registerBigTorch
 import ra.modules.interactive.BlockBreaker.registerBlockBreaker

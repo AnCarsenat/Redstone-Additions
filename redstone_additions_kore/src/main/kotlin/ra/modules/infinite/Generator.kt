@@ -42,6 +42,8 @@ import ra.core.block.newMarker
 import ra.core.block.placeBlock
 import ra.core.define
 import ra.core.raw
+import ra.core.item.SComp
+import ra.core.item.loreItem
 
 /**
  * What every Infinite generator shares: a real DROPPER, the item, the shapeless casing + core

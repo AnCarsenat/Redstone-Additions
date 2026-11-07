@@ -26,8 +26,8 @@ import ra.core.define
 import ra.core.raw
 import ra.modules.infinite.breakCheck
 import ra.modules.infinite.finishLorePlacement
-import ra.modules.infinite.loreItem
-import ra.modules.infinite.loreLine
+import ra.core.item.loreItem
+import ra.core.item.loreLine
 import ra.modules.infinite.registerBlockMessage
 import ra.modules.interactive.BigTorchSweep.registerBigTorchSweep
 import io.github.ayfri.kore.arguments.types.literals.literal

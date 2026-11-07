@@ -22,7 +22,7 @@ import ra.core.block.propLine
 import ra.core.define
 import ra.core.raw
 import ra.modules.infinite.breakCheck
-import ra.modules.infinite.loreItem
+import ra.core.item.loreItem
 import ra.modules.infinite.registerBlockMessage
 import ra.modules.sensors.batGuard
 import ra.modules.sensors.clearNew

@@ -17,7 +17,7 @@ import ra.core.define
 import ra.core.raw
 import ra.modules.infinite.breakCheck
 import ra.modules.infinite.finishLorePlacement
-import ra.modules.infinite.loreItem
+import ra.core.item.loreItem
 import ra.modules.infinite.registerBlockMessage
 
 /** Block Placer: a dispenser that places its first stack as a block in front, once a second while powered. */

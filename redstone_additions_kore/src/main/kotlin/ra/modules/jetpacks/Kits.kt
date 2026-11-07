@@ -18,19 +18,19 @@ import ra.core.raw
 import ra.core.ref
 import ra.modules.enchanting.sacrificeRecipe
 import io.github.ayfri.kore.commands.returnValue
-import ra.modules.infinite.ItemSpec
-import ra.modules.infinite.SBool
-import ra.modules.infinite.SByte
-import ra.modules.infinite.SFloat
-import ra.modules.infinite.SInt
-import ra.modules.infinite.SStr
-import ra.modules.infinite.SComp
-import ra.modules.infinite.SList
-import ra.modules.infinite.comp
-import ra.modules.infinite.flag
-import ra.modules.infinite.itemSpec
-import ra.modules.infinite.loreLine
-import ra.modules.infinite.raData
+import ra.core.item.ItemSpec
+import ra.core.item.SBool
+import ra.core.item.SByte
+import ra.core.item.SFloat
+import ra.core.item.SInt
+import ra.core.item.SStr
+import ra.core.item.SComp
+import ra.core.item.SList
+import ra.core.item.comp
+import ra.core.item.flag
+import ra.core.item.itemSpec
+import ra.core.item.loreLine
+import ra.core.item.raData
 
 /**
  * The kits: the two that turn a chestplate into a jetpack (iron, infinite) and the three

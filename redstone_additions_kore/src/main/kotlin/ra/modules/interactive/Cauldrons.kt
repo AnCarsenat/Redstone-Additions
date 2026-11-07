@@ -15,7 +15,7 @@ import ra.core.block.gogglesHeader
 import ra.core.block.killVanillaDrop
 import ra.core.define
 import ra.core.raw
-import ra.modules.infinite.loreItem
+import ra.core.item.loreItem
 import ra.modules.infinite.registerBlockMessage
 
 /**

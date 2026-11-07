@@ -2,7 +2,6 @@ package ra.modules.ender
 
 import io.github.ayfri.kore.arguments.types.literals.self
 import io.github.ayfri.kore.commands.function
-import io.github.ayfri.kore.commands.returnValue
 import io.github.ayfri.kore.commands.scoreboard.scoreboard
 import io.github.ayfri.kore.commands.tag
 import io.github.ayfri.kore.features.recipes.types.RecipeCategory
@@ -11,7 +10,6 @@ import io.github.ayfri.kore.features.recipes.types.pattern
 import io.github.ayfri.kore.functions.Function
 import io.github.ayfri.kore.generated.Blocks
 import io.github.ayfri.kore.generated.Items
-import io.github.ayfri.kore.utils.nbt
 import io.github.ayfri.kore.utils.set
 import ra.api.RaLib
 import ra.core.Ns
@@ -28,15 +26,19 @@ import ra.core.define
 import ra.core.raw
 import ra.modules.ender.link.Link
 import ra.core.item.loreLine
-import ra.core.block.breakCheck
 import ra.core.blockRegisterMessage
 import ra.core.executeRun
 import ra.core.executeReturnRun
 import ra.core.block.newMarkerSel
 import ra.core.block.placementGuard
 import ra.core.block.setOnNew
-import ra.core.block.clearNewTag
 import ra.core.block.defaultProperty
+import ra.core.block.finishPlacement
+import ra.core.block.blockTick
+import ra.core.block.BreakTest
+import ra.core.block.markerSel
+import ra.core.Tag
+import ra.core.block.readProperty
 
 /**
  * Ender Fluid Vault: an ordinary fluid node with a small buffer, so pipes, pumps and tanks
@@ -55,7 +57,6 @@ object FluidVault {
 	val process = block.fn("process")
 	private val level = block.fn("level")
 	val cycleMode = block.fn("cycle_mode")
-	val registerBlock = block.fn("register_block")
 
 	private const val T = Obj.TEMP
 
@@ -82,12 +83,10 @@ object FluidVault {
 			setOnNew(block, "data.properties.transfer_rate", "200")
 
 			// Fluid network membership, and the fluid flag the wires status readouts look for.
-			raw("tag @e[type=marker,tag=${block.tag},tag=ra.new,distance=..0.5] add ${EnderIds.FLUID_NODE}")
+			raw("tag ${block.markerSel("tag=${Tag.NEW}", "distance=..0.5")} add ${EnderIds.FLUID_NODE}")
 			executeRun("as ${block.newMarkerSel()}", RaLib.Transport.Net.join, "{class:\"fluid\",capacity:1000}")
 
-			clearNewTag(block)
-			tag(self()) { remove(block.placeTag) }
-			returnValue(1)
+			finishPlacement(block)
 		}
 
 		pack.cycleLinkSendReceive(block)
@@ -99,21 +98,19 @@ object FluidVault {
 		// with it.
 		val onBreak = pack.enderOnBreak(block, item) { function(RaLib.Transport.Net.leave) }
 
-		pack.define(block.tick) {
-			breakCheck(block, Blocks.PURPUR_BLOCK, onBreak)
-
+		pack.blockTick(block, onBreak, BreakTest.NotBlock(Blocks.PURPUR_BLOCK)) {
 			// Defaults, and a node that lost its network membership on reload rejoins.
 			defaultProperty(block, "channel", "\"default\"")
 			defaultProperty(block, "mode", "\"link\"")
 			defaultProperty(block, "transfer_rate", "200")
-			executeRun("as @e[type=marker,tag=${block.tag},tag=!ra.tr.node]", RaLib.Transport.Net.rejoin, "{class:\"fluid\"}")
+			executeRun("as ${block.markerSel("tag=!ra.tr.node")}", RaLib.Transport.Net.rejoin, "{class:\"fluid\"}")
 
 			raw("tag @e[type=marker,tag=${EnderIds.RECV_FLUID}] remove ${EnderIds.RECV_FLUID}")
 			tagUnlessMode(block, "send", EnderIds.RECV_FLUID)
 
 			// Every 10 ticks, so a link is a steady trickle rather than a spike.
-			raw("scoreboard players add @e[type=marker,tag=${block.tag}] ${EnderIds.CD} 1")
-			executeRun("as @e[type=marker,tag=${block.tag},scores={${EnderIds.CD}=10..}] at @s", process)
+			raw("scoreboard players add ${block.markerSel()} ${EnderIds.CD} 1")
+			executeRun("as ${block.markerSel("scores={${EnderIds.CD}=10..}")} at @s", process)
 		}
 	}
 
@@ -135,11 +132,11 @@ object FluidVault {
 		executeReturnRun("if data entity @s data.properties{mode:\"receive\"}", Link.done)
 
 		function(RaLib.Transport.Net.read)
-		executeReturnRun("if score #net_amount ra.tr.tmp matches ..0", Link.done)
+		executeReturnRun("if score #net_amount ${Obj.TR_TMP} matches ..0", Link.done)
 		executeReturnRun("unless data storage ra:transport cur.medium", Link.done)
 
-		raw("scoreboard players operation #ender.mine $T = #net_amount ra.tr.tmp")
-		function(RaLib.Util.property, nbt { this["name"] = "transfer_rate"; this["default"] = 200; this["min"] = 1 })
+		raw("scoreboard players operation #ender.mine $T = #net_amount ${Obj.TR_TMP}")
+		readProperty("transfer_rate", default = 200, min = 1)
 		raw("scoreboard players operation #ender.rate $T = #prop $T")
 
 		raw("data modify storage ra:ender fluid set value {}")
@@ -194,14 +191,10 @@ object FluidVault {
 
 		// What the local network holds, read live rather than stored on the marker.
 		function(RaLib.Transport.Net.read)
-		raw("execute store result score #ender.amount $T run scoreboard players get #net_amount ra.tr.tmp")
+		raw("execute store result score #ender.amount $T run scoreboard players get #net_amount ${Obj.TR_TMP}")
 		raw("data modify storage ra:temp ender_line set value {label:\"Holding: \",value:\"empty\",color:\"gray\",suffix:\"\"}")
 		raw("execute if data storage ra:transport cur.medium run data modify storage ra:temp ender_line.value set from storage ra:transport cur.medium")
 		raw("execute if data storage ra:transport cur.medium run data modify storage ra:temp ender_line.color set value \"aqua\"")
 		stackedTextLineFromStorage()
 	}
 }
-
-/** `function ra:tools/goggles/billboard/stacked_text_line with storage ra:temp ender_line`. */
-internal fun Function.stackedTextLineFromStorage() =
-	function(ra.api.Goggles.Billboard.stackedTextLine, Storage.TEMP, "ender_line")

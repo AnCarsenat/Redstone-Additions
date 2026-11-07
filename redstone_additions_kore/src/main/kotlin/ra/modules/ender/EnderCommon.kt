@@ -19,6 +19,11 @@ import ra.core.raw
 import ra.core.item.ItemSpec
 import ra.core.item.SComp
 import ra.core.item.loreItem
+import ra.core.block.soundListenersSel
+import ra.core.block.markerSel
+import ra.api.Goggles
+import ra.core.Storage
+import io.github.ayfri.kore.commands.function
 
 /**
  * What every `ra_ender` block shares: identifiers, the item shape, the recipe and the break.
@@ -89,7 +94,7 @@ internal fun DataPack.enderGive(block: CustomBlock, item: ItemSpec, hint: String
 internal fun wrenchSay(name: String, mode: String, color: String) =
 	"""tellraw @a[distance=..10] [{text:"[Wrench] ",color:"gold"},{text:"$name: ",color:"gray"},{text:"$mode",color:"$color"}]"""
 
-internal const val WRENCH_CLICK = "playsound minecraft:block.lever.click block @a[distance=..10,scores={ra.u.snd=1..}] ~ ~ ~ 0.6 1.4"
+internal val WRENCH_CLICK = "playsound minecraft:block.lever.click block ${soundListenersSel(10)} ~ ~ ~ 0.6 1.4"
 
 /**
  * `cycle_mode` of the fluid and power vaults: link -> send -> receive -> link.
@@ -122,4 +127,8 @@ internal fun DataPack.cycleLinkSendReceive(block: CustomBlock) = define(block.fn
  * wearing, found nothing, and silently did nothing.
  */
 internal fun Function.tagUnlessMode(block: CustomBlock, notMode: String, tag: String) =
-	raw("execute as @e[type=marker,tag=${block.tag}] unless data entity @s data.properties{mode:\"$notMode\"} run tag @s add $tag")
+	raw("execute as ${block.markerSel()} unless data entity @s data.properties{mode:\"$notMode\"} run tag @s add $tag")
+
+/** `function ra:tools/goggles/billboard/stacked_text_line with storage ra:temp ender_line`. */
+internal fun Function.stackedTextLineFromStorage() =
+	function(Goggles.Billboard.stackedTextLine, Storage.TEMP, "ender_line")

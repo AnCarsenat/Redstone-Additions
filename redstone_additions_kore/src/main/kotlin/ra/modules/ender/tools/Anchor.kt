@@ -10,6 +10,7 @@ import ra.core.define
 import ra.core.raw
 import ra.core.ref
 import ra.modules.ender.TeleportAnchor
+import ra.core.block.markerSel
 
 /**
  * `ra_ender:tools/anchor/...`: chat commands that name an anchor and fill its target table.
@@ -25,9 +26,9 @@ object Anchor {
 	private const val T = Obj.TEMP
 
 	/** The nearest anchor within 6 blocks. */
-	private val NEAREST = "@e[type=marker,tag=${TeleportAnchor.block.tag},distance=..6,limit=1,sort=nearest]"
+	private val NEAREST = TeleportAnchor.block.markerSel("distance=..6", "limit=1", "sort=nearest")
 
-	private val NO_ANCHOR = "execute unless entity @e[type=marker,tag=${TeleportAnchor.block.tag},distance=..6] run return run " +
+	private val NO_ANCHOR = "execute unless entity ${TeleportAnchor.block.markerSel("distance=..6")} run return run " +
 		"""tellraw @s [{text:"[RA] ",color:"gold"},{text:"No Teleport Anchor within 6 blocks",color:"red"}]"""
 
 	fun Ra.registerAnchorTools() {

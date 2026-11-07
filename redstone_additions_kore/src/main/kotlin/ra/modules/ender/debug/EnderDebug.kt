@@ -11,6 +11,7 @@ import ra.modules.ender.FluidVault
 import ra.modules.ender.ItemVault
 import ra.modules.ender.PowerVault
 import ra.core.executeRun
+import ra.core.block.markerSel
 
 /** `/function ra_ender:debug/vaults`: report every vault. */
 object EnderDebug {
@@ -21,11 +22,11 @@ object EnderDebug {
 
 		pack.define(ref(Ns.ENDER, "debug/vaults")) {
 			raw("""tellraw @s [{text:"[RA] ",color:"gold"},{text:"Ender links",color:"light_purple"}]""")
-			val none = vaults.joinToString(" ") { (_, b) -> "unless entity @e[type=marker,tag=${b.tag}]" }
+			val none = vaults.joinToString(" ") { (_, b) -> "unless entity ${b.markerSel()}" }
 			raw("""execute $none run tellraw @s [{text:"  no vaults loaded",color:"dark_gray"}]""")
 
 			for ((kind, b) in vaults)
-				executeRun("as @e[type=marker,tag=${b.tag}] at @s", one, "{kind:\"$kind\"}")
+				executeRun("as ${b.markerSel()} at @s", one, "{kind:\"$kind\"}")
 		}
 
 		// Macro {kind}: one vault's report. As its marker, at the block.

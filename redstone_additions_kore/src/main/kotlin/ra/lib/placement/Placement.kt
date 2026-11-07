@@ -5,6 +5,7 @@ import io.github.ayfri.kore.commands.execute.execute
 import io.github.ayfri.kore.commands.function
 import io.github.ayfri.kore.commands.scoreboard.scoreboard
 import io.github.ayfri.kore.functions.Function
+import net.benwoodworth.knbt.NbtByte
 import net.benwoodworth.knbt.NbtString
 import ra.api.RaLib
 import ra.core.Obj
@@ -79,10 +80,10 @@ object Placement {
 		// Set has_facing from dir_type. Only 1 and 2 write the facing onto the block itself; 3
 		// resolves it for the marker and leaves the block plain.
 		raw("\$scoreboard players set #dir_type ${Obj.TEMP} \$(dir_type)")
-		raw("data modify storage ra:temp has_facing set value 0b")
+		data(Storage.TEMP) { modify("has_facing") { set(NbtByte(0)) } }
 		execute {
 			ifCondition { score(dirType, Obj.TEMP) matches 1..2 }
-			run { raw("data modify storage ra:temp has_facing set value 1b") }
+			run { data(Storage.TEMP) { modify("has_facing") { set(NbtByte(1)) } } }
 		}
 
 		// Facing name from the score.

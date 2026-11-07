@@ -1,13 +1,11 @@
 package ra.modules.gates.debug
 
-import io.github.ayfri.kore.arguments.types.literals.self
-import io.github.ayfri.kore.commands.execute.execute
-import io.github.ayfri.kore.commands.function
 import io.github.ayfri.kore.functions.Function
 import ra.core.Ns
 import ra.core.Obj
 import ra.core.Ra
-import ra.core.block.markers
+import ra.core.block.forEachMarker
+import ra.core.block.markerSel
 import ra.core.define
 import ra.core.raw
 import ra.core.ref
@@ -19,6 +17,8 @@ import ra.modules.gates.Clock
  * Written because the Clock's symptom -- "it ignores its cooldown" -- has more than one cause
  * that looks identical from across the room, and guessing between them from source alone has
  * already been wrong twice.
+ *
+ * kept: beet contract. Nothing in the pack calls it; players run it by hand.
  */
 object ClockDebug {
 	val clock = ref(Ns.GATES, "debug/clock")
@@ -27,12 +27,8 @@ object ClockDebug {
 	fun Ra.registerClockDebug() {
 		pack.define(clock) {
 			raw("""tellraw @s [{text:"[RA] ",color:"gold"},{text:"Clocks",color:"aqua"}]""")
-			raw("""execute unless entity @e[type=marker,tag=${Clock.block.tag}] run tellraw @s [{text:"  none loaded",color:"dark_gray"}]""")
-			execute {
-				asTarget(markers(Clock.block))
-				at(self())
-				run { function(clockOne) }
-			}
+			raw("""execute unless entity ${Clock.block.markerSel()} run tellraw @s [{text:"  none loaded",color:"dark_gray"}]""")
+			forEachMarker(Clock.block, clockOne)
 		}
 		pack.define(clockOne) { clockOne() }
 	}
@@ -61,8 +57,8 @@ object ClockDebug {
 		raw("""execute unless data entity @s data.properties.cooldown run tellraw @s [{text:"   no `cooldown` property at all — running on the default",color:"red"}]""")
 		raw("""execute if score #clk.max $t matches 2 run tellraw @s [{text:"   period is at the floor of 2 — either delay is 2 or under, or the read failed.",color:"yellow"}]""")
 
-		raw("""execute if entity @s[tag=ra.clock_on] run tellraw @s [{text:"   pulsing this tick",color:"green"}]""")
-		raw("""execute unless entity @s[tag=ra.clock_on] run tellraw @s [{text:"   idle between pulses",color:"dark_gray"}]""")
+		raw("""execute if entity @s[tag=${Clock.ON}] run tellraw @s [{text:"   pulsing this tick",color:"green"}]""")
+		raw("""execute unless entity @s[tag=${Clock.ON}] run tellraw @s [{text:"   idle between pulses",color:"dark_gray"}]""")
 
 		// The output is iron blocks becoming redstone blocks. With neither touching it there is
 		// nothing to convert and a working clock looks completely dead.

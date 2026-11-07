@@ -7,7 +7,7 @@ import ra.core.GiveBundle
 import ra.core.Ns
 import ra.core.Ra
 import ra.core.define
-import ra.core.raw
+import ra.core.moduleLoaded
 import ra.core.ref
 import ra.modules.gates.Clock.registerClock
 import ra.modules.gates.Delayer.registerDelayer
@@ -40,7 +40,7 @@ object GatesModule : GameplayModule {
 
 		pack.define(load) {
 			for (b in gateBlocks) function(b.fn("register_block"))
-			raw("""tellraw @a [{text:"[",color:"dark_gray"},{text:"RA",color:"gold",bold:true},{text:"] ",color:"dark_gray"},{text:"Logic Gates loaded!",color:"aqua"}]""")
+			moduleLoaded("Logic Gates loaded!", "aqua")
 		}
 		pack.define(tick!!) {
 			// Per-block redstone detection runs in each block's process function.
@@ -52,8 +52,9 @@ object GatesModule : GameplayModule {
 			for (b in gateBlocks) function(b.give)
 		}
 
-		// Deprecated compatibility entry point: gates now run per-entity redstone detection
-		// directly in their process functions. Kept because other packs may still call it.
+		// kept: beet contract. Deprecated compatibility entry point: gates now run per-entity
+		// redstone detection directly in their process functions. Kept because other packs may
+		// still call it.
 		pack.define(ref(ns, "check_signals")) { returnValue(1) }
 
 		bundles += GiveBundle("gates", "Gates Bundle", "UNI Gate + timing utility blocks", ns, gateBlocks.map { it.itemStackNbt() })

@@ -28,6 +28,8 @@ import ra.core.raw
 import ra.core.blockRegisterMessage
 import ra.core.block.outputShell
 import ra.core.block.readProperty
+import ra.core.block.placementGuard
+import ra.core.block.STONE_BREAK_SOUND
 
 /** Delayer: turns its output on `delay` ticks after its input, and off as soon as the input drops. */
 object Delayer {
@@ -48,13 +50,13 @@ object Delayer {
 		pack.define(block.handlePlacement) { handlePlacement() }
 		pack.define(process) { process() }
 		pack.gateGoggles(block, nameY = 1.0, prop = "delay", label = "Delay: ", suffix = "t", y = 0.8)
-		val onBreak = pack.timingOnBreak(block, "minecraft:block.stone.break")
+		val onBreak = pack.timingOnBreak(block, STONE_BREAK_SOUND)
 		pack.timingTick(block, Blocks.QUARTZ_BLOCK, onBreak, process)
 	}
 
 	/** As the spawned bat, at the block centre. */
 	private fun Function.handlePlacement() {
-		raw("execute unless entity @s[tag=${block.placeTag}] run return 0")
+		placementGuard(block, checkExisting = false)
 		placeBlock(block)
 		// Default delay: 20 ticks = 1 second.
 		data(newMarker(block)) { modify("data.properties.delay") { set(20) } }

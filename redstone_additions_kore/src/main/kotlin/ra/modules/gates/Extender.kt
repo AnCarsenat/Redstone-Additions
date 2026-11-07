@@ -27,6 +27,8 @@ import ra.core.raw
 import ra.core.blockRegisterMessage
 import ra.core.block.outputShell
 import ra.core.block.readProperty
+import ra.core.block.placementGuard
+import ra.core.block.STONE_BREAK_SOUND
 
 /** Extender: keeps its output on for `extend` ticks after its input drops. */
 object Extender {
@@ -47,12 +49,12 @@ object Extender {
 		pack.define(block.handlePlacement) { handlePlacement() }
 		pack.define(process) { process() }
 		pack.gateGoggles(block, nameY = 1.0, prop = "extend", label = "Extend: ", suffix = "t", y = 0.8)
-		val onBreak = pack.timingOnBreak(block, "minecraft:block.stone.break")
+		val onBreak = pack.timingOnBreak(block, STONE_BREAK_SOUND)
 		pack.timingTick(block, Blocks.QUARTZ_BLOCK, onBreak, process)
 	}
 
 	private fun Function.handlePlacement() {
-		raw("execute unless entity @s[tag=${block.placeTag}] run return 0")
+		placementGuard(block, checkExisting = false)
 		placeBlock(block)
 		// Default extend: 20 ticks = 1 second.
 		data(newMarker(block)) { modify("data.properties.extend") { set(20) } }

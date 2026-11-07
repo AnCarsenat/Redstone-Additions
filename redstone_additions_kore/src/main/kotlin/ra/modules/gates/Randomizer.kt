@@ -28,6 +28,7 @@ import ra.core.raw
 import ra.core.blockRegisterMessage
 import ra.core.block.outputShell
 import ra.core.block.readProperty
+import ra.core.block.placementGuard
 
 /** Randomizer: on each rising edge, turns its output on with probability `chance` percent. */
 object Randomizer {
@@ -53,7 +54,7 @@ object Randomizer {
 	}
 
 	private fun Function.handlePlacement() {
-		raw("execute unless entity @s[tag=${block.placeTag}] run return 0")
+		placementGuard(block, checkExisting = false)
 		placeBlock(block)
 		// Default chance: 50%.
 		data(newMarker(block)) { modify("data.properties.chance") { set(50) } }

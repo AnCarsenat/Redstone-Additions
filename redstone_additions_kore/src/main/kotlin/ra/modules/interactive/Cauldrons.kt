@@ -1,0 +1,112 @@
+package ra.modules.interactive
+
+import io.github.ayfri.kore.arguments.types.literals.self
+import io.github.ayfri.kore.commands.kill
+import io.github.ayfri.kore.commands.returnValue
+import io.github.ayfri.kore.features.recipes.types.RecipeCategory
+import io.github.ayfri.kore.arguments.types.resources.ItemArgument
+import io.github.ayfri.kore.generated.Items
+import ra.core.Ns
+import ra.core.Obj
+import ra.core.Ra
+import ra.core.Tag
+import ra.core.block.CustomBlock
+import ra.core.block.gogglesHeader
+import ra.core.block.killVanillaDrop
+import ra.core.define
+import ra.core.raw
+import ra.modules.infinite.loreItem
+import ra.modules.infinite.registerBlockMessage
+
+/**
+ * The three Infinite Cauldrons: a cauldron that refills itself every tick, with water, lava or
+ * powder snow. Three near-identical blocks, so they are one table here.
+ *
+ * They place their block themselves (`setblock` + a bare marker) instead of going through
+ * ra_lib:placement/place: a filled cauldron has a block state the library does not take.
+ */
+object Cauldrons {
+	/**
+	 * @property full the block state of a full cauldron.
+	 * @property partial the states to top up besides the empty `cauldron`; lava has no levels.
+	 */
+	class Cauldron(
+		id: String,
+		name: String,
+		val full: String,
+		val partial: List<String>,
+		val pattern: List<String>,
+		val keys: List<Pair<String, List<ItemArgument>>>,
+		val unlock: Pair<String, ItemArgument>,
+	) {
+		val block = CustomBlock(Ns.INTERACTIVE, id, name, model = "minecraft:cauldron")
+		val item = block.loreItem {}
+		val registerBlock = block.fn("register_block")
+	}
+
+	val water = Cauldron(
+		"infinite_water_cauldron", "Infinite Water Cauldron",
+		full = "water_cauldron[level=3]", partial = listOf("water_cauldron[level=1]", "water_cauldron[level=2]"),
+		pattern = listOf("III", "WCW", "III"),
+		keys = listOf("I" to listOf(Items.IRON_INGOT), "W" to listOf(Items.WATER_BUCKET), "C" to listOf(Items.CAULDRON)),
+		unlock = "has_cauldron" to Items.CAULDRON,
+	)
+	val lava = Cauldron(
+		"infinite_lava_cauldron", "Infinite Lava Cauldron",
+		full = "lava_cauldron", partial = emptyList(),
+		pattern = listOf("OOO", "LCL", "OOO"),
+		keys = listOf("O" to listOf(Items.OBSIDIAN), "L" to listOf(Items.LAVA_BUCKET), "C" to listOf(Items.CAULDRON)),
+		unlock = "has_lava" to Items.LAVA_BUCKET,
+	)
+	val snow = Cauldron(
+		"infinite_snow_cauldron", "Infinite Snow Cauldron",
+		full = "powder_snow_cauldron[level=3]", partial = listOf("powder_snow_cauldron[level=1]", "powder_snow_cauldron[level=2]"),
+		pattern = listOf("SSS", "PCP", "SSS"),
+		keys = listOf("S" to listOf(Items.SNOW_BLOCK), "P" to listOf(Items.POWDER_SNOW_BUCKET), "C" to listOf(Items.CAULDRON)),
+		unlock = "has_powder_snow" to Items.POWDER_SNOW_BUCKET,
+	)
+
+	/** In load / tick / give order. */
+	val all = listOf(water, lava, snow)
+
+	fun Ra.registerCauldrons() = all.forEach { registerCauldron(it) }
+
+	private fun Ra.registerCauldron(c: Cauldron) {
+		val block = c.block
+		block(block)
+		pack.registerBlockMessage(block)
+		pack.specGive(block, c.item)
+		pack.shapedRecipe(
+			block.ns.id, block.id, c.item, pattern = c.pattern, keys = c.keys,
+			category = RecipeCategory.MISC, unlock = c.unlock,
+		)
+
+		pack.define(block.handlePlacement) {
+			placeGuard(block)
+			// The cauldron, full, with a bare marker (no direction).
+			raw("setblock ~ ~ ~ ${c.full}")
+			raw("""summon marker ~ ~ ~ {Tags:["${Tag.RA}","${Tag.CUSTOM_BLOCK}","${block.tag}"]}""")
+			raw("playsound minecraft:block.stone.place block @a[distance=..16,scores={${Obj.USER_SOUND}=1..}] ~ ~ ~ 1 1")
+			returnValue(1)
+		}
+
+		pack.define(block.goggles) { gogglesHeader(block, nameY = 1.0) }
+
+		val onBreak = pack.define(block.fn("on_break")) {
+			killVanillaDrop(block.physical)
+			dropSpec(c.item)
+			breakSound()
+			breakCloud()
+			kill(self())
+		}
+
+		pack.define(block.tick) {
+			// Break detection only when the block is air: see airBreakCheck.
+			airBreakCheck(block, onBreak)
+
+			// Refill when emptied or partially filled.
+			for (state in listOf("cauldron") + c.partial)
+				raw("execute as @e[type=marker,tag=${block.tag}] at @s if block ~ ~ ~ $state run setblock ~ ~ ~ ${c.full}")
+		}
+	}
+}

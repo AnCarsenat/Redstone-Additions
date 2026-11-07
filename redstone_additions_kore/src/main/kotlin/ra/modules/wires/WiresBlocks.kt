@@ -3,26 +3,13 @@ package ra.modules.wires
 import io.github.ayfri.kore.arguments.components.item.CustomComponent
 import io.github.ayfri.kore.arguments.components.item.itemModel
 import io.github.ayfri.kore.arguments.types.resources.ItemArgument
-import io.github.ayfri.kore.features.advancements.advancement
-import io.github.ayfri.kore.features.advancements.criteria
-import io.github.ayfri.kore.features.advancements.requirements
-import io.github.ayfri.kore.features.advancements.rewards
-import io.github.ayfri.kore.features.advancements.recipes
-import io.github.ayfri.kore.features.advancements.triggers.inventoryChanged
-import io.github.ayfri.kore.features.advancements.triggers.item
-import io.github.ayfri.kore.features.advancements.triggers.recipeUnlocked
 import io.github.ayfri.kore.features.itemmodifiers.functions.setCount
 import io.github.ayfri.kore.features.itemmodifiers.itemModifier
-import io.github.ayfri.kore.features.recipes.recipesBuilder
-import io.github.ayfri.kore.features.recipes.types.RecipeCategory
-import io.github.ayfri.kore.features.recipes.types.craftingShaped
 import io.github.ayfri.kore.features.recipes.types.key
 import io.github.ayfri.kore.features.recipes.types.pattern
-import io.github.ayfri.kore.features.recipes.types.result
 import io.github.ayfri.kore.features.tags.blockTag
 import io.github.ayfri.kore.generated.Blocks
 import io.github.ayfri.kore.generated.Items
-import io.github.ayfri.kore.generated.arguments.types.AdvancementArgument
 import io.github.ayfri.kore.utils.nbt
 import io.github.ayfri.kore.utils.set
 import net.benwoodworth.knbt.NbtCompound
@@ -35,6 +22,9 @@ import ra.core.Ra
 import ra.core.TagRoute
 import ra.core.WrenchCycle
 import ra.core.block.CustomBlock
+import ra.core.block.RecipeResult
+import ra.core.block.Unlock
+import ra.core.block.shapedRecipe
 import ra.core.ref
 import ra.modules.wires.blocks.Placement
 import ra.modules.wires.blocks.creative_fluid.CreativeFluid
@@ -51,14 +41,17 @@ import ra.modules.wires.blocks.liquid_drain.LiquidDrain
  * tier names (`liquid_pipe_copper`, `electric_wire_copper`) after the tiers merged.
  */
 object WiresBlocks : PackPart {
-	/** How a recipe's unlock advancement names its ingredient criterion, as each file had it. */
-	enum class Unlock { INGREDIENT, MATERIAL, NAMED }
+	/**
+	 * How a recipe's unlock advancement names its ingredient criterion, as each file had it.
+	 * Kept, since a criterion name is how an advancement is granted or revoked by command.
+	 */
+	enum class Criterion { INGREDIENT, MATERIAL, NAMED }
 
 	data class WiresRecipe(
 		val pattern: List<String>,
 		val keys: List<Pair<String, ItemArgument>>,
 		val unlockedBy: ItemArgument,
-		val unlock: Unlock,
+		val criterion: Criterion,
 		val count: Short? = 1,
 		val notify: Boolean = true,
 	)
@@ -79,53 +72,53 @@ object WiresBlocks : PackPart {
 	/** In bundle order: the order `give_wires_bundle` packed them. */
 	val items = listOf(
 		WiresItem(item("liquid_pipe_copper", "Copper Pipe", "minecraft:copper_block", "minecraft:conduit", "liquid_pipe"), marker = "liquid_pipe",
-			recipe = WiresRecipe(listOf("CCC", "   ", "CCC"), listOf("C" to Items.COPPER_INGOT), Items.COPPER_INGOT, Unlock.MATERIAL, count = 16)),
+			recipe = WiresRecipe(listOf("CCC", "   ", "CCC"), listOf("C" to Items.COPPER_INGOT), Items.COPPER_INGOT, Criterion.MATERIAL, count = 16)),
 		WiresItem(item("liquid_tank", "Liquid Tank", "minecraft:waxed_copper_block", "minecraft:waxed_copper_block"),
-			recipe = WiresRecipe(listOf("C C", "CBC", "C C"), listOf("C" to Items.COPPER_INGOT, "B" to Items.BARREL), Items.BARREL, Unlock.MATERIAL)),
+			recipe = WiresRecipe(listOf("C C", "CBC", "C C"), listOf("C" to Items.COPPER_INGOT, "B" to Items.BARREL), Items.BARREL, Criterion.MATERIAL)),
 		WiresItem(item("liquid_pump", "Liquid Pump", "minecraft:dispenser", "minecraft:dispenser"),
-			recipe = WiresRecipe(listOf("IRI", "PDP", "IBI"), listOf("I" to Items.IRON_INGOT, "R" to Items.REDSTONE, "P" to Items.COPPER_INGOT, "D" to Items.DISPENSER, "B" to Items.BUCKET), Items.DISPENSER, Unlock.MATERIAL)),
+			recipe = WiresRecipe(listOf("IRI", "PDP", "IBI"), listOf("I" to Items.IRON_INGOT, "R" to Items.REDSTONE, "P" to Items.COPPER_INGOT, "D" to Items.DISPENSER, "B" to Items.BUCKET), Items.DISPENSER, Criterion.MATERIAL)),
 		WiresItem(item("liquid_valve", "Liquid Valve", "minecraft:waxed_cut_copper", "minecraft:waxed_cut_copper"),
-			recipe = WiresRecipe(listOf(" C ", "RLR", " C "), listOf("C" to Items.COPPER_INGOT, "R" to Items.REDSTONE, "L" to Items.LEVER), Items.LEVER, Unlock.MATERIAL)),
+			recipe = WiresRecipe(listOf(" C ", "RLR", " C "), listOf("C" to Items.COPPER_INGOT, "R" to Items.REDSTONE, "L" to Items.LEVER), Items.LEVER, Criterion.MATERIAL)),
 		WiresItem(item("liquid_drain", "Liquid Drain", "minecraft:dropper", "minecraft:dropper"),
-			recipe = WiresRecipe(listOf("ICI", "RDR", "IBI"), listOf("I" to Items.IRON_INGOT, "C" to Items.COPPER_INGOT, "R" to Items.REDSTONE, "D" to Items.DROPPER, "B" to Items.BUCKET), Items.DROPPER, Unlock.MATERIAL)),
+			recipe = WiresRecipe(listOf("ICI", "RDR", "IBI"), listOf("I" to Items.IRON_INGOT, "C" to Items.COPPER_INGOT, "R" to Items.REDSTONE, "D" to Items.DROPPER, "B" to Items.BUCKET), Items.DROPPER, Criterion.MATERIAL)),
 		WiresItem(item("gas_tank", "Gas Tank", "minecraft:iron_block", "minecraft:iron_block"),
-			recipe = WiresRecipe(listOf("I I", "IBI", "I I"), listOf("I" to Items.IRON_INGOT, "B" to Items.BARREL), Items.BARREL, Unlock.MATERIAL)),
+			recipe = WiresRecipe(listOf("I I", "IBI", "I I"), listOf("I" to Items.IRON_INGOT, "B" to Items.BARREL), Items.BARREL, Criterion.MATERIAL)),
 		WiresItem(item("gas_pump", "Gas Pump", "minecraft:smoker", "minecraft:smoker"),
-			recipe = WiresRecipe(listOf("IRI", "PSP", "IBI"), listOf("I" to Items.IRON_INGOT, "R" to Items.REDSTONE, "P" to Items.COPPER_INGOT, "S" to Items.SMOKER, "B" to Items.GLASS_BOTTLE), Items.SMOKER, Unlock.MATERIAL)),
+			recipe = WiresRecipe(listOf("IRI", "PSP", "IBI"), listOf("I" to Items.IRON_INGOT, "R" to Items.REDSTONE, "P" to Items.COPPER_INGOT, "S" to Items.SMOKER, "B" to Items.GLASS_BOTTLE), Items.SMOKER, Criterion.MATERIAL)),
 		WiresItem(item("gas_valve", "Gas Valve", "minecraft:smooth_basalt", "minecraft:smooth_basalt"),
-			recipe = WiresRecipe(listOf(" C ", "ILI", " C "), listOf("I" to Items.IRON_INGOT, "C" to Items.COBBLESTONE, "L" to Items.LEVER), Items.SMOOTH_BASALT, Unlock.MATERIAL)),
+			recipe = WiresRecipe(listOf(" C ", "ILI", " C "), listOf("I" to Items.IRON_INGOT, "C" to Items.COBBLESTONE, "L" to Items.LEVER), Items.SMOOTH_BASALT, Criterion.MATERIAL)),
 		WiresItem(item("electric_wire_copper", "Wire", "minecraft:orange_candle", "minecraft:conduit", "electric_wire"), marker = "electric_wire",
-			recipe = WiresRecipe(listOf("CCC"), listOf("C" to Items.COPPER_INGOT), Items.BLACK_DYE, Unlock.MATERIAL, count = 8)),
+			recipe = WiresRecipe(listOf("CCC"), listOf("C" to Items.COPPER_INGOT), Items.BLACK_DYE, Criterion.MATERIAL, count = 8)),
 		// Creative only -- no recipe, on purpose. The bundle and items/give_creative are the only ways to get one.
 		WiresItem(item("creative_eu", "Creative EU Source", "minecraft:beacon", "minecraft:beacon"), epic = true, lore = listOf(CREATIVE to "light_purple")),
 		WiresItem(item("creative_fluid", "Creative Fluid Source", "minecraft:beacon", "minecraft:beacon"), epic = true, lore = listOf(CREATIVE to "light_purple")),
 		WiresItem(item("electric_furnace", "Electric Furnace", "minecraft:blast_furnace", "minecraft:barrel"),
 			lore = listOf("Smelts with EU - no fuel" to "gray", "Top row in, rows 2-3 out" to "gray"),
-			recipe = WiresRecipe(listOf("III", "CFC", "IRI"), listOf("I" to Items.IRON_INGOT, "C" to Items.COPPER_INGOT, "F" to Items.BLAST_FURNACE, "R" to Items.REDSTONE_BLOCK), Items.BLAST_FURNACE, Unlock.NAMED, count = null)),
+			recipe = WiresRecipe(listOf("III", "CFC", "IRI"), listOf("I" to Items.IRON_INGOT, "C" to Items.COPPER_INGOT, "F" to Items.BLAST_FURNACE, "R" to Items.REDSTONE_BLOCK), Items.BLAST_FURNACE, Criterion.NAMED, count = null)),
 		WiresItem(item("electric_generator", "EU Generator", "minecraft:blast_furnace", "minecraft:barrel"),
-			recipe = WiresRecipe(listOf("IRI", "CBC", "RFR"), listOf("I" to Items.IRON_INGOT, "R" to Items.REDSTONE, "C" to Items.COPPER_INGOT, "B" to Items.BARREL, "F" to Items.FURNACE), Items.BARREL, Unlock.MATERIAL)),
+			recipe = WiresRecipe(listOf("IRI", "CBC", "RFR"), listOf("I" to Items.IRON_INGOT, "R" to Items.REDSTONE, "C" to Items.COPPER_INGOT, "B" to Items.BARREL, "F" to Items.FURNACE), Items.BARREL, Criterion.MATERIAL)),
 		WiresItem(item("electric_consumer", "EU Consumer", "minecraft:observer", "minecraft:observer"),
-			recipe = WiresRecipe(listOf("IRI", "COC", "RCR"), listOf("I" to Items.IRON_INGOT, "R" to Items.REDSTONE, "C" to Items.COPPER_INGOT, "O" to Items.OBSERVER), Items.OBSERVER, Unlock.MATERIAL)),
+			recipe = WiresRecipe(listOf("IRI", "COC", "RCR"), listOf("I" to Items.IRON_INGOT, "R" to Items.REDSTONE, "C" to Items.COPPER_INGOT, "O" to Items.OBSERVER), Items.OBSERVER, Criterion.MATERIAL)),
 		WiresItem(item("electric_switch", "EU Switch", "minecraft:redstone_lamp", "minecraft:waxed_cut_copper"),
-			recipe = WiresRecipe(listOf(" C ", "RLR", "CLC"), listOf("C" to Items.COPPER_INGOT, "R" to Items.REDSTONE, "L" to Items.LEVER), Items.REDSTONE_LAMP, Unlock.MATERIAL)),
+			recipe = WiresRecipe(listOf(" C ", "RLR", "CLC"), listOf("C" to Items.COPPER_INGOT, "R" to Items.REDSTONE, "L" to Items.LEVER), Items.REDSTONE_LAMP, Criterion.MATERIAL)),
 		WiresItem(item("battery", "Battery", "minecraft:waxed_copper_grate", "minecraft:waxed_copper_grate"),
 			lore = listOf("Stores 10000 EU for its grid" to "gray"),
-			recipe = WiresRecipe(listOf("CRC", "RBR", "CRC"), listOf("C" to Items.COPPER_INGOT, "R" to Items.REDSTONE_BLOCK, "B" to Items.WAXED_COPPER_GRATE), Items.COPPER_INGOT, Unlock.INGREDIENT)),
+			recipe = WiresRecipe(listOf("CRC", "RBR", "CRC"), listOf("C" to Items.COPPER_INGOT, "R" to Items.REDSTONE_BLOCK, "B" to Items.WAXED_COPPER_GRATE), Items.COPPER_INGOT, Criterion.INGREDIENT)),
 		WiresItem(item("electric_breaker", "EU Breaker", "minecraft:waxed_copper_bulb", "minecraft:waxed_copper_bulb"),
 			lore = listOf("Powered: moves EU from the grid behind" to "gray", "into the grid in front. Never merges them." to "gray"),
-			recipe = WiresRecipe(listOf(" R ", "CLC", " R "), listOf("C" to Items.COPPER_INGOT, "R" to Items.REDSTONE, "L" to Items.WAXED_COPPER_BULB), Items.COPPER_INGOT, Unlock.INGREDIENT)),
+			recipe = WiresRecipe(listOf(" R ", "CLC", " R "), listOf("C" to Items.COPPER_INGOT, "R" to Items.REDSTONE, "L" to Items.WAXED_COPPER_BULB), Items.COPPER_INGOT, Criterion.INGREDIENT)),
 		WiresItem(item("industrial_light", "Industrial Light", "minecraft:sea_lantern", "minecraft:sea_lantern"),
 			lore = listOf("Redstone + EU: a 10 block beam of light" to "gray"),
-			recipe = WiresRecipe(listOf("CGC", "GLG", "CRC"), listOf("C" to Items.COPPER_INGOT, "G" to Items.GLASS, "L" to Items.SEA_LANTERN, "R" to Items.REDSTONE), Items.GLOWSTONE_DUST, Unlock.INGREDIENT)),
+			recipe = WiresRecipe(listOf("CGC", "GLG", "CRC"), listOf("C" to Items.COPPER_INGOT, "G" to Items.GLASS, "L" to Items.SEA_LANTERN, "R" to Items.REDSTONE), Items.GLOWSTONE_DUST, Criterion.INGREDIENT)),
 		WiresItem(item("boiler", "Boiler", "minecraft:furnace", "minecraft:furnace"),
 			lore = listOf("Water in, steam out, over a heat source" to "gray"),
-			recipe = WiresRecipe(listOf("III", "IFI", "III"), listOf("I" to Items.IRON_INGOT, "F" to Items.FURNACE), Items.FURNACE, Unlock.INGREDIENT)),
+			recipe = WiresRecipe(listOf("III", "IFI", "III"), listOf("I" to Items.IRON_INGOT, "F" to Items.FURNACE), Items.FURNACE, Criterion.INGREDIENT)),
 		WiresItem(item("solar_panel", "Solar Panel", "minecraft:daylight_detector", "minecraft:daylight_detector"),
 			lore = listOf("Generates EU from sunlight" to "gray"),
-			recipe = WiresRecipe(listOf("GGG", "QQQ", "CRC"), listOf("G" to Items.GLASS, "Q" to Items.QUARTZ, "C" to Items.COPPER_INGOT, "R" to Items.REDSTONE), Items.DAYLIGHT_DETECTOR, Unlock.INGREDIENT)),
+			recipe = WiresRecipe(listOf("GGG", "QQQ", "CRC"), listOf("G" to Items.GLASS, "Q" to Items.QUARTZ, "C" to Items.COPPER_INGOT, "R" to Items.REDSTONE), Items.DAYLIGHT_DETECTOR, Criterion.INGREDIENT)),
 		WiresItem(item("liquid_filter", "Liquid Filter", "minecraft:waxed_exposed_cut_copper", "minecraft:waxed_exposed_cut_copper"),
 			lore = listOf("Passes only the medium it is set to" to "gray", "Set filter_medium with the Data Handler" to "dark_gray"),
-			recipe = WiresRecipe(listOf("CIC", "CHC", "CIC"), listOf("C" to Items.COPPER_INGOT, "I" to Items.IRON_INGOT, "H" to Items.HOPPER), Items.HOPPER, Unlock.MATERIAL, notify = false)),
+			recipe = WiresRecipe(listOf("CIC", "CHC", "CIC"), listOf("C" to Items.COPPER_INGOT, "I" to Items.IRON_INGOT, "H" to Items.HOPPER), Items.HOPPER, Criterion.MATERIAL, notify = false)),
 	)
 
 	/** Goggles readouts, in the order `ra:tools/goggles/draw_block` listed the module's markers. */
@@ -198,36 +191,25 @@ object WiresBlocks : PackPart {
 
 	private fun Ra.recipe(it: WiresItem, r: WiresRecipe) {
 		val b = it.block
-		val recipe = pack.recipesBuilder.craftingShaped(b.id, b.ns.id) {
-			category = RecipeCategory.REDSTONE
-			if (r.notify) showNotification = true
-			pattern(*r.pattern.toTypedArray())
-			for ((k, item) in r.keys) key(k, item)
-			result(Items.BAT_SPAWN_EGG, r.count) {
-				itemModel(b.model.substringAfter(':'), "minecraft")
-				// CustomComponent (raw NBT): Kore's typed item_name / custom_data / entity_data throw in JSON.
-				this["item_name"] = CustomComponent(NbtString(b.name))
-				if (it.lore.isNotEmpty()) this["lore"] = CustomComponent(loreNbt(it.lore))
-				this["custom_data"] = CustomComponent(nbt { this["ra"] = nbt { this[b.id] = true } })
-				this["entity_data"] = CustomComponent(b.entityDataNbt())
-			}
+		val result = RecipeResult(Items.BAT_SPAWN_EGG) {
+			itemModel(b.model.substringAfter(':'), "minecraft")
+			// CustomComponent (raw NBT): Kore's typed item_name / custom_data / entity_data throw in JSON.
+			// Not blockItemComponents(): the lore goes between the name and custom_data.
+			this["item_name"] = CustomComponent(NbtString(b.name))
+			if (it.lore.isNotEmpty()) this["lore"] = CustomComponent(loreNbt(it.lore))
+			this["custom_data"] = CustomComponent(nbt { this["ra"] = nbt { this[b.id] = true } })
+			this["entity_data"] = CustomComponent(b.entityDataNbt())
 		}
 		// Each unlock file named its ingredient criterion its own way; the names are kept, since a
 		// criterion name is how an advancement is granted or revoked by command.
-		val trigger = when (r.unlock) {
-			Unlock.INGREDIENT -> "has_ingredient"
-			Unlock.MATERIAL -> "has_material"
-			Unlock.NAMED -> "has_${r.unlockedBy.asId().substringAfter(':')}"
+		val unlock = when (r.criterion) {
+			Criterion.INGREDIENT -> Unlock(r.unlockedBy, "has_ingredient")
+			Criterion.MATERIAL -> Unlock(r.unlockedBy, "has_material")
+			Criterion.NAMED -> Unlock(r.unlockedBy)
 		}
-		pack.advancement("recipes/unlock_${b.id}") {
-			namespace = b.ns.id
-			parent = AdvancementArgument("recipes/root", "minecraft")
-			criteria {
-				recipeUnlocked("has_the_recipe", recipe)
-				inventoryChanged(trigger) { item { items = listOf(r.unlockedBy) } }
-			}
-			requirements(listOf("has_the_recipe", trigger))
-			rewards { recipes(recipe) }
+		pack.shapedRecipe(b.ns, b.id, result, unlock, count = r.count, notify = r.notify) {
+			pattern(*r.pattern.toTypedArray())
+			for ((k, item) in r.keys) key(k, item)
 		}
 	}
 }

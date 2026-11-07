@@ -10,6 +10,8 @@ import ra.core.PackPart
 import ra.core.Ra
 import ra.core.Storage
 import ra.core.define
+import ra.core.executeRun
+import ra.core.moduleLoaded
 import ra.core.raw
 import ra.core.ref
 import ra.modules.wires.blocks.Placement
@@ -18,7 +20,6 @@ import ra.modules.wires.blocks.creative_fluid.CreativeFluid
 import ra.modules.wires.blocks.electric_furnace.ElectricFurnaceSettings
 import ra.modules.wires.bridge.Bridge
 import ra.modules.wires.common.Common
-import ra.modules.wires.common.line
 import ra.modules.wires.electric.Electric
 import ra.modules.wires.fluid.Fluid
 import ra.modules.wires.media.Media
@@ -54,13 +55,13 @@ object WiresLifecycle : PackPart {
 
 			function(Placement.registerAll)
 
-			raw("""tellraw @a [{text:"[",color:"dark_gray"},{text:"RA",color:"gold",bold:true},{text:"] ",color:"dark_gray"},{text:"Wires module loaded!",color:"aqua"}]""")
+			moduleLoaded("Wires module loaded!", "aqua")
 		}
 
 		pack.define(WiresLifecycle.tick) {
 			// Tick merged fluid and electric systems in RA Wires
 
-			line("execute unless data storage ra:wires {initialized:1b} run function", WiresLifecycle.load)
+			executeRun("unless data storage ra:wires {initialized:1b}", WiresLifecycle.load)
 
 			// Keep marker anchors snapped to centered block coordinates.
 			raw("execute as @e[type=marker,tag=ra.wires.node] at @s align xyz positioned ~0.5 ~0.5 ~0.5 run tp @s ~ ~ ~")
@@ -69,7 +70,7 @@ object WiresLifecycle : PackPart {
 			// Bridges move contents between two networks and belong to neither, so they are
 			// ticked here rather than inside the fluid or electric pass -- the same block
 			// logic serves a Valve and a Breaker.
-			line("execute as @e[type=marker,tag=ra.wires.bridge] at @s run function", Bridge.tick)
+			executeRun("as @e[type=marker,tag=ra.wires.bridge] at @s", Bridge.tick)
 
 			function(Fluid.tick)
 			function(Electric.tick)

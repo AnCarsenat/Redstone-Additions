@@ -13,10 +13,10 @@ import ra.core.Ns
 import ra.core.PackPart
 import ra.core.Ra
 import ra.core.define
+import ra.core.executeRun
 import ra.core.raw
 import ra.core.ref
 import ra.modules.wires.blocks.electric_generator.ElectricGenerator
-import ra.modules.wires.common.line
 
 object Generator : PackPart {
 	val consumeSteam = ref(Ns.WIRES, "electric/consume_steam")
@@ -36,7 +36,7 @@ object Generator : PackPart {
 			raw("execute store result score #eu_steam ra.wires.tmp run data get storage ra:transport cur.amounts.steam")
 			raw("execute unless score #eu_steam ra.wires.tmp matches 20.. run return 0")
 
-			line("execute store result score #steam_used ra.wires.tmp run function", RaLib.Transport.Net.take, """{amount:20,medium:"steam"}""")
+			executeRun("store result score #steam_used ra.wires.tmp", RaLib.Transport.Net.take, """{amount:20,medium:"steam"}""")
 			raw("execute if score #steam_used ra.wires.tmp matches 1.. run scoreboard players set #eu_fuel ra.wires.tmp2 1")
 		}
 
@@ -63,7 +63,7 @@ object Generator : PackPart {
 			scoreboard.players.set(literal("#gen.burning"), "ra.wires.tmp", 0)
 
 			// Nothing alight: try to light something.
-			line("execute unless data entity @s data.data.burn run function", Fuel.scan)
+			executeRun("unless data entity @s data.data.burn", Fuel.scan)
 
 			raw("execute if data entity @s data.data.burn run scoreboard players set #gen.burning ra.wires.tmp 1")
 			raw("execute if score #gen.burning ra.wires.tmp matches 1 store result score #gen.left ra.wires.tmp run data get entity @s data.data.burn 1")
@@ -73,16 +73,16 @@ object Generator : PackPart {
 
 			// --- Steam, out of an adjacent gas network ---
 			scoreboard.players.set(literal("#eu_fuel"), "ra.wires.tmp2", 0)
-			line("execute if score #gen.burning ra.wires.tmp matches 0 positioned ~1 ~ ~ as @e[type=marker,tag=ra.wires.fluid_node,distance=..0.75,limit=1] run function", Generator.consumeSteam)
-			line("execute if score #gen.burning ra.wires.tmp matches 0 positioned ~-1 ~ ~ as @e[type=marker,tag=ra.wires.fluid_node,distance=..0.75,limit=1] run function", Generator.consumeSteam)
-			line("execute if score #gen.burning ra.wires.tmp matches 0 positioned ~ ~ ~1 as @e[type=marker,tag=ra.wires.fluid_node,distance=..0.75,limit=1] run function", Generator.consumeSteam)
-			line("execute if score #gen.burning ra.wires.tmp matches 0 positioned ~ ~ ~-1 as @e[type=marker,tag=ra.wires.fluid_node,distance=..0.75,limit=1] run function", Generator.consumeSteam)
-			line("execute if score #gen.burning ra.wires.tmp matches 0 positioned ~ ~1 ~ as @e[type=marker,tag=ra.wires.fluid_node,distance=..0.75,limit=1] run function", Generator.consumeSteam)
-			line("execute if score #gen.burning ra.wires.tmp matches 0 positioned ~ ~-1 ~ as @e[type=marker,tag=ra.wires.fluid_node,distance=..0.75,limit=1] run function", Generator.consumeSteam)
+			executeRun("if score #gen.burning ra.wires.tmp matches 0 positioned ~1 ~ ~ as @e[type=marker,tag=ra.wires.fluid_node,distance=..0.75,limit=1]", Generator.consumeSteam)
+			executeRun("if score #gen.burning ra.wires.tmp matches 0 positioned ~-1 ~ ~ as @e[type=marker,tag=ra.wires.fluid_node,distance=..0.75,limit=1]", Generator.consumeSteam)
+			executeRun("if score #gen.burning ra.wires.tmp matches 0 positioned ~ ~ ~1 as @e[type=marker,tag=ra.wires.fluid_node,distance=..0.75,limit=1]", Generator.consumeSteam)
+			executeRun("if score #gen.burning ra.wires.tmp matches 0 positioned ~ ~ ~-1 as @e[type=marker,tag=ra.wires.fluid_node,distance=..0.75,limit=1]", Generator.consumeSteam)
+			executeRun("if score #gen.burning ra.wires.tmp matches 0 positioned ~ ~1 ~ as @e[type=marker,tag=ra.wires.fluid_node,distance=..0.75,limit=1]", Generator.consumeSteam)
+			executeRun("if score #gen.burning ra.wires.tmp matches 0 positioned ~ ~-1 ~ as @e[type=marker,tag=ra.wires.fluid_node,distance=..0.75,limit=1]", Generator.consumeSteam)
 			raw("execute if score #eu_fuel ra.wires.tmp2 matches 1.. run scoreboard players set #gen.burning ra.wires.tmp 1")
 			raw("execute if score #eu_fuel ra.wires.tmp2 matches 1.. run data modify entity @s data.status.fuel set value \"Steam\"")
 
-			line("execute if score #gen.burning ra.wires.tmp matches 0 run function", ElectricGenerator.idle)
+			executeRun("if score #gen.burning ra.wires.tmp matches 0", ElectricGenerator.idle)
 			raw("execute if score #gen.burning ra.wires.tmp matches 0 run data modify entity @s data.status.fuel set value \"No fuel\"")
 			raw("execute if score #gen.burning ra.wires.tmp matches 0 run data modify entity @s data.status.active set value 0b")
 			raw("execute if score #gen.burning ra.wires.tmp matches 0 run return 0")
@@ -90,7 +90,7 @@ object Generator : PackPart {
 			// Offer this tick's output to the grid. The network decides how much it can hold
 			// and hands back the rest as a refusal — there is no buffer here to overflow.
 			raw("execute store result storage ra:wires eu.amount int 1 run scoreboard players get #gen.rate ra.wires.tmp")
-			line("execute store result score #eu_made ra.wires.tmp run function", EuApi.offerEu, "with storage ra:wires eu")
+			executeRun("store result score #eu_made ra.wires.tmp", EuApi.offerEu, "with storage ra:wires eu")
 
 			function(ElectricGenerator.running)
 

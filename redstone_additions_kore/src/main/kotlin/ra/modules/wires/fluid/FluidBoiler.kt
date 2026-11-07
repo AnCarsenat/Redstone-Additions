@@ -9,12 +9,15 @@ import io.github.ayfri.kore.commands.scoreboard.scoreboard
 import io.github.ayfri.kore.commands.tag
 import ra.api.RaLib
 import ra.core.Ns
+import ra.core.Obj
 import ra.core.PackPart
 import ra.core.Ra
+import ra.core.block.particleViewersSel
+import ra.core.block.soundListenersSel
 import ra.core.define
+import ra.core.executeRun
 import ra.core.raw
 import ra.core.ref
-import ra.modules.wires.common.line
 
 object FluidBoiler : PackPart {
 	val boilerCleanup = ref(Ns.WIRES, "fluid/boiler_cleanup")
@@ -82,9 +85,9 @@ object FluidBoiler : PackPart {
 			// This is the point of the whole fluid system — water in one side, steam out the
 			// other, and an EU Generator next to the steam side turning it into power.
 
-			scoreboard.players.add(self(), "ra.cooldown", 1)
-			raw("execute unless score @s ra.cooldown matches 20.. run return 0")
-			scoreboard.players.set(self(), "ra.cooldown", 0)
+			scoreboard.players.add(self(), Obj.COOLDOWN, 1)
+			raw("execute unless score @s ${Obj.COOLDOWN} matches 20.. run return 0")
+			scoreboard.players.set(self(), Obj.COOLDOWN, 0)
 
 			raw("data modify entity @s data.status.boiler_state set value \"no_heat\"")
 			raw("execute unless block ~ ~-1 ~ #ra_wires:heat_sources run return 0")
@@ -93,34 +96,34 @@ object FluidBoiler : PackPart {
 			scoreboard.players.set(literal("#boil_dst"), "ra.wires.tmp", 0)
 
 			// Water side.
-			line("execute positioned ~1 ~ ~ as @e[type=marker,tag=ra.wires.fluid_node,distance=..0.75,limit=1] run function", FluidBoiler.boilerScanSrc)
-			line("execute positioned ~-1 ~ ~ as @e[type=marker,tag=ra.wires.fluid_node,distance=..0.75,limit=1] run function", FluidBoiler.boilerScanSrc)
-			line("execute positioned ~ ~ ~1 as @e[type=marker,tag=ra.wires.fluid_node,distance=..0.75,limit=1] run function", FluidBoiler.boilerScanSrc)
-			line("execute positioned ~ ~ ~-1 as @e[type=marker,tag=ra.wires.fluid_node,distance=..0.75,limit=1] run function", FluidBoiler.boilerScanSrc)
-			line("execute positioned ~ ~1 ~ as @e[type=marker,tag=ra.wires.fluid_node,distance=..0.75,limit=1] run function", FluidBoiler.boilerScanSrc)
+			executeRun("positioned ~1 ~ ~ as @e[type=marker,tag=ra.wires.fluid_node,distance=..0.75,limit=1]", FluidBoiler.boilerScanSrc)
+			executeRun("positioned ~-1 ~ ~ as @e[type=marker,tag=ra.wires.fluid_node,distance=..0.75,limit=1]", FluidBoiler.boilerScanSrc)
+			executeRun("positioned ~ ~ ~1 as @e[type=marker,tag=ra.wires.fluid_node,distance=..0.75,limit=1]", FluidBoiler.boilerScanSrc)
+			executeRun("positioned ~ ~ ~-1 as @e[type=marker,tag=ra.wires.fluid_node,distance=..0.75,limit=1]", FluidBoiler.boilerScanSrc)
+			executeRun("positioned ~ ~1 ~ as @e[type=marker,tag=ra.wires.fluid_node,distance=..0.75,limit=1]", FluidBoiler.boilerScanSrc)
 
 			raw("data modify entity @s data.status.boiler_state set value \"no_water\"")
 			raw("execute if score #boil_src ra.wires.tmp matches 0 run return 0")
 
 			// Steam side. Never the same network the water came from.
-			line("execute positioned ~1 ~ ~ as @e[type=marker,tag=ra.wires.fluid_node,distance=..0.75,limit=1] run function", FluidBoiler.boilerScanDst)
-			line("execute positioned ~-1 ~ ~ as @e[type=marker,tag=ra.wires.fluid_node,distance=..0.75,limit=1] run function", FluidBoiler.boilerScanDst)
-			line("execute positioned ~ ~ ~1 as @e[type=marker,tag=ra.wires.fluid_node,distance=..0.75,limit=1] run function", FluidBoiler.boilerScanDst)
-			line("execute positioned ~ ~ ~-1 as @e[type=marker,tag=ra.wires.fluid_node,distance=..0.75,limit=1] run function", FluidBoiler.boilerScanDst)
-			line("execute positioned ~ ~1 ~ as @e[type=marker,tag=ra.wires.fluid_node,distance=..0.75,limit=1] run function", FluidBoiler.boilerScanDst)
+			executeRun("positioned ~1 ~ ~ as @e[type=marker,tag=ra.wires.fluid_node,distance=..0.75,limit=1]", FluidBoiler.boilerScanDst)
+			executeRun("positioned ~-1 ~ ~ as @e[type=marker,tag=ra.wires.fluid_node,distance=..0.75,limit=1]", FluidBoiler.boilerScanDst)
+			executeRun("positioned ~ ~ ~1 as @e[type=marker,tag=ra.wires.fluid_node,distance=..0.75,limit=1]", FluidBoiler.boilerScanDst)
+			executeRun("positioned ~ ~ ~-1 as @e[type=marker,tag=ra.wires.fluid_node,distance=..0.75,limit=1]", FluidBoiler.boilerScanDst)
+			executeRun("positioned ~ ~1 ~ as @e[type=marker,tag=ra.wires.fluid_node,distance=..0.75,limit=1]", FluidBoiler.boilerScanDst)
 
 			raw("data modify entity @s data.status.boiler_state set value \"no_outlet\"")
-			line("execute if score #boil_dst ra.wires.tmp matches 0 run function", FluidBoiler.boilerCleanup)
+			executeRun("if score #boil_dst ra.wires.tmp matches 0", FluidBoiler.boilerCleanup)
 			raw("execute if score #boil_dst ra.wires.tmp matches 0 run return 0")
 
 			// Both sides confirmed, so neither half of this can fail and strand the water.
-			line("execute as @e[type=marker,tag=ra.wires.boil_src,limit=1] run function", RaLib.Transport.Net.take, """{amount:1000,medium:"water"}""")
-			line("execute as @e[type=marker,tag=ra.wires.boil_dst,limit=1] run function", RaLib.Transport.Net.offer, """{amount:1000,medium:"steam"}""")
+			executeRun("as @e[type=marker,tag=ra.wires.boil_src,limit=1]", RaLib.Transport.Net.take, """{amount:1000,medium:"water"}""")
+			executeRun("as @e[type=marker,tag=ra.wires.boil_dst,limit=1]", RaLib.Transport.Net.offer, """{amount:1000,medium:"steam"}""")
 
 			function(FluidBoiler.boilerCleanup)
 
-			raw("particle minecraft:cloud ~ ~1 ~ 0.3 0.2 0.3 0.02 12 normal @a[scores={ra.u.par=1..}]")
-			raw("playsound minecraft:block.fire.extinguish block @a[distance=..12,scores={ra.u.snd=1..}] ~ ~ ~ 0.3 1.6")
+			raw("particle minecraft:cloud ~ ~1 ~ 0.3 0.2 0.3 0.02 12 normal ${particleViewersSel()}")
+			raw("playsound minecraft:block.fire.extinguish block ${soundListenersSel(12)} ~ ~ ~ 0.3 1.6")
 			raw("data modify entity @s data.status.boiler_state set value \"boiling\"")
 		}
 	}

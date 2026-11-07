@@ -11,9 +11,9 @@ import ra.core.Ra
 import ra.core.block.dataLine
 import ra.core.block.gogglesHeader
 import ra.core.define
+import ra.core.executeRun
 import ra.core.raw
 import ra.core.ref
-import ra.modules.wires.common.line
 import ra.modules.wires.electric.EuApi
 
 object SolarPanel : PackPart {
@@ -95,7 +95,7 @@ object SolarPanel : PackPart {
 			// refuses whatever will not fit, so there is no free-space arithmetic here and no
 			// capacity of ours to overflow.
 			raw("execute store result storage ra:wires eu.amount int 1 run scoreboard players get #solar_gen ra.wires.tmp")
-			line("execute store result score #solar_made ra.wires.tmp run function", EuApi.offerEu, "with storage ra:wires eu")
+			executeRun("store result score #solar_made ra.wires.tmp", EuApi.offerEu, "with storage ra:wires eu")
 
 			raw("execute if score #solar_made ra.wires.tmp matches 1.. run data modify entity @s data.status.active set value 1b")
 			raw("execute if score #solar_made ra.wires.tmp matches ..0 run data modify entity @s data.status.active set value 0b")

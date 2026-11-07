@@ -8,6 +8,7 @@ import ra.core.Ns
 import ra.core.PackPart
 import ra.core.Ra
 import ra.core.Storage
+import ra.core.block.soundListenersSel
 import ra.core.define
 import ra.core.raw
 import ra.core.ref
@@ -106,7 +107,7 @@ object Fuel : PackPart {
 			raw("\$data modify entity @s data.data.burn set value \$(ticks)")
 			raw("\$data modify entity @s data.status.fuel set value \"\$(name)\"")
 
-			raw("playsound minecraft:block.furnace.fire_crackle block @a[distance=..12,scores={ra.u.snd=1..}] ~ ~ ~ 0.4 1.2")
+			raw("playsound minecraft:block.furnace.fire_crackle block ${soundListenersSel(12)} ~ ~ ~ 0.4 1.2")
 		}
 	}
 }

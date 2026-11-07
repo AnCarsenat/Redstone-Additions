@@ -11,12 +11,13 @@ import ra.core.Ns
 import ra.core.PackPart
 import ra.core.Ra
 import ra.core.block.gogglesHeader
+import ra.core.block.particleViewersSel
 import ra.core.block.stackReset
 import ra.core.block.stackedStatusLine
 import ra.core.define
+import ra.core.executeRun
 import ra.core.raw
 import ra.core.ref
-import ra.modules.wires.common.line
 import ra.modules.wires.electric.EuApi
 
 object CreativeEu : PackPart {
@@ -64,12 +65,12 @@ object CreativeEu : PackPart {
 			raw("execute if score #cr.fill ra.wires.tmp matches ..0 run return run data modify entity @s data.status.state set value \"Grid full\"")
 
 			raw("execute store result storage ra:wires eu.amount int 1 run scoreboard players get #cr.fill ra.wires.tmp")
-			line("execute store result score #cr.made ra.wires.tmp run function", EuApi.offerEu, "with storage ra:wires eu")
+			executeRun("store result score #cr.made ra.wires.tmp", EuApi.offerEu, "with storage ra:wires eu")
 
 			raw("data modify entity @s data.status.state set value \"Generating\"")
 			raw("execute store result entity @s data.status.filled int 1 run scoreboard players get #cr.made ra.wires.tmp")
 
-			raw("particle minecraft:end_rod ~ ~0.8 ~ 0.25 0.15 0.25 0.01 3 normal @a[scores={ra.u.par=1..}]")
+			raw("particle minecraft:end_rod ~ ~0.8 ~ 0.25 0.15 0.25 0.01 3 normal ${particleViewersSel()}")
 		}
 	}
 }

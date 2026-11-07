@@ -14,10 +14,12 @@ import ra.core.Ns
 import ra.core.PackPart
 import ra.core.Ra
 import ra.core.Storage
+import ra.core.block.soundListenersSel
 import ra.core.define
+import ra.core.executeReturnRun
+import ra.core.executeRun
 import ra.core.raw
 import ra.core.ref
-import ra.modules.wires.common.line
 
 object DrainExperience : PackPart {
 	val drainExp = ref(Ns.WIRES, "fluid/drain_exp")
@@ -49,14 +51,14 @@ object DrainExperience : PackPart {
 			raw("execute unless entity @a[tag=ra.wires.xp_giver,limit=1] run return 0")
 
 			raw("execute store result score #dr.pts ra.wires.tmp run xp query @a[tag=ra.wires.xp_giver,limit=1] points")
-			line("execute if score #dr.pts ra.wires.tmp matches ..0 run return run function", DrainExperience.drainExpClear)
+			executeReturnRun("if score #dr.pts ra.wires.tmp matches ..0", DrainExperience.drainExpClear)
 
 			// A network holding something else will not take experience.
 			function(RaLib.Transport.Net.read)
 			// Is there EXPERIENCE here, whatever else shares the run.
 			raw("execute store result score #dx.have ra.wires.tmp run data get storage ra:transport cur.amounts.experience")
 			raw("execute if score #net_amount ra.tr.tmp matches 1.. if score #dx.have ra.wires.tmp matches ..0 run data modify entity @s data.status.drain_state set value \"wrong_medium\"")
-			line("execute if score #net_amount ra.tr.tmp matches 1.. if score #dx.have ra.wires.tmp matches ..0 run return run function", DrainExperience.drainExpClear)
+			executeReturnRun("if score #net_amount ra.tr.tmp matches 1.. if score #dx.have ra.wires.tmp matches ..0", DrainExperience.drainExpClear)
 
 			// Ten points a cycle, or as much of that as the player has and the grid will hold.
 			scoreboard.players.set(literal("#dr.mul"), "ra.wires.tmp", 100)
@@ -69,7 +71,7 @@ object DrainExperience : PackPart {
 			raw("execute if score #dr.free ra.wires.tmp < #dr.pts ra.wires.tmp run scoreboard players operation #dr.pts ra.wires.tmp = #dr.free ra.wires.tmp")
 
 			raw("execute if score #dr.pts ra.wires.tmp matches ..0 run data modify entity @s data.status.drain_state set value \"network_full\"")
-			line("execute if score #dr.pts ra.wires.tmp matches ..0 run return run function", DrainExperience.drainExpClear)
+			executeReturnRun("if score #dr.pts ra.wires.tmp matches ..0", DrainExperience.drainExpClear)
 
 			// Charge the grid for exactly the points about to be taken, so neither side can
 			// end up owing the other a fraction of a point.
@@ -83,7 +85,7 @@ object DrainExperience : PackPart {
 
 			raw("data modify entity @s data.status.drain_state set value \"absorbing_xp\"")
 			function(Fluid.particles, nbt { this["medium"] = "experience" })
-			raw("playsound minecraft:entity.experience_orb.pickup block @a[distance=..8,scores={ra.u.snd=1..}] ~ ~ ~ 0.6 1.4")
+			raw("playsound minecraft:entity.experience_orb.pickup block ${soundListenersSel(8)} ~ ~ ~ 0.6 1.4")
 			function(DrainExperience.drainExpClear)
 		}
 
@@ -189,11 +191,11 @@ object DrainExperience : PackPart {
 			raw("\$data modify storage ra:wires place.block set from storage ra:wires media.\$(medium).block")
 
 			scoreboard.players.set(literal("#placed"), "ra.wires.tmp", 0)
-			line("execute positioned ~1 ~ ~ if block ~ ~ ~ #ra_lib:passable run function", DrainExperience.drainPlaceTry, "with storage ra:wires place")
-			line("execute positioned ~-1 ~ ~ if block ~ ~ ~ #ra_lib:passable run function", DrainExperience.drainPlaceTry, "with storage ra:wires place")
-			line("execute positioned ~ ~ ~1 if block ~ ~ ~ #ra_lib:passable run function", DrainExperience.drainPlaceTry, "with storage ra:wires place")
-			line("execute positioned ~ ~ ~-1 if block ~ ~ ~ #ra_lib:passable run function", DrainExperience.drainPlaceTry, "with storage ra:wires place")
-			line("execute positioned ~ ~-1 ~ if block ~ ~ ~ #ra_lib:passable run function", DrainExperience.drainPlaceTry, "with storage ra:wires place")
+			executeRun("positioned ~1 ~ ~ if block ~ ~ ~ #ra_lib:passable", DrainExperience.drainPlaceTry, "with storage ra:wires place")
+			executeRun("positioned ~-1 ~ ~ if block ~ ~ ~ #ra_lib:passable", DrainExperience.drainPlaceTry, "with storage ra:wires place")
+			executeRun("positioned ~ ~ ~1 if block ~ ~ ~ #ra_lib:passable", DrainExperience.drainPlaceTry, "with storage ra:wires place")
+			executeRun("positioned ~ ~ ~-1 if block ~ ~ ~ #ra_lib:passable", DrainExperience.drainPlaceTry, "with storage ra:wires place")
+			executeRun("positioned ~ ~-1 ~ if block ~ ~ ~ #ra_lib:passable", DrainExperience.drainPlaceTry, "with storage ra:wires place")
 
 			raw("execute if score #placed ra.wires.tmp matches 0 run data modify entity @s data.status.drain_state set value \"no_room\"")
 			raw("execute if score #placed ra.wires.tmp matches 0 run return 0")

@@ -8,9 +8,9 @@ import ra.core.Ns
 import ra.core.PackPart
 import ra.core.Ra
 import ra.core.define
+import ra.core.executeReturnRun
 import ra.core.raw
 import ra.core.ref
-import ra.modules.wires.common.line
 
 object Media : PackPart {
 	val init = ref(Ns.WIRES, "media/init")
@@ -97,7 +97,7 @@ object Media : PackPart {
 
 			// One medium keeps the plain name, which is what the Data Handler and every
 			// single-medium block expects to read back.
-			line("execute unless data storage ra:transport cur.media[1] run return run function", Media.labelRun, "with storage ra:transport cur")
+			executeReturnRun("unless data storage ra:transport cur.media[1]", Media.labelRun, "with storage ra:transport cur")
 
 			raw("data modify entity @s data.status.medium set value \"Multimedium\"")
 		}
@@ -133,6 +133,7 @@ object Media : PackPart {
 		}
 
 		pack.define(Media.stateIs) {
+			// kept: beet contract (nothing in the pack calls it).
 			// Returns 1 when the medium is registered with that state.
 			// Used to keep gas out of liquid tanks and the other way round.
 

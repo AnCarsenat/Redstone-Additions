@@ -15,6 +15,8 @@ import ra.core.PackPart
 import ra.core.Ra
 import ra.core.Storage
 import ra.core.define
+import ra.core.executeReturnRun
+import ra.core.executeRun
 import ra.core.raw
 import ra.core.ref
 import ra.modules.wires.common.line
@@ -109,7 +111,7 @@ object Bridge : PackPart {
 			// all water and one all lava, are not level from a water valve's point of view.
 			raw("data modify storage ra:wires amtq set value {}")
 			data(Storage.WIRES) { modify("amtq.medium", Storage.WIRES, "bridge.medium") }
-			line("execute store result score #br.dst_amount ra.wires.tmp run function", Bridge.readAmount, "with storage ra:wires amtq")
+			executeRun("store result score #br.dst_amount ra.wires.tmp", Bridge.readAmount, "with storage ra:wires amtq")
 
 			scoreboard.players.set(literal("#br.dst"), "ra.wires.tmp", 1)
 			scoreboard.players.operation(literal("#br.dst_net"), "ra.wires.tmp", Operation.SET, self(), "ra.tr.net")
@@ -136,7 +138,7 @@ object Bridge : PackPart {
 			// filter set to lava on a run holding 9000 water and 1000 lava has 1000 to move.
 			raw("data modify storage ra:wires amtq set value {}")
 			data(Storage.WIRES) { modify("amtq.medium", Storage.WIRES, "bridge.medium") }
-			line("execute store result score #br.src_amount ra.wires.tmp run function", Bridge.readAmount, "with storage ra:wires amtq")
+			executeRun("store result score #br.src_amount ra.wires.tmp", Bridge.readAmount, "with storage ra:wires amtq")
 
 			raw("execute if score #br.src_amount ra.wires.tmp matches ..0 run return 0")
 
@@ -160,12 +162,12 @@ object Bridge : PackPart {
 			scoreboard.players.set(literal("#br.found"), "ra.wires.tmp", 0)
 			data(Storage.WIRES) { remove("bridge") }
 
-			line("execute positioned ~1 ~ ~ as @e[type=marker,tag=ra.tr.node,distance=..0.75,limit=1] run function", Bridge.consider, "{dx:1,dy:0,dz:0}")
-			line("execute positioned ~-1 ~ ~ as @e[type=marker,tag=ra.tr.node,distance=..0.75,limit=1] run function", Bridge.consider, "{dx:-1,dy:0,dz:0}")
-			line("execute positioned ~ ~ ~1 as @e[type=marker,tag=ra.tr.node,distance=..0.75,limit=1] run function", Bridge.consider, "{dx:0,dy:0,dz:1}")
-			line("execute positioned ~ ~ ~-1 as @e[type=marker,tag=ra.tr.node,distance=..0.75,limit=1] run function", Bridge.consider, "{dx:0,dy:0,dz:-1}")
-			line("execute positioned ~ ~1 ~ as @e[type=marker,tag=ra.tr.node,distance=..0.75,limit=1] run function", Bridge.consider, "{dx:0,dy:1,dz:0}")
-			line("execute positioned ~ ~-1 ~ as @e[type=marker,tag=ra.tr.node,distance=..0.75,limit=1] run function", Bridge.consider, "{dx:0,dy:-1,dz:0}")
+			executeRun("positioned ~1 ~ ~ as @e[type=marker,tag=ra.tr.node,distance=..0.75,limit=1]", Bridge.consider, "{dx:1,dy:0,dz:0}")
+			executeRun("positioned ~-1 ~ ~ as @e[type=marker,tag=ra.tr.node,distance=..0.75,limit=1]", Bridge.consider, "{dx:-1,dy:0,dz:0}")
+			executeRun("positioned ~ ~ ~1 as @e[type=marker,tag=ra.tr.node,distance=..0.75,limit=1]", Bridge.consider, "{dx:0,dy:0,dz:1}")
+			executeRun("positioned ~ ~ ~-1 as @e[type=marker,tag=ra.tr.node,distance=..0.75,limit=1]", Bridge.consider, "{dx:0,dy:0,dz:-1}")
+			executeRun("positioned ~ ~1 ~ as @e[type=marker,tag=ra.tr.node,distance=..0.75,limit=1]", Bridge.consider, "{dx:0,dy:1,dz:0}")
+			executeRun("positioned ~ ~-1 ~ as @e[type=marker,tag=ra.tr.node,distance=..0.75,limit=1]", Bridge.consider, "{dx:0,dy:-1,dz:0}")
 
 			raw("execute if score #br.found ra.wires.tmp matches ..1 run return run data modify entity @s data.status.bridge_state set value \"needs_two_networks\"")
 
@@ -174,7 +176,7 @@ object Bridge : PackPart {
 			// There is nothing to move, and reporting throughput would be a lie.
 			raw("execute if score #br.hi_net ra.wires.tmp = #br.lo_net ra.wires.tmp run return run data modify entity @s data.status.bridge_state set value \"same_network\"")
 
-			line("execute if score #br.hi ra.wires.tmp = #br.lo ra.wires.tmp run return run function", Bridge.balanced)
+			executeReturnRun("if score #br.hi ra.wires.tmp = #br.lo ra.wires.tmp", Bridge.balanced)
 
 			raw("data modify storage ra:wires move set value {}")
 			data(Storage.WIRES) { modify("move.sx", Storage.WIRES, "bridge.src.dx") }

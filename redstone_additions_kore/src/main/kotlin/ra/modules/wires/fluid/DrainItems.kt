@@ -13,10 +13,11 @@ import ra.core.Ns
 import ra.core.PackPart
 import ra.core.Ra
 import ra.core.Storage
+import ra.core.block.soundListenersSel
 import ra.core.define
+import ra.core.executeRun
 import ra.core.raw
 import ra.core.ref
-import ra.modules.wires.common.line
 
 object DrainItems : PackPart {
 	val drainItemNext = ref(Ns.WIRES, "fluid/drain_item_next")
@@ -93,7 +94,7 @@ object DrainItems : PackPart {
 			scoreboard.players.set(literal("#dr.took"), "ra.wires.tmp", 1)
 			raw("data modify entity @s data.status.drain_state set value \"emptied_container\"")
 			raw("\$function ${Fluid.particles.asId()} {medium:\"\$(medium)\"}")
-			raw("playsound minecraft:item.bucket_empty block @a[distance=..8,scores={ra.u.snd=1..}] ~ ~ ~ 0.7 1.2")
+			raw("playsound minecraft:item.bucket_empty block ${soundListenersSel(8)} ~ ~ ~ 0.7 1.2")
 		}
 
 		pack.define(DrainItems.drainItems) {
@@ -127,14 +128,14 @@ object DrainItems : PackPart {
 
 			data(Storage.WIRES) { remove("iq") }
 			data(Storage.WIRES) { modify("iq.queue", Storage.WIRES, "item_sources") }
-			line("execute if entity @a[distance=..2.5,predicate=ra:is_sneaking,limit=1] run function", DrainItems.drainItemNext)
+			executeRun("if entity @a[distance=..2.5,predicate=ra:is_sneaking,limit=1]", DrainItems.drainItemNext)
 
-			line("execute if score #dr.took ra.wires.tmp matches 0 run function", Drain.drainAbove)
-			line("execute if score #dr.took ra.wires.tmp matches 0 run function", DrainItems.drainLoose)
+			executeRun("if score #dr.took ra.wires.tmp matches 0", Drain.drainAbove)
+			executeRun("if score #dr.took ra.wires.tmp matches 0", DrainItems.drainLoose)
 
 			// Nothing to empty, so fall through to the other thing a player standing on a
 			// vertical drain can give it: their own experience.
-			line("execute if score #dr.took ra.wires.tmp matches 0 run function", DrainExperience.drainExp)
+			executeRun("if score #dr.took ra.wires.tmp matches 0", DrainExperience.drainExp)
 
 			raw("execute if score #dr.took ra.wires.tmp matches 0 unless data entity @s data.status{drain_state:\"absorbing_xp\"} unless data entity @s data.status{drain_state:\"network_full\"} unless data entity @s data.status{drain_state:\"wrong_medium\"} run data modify entity @s data.status.drain_state set value \"nothing_to_empty\"")
 			data(Storage.WIRES) { remove("iq") }
@@ -208,7 +209,7 @@ object DrainItems : PackPart {
 			scoreboard.players.set(literal("#dr.took"), "ra.wires.tmp", 1)
 			raw("data modify entity @s data.status.drain_state set value \"emptied_container\"")
 			raw("\$function ${Fluid.particles.asId()} {medium:\"\$(medium)\"}")
-			raw("playsound minecraft:item.bucket_empty block @a[distance=..8,scores={ra.u.snd=1..}] ~ ~ ~ 0.7 1.2")
+			raw("playsound minecraft:item.bucket_empty block ${soundListenersSel(8)} ~ ~ ~ 0.7 1.2")
 		}
 	}
 }

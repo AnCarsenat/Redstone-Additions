@@ -9,9 +9,9 @@ import ra.core.PackPart
 import ra.core.Ra
 import ra.core.Storage
 import ra.core.define
+import ra.core.executeRun
 import ra.core.raw
 import ra.core.ref
-import ra.modules.wires.common.line
 
 object Source : PackPart {
 	val isInfinite = ref(Ns.WIRES, "fluid/source/is_infinite")
@@ -118,12 +118,12 @@ object Source : PackPart {
 
 			data(Storage.WIRES) { remove("found") }
 
-			line("execute positioned ~1 ~ ~ run function", Source.probe, "{dx:1,dy:0,dz:0}")
-			line("execute positioned ~-1 ~ ~ run function", Source.probe, "{dx:-1,dy:0,dz:0}")
-			line("execute positioned ~ ~ ~1 run function", Source.probe, "{dx:0,dy:0,dz:1}")
-			line("execute positioned ~ ~ ~-1 run function", Source.probe, "{dx:0,dy:0,dz:-1}")
-			line("execute positioned ~ ~-1 ~ run function", Source.probe, "{dx:0,dy:-1,dz:0}")
-			line("execute positioned ~ ~1 ~ run function", Source.probe, "{dx:0,dy:1,dz:0}")
+			executeRun("positioned ~1 ~ ~", Source.probe, "{dx:1,dy:0,dz:0}")
+			executeRun("positioned ~-1 ~ ~", Source.probe, "{dx:-1,dy:0,dz:0}")
+			executeRun("positioned ~ ~ ~1", Source.probe, "{dx:0,dy:0,dz:1}")
+			executeRun("positioned ~ ~ ~-1", Source.probe, "{dx:0,dy:0,dz:-1}")
+			executeRun("positioned ~ ~-1 ~", Source.probe, "{dx:0,dy:-1,dz:0}")
+			executeRun("positioned ~ ~1 ~", Source.probe, "{dx:0,dy:1,dz:0}")
 		}
 	}
 }

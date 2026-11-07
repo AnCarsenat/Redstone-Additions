@@ -11,6 +11,7 @@ import ra.core.Ns
 import ra.core.PackPart
 import ra.core.Ra
 import ra.core.block.gogglesHeader
+import ra.core.block.soundListenersSel
 import ra.core.block.stackReset
 import ra.core.block.stackedStatusLine
 import ra.core.define
@@ -47,7 +48,7 @@ object ElectricFurnaceSettings : PackPart {
 			raw("""execute if score #ef.m ra.wires.tmp matches 2 run tellraw @a[distance=..10] [{text:"[Wrench] ",color:"gold"},{text:"Furnace: ",color:"gray"},{text:"high - 20 ticks, 300 EU/item",color:"yellow"}]""")
 			raw("""execute if score #ef.m ra.wires.tmp matches 3 run tellraw @a[distance=..10] [{text:"[Wrench] ",color:"gold"},{text:"Furnace: ",color:"gray"},{text:"superpowered - 5 ticks, 1000 EU/item",color:"red"}]""")
 
-			raw("playsound minecraft:block.lever.click block @a[distance=..10,scores={ra.u.snd=1..}] ~ ~ ~ 0.6 1.4")
+			raw("playsound minecraft:block.lever.click block ${soundListenersSel(10)} ~ ~ ~ 0.6 1.4")
 		}
 
 		pack.define(ElectricFurnaceSettings.cycleOutput) {
@@ -74,7 +75,7 @@ object ElectricFurnaceSettings : PackPart {
 			// raycast and never touches the player, so anything addressed to a player-side
 			// tag would reach nobody -- which is exactly how this once cycled in silence.
 			raw("""tellraw @a[distance=..10] [{text:"[Wrench] ",color:"gold"},{text:"Furnace output: ",color:"gray"},{nbt:"data.properties.output",entity:"@s",color:"green"}]""")
-			raw("playsound minecraft:block.lever.click block @a[distance=..10,scores={ra.u.snd=1..}] ~ ~ ~ 0.6 1.4")
+			raw("playsound minecraft:block.lever.click block ${soundListenersSel(10)} ~ ~ ~ 0.6 1.4")
 		}
 
 		pack.define(ElectricFurnaceSettings.goggles) {

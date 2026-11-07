@@ -10,11 +10,12 @@ import ra.core.Ns
 import ra.core.PackPart
 import ra.core.Ra
 import ra.core.Storage
+import ra.core.block.particleViewersSel
 import ra.core.define
+import ra.core.executeRun
 import ra.core.raw
 import ra.core.ref
 import ra.modules.wires.common.Common
-import ra.modules.wires.common.line
 import ra.modules.wires.liquid.Liquid
 import ra.modules.wires.liquid.LiquidBreak
 import ra.modules.wires.media.Media
@@ -39,7 +40,7 @@ object Fluid : PackPart {
 			// Internal: the medium's own particle, so water splashes, lava sparks and powder
 			// snow puffs snowflakes rather than everything emitting the same grey smoke.
 
-			raw("\$particle \$(particle) ~ ~0.6 ~ 0.25 0.25 0.25 0.02 8 normal @a[scores={ra.u.par=1..}]")
+			raw("\$particle \$(particle) ~ ~0.6 ~ 0.25 0.25 0.25 0.02 8 normal ${particleViewersSel()}")
 		}
 
 		pack.define(Fluid.potionStore) {
@@ -91,7 +92,7 @@ object Fluid : PackPart {
 			// Periodic status refresh for every fluid node.
 
 			scoreboard.players.set(literal("#status_timer"), "ra.wires.tmp", 0)
-			line("execute as @e[type=marker,tag=ra.wires.fluid_node] run function", Fluid.refreshStatus)
+			executeRun("as @e[type=marker,tag=ra.wires.fluid_node]", Fluid.refreshStatus)
 		}
 
 		pack.define(Fluid.tick) {
@@ -113,21 +114,21 @@ object Fluid : PackPart {
 			// marker, or when a pipe's display entity has gone missing. They are never
 			// rebuilt on a tick where nothing changed.
 			raw("execute as @e[type=marker,tag=ra.custom_block.liquid_pipe] at @s if block ~ ~ ~ conduit[waterlogged=true] run setblock ~ ~ ~ conduit[waterlogged=false]")
-			line("execute as @e[type=marker,tag=ra.custom_block.liquid_pipe,tag=!ra.wires.pipe_present] at @s if block ~ ~ ~ conduit run function", Liquid.pipeAppeared)
-			line("execute as @e[type=marker,tag=ra.custom_block.liquid_pipe,tag=ra.wires.pipe_present] at @s unless block ~ ~ ~ conduit run function", Liquid.pipeVanished)
-			line("execute as @e[type=marker,tag=ra.custom_block.liquid_pipe] at @s if block ~ ~ ~ conduit unless entity @e[type=block_display,tag=ra.wires.pipe_display.center,distance=..0.6,limit=1] run function", Common.updateModelLocalAndNeighbors)
+			executeRun("as @e[type=marker,tag=ra.custom_block.liquid_pipe,tag=!ra.wires.pipe_present] at @s if block ~ ~ ~ conduit", Liquid.pipeAppeared)
+			executeRun("as @e[type=marker,tag=ra.custom_block.liquid_pipe,tag=ra.wires.pipe_present] at @s unless block ~ ~ ~ conduit", Liquid.pipeVanished)
+			executeRun("as @e[type=marker,tag=ra.custom_block.liquid_pipe] at @s if block ~ ~ ~ conduit unless entity @e[type=block_display,tag=ra.wires.pipe_display.center,distance=..0.6,limit=1]", Common.updateModelLocalAndNeighbors)
 
 			// --- Break detection ---
-			line("execute as @e[type=marker,tag=ra.custom_block.liquid_pipe] at @s unless block ~ ~ ~ conduit run function", LiquidBreak.pipe)
-			line("execute as @e[type=marker,tag=ra.custom_block.liquid_tank] at @s unless block ~ ~ ~ waxed_copper_block run function", LiquidBreak.tank)
-			line("execute as @e[type=marker,tag=ra.custom_block.liquid_pump] at @s unless block ~ ~ ~ dispenser run function", LiquidBreak.pump)
-			line("execute as @e[type=marker,tag=ra.custom_block.liquid_valve] at @s unless block ~ ~ ~ waxed_cut_copper run function", LiquidBreak.valve)
-			line("execute as @e[type=marker,tag=ra.custom_block.liquid_filter] at @s unless block ~ ~ ~ waxed_exposed_cut_copper run function", LiquidBreak.filter)
-			line("execute as @e[type=marker,tag=ra.custom_block.liquid_drain] at @s unless block ~ ~ ~ dropper run function", LiquidBreak.drain)
-			line("execute as @e[type=marker,tag=ra.custom_block.gas_tank] at @s unless block ~ ~ ~ iron_block run function", LiquidBreak.gasTank)
-			line("execute as @e[type=marker,tag=ra.custom_block.gas_pump] at @s unless block ~ ~ ~ smoker run function", LiquidBreak.gasPump)
-			line("execute as @e[type=marker,tag=ra.custom_block.gas_valve] at @s unless block ~ ~ ~ smooth_basalt run function", LiquidBreak.gasValve)
-			line("execute as @e[type=marker,tag=ra.custom_block.boiler] at @s unless block ~ ~ ~ furnace run function", LiquidBreak.boiler)
+			executeRun("as @e[type=marker,tag=ra.custom_block.liquid_pipe] at @s unless block ~ ~ ~ conduit", LiquidBreak.pipe)
+			executeRun("as @e[type=marker,tag=ra.custom_block.liquid_tank] at @s unless block ~ ~ ~ waxed_copper_block", LiquidBreak.tank)
+			executeRun("as @e[type=marker,tag=ra.custom_block.liquid_pump] at @s unless block ~ ~ ~ dispenser", LiquidBreak.pump)
+			executeRun("as @e[type=marker,tag=ra.custom_block.liquid_valve] at @s unless block ~ ~ ~ waxed_cut_copper", LiquidBreak.valve)
+			executeRun("as @e[type=marker,tag=ra.custom_block.liquid_filter] at @s unless block ~ ~ ~ waxed_exposed_cut_copper", LiquidBreak.filter)
+			executeRun("as @e[type=marker,tag=ra.custom_block.liquid_drain] at @s unless block ~ ~ ~ dropper", LiquidBreak.drain)
+			executeRun("as @e[type=marker,tag=ra.custom_block.gas_tank] at @s unless block ~ ~ ~ iron_block", LiquidBreak.gasTank)
+			executeRun("as @e[type=marker,tag=ra.custom_block.gas_pump] at @s unless block ~ ~ ~ smoker", LiquidBreak.gasPump)
+			executeRun("as @e[type=marker,tag=ra.custom_block.gas_valve] at @s unless block ~ ~ ~ smooth_basalt", LiquidBreak.gasValve)
+			executeRun("as @e[type=marker,tag=ra.custom_block.boiler] at @s unless block ~ ~ ~ furnace", LiquidBreak.boiler)
 
 			// Valves are bridges now: they belong to no network and pump between the two they
 			// sit between. Two things have to be true of a valve built by an older version.
@@ -135,9 +136,9 @@ object Fluid : PackPart {
 			// It must stop being a member -- a valve that stayed in a network would merge the
 			// very runs it is supposed to keep apart, and the bridge would then find the same
 			// network on both sides and refuse to move anything.
-			line("execute as @e[type=marker,tag=ra.custom_block.liquid_valve,tag=ra.tr.node] run function", RaLib.Transport.Net.leave)
-			line("execute as @e[type=marker,tag=ra.custom_block.gas_valve,tag=ra.tr.node] run function", RaLib.Transport.Net.leave)
-			line("execute as @e[type=marker,tag=ra.custom_block.liquid_filter,tag=ra.tr.node] run function", RaLib.Transport.Net.leave)
+			executeRun("as @e[type=marker,tag=ra.custom_block.liquid_valve,tag=ra.tr.node]", RaLib.Transport.Net.leave)
+			executeRun("as @e[type=marker,tag=ra.custom_block.gas_valve,tag=ra.tr.node]", RaLib.Transport.Net.leave)
+			executeRun("as @e[type=marker,tag=ra.custom_block.liquid_filter,tag=ra.tr.node]", RaLib.Transport.Net.leave)
 
 			// And it must be tagged as a bridge so ra_wires:tick drives it at all. Idempotent,
 			// so this costs one tag write on a set that is almost always empty.
@@ -146,16 +147,16 @@ object Fluid : PackPart {
 			raw("tag @e[type=marker,tag=ra.custom_block.liquid_filter,tag=!ra.wires.bridge] add ra.wires.bridge")
 
 			// --- World <-> network ---
-			line("execute as @e[type=marker,tag=ra.custom_block.liquid_pump] at @s run function", Pump.pumpTick)
-			line("execute as @e[type=marker,tag=ra.custom_block.gas_pump] at @s run function", Pump.pumpTick)
-			line("execute as @e[type=marker,tag=ra.custom_block.liquid_drain] at @s run function", Drain.drainTick)
-			line("execute as @e[type=marker,tag=ra.custom_block.boiler] at @s run function", FluidBoiler.boilerTick)
+			executeRun("as @e[type=marker,tag=ra.custom_block.liquid_pump] at @s", Pump.pumpTick)
+			executeRun("as @e[type=marker,tag=ra.custom_block.gas_pump] at @s", Pump.pumpTick)
+			executeRun("as @e[type=marker,tag=ra.custom_block.liquid_drain] at @s", Drain.drainTick)
+			executeRun("as @e[type=marker,tag=ra.custom_block.boiler] at @s", FluidBoiler.boilerTick)
 
 			// --- Status for the goggles, refreshed every 20 ticks ---
 			// The goggles only re-read billboards every 40 ticks, so writing these values on
 			// every node on every tick was pure waste.
 			scoreboard.players.add(literal("#status_timer"), "ra.wires.tmp", 1)
-			line("execute if score #status_timer ra.wires.tmp matches 20.. run function", Fluid.refreshStatusAll)
+			executeRun("if score #status_timer ra.wires.tmp matches 20..", Fluid.refreshStatusAll)
 		}
 	}
 }

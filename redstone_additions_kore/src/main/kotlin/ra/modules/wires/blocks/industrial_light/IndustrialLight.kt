@@ -18,6 +18,8 @@ import ra.core.Storage
 import ra.core.block.dataLine
 import ra.core.block.gogglesHeader
 import ra.core.define
+import ra.core.executeReturnRun
+import ra.core.executeRun
 import ra.core.raw
 import ra.core.ref
 import ra.modules.wires.common.line
@@ -90,8 +92,8 @@ object IndustrialLight : PackPart {
 			raw("\$data modify entity @s data.status.beam set value \"\$(why)\"")
 			raw("data modify entity @s data.status.active set value 0b")
 
-			line("execute if entity @s[tag=ra.wires.light_lit] run function", IndustrialLight.cast, "{mode:0}")
-			line("execute if entity @s[tag=!ra.wires.light_lit] if score #il.sweep ra.wires.tmp2 matches 0 run function", IndustrialLight.cast, "{mode:0}")
+			executeRun("if entity @s[tag=ra.wires.light_lit]", IndustrialLight.cast, "{mode:0}")
+			executeRun("if entity @s[tag=!ra.wires.light_lit] if score #il.sweep ra.wires.tmp2 matches 0", IndustrialLight.cast, "{mode:0}")
 			tag(self()) { remove("ra.wires.light_lit") }
 		}
 
@@ -107,6 +109,7 @@ object IndustrialLight : PackPart {
 		}
 
 		pack.define(IndustrialLight.off) {
+			// kept: beet contract (nothing in the pack calls it).
 			// Put the beam out with no explanation. Context: as the marker, at its block.
 			//
 			// Used for the one case that is not a failure: the light is switched off in its
@@ -189,8 +192,8 @@ object IndustrialLight : PackPart {
 			// can pay -- taking 0 always returns 0, which is the refusal value.
 			scoreboard.players.set(literal("#il.got"), "ra.wires.tmp", 1)
 			raw("execute if score #il.use ra.wires.tmp matches 1.. store result storage ra:wires eu.amount int 1 run scoreboard players get #il.use ra.wires.tmp")
-			line("execute if score #il.use ra.wires.tmp matches 1.. store result score #il.got ra.wires.tmp run function", EuApi.takeEu, "with storage ra:wires eu")
-			line("execute if score #il.got ra.wires.tmp matches ..0 run return run function", IndustrialLight.dark, """{why:"No EU"}""")
+			executeRun("if score #il.use ra.wires.tmp matches 1.. store result score #il.got ra.wires.tmp", EuApi.takeEu, "with storage ra:wires eu")
+			executeReturnRun("if score #il.got ra.wires.tmp matches ..0", IndustrialLight.dark, """{why:"No EU"}""")
 
 			raw("data modify entity @s data.status.active set value 1b")
 			raw("data modify entity @s data.status.beam set value \"Lit\"")

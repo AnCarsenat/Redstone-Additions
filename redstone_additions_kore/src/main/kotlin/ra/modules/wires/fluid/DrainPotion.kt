@@ -10,10 +10,12 @@ import ra.core.Ns
 import ra.core.PackPart
 import ra.core.Ra
 import ra.core.Storage
+import ra.core.block.particleViewersSel
+import ra.core.block.soundListenersSel
 import ra.core.define
+import ra.core.executeRun
 import ra.core.raw
 import ra.core.ref
-import ra.modules.wires.common.line
 
 object DrainPotion : PackPart {
 	val drainPotion = ref(Ns.WIRES, "fluid/drain_potion")
@@ -49,7 +51,7 @@ object DrainPotion : PackPart {
 			function(RaLib.Transport.Net.read)
 			raw("execute unless data storage ra:transport cur.amounts.potion run return run data modify entity @s data.status.drain_state set value \"nothing_to_pour\"")
 
-			line("execute store result score #pt.got ra.wires.tmp run function", RaLib.Transport.Net.take, """{amount:1000,medium:"potion"}""")
+			executeRun("store result score #pt.got ra.wires.tmp", RaLib.Transport.Net.take, """{amount:1000,medium:"potion"}""")
 			raw("execute if score #pt.got ra.wires.tmp matches ..0 run return run data modify entity @s data.status.drain_state set value \"nothing_to_pour\"")
 
 			// Nobody to pour it over is not a failure, but the potion has already left the
@@ -62,8 +64,8 @@ object DrainPotion : PackPart {
 			raw("execute store result storage ra:wires apply.id int 1 run scoreboard players get @s ra.tr.net")
 			function(DrainPotion.drainPotionRead, Storage.WIRES, "apply")
 
-			raw("particle minecraft:effect ~ ~1 ~ 0.4 0.4 0.4 0.1 12 normal @a[distance=..16,scores={ra.u.par=1..}]")
-			raw("playsound minecraft:entity.generic.drink block @a[distance=..8,scores={ra.u.snd=1..}] ~ ~ ~ 0.7 1.1")
+			raw("particle minecraft:effect ~ ~1 ~ 0.4 0.4 0.4 0.1 12 normal ${particleViewersSel(16)}")
+			raw("playsound minecraft:entity.generic.drink block ${soundListenersSel(8)} ~ ~ ~ 0.7 1.1")
 		}
 
 		pack.define(DrainPotion.drainPotionGive) {
@@ -100,7 +102,7 @@ object DrainPotion : PackPart {
 			// so it is seeded rather than guarded.
 			raw("execute unless data storage ra:wires one.amp run data modify storage ra:wires one.amp set value 0")
 
-			line("execute if data storage ra:wires one.id run function", DrainPotion.drainPotionScale)
+			executeRun("if data storage ra:wires one.id", DrainPotion.drainPotionScale)
 
 			data(Storage.WIRES) { remove("eff.list[0]") }
 			function(DrainPotion.drainPotionNext)

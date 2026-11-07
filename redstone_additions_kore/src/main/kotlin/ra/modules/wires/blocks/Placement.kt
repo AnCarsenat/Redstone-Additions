@@ -11,12 +11,13 @@ import ra.core.PackPart
 import ra.core.Ra
 import ra.core.Storage
 import ra.core.define
+import ra.core.executeRun
 import ra.core.raw
 import ra.core.ref
+import ra.core.registeredLine
 import ra.modules.wires.blocks.electric_furnace.ElectricFurnace
 import ra.modules.wires.blocks.electric_generator.ElectricGenerator
 import ra.modules.wires.common.Common
-import ra.modules.wires.common.line
 
 object Placement : PackPart {
 	val handlePlacement = ref(Ns.WIRES, "blocks/handle_placement")
@@ -96,10 +97,10 @@ object Placement : PackPart {
 			// A bridge is deliberately not a node: ra_wires:bridge/tick reaches into the
 			// networks on either side of it instead of joining one.
 			raw("execute if data storage ra:wires spec.bridge run tag @s add ra.wires.bridge")
-			line("execute if data storage ra:wires spec.net run function", Placement.placeJoin, "with storage ra:wires spec")
+			executeRun("if data storage ra:wires spec.net", Placement.placeJoin, "with storage ra:wires spec")
 
-			line("""execute if data storage ra:wires spec{marker:"electric_generator"} run function""", ElectricGenerator.refreshDisplay)
-			line("""execute if data storage ra:wires spec{marker:"electric_furnace"} run function""", ElectricFurnace.refreshDisplay)
+			executeRun("""if data storage ra:wires spec{marker:"electric_generator"}""", ElectricGenerator.refreshDisplay)
+			executeRun("""if data storage ra:wires spec{marker:"electric_furnace"}""", ElectricFurnace.refreshDisplay)
 
 			function(Common.updateModelLocalAndNeighbors)
 		}
@@ -146,7 +147,7 @@ object Placement : PackPart {
 				"Battery",
 				"EU Breaker",
 				"Industrial Light",
-			)) raw("""tellraw @a[tag=ra.debug] [{text:"[RA] ",color:"gold"},{text:"$name registered",color:"gray"}]""")
+			)) registeredLine(name)
 		}
 	}
 }

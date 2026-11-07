@@ -45,7 +45,7 @@ identifier spelled two ways, or one rule applied in nine places but forgotten in
   | Helper | Package | Writes |
   | --- | --- | --- |
   | `executeRun(chain, fn, args)`, `executeReturnRun`, `executeStoreRun`, `callWith(fn, source)`, `returnRun`, `macroCall` | `ra.core` (`Exec.kt`) | `execute <chain> run function <fn>`, `function <fn> with <source>` |
-  | `line(text, fn, rest…)` | `ra.modules.wires.common` (`Line.kt`) | any command with typed function arguments |
+  | `line(text, fn, rest…)` | `ra.modules.wires.common` (`Line.kt`) | a command with a typed function call inside its chain (`execute unless function <fn> run ...`); a call at the end is `executeRun` |
 
   In a macro line, build the path from the reference: `"\$function ${ref.asId()} …"`.
 - The owner of a reference defines it at **exactly** that path. Another part may keep a private

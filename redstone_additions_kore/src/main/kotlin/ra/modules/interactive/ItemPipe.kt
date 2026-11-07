@@ -21,12 +21,12 @@ import ra.core.block.placeBlock
 import ra.core.block.stackReset
 import ra.core.define
 import ra.core.raw
-import ra.modules.infinite.breakCheck
-import ra.modules.infinite.finishLorePlacement
 import ra.core.item.loreItem
-import ra.modules.infinite.registerBlockMessage
 import ra.modules.interactive.ItemPipeTransfer.registerItemPipeTransfer
 import io.github.ayfri.kore.commands.tag
+import ra.core.block.breakCheck
+import ra.core.block.finishPlacement
+import ra.core.blockRegisterMessage
 
 /**
  * Item Pipe: a dispenser that pushes its first stack into the container in front, or into a side
@@ -44,7 +44,7 @@ object ItemPipe {
 
 	fun Ra.registerItemPipe() {
 		block(block)
-		pack.registerBlockMessage(block)
+		pack.blockRegisterMessage(block)
 		pack.specGive(block, item)
 		pack.shapedRecipe(
 			block.ns.id, block.id, item,
@@ -102,7 +102,7 @@ object ItemPipe {
 		// "no filter" value, which check_filter tests for.
 		raw("data modify entity $fresh data.properties.filter_item set value \"\"")
 
-		finishLorePlacement(block)
+		finishPlacement(block, removePlaceTag = false, withinBlock = false)
 	}
 
 	private fun Function.goggles() {

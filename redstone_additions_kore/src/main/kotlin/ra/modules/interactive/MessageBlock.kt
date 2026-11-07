@@ -24,9 +24,9 @@ import ra.core.block.placeBlock
 import ra.core.block.propLine
 import ra.core.define
 import ra.core.raw
-import ra.modules.infinite.breakCheck
 import ra.core.item.loreItem
-import ra.modules.infinite.registerBlockMessage
+import ra.core.block.breakCheck
+import ra.core.blockRegisterMessage
 
 /**
  * Message Block: a note block that sends its `message_block` text to `entity_selector` on the
@@ -46,7 +46,7 @@ object MessageBlock {
 
 	fun Ra.registerMessageBlock() {
 		block(block)
-		pack.registerBlockMessage(block)
+		pack.blockRegisterMessage(block)
 		pack.specGive(block, item)
 		pack.shapedRecipe(
 			block.ns.id, block.id, item,

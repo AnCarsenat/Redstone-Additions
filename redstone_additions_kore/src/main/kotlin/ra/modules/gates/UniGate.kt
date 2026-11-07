@@ -49,6 +49,8 @@ import io.github.ayfri.kore.arguments.numbers.ranges.rangeOrDoubleEnd
 import io.github.ayfri.kore.arguments.types.literals.allEntities
 import ra.core.define
 import ra.core.raw
+import ra.core.blockRegisterMessage
+import ra.core.block.outputShell
 
 /**
  * UNI Gate: one universal logic gate whose `gate_type` property picks the function (and, or,
@@ -69,7 +71,7 @@ object UniGate {
 		block(block)
 		pack.blockGive(block)
 		recipe()
-		pack.registerBlockMessage(block)
+		pack.blockRegisterMessage(block)
 		pack.define(block.handlePlacement) { handlePlacement() }
 		pack.define(onBreakDrop) { onBreakDrop() }
 		pack.define(process) { process() }
@@ -144,7 +146,7 @@ object UniGate {
 	private fun Function.onBreakDrop() {
 		killVanillaDrop(block.physical)
 		killDisplays(2.0)
-		shell(on = false)
+		outputShell(on = false)
 		summon(EntityTypes.ITEM, vec3(), nbt {
 			this["Item"] = block.itemStackNbt()
 			this["Tags"] = NbtList(listOf(NbtString(Tag.RA), NbtString(Tag.DROP_TEMP)))

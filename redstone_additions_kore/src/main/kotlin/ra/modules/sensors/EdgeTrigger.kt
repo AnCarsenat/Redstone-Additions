@@ -11,6 +11,7 @@ import ra.api.RaLib
 import ra.core.Tag
 import ra.core.block.CustomBlock
 import ra.core.block.markers
+import ra.core.block.markerSel
 
 /** The Tag Adder / Tag Remover rising-edge trigger: read power, act on the edge, remember the state. */
 
@@ -25,7 +26,7 @@ fun Function.detectAll(block: CustomBlock) = execute {
 }
 
 /** Markers of [block] powered this tick and not last tick, as selector text. */
-fun risingEdge(block: CustomBlock) = block.sel("tag=${Tag.POWERED}", "tag=!$WAS_POWERED")
+fun risingEdge(block: CustomBlock) = block.markerSel("tag=${Tag.POWERED}", "tag=!$WAS_POWERED")
 
 /** Track power state for edge detection. */
 fun Function.trackPower(block: CustomBlock) {

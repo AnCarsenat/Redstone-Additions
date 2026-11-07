@@ -62,13 +62,16 @@ All in `ra/core/block/`.
 | --- | --- | --- |
 | `pack.blockGive(block)` | `ns:blocks/<dir>/give`: `give @s <block.item>` | |
 | `pack.blockRecipe(block, unlockedBy, category = REDSTONE) { shape }` | `ns:<id>` (shaped, `show_notification: true`, result = the block's item) and `ns:recipes/unlock_<id>` | Returns the `RecipeArgument` |
-| `pack.recipeUnlock(name, namespace, recipe, unlockedBy)` | `ns:recipes/unlock_<name>` only | For recipes that are not a `CustomBlock` |
-| `placementGuard(block)` | `return 0` unless `@s` carries the place tag, or if a marker of this type is already within 0.5 | First lines of a handler |
+| `pack.shapedRecipe(ns, name, result, unlock, category, count, notify) { shape }` | `ns:<name>` and, when `unlock` is given, `ns:recipes/unlock_<name>` | `result`: `block.recipeResult()`, `spec.recipeResult(item)` or `RecipeResult(item) { components }`; `unlock`: `Unlock(item, criterion = "has_<item>") { match }`; `count`/`category` null and `notify = false` leave the key out |
+| `pack.recipeUnlock(name, ns, recipe, unlock)` | `ns:recipes/unlock_<name>` only | For recipes that are not shaped (an `ItemArgument` overload keeps `has_<item>`) |
+| `placementGuard(block, checkExisting = true)` | `return 0` unless `@s` carries the place tag, or (when `checkExisting`) if a marker of this type is already within 0.5 | First lines of a handler |
 | `placeBlock(block)` | `function ra_lib:placement/place {block_id:<physical>,block_tag:<id>,dir_type:<dirType>}` | Places the block and summons the marker tagged `ra.new` |
-| `finishPlacement(block)` | removes `ra.new` from the fresh marker, removes the place tag from the bat, `return 1` | Last lines of a handler |
-| `pack.blockOnBreak(block) { cleanup }` | `ns:blocks/<dir>/on_break`: `cleanup`, `killVanillaDrop(physical)`, `dropBlockItem(block)`, `kill @s` | Run as the marker at the block |
-| `pack.blockTick(block, onBreak) { body }` | `ns:blocks/<dir>/tick`: `execute as <markers> at @s if block ~ ~ ~ #air run function <onBreak>`, then `body` | |
-| `dropBlockItem(block)` | `summon item ~ ~ ~ {Item:<block item>,Tags:["ra","ra.drop_temp"]}` | |
+| `setOnNew(block, path, snbt)` | `data modify entity <fresh marker> <path> set value <snbt>` | |
+| `finishPlacement(block, removePlaceTag = true, withinBlock = true)` | `clearNewTag` (the fresh marker, or every marker of the type), removes the place tag from the bat, `return 1` | Last lines of a handler |
+| `pack.blockOnBreak(block, drop, sound, soundListenersOnly, cloud, afterVanillaKill) { cleanup }` | `ns:blocks/<dir>/on_break`: `cleanup`, `killVanillaDrop(physical)`, `afterVanillaKill`, `drop` (default `dropBlockItem(block)`), `breakSound`, `breakCloud`, `kill @s` | Run as the marker at the block |
+| `pack.blockTick(block, onBreak, test = BreakTest.Air) { body }` | `ns:blocks/<dir>/tick`: `breakCheck(block, test, onBreak)`, then `body` | `BreakTest.NotBlock(physical)`: broken when the block is anything but `physical` |
+| `breakCheck(block, test, onBreak, skipNew)`, `forEachMarker(block, fn)` | `execute as <markers> at @s if/unless block ~ ~ ~ … run function <onBreak>`; `execute as <markers> at @s run function <fn>` | `skipNew` adds `tag=!ra.new` |
+| `dropBlockItem(block, tagged = true)`, `dropItem(spec, tagged = false)` | `summon item ~ ~ ~ {Item:<item>[,Tags:["ra","ra.drop_temp"]]}` | |
 | `killVanillaDrop(itemId)` | kills the nearest item of that id within 2 blocks | |
 
 `unlockedBy` names the advancement criterion too: `has_<item path>` (`has_daylight_detector`),
@@ -155,12 +158,12 @@ the same work, the cleanup in one place, no `ra.broken` tag carried between line
 [expected](porting.md#differences-that-are-expected).
 
 Not every beet block broke the same way, and where the difference is observable the port keeps
-it with a module-local variant rather than bending the core helpers:
+it, through the options of the core helpers:
 
-| Variant | Where | Differs from `blockTick` / `blockOnBreak` in |
+| Variant | Where | Spelled |
 | --- | --- | --- |
-| `timingOnBreak(block, breakSound)` | `modules/gates/GateCommon.kt` (Delayer, Extender, Shortener, Randomizer) | drop summoned **without** `ra.drop_temp`, output shell switched off, break sound + cloud particles |
-| `breakCheck(block, physical, onBreak, skipNew)` + `loreBlockOnBreak(block, drop) { }` | `modules/infinite/BlockLifecycle.kt` (Infinite generators, Chunk Loader) | broken when the block is anything but `physical` (not only air), optional `tag=!ra.new` filter, drop is a full `ItemSpec` stack (lore, rarity, glint) |
+| timing gates | `timingOnBreak` / `timingTick` in `modules/gates/GateCommon.kt` (Delayer, Extender, Shortener, Randomizer) | `blockOnBreak(block, drop = { dropBlockItem(block, tagged = false) }, sound, cloud = true, afterVanillaKill = { outputShell(false) })`, `blockTick(block, onBreak, BreakTest.NotBlock(physical))` |
+| blocks with a full `ItemSpec` item (Infinite generators, Chunk Loader, sensors, wireless, ender) | each block's file | `breakCheck(block, physical, onBreak, skipNew)`, `blockOnBreak(block, drop = { dropItem(item) }, sound = STONE_BREAK_SOUND, cloud = …)` |
 | shared `ra_wires:blocks/handle_placement` | `modules/wires/blocks/Placement.kt` + `PlacementSpecs.kt` | one handler for every Wires block, driven by a per-place-tag spec list (`placementHandlers += Placement.handlePlacement`); blocks register with `ra.block(b, placement = false, goggles = false)`, and goggles routes are added per *marker* type, because several items (the retired pipe tiers) place the same marker |
 
 !!! warning "Why the timing gates drop untagged items"
@@ -171,11 +174,11 @@ it with a module-local variant rather than bending the core helpers:
 ## Items richer than `CustomBlock`
 
 `CustomBlock` carries the four components every egg has. Items with more (lore, rarity,
-`enchantment_glint_override`, food, consumable) use a module-local model:
+`enchantment_glint_override`, food, consumable) use one of these models:
 
 | Model | Where | Used by |
 | --- | --- | --- |
-| `ItemSpec` + the `Snbt` value classes | `modules/infinite/ItemSpec.kt` | Chunk Loader, Infinite generators and casing/cores, Jetpack kits |
+| `ItemSpec` + the `Snbt` value classes, `CustomBlock.loreItem { }` | `core/item/` | Chunk Loader, Infinite generators and casing/cores, Jetpack kits, sensors, wireless, ender, interactive, storage; `ItemSpec.fromSnbt` takes SNBT text copied from a `give` |
 | `WiresItem` (`block`, `lore`, `epic`, `recipe`) | `modules/wires/WiresBlocks.kt` | every Wires item |
 | `ToolItem` (`id`, `item`, `components` as ordered SNBT pairs) | `tools/ToolItems.kt` | the six tools |
 | `BaseTier` | `modules/multiblock/blocks/BaseTier.kt` | the five Multiblock Base tiers (one block type, five items) |

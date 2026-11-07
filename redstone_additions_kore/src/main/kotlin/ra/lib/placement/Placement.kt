@@ -16,8 +16,8 @@ import ra.core.raw
 import ra.lib.dummyObjectives
 import ra.lib.fake
 import ra.lib.lib
-import ra.lib.macroCall
 import ra.lib.orientation.Orientation
+import ra.core.macroCall
 
 /** `ra_lib:placement/...`: put the vanilla block down and summon the custom block's marker. */
 object Placement {

@@ -7,10 +7,10 @@ import ra.core.Ns
 import ra.core.Ra
 import ra.core.define
 import ra.core.ref
-import ra.modules.infinite.loadMessage
 import ra.modules.storage.Boxer.registerBoxer
 import ra.modules.storage.StorageBox.registerStorageBox
 import ra.modules.storage.Unboxer.registerUnboxer
+import ra.core.moduleLoaded
 
 /**
  * Storage (`ra_storage`): the Boxer packs a container into an Item Crate, the Unboxer empties
@@ -29,7 +29,7 @@ object StorageModule : GameplayModule {
 		pack.define(load) {
 			function(Boxer.registerBlock)
 			function(Unboxer.registerBlock)
-			loadMessage("Storage blocks loaded!", "aqua")
+			moduleLoaded("Storage blocks loaded!", "aqua")
 		}
 		pack.define(tick!!) {
 			function(Boxer.block.tick)

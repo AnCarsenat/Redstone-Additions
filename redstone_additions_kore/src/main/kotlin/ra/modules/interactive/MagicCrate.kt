@@ -23,13 +23,13 @@ import ra.core.block.stackedPropLine
 import ra.core.block.stackedStatusLine
 import ra.core.define
 import ra.core.raw
-import ra.modules.infinite.breakCheck
-import ra.modules.infinite.finishLorePlacement
 import ra.core.item.loreItem
 import ra.core.item.loreLine
-import ra.modules.infinite.registerBlockMessage
 import io.github.ayfri.kore.arguments.types.literals.literal
 import io.github.ayfri.kore.commands.scoreboard.scoreboard
+import ra.core.block.breakCheck
+import ra.core.block.finishPlacement
+import ra.core.blockRegisterMessage
 
 /** Magic Crate: a barrel that pulls dropped items in from around it, every `cooldown` ticks. */
 object MagicCrate {
@@ -45,7 +45,7 @@ object MagicCrate {
 
 	fun Ra.registerMagicCrate() {
 		block(block)
-		pack.registerBlockMessage(block)
+		pack.blockRegisterMessage(block)
 		pack.specGive(block, item)
 		pack.shapedRecipe(
 			block.ns.id, block.id, item,
@@ -93,7 +93,7 @@ object MagicCrate {
 		// that pull inwards. A crate looks like what it is.
 		placeBlock(block)
 		raw("data modify entity @e[type=marker,tag=${block.tag},tag=${Tag.NEW},limit=1,sort=nearest] data.properties set value {radius:8,cooldown:20}")
-		finishLorePlacement(block)
+		finishPlacement(block, removePlaceTag = false, withinBlock = false)
 	}
 
 	private fun Function.goggles() {

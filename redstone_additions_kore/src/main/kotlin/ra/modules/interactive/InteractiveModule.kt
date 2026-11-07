@@ -11,7 +11,6 @@ import ra.core.define
 import ra.core.raw
 import ra.core.ref
 import ra.core.item.ItemSpec
-import ra.modules.infinite.loadMessage
 import ra.modules.interactive.BigTorch.registerBigTorch
 import ra.modules.interactive.BlockBreaker.registerBlockBreaker
 import ra.modules.interactive.BlockPlacer.registerBlockPlacer
@@ -23,6 +22,7 @@ import ra.modules.interactive.ItemPipe.registerItemPipe
 import ra.modules.interactive.MagicCrate.registerMagicCrate
 import ra.modules.interactive.MessageBlock.registerMessageBlock
 import ra.modules.interactive.Spitter.registerSpitter
+import ra.core.moduleLoaded
 
 /**
  * Interactive Machines (`ra_interactive`): blocks that act on the world around them -- break,
@@ -76,7 +76,7 @@ object InteractiveModule : GameplayModule {
 			// the beet load did.
 			raw("scoreboard objectives add ra.filter_cd dummy")
 			for (e in loadOrder) function(e.registerBlock)
-			loadMessage("Interactive blocks loaded!", "aqua")
+			moduleLoaded("Interactive blocks loaded!", "aqua")
 		}
 		pack.define(tick!!) {
 			for (e in tickOrder) function(e.block.tick)

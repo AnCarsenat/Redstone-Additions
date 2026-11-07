@@ -24,13 +24,15 @@ import ra.core.block.stackedPropLine
 import ra.core.define
 import ra.core.raw
 import ra.modules.ender.link.Link
-import ra.modules.infinite.breakCheck
 import ra.core.item.loreLine
-import ra.modules.sensors.batGuard
-import ra.modules.sensors.clearNew
-import ra.modules.sensors.exec
-import ra.modules.sensors.execReturn
-import ra.modules.sensors.setOnNew
+import ra.core.block.breakCheck
+import ra.core.blockRegisterMessage
+import ra.core.executeRun
+import ra.core.executeReturnRun
+import ra.core.block.placementGuard
+import ra.core.block.setOnNew
+import ra.core.block.clearNewTag
+import ra.core.block.defaultProperty
 
 /**
  * Ender Item Vault: a real barrel whose stacks move to the vault on its channel. The vault's
@@ -65,7 +67,7 @@ object ItemVault {
 	fun Ra.registerItemVault() {
 		block(block)
 		wrenchCycle(block.id, WrenchCycle("Mode", "mode", cycleMode))
-		pack.enderRegisterBlock(block)
+		pack.blockRegisterMessage(block)
 		pack.enderGive(block, item, """{text:" — set the channel with the Data Handler",color:"gray"}""")
 		pack.enderRecipe(block, item, RecipeCategory.MISC) {
 			pattern(" P ", "PBP", "OOO")
@@ -76,11 +78,11 @@ object ItemVault {
 
 		// As bat, at bat position.
 		pack.define(block.handlePlacement) {
-			batGuard(block)
+			placementGuard(block, checkExisting = false)
 			placeBlock(block)
 			setOnNew(block, "data.properties.channel", "\"default\"")
 			setOnNew(block, "data.properties.mode", "\"link\"")
-			clearNew(block)
+			clearNewTag(block)
 			tag(self()) { remove(block.placeTag) }
 			returnValue(1)
 		}
@@ -148,13 +150,13 @@ object ItemVault {
 		raw("execute store result score #ender.was $T run data get entity @s data.data.last_used")
 
 		// One-way modes keep their old, simpler behaviour: a sender drains, a receiver waits.
-		exec("if data entity @s data.properties{mode:\"send\"}", push)
-		exec("if data entity @s data.properties{mode:\"receive\"}", mark)
-		execReturn("unless data entity @s data.properties{mode:\"link\"}", Link.done)
+		executeRun("if data entity @s data.properties{mode:\"send\"}", push)
+		executeRun("if data entity @s data.properties{mode:\"receive\"}", mark)
+		executeReturnRun("unless data entity @s data.properties{mode:\"link\"}", Link.done)
 
 		// Two-way: follow the outside world.
-		exec("if score #ender.used $T > #ender.was $T", push)
-		exec("if score #ender.used $T < #ender.was $T", pull)
+		executeRun("if score #ender.used $T > #ender.was $T", push)
+		executeRun("if score #ender.used $T < #ender.was $T", pull)
 
 		function(mark)
 
@@ -165,11 +167,11 @@ object ItemVault {
 		breakCheck(block, Blocks.BARREL, onBreak)
 
 		// Defaults for vaults placed before a property existed.
-		enderDefault(block, "channel", "\"default\"")
+		defaultProperty(block, "channel", "\"default\"")
 		// Migration: `shared` is gone. A vault still set to it becomes `link`, which is the closest
 		// of the three that remain -- two-way and demand driven.
 		raw("execute as @e[type=marker,tag=${block.tag}] if data entity @s data.properties{mode:\"shared\"} run data modify entity @s data.properties.mode set value \"link\"")
-		enderDefault(block, "mode", "\"link\"")
+		defaultProperty(block, "mode", "\"link\"")
 
 		// The `ra.ender.occupied` and `ra.ender.share` bookkeeping went with `shared`: both existed
 		// only to work out which vault a player was standing at. Two whole-world sweeps a tick, gone.
@@ -181,7 +183,7 @@ object ItemVault {
 
 		// Hopper rate: one stack every 4 ticks per sending vault.
 		raw("scoreboard players add @e[type=marker,tag=${block.tag}] ${EnderIds.CD} 1")
-		exec("as @e[type=marker,tag=${block.tag},scores={${EnderIds.CD}=4..}] at @s", process)
+		executeRun("as @e[type=marker,tag=${block.tag},scores={${EnderIds.CD}=4..}] at @s", process)
 	}
 
 	private fun Ra.registerMoves() {

@@ -16,7 +16,7 @@ import ra.core.block.killVanillaDrop
 import ra.core.define
 import ra.core.raw
 import ra.core.item.loreItem
-import ra.modules.infinite.registerBlockMessage
+import ra.core.blockRegisterMessage
 
 /**
  * The three Infinite Cauldrons: a cauldron that refills itself every tick, with water, lava or
@@ -74,7 +74,7 @@ object Cauldrons {
 	private fun Ra.registerCauldron(c: Cauldron) {
 		val block = c.block
 		block(block)
-		pack.registerBlockMessage(block)
+		pack.blockRegisterMessage(block)
 		pack.specGive(block, c.item)
 		pack.shapedRecipe(
 			block.ns.id, block.id, c.item, pattern = c.pattern, keys = c.keys,

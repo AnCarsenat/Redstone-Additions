@@ -25,6 +25,9 @@ import ra.core.block.newMarker
 import ra.core.block.placeBlock
 import ra.core.define
 import ra.core.raw
+import ra.core.blockRegisterMessage
+import ra.core.block.outputShell
+import ra.core.block.readProperty
 
 /** Delayer: turns its output on `delay` ticks after its input, and off as soon as the input drops. */
 object Delayer {
@@ -41,7 +44,7 @@ object Delayer {
 			key("C", Items.QUARTZ_BLOCK)
 			key("R", Items.REPEATER)
 		}
-		pack.registerBlockMessage(block)
+		pack.blockRegisterMessage(block)
 		pack.define(block.handlePlacement) { handlePlacement() }
 		pack.define(process) { process() }
 		pack.gateGoggles(block, nameY = 1.0, prop = "delay", label = "Delay: ", suffix = "t", y = 0.8)
@@ -101,13 +104,13 @@ object Delayer {
 			ifCondition { entity(delaying) }
 			ifCondition { score(self(), Obj.TEMP, rangeOrIntEnd(0)) }
 			at(self())
-			run { shell(on = true) }
+			run { outputShell(on = true) }
 		}
 		execute {
 			ifCondition { entity(delaying) }
 			ifCondition { score(self(), Obj.TEMP, rangeOrIntStart(1)) }
 			at(self())
-			run { shell(on = false) }
+			run { outputShell(on = false) }
 		}
 
 		// Reset when power is removed.
@@ -123,7 +126,7 @@ object Delayer {
 		execute {
 			unlessCondition { entity(powered) }
 			at(self())
-			run { shell(on = false) }
+			run { outputShell(on = false) }
 		}
 	}
 }

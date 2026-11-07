@@ -34,9 +34,11 @@ import ra.core.item.SStr
 import ra.core.item.comp
 import ra.core.item.itemSpec
 import ra.core.item.raData
-import ra.modules.sensors.exec
-import ra.modules.sensors.shapedRecipe
 import ra.modules.wireless.Receiver
+import ra.core.block.shapedRecipe
+import ra.core.block.recipeResult
+import ra.core.block.Unlock
+import ra.core.executeRun
 
 /**
  * Redstone Remote: RMB pulses every receiver on the remote's channel, Shift+RMB asks for a new
@@ -97,7 +99,7 @@ object Remote {
 
 		// The recipe's custom data has `remote:1` (an int), not `1b`, exactly as the beet JSON did.
 		val recipeItem = item.replace("custom_data", raData("remote" to SInt(1), "channel" to SStr("default")))
-		pack.shapedRecipe(Ns.WIRELESS, "remote", recipeItem, unlockedBy = Items.IRON_INGOT, resultItem = Items.BLAZE_ROD) {
+		pack.shapedRecipe(Ns.WIRELESS, "remote", recipeItem.recipeResult(Items.BLAZE_ROD), Unlock(Items.IRON_INGOT)) {
 			pattern(" T ", "IBI", " I ")
 			key("T", Items.REDSTONE_TORCH)
 			key("I", Items.IRON_INGOT)
@@ -137,8 +139,8 @@ object Remote {
 			tag(self()) { add("ra.remote_active") }
 
 			// Sneaking: change channel. Otherwise: pulse.
-			exec("if predicate ra:is_sneaking", changeChannel)
-			exec("unless predicate ra:is_sneaking", toggleReceivers)
+			executeRun("if predicate ra:is_sneaking", changeChannel)
+			executeRun("unless predicate ra:is_sneaking", toggleReceivers)
 		}
 
 		// Pulse every receiver on the remote's channel (a string). As the player.
@@ -146,7 +148,7 @@ object Remote {
 			// Channel from the held item, into storage.
 			raw("data modify storage ra:temp remote_channel set from entity @s SelectedItem.components.\"minecraft:custom_data\".ra.channel")
 
-			exec("as @e[type=marker,tag=${Receiver.block.tag}]", checkReceiverChannel)
+			executeRun("as @e[type=marker,tag=${Receiver.block.tag}]", checkReceiverChannel)
 
 			// Feedback.
 			raw("""tellraw @s [{text:"[Remote] ",color:"red"},{text:"Pulsed receivers on channel ",color:"gray"},{nbt:"remote_channel",storage:"ra:temp",color:"yellow"}]""")
@@ -218,10 +220,10 @@ object Remote {
 			raw("execute unless entity @s[tag=ra.input.active] unless score @s ra.input.state matches 2 run scoreboard players set @s $PENDING 0")
 			raw("execute unless entity @s[tag=ra.input.active] unless score @s ra.input.state matches 2 run return 0")
 
-			exec("store result score #remote_state ${Obj.TEMP}", RaLib.Input.poll)
+			executeRun("store result score #remote_state ${Obj.TEMP}", RaLib.Input.poll)
 			raw("execute unless score #remote_state ${Obj.TEMP} matches 2 run return 0")
 
-			exec("store result score #remote_state ${Obj.TEMP}", RaLib.Input.consume)
+			executeRun("store result score #remote_state ${Obj.TEMP}", RaLib.Input.consume)
 			raw("execute unless score #remote_state ${Obj.TEMP} matches 1 run return 0")
 
 			scoreboard.players.set(self(), PENDING, 0)
@@ -236,7 +238,7 @@ object Remote {
 			raw("data modify storage ra_wireless:remote channel set from storage ra:input consume.text")
 
 			raw("execute store result storage ra_wireless:remote slot int 1 run scoreboard players get @s $SLOT")
-			exec("store result score #remote_state ${Obj.TEMP}", applyToSlot, "with storage ra_wireless:remote")
+			executeRun("store result score #remote_state ${Obj.TEMP}", applyToSlot, "with storage ra_wireless:remote")
 
 			raw("""execute if score #remote_state ${Obj.TEMP} matches 0 run tellraw @s [{text:"[Remote] ",color:"red"},{text:"Remote moved out of its slot; channel not applied.",color:"gray"}]""")
 			raw("execute if score #remote_state ${Obj.TEMP} matches 0 run return 0")

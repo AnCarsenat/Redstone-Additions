@@ -29,13 +29,15 @@ import ra.core.block.stackedPropLine
 import ra.core.define
 import ra.core.raw
 import ra.modules.ender.link.Link
-import ra.modules.infinite.breakCheck
 import ra.core.item.loreLine
-import ra.modules.sensors.batGuard
-import ra.modules.sensors.clearNew
-import ra.modules.sensors.exec
-import ra.modules.sensors.execReturn
-import ra.modules.sensors.setOnNew
+import ra.core.block.breakCheck
+import ra.core.blockRegisterMessage
+import ra.core.executeRun
+import ra.core.executeReturnRun
+import ra.core.block.placementGuard
+import ra.core.block.setOnNew
+import ra.core.block.clearNewTag
+import ra.core.block.defaultProperty
 
 /**
  * Ender Power Vault: a wireless bridge between two electric grids. It carries
@@ -66,7 +68,7 @@ object PowerVault {
 		block(block)
 		wrenchCycle(block.id, WrenchCycle("Mode", "mode", cycleMode))
 		readonly(block.id, "transfer_rate")
-		pack.enderRegisterBlock(block)
+		pack.blockRegisterMessage(block)
 		pack.enderGive(block, item, """{text:" — wire into it like a switch",color:"gray"}""")
 		pack.enderRecipe(block, item, RecipeCategory.REDSTONE) {
 			pattern("CPC", "URU", "CUC")
@@ -78,7 +80,7 @@ object PowerVault {
 
 		// As bat, at bat position.
 		pack.define(block.handlePlacement) {
-			batGuard(block)
+			placementGuard(block, checkExisting = false)
 			placeBlock(block)
 			setOnNew(block, "data.properties.channel", "\"default\"")
 			setOnNew(block, "data.properties.mode", "\"link\"")
@@ -86,7 +88,7 @@ object PowerVault {
 
 			raw("tag @e[type=marker,tag=${block.tag},tag=ra.new,distance=..0.5] add ${EnderIds.ELECTRIC_NODE}")
 
-			clearNew(block)
+			clearNewTag(block)
 			tag(self()) { remove(block.placeTag) }
 			returnValue(1)
 		}
@@ -121,16 +123,16 @@ object PowerVault {
 			breakCheck(block, Blocks.PURPUR_PILLAR, onBreak)
 
 			// Defaults, including the electric-node tag a vault placed by an older build lacks.
-			enderDefault(block, "channel", "\"default\"")
-			enderDefault(block, "mode", "\"link\"")
-			enderDefault(block, "transfer_rate", "80")
+			defaultProperty(block, "channel", "\"default\"")
+			defaultProperty(block, "mode", "\"link\"")
+			defaultProperty(block, "transfer_rate", "80")
 			raw("tag @e[type=marker,tag=${block.tag}] add ${EnderIds.ELECTRIC_NODE}")
 
 			raw("tag @e[type=marker,tag=${EnderIds.RECV_POWER}] remove ${EnderIds.RECV_POWER}")
 			tagUnlessMode(block, "send", EnderIds.RECV_POWER)
 
 			raw("scoreboard players add @e[type=marker,tag=${block.tag}] ${EnderIds.CD} 1")
-			exec("as @e[type=marker,tag=${block.tag},scores={${EnderIds.CD}=5..}] at @s", process)
+			executeRun("as @e[type=marker,tag=${block.tag},scores={${EnderIds.CD}=5..}] at @s", process)
 		}
 	}
 
@@ -150,28 +152,28 @@ object PowerVault {
 		scoreboard.players.set(self(), EnderIds.CD, 0)
 		tag(self()) { add(EnderIds.SELF) }
 
-		execReturn("if data entity @s data.properties{mode:\"receive\"}", Link.done)
+		executeReturnRun("if data entity @s data.properties{mode:\"receive\"}", Link.done)
 
 		// What this grid can spare.
 		function(RaLib.Transport.Net.read)
 		raw("scoreboard players operation #ender.eu $T = #net_amount ra.tr.tmp")
 		function(RaLib.Util.property, nbt { this["name"] = "transfer_rate"; this["default"] = 80; this["min"] = 1 })
 		raw("scoreboard players operation #ender.rate $T = #prop $T")
-		execReturn("if score #ender.eu $T matches ..0", Link.done)
+		executeReturnRun("if score #ender.eu $T matches ..0", Link.done)
 
 		// One-way: up to the rate, whatever the far side holds.
 		raw("scoreboard players operation #ender.carry $T = #ender.eu $T")
 		raw("execute if score #ender.carry $T > #ender.rate $T run scoreboard players operation #ender.carry $T = #ender.rate $T")
 
 		// Two-way: half the gap between the two GRIDS, and only downhill.
-		exec("if data entity @s data.properties{mode:\"link\"}", level)
-		execReturn("if score #ender.carry $T matches ..0", Link.done)
+		executeRun("if data entity @s data.properties{mode:\"link\"}", level)
+		executeReturnRun("if score #ender.carry $T matches ..0", Link.done)
 
 		// Take first, so the receiver cannot be handed EU that still exists here. The refund below
 		// puts back anything it turns out not to want.
 		raw("execute store result storage ra:wires eu.amount int 1 run scoreboard players get #ender.carry $T")
-		exec("store result score #ender.carry $T", ModulesApi.Wires.takeEu, "with storage ra:wires eu")
-		execReturn("if score #ender.carry $T matches ..0", Link.done)
+		executeRun("store result score #ender.carry $T", ModulesApi.Wires.takeEu, "with storage ra:wires eu")
+		executeReturnRun("if score #ender.carry $T matches ..0", Link.done)
 
 		raw("data modify storage ra:ender power set value {}")
 		raw("data modify storage ra:ender power.channel set from entity @s data.properties.channel")
@@ -180,7 +182,7 @@ object PowerVault {
 		// Refund whatever the partner's grid could not hold.
 		raw("scoreboard players operation #ender.back $T = #ender.carry $T")
 		raw("scoreboard players operation #ender.back $T -= #ender.sent $T")
-		exec("if score #ender.back $T matches 1..", refund)
+		executeRun("if score #ender.back $T matches 1..", refund)
 
 		raw("execute if score #ender.sent $T matches 1.. run particle minecraft:portal ~ ~1 ~ 0.2 0.2 0.2 0.05 3")
 

@@ -15,7 +15,7 @@ import ra.core.raw
 import ra.core.ref
 import ra.modules.ender.EnderIds
 import ra.modules.ender.ItemVault
-import ra.modules.sensors.exec
+import ra.core.executeRun
 
 /**
  * `ra_ender:link/...`: the transfer half of every vault. The channel is a string, so finding the
@@ -140,7 +140,7 @@ object Link {
 
 			// Whatever came back goes straight into the network it came from, so nothing is lost
 			// when the far side is full or holds another medium.
-			exec("if score #ender.carry $T matches 1..", returnFluid, "with storage ra:ender fluid")
+			executeRun("if score #ender.carry $T matches 1..", returnFluid, "with storage ra:ender fluid")
 		}
 
 		// Macro {medium}, as the receiving vault marker, at its block.
@@ -199,7 +199,7 @@ object Link {
 			raw("scoreboard players set #ender.sent $T 0")
 
 			raw("execute store result storage ra:wires eu.amount int 1 run scoreboard players get #ender.carry $T")
-			exec("store result score #ender.sent $T", ModulesApi.Wires.offerEu, "with storage ra:wires eu")
+			executeRun("store result score #ender.sent $T", ModulesApi.Wires.offerEu, "with storage ra:wires eu")
 
 			raw("execute if score #ender.sent $T matches ..0 run return 0")
 

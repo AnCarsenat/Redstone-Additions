@@ -8,12 +8,12 @@ import ra.core.Ns
 import ra.core.Ra
 import ra.core.define
 import ra.core.ref
-import ra.modules.infinite.loadMessage
-import ra.modules.sensors.exec
 import ra.modules.wireless.Emitter.registerEmitter
 import ra.modules.wireless.Receiver.registerReceiver
 import ra.modules.wireless.tools.Remote
 import ra.modules.wireless.tools.Remote.registerRemote
+import ra.core.moduleLoaded
+import ra.core.executeRun
 
 /** Wireless Redstone (`ra_wireless`): emitters, receivers on string channels, and the Redstone Remote. */
 object WirelessModule : GameplayModule {
@@ -35,7 +35,7 @@ object WirelessModule : GameplayModule {
 			function(Emitter.registerBlock)
 			function(Receiver.registerBlock)
 
-			loadMessage("Wireless Redstone loaded!", "aqua")
+			moduleLoaded("Wireless Redstone loaded!", "aqua")
 		}
 
 		// Called every game tick from ra:tick.
@@ -44,7 +44,7 @@ object WirelessModule : GameplayModule {
 			function(Receiver.block.tick)
 
 			// Finish channel entry for anyone who has a book request outstanding.
-			exec("as @a[scores={${Remote.PENDING}=1..}]", Remote.applyPending)
+			executeRun("as @a[scores={${Remote.PENDING}=1..}]", Remote.applyPending)
 		}
 
 		pack.define(ref(ns, "items/give_all")) {

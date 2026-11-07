@@ -15,10 +15,10 @@ import ra.core.block.killVanillaDrop
 import ra.core.block.placeBlock
 import ra.core.define
 import ra.core.raw
-import ra.modules.infinite.breakCheck
-import ra.modules.infinite.finishLorePlacement
 import ra.core.item.loreItem
-import ra.modules.infinite.registerBlockMessage
+import ra.core.block.breakCheck
+import ra.core.block.finishPlacement
+import ra.core.blockRegisterMessage
 
 /** Block Placer: a dispenser that places its first stack as a block in front, once a second while powered. */
 object BlockPlacer {
@@ -31,7 +31,7 @@ object BlockPlacer {
 	fun Ra.registerBlockPlacer() {
 		block(block)
 		readonly(block.id, "cooldown")
-		pack.registerBlockMessage(block)
+		pack.blockRegisterMessage(block)
 		pack.specGive(block, item)
 		pack.shapedRecipe(
 			block.ns.id, block.id, item,
@@ -46,7 +46,7 @@ object BlockPlacer {
 		pack.define(block.handlePlacement) {
 			placeGuard(block)
 			placeBlock(block)
-			finishLorePlacement(block)
+			finishPlacement(block, removePlaceTag = false, withinBlock = false)
 		}
 		pack.define(block.goggles) { gogglesHeader(block, nameY = 1.0) }
 		pack.define(fire) { fire() }

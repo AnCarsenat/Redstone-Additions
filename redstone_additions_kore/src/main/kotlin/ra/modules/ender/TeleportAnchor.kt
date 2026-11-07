@@ -24,12 +24,14 @@ import ra.core.block.stackReset
 import ra.core.block.stackedPropLine
 import ra.core.define
 import ra.core.raw
-import ra.modules.infinite.breakCheck
 import ra.core.item.loreLine
-import ra.modules.sensors.batGuard
-import ra.modules.sensors.clearNew
-import ra.modules.sensors.exec
-import ra.modules.sensors.setOnNew
+import ra.core.block.breakCheck
+import ra.core.blockRegisterMessage
+import ra.core.executeRun
+import ra.core.block.placementGuard
+import ra.core.block.setOnNew
+import ra.core.block.clearNewTag
+import ra.core.block.defaultProperty
 
 /**
  * Teleport Anchor: sends whoever stands on it to the anchor the redstone strength names.
@@ -60,7 +62,7 @@ object TeleportAnchor {
 
 	fun Ra.registerTeleportAnchor() {
 		block(block)
-		pack.enderRegisterBlock(block)
+		pack.blockRegisterMessage(block)
 		pack.enderGive(
 			block, item,
 			"""{text:" — set its id and target table with ",color:"gray"},{text:"/function ${ModulesApi.Ender.anchorHelp.asId()}",color:"aqua"}""",
@@ -74,11 +76,11 @@ object TeleportAnchor {
 
 		// As bat, at bat position.
 		pack.define(block.handlePlacement) {
-			batGuard(block)
+			placementGuard(block, checkExisting = false)
 			placeBlock(block)
 			setOnNew(block, "data.properties.anchor_id", "\"A\"")
 			setOnNew(block, "data.properties.targets", EMPTY_TABLE)
-			clearNew(block)
+			clearNewTag(block)
 			tag(self()) { remove(block.placeTag) }
 			returnValue(1)
 		}
@@ -139,14 +141,14 @@ object TeleportAnchor {
 			breakCheck(block, Blocks.CRYING_OBSIDIAN, onBreak)
 
 			// Defaults for anchors placed before a property existed.
-			enderDefault(block, "anchor_id", "\"A\"")
-			enderDefault(block, "targets", EMPTY_TABLE)
+			defaultProperty(block, "anchor_id", "\"A\"")
+			defaultProperty(block, "targets", EMPTY_TABLE)
 
 			// A selector on scores skips entities that have no score at all, so every anchor needs
 			// one before the cooldown gate can mean anything. Adding zero creates it.
 			raw("scoreboard players add @e[type=marker,tag=${block.tag}] ${EnderIds.TP_CD} 0")
 			raw("scoreboard players remove @e[type=marker,tag=${block.tag},scores={${EnderIds.TP_CD}=1..}] ${EnderIds.TP_CD} 1")
-			exec("as @e[type=marker,tag=${block.tag},scores={${EnderIds.TP_CD}=..0}] at @s", process)
+			executeRun("as @e[type=marker,tag=${block.tag},scores={${EnderIds.TP_CD}=..0}] at @s", process)
 		}
 	}
 
@@ -183,7 +185,7 @@ object TeleportAnchor {
 		raw("playsound minecraft:entity.enderman.teleport block @a[distance=..12,scores={ra.u.snd=1..}] ~ ~ ~ 0.7 1.2")
 		raw("particle minecraft:portal ~ ~0.6 ~ 0.3 0.5 0.3 0.2 30 normal @a[scores={ra.u.par=1..}]")
 
-		exec("as @a[distance=..2,scores={${EnderIds.GRACE}=..0},limit=1,sort=nearest]", sendPlayer)
+		executeRun("as @a[distance=..2,scores={${EnderIds.GRACE}=..0},limit=1,sort=nearest]", sendPlayer)
 
 		raw("tag @e[type=marker,tag=${EnderIds.TP_DEST}] remove ${EnderIds.TP_DEST}")
 		scoreboard.players.set(self(), EnderIds.TP_CD, 20)
@@ -207,7 +209,7 @@ object TeleportAnchor {
 		raw("scoreboard players remove #ender.slot $T 1")
 		raw("data remove storage ra:ender anchor.want")
 		raw("execute if score #ender.slot $T matches 0..14 store result storage ra:ender anchor.i int 1 run scoreboard players get #ender.slot $T")
-		exec("if score #ender.slot $T matches 0..14", readTarget, "with storage ra:ender anchor")
+		executeRun("if score #ender.slot $T matches 0..14", readTarget, "with storage ra:ender anchor")
 
 		raw("data modify storage ra:temp ender_line set value {label:\"Target: \",value:\"none\",color:\"red\",suffix:\"\"}")
 		raw("execute if data storage ra:ender anchor.want unless data storage ra:ender anchor{want:\"\"} run data modify storage ra:temp ender_line.value set from storage ra:ender anchor.want")

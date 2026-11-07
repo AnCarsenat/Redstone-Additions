@@ -31,7 +31,6 @@ import ra.core.define
 import ra.modules.enchanting.hookEnchantRecipes
 import ra.core.raw
 import ra.core.ref
-import ra.modules.infinite.loadMessage
 import ra.modules.jetpacks.Kits.registerKits
 import ra.modules.jetpacks.flight.Classic.registerClassic
 import ra.modules.jetpacks.flight.Engine
@@ -48,6 +47,7 @@ import ra.modules.jetpacks.kit.KitMenu
 import ra.modules.jetpacks.kit.KitMenu.registerKitMenu
 import ra.modules.jetpacks.mode.Modes
 import ra.modules.jetpacks.mode.Modes.registerModes
+import ra.core.moduleLoaded
 
 /** Jetpacks (`ra_jetpacks`): chestplate upgrade kits. */
 object JetpacksModule : GameplayModule {
@@ -137,7 +137,7 @@ object JetpacksModule : GameplayModule {
 		scoreboard.objectives.add(Jp.MUTE)
 		scoreboard.objectives.add(Jp.SOUND, ScoreboardCriteria.TRIGGER)
 
-		loadMessage("Jetpacks loaded!", "aqua")
+		moduleLoaded("Jetpacks loaded!", "aqua")
 	}
 
 	/**

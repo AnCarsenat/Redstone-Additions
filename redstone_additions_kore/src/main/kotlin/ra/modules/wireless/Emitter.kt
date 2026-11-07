@@ -21,14 +21,18 @@ import ra.core.block.placeBlock
 import ra.core.block.propLine
 import ra.core.define
 import ra.core.raw
-import ra.modules.infinite.breakCheck
 import ra.core.item.loreItem
-import ra.modules.infinite.registerBlockMessage
-import ra.modules.sensors.batGuard
-import ra.modules.sensors.clearNew
-import ra.modules.sensors.plainOnBreak
-import ra.modules.sensors.setOnNew
-import ra.modules.sensors.shapedRecipe
+import ra.core.block.shapedRecipe
+import ra.core.block.recipeResult
+import ra.core.block.Unlock
+import ra.core.block.blockOnBreak
+import ra.core.block.dropItem
+import ra.core.block.STONE_BREAK_SOUND
+import ra.core.block.breakCheck
+import ra.core.blockRegisterMessage
+import ra.core.block.placementGuard
+import ra.core.block.setOnNew
+import ra.core.block.clearNewTag
 
 /**
  * Wireless Emitter: transmits its redstone input to every receiver on the same `channel` string.
@@ -49,9 +53,9 @@ object Emitter {
 	fun Ra.registerEmitter() {
 		block(block)
 		wrenchToggles += TagRoute(block.tag, toggle)
-		pack.registerBlockMessage(block)
+		pack.blockRegisterMessage(block)
 		pack.blockGive(block)
-		pack.shapedRecipe(block.ns, block.id, item, unlockedBy = Items.END_STONE_BRICKS) {
+		pack.shapedRecipe(block.ns, block.id, item.recipeResult(), Unlock(Items.END_STONE_BRICKS)) {
 			pattern("GEG", "ERE", "GEG")
 			key("G", Items.GOLD_INGOT)
 			key("E", Items.END_STONE_BRICKS)
@@ -60,13 +64,13 @@ object Emitter {
 
 		// As bat, at bat position.
 		pack.define(block.handlePlacement) {
-			batGuard(block)
+			placementGuard(block, checkExisting = false)
 			// End stone bricks with a marker.
 			placeBlock(block)
 			// Default channel (a string) and enabled state.
 			setOnNew(block, "data.properties.channel", "\"default\"")
 			setOnNew(block, "data.properties.enabled", "1b")
-			clearNew(block)
+			clearNewTag(block)
 			// Remove the placement tag.
 			tag(self()) { remove(block.placeTag) }
 			returnValue(1)
@@ -95,7 +99,7 @@ object Emitter {
 			propLine("channel", "Channel: ", "aqua", y = 0.8)
 		}
 
-		val onBreak = pack.plainOnBreak(block, item, particle = true)
+		val onBreak = pack.blockOnBreak(block, drop = { dropItem(item) }, sound = STONE_BREAK_SOUND, cloud = true)
 		pack.define(block.tick) {
 			// Break detection: the emitter is end stone bricks, anything else means it is gone.
 			breakCheck(block, Blocks.END_STONE_BRICKS, onBreak)

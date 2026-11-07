@@ -43,3 +43,30 @@ fun soundListeners(radius: Double = 16.0): SelectorArgument = allPlayers {
 	distance = rangeOrDoubleEnd(radius)
 	scores { Obj.USER_SOUND greaterThanOrEqualTo 1 }
 }
+
+// The same selectors as vanilla text, for commands that stay text (`raw`, execute chains). The
+// typed ones above write e.g. `distance=..16.0`; these keep the beet spelling.
+
+/**
+ * `@e[type=marker,tag=<block tag>(,<extra>)*]` as text. [extra] are further selector arguments,
+ * written as given (`"tag=!ra.new"`, `"limit=1"`).
+ */
+fun CustomBlock.markerSel(vararg extra: String) =
+	"@e[type=marker,tag=$tag${extra.joinToString("") { ",$it" }}]"
+
+/** The fresh marker as text, as the beet handlers spelled it ([newMarker] is the typed form). */
+fun CustomBlock.newMarkerSel() = "@e[type=marker,tag=$tag,tag=${Tag.NEW},distance=..0.5,sort=nearest,limit=1]"
+
+/**
+ * Players who asked for block sounds, as text: `@a[distance=..<radius>,scores={ra.u.snd=1..}]`,
+ * or `@a[scores={ra.u.snd=1..}]` when [radius] is null.
+ */
+fun soundListenersSel(radius: Int? = 16) =
+	"@a[${if (radius == null) "" else "distance=..$radius,"}scores={${Obj.USER_SOUND}=1..}]"
+
+/**
+ * Players who asked for block particles, as text: `@a[scores={ra.u.par=1..}]`, or with
+ * `distance=..<radius>,` first when [radius] is given.
+ */
+fun particleViewersSel(radius: Int? = null) =
+	"@a[${if (radius == null) "" else "distance=..$radius,"}scores={${Obj.USER_PARTICLES}=1..}]"

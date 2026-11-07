@@ -1,7 +1,6 @@
 package ra.modules.interactive
 
 import io.github.ayfri.kore.arguments.types.literals.self
-import io.github.ayfri.kore.commands.kill
 import io.github.ayfri.kore.commands.scoreboard.scoreboard
 import io.github.ayfri.kore.functions.Function
 import io.github.ayfri.kore.generated.Blocks
@@ -12,7 +11,6 @@ import ra.core.Ra
 import ra.core.Tag
 import ra.core.block.CustomBlock
 import ra.core.block.gogglesHeader
-import ra.core.block.killVanillaDrop
 import ra.core.block.placeBlock
 import ra.core.define
 import ra.core.raw
@@ -20,6 +18,17 @@ import ra.core.item.loreItem
 import ra.core.block.breakCheck
 import ra.core.block.finishPlacement
 import ra.core.blockRegisterMessage
+import ra.core.block.forEachMarker
+import ra.core.block.placementGuard
+import ra.core.block.dropItem
+import ra.core.block.blockOnBreak
+import ra.core.block.STONE_BREAK_SOUND
+import ra.core.block.Unlock
+import ra.core.block.recipeResult
+import ra.core.block.shapedRecipe
+import ra.core.block.soundListenersSel
+import io.github.ayfri.kore.features.recipes.types.pattern
+import io.github.ayfri.kore.features.recipes.types.key
 
 /** Spitter: a dropper that throws its contents out in front, one item every 4 ticks. */
 object Spitter {
@@ -34,15 +43,15 @@ object Spitter {
 		block(block)
 		pack.blockRegisterMessage(block)
 		pack.specGive(block, item)
-		pack.shapedRecipe(
-			block.ns.id, block.id, item,
-			pattern = listOf("CCC", "RDR", "CCC"),
-			keys = listOf("C" to listOf(Items.COBBLESTONE, Items.BLACKSTONE), "R" to listOf(Items.REDSTONE), "D" to listOf(Items.DROPPER)),
-			unlock = has(Items.DROPPER),
-		)
+		pack.shapedRecipe(block.ns, block.id, item.recipeResult(), Unlock(Items.DROPPER), count = null) {
+			pattern("CCC", "RDR", "CCC")
+			key("C", listOf(Items.COBBLESTONE, Items.BLACKSTONE))
+			key("R", listOf(Items.REDSTONE))
+			key("D", listOf(Items.DROPPER))
+		}
 
 		pack.define(block.handlePlacement) {
-			placeGuard(block)
+			placementGuard(block, checkExisting = false)
 			// Dropper with full 6-directional facing.
 			placeBlock(block)
 			finishPlacement(block, removePlaceTag = false, withinBlock = false)
@@ -50,14 +59,10 @@ object Spitter {
 		pack.define(block.goggles) { gogglesHeader(block, nameY = 1.0) }
 		pack.define(process) { process() }
 
-		val onBreak = pack.define(block.fn("on_break")) {
-			killVanillaDrop(block.physical)
-			dropFirstSlot()
-			dropSpec(item)
-			breakSound()
-			breakCloud()
-			kill(self())
-		}
+		val onBreak = pack.blockOnBreak(
+			block, drop = { dropItem(item) }, sound = STONE_BREAK_SOUND, cloud = true,
+			afterVanillaKill = { dropFirstSlot() },
+		)
 
 		pack.define(block.tick) {
 			breakCheck(block, Blocks.DROPPER, onBreak)
@@ -66,11 +71,9 @@ object Spitter {
 		}
 	}
 
-	/** One spitter. As its marker, at the dropper. */
+	/** One spitter. As its marker, at the dropper. Hopper rate: every 4 ticks. */
 	private fun Function.process() {
-		raw("execute unless score @s ${Obj.COOLDOWN} matches -2147483648.. run scoreboard players set @s ${Obj.COOLDOWN} 0")
-		scoreboard.players.add(self(), Obj.COOLDOWN, 1)
-		raw("execute if score @s ${Obj.COOLDOWN} matches ..3 run return 0")
+		hopperCooldown()
 
 		raw("execute unless data block ~ ~ ~ Items[0] run return 0")
 
@@ -85,6 +88,6 @@ object Spitter {
 		raw("tag @e[type=item,tag=$SPIT] remove $SPIT")
 
 		raw("data remove block ~ ~ ~ Items[0]")
-		raw("playsound minecraft:block.dispenser.dispense block @a[distance=..16,scores={${Obj.USER_SOUND}=1..}] ~ ~ ~ 0.5 1.2")
+		raw("playsound minecraft:block.dispenser.dispense block ${soundListenersSel()} ~ ~ ~ 0.5 1.2")
 	}
 }

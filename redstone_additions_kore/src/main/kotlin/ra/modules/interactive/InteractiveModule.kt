@@ -23,6 +23,7 @@ import ra.modules.interactive.MagicCrate.registerMagicCrate
 import ra.modules.interactive.MessageBlock.registerMessageBlock
 import ra.modules.interactive.Spitter.registerSpitter
 import ra.core.moduleLoaded
+import ra.core.raMessage
 
 /**
  * Interactive Machines (`ra_interactive`): blocks that act on the world around them -- break,
@@ -85,7 +86,7 @@ object InteractiveModule : GameplayModule {
 		// /function ra_interactive:items/give_all
 		pack.define(ref(ns, "items/give_all")) {
 			for (e in tickOrder) function(e.block.give)
-			raw("""tellraw @s [{text:"[",color:"dark_gray"},{text:"RA",color:"gold",bold:true},{text:"] ",color:"dark_gray"},{text:"Given all custom blocks!",color:"green"}]""")
+			raMessage("@s", "Given all custom blocks!", "green")
 		}
 
 		bundles += GiveBundle(

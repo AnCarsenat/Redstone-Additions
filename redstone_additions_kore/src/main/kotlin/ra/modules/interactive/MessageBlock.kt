@@ -1,10 +1,6 @@
 package ra.modules.interactive
 
 import io.github.ayfri.kore.arguments.types.literals.allEntities
-import io.github.ayfri.kore.arguments.types.literals.self
-import io.github.ayfri.kore.commands.function
-import io.github.ayfri.kore.commands.kill
-import io.github.ayfri.kore.commands.returnValue
 import io.github.ayfri.kore.commands.tag
 import io.github.ayfri.kore.functions.Function
 import io.github.ayfri.kore.generated.Blocks
@@ -19,7 +15,6 @@ import ra.core.Ra
 import ra.core.Tag
 import ra.core.block.CustomBlock
 import ra.core.block.gogglesHeader
-import ra.core.block.killVanillaDrop
 import ra.core.block.placeBlock
 import ra.core.block.propLine
 import ra.core.define
@@ -27,6 +22,19 @@ import ra.core.raw
 import ra.core.item.loreItem
 import ra.core.block.breakCheck
 import ra.core.blockRegisterMessage
+import ra.core.executeRun
+import ra.core.block.placementGuard
+import ra.core.block.dropItem
+import ra.core.block.blockOnBreak
+import ra.core.block.Unlock
+import ra.core.block.recipeResult
+import ra.core.block.shapedRecipe
+import ra.core.block.markerSel
+import ra.core.block.setOnNew
+import ra.core.block.readProperty
+import io.github.ayfri.kore.features.recipes.types.pattern
+import io.github.ayfri.kore.features.recipes.types.key
+import io.github.ayfri.kore.commands.returnValue
 
 /**
  * Message Block: a note block that sends its `message_block` text to `entity_selector` on the
@@ -48,12 +56,13 @@ object MessageBlock {
 		block(block)
 		pack.blockRegisterMessage(block)
 		pack.specGive(block, item)
-		pack.shapedRecipe(
-			block.ns.id, block.id, item,
-			pattern = listOf("CCC", "BNR", "CCC"),
-			keys = listOf("C" to listOf(Items.COBBLESTONE), "B" to listOf(Items.BOOK), "N" to listOf(Items.NOTE_BLOCK), "R" to listOf(Items.REDSTONE)),
-			unlock = has(Items.NOTE_BLOCK),
-		)
+		pack.shapedRecipe(block.ns, block.id, item.recipeResult(), Unlock(Items.NOTE_BLOCK), count = null) {
+			pattern("CCC", "BNR", "CCC")
+			key("C", listOf(Items.COBBLESTONE))
+			key("B", listOf(Items.BOOK))
+			key("N", listOf(Items.NOTE_BLOCK))
+			key("R", listOf(Items.REDSTONE))
+		}
 
 		pack.define(block.handlePlacement) { handlePlacement() }
 		pack.define(block.goggles) {
@@ -63,22 +72,16 @@ object MessageBlock {
 		pack.define(send) { send() }
 		pack.define(sendMacro) { sendMacro() }
 
-		val onBreak = pack.define(block.fn("on_break")) {
-			killVanillaDrop(block.physical)
-			dropSpec(item, dropTemp = true)
-			breakSound("minecraft:block.wood.break")
-			breakCloud()
-			kill(self())
-		}
+		val onBreak = pack.blockOnBreak(block, drop = { dropItem(item, tagged = true) }, sound = "minecraft:block.wood.break", cloud = true)
 
 		pack.define(block.tick) {
 			// Excludes new blocks, whose marker exists a moment before its note block does.
 			breakCheck(block, Blocks.NOTE_BLOCK, onBreak, skipNew = true)
 
-			executeRun("as @e[type=marker,tag=${block.tag},tag=!${Tag.NEW}] at @s", RaLib.Redstone.detectSwitch)
+			executeRun("as ${block.markerSel("tag=!${Tag.NEW}")} at @s", RaLib.Redstone.detectSwitch)
 
 			// Trigger on the rising edge (just powered).
-			executeRun("as @e[type=marker,tag=${block.tag},tag=!$WAS_POWERED,tag=${Tag.POWERED}] at @s", send)
+			executeRun("as ${block.markerSel("tag=!$WAS_POWERED", "tag=${Tag.POWERED}")} at @s", send)
 
 			// Track power state for edge detection.
 			tag(allEntities { type = EntityTypes.MARKER; tag = block.tag; tag = Tag.POWERED }) { add(WAS_POWERED) }
@@ -88,12 +91,14 @@ object MessageBlock {
 
 	/** As the spawned bat, at its position. */
 	private fun Function.handlePlacement() {
-		placeGuard(block)
+		placementGuard(block, checkExisting = false)
 		// Note block with a marker (dir_type 0 = no direction).
 		placeBlock(block)
 		// Default properties first.
-		raw("""data modify entity @e[type=marker,tag=${block.tag},tag=${Tag.NEW},distance=..0.5,sort=nearest,limit=1] data.properties set value {message_block:"Hello World!",entity_selector:"@a[distance=..16]"}""")
-		raw("tag @e[type=marker,tag=${block.tag},tag=${Tag.NEW},distance=..0.5] remove ${Tag.NEW}")
+		setOnNew(block, "data.properties", """{message_block:"Hello World!",entity_selector:"@a[distance=..16]"}""")
+		// Text, not finishPlacement: the typed clearNewTag writes the selector arguments in another
+		// order, and this handler keeps the beet spelling.
+		raw("tag ${block.markerSel("tag=${Tag.NEW}", "distance=..0.5")} remove ${Tag.NEW}")
 		returnValue(1)
 	}
 
@@ -107,7 +112,7 @@ object MessageBlock {
 		raw("execute if data entity @s data.properties.entity_selector run return 1")
 
 		// Legacy fallback for old blocks that still use `range`.
-		function(RaLib.Util.property, nbt { this["name"] = "range"; this["default"] = 16; this["min"] = 1 })
+		readProperty("range", default = 16, min = 1)
 		raw("scoreboard players operation @s ${Obj.TEMP} = #prop ${Obj.TEMP}")
 		raw("execute if score @s ${Obj.TEMP} matches ..0 run scoreboard players set @s ${Obj.TEMP} 16")
 

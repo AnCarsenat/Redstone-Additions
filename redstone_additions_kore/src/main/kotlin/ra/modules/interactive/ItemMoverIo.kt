@@ -14,6 +14,10 @@ import ra.core.raw
 import io.github.ayfri.kore.arguments.types.literals.literal
 import io.github.ayfri.kore.commands.scoreboard.scoreboard
 import io.github.ayfri.kore.arguments.types.literals.self
+import ra.core.executeRun
+import ra.core.executeStoreRun
+import ra.core.returnRun
+import ra.core.Tag
 
 /**
  * The Item Mover's container plumbing: pick an input stack, check and fill the output, consume
@@ -42,7 +46,7 @@ object ItemMoverIo {
 
 	/** Never a vanilla dispenser: only RA custom blocks (markers, or the old armor stands) are valid. */
 	private const val VANILLA_DISPENSER =
-		"if block ~ ~ ~ minecraft:dispenser unless entity @e[type=marker,tag=ra.custom_block,distance=..0.75,limit=1,sort=nearest] unless entity @e[type=armor_stand,tag=ra.custom_block,distance=..0.75,limit=1,sort=nearest]"
+		"if block ~ ~ ~ minecraft:dispenser unless entity @e[type=marker,tag=${Tag.CUSTOM_BLOCK},distance=..0.75,limit=1,sort=nearest] unless entity @e[type=armor_stand,tag=${Tag.CUSTOM_BLOCK},distance=..0.75,limit=1,sort=nearest]"
 
 	fun Ra.registerItemMoverIo() {
 		pack.define(selectInput) { selectInput() }

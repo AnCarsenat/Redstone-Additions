@@ -21,10 +21,11 @@ import ra.core.item.flag
 import ra.core.item.itemSpec
 import ra.core.item.loreLine
 import ra.core.item.raData
-import ra.modules.interactive.callWith
-import ra.modules.interactive.executeRun
 import io.github.ayfri.kore.arguments.types.literals.literal
 import io.github.ayfri.kore.commands.scoreboard.scoreboard
+import ra.core.executeRun
+import ra.core.callWith
+import ra.core.macroCall
 
 /**
  * The Item Crate (the `storage_box/` functions): a whole container's contents packed into one item.
@@ -225,6 +226,6 @@ object StorageBox {
 	 */
 	private fun Function.deliverStack() {
 		raw("data modify storage ra:inventory item set from storage ra:temp mover_item")
-		raw("\$execute at @s positioned \$(output) run function ${RaLib.Inventory.insertOrDrop.asId()}")
+		raw("\$execute at @s positioned \$(output) run ${macroCall(RaLib.Inventory.insertOrDrop)}")
 	}
 }

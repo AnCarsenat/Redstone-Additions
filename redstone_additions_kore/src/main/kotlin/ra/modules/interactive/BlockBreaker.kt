@@ -1,7 +1,6 @@
 package ra.modules.interactive
 
 import io.github.ayfri.kore.arguments.types.literals.self
-import io.github.ayfri.kore.commands.kill
 import io.github.ayfri.kore.commands.scoreboard.scoreboard
 import io.github.ayfri.kore.functions.Function
 import io.github.ayfri.kore.generated.Blocks
@@ -11,7 +10,6 @@ import ra.core.Obj
 import ra.core.Ra
 import ra.core.block.CustomBlock
 import ra.core.block.gogglesHeader
-import ra.core.block.killVanillaDrop
 import ra.core.block.placeBlock
 import ra.core.define
 import ra.core.raw
@@ -19,6 +17,18 @@ import ra.core.item.loreItem
 import ra.core.block.breakCheck
 import ra.core.block.finishPlacement
 import ra.core.blockRegisterMessage
+import ra.core.executeRun
+import ra.core.block.placementGuard
+import ra.core.block.dropItem
+import ra.core.block.blockOnBreak
+import ra.core.block.STONE_BREAK_SOUND
+import ra.core.block.Unlock
+import ra.core.block.recipeResult
+import ra.core.block.shapedRecipe
+import ra.core.block.markerSel
+import ra.core.block.soundListenersSel
+import io.github.ayfri.kore.features.recipes.types.pattern
+import io.github.ayfri.kore.features.recipes.types.key
 
 /**
  * Block Breaker: a dispenser that breaks the block in front of it when powered, at most once a
@@ -36,38 +46,32 @@ object BlockBreaker {
 		readonly(block.id, "cooldown")
 		pack.blockRegisterMessage(block)
 		pack.specGive(block, item)
-		pack.shapedRecipe(
-			block.ns.id, block.id, item,
-			pattern = listOf("CCC", "CDP", "CCC"),
-			keys = listOf("C" to listOf(Items.COBBLESTONE, Items.BLACKSTONE), "P" to listOf(Items.STONE_PICKAXE), "D" to listOf(Items.DISPENSER)),
-			unlock = has(Items.DISPENSER),
-		)
+		pack.shapedRecipe(block.ns, block.id, item.recipeResult(), Unlock(Items.DISPENSER), count = null) {
+			pattern("CCC", "CDP", "CCC")
+			key("C", listOf(Items.COBBLESTONE, Items.BLACKSTONE))
+			key("P", listOf(Items.STONE_PICKAXE))
+			key("D", listOf(Items.DISPENSER))
+		}
 
 		pack.define(block.handlePlacement) {
-			placeGuard(block)
+			placementGuard(block, checkExisting = false)
 			placeBlock(block)
 			finishPlacement(block, removePlaceTag = false, withinBlock = false)
 		}
 		pack.define(block.goggles) { gogglesHeader(block, nameY = 1.0) }
 		pack.define(fire) { fire() }
 
-		val onBreak = pack.define(block.fn("on_break")) {
-			killVanillaDrop(block.physical)
-			dropSpec(item)
-			breakSound()
-			breakCloud()
-			kill(self())
-		}
+		val onBreak = pack.blockOnBreak(block, drop = { dropItem(item) }, sound = STONE_BREAK_SOUND, cloud = true)
 
 		pack.define(block.tick) {
 			breakCheck(block, Blocks.DISPENSER, onBreak)
 
-			raw("scoreboard players add @e[type=marker,tag=${block.tag}] ${Obj.COOLDOWN} 1")
+			raw("scoreboard players add ${block.markerSel()} ${Obj.COOLDOWN} 1")
 
 			// One gated call instead of five identical selector sweeps that each re-tested the
 			// same conditions -- and re-tested them AFTER the first had already changed the
 			// world. See fire.
-			executeRun("as @e[type=marker,tag=${block.tag},scores={${Obj.COOLDOWN}=20..}] at @s if block ~ ~ ~ dispenser[triggered=true] unless block ^ ^ ^1 #air", fire)
+			executeRun("as ${block.markerSel("scores={${Obj.COOLDOWN}=20..}")} at @s if block ~ ~ ~ dispenser[triggered=true] unless block ^ ^ ^1 #air", fire)
 		}
 	}
 
@@ -88,7 +92,7 @@ object BlockBreaker {
 	private fun Function.fire() {
 		scoreboard.players.set(self(), Obj.COOLDOWN, 0)
 		raw("execute positioned ^ ^ ^1 unless block ~ ~ ~ #ra_lib:unbreakable run fill ~ ~ ~ ~ ~ ~ air destroy")
-		raw("playsound minecraft:block.stone.break block @a[distance=..16,scores={${Obj.USER_SOUND}=1..}] ~ ~ ~ 1 0.8")
+		raw("playsound minecraft:block.stone.break block ${soundListenersSel()} ~ ~ ~ 1 0.8")
 		raw("""execute positioned ^ ^ ^1 run particle minecraft:block{block_state:"minecraft:stone"} ~ ~ ~ 0.3 0.3 0.3 0.1 20""")
 	}
 }

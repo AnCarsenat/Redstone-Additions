@@ -1,7 +1,6 @@
 package ra.modules.interactive
 
 import io.github.ayfri.kore.arguments.types.literals.self
-import io.github.ayfri.kore.commands.kill
 import io.github.ayfri.kore.functions.Function
 import io.github.ayfri.kore.generated.Blocks
 import io.github.ayfri.kore.generated.Items
@@ -10,7 +9,6 @@ import ra.core.Obj
 import ra.core.Ra
 import ra.core.block.CustomBlock
 import ra.core.block.gogglesHeader
-import ra.core.block.killVanillaDrop
 import ra.core.block.placeBlock
 import ra.core.define
 import ra.core.raw
@@ -25,6 +23,17 @@ import io.github.ayfri.kore.commands.scoreboard.scoreboard
 import ra.core.block.breakCheck
 import ra.core.block.finishPlacement
 import ra.core.blockRegisterMessage
+import ra.core.executeRun
+import ra.core.block.forEachMarker
+import ra.core.block.placementGuard
+import ra.core.block.dropItem
+import ra.core.block.blockOnBreak
+import ra.core.block.STONE_BREAK_SOUND
+import ra.core.block.Unlock
+import ra.core.block.recipeResult
+import ra.core.block.shapedRecipe
+import io.github.ayfri.kore.features.recipes.types.pattern
+import io.github.ayfri.kore.features.recipes.types.key
 
 /**
  * Item Mover: moves the first stack of the container behind it (`^ ^ ^-1`) into the container in
@@ -42,18 +51,16 @@ object ItemMover {
 		block(block)
 		pack.blockRegisterMessage(block)
 		pack.specGive(block, item)
-		pack.shapedRecipe(
-			block.ns.id, block.id, item,
-			pattern = listOf("CRC", "HOH", "CRC"),
-			keys = listOf(
-				"C" to listOf(Items.COBBLESTONE, Items.BLACKSTONE), "R" to listOf(Items.REDSTONE),
-				"O" to listOf(Items.DISPENSER), "H" to listOf(Items.HOPPER),
-			),
-			unlock = has(Items.DISPENSER),
-		)
+		pack.shapedRecipe(block.ns, block.id, item.recipeResult(), Unlock(Items.DISPENSER), count = null) {
+			pattern("CRC", "HOH", "CRC")
+			key("C", listOf(Items.COBBLESTONE, Items.BLACKSTONE))
+			key("R", listOf(Items.REDSTONE))
+			key("O", listOf(Items.DISPENSER))
+			key("H", listOf(Items.HOPPER))
+		}
 
 		pack.define(block.handlePlacement) {
-			placeGuard(block)
+			placementGuard(block, checkExisting = false)
 			// Dispenser with full 6-directional facing (same block family as the item pipe).
 			placeBlock(block)
 			finishPlacement(block, removePlaceTag = false, withinBlock = false)
@@ -62,13 +69,7 @@ object ItemMover {
 		registerItemMoverIo()
 		pack.define(process) { process() }
 
-		val onBreak = pack.define(block.fn("on_break")) {
-			killVanillaDrop(block.physical)
-			dropSpec(item)
-			breakSound()
-			breakCloud()
-			kill(self())
-		}
+		val onBreak = pack.blockOnBreak(block, drop = { dropItem(item) }, sound = STONE_BREAK_SOUND, cloud = true)
 
 		pack.define(block.tick) {
 			breakCheck(block, Blocks.DISPENSER, onBreak)

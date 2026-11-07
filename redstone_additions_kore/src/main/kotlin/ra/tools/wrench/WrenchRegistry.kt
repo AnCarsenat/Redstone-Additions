@@ -1,7 +1,10 @@
 package ra.tools.wrench
 
+import io.github.ayfri.kore.commands.data
 import io.github.ayfri.kore.commands.function
+import ra.core.Obj
 import ra.core.Ra
+import ra.core.Storage
 import ra.core.WrenchCycle
 import ra.core.define
 import ra.core.raw
@@ -67,9 +70,9 @@ object WrenchRegistry {
 		pack.define(cycleUniGateNotify) {
 			raw("data modify storage ra:temp current_gate set from entity @s data.properties.gate_type")
 			raw("""tellraw @a[distance=..10] [{text:"[Wrench] ",color:"gold"},{text:"UNI Gate mode: ",color:"gray"},{nbt:"current_gate",storage:"ra:temp",color:"light_purple",bold:true}]""")
-			raw("playsound minecraft:block.note_block.hat block @a[distance=..16,scores={ra.u.snd=1..}] ~ ~ ~ 0.5 2")
-			raw("particle minecraft:happy_villager ~ ~0.5 ~ 0.3 0.3 0.3 0 5 normal @a[scores={ra.u.par=1..}]")
-			raw("data remove storage ra:temp current_gate")
+			raw("playsound minecraft:block.note_block.hat block @a[distance=..16,scores={${Obj.USER_SOUND}=1..}] ~ ~ ~ 0.5 2")
+			raw("particle minecraft:happy_villager ~ ~0.5 ~ 0.3 0.3 0.3 0 5 normal @a[scores={${Obj.USER_PARTICLES}=1..}]")
+			data(Storage.TEMP) { remove("current_gate") }
 		}
 	}
 }

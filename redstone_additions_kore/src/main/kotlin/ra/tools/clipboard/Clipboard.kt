@@ -2,11 +2,14 @@ package ra.tools.clipboard
 
 import io.github.ayfri.kore.arguments.types.literals.self
 import io.github.ayfri.kore.commands.advancement
+import io.github.ayfri.kore.commands.data
 import io.github.ayfri.kore.commands.function
 import io.github.ayfri.kore.commands.tag
 import io.github.ayfri.kore.generated.arguments.types.AdvancementArgument
-import ra.api.Goggles
+import net.benwoodworth.knbt.NbtByte
+import ra.core.Obj
 import ra.core.Ra
+import ra.core.Storage
 import ra.core.define
 import ra.core.raw
 import ra.tools.RAY_TARGET
@@ -15,6 +18,7 @@ import ra.tools.ToolItems
 import ra.tools.callWith
 import ra.tools.executeReturnRun
 import ra.tools.executeRun
+import ra.tools.goggles.GogglesRefs
 import ra.tools.tool
 
 /**
@@ -73,21 +77,21 @@ object Clipboard {
 			function(ensureId)
 			// Is the clipboard loaded? That, not the click, decides copy versus apply.
 			raw("execute store result storage ra:temp clip.slot int 1 run scoreboard players get @s ra.clip.id")
-			raw("data remove storage ra:temp clip.kind")
+			data(Storage.TEMP) { remove("clip.kind") }
 			callWith(load, "temp", "clip")
-			raw("data remove storage ra:temp clip_found")
+			data(Storage.TEMP) { remove("clip_found") }
 			executeRun("if data storage ra:temp clip.kind", raycastQuiet, "{action:\"paste\"}")
 			executeRun("unless data storage ra:temp clip.kind", raycastQuiet, "{action:\"copy\"}")
 			// Nothing in front of you is the deliberate way to empty it. Clearing on a miss rather than
 			// on a hit means a slightly-off click can never wipe a working origin.
 			executeRun("unless data storage ra:temp clip_found", clear)
-			raw("data remove storage ra:temp clip_found")
+			data(Storage.TEMP) { remove("clip_found") }
 		}
 
 		// Give this player a slot number if they do not have one yet. As the player.
 		pack.define(ensureId) {
-			raw("execute unless score @s ra.clip.id matches 1.. run scoreboard players add #clip.next ra.temp 1")
-			raw("execute unless score @s ra.clip.id matches 1.. run scoreboard players operation @s ra.clip.id = #clip.next ra.temp")
+			raw("execute unless score @s ra.clip.id matches 1.. run scoreboard players add #clip.next ${Obj.TEMP} 1")
+			raw("execute unless score @s ra.clip.id matches 1.. run scoreboard players operation @s ra.clip.id = #clip.next ${Obj.TEMP}")
 		}
 
 		// {slot}: pull this player's slot back into scratch.
@@ -106,9 +110,9 @@ object Clipboard {
 		pack.define(clear) {
 			raw("execute store result storage ra:temp clip.slot int 1 run scoreboard players get @s ra.clip.id")
 			callWith(clearSlot, "temp", "clip")
-			raw("data remove storage ra:temp clip")
+			data(Storage.TEMP) { remove("clip") }
 			raw("""tellraw @s [$PREFIX,{text:"Cleared. The next block you click becomes the new origin.",color:"gray"}]""")
-			raw("playsound minecraft:item.book.put block @s[scores={ra.u.snd=1..}] ~ ~ ~ 0.7 0.9")
+			raw("playsound minecraft:item.book.put block @s[scores={${Obj.USER_SOUND}=1..}] ~ ~ ~ 0.7 0.9")
 		}
 		pack.define(clearSlot) { raw("\$data remove storage ra:clipboard boards.p\$(slot)") }
 
@@ -130,7 +134,7 @@ object Clipboard {
 		// Make this block the origin: its settings become what every later click hands out.
 		// As the target block's marker.
 		pack.define(copy) {
-			raw("data modify storage ra:temp clip_found set value 1b")
+			data(Storage.TEMP) { modify("clip_found", NbtByte(1)) }
 			// Only data.properties travels. data.data is a block's private working state -- a pump's
 			// cooldown, a gate's latch, a network id -- and copying that onto another block would hand
 			// it a half-finished operation belonging to somewhere else. Settings are what a player
@@ -144,15 +148,15 @@ object Clipboard {
 			raw("execute store result storage ra:temp clip.slot int 1 run scoreboard players get $HOLDER ra.clip.id")
 			callWith(store, "temp", "clip")
 			raw("""tellraw $HOLDER [$PREFIX,{text:"Origin set: ",color:"gray"},{nbt:"block_name",storage:"ra:temp",color:"yellow"},{text:". Click others of the same kind to match it.",color:"gray"}]""")
-			raw("playsound minecraft:item.book.page_turn block @a[tag=ra.clip_active,limit=1,scores={ra.u.snd=1..}] ~ ~ ~ 0.8 1.6")
-			raw("data remove storage ra:temp clip")
+			raw("playsound minecraft:item.book.page_turn block @a[tag=ra.clip_active,limit=1,scores={${Obj.USER_SOUND}=1..}] ~ ~ ~ 0.8 1.6")
+			data(Storage.TEMP) { remove("clip") }
 		}
 
 		// Apply the holder's clipboard onto this block. As the target block's marker.
 		pack.define(paste) {
-			raw("data modify storage ra:temp clip_found set value 1b")
+			data(Storage.TEMP) { modify("clip_found", NbtByte(1)) }
 			raw("execute store result storage ra:temp clip.slot int 1 run scoreboard players get $HOLDER ra.clip.id")
-			raw("data remove storage ra:temp clip.kind")
+			data(Storage.TEMP) { remove("clip.kind") }
 			callWith(load, "temp", "clip")
 			raw("""execute unless data storage ra:temp clip.kind run return run tellraw $HOLDER [$PREFIX,{text:"No origin set — click a block to choose one.",color:"gray"}]""")
 			// Same kind only. Property names overlap between unrelated blocks -- half the pack has
@@ -163,10 +167,10 @@ object Clipboard {
 			executeReturnRun("unless data storage ra:temp clip_ok", refuse)
 			callWith(apply, "temp", "clip")
 			raw("""tellraw $HOLDER [$PREFIX,{text:"Matched this ",color:"gray"},{nbt:"block_name",storage:"ra:temp",color:"yellow"},{text:" to the origin.",color:"gray"}]""")
-			raw("playsound minecraft:block.amethyst_block.chime block @a[tag=ra.clip_active,limit=1,scores={ra.u.snd=1..}] ~ ~ ~ 0.7 1.4")
-			raw("particle minecraft:happy_villager ~ ~0.8 ~ 0.3 0.3 0.3 0.02 6 normal @a[scores={ra.u.par=1..}]")
-			raw("data remove storage ra:temp clip")
-			raw("data remove storage ra:temp clip_ok")
+			raw("playsound minecraft:block.amethyst_block.chime block @a[tag=ra.clip_active,limit=1,scores={${Obj.USER_SOUND}=1..}] ~ ~ ~ 0.7 1.4")
+			raw("particle minecraft:happy_villager ~ ~0.8 ~ 0.3 0.3 0.3 0.02 6 normal @a[scores={${Obj.USER_PARTICLES}=1..}]")
+			data(Storage.TEMP) { remove("clip") }
+			data(Storage.TEMP) { remove("clip_ok") }
 		}
 
 		// {kind}: does the copied block's name match the one being pasted onto? Sets storage ra:temp
@@ -189,16 +193,16 @@ object Clipboard {
 		// Say why the paste did not happen, naming both kinds.
 		pack.define(refuse) {
 			raw("""tellraw $HOLDER [$PREFIX,{text:"Origin is a ",color:"gray"},{nbt:"clip.kind",storage:"ra:temp",color:"yellow"},{text:" — that is a ",color:"gray"},{nbt:"block_name",storage:"ra:temp",color:"yellow"},{text:".",color:"gray"}]""")
-			raw("playsound minecraft:block.note_block.bass block @a[tag=ra.clip_active,limit=1,scores={ra.u.snd=1..}] ~ ~ ~ 0.7 0.7")
-			raw("data remove storage ra:temp clip")
-			raw("data remove storage ra:temp clip_ok")
+			raw("playsound minecraft:block.note_block.bass block @a[tag=ra.clip_active,limit=1,scores={${Obj.USER_SOUND}=1..}] ~ ~ ~ 0.7 0.7")
+			data(Storage.TEMP) { remove("clip") }
+			data(Storage.TEMP) { remove("clip_ok") }
 		}
 	}
 
 	/** Ask this marker's goggles function for its name only: into storage ra:temp block_name. */
 	private fun io.github.ayfri.kore.functions.Function.blockNameOnly() {
-		raw("data modify storage ra:temp name_only set value 1b")
-		function(Goggles.drawBlock)
-		raw("data remove storage ra:temp name_only")
+		data(Storage.TEMP) { modify("name_only", NbtByte(1)) }
+		function(GogglesRefs.drawBlock)
+		data(Storage.TEMP) { remove("name_only") }
 	}
 }

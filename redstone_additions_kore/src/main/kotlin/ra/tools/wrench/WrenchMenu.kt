@@ -1,9 +1,15 @@
 package ra.tools.wrench
 
+import io.github.ayfri.kore.arguments.types.literals.literal
 import io.github.ayfri.kore.arguments.types.literals.self
+import io.github.ayfri.kore.commands.data
 import io.github.ayfri.kore.commands.function
+import io.github.ayfri.kore.commands.scoreboard.scoreboard
 import io.github.ayfri.kore.commands.tag
+import net.benwoodworth.knbt.NbtByte
+import ra.core.Obj
 import ra.core.Ra
+import ra.core.Storage
 import ra.core.define
 import ra.core.raw
 import ra.tools.callWith
@@ -50,13 +56,13 @@ object WrenchMenu {
 		// data.type is how both registries are looked up. A data pack cannot ask an entity which of
 		// its tags names its kind, so placement writes the kind down.
 		pack.define(cycleBlock) {
-			raw("data modify storage ra:temp wrench_found set value 1b")
+			data(Storage.TEMP) { modify("wrench_found", NbtByte(1)) }
 			raw("""execute unless data entity @s data.type run return run tellraw @a[distance=..10] [{text:"[Wrench] ",color:"gold"},{text:"This block predates wrench menus — break and replace it.",color:"gray"}]""")
 			function(loadForBlock)
-			raw("scoreboard players set #wr.n ra.temp 0")
-			raw("execute if data storage ra:wrench list run execute store result score #wr.n ra.temp run data get storage ra:wrench list")
-			raw("""execute if score #wr.n ra.temp matches 0 run return run tellraw @a[distance=..10] [{text:"[Wrench] ",color:"gold"},{text:"This block doesn't support cycling.",color:"gray"}]""")
-			executeReturnRun("if score #wr.n ra.temp matches 1", runEntry, "{i:0}")
+			scoreboard.players.set(literal("#wr.n"), Obj.TEMP, 0)
+			raw("execute if data storage ra:wrench list run execute store result score #wr.n ${Obj.TEMP} run data get storage ra:wrench list")
+			raw("""execute if score #wr.n ${Obj.TEMP} matches 0 run return run tellraw @a[distance=..10] [{text:"[Wrench] ",color:"gold"},{text:"This block doesn't support cycling.",color:"gray"}]""")
+			executeReturnRun("if score #wr.n ${Obj.TEMP} matches 1", runEntry, "{i:0}")
 			function(openMenu)
 		}
 
@@ -78,15 +84,15 @@ object WrenchMenu {
 		// any differently -- unfiltered, say -- index 1 would mean a different property than the one
 		// the player read on screen.
 		pack.define(loadForBlock) {
-			raw("data remove storage ra:wrench q")
-			raw("data remove storage ra:wrench ro")
+			data(Storage.WRENCH) { remove("q") }
+			data(Storage.WRENCH) { remove("ro") }
 			raw("data modify storage ra:wrench q.type set from entity @s data.type")
 			callWith(loadEntries, "wrench", "q")
 			callWith(loadReadonly, "wrench", "q")
 			function(filterReadonly)
 		}
 		pack.define(loadEntries) {
-			raw("data remove storage ra:wrench list")
+			data(Storage.WRENCH) { remove("list") }
 			raw("\$data modify storage ra:wrench list set from storage ra:wrench cyclables.\"\$(type)\"")
 		}
 		pack.define(loadReadonly) {
@@ -101,7 +107,7 @@ object WrenchMenu {
 			raw("data modify storage ra:wrench keep set value []")
 			function(filterNext)
 			raw("data modify storage ra:wrench list set from storage ra:wrench keep")
-			raw("data remove storage ra:wrench keep")
+			data(Storage.WRENCH) { remove("keep") }
 		}
 		pack.define(filterNext) {
 			raw("execute unless data storage ra:wrench list[0] run return 0")
@@ -136,7 +142,7 @@ object WrenchMenu {
 			executeRun("as @a[tag=ra.wrench_user,limit=1]", rememberTarget)
 			raw("""tellraw @a[tag=ra.wrench_user,limit=1] [{text:""}]""")
 			raw("""tellraw @a[tag=ra.wrench_user,limit=1] [{text:"── ",color:"dark_gray"},{nbt:"data.type",entity:"@s",color:"gold",bold:true},{text:" ──",color:"dark_gray"}]""")
-			raw("scoreboard players set #wr.i ra.temp 0")
+			scoreboard.players.set(literal("#wr.i"), Obj.TEMP, 0)
 			function(menuRowNext)
 			tag(self()) { remove("ra.wrench.sel") }
 		}
@@ -157,12 +163,12 @@ object WrenchMenu {
 			// The button carries index+1. A trigger score of 0 is indistinguishable from "nobody
 			// clicked anything", and row 0 is a real row -- so every action id is shifted by one and
 			// menu_action shifts it back.
-			raw("scoreboard players operation #wr.btn ra.temp = #wr.i ra.temp")
-			raw("scoreboard players add #wr.btn ra.temp 1")
-			raw("execute store result storage ra:wrench row.i int 1 run scoreboard players get #wr.btn ra.temp")
+			raw("scoreboard players operation #wr.btn ${Obj.TEMP} = #wr.i ${Obj.TEMP}")
+			scoreboard.players.add(literal("#wr.btn"), Obj.TEMP, 1)
+			raw("execute store result storage ra:wrench row.i int 1 run scoreboard players get #wr.btn ${Obj.TEMP}")
 			callWith(menuRow, "wrench", "row")
 			raw("data remove storage ra:wrench list[0]")
-			raw("scoreboard players add #wr.i ra.temp 1")
+			scoreboard.players.add(literal("#wr.i"), Obj.TEMP, 1)
 			function(menuRowNext)
 		}
 
@@ -171,14 +177,14 @@ object WrenchMenu {
 		// The trigger value is the row index. The block is whichever one this player last opened a
 		// menu on, remembered as three scores -- see open_menu for why it is not a re-raycast.
 		pack.define(menuAction) {
-			raw("execute store result score #wr.act ra.temp run scoreboard players get @s ra.wrench")
-			raw("scoreboard players remove #wr.act ra.temp 1")
-			raw("scoreboard players set @s ra.wrench 0")
+			raw("execute store result score #wr.act ${Obj.TEMP} run scoreboard players get @s ra.wrench")
+			scoreboard.players.remove(literal("#wr.act"), Obj.TEMP, 1)
+			scoreboard.players.set(self(), "ra.wrench", 0)
 			raw("scoreboard players enable @s ra.wrench")
 			raw("""execute unless score @s ra.wr.x matches -2147483648.. run return run tellraw @s [{text:"[Wrench] ",color:"gold"},{text:"Nothing selected — shift-click a block first.",color:"gray"}]""")
 			for (axis in listOf("x", "y", "z"))
 				raw("execute store result storage ra:wrench at.$axis int 1 run scoreboard players get @s ra.wr.$axis")
-			raw("execute store result storage ra:wrench at.i int 1 run scoreboard players get #wr.act ra.temp")
+			raw("execute store result storage ra:wrench at.i int 1 run scoreboard players get #wr.act ${Obj.TEMP}")
 			tag(self()) { add("ra.wrench_user") }
 			callWith(menuAt, "wrench", "at")
 			tag(self()) { remove("ra.wrench_user") }

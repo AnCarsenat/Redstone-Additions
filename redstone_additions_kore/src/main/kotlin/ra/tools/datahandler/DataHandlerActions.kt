@@ -1,7 +1,11 @@
 package ra.tools.datahandler
 
+import io.github.ayfri.kore.arguments.types.literals.literal
+import io.github.ayfri.kore.arguments.types.literals.self
 import io.github.ayfri.kore.commands.function
+import io.github.ayfri.kore.commands.scoreboard.scoreboard
 import ra.api.RaLib
+import ra.core.Obj
 import ra.core.Ra
 import ra.core.define
 import ra.core.raw
@@ -63,7 +67,7 @@ object DataHandlerActions {
 			raw("execute if score @s ra.dh.action matches 93 run scoreboard players set @s ra.dh.pending 0")
 			raw("""execute if score @s ra.dh.action matches 93 run tellraw @s [$PREFIX,{text:"Pending edit canceled.",color:"gray"}]""")
 
-			raw("scoreboard players set @s ra.dh.action 0")
+			scoreboard.players.set(self(), "ra.dh.action", 0)
 			raw("scoreboard players enable @s ra.dh.action")
 		}
 
@@ -78,24 +82,24 @@ object DataHandlerActions {
 			val gone = "execute unless entity @s[tag=ra.input.active] unless score @s ra.input.state matches 2"
 			raw("$gone run scoreboard players set @s ra.dh.pending 0")
 			raw("$gone run return 0")
-			executeRun("store result score @s ra.temp", RaLib.Input.poll)
-			raw("execute unless score @s ra.temp matches 2 run return 0")
-			executeRun("store result score @s ra.temp", RaLib.Input.consume)
-			raw("execute unless score @s ra.temp matches 1 run return 0")
+			executeRun("store result score @s ${Obj.TEMP}", RaLib.Input.poll)
+			raw("execute unless score @s ${Obj.TEMP} matches 2 run return 0")
+			executeRun("store result score @s ${Obj.TEMP}", RaLib.Input.consume)
+			raw("execute unless score @s ${Obj.TEMP} matches 1 run return 0")
 			// One write for every property: the pending id is 100 + the registry index, and storage
 			// ra:dh pending_name / pending_kind carry the rest.
 			executeRun("if score @s ra.dh.pending matches 100..", genericApply)
-			raw("scoreboard players set @s ra.dh.pending 0")
+			scoreboard.players.set(self(), "ra.dh.pending", 0)
 			raw("""tellraw @s [$PREFIX,{text:"Property updated.",color:"green"}]""")
 			function(refresh)
 		}
 
 		// A property row's button, as the player, with ra.dh.action at 100 + row index.
 		pack.define(genericAction) {
-			raw("scoreboard players operation #dh.idx ra.temp = @s ra.dh.action")
-			raw("scoreboard players remove #dh.idx ra.temp 100")
+			raw("scoreboard players operation #dh.idx ${Obj.TEMP} = @s ra.dh.action")
+			scoreboard.players.remove(literal("#dh.idx"), Obj.TEMP, 100)
 			raw("data modify storage ra:dh q set value {}")
-			raw("execute store result storage ra:dh q.i int 1 run scoreboard players get #dh.idx ra.temp")
+			raw("execute store result storage ra:dh q.i int 1 run scoreboard players get #dh.idx ${Obj.TEMP}")
 			callWith(DataHandlerProps.pickName, "dh", "q")
 			raw("execute unless data storage ra:dh pending_name run return 0")
 			raw("data modify storage ra:dh q.name set from storage ra:dh pending_name")
@@ -109,18 +113,18 @@ object DataHandlerActions {
 			callWith(DataHandlerProps.probe, "dh", "q")
 
 			// A flag needs no input: flip it and show the result.
-			executeRun("if score #dh.type ra.temp matches 2", DataHandlerProps.toggle, "with storage ra:dh q")
-			executeRun("if score #dh.type ra.temp matches 2", refresh)
-			raw("execute if score #dh.type ra.temp matches 2 run return 0")
+			executeRun("if score #dh.type ${Obj.TEMP} matches 2", DataHandlerProps.toggle, "with storage ra:dh q")
+			executeRun("if score #dh.type ${Obj.TEMP} matches 2", refresh)
+			raw("execute if score #dh.type ${Obj.TEMP} matches 2 run return 0")
 
 			// Everything else waits for the input form. The kind is remembered so the apply step does
 			// not have to probe a value that is about to be replaced.
 			raw("scoreboard players operation @s ra.dh.pending = @s ra.dh.action")
 			raw("data modify storage ra:dh pending_kind set value \"text\"")
-			raw("execute if score #dh.type ra.temp matches 1 run data modify storage ra:dh pending_kind set value \"number\"")
-			raw("execute if score #dh.type ra.temp matches 3 run data modify storage ra:dh pending_kind set value \"list\"")
-			executeRun("if score #dh.type ra.temp matches 1", DataHandlerProps.askNumber, "with storage ra:dh q")
-			executeRun("unless score #dh.type ra.temp matches 1", DataHandlerProps.askText, "with storage ra:dh q")
+			raw("execute if score #dh.type ${Obj.TEMP} matches 1 run data modify storage ra:dh pending_kind set value \"number\"")
+			raw("execute if score #dh.type ${Obj.TEMP} matches 3 run data modify storage ra:dh pending_kind set value \"list\"")
+			executeRun("if score #dh.type ${Obj.TEMP} matches 1", DataHandlerProps.askNumber, "with storage ra:dh q")
+			executeRun("unless score #dh.type ${Obj.TEMP} matches 1", DataHandlerProps.askText, "with storage ra:dh q")
 		}
 
 		// Write a finished input into the property it was asked for. As the player.
@@ -140,9 +144,9 @@ object DataHandlerActions {
 		for ((fn, mode, max) in listOf(Triple(requestNumber, 3, 9999), Triple(requestText, 2, 120)))
 			pack.define(fn) {
 				function(RaLib.Input.cancel)
-				raw("scoreboard players set @s ra.input.mode $mode")
-				raw("scoreboard players set @s ra.input.min 0")
-				raw("scoreboard players set @s ra.input.max $max")
+				scoreboard.players.set(self(), "ra.input.mode", mode)
+				scoreboard.players.set(self(), "ra.input.min", 0)
+				scoreboard.players.set(self(), "ra.input.max", max)
 				function(RaLib.Input.sessionCreate)
 				function(RaLib.Input.routerSelectBackend)
 				function(RaLib.Input.routerOpen)

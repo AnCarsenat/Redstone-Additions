@@ -3,11 +3,13 @@ package ra.tools.goggles.billboard
 import io.github.ayfri.kore.commands.function
 import ra.api.Goggles
 import ra.api.Goggles.Billboard
+import ra.core.Obj
 import ra.core.Ra
 import ra.core.define
 import ra.core.raw
 import ra.tools.callWith
 import ra.tools.executeRun
+import ra.tools.goggles.GogglesRefs
 
 /** The text_display a billboard line is drawn on; only the `text` and `scale` differ. */
 private fun display(text: String, background: Long, scale: String) =
@@ -48,19 +50,19 @@ internal fun Ra.registerBillboardRender() {
 		for ((key, field) in listOf("name_x" to "x", "name_y" to "y", "name_z" to "z", "name_scale" to "scale"))
 			raw("$shown if data storage ra:temp billboard.$key run data modify storage ra:temp billboard_render.$field set from storage ra:temp billboard.$key")
 		raw("\$$shown run data modify storage ra:temp billboard_render.name set value \"\$(name)\"")
-		executeRun("if data storage ra:temp billboard.show_name", Billboard.renderName, "with storage ra:temp billboard_render")
+		executeRun("if data storage ra:temp billboard.show_name", GogglesRefs.Billboard.renderName, "with storage ra:temp billboard_render")
 		// No status section here any more. Each block emits its own lines from its
 		// blocks/<name>/goggles function, using prop_line / data_line / text_line, which is what
 		// removed the central read_status dispatch table.
 	}
 
 	// MACRO {name, x, y, z, scale}: a centered block name billboard.
-	pack.define(Billboard.renderName) {
+	pack.define(GogglesRefs.Billboard.renderName) {
 		raw("\$execute $ANCHOR run summon text_display ~\$(x) ~\$(y) ~\$(z) " + display("""{text:"$(name)",color:"gold",bold:false}""", 1073741824, MACRO_SCALE))
 	}
 
 	// MACRO {x, y, z, scale, label, value, suffix, value_color}: one literal status line.
-	pack.define(Billboard.renderLiteralLine) {
+	pack.define(GogglesRefs.Billboard.renderLiteralLine) {
 		raw(
 			"\$execute $ANCHOR run summon text_display ~\$(x) ~\$(y) ~\$(z) " +
 				display("""[{text:"$(label)",color:"gray"},{text:"$(value)",color:"$(value_color)"},{text:"$(suffix)",color:"gray"}]""", 1073741824, MACRO_SCALE)
@@ -68,7 +70,7 @@ internal fun Ra.registerBillboardRender() {
 	}
 
 	// MACRO {x, y, z, ox, oy, oz, label, color, scale}: one I/O label.
-	pack.define(Billboard.renderIoLine) {
+	pack.define(GogglesRefs.Billboard.renderIoLine) {
 		raw(
 			"\$execute positioned ~\$(x) ~\$(y) ~\$(z) align xyz positioned ~0.5 ~0.5 ~0.5 run summon text_display ~\$(ox) ~\$(oy) ~\$(oz) " +
 				display("""{text:"$(label)",color:"$(color)",italic:false}""", 553648127, MACRO_SCALE)
@@ -79,7 +81,7 @@ internal fun Ra.registerBillboardRender() {
 	//   y = vertical offset (relative to the anchor), x/z = optional horizontal offsets,
 	//   scale = optional text scale, label / suffix = gray text, value = literal text,
 	//   value_color = color for the value.
-	pack.define(Billboard.showLiteralLine) {
+	pack.define(GogglesRefs.Billboard.showLiteralLine) {
 		executeRun("unless data storage ra:display offsets.status_line", Billboard.initOffsets)
 		for (axis in listOf("x", "y", "z", "scale"))
 			raw("execute unless data storage ra:temp status_literal.$axis run data modify storage ra:temp status_literal.$axis set from storage ra:display offsets.status_line.$axis")
@@ -89,9 +91,9 @@ internal fun Ra.registerBillboardRender() {
 		// the block corner and the block is 1 tall, so anything below -0.3 is inside it. A block with
 		// more lines than fit now piles the extras on the bottom rung, which is ugly but readable --
 		// being inside the block was neither.
-		raw("execute store result score #gg.y ra.temp run data get storage ra:temp status_literal.y 100")
-		raw("execute if score #gg.y ra.temp matches ..-25 run data modify storage ra:temp status_literal.y set value -0.25d")
-		callWith(Billboard.renderLiteralLine, "temp", "status_literal")
+		raw("execute store result score #gg.y ${Obj.TEMP} run data get storage ra:temp status_literal.y 100")
+		raw("execute if score #gg.y ${Obj.TEMP} matches ..-25 run data modify storage ra:temp status_literal.y set value -0.25d")
+		callWith(GogglesRefs.Billboard.renderLiteralLine, "temp", "status_literal")
 	}
 
 	// Render one colored I/O label from storage ra:temp io.
@@ -103,26 +105,26 @@ internal fun Ra.registerBillboardRender() {
 		raw("execute unless data storage ra:temp io.color run data modify storage ra:temp io.color set value \"white\"")
 		for ((field, offset) in listOf("ox" to "x", "oy" to "y", "oz" to "z", "scale" to "scale"))
 			raw("execute unless data storage ra:temp io.$field run data modify storage ra:temp io.$field set from storage ra:display offsets.io_label.$offset")
-		callWith(Billboard.renderIoLine, "temp", "io")
+		callWith(GogglesRefs.Billboard.renderIoLine, "temp", "io")
 	}
 
 	// MACRO {label, x, y, z}: one colored indicator at an I/O block, as the multiblock marker.
 	// Green = Input, Red = Output, Yellow = Control.
-	for ((fn, color) in listOf(Billboard.showInput to "green", Billboard.showOutput to "red", Billboard.showControl to "yellow"))
+	for ((fn, color) in listOf(GogglesRefs.Billboard.showInput to "green", GogglesRefs.Billboard.showOutput to "red", GogglesRefs.Billboard.showControl to "yellow"))
 		pack.define(fn) {
 			raw("""${'$'}data modify storage ra:temp io set value {x:$(x),y:$(y),z:$(z),label:"$(label)",color:"$color"}""")
 			function(Billboard.showIoLine)
 		}
 
 	// MACRO {name}: multiblock name + I/O indicators. As the multiblock marker, at its base.
-	pack.define(Billboard.handleMultiblock) {
+	pack.define(GogglesRefs.Billboard.handleMultiblock) {
 		raw("\$summon text_display ~ ~2.2 ~ " + display("""{text:"$(name)",color:"green",bold:true}""", 1073741824, "0.6f"))
 		// Copy each indicator's offsets + label to temp storage, then call its show function.
 		val io = listOf(
-			Triple("inputs.input_1", "Input (Material)", Billboard.showInput),
-			Triple("inputs.input_2", "Input (Fuel)", Billboard.showInput),
-			Triple("outputs.output_1", "Output", Billboard.showOutput),
-			Triple("controls.redstone_in", "Redstone Control", Billboard.showControl),
+			Triple("inputs.input_1", "Input (Material)", GogglesRefs.Billboard.showInput),
+			Triple("inputs.input_2", "Input (Fuel)", GogglesRefs.Billboard.showInput),
+			Triple("outputs.output_1", "Output", GogglesRefs.Billboard.showOutput),
+			Triple("controls.redstone_in", "Redstone Control", GogglesRefs.Billboard.showControl),
 		)
 		for ((path, label, show) in io) {
 			raw("execute if data entity @s data.$path run data modify storage ra:temp io set from entity @s data.$path")

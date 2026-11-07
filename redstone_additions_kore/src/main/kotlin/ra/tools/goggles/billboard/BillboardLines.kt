@@ -1,12 +1,16 @@
 package ra.tools.goggles.billboard
 
 import io.github.ayfri.kore.arguments.types.resources.FunctionArgument
+import io.github.ayfri.kore.commands.data
+import io.github.ayfri.kore.commands.function
 import ra.api.Goggles.Billboard
+import ra.core.Obj
 import ra.core.Ra
+import ra.core.Storage
 import ra.core.define
 import ra.core.raw
 import ra.tools.callWith
-import io.github.ayfri.kore.commands.function
+import ra.tools.goggles.GogglesRefs
 
 /**
  * The line writers a block's `goggles` function calls, as the block marker at its position.
@@ -41,15 +45,15 @@ internal fun Ra.registerBillboardLines() {
 
 	// {label,value,color,suffix,y}: a literal value.
 	pack.define(Billboard.textLine) {
-		raw("data remove storage ra:temp status_literal")
+		data(Storage.TEMP) { remove("status_literal") }
 		raw("""${'$'}data modify storage ra:temp status_literal set value {y:$(y),label:"$(label)",value:"$(value)",value_color:"$(color)",suffix:"$(suffix)"}""")
-		callWith(Billboard.showLiteralLine, "temp", "status_literal")
+		callWith(GogglesRefs.Billboard.showLiteralLine, "temp", "status_literal")
 	}
 	pack.define(Billboard.stackedTextLine) {
-		raw("data remove storage ra:temp status_literal")
+		data(Storage.TEMP) { remove("status_literal") }
 		raw("""${'$'}data modify storage ra:temp status_literal set value {label:"$(label)",value:"$(value)",value_color:"$(color)",suffix:"$(suffix)"}""")
-		function(Billboard.stackNext)
-		callWith(Billboard.showLiteralLine, "temp", "status_literal")
+		function(GogglesRefs.Billboard.stackNext)
+		callWith(GogglesRefs.Billboard.showLiteralLine, "temp", "status_literal")
 	}
 
 	// {top,step}: start a stack of status lines at a height this block chooses. Before any stacked_*.
@@ -57,17 +61,17 @@ internal fun Ra.registerBillboardLines() {
 	// the block and each following one 0.2 lower. Integers because macro arguments are pasted as
 	// text and scoreboards do the arithmetic.
 	pack.define(Billboard.stackReset) {
-		raw("\$scoreboard players set #gg.stack_y ra.temp \$(top)")
-		raw("\$scoreboard players set #gg.stack_step ra.temp \$(step)")
+		raw("\$scoreboard players set #gg.stack_y ${Obj.TEMP} \$(top)")
+		raw("\$scoreboard players set #gg.stack_step ${Obj.TEMP} \$(step)")
 	}
 
 	// Write the next stacked height into the line being built, then step down.
-	pack.define(Billboard.stackNext) {
+	pack.define(GogglesRefs.Billboard.stackNext) {
 		// A block that forgot stack_reset still gets a sane ladder rather than a broken line.
-		raw("execute unless score #gg.stack_y ra.temp = #gg.stack_y ra.temp run scoreboard players set #gg.stack_y ra.temp 80")
-		raw("execute unless score #gg.stack_step ra.temp = #gg.stack_step ra.temp run scoreboard players set #gg.stack_step ra.temp 20")
-		raw("execute store result storage ra:temp status_literal.y double 0.01 run scoreboard players get #gg.stack_y ra.temp")
-		raw("scoreboard players operation #gg.stack_y ra.temp -= #gg.stack_step ra.temp")
+		raw("execute unless score #gg.stack_y ${Obj.TEMP} = #gg.stack_y ${Obj.TEMP} run scoreboard players set #gg.stack_y ${Obj.TEMP} 80")
+		raw("execute unless score #gg.stack_step ${Obj.TEMP} = #gg.stack_step ${Obj.TEMP} run scoreboard players set #gg.stack_step ${Obj.TEMP} 20")
+		raw("execute store result storage ra:temp status_literal.y double 0.01 run scoreboard players get #gg.stack_y ${Obj.TEMP}")
+		raw("scoreboard players operation #gg.stack_y ${Obj.TEMP} -= #gg.stack_step ${Obj.TEMP}")
 	}
 
 	// {id:"minecraft:iron_ingot",y:0.9}: draw one item, floating, as part of the readout.
@@ -88,10 +92,10 @@ internal fun Ra.registerBillboardLines() {
 /** A line showing `data.<source>.$(path)` from the marker, at `$(y)` or at the next stacked height. */
 private fun Ra.valueLine(fn: FunctionArgument, source: String, stacked: Boolean) = pack.define(fn) {
 	val y = if (stacked) "" else "y:$(y),"
-	raw("data remove storage ra:temp status_literal")
+	data(Storage.TEMP) { remove("status_literal") }
 	raw("""${'$'}data modify storage ra:temp status_literal set value {${y}label:"$(label)",value:"N/A",value_color:"red",suffix:"$(suffix)"}""")
 	raw("\$execute if data entity @s data.$source.\$(path) run data modify storage ra:temp status_literal.value set from entity @s data.$source.\$(path)")
 	raw("\$execute if data entity @s data.$source.\$(path) run data modify storage ra:temp status_literal.value_color set value \"\$(color)\"")
-	if (stacked) function(Billboard.stackNext)
-	callWith(Billboard.showLiteralLine, "temp", "status_literal")
+	if (stacked) function(GogglesRefs.Billboard.stackNext)
+	callWith(GogglesRefs.Billboard.showLiteralLine, "temp", "status_literal")
 }

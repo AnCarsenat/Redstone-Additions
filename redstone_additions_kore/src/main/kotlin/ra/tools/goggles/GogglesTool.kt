@@ -1,7 +1,9 @@
 package ra.tools.goggles
 
-import ra.api.Goggles
+import io.github.ayfri.kore.arguments.types.literals.literal
+import io.github.ayfri.kore.commands.scoreboard.scoreboard
 import ra.api.Settings
+import ra.core.Obj
 import ra.core.Ra
 import ra.core.define
 import ra.core.raw
@@ -25,13 +27,13 @@ object GogglesTool {
 	private val SLOTS = listOf("armor.head", "weapon.mainhand", "weapon.offhand")
 
 	fun Ra.registerGoggles() {
-		pack.define(Goggles.give) {
+		pack.define(GogglesRefs.give) {
 			raw("give @s ${ToolItems.goggles.argument.removePrefix("minecraft:")}")
 			raw("""tellraw @s [{text:"[",color:"dark_gray"},{text:"RA",color:"gold",bold:true},{text:"] ",color:"dark_gray"},{text:"Given ",color:"green"},{text:"Goggles",color:"gold"},{text:"!",color:"green"}]""")
 		}
 
 		// Called every tick from ra:tick.
-		pack.define(Goggles.tick) {
+		pack.define(GogglesRefs.tick) {
 			for (slot in SLOTS)
 				raw("execute as @a at @s if items entity @s $slot *[custom_data~{ra:{goggles:1b}}] run tag @s add ra.goggles_active")
 
@@ -44,11 +46,11 @@ object GogglesTool {
 			// The interval is a setting, so the threshold is a score rather than a literal --
 			// `matches` cannot take one. Read once per tick, which is cheap beside the sweep it is
 			// deciding whether to run.
-			raw("scoreboard players add #goggles_timer ra.temp 1")
-			executeRun("store result score #goggles_want ra.temp", Settings.get, "{key:\"goggles_redraw\",default:20}")
-			raw("execute if score #goggles_want ra.temp matches ..0 run scoreboard players set #goggles_want ra.temp 20")
-			raw("execute if score #goggles_timer ra.temp < #goggles_want ra.temp run return 0")
-			raw("scoreboard players set #goggles_timer ra.temp 0")
+			scoreboard.players.add(literal("#goggles_timer"), Obj.TEMP, 1)
+			executeRun("store result score #goggles_want ${Obj.TEMP}", Settings.get, "{key:\"goggles_redraw\",default:20}")
+			raw("execute if score #goggles_want ${Obj.TEMP} matches ..0 run scoreboard players set #goggles_want ${Obj.TEMP} 20")
+			raw("execute if score #goggles_timer ${Obj.TEMP} < #goggles_want ${Obj.TEMP} run return 0")
+			scoreboard.players.set(literal("#goggles_timer"), Obj.TEMP, 0)
 
 			// Remove old billboards. Item displays as well as text ones since blocks can draw an item
 			// into their readout -- see billboard/item_line. A display left behind by this sweep is a
@@ -64,10 +66,10 @@ object GogglesTool {
 			// scans go through a macro. One instantiation per redraw, not per player.
 			executeRun("store result storage ra:temp goggles.range int 1", Settings.get, "{key:\"goggles_range\",default:16}")
 			raw("execute if data storage ra:temp goggles{range:0} run data modify storage ra:temp goggles.range set value 16")
-			callWith(Goggles.scanRange, "temp", "goggles")
+			callWith(GogglesRefs.scanRange, "temp", "goggles")
 
-			executeRun("as @e[type=marker,tag=ra.goggles_seen,tag=ra.custom_block] at @s", Goggles.drawBlock)
-			executeRun("as @e[type=marker,tag=ra.goggles_seen,tag=ra.multiblock] at @s", Goggles.drawMultiblock)
+			executeRun("as @e[type=marker,tag=ra.goggles_seen,tag=ra.custom_block] at @s", GogglesRefs.drawBlock)
+			executeRun("as @e[type=marker,tag=ra.goggles_seen,tag=ra.multiblock] at @s", GogglesRefs.drawMultiblock)
 
 			raw("tag @e[type=marker,tag=ra.goggles_seen] remove ra.goggles_seen")
 			// Re-applied next tick if still wearing/holding.
@@ -76,7 +78,7 @@ object GogglesTool {
 
 		// {range}: tag everything a goggles wearer can see. A selector's `distance` is part of the
 		// command text and cannot read a score, which is the only reason these two lines are a macro.
-		pack.define(Goggles.scanRange) {
+		pack.define(GogglesRefs.scanRange) {
 			for (kind in listOf("ra.custom_block", "ra.multiblock"))
 				raw("\$execute as @a[tag=ra.goggles_active] at @s run tag @e[type=marker,tag=$kind,distance=..\$(range)] add ra.goggles_seen")
 		}
@@ -84,13 +86,13 @@ object GogglesTool {
 		// Pure routing, built from the registry: what each block shows, and what it is called, is
 		// defined by that block in its own goggles function. ra:tools/block_name reuses this same
 		// dispatch to resolve just the name. As the block's marker, at the block position.
-		pack.define(Goggles.drawBlock) {
+		pack.define(GogglesRefs.drawBlock) {
 			for (route in goggles) executeRun("if entity @s[tag=${route.tag}]", route.fn)
 		}
 
 		// One multiblock's billboard, as its marker. goggles/tick selects the markers in range once
 		// and calls this per marker, so a multiblock type costs one line here and no extra sweep.
-		pack.define(Goggles.drawMultiblock) {
+		pack.define(GogglesRefs.drawMultiblock) {
 			for (route in multiblockGoggles) executeRun("if entity @s[tag=${route.tag}]", route.fn)
 		}
 

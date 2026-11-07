@@ -3,12 +3,15 @@ package ra.tools.wrench
 import io.github.ayfri.kore.arguments.types.literals.allPlayers
 import io.github.ayfri.kore.arguments.types.literals.self
 import io.github.ayfri.kore.commands.advancement
+import io.github.ayfri.kore.commands.data
 import io.github.ayfri.kore.commands.function
 import io.github.ayfri.kore.commands.returnFail
 import io.github.ayfri.kore.commands.tag
 import io.github.ayfri.kore.functions.Function
 import io.github.ayfri.kore.generated.arguments.types.AdvancementArgument
+import net.benwoodworth.knbt.NbtByte
 import ra.core.Ra
+import ra.core.Storage
 import ra.core.define
 import ra.core.raw
 import ra.tools.REACH_4
@@ -59,7 +62,7 @@ object Wrench {
 
 	/** RMB, not sneaking: toggle wireless blocks, or assemble/toggle multiblocks. As the player. */
 	private fun Function.rmb() {
-		raw("data remove storage ra:temp wrench_found")
+		data(Storage.TEMP) { remove("wrench_found") }
 		raycast(REACH_4, "wrench_found", foundBlock)
 
 		// If no custom block found, try multiblock assembly/interaction at the looked-at block.
@@ -69,12 +72,12 @@ object Wrench {
 		)
 
 		raw("""execute unless data storage ra:temp wrench_found run tellraw @s [{text:"[Wrench] ",color:"gold"},{text:"No custom block or multiblock found nearby.",color:"gray"}]""")
-		raw("data remove storage ra:temp wrench_found")
+		data(Storage.TEMP) { remove("wrench_found") }
 	}
 
 	/** Shift+RMB: cycle the block in front of the player. As the player. */
 	private fun Function.shiftRmb() {
-		raw("data remove storage ra:temp wrench_found")
+		data(Storage.TEMP) { remove("wrench_found") }
 		// The menu and every cycler message this player specifically; the wrench runs `as` the
 		// marker from here on and would otherwise have no idea who swung it.
 		tag(self()) { add("ra.wrench_user") }
@@ -83,7 +86,7 @@ object Wrench {
 		raycast(listOf("0.5", "1.5", "2.5", "3.5", "4.5"), "wrench_found", WrenchMenu.cycleBlock)
 
 		raw("""execute unless data storage ra:temp wrench_found run tellraw @s [{text:"[Wrench] ",color:"gold"},{text:"No cyclable block found nearby.",color:"gray"}]""")
-		raw("data remove storage ra:temp wrench_found")
+		data(Storage.TEMP) { remove("wrench_found") }
 
 		tag(allPlayers()) { remove("ra.wrench_user") }
 	}
@@ -95,7 +98,7 @@ object Wrench {
 	 * registers its tag and function, so this list never names a module.
 	 */
 	private fun Function.foundBlock(ra: Ra) {
-		raw("data modify storage ra:temp wrench_found set value 1b")
+		data(Storage.TEMP) { modify("wrench_found", NbtByte(1)) }
 
 		for (route in ra.wrenchToggles) executeRun("if entity @s[tag=${route.tag}]", route.fn)
 

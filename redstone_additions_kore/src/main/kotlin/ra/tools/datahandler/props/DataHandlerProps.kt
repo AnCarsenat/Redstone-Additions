@@ -1,9 +1,15 @@
 package ra.tools.datahandler.props
 
+import io.github.ayfri.kore.arguments.types.literals.literal
 import io.github.ayfri.kore.arguments.types.literals.self
+import io.github.ayfri.kore.commands.data
 import io.github.ayfri.kore.commands.function
+import io.github.ayfri.kore.commands.scoreboard.scoreboard
 import io.github.ayfri.kore.commands.tag
+import net.benwoodworth.knbt.NbtByte
+import ra.core.Obj
 import ra.core.Ra
+import ra.core.Storage
 import ra.core.define
 import ra.core.raw
 import ra.tools.callWith
@@ -39,10 +45,10 @@ object DataHandlerProps {
 			raw("execute unless data storage ra:dh iter[0] run return 0")
 			raw("data modify storage ra:dh q set value {}")
 			raw("data modify storage ra:dh q.name set from storage ra:dh iter[0]")
-			raw("execute store result storage ra:dh q.action int 1 run scoreboard players get #dh.act ra.temp")
+			raw("execute store result storage ra:dh q.action int 1 run scoreboard players get #dh.act ${Obj.TEMP}")
 			callWith(render, "dh", "q")
 			raw("data remove storage ra:dh iter[0]")
-			raw("scoreboard players add #dh.act ra.temp 1")
+			scoreboard.players.add(literal("#dh.act"), Obj.TEMP, 1)
 			function(next)
 		}
 
@@ -62,29 +68,29 @@ object DataHandlerProps {
 		// string as a number, so the editor asked for a number and wrote one, which is how channels
 		// ended up as ints that no string comparison could match.
 		pack.define(probe) {
-			raw("scoreboard players set #dh.type ra.temp 1")
+			scoreboard.players.set(literal("#dh.type"), Obj.TEMP, 1)
 			// `data modify ... set string` is the real test: it only accepts a string source and
 			// fails on anything else.
-			raw("\$execute store success score #dh.probe ra.temp run data modify storage ra:dh probe set string storage ra:dh properties.\$(name)")
-			raw("execute if score #dh.probe ra.temp matches 1 run scoreboard players set #dh.type ra.temp 0")
+			raw("\$execute store success score #dh.probe ${Obj.TEMP} run data modify storage ra:dh probe set string storage ra:dh properties.\$(name)")
+			raw("execute if score #dh.probe ${Obj.TEMP} matches 1 run scoreboard players set #dh.type ${Obj.TEMP} 0")
 			// A list answers to [0]; a string does not, so this cannot catch one by mistake.
-			raw("\$execute if data storage ra:dh properties.\$(name)[0] run scoreboard players set #dh.type ra.temp 3")
+			raw("\$execute if data storage ra:dh properties.\$(name)[0] run scoreboard players set #dh.type ${Obj.TEMP} 3")
 			// Bytes last: not a string, no [0], so whatever it is has fallen through to number.
-			raw("\$execute if data storage ra:dh properties{\$(name):0b} run scoreboard players set #dh.type ra.temp 2")
-			raw("\$execute if data storage ra:dh properties{\$(name):1b} run scoreboard players set #dh.type ra.temp 2")
+			raw("\$execute if data storage ra:dh properties{\$(name):0b} run scoreboard players set #dh.type ${Obj.TEMP} 2")
+			raw("\$execute if data storage ra:dh properties{\$(name):1b} run scoreboard players set #dh.type ${Obj.TEMP} 2")
 			// A name the registry calls numeric is numeric, whatever is currently sitting in it. This
 			// is the only source here that cannot have been corrupted by an earlier bad write; see
 			// init_registry for why the list lives there and what is kept off it on purpose.
-			raw("\$execute if data storage ra:dh {numeric:[\"\$(name)\"]} run scoreboard players set #dh.type ra.temp 1")
+			raw("\$execute if data storage ra:dh {numeric:[\"\$(name)\"]} run scoreboard players set #dh.type ${Obj.TEMP} 1")
 			// An item id last, so it wins over the string it would otherwise probe as. Same reasoning
 			// as `numeric`: the registry knows what the field means, the value sitting in it does not.
-			raw("\$execute if data storage ra:dh {item_names:[\"\$(name)\"]} run scoreboard players set #dh.type ra.temp 4")
-			raw("data remove storage ra:dh probe")
+			raw("\$execute if data storage ra:dh {item_names:[\"\$(name)\"]} run scoreboard players set #dh.type ${Obj.TEMP} 4")
+			data(Storage.DH) { remove("probe") }
 		}
 
 		// {i}: resolve a row index to the property name it stands for.
 		pack.define(pickName) {
-			raw("data remove storage ra:dh pending_name")
+			data(Storage.DH) { remove("pending_name") }
 			raw("\$data modify storage ra:dh pending_name set from storage ra:dh registry[\$(i)]")
 		}
 
@@ -92,9 +98,9 @@ object DataHandlerProps {
 		// when it refuses, which the caller checks.
 		pack.define(deny) {
 			raw("\$execute unless data storage ra:dh hidden.\$(name) run return 0")
-			raw("data modify storage ra:dh denied set value 1b")
+			data(Storage.DH) { modify("denied", NbtByte(1)) }
 			raw("""${'$'}tellraw @s [$PREFIX,{text:"$(name)",color:"yellow"},{text:" is set by the block and cannot be changed here.",color:"gray"}]""")
-			raw("playsound minecraft:block.note_block.bass block @s[scores={ra.u.snd=1..}] ~ ~ ~ 0.7 0.7")
+			raw("playsound minecraft:block.note_block.bass block @s[scores={${Obj.USER_SOUND}=1..}] ~ ~ ~ 0.7 0.7")
 		}
 
 		// A [Set from hand] button: as the player, with ra.dh.action at 200 + index.
@@ -103,10 +109,10 @@ object DataHandlerProps {
 		// for a field the block keeps to itself, and then a straight write rather than an input form
 		// -- there is nothing to ask for, the answer is in the player's hand.
 		pack.define(handAction) {
-			raw("scoreboard players operation #dh.idx ra.temp = @s ra.dh.action")
-			raw("scoreboard players remove #dh.idx ra.temp 200")
+			raw("scoreboard players operation #dh.idx ${Obj.TEMP} = @s ra.dh.action")
+			scoreboard.players.remove(literal("#dh.idx"), Obj.TEMP, 200)
 			raw("data modify storage ra:dh q set value {}")
-			raw("execute store result storage ra:dh q.i int 1 run scoreboard players get #dh.idx ra.temp")
+			raw("execute store result storage ra:dh q.i int 1 run scoreboard players get #dh.idx ${Obj.TEMP}")
 			callWith(pickName, "dh", "q")
 			raw("execute unless data storage ra:dh pending_name run return 0")
 			raw("data modify storage ra:dh q.name set from storage ra:dh pending_name")
@@ -127,9 +133,9 @@ object DataHandlerProps {
 			raw("data modify storage ra:dh hand set from entity @s SelectedItem.id")
 			raw("\$data modify storage ra:dh properties.\$(name) set from storage ra:dh hand")
 			raw("\$data modify entity $TARGET data.properties.\$(name) set from storage ra:dh hand")
-			raw("data remove storage ra:dh hand")
+			data(Storage.DH) { remove("hand") }
 			raw("""${'$'}tellraw @s [$PREFIX,{text:"$(name)",color:"yellow"},{text:" set to ",color:"gray"},{nbt:"properties.$(name)",storage:"ra:dh",color:"green"}]""")
-			raw("playsound minecraft:block.note_block.pling block @s[scores={ra.u.snd=1..}] ~ ~ ~ 0.7 1.4")
+			raw("playsound minecraft:block.note_block.pling block @s[scores={${Obj.USER_SOUND}=1..}] ~ ~ ~ 0.7 1.4")
 		}
 
 		// {name}: flip a byte property on the selected block.
@@ -175,22 +181,22 @@ object DataHandlerProps {
 		//
 		// No gamemode test. Creative players use the Creative Data Handler, which shows and edits
 		// everything -- so this tool does not need a second mode.
-		raw("\$execute if data storage ra:dh hidden.\$(name) run scoreboard players add #dh.shown ra.temp 1")
+		raw("\$execute if data storage ra:dh hidden.\$(name) run scoreboard players add #dh.shown ${Obj.TEMP} 1")
 		raw("\$execute if data storage ra:dh hidden.\$(name) run return run function ${PropRows.rowLocked.asId()} with storage ra:dh q")
 
-		raw("scoreboard players add #dh.shown ra.temp 1")
+		scoreboard.players.add(literal("#dh.shown"), Obj.TEMP, 1)
 		callWith(probe, "dh", "q")
 
 		for ((type, row) in listOf(1 to PropRows.rowNumber, 2 to PropRows.rowBool, 3 to PropRows.rowList, 0 to PropRows.rowString))
-			executeRun("if score #dh.type ra.temp matches $type", row, "with storage ra:dh q")
+			executeRun("if score #dh.type ${Obj.TEMP} matches $type", row, "with storage ra:dh q")
 
 		// The item row carries two buttons, and a macro is substituted from one compound, so the
 		// second action id is worked out here rather than in the row. 200 + index is the same
 		// registry index in a second action space -- see hand_action. On a scratch holder, not on
 		// #dh.act: that one is the row iterator and the rest of the list is still counting on it.
-		raw("scoreboard players operation #dh.hand ra.temp = #dh.act ra.temp")
-		raw("scoreboard players add #dh.hand ra.temp 100")
-		raw("execute if score #dh.type ra.temp matches 4 store result storage ra:dh q.hand_action int 1 run scoreboard players get #dh.hand ra.temp")
-		executeRun("if score #dh.type ra.temp matches 4", PropRows.rowItem, "with storage ra:dh q")
+		raw("scoreboard players operation #dh.hand ${Obj.TEMP} = #dh.act ${Obj.TEMP}")
+		scoreboard.players.add(literal("#dh.hand"), Obj.TEMP, 100)
+		raw("execute if score #dh.type ${Obj.TEMP} matches 4 store result storage ra:dh q.hand_action int 1 run scoreboard players get #dh.hand ${Obj.TEMP}")
+		executeRun("if score #dh.type ${Obj.TEMP} matches 4", PropRows.rowItem, "with storage ra:dh q")
 	}
 }

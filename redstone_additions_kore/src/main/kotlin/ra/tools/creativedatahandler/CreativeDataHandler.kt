@@ -2,11 +2,13 @@ package ra.tools.creativedatahandler
 
 import io.github.ayfri.kore.arguments.types.literals.self
 import io.github.ayfri.kore.commands.advancement
+import io.github.ayfri.kore.commands.data
 import io.github.ayfri.kore.commands.function
 import io.github.ayfri.kore.commands.tag
 import io.github.ayfri.kore.generated.arguments.types.AdvancementArgument
-import ra.api.Goggles
+import net.benwoodworth.knbt.NbtByte
 import ra.core.Ra
+import ra.core.Storage
 import ra.core.define
 import ra.core.raw
 import ra.tools.REACH_4
@@ -14,6 +16,7 @@ import ra.tools.ToolItems
 import ra.tools.creativedatahandler.props.CdhProps
 import ra.tools.creativedatahandler.props.CdhProps.registerCdhProps
 import ra.tools.executeRun
+import ra.tools.goggles.GogglesRefs
 import ra.tools.raycast
 import ra.tools.tool
 
@@ -58,27 +61,27 @@ object CreativeDataHandler {
 			tag(self()) { add("ra.cdh_active") }
 			raw("execute unless predicate ra:is_sneaking run return 0")
 			raw("tag @e[type=marker,tag=ra.cdh_target] remove ra.cdh_target")
-			raw("data remove storage ra:temp cdh_found")
-			raw("data remove storage ra:temp cdh_menu_shown")
+			data(Storage.TEMP) { remove("cdh_found") }
+			data(Storage.TEMP) { remove("cdh_menu_shown") }
 			raycast(REACH_4, "cdh_found", foundBlock)
 			raw("""execute unless data storage ra:temp cdh_found run tellraw @s [$PREFIX,{text:"No custom block found nearby.",color:"gray"}]""")
-			raw("data remove storage ra:temp cdh_found")
+			data(Storage.TEMP) { remove("cdh_found") }
 		}
 
 		// A custom block was found. As its marker.
 		pack.define(foundBlock) {
-			raw("data modify storage ra:temp cdh_found set value 1b")
+			data(Storage.TEMP) { modify("cdh_found", NbtByte(1)) }
 			tag(self()) { add("ra.cdh_target") }
 			raw("data modify storage ra:cdh target set from entity @s UUID")
 			// The name comes from the block's own goggles function (see ra:tools/block_name), not
 			// from a table here that could drift from the Data Handler's.
-			function(Goggles.blockName)
+			function(GogglesRefs.blockName)
 			raw("data modify storage ra:cdh block_type set from storage ra:temp block_name")
 			raw("data modify storage ra:cdh properties set from entity @s data.properties")
 			raw("data modify storage ra:cdh internal_data set from entity @s data.data")
 			// Show the info to the nearest player who used the tool (only once).
 			executeRun("unless data storage ra:temp cdh_menu_shown as @p[distance=..10]", showMenu)
-			raw("data modify storage ra:temp cdh_menu_shown set value 1b")
+			data(Storage.TEMP) { modify("cdh_menu_shown", NbtByte(1)) }
 		}
 
 		pack.define(refresh) {

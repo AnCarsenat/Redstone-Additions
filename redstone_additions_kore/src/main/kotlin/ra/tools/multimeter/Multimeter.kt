@@ -1,13 +1,18 @@
 package ra.tools.multimeter
 
+import io.github.ayfri.kore.arguments.types.literals.literal
 import io.github.ayfri.kore.arguments.types.literals.self
 import io.github.ayfri.kore.commands.advancement
+import io.github.ayfri.kore.commands.data
 import io.github.ayfri.kore.commands.function
+import io.github.ayfri.kore.commands.scoreboard.scoreboard
 import io.github.ayfri.kore.commands.tag
 import io.github.ayfri.kore.generated.arguments.types.AdvancementArgument
-import ra.api.Goggles
+import net.benwoodworth.knbt.NbtByte
 import ra.api.RaLib
+import ra.core.Obj
 import ra.core.Ra
+import ra.core.Storage
 import ra.core.define
 import ra.core.raw
 import ra.tools.REACH_4
@@ -15,6 +20,7 @@ import ra.tools.ToolItems
 import ra.tools.callWith
 import ra.tools.executeReturnRun
 import ra.tools.executeRun
+import ra.tools.goggles.GogglesRefs
 import ra.tools.raycast
 import ra.tools.tool
 
@@ -48,18 +54,18 @@ object Multimeter {
 			tag(self()) { add("ra.meter_clicked") }
 			raw("execute if entity @s[tag=ra.meter_active] run return fail")
 			tag(self()) { add("ra.meter_active") }
-			raw("data remove storage ra:temp meter_found")
+			data(Storage.TEMP) { remove("meter_found") }
 			raycast(REACH_4, "meter_found", report)
 			raw("""execute unless data storage ra:temp meter_found run tellraw @s [{text:"[Multimeter] ",color:"gold"},{text:"No custom block in front of you.",color:"gray"}]""")
-			raw("data remove storage ra:temp meter_found")
+			data(Storage.TEMP) { remove("meter_found") }
 		}
 
 		// What this block is doing on its network. As the target block's marker.
 		pack.define(report) {
-			raw("data modify storage ra:temp meter_found set value 1b")
-			raw("data modify storage ra:temp name_only set value 1b")
-			function(Goggles.drawBlock)
-			raw("data remove storage ra:temp name_only")
+			data(Storage.TEMP) { modify("meter_found", NbtByte(1)) }
+			data(Storage.TEMP) { modify("name_only", NbtByte(1)) }
+			function(GogglesRefs.drawBlock)
+			data(Storage.TEMP) { remove("name_only") }
 			raw("""tellraw $HOLDER [{text:"── ",color:"dark_gray"},{nbt:"block_name",storage:"ra:temp",color:"gold",bold:true},{text:" ──",color:"dark_gray"}]""")
 
 			// Not every custom block is on a network. Say so plainly rather than printing three
@@ -86,7 +92,7 @@ object Multimeter {
 				listOf("status.trend", "Change ", "aqua", " per second"),
 			)) raw("""execute if data entity @s data.$path run tellraw $HOLDER [{text:"  $label",color:"gray"},{nbt:"data.$path",entity:"@s",color:"$color"},{text:"$unit",color:"gray"}]""")
 
-			raw("playsound minecraft:block.note_block.bit block @a[tag=ra.meter_active,limit=1,scores={ra.u.snd=1..}] ~ ~ ~ 0.6 1.8")
+			raw("playsound minecraft:block.note_block.bit block @a[tag=ra.meter_active,limit=1,scores={${Obj.USER_SOUND}=1..}] ~ ~ ~ 0.6 1.8")
 		}
 
 		// This block is not a transport node at all.
@@ -113,19 +119,19 @@ object Multimeter {
 	 */
 	private fun Ra.registerMedia() {
 		pack.define(media) {
-			raw("data remove storage ra:temp meterq")
+			data(Storage.TEMP) { remove("meterq") }
 			raw("data modify storage ra:temp meterq.queue set from storage ra:transport cur.media")
 			// One medium reads as a sentence. Several want a heading and a line each, so the amounts
 			// line up under it instead of running together.
-			raw("scoreboard players set #meter.n ra.temp 0")
-			raw("execute if data storage ra:temp meterq.queue[1] run scoreboard players set #meter.n ra.temp 1")
-			raw("""execute if score #meter.n ra.temp matches 1.. run tellraw $HOLDER [{text:"  Holding",color:"gray"}]""")
+			scoreboard.players.set(literal("#meter.n"), Obj.TEMP, 0)
+			raw("execute if data storage ra:temp meterq.queue[1] run scoreboard players set #meter.n ${Obj.TEMP} 1")
+			raw("""execute if score #meter.n ${Obj.TEMP} matches 1.. run tellraw $HOLDER [{text:"  Holding",color:"gray"}]""")
 			// A network with a primary and no list should not exist -- ra_lib:transport/net/read
 			// backfills one -- but naming it is better than printing nothing at all.
 			raw("""execute unless data storage ra:temp meterq.queue[0] run return run tellraw $HOLDER [{text:"  Holding ",color:"gray"},{nbt:"cur.medium",storage:"ra:transport",color:"aqua"}]""")
 			function(mediaNext)
-			raw("data remove storage ra:temp meterq")
-			raw("data remove storage ra:temp meter")
+			data(Storage.TEMP) { remove("meterq") }
+			data(Storage.TEMP) { remove("meter") }
 		}
 
 		// The head of the media list, then the rest. The list is walked rather than the `amounts`
@@ -144,15 +150,15 @@ object Multimeter {
 		pack.define(mediaOne) {
 			raw("\$data modify storage ra:temp meter.name set value \"\$(m)\"")
 			raw("\$execute if data storage ra:wires media.\$(m).name run data modify storage ra:temp meter.name set from storage ra:wires media.\$(m).name")
-			raw("\$execute store result score #meter.a ra.temp run data get storage ra:transport cur.amounts.\$(m)")
+			raw("\$execute store result score #meter.a ${Obj.TEMP} run data get storage ra:transport cur.amounts.\$(m)")
 			// EU is the one medium that is not a fluid and is deliberately not in the fluid registry
 			// -- a Creative Fluid Source set to "eu" would otherwise be accepted. So: anything the
 			// registry knows is measured in millilitres, and a grid's charge is measured in EU.
 			raw("data modify storage ra:temp meter.unit set value \" EU\"")
 			raw("\$execute if data storage ra:wires media.\$(m) run data modify storage ra:temp meter.unit set value \" mL\"")
 			val amount = """{nbt:"meter.name",storage:"ra:temp",color:"aqua"},{text:"  ",color:"gray"},{score:{name:"#meter.a",objective:"ra.temp"},color:"green"},{nbt:"meter.unit",storage:"ra:temp",color:"gray"}"""
-			raw("""execute if score #meter.n ra.temp matches 1.. run tellraw $HOLDER [{text:"    ",color:"gray"},$amount]""")
-			raw("""execute if score #meter.n ra.temp matches ..0 run tellraw $HOLDER [{text:"  Holding ",color:"gray"},$amount]""")
+			raw("""execute if score #meter.n ${Obj.TEMP} matches 1.. run tellraw $HOLDER [{text:"    ",color:"gray"},$amount]""")
+			raw("""execute if score #meter.n ${Obj.TEMP} matches ..0 run tellraw $HOLDER [{text:"  Holding ",color:"gray"},$amount]""")
 		}
 	}
 }

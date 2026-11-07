@@ -3,9 +3,11 @@ package ra.tools.inputdatahandler
 import io.github.ayfri.kore.arguments.types.literals.self
 import io.github.ayfri.kore.commands.advancement
 import io.github.ayfri.kore.commands.function
+import io.github.ayfri.kore.commands.scoreboard.scoreboard
 import io.github.ayfri.kore.commands.tag
 import io.github.ayfri.kore.generated.arguments.types.AdvancementArgument
 import ra.api.RaLib
+import ra.core.Obj
 import ra.core.Ra
 import ra.core.define
 import ra.core.raw
@@ -58,7 +60,7 @@ object InputDataHandler {
 		pack.define(runAction) {
 			val actions = listOf(testNumber, testText, poll, consume, RaLib.Input.cancel, showMenu)
 			actions.forEachIndexed { i, fn -> executeRun("if score @s ra.input_handler.action matches ${i + 1}", fn) }
-			raw("scoreboard players set @s ra.input_handler.action 0")
+			scoreboard.players.set(self(), "ra.input_handler.action", 0)
 			raw("scoreboard players enable @s ra.input_handler.action")
 		}
 
@@ -80,13 +82,13 @@ object InputDataHandler {
 		pack.define(testText) { function(RaLib.Input.openText) }
 
 		pack.define(poll) {
-			executeRun("store result score @s ra.temp", RaLib.Input.poll)
-			raw("""tellraw @s [{text:"[RA Input] state=",color:"gold"},{score:{name:"@s",objective:"ra.temp"},color:"yellow"},{text:" (0=idle, 1=waiting, 2=ready)",color:"gray"}]""")
+			executeRun("store result score @s ${Obj.TEMP}", RaLib.Input.poll)
+			raw("""tellraw @s [{text:"[RA Input] state=",color:"gold"},{score:{name:"@s",objective:"${Obj.TEMP}"},color:"yellow"},{text:" (0=idle, 1=waiting, 2=ready)",color:"gray"}]""")
 		}
 		pack.define(consume) {
-			executeRun("store result score @s ra.temp", RaLib.Input.consume)
-			raw("""execute if score @s ra.temp matches 1 run tellraw @s [$PREFIX,{text:"Consumed: ",color:"green"},{nbt:"consume",storage:"ra:input",color:"white"}]""")
-			raw("""execute unless score @s ra.temp matches 1 run tellraw @s [$PREFIX,{text:"No ready result.",color:"red"}]""")
+			executeRun("store result score @s ${Obj.TEMP}", RaLib.Input.consume)
+			raw("""execute if score @s ${Obj.TEMP} matches 1 run tellraw @s [$PREFIX,{text:"Consumed: ",color:"green"},{nbt:"consume",storage:"ra:input",color:"white"}]""")
+			raw("""execute unless score @s ${Obj.TEMP} matches 1 run tellraw @s [$PREFIX,{text:"No ready result.",color:"red"}]""")
 		}
 	}
 }

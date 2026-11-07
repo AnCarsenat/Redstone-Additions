@@ -30,6 +30,12 @@ import io.github.ayfri.kore.generated.arguments.types.AdvancementArgument
 import io.github.ayfri.kore.utils.nbt
 import io.github.ayfri.kore.utils.set
 import ra.core.Ns
+import ra.tools.clipboard.Clipboard
+import ra.tools.creativedatahandler.CreativeDataHandler
+import ra.tools.datahandler.DataHandler
+import ra.tools.inputdatahandler.InputDataHandler
+import ra.tools.multimeter.Multimeter
+import ra.tools.wrench.Wrench
 
 /**
  * The tools' data files: crafting recipes with their unlock advancements, the `using_item`
@@ -58,12 +64,12 @@ internal fun DataPack.registerToolResources() {
 		key("C", Items.COPPER_INGOT); key("R", Items.REDSTONE); key("Q", Items.QUARTZ); key("I", Items.IRON_INGOT)
 	}
 
-	useAdvancement(ToolItems.clipboard, Items.PAPER, tool("clipboard/on_use"))
-	useAdvancement(ToolItems.creativeDataHandler, Items.BLAZE_ROD, tool("creative_data_handler/on_use"))
-	useAdvancement(ToolItems.dataHandler, Items.BLAZE_ROD, tool("data_handler/on_use"))
-	useAdvancement(ToolItems.inputDataHandler, Items.BLAZE_ROD, tool("input_data_handler/on_use"))
-	useAdvancement(ToolItems.multimeter, Items.CLOCK, tool("multimeter/on_use"))
-	useAdvancement(ToolItems.wrench, Items.BLAZE_ROD, tool("wrench/on_use"))
+	useAdvancement(ToolItems.clipboard, Items.PAPER, Clipboard.onUse)
+	useAdvancement(ToolItems.creativeDataHandler, Items.BLAZE_ROD, CreativeDataHandler.onUse)
+	useAdvancement(ToolItems.dataHandler, Items.BLAZE_ROD, DataHandler.onUse)
+	useAdvancement(ToolItems.inputDataHandler, Items.BLAZE_ROD, InputDataHandler.onUse)
+	useAdvancement(ToolItems.multimeter, Items.CLOCK, Multimeter.onUse)
+	useAdvancement(ToolItems.wrench, Items.BLAZE_ROD, Wrench.onUse)
 
 	predicate("is_sneaking") {
 		namespace = Ns.RA.id

@@ -1,7 +1,11 @@
 package ra.tools.wrench
 
+import io.github.ayfri.kore.commands.data
+import net.benwoodworth.knbt.NbtByte
 import ra.api.MultiblockLib
+import ra.core.Obj
 import ra.core.Ra
+import ra.core.Storage
 import ra.core.define
 import ra.core.raw
 import ra.tools.executeReturnRun
@@ -51,14 +55,14 @@ object WrenchMultiblock {
 	fun Ra.registerWrenchMultiblock() {
 		// Check if looking at a valid blast forge structure. At the hopper position.
 		pack.define(checkBlastForge) {
-			raw("data modify storage ra:temp wrench_found set value 1b")
+			data(Storage.TEMP) { modify("wrench_found", NbtByte(1)) }
 			// Already a multiblock? Aligned position + tight distance.
 			executeReturnRun("align xyz positioned ~0.5 ~ ~0.5 $ASSEMBLED", toggleMultiblock)
 			raw("data modify storage ra:multiblock type set value \"blast_forge\"")
 			// Player rotation, for a directional multiblock.
 			raw("execute store result storage ra:multiblock rotation int 1 positioned as @a[tag=ra.wrench_active,distance=..8,limit=1,sort=nearest] run data get entity @s Rotation[0]")
-			executeRun("store result score #mb_assembled ra.temp", MultiblockLib.tryAssemble)
-			raw("""execute if score #mb_assembled ra.temp matches 0 run tellraw @a[distance=..8] [{text:"[Wrench] ",color:"gold"},{text:"Invalid Blast Forge structure. Need: 3x3 brick wall + blast furnace behind.",color:"red"}]""")
+			executeRun("store result score #mb_assembled ${Obj.TEMP}", MultiblockLib.tryAssemble)
+			raw("""execute if score #mb_assembled ${Obj.TEMP} matches 0 run tellraw @a[distance=..8] [{text:"[Wrench] ",color:"gold"},{text:"Invalid Blast Forge structure. Need: 3x3 brick wall + blast furnace behind.",color:"red"}]""")
 		}
 
 		// As the multiblock base marker, at its position.
@@ -83,7 +87,7 @@ object WrenchMultiblock {
 			raw("execute if data entity @s data.properties{enabled:0b} run data modify entity @s data.properties.enabled set value 1b")
 			raw("""execute if data entity @s data.properties{enabled:1b} at @s run tellraw @a[distance=..16] [{text:"[Wrench] ",color:"gold"},{text:"Multiblock ",color:"gray"},{text:"enabled",color:"green"}]""")
 			raw("""execute if data entity @s data.properties{enabled:0b} at @s run tellraw @a[distance=..16] [{text:"[Wrench] ",color:"gold"},{text:"Multiblock ",color:"gray"},{text:"disabled",color:"red"}]""")
-			raw("playsound minecraft:block.lever.click block @a[distance=..8,scores={ra.u.snd=1..}] ~ ~ ~ 0.5 1")
+			raw("playsound minecraft:block.lever.click block @a[distance=..8,scores={${Obj.USER_SOUND}=1..}] ~ ~ ~ 0.5 1")
 		}
 
 		// At the multiblock base position.
@@ -91,22 +95,22 @@ object WrenchMultiblock {
 			if (t.named != null) {
 				// A structure with its own hand-written validator is tried by name first...
 				raw("data modify storage ra:multiblock type set value \"${t.named}\"")
-				executeRun("store result score #mb_assembled ra.temp", MultiblockLib.tryAssemble)
+				executeRun("store result score #mb_assembled ${Obj.TEMP}", MultiblockLib.tryAssemble)
 				// ...then anything registered for this tier. Adding a structure means registering it
 				// in ra_multiblock:register_types -- this file does not change.
 				executeRun(
 					"if score #mb_assembled ra.temp matches 0 store result score #mb_assembled ra.temp",
 					MultiblockLib.tryTier, "{tier:\"${t.name}\"}",
 				)
-				raw("""execute if score #mb_assembled ra.temp matches 0 run tellraw @a[distance=..8] [{text:"[Wrench] ",color:"gold"},{text:"No ${t.name}-tier multiblock matches the structure here.",color:"red"}]""")
+				raw("""execute if score #mb_assembled ${Obj.TEMP} matches 0 run tellraw @a[distance=..8] [{text:"[Wrench] ",color:"gold"},{text:"No ${t.name}-tier multiblock matches the structure here.",color:"red"}]""")
 				for (hint in t.hints)
-					raw("""execute if score #mb_assembled ra.temp matches 0 run tellraw @a[distance=..8] [{text:"",color:"gray"},{text:"$hint",color:"gray"}]""")
-				raw("execute if score #mb_assembled ra.temp matches 0 run playsound minecraft:block.note_block.bass block @a[distance=..8] ~ ~ ~ 0.5 0.5")
+					raw("""execute if score #mb_assembled ${Obj.TEMP} matches 0 run tellraw @a[distance=..8] [{text:"",color:"gray"},{text:"$hint",color:"gray"}]""")
+				raw("execute if score #mb_assembled ${Obj.TEMP} matches 0 run playsound minecraft:block.note_block.bass block @a[distance=..8] ~ ~ ~ 0.5 0.5")
 			} else {
 				// No hand-written multiblock exists for this tier; ask the registry.
-				executeRun("store result score #mb_assembled ra.temp", MultiblockLib.tryTier, "{tier:\"${t.name}\"}")
-				raw("""execute if score #mb_assembled ra.temp matches 0 run tellraw @a[distance=..8] [{text:"[Wrench] ",color:"gold"},{text:"No ${t.name}-tier multiblock matches the structure here.",color:"gray"}]""")
-				raw("execute if score #mb_assembled ra.temp matches 0 run playsound minecraft:block.note_block.bass block @a[distance=..8] ~ ~ ~ 0.5 0.8")
+				executeRun("store result score #mb_assembled ${Obj.TEMP}", MultiblockLib.tryTier, "{tier:\"${t.name}\"}")
+				raw("""execute if score #mb_assembled ${Obj.TEMP} matches 0 run tellraw @a[distance=..8] [{text:"[Wrench] ",color:"gold"},{text:"No ${t.name}-tier multiblock matches the structure here.",color:"gray"}]""")
+				raw("execute if score #mb_assembled ${Obj.TEMP} matches 0 run playsound minecraft:block.note_block.bass block @a[distance=..8] ~ ~ ~ 0.5 0.8")
 			}
 		}
 

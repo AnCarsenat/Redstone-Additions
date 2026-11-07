@@ -1,12 +1,17 @@
 package ra.tools.datahandler
 
+import io.github.ayfri.kore.arguments.types.literals.literal
 import io.github.ayfri.kore.arguments.types.literals.self
 import io.github.ayfri.kore.commands.advancement
+import io.github.ayfri.kore.commands.data
 import io.github.ayfri.kore.commands.function
+import io.github.ayfri.kore.commands.scoreboard.scoreboard
 import io.github.ayfri.kore.commands.tag
 import io.github.ayfri.kore.generated.arguments.types.AdvancementArgument
-import ra.api.Goggles
+import net.benwoodworth.knbt.NbtByte
+import ra.core.Obj
 import ra.core.Ra
+import ra.core.Storage
 import ra.core.define
 import ra.core.raw
 import ra.tools.REACH_4
@@ -15,6 +20,7 @@ import ra.tools.datahandler.DataHandlerActions.registerDataHandlerActions
 import ra.tools.datahandler.props.DataHandlerProps
 import ra.tools.datahandler.props.DataHandlerProps.registerDataHandlerProps
 import ra.tools.executeRun
+import ra.tools.goggles.GogglesRefs
 import ra.tools.raycast
 import ra.tools.tool
 
@@ -59,16 +65,16 @@ object DataHandler {
 			raw("execute unless predicate ra:is_sneaking run return 0")
 			// Remove the target tag from any previously selected block.
 			raw("tag @e[type=marker,tag=ra.dh_target] remove ra.dh_target")
-			raw("data remove storage ra:temp dh_found")
+			data(Storage.TEMP) { remove("dh_found") }
 			raycast(REACH_4, "dh_found", foundBlock)
 			executeRun("if data storage ra:temp dh_found", refresh)
 			raw("""execute unless data storage ra:temp dh_found run tellraw @s [$PREFIX,{text:"No custom block found nearby.",color:"gray"}]""")
-			raw("data remove storage ra:temp dh_found")
+			data(Storage.TEMP) { remove("dh_found") }
 		}
 
 		// A custom block was found. As its marker, at the marker.
 		pack.define(foundBlock) {
-			raw("data modify storage ra:temp dh_found set value 1b")
+			data(Storage.TEMP) { modify("dh_found", NbtByte(1)) }
 			tag(self()) { add("ra.dh_target") }
 			raw("data modify storage ra:dh target set from entity @s UUID")
 			// Resolve the block's display name. Each block declares its own name in its goggles
@@ -76,7 +82,7 @@ object DataHandler {
 			// Data Handlers, and blocks missing from it -- every RA Wires block here -- showed as
 			// "Unknown Block" while their properties were read out correctly, which is what made it
 			// look as though unknown blocks had an `enabled` property of their own.
-			function(Goggles.blockName)
+			function(GogglesRefs.blockName)
 			raw("data modify storage ra:dh block_type set from storage ra:temp block_name")
 			// Clock compatibility runs in ra_gates:blocks/clock/tick, which folds the old property
 			// name into the current one every tick. Nothing is needed here -- this used to migrate
@@ -133,15 +139,15 @@ object DataHandler {
 			// A working copy is consumed from the front, since a list cannot be indexed by a score
 			// without a macro per read.
 			raw("data modify storage ra:dh iter set from storage ra:dh registry")
-			raw("scoreboard players set #dh.act ra.temp 100")
-			raw("scoreboard players set #dh.shown ra.temp 0")
+			scoreboard.players.set(literal("#dh.act"), Obj.TEMP, 100)
+			scoreboard.players.set(literal("#dh.shown"), Obj.TEMP, 0)
 			// How many fields this player may see at all, so anything the registry does not know
 			// about can be reported rather than silently dropped.
-			raw("scoreboard players set #dh.total ra.temp 0")
-			raw("execute store result score #dh.total ra.temp run data get storage ra:dh display_props")
+			scoreboard.players.set(literal("#dh.total"), Obj.TEMP, 0)
+			raw("execute store result score #dh.total ${Obj.TEMP} run data get storage ra:dh display_props")
 			function(DataHandlerProps.next)
-			raw("scoreboard players operation #dh.total ra.temp -= #dh.shown ra.temp")
-			raw("""execute if score #dh.total ra.temp matches 1.. run tellraw @s [{text:"  ",color:"dark_gray"},{score:{name:"#dh.total",objective:"ra.temp"},color:"dark_gray"},{text:" field(s) above have no editor yet — they are listed in Properties and can be set with /data",color:"dark_gray",italic:true}]""")
+			raw("scoreboard players operation #dh.total ${Obj.TEMP} -= #dh.shown ${Obj.TEMP}")
+			raw("""execute if score #dh.total ${Obj.TEMP} matches 1.. run tellraw @s [{text:"  ",color:"dark_gray"},{score:{name:"#dh.total",objective:"${Obj.TEMP}"},color:"dark_gray"},{text:" field(s) above have no editor yet — they are listed in Properties and can be set with /data",color:"dark_gray",italic:true}]""")
 			// Nothing is withheld any more; a locked field shows its value and a dead button.
 		}
 
@@ -153,7 +159,7 @@ object DataHandler {
 		// the first place removes both halves.
 		pack.define(collectHidden) {
 			raw("data modify storage ra:dh hidden set value {}")
-			raw("data remove storage ra:dh ro_q")
+			data(Storage.DH) { remove("ro_q") }
 			raw("execute as $TARGET run data modify storage ra:dh ro_q.type set from entity @s data.type")
 			executeRun("if data storage ra:dh ro_q.type", collectHiddenAt, "with storage ra:dh ro_q")
 		}

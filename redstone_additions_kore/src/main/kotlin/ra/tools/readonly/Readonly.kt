@@ -1,9 +1,9 @@
 package ra.tools.readonly
 
+import ra.api.Tools
 import ra.core.Ra
 import ra.core.define
 import ra.core.raw
-import ra.tools.tool
 
 /**
  * `ra:tools/readonly/init_registry`: which properties a block owns and the player may not edit.
@@ -28,7 +28,7 @@ import ra.tools.tool
  * `if data storage ... ."$(name)"` answers that in one command where a list would need a walk.
  */
 object Readonly {
-	val initRegistry = tool("readonly/init_registry")
+	val initRegistry = Tools.Readonly.initRegistry
 
 	fun Ra.registerReadonly() {
 		// Keys sorted, as the hand-written map was.

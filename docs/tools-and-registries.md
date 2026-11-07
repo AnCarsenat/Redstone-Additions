@@ -27,7 +27,7 @@ Billboard writers callable from a readout:
 | Reference | Path | For |
 | --- | --- | --- |
 | `Goggles.Billboard.*` (`ra/api/ToolsApi.kt`) | `ra:tools/goggles/billboard/{handle_billboard, prop_line, data_line, text_line, item_line, show_io_line, stack_reset, stacked_*_line, init_offsets}` | block readouts; wrapped by `core/block/GogglesLines.kt` |
-| `GogglesRefs.Billboard.*` (`ra/tools/goggles/GogglesRefs.kt`) | `handle_multiblock`, `show_input`, `show_output`, `show_control`, `show_literal_line`, `render_*`, `stack_next` | multiblock readouts and the tools' own rendering |
+| `Goggles.Billboard.*` (same object) | `handle_multiblock`, `show_input`, `show_output`, `show_control`, `show_literal_line`, `render_*`, `stack_next` | multiblock readouts and the tools' own rendering |
 | `Goggles.Status.readStatusMultiblock` | `ra:tools/goggles/status/read_status_multiblock` | multiblock status |
 
 ## Wrench
@@ -125,21 +125,19 @@ once left upgraded worlds without the filter rows for good.
 
 ## Tool items
 
-Each tool item is one `ToolItem` (`tools/ToolItems.kt`): its id, base item and an ordered list of
-components as SNBT. From that one value come the `give` argument, the recipe result
+Each tool item is one `ToolItem` (`tools/ToolItems.kt`): its id and an `ItemSpec.fromSnbt` with the
+base item and an ordered list of components as SNBT. From that one value come the `give` argument, the recipe result
 (`CustomComponent`s, see [Kore Gotchas](gotchas.md#item-components-in-json)) and the bundle
 entry. Most tools are a food with an endless `consumable`: `using_item` is the only advancement
 trigger that fires reliably on right-click whatever the player looks at, and only for an item
 the player can start using.
 
-`tools/ToolsDsl.kt` holds the writers every tool repeats:
+`tools/ToolsDsl.kt` holds the writers every tool repeats; the `execute ... run function` lines use
+the shared `executeRun` / `executeReturnRun` / `callWith` of `ra.core` (`core/Exec.kt`):
 
 | Helper | Writes |
 | --- | --- |
 | `tool("wrench/menu")` | `ref(Ns.RA, "tools/wrench/menu")` |
-| `executeRun(chain, fn, args)` | `execute <chain> run function <fn> <args>` |
-| `executeReturnRun(chain, fn, args)` | `execute <chain> run return run function <fn> <args>` |
-| `callWith(fn, storage, path)` | `function <fn> with storage ra:<storage> <path>` |
 | `raycast(steps, foundFlag, fn)` | one probe per step along the player's look, stopping once `fn` sets `foundFlag` |
 
 The chain stays vanilla text because the typed `execute { }` builder writes these

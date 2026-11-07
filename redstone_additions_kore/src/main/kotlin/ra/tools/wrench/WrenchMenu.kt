@@ -7,14 +7,18 @@ import io.github.ayfri.kore.commands.function
 import io.github.ayfri.kore.commands.scoreboard.scoreboard
 import io.github.ayfri.kore.commands.tag
 import net.benwoodworth.knbt.NbtByte
+import ra.api.Tools
 import ra.core.Obj
 import ra.core.Ra
 import ra.core.Storage
+import ra.core.Tag
+import ra.core.callWith
 import ra.core.define
+import ra.core.executeReturnRun
+import ra.core.executeRun
+import ra.core.macroCall
 import ra.core.raw
-import ra.tools.callWith
-import ra.tools.executeReturnRun
-import ra.tools.executeRun
+import ra.tools.RAY_TARGET
 import ra.tools.tool
 
 /**
@@ -41,7 +45,7 @@ object WrenchMenu {
 	val rememberTarget = tool("wrench/remember_target")
 	val menuRow = tool("wrench/menu_row")
 	val menuRowNext = tool("wrench/menu_row_next")
-	val menuAction = tool("wrench/menu_action")
+	val menuAction = Tools.Wrench.menuAction
 	val menuAt = tool("wrench/menu_at")
 	val runEntry = tool("wrench/run_entry")
 	val runPick = tool("wrench/run_pick")
@@ -74,7 +78,7 @@ object WrenchMenu {
 		// so the indices match what was on screen.
 		pack.define(cycleIndex) {
 			function(loadForBlock)
-			raw("\$function ${runEntry.asId()} {i:\$(i)}")
+			raw("\$" + macroCall(runEntry, "{i:\$(i)}"))
 			function(loadForBlock)
 			function(openMenu)
 		}
@@ -87,8 +91,8 @@ object WrenchMenu {
 			data(Storage.WRENCH) { remove("q") }
 			data(Storage.WRENCH) { remove("ro") }
 			raw("data modify storage ra:wrench q.type set from entity @s data.type")
-			callWith(loadEntries, "wrench", "q")
-			callWith(loadReadonly, "wrench", "q")
+			callWith(loadEntries, "storage ra:wrench q")
+			callWith(loadReadonly, "storage ra:wrench q")
 			function(filterReadonly)
 		}
 		pack.define(loadEntries) {
@@ -112,7 +116,7 @@ object WrenchMenu {
 		pack.define(filterNext) {
 			raw("execute unless data storage ra:wrench list[0] run return 0")
 			raw("data modify storage ra:wrench fq set from storage ra:wrench list[0]")
-			callWith(filterTest, "wrench", "fq")
+			callWith(filterTest, "storage ra:wrench fq")
 			raw("data remove storage ra:wrench list[0]")
 			function(filterNext)
 		}
@@ -166,7 +170,7 @@ object WrenchMenu {
 			raw("scoreboard players operation #wr.btn ${Obj.TEMP} = #wr.i ${Obj.TEMP}")
 			scoreboard.players.add(literal("#wr.btn"), Obj.TEMP, 1)
 			raw("execute store result storage ra:wrench row.i int 1 run scoreboard players get #wr.btn ${Obj.TEMP}")
-			callWith(menuRow, "wrench", "row")
+			callWith(menuRow, "storage ra:wrench row")
 			raw("data remove storage ra:wrench list[0]")
 			scoreboard.players.add(literal("#wr.i"), Obj.TEMP, 1)
 			function(menuRowNext)
@@ -186,7 +190,7 @@ object WrenchMenu {
 				raw("execute store result storage ra:wrench at.$axis int 1 run scoreboard players get @s ra.wr.$axis")
 			raw("execute store result storage ra:wrench at.i int 1 run scoreboard players get #wr.act ${Obj.TEMP}")
 			tag(self()) { add("ra.wrench_user") }
-			callWith(menuAt, "wrench", "at")
+			callWith(menuAt, "storage ra:wrench at")
 			tag(self()) { remove("ra.wrench_user") }
 		}
 
@@ -196,8 +200,8 @@ object WrenchMenu {
 		// it can have been broken between opening the menu and clicking, and a button that silently
 		// did nothing would be worse than one that says so.
 		pack.define(menuAt) {
-			raw("""${'$'}execute positioned $(x) $(y) $(z) unless entity @e[type=marker,tag=ra.custom_block,distance=..1.5,limit=1] run return run tellraw @s [{text:"[Wrench] ",color:"gold"},{text:"That block is gone.",color:"gray"}]""")
-			raw("\$execute positioned \$(x) \$(y) \$(z) as @e[type=marker,tag=ra.custom_block,distance=..1.5,limit=1,sort=nearest] at @s run function ${cycleIndex.asId()} {i:\$(i)}")
+			raw("""${'$'}execute positioned $(x) $(y) $(z) unless entity @e[type=marker,tag=${Tag.CUSTOM_BLOCK},distance=..1.5,limit=1] run return run tellraw @s [{text:"[Wrench] ",color:"gold"},{text:"That block is gone.",color:"gray"}]""")
+			raw("\$execute positioned \$(x) \$(y) \$(z) as $RAY_TARGET at @s run ${macroCall(cycleIndex, "{i:\$(i)}")}")
 		}
 
 		// {i}: run cyclable number i. As the marker, at the block.
@@ -207,7 +211,7 @@ object WrenchMenu {
 		pack.define(runEntry) {
 			raw("\$data modify storage ra:wrench pick set from storage ra:wrench list[\$(i)]")
 			raw("execute unless data storage ra:wrench pick run return 0")
-			callWith(runPick, "wrench", "pick")
+			callWith(runPick, "storage ra:wrench pick")
 		}
 		pack.define(runPick) { raw("\$function \$(fn)") }
 	}

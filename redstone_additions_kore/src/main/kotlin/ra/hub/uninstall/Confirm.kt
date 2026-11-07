@@ -12,6 +12,7 @@ import io.github.ayfri.kore.commands.tag
 import io.github.ayfri.kore.generated.EntityTypes
 import io.github.ayfri.kore.generated.arguments.types.EntityTypeArgument
 import ra.api.Settings
+import ra.core.RA_CHAT_PREFIX
 import ra.core.Storage
 import ra.core.Tag
 import ra.core.define
@@ -89,6 +90,6 @@ internal fun DataPack.registerUninstallConfirm() = define(confirm) {
 	killAll(EntityTypes.BLOCK_DISPLAY, "ra.wires.pipe_display")
 	killAll(EntityTypes.BLOCK_DISPLAY, "ra.wires.wire_display")
 
-	raw("""tellraw @a [{text:"\n"},$RA_PREFIX,{text:"Redstone Additions has been uninstalled.",color:"red"}]""")
+	raw("""tellraw @a [{text:"\n"},$RA_CHAT_PREFIX,{text:"Redstone Additions has been uninstalled.",color:"red"}]""")
 	raw("""tellraw @a [{text:"  "},{text:"You may now disable the datapack with: ",color:"gray"},{text:"/datapack disable \"file/redstone_additions\"",color:"yellow",click_event:{action:"suggest_command",command:"/datapack disable \"file/redstone_additions\""},hover_event:{action:"show_text",value:"Click to run"}}]""")
 }

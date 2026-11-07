@@ -2,13 +2,14 @@ package ra.tools.wrench
 
 import io.github.ayfri.kore.commands.data
 import io.github.ayfri.kore.commands.function
+import ra.api.Tools
 import ra.core.Obj
 import ra.core.Ra
 import ra.core.Storage
 import ra.core.WrenchCycle
 import ra.core.define
+import ra.core.executeReturnRun
 import ra.core.raw
-import ra.tools.executeReturnRun
 import ra.tools.tool
 
 /**
@@ -35,7 +36,7 @@ import ra.tools.tool
  * whose only control it was, runs on redstone now.
  */
 object WrenchRegistry {
-	val initRegistry = tool("wrench/init_registry")
+	val initRegistry = Tools.Wrench.initRegistry
 	val cycleUniGate = tool("wrench/cycle_uni_gate")
 	val cycleUniGateNotify = tool("wrench/cycle_uni_gate_notify")
 

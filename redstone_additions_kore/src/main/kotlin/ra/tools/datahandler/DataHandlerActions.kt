@@ -5,16 +5,17 @@ import io.github.ayfri.kore.arguments.types.literals.self
 import io.github.ayfri.kore.commands.function
 import io.github.ayfri.kore.commands.scoreboard.scoreboard
 import ra.api.RaLib
+import ra.api.Tools
 import ra.core.Obj
 import ra.core.Ra
+import ra.core.callWith
 import ra.core.define
+import ra.core.executeRun
 import ra.core.raw
-import ra.tools.callWith
 import ra.tools.datahandler.DataHandler.refresh
 import ra.tools.datahandler.DataHandler.showInternalData
 import ra.tools.datahandler.DataHandler.showMenu
 import ra.tools.datahandler.props.DataHandlerProps
-import ra.tools.executeRun
 import ra.tools.tool
 
 /**
@@ -28,7 +29,7 @@ import ra.tools.tool
  * serves every property instead of a branch per name.
  */
 object DataHandlerActions {
-	val tick = tool("data_handler/tick")
+	val tick = Tools.DataHandler.tick
 	val runAction = tool("data_handler/run_action")
 	val applyPending = tool("data_handler/apply_pending")
 	val genericAction = tool("data_handler/generic_action")
@@ -100,17 +101,17 @@ object DataHandlerActions {
 			scoreboard.players.remove(literal("#dh.idx"), Obj.TEMP, 100)
 			raw("data modify storage ra:dh q set value {}")
 			raw("execute store result storage ra:dh q.i int 1 run scoreboard players get #dh.idx ${Obj.TEMP}")
-			callWith(DataHandlerProps.pickName, "dh", "q")
+			callWith(DataHandlerProps.pickName, "storage ra:dh q")
 			raw("execute unless data storage ra:dh pending_name run return 0")
 			raw("data modify storage ra:dh q.name set from storage ra:dh pending_name")
 
 			// A dead button stops the click, but the row's action is a /trigger and a player can
 			// still type one. This is the refusal that actually holds.
 			function(DataHandler.collectHidden)
-			callWith(DataHandlerProps.deny, "dh", "q")
+			callWith(DataHandlerProps.deny, "storage ra:dh q")
 			raw("execute if data storage ra:dh denied run return run data remove storage ra:dh denied")
 
-			callWith(DataHandlerProps.probe, "dh", "q")
+			callWith(DataHandlerProps.probe, "storage ra:dh q")
 
 			// A flag needs no input: flip it and show the result.
 			executeRun("if score #dh.type ${Obj.TEMP} matches 2", DataHandlerProps.toggle, "with storage ra:dh q")

@@ -180,7 +180,7 @@ it, through the options of the core helpers:
 | --- | --- | --- |
 | `ItemSpec` + the `Snbt` value classes, `CustomBlock.loreItem { }` | `core/item/` | Chunk Loader, Infinite generators and casing/cores, Jetpack kits, sensors, wireless, ender, interactive, storage; `ItemSpec.fromSnbt` takes SNBT text copied from a `give` |
 | `WiresItem` (`block`, `lore`, `epic`, `recipe`) | `modules/wires/WiresBlocks.kt` | every Wires item |
-| `ToolItem` (`id`, `item`, `components` as ordered SNBT pairs) | `tools/ToolItems.kt` | the six tools |
+| `ToolItem` (`id`, `spec`: an `ItemSpec.fromSnbt`) | `tools/ToolItems.kt` | the six tools |
 | `BaseTier` | `modules/multiblock/blocks/BaseTier.kt` | the five Multiblock Base tiers (one block type, five items) |
 
 Each writes the same item in every shape the pack needs (give argument, SNBT stack, recipe

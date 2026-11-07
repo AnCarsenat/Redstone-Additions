@@ -6,30 +6,24 @@ import io.github.ayfri.kore.arguments.types.resources.FunctionArgument
 import io.github.ayfri.kore.arguments.types.resources.ItemArgument
 import io.github.ayfri.kore.features.advancements.advancement
 import io.github.ayfri.kore.features.advancements.criteria
-import io.github.ayfri.kore.features.advancements.recipes
-import io.github.ayfri.kore.features.advancements.requirements
 import io.github.ayfri.kore.features.advancements.rewards
-import io.github.ayfri.kore.features.advancements.triggers.inventoryChanged
-import io.github.ayfri.kore.features.advancements.triggers.item
-import io.github.ayfri.kore.features.advancements.triggers.recipeUnlocked
 import io.github.ayfri.kore.features.advancements.triggers.usingItem
 import io.github.ayfri.kore.features.predicates.conditions.entityProperties
 import io.github.ayfri.kore.features.predicates.predicate
 import io.github.ayfri.kore.features.predicates.sub.flags
 import io.github.ayfri.kore.features.predicates.sub.itemStackPredicate
 import io.github.ayfri.kore.features.predicates.sub.predicates
-import io.github.ayfri.kore.features.recipes.recipesBuilder
 import io.github.ayfri.kore.features.recipes.types.CraftingShaped
 import io.github.ayfri.kore.features.recipes.types.RecipeCategory
-import io.github.ayfri.kore.features.recipes.types.craftingShaped
 import io.github.ayfri.kore.features.recipes.types.key
 import io.github.ayfri.kore.features.recipes.types.pattern
-import io.github.ayfri.kore.features.recipes.types.result
 import io.github.ayfri.kore.generated.Items
-import io.github.ayfri.kore.generated.arguments.types.AdvancementArgument
 import io.github.ayfri.kore.utils.nbt
 import io.github.ayfri.kore.utils.set
 import ra.core.Ns
+import ra.core.block.Unlock
+import ra.core.block.recipeResult
+import ra.core.block.shapedRecipe
 import ra.tools.clipboard.Clipboard
 import ra.tools.creativedatahandler.CreativeDataHandler
 import ra.tools.datahandler.DataHandler
@@ -81,7 +75,7 @@ internal fun DataPack.registerToolResources() {
 	}
 }
 
-/** `ra:<id>` and `ra:recipes/unlock_<id>`, unlocked by holding [unlockedBy]. */
+/** `ra:<id>` and `ra:recipes/unlock_<id>`, unlocked by holding [unlockedBy] (criterion [trigger]). */
 private fun DataPack.toolRecipe(
 	tool: ToolItem,
 	resultItem: ItemArgument,
@@ -89,24 +83,7 @@ private fun DataPack.toolRecipe(
 	unlockedBy: ItemArgument,
 	trigger: String = "has_ingredient",
 	shape: CraftingShaped.() -> Unit,
-) {
-	val recipe = recipesBuilder.craftingShaped(tool.id, Ns.RA.id) {
-		this.category = category
-		showNotification = true
-		shape()
-		result(resultItem, 1) { with(tool) { toolComponents() } }
-	}
-	advancement("recipes/unlock_${tool.id}") {
-		namespace = Ns.RA.id
-		parent = AdvancementArgument("recipes/root", "minecraft")
-		criteria {
-			recipeUnlocked("has_the_recipe", recipe)
-			inventoryChanged(trigger) { item { items = listOf(unlockedBy) } }
-		}
-		requirements(listOf("has_the_recipe", trigger))
-		rewards { recipes(recipe) }
-	}
-}
+) = shapedRecipe(Ns.RA, tool.id, tool.spec.recipeResult(resultItem), Unlock(unlockedBy, trigger), category, shape = shape)
 
 /** `ra:tools/<id>_use`: right-click with the tool runs [onUse] as the player. It revokes itself. */
 private fun DataPack.useAdvancement(tool: ToolItem, item: ItemArgument, onUse: FunctionArgument) {

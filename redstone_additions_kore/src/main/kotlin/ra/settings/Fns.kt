@@ -39,7 +39,4 @@ internal object Fns {
 	val adminGrant = s("admin_grant")
 	val adminCall = s("admin_call")
 	val adminRefresh = s("admin_refresh")
-
-	/** Cross-namespace: owned by the Hub (`ra:uninstall`), offered from the server-settings index. */
-	val raUninstall = ref(Ns.RA, "uninstall")
 }

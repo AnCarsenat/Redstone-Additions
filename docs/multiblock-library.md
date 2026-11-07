@@ -136,7 +136,7 @@ produces its item, give and placement data; `Bases.kt` registers them, marks `ti
 
 Register a readout per multiblock type with `multiblockGoggles += TagRoute(markerTag, fn)`; Tools
 builds `ra:tools/goggles/draw_multiblock` from it. Readouts use the multiblock billboard writers
-in `GogglesRefs.Billboard` (`handle_multiblock`, `show_input`, `show_output`, `show_control`) and
+in `Goggles.Billboard` (`handle_multiblock`, `show_input`, `show_output`, `show_control`) and
 `Goggles.Status.readStatusMultiblock`.
 
 ## Ticking order

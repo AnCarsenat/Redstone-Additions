@@ -54,7 +54,7 @@ object ToolsPart : PackPart {
 			items = listOf(
 				ToolItems.multimeter, ToolItems.clipboard, ToolItems.wrench,
 				ToolItems.creativeDataHandler, ToolItems.dataHandler, ToolItems.goggles,
-			).map { it.stackNbt() },
+			).map { it.spec.stackNbt() },
 		)
 	}
 }

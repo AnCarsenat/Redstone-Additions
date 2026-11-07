@@ -13,11 +13,11 @@ import net.benwoodworth.knbt.NbtByte
 import ra.core.Ra
 import ra.core.Storage
 import ra.core.define
+import ra.core.executeReturnRun
+import ra.core.executeRun
 import ra.core.raw
 import ra.tools.REACH_4
 import ra.tools.ToolItems
-import ra.tools.executeReturnRun
-import ra.tools.executeRun
 import ra.tools.raycast
 import ra.tools.tool
 
@@ -34,7 +34,7 @@ object Wrench {
 
 	fun Ra.registerWrench() {
 		pack.define(give) {
-			raw("give @s ${ToolItems.wrench.argument}")
+			raw("give @s ${ToolItems.wrench.spec.giveArg()}")
 			raw("""tellraw @s [{text:"[RA] ",color:"gold"},{text:"Received ",color:"gray"},{text:"Wrench",color:"gold"}]""")
 		}
 		pack.define(onUse) { onUse() }

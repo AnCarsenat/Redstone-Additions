@@ -7,6 +7,7 @@ import ra.core.GiveBundle
 import ra.core.Ns
 import ra.core.Ra
 import ra.core.define
+import ra.core.raMessage
 import ra.core.raw
 import ra.core.ref
 
@@ -41,7 +42,7 @@ private val EXTRA_LORE = mapOf(
 private val NAMESPACE_LABEL = mapOf("tools" to "ra_tools")
 private val AFTER_GIVE = mapOf<String, Function.() -> Unit>(
 	"ender" to {
-		raw("""tellraw @s [{text:"[",color:"dark_gray"},{text:"RA",color:"gold",bold:true},{text:"] ",color:"dark_gray"},{text:"Ender Bundle",color:"light_purple"}]""")
+		raMessage("@s", "Ender Bundle", "light_purple")
 	},
 )
 
@@ -51,7 +52,7 @@ internal fun Ra.registerBundles() {
 
 	pack.define(giveAll) {
 		gives.forEach { function(it) }
-		raw("""tellraw @s [{text:"[",color:"dark_gray"},{text:"RA",color:"gold",bold:true},{text:"] ",color:"dark_gray"},{text:"Given categorized namespace bundles!",color:"green"}]""")
+		raMessage("@s", "Given categorized namespace bundles!", "green")
 	}
 
 	// Give categorized namespace bundles directly to the executing player.

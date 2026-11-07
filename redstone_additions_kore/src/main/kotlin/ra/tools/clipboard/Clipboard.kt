@@ -7,18 +7,18 @@ import io.github.ayfri.kore.commands.function
 import io.github.ayfri.kore.commands.tag
 import io.github.ayfri.kore.generated.arguments.types.AdvancementArgument
 import net.benwoodworth.knbt.NbtByte
+import ra.api.Goggles
 import ra.core.Obj
 import ra.core.Ra
 import ra.core.Storage
+import ra.core.callWith
 import ra.core.define
+import ra.core.executeReturnRun
+import ra.core.executeRun
 import ra.core.raw
 import ra.tools.RAY_TARGET
 import ra.tools.REACH_4
 import ra.tools.ToolItems
-import ra.tools.callWith
-import ra.tools.executeReturnRun
-import ra.tools.executeRun
-import ra.tools.goggles.GogglesRefs
 import ra.tools.tool
 
 /**
@@ -62,7 +62,7 @@ object Clipboard {
 
 	fun Ra.registerClipboard() {
 		pack.define(give) {
-			raw("give @s ${ToolItems.clipboard.argument}")
+			raw("give @s ${ToolItems.clipboard.spec.giveArg()}")
 			raw("""tellraw @s [{text:"[RA] ",color:"gold"},{text:"Received ",color:"gray"},{text:"Clipboard",color:"gold"}]""")
 		}
 
@@ -78,7 +78,7 @@ object Clipboard {
 			// Is the clipboard loaded? That, not the click, decides copy versus apply.
 			raw("execute store result storage ra:temp clip.slot int 1 run scoreboard players get @s ra.clip.id")
 			data(Storage.TEMP) { remove("clip.kind") }
-			callWith(load, "temp", "clip")
+			callWith(load, "storage ra:temp clip")
 			data(Storage.TEMP) { remove("clip_found") }
 			executeRun("if data storage ra:temp clip.kind", raycastQuiet, "{action:\"paste\"}")
 			executeRun("unless data storage ra:temp clip.kind", raycastQuiet, "{action:\"copy\"}")
@@ -109,7 +109,7 @@ object Clipboard {
 		// Empty this player's clipboard. As the player.
 		pack.define(clear) {
 			raw("execute store result storage ra:temp clip.slot int 1 run scoreboard players get @s ra.clip.id")
-			callWith(clearSlot, "temp", "clip")
+			callWith(clearSlot, "storage ra:temp clip")
 			data(Storage.TEMP) { remove("clip") }
 			raw("""tellraw @s [$PREFIX,{text:"Cleared. The next block you click becomes the new origin.",color:"gray"}]""")
 			raw("playsound minecraft:item.book.put block @s[scores={${Obj.USER_SOUND}=1..}] ~ ~ ~ 0.7 0.9")
@@ -146,7 +146,7 @@ object Clipboard {
 			raw("data modify storage ra:temp clip.props set from entity @s data.properties")
 			raw("data modify storage ra:temp clip.kind set from storage ra:temp block_name")
 			raw("execute store result storage ra:temp clip.slot int 1 run scoreboard players get $HOLDER ra.clip.id")
-			callWith(store, "temp", "clip")
+			callWith(store, "storage ra:temp clip")
 			raw("""tellraw $HOLDER [$PREFIX,{text:"Origin set: ",color:"gray"},{nbt:"block_name",storage:"ra:temp",color:"yellow"},{text:". Click others of the same kind to match it.",color:"gray"}]""")
 			raw("playsound minecraft:item.book.page_turn block @a[tag=ra.clip_active,limit=1,scores={${Obj.USER_SOUND}=1..}] ~ ~ ~ 0.8 1.6")
 			data(Storage.TEMP) { remove("clip") }
@@ -157,15 +157,15 @@ object Clipboard {
 			data(Storage.TEMP) { modify("clip_found", NbtByte(1)) }
 			raw("execute store result storage ra:temp clip.slot int 1 run scoreboard players get $HOLDER ra.clip.id")
 			data(Storage.TEMP) { remove("clip.kind") }
-			callWith(load, "temp", "clip")
+			callWith(load, "storage ra:temp clip")
 			raw("""execute unless data storage ra:temp clip.kind run return run tellraw $HOLDER [$PREFIX,{text:"No origin set — click a block to choose one.",color:"gray"}]""")
 			// Same kind only. Property names overlap between unrelated blocks -- half the pack has
 			// `enabled` -- so without this a Gas Valve's rate would happily land on a Randomizer's
 			// chance and quietly mean something else.
 			blockNameOnly()
-			callWith(checkKind, "temp", "clip")
+			callWith(checkKind, "storage ra:temp clip")
 			executeReturnRun("unless data storage ra:temp clip_ok", refuse)
-			callWith(apply, "temp", "clip")
+			callWith(apply, "storage ra:temp clip")
 			raw("""tellraw $HOLDER [$PREFIX,{text:"Matched this ",color:"gray"},{nbt:"block_name",storage:"ra:temp",color:"yellow"},{text:" to the origin.",color:"gray"}]""")
 			raw("playsound minecraft:block.amethyst_block.chime block @a[tag=ra.clip_active,limit=1,scores={${Obj.USER_SOUND}=1..}] ~ ~ ~ 0.7 1.4")
 			raw("particle minecraft:happy_villager ~ ~0.8 ~ 0.3 0.3 0.3 0.02 6 normal @a[scores={${Obj.USER_PARTICLES}=1..}]")
@@ -202,7 +202,7 @@ object Clipboard {
 	/** Ask this marker's goggles function for its name only: into storage ra:temp block_name. */
 	private fun io.github.ayfri.kore.functions.Function.blockNameOnly() {
 		data(Storage.TEMP) { modify("name_only", NbtByte(1)) }
-		function(GogglesRefs.drawBlock)
+		function(Goggles.drawBlock)
 		data(Storage.TEMP) { remove("name_only") }
 	}
 }

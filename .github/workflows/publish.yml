@@ -1,7 +1,9 @@
 # Publishes a release to Modrinth: the data pack zip, and the same pack as a
 # Fabric / Quilt / Forge / NeoForge jar (the "+mod" version).
 #
-# Triggered by pushing a tag like "v5.1.17", or manually from the Actions tab.
+# Built from the Kotlin sources in redstone_additions/ with Kore (JDK 25).
+# Triggered by pushing a tag like "v6.0.0", or manually from the Actions tab. The tag
+# must equal `version` in redstone_additions/gradle.properties.
 # Needs a MODRINTH_TOKEN repository secret with the "Create versions" scope. The
 # Modrinth project (52z5jQjy) already exists; this only adds versions to it.
 
@@ -9,9 +11,10 @@ name: Publish to Modrinth
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
-  # Every Minecraft version the pack supports, as Modrinth names them.
-  # Keep in sync with min_format / max_format in redstone_additions/src/pack.mcmeta.
-  GAME_VERSIONS: "1.21.9 1.21.10 1.21.11 26.1 26.1.1 26.1.2 26.2 26.3"
+  # Every Minecraft version the pack supports, as Modrinth names them. The Kore build
+  # targets exactly the version Kore targets (gradle/libs.versions.toml: kore = "x-26.3"),
+  # and pack.mcmeta declares only that format.
+  GAME_VERSIONS: "26.3"
 
 on:
   push:
@@ -36,11 +39,14 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v5
 
-      - name: Set up Python
-        uses: actions/setup-python@v6
+      - name: Set up JDK 25
+        uses: actions/setup-java@v5
         with:
-          # beet 0.113+ requires Python 3.14.
-          python-version: "3.14"
+          distribution: temurin
+          java-version: "25"
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v5
 
       # A tag push carries the version in the ref, a manual run in the input.
       # Both go through the environment rather than being interpolated into the
@@ -59,18 +65,23 @@ jobs:
           esac
           echo "value=$version" >> "$GITHUB_OUTPUT"
 
-      # Rebuild from src and require the result to match the committed build, so
-      # a release can never ship a build/ that is older than its sources.
-      - name: Build with beet
-        working-directory: redstone_additions
+      # The tag and the version the pack is built with must agree: the pack.mcmeta
+      # description and the load message both carry it, and the publish script checks
+      # pack.mcmeta again before uploading anything.
+      - name: Check version matches gradle.properties
+        env:
+          VERSION: ${{ steps.version.outputs.value }}
         run: |
-          pip install beet==0.116.0
-          beet build
-          if [ -n "$(git status --porcelain -- build)" ]; then
-            git status --short -- build
-            echo "::error::committed build/ is out of date with src/; run 'beet build' and commit the result" >&2
+          declared="$(sed -n 's/^[[:space:]]*version[[:space:]]*=[[:space:]]*//p' redstone_additions/gradle.properties | head -n1)"
+          if [ "$declared" != "$VERSION" ]; then
+            echo "::error::publishing $VERSION, but redstone_additions/gradle.properties says version=$declared" >&2
             exit 1
           fi
+
+      # Strict by default: generation fails on a call to a function the pack never defines.
+      - name: Build with Kore
+        working-directory: redstone_additions
+        run: ./gradlew koreBuild --no-daemon
 
       - name: Publish
         env:

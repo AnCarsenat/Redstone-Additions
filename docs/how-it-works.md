@@ -4,6 +4,11 @@ This page explains the runtime architecture of Redstone Additions in detail.
 
 Use this as the canonical technical reference for the pack flow. Module pages focus on behavior and block details, while this page explains system internals.
 
+Everything here is what runs **in game**: function paths, tags, scores and storages. The Kotlin
+that generates it is described in [Architecture](architecture.md) (parts, the `Ra` registry, the
+order `ra:load` and `ra:tick` are assembled in) and mapped file by file in
+[Project Reference](project-reference.md).
+
 ## Runtime At A Glance
 
 ```mermaid
@@ -79,7 +84,7 @@ sequenceDiagram
 
 ### Handler Routing
 
-Placement handlers are resolved through function tags, allowing each module to register block-specific `handle_placement` functions without changing core router logic.
+Placement handlers are resolved through the function tag `#ra:placement_handlers`, allowing each module to register block-specific `handle_placement` functions without changing core router logic. In the Kotlin, `ra.block(block)` adds a block's handler; the tag lists them in registration order. An addon pack adds its own handler with a `"replace": false` tag file ([Extension Examples](extension-examples.md)).
 
 ### Marker Creation Contract
 
@@ -228,8 +233,9 @@ there is no second editing path, which is why the goggles no longer have a
 
 **Shift+RMB** cycles properties, driven entirely by data:
 
-- The block declares what it can cycle in `ra:tools/wrench/init_registry`,
-  keyed by the type markers carry in `data.type`.
+- The block declares what it can cycle with `ra.wrenchCycle(...)` in its Kotlin; the Tools part
+  writes every declaration into `ra:tools/wrench/init_registry`, keyed by the type markers
+  carry in `data.type`.
 - Properties listed in `ra:tools/readonly/init_registry` are dropped first, so
   something the block owns can never be cycled by hand.
 - What is left decides the presentation: **nothing** and it says the block does
@@ -279,7 +285,7 @@ Status overlay system:
 
 Block-level rendering control:
 
-- Each block owns its readout in `blocks/<name>/goggles.mcfunction`, next to its
+- Each block owns its readout in `blocks/<name>/goggles`, written in the block's Kotlin file next to its
   tick and placement logic.
 - That function publishes the block's display name to `storage ra:temp block_name`
   first, then returns early if `storage ra:temp name_only` is set. This makes it

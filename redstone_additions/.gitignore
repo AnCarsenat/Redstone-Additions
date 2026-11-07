@@ -1,0 +1,7 @@
+/.idea
+/.gradle
+/build
+/out
+/.kotlin
+__pycache__
+/local.properties

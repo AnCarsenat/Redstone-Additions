@@ -8,28 +8,28 @@ Pure standard library — no install step, no dependencies.
 
 ## Quick commands
 
-Run from `redstone_additions/`.
+Run from the repository root.
 
 ```bash
 # readme.md -> readme.bbcode, next to the input
-python3 tools/md_to_bbcode.py ../readme.md \
+python3 tools/md_to_bbcode.py readme.md \
     --base-url https://github.com/AnCarsenat/Redstone-Additions/raw/main/
 
 # straight to the terminal, ready to pipe into a clipboard tool
-python3 tools/md_to_bbcode.py ../docs/jetpacks.md -o - --quiet | wl-copy
+python3 tools/md_to_bbcode.py docs/jetpacks.md -o - --quiet | wl-copy
 
 # a docs page, with its relative pictures pointed at the published site
-python3 tools/md_to_bbcode.py ../docs/storage.md \
+python3 tools/md_to_bbcode.py docs/storage.md \
     --base-url https://ancarsenat.github.io/Redstone-Additions/ -o /tmp/storage.bbcode
 
 # tables as aligned monospace text instead of flattened lists
-python3 tools/md_to_bbcode.py ../readme.md --tables code
+python3 tools/md_to_bbcode.py readme.md --tables code
 
 # drop the shields.io badges, keep everything else
-python3 tools/md_to_bbcode.py ../readme.md --no-badges
+python3 tools/md_to_bbcode.py readme.md --no-badges
 
 # from stdin
-cat ../readme.md | python3 tools/md_to_bbcode.py - > /tmp/out.bbcode
+cat readme.md | python3 tools/md_to_bbcode.py - > /tmp/out.bbcode
 ```
 
 The repo's own PMC description lives in `readme.bbcode` at the repo root,
@@ -183,7 +183,7 @@ The tool reports each of these on stderr unless `--quiet` is passed.
 ## Updating the PMC page
 
 1. Edit `readme.md` as usual.
-2. `python3 tools/md_to_bbcode.py ../readme.md --base-url https://github.com/AnCarsenat/Redstone-Additions/raw/main/`
+2. `python3 tools/md_to_bbcode.py readme.md --base-url https://github.com/AnCarsenat/Redstone-Additions/raw/main/`
 3. Paste `readme.bbcode` into the PMC submission's description field with
    **BBCode mode on**, and preview before saving — PMC turns every newline into
    a line break, so the preview is the only real check.

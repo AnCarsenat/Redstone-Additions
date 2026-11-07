@@ -1,0 +1,84 @@
+package ra.tools.datahandler
+
+import ra.api.Tools
+import ra.core.Ra
+import ra.core.define
+import ra.core.raw
+
+/**
+ * `ra:tools/data_handler/init_registry`: the property names the Handler knows how to show, in
+ * display order.
+ *
+ * A data pack cannot iterate the keys of a compound, which is why this list exists at all -- it is
+ * the only hand-maintained part left. Adding a property to a block means adding its name here, and
+ * nothing else: the row, the type and the editor are all worked out at runtime. Position matters
+ * only in that it decides the action id a row's button carries (100 + index).
+ *
+ * CALLED UNCONDITIONALLY FROM ra:load, LIKE THE WRENCH AND READONLY REGISTRIES
+ * This is configuration, not world state: it is the same on every world and it must match the
+ * build that is running. It used to be seeded lazily instead, `unless data storage ra:dh numeric`,
+ * from three call sites -- and that guard is exactly what broke the two filter properties. A world
+ * upgraded from an earlier version already had `numeric`, so the guard passed, this function never
+ * ran again, and the world kept an old `registry` with no filter_item or filter_medium in it and no
+ * item_names list at all. Neither filter had a row in the editor, on any block, for ever.
+ *
+ * So: never guard this on the presence of one of its own lists. Every list is rewritten on every
+ * load, and a name added here reaches an existing world on the next /reload.
+ *
+ * APPEND, DO NOT INSERT
+ * A row's button carries 100 + its index, and those ids are baked into the chat message a player is
+ * looking at. Inserting a name in the middle renumbers every row after it, so a menu drawn before a
+ * /reload would edit the wrong property when clicked. New names go on the end.
+ */
+object DataHandlerRegistry {
+	val initRegistry = Tools.DataHandler.initRegistry
+
+	/** Menu order. Append only (see above). */
+	private val PROPERTIES = listOf(
+		"inverted", "mode", "channel", "target", "tag", "entity_selector", "message_block", "gate", "gate_type",
+		"output", "range", "radius", "delay", "cooldown", "power", "distance", "extend", "pulse", "chance",
+		"transfer_rate", "generation_rate", "eu_use", "tier", "tier_level", "input1", "output1", "anchor_id",
+		"targets", "rate", "filter_item", "filter_medium", "medium", "enabled",
+	)
+
+	/**
+	 * Which of those names hold numbers, in one place beside the registry itself.
+	 *
+	 * props/probe works a type out from the value that is stored, which is right until the stored
+	 * value is already wrong: a delay that somehow became the string "5" probes as a string, so the
+	 * editor asks for text, the player types 5, and it writes a string again. The field can never
+	 * climb back out, and every reader of it is measuring the length of a word.
+	 *
+	 * `channel`, `anchor_id`, `tag` and `entity_selector` are deliberately absent: they are string
+	 * identifiers that blocks compare, and a channel called "5" must stay the text 5 -- turning one
+	 * into a number is the v5.1.6 bug that stopped a vault matching its partner.
+	 */
+	private val NUMERIC = listOf(
+		"range", "delay", "cooldown", "power", "distance", "extend", "pulse", "chance", "transfer_rate",
+		"generation_rate", "eu_use", "tier_level", "rate", "radius",
+	)
+
+	/**
+	 * Which of those names hold an item id, beside the registry for the same reason `numeric` is. An
+	 * item_name is a string as far as storage is concerned, so it would probe as one and get a plain
+	 * text row -- and the player would be typing item ids out by hand. Naming it here is what gets it
+	 * the [Set from hand] button, which is the only way anyone would actually want to fill one in.
+	 */
+	private val ITEM_NAMES = listOf("filter_item")
+
+	private fun List<String>.snbt() = joinToString(",", "[", "]") { "\"$it\"" }
+
+	fun Ra.registerDataHandlerRegistry() {
+		// The tools port this list centrally, in its original order. Anything a module registered
+		// on top goes on the end, which is the only place a new name may go.
+		val names = PROPERTIES + dataHandlerProperties.filter { it !in PROPERTIES }
+		dataHandlerProperties.clear()
+		dataHandlerProperties += names
+
+		pack.define(initRegistry) {
+			raw("data modify storage ra:dh registry set value ${names.snbt()}")
+			raw("data modify storage ra:dh numeric set value ${NUMERIC.snbt()}")
+			raw("data modify storage ra:dh item_names set value ${ITEM_NAMES.snbt()}")
+		}
+	}
+}

@@ -1,314 +1,192 @@
 # Transport Networks
 
-The `ra_wires` module adds liquid, gas, and EU transport.
-
-- Namespace: `ra_wires`
-- Get the blocks: the **Wires Bundle** (`/function ra:items/bundles/give_wires_bundle`)
-- Creative-only sources: `/function ra_wires:items/give_creative`
-- Runtime architecture: [How It Works](how-it-works.md)
-
+Pipes for liquids and gases, wires for electricity (EU), and the machines that fill, store and use
+them: pumps, tanks, boilers, generators, solar panels, batteries, an electric furnace and lights.
 
 ![An EU grid running](images/screenshots/Electricity.png)
 
-*An EU grid: generator, wire, battery and consumers, with the goggles reporting
-what each one holds and whether the grid is gaining or losing.*
+*An EU grid: generator, wire, battery and consumers, with the Goggles showing what each one holds.*
 
-## Block Families
+## Getting them
 
-| Family | Blocks | Notes |
-|---|---|---|
-| Fluid | Copper Pipe, Liquid Tank, Liquid Pump, Liquid Valve, Liquid Drain | Liquids and gases share one pipe network |
-| Gas | Gas Tank, Gas Pump, Gas Valve, Boiler | Gases use the same pipes as liquids |
-| Electric | Wire, EU Generator, EU Consumer, EU Switch, EU Breaker, Battery, Solar Panel, Industrial Light, Electric Furnace | Grid-wide EU: batteries store it, breakers bridge grids |
+| Block | Recipe |
+| --- | --- |
+| Copper Pipe | ![Copper Pipe recipe](images/recipes/ra_wires/liquid_pipe_copper.png){ width="220" } |
+| Liquid Tank | ![Liquid Tank recipe](images/recipes/ra_wires/liquid_tank.png){ width="220" } |
+| Liquid Pump | ![Liquid Pump recipe](images/recipes/ra_wires/liquid_pump.png){ width="220" } |
+| Liquid Drain | ![Liquid Drain recipe](images/recipes/ra_wires/liquid_drain.png){ width="220" } |
+| Liquid Valve | ![Liquid Valve recipe](images/recipes/ra_wires/liquid_valve.png){ width="220" } |
+| Liquid Filter | ![Liquid Filter recipe](images/recipes/ra_wires/liquid_filter.png){ width="220" } |
+| Gas Tank | ![Gas Tank recipe](images/recipes/ra_wires/gas_tank.png){ width="220" } |
+| Gas Pump | ![Gas Pump recipe](images/recipes/ra_wires/gas_pump.png){ width="220" } |
+| Gas Valve | ![Gas Valve recipe](images/recipes/ra_wires/gas_valve.png){ width="220" } |
+| Boiler | ![Boiler recipe](images/recipes/ra_wires/boiler.png){ width="220" } |
+| Wire | ![Wire recipe](images/recipes/ra_wires/electric_wire_copper.png){ width="220" } |
+| EU Generator | ![EU Generator recipe](images/recipes/ra_wires/electric_generator.png){ width="220" } |
+| Solar Panel | ![Solar Panel recipe](images/recipes/ra_wires/solar_panel.png){ width="220" } |
+| Battery | ![Battery recipe](images/recipes/ra_wires/battery.png){ width="220" } |
+| EU Switch | ![EU Switch recipe](images/recipes/ra_wires/electric_switch.png){ width="220" } |
+| EU Breaker | ![EU Breaker recipe](images/recipes/ra_wires/electric_breaker.png){ width="220" } |
+| EU Consumer | ![EU Consumer recipe](images/recipes/ra_wires/electric_consumer.png){ width="220" } |
+| Electric Furnace | ![Electric Furnace recipe](images/recipes/ra_wires/electric_furnace.png){ width="220" } |
+| Industrial Light | ![Industrial Light recipe](images/recipes/ra_wires/industrial_light.png){ width="220" } |
 
-## Flow Model
+Operators: the **Wires Bundle** (`/function ra:items/bundles/give_wires_bundle`) has everything;
+`/function ra_wires:items/give_creative` gives the two creative sources.
 
-**Contents belong to the network, not to individual blocks — fluids and EU alike.**
+## How networks work
 
-Electric used to be the exception: every wire held its own charge and, once a
-tick, handed half the difference to one neighbour that had less. That model
-levels charge out, it does not deliver it. Charge crawled one block per tick, a
-generator with six neighbours fed exactly one of them, and once a run had evened
-out to within 1 EU everywhere the transfer guard stopped it moving at all, so a
-consumer at the end of a line was fed by whatever leaked past the wires in front
-of it. Electric now runs on the same engine as fluids, and everything below
-applies to it word for word.
+Blocks of the same family that touch form one **network**:
 
-A connected run of pipes, tanks, pumps, valves and drains is one *network* with
-one pool of contents and a capacity equal to the sum of its members. Adding a
-pipe adds capacity; it does not add another buffer that fluid has to be pushed
-through. That pool can hold several media at once — see
-[Mixing media in one run](#mixing-media-in-one-run).
+- **Fluid network** — pipes, tanks, pumps, drains (liquids and gases share the same pipes).
+- **Electric grid** — wires, generators, solar panels, batteries, consumers, the furnace, lights.
 
-That means:
-
-- Nothing travels. Anything a pump or a generator adds is immediately available
-  to every drain or consumer on the same network, however far away, on the same
-  tick.
-- Pipes, tanks, valves, wires and switches do **no** per-tick work. Only the
-  blocks that move something between the world and the network are ticked —
-  pumps, drains, boilers, generators, solar panels, consumers. A hundred-block
-  run is free to keep running.
-- Network membership is recomputed only when a node is placed or broken, and is
-  debounced so laying a long run costs one rebuild rather than one per block.
-- **A network keeps its number.** The id the Multimeter shows is an identity, not
-  a position in a list: extending a run, or tearing out an unrelated one
-  somewhere else in the world, leaves it alone. A run split in two keeps the
-  number on one half and the other half gets a fresh one; a run whose blocks are
-  all broken loses its number for good, and it is never issued again.
-
-  It did not used to work that way. Ids were handed out 1, 2, 3… on every
-  rebuild, so breaking one run slid every higher-numbered run down one. The
-  Multimeter would say "Network 22", the run would be torn out, and `nets.n22`
-  would still be sitting in `storage ra:transport` afterwards holding a different
-  run's water — which reads exactly like a network that refused to die.
-
-Network state:
-
-- `data.properties.*` — configuration the player can change (`mode`, `rate`, `cooldown`).
-- `data.status.*` — read-only values for goggles, redrawn once a second.
-
-## Capacity is Storage, and Storage is Finite
-
-A network holds exactly what its members can store, and nothing carries a hidden
-buffer. Fluids are measured in **millilitres**; a bucket is 5000 mL.
+A network has **one shared pool**. Whatever a pump or generator adds is instantly available to
+every drain or machine on the same network, however far away. Each block adds to the network's
+capacity:
 
 | Block | Holds |
 |---|---|
-| Pipe (either tier) | 1000 mL |
+| Pipe | 1000 mL |
 | Pump, Drain | 5000 mL |
-| Tank, Gas Tank | 100000 mL (20 buckets) |
-| Creative Fluid Source | 100000 mL |
-| Ender Fluid Vault | 1000 mL |
-| Wire, EU Switch, EU Breaker, Ender Power Vault | **0 EU** |
-| EU Generator, Consumer, Solar Panel, Electric Furnace | 50 EU |
+| Liquid Tank, Gas Tank | 100000 mL (20 buckets) |
+| Wire, EU Switch, EU Breaker | 0 EU |
+| EU Generator, EU Consumer, Solar Panel, Electric Furnace | 50 EU |
 | **Battery** | 10000 EU |
-| Creative EU Source | 100000 EU |
 
-Network totals live in `storage ra:transport nets.n<id>` rather than on a
-scoreboard fake player. A scoreboard gives one number per network, which is
-exactly the shape that has to change when a network can hold several media at
-once; a compound already has room for the per-medium map. Arithmetic still goes
-through scoreboards, because commands have no other way to add two numbers.
+Fluids are measured in millilitres: **a bucket is 5000 mL**.
 
-Valves and Liquid Filters are **bridges**, not members: they move contents
-between two networks and hold nothing themselves, so they add no capacity to
-either side and never appear in this table.
+!!! tip "Wire stores nothing"
+    Without a Battery, power that is not used straight away is lost. Put Batteries on any grid
+    with a generator or solar panel.
 
-Wire stores nothing. A grid with no battery on it holds only the small working
-buffers of its generators and consumers, so whatever is generated has to be spent
-on the same tick or it is lost — build batteries or waste your output. This is
-the electric answer to "a pipe adds a litre": a run of wire is not secretly a
-tank.
+Different families never mix, so an electric wire and a pipe can run side by side.
 
-A world source block pumps in as 5000 mL. A cauldron gives up its bucket across
-its three levels, 1667 + 1667 + 1666. The Boiler trades 1000 mL of water for
-1000 mL of steam per cycle.
+## Fluids
 
-## Media
+### Getting fluid in and out
 
-Each medium carries its own colour and particle, so water splashes, lava sparks
-and experience glows rather than everything emitting the same grey smoke.
+| Block | Does |
+| --- | --- |
+| **Liquid Pump** | Pulls a fluid source block next to it (any side) into the network — only when the whole 5000 mL fits. Cauldrons give 1667 + 1667 + 1666 mL |
+| **Liquid Drain**, mode `drain` | Same, on a slower cycle |
+| **Liquid Drain**, mode `place` | Spends 5000 mL to put a source block back into the world on a free side (says `not_enough` below 5000 mL) |
+| **Liquid Drain**, placed vertically | A **loading point**: takes filled buckets/bottles from you (sneak while holding one), from a container on top of it, or from items dropped on it, and gives the empties back. With nothing to load, it takes a sneaking player's **experience** instead |
+| **Gas Pump** | Like the Liquid Pump, for gases |
 
-Registered: water, lava, powder snow, milk, **experience**, **potion**, steam,
-smoke, oxygen.
+Change a Drain's mode or rate with the [Wrench](tools.md) (2.5 / **5** / 10 L per second).
 
-**One experience point is 100 mL**, and the rate is the same in both directions —
-what a player pours into a drain is exactly what a drain set to *place* gives
-back, as orbs.
+**Infinite sources:** a source block with **nine or more** matching sources within two blocks is
+left in place when pumped, so a large lake never runs dry. Smaller pools do empty.
 
-!!! note "`potion` is one medium, whichever potion it is"
-    A network holds [several media at once](#mixing-media-in-one-run), but every
-    potion is the same medium — `potion` — because the variety lives beside the
-    amount rather than in the media list. The first potion into a network is the
-    one it keeps; a second, different potion poured in adds to the same
-    `potion` entry and arrives as the first one. A Liquid Filter set to `potion`
-    passes potions as a group, not one kind of potion.
+### Fluids you can move
 
-## The Drain's Three Roles
-
-Two are set with the wrench: **drain** takes a world source into the
-network, **place** spends network contents putting a source block back.
-
-The third is decided by how you place the block. Stood **vertically** it stops
-working on the world entirely and becomes the **loading point**, taking filled
-containers in from three places, tried in that order:
-
-1. **A sneaking player's main hand.** The empty is left in your hand.
-2. **A container on top of the drain.** The empty goes back into that container,
-   or is dropped if it no longer fits.
-3. **Loose items on top of the drain.** The empty is dropped.
-
-Only the first needs sneaking, because a bucket is also how you pick fluid *up* —
-without that gate, walking past with a full bucket would quietly empty it. A
-bucket you have deliberately put in a barrel or dropped on the block is not
-ambiguous in that way, and running unattended is the point of those two: a hopper
-feeding buckets into a barrel over a drain is how a base loads a network with
-nobody standing there.
-
-One container per cycle, whichever route it came from, so the drain's `cooldown`
-still governs throughput.
-
-With **nothing** it recognises anywhere, it takes a sneaking player's
-**experience** instead: ten points a cycle, 100 mL each, whole points only.
-
-The network is charged before the swap, and only if it can take the whole
-container. There is no such item as a part-full bucket.
-
-## Throughput
-
-The wrench cycles three steps on the two blocks whose whole job is a rate:
-
-| Block | Steps |
+| Fluid | Kind |
 |---|---|
-| Liquid Drain | 2.5 / **5** / 10 L per second |
-| EU Consumer | 20 / **40** / 80 EU per tick |
+| Water, Lava, Powder Snow, Milk | liquid |
+| Steam, Smoke, Oxygen | gas |
+| Experience | 1 point = 100 mL; a Drain set to `place` gives it back as orbs |
+| Potion | keeps its effects (see below) |
 
-A consumer takes all or nothing, so the heavy setting simply idles on a grid that
-cannot cover it — that is how you decide what a base spends its generation on.
+### Several fluids in one pipe
 
-## Bridges
+A network can carry several fluids at once; it is full when the **total** reaches its capacity. The
+fluid that arrived first is the **primary** one: it is what a Valve moves and what a Drain places
+unless told otherwise.
 
-A **bridge** belongs to neither of the networks it sits between, and that is what
-makes it work: a node belongs to exactly one network, so anything that joined
-would merge the two sides and leave nothing to bridge. The Boiler has always
-worked this way. A bridge also breaks connectivity by existing — a pipe run with
-a valve in it is two networks, always.
+To split a mixed pipe back into separate ones, use **Liquid Filters** (below).
 
-While powered by redstone, a bridge **evens the two networks out**: it takes from
-whichever side holds more and gives it to whichever holds less, up to its `rate`
-per tick, and stops when they are level.
+### Valves, Filters and Breakers
 
-**It has no facing.** It looks at all six neighbours, finds the networks touching
-it, and moves from the fullest to the emptiest. Drop it into a pipe run any way
-round and it works — there is nothing to get wrong and nothing to line up.
+These connect **two** networks without merging them, and only work **while powered by redstone**.
+They move contents from the fuller side to the emptier one until both are level, up to their rate
+per tick. They work whichever way round you place them.
 
-It cannot oscillate: the amount moved is capped at the difference between the two
-sides, so the most that can happen is that they end up level, and once level
-neither direction fires.
+| Block | Connects | Moves |
+| --- | --- | --- |
+| Liquid Valve, Gas Valve | two fluid networks | the primary fluid |
+| Liquid Filter | two fluid networks | only its `filter_medium` (default `water`) — set it with the [Data Handler](tools.md) to `lava`, `steam`, `potion`… |
+| EU Breaker | two electric grids | EU — lets two bases with their own batteries share power |
 
-- **Liquid Valve / Gas Valve** — the fluid bridge. Carries the medium across, and
-  refuses if the far side holds something different.
-- **EU Breaker** — the same block for grids. Two bases with their own batteries
-  share what they have through one.
-- **Ender Power Vault** — a *wireless* bridge. It joins its local grid so wires
-  connect to it, contributes no capacity, and moves EU to the vault on its channel
-  — out of the grid at this end and into the grid at the far end. Whatever the far
-  grid cannot accept is put straight back.
+To cut a pipe completely, remove a pipe block. To cut a wire, use an **EU Switch**: switched off
+(toggle `enabled` with the Data Handler) it splits the grid in two.
 
-!!! warning "The Valve changed meaning"
-    The Valve used to be a shutoff that cut a line by leaving its network. It is
-    now a two-way link between two networks and needs redstone to do anything. An
-    existing build using a valve as a closed tap will find it does not conduct at
-    all until powered. To cut a fluid line now, remove a pipe.
+### Potions
 
-Pipes, tanks and wires carry no configuration at all — they are pure conductors and
-capacity. The **EU Switch** is still a true shutoff: it leaves its network when
-turned off, so the two halves genuinely become separate grids.
+Pour a potion into a Drain and the network remembers which potion it is (the **first** potion in
+wins; a different potion added later becomes the same one). A Drain set to output pours it over
+everyone within 4 blocks. A full bottle (1000 mL) gives the potion's full duration; less gives a
+proportional share — 250 mL of a 3-minute Strength potion is 45 seconds. The level is unchanged.
 
-## Media
+## Electricity
 
-Media are named, not numbered:
+### Making power
 
-| Key | Name | State | World block |
-|---|---|---|---|
-| `water` | Water | liquid | `minecraft:water` |
-| `lava` | Lava | liquid | `minecraft:lava` |
-| `powder_snow` | Powder Snow | liquid | `minecraft:powder_snow` |
-| `milk` | Milk | liquid | — |
-| `steam` | Steam | gas | — |
-| `smoke` | Smoke | gas | — |
-| `oxygen` | Oxygen | gas | — |
+| Source | Makes |
+| --- | --- |
+| **EU Generator** | 60 EU per tick. Burns **steam** from a network, or solid fuel (coal etc.) put into it — it opens like a chest |
+| **Solar Panel** | 10–50 EU per tick from sky light: most at noon, less at night, in rain, under a roof or snow |
+| **Boiler** | Not power itself: turns 1000 mL of water into 1000 mL of steam every second |
 
-A network holds any number of these at once and clogs on the **sum** — see
-[Mixing media in one run](#mixing-media-in-one-run). A medium drained to nothing
-leaves the network entirely, so a run that once carried lava stops claiming to,
-and a network drained to empty forgets everything.
-
-## Pumps and Drains
-
-**Liquid Pump** — pulls a world fluid source into the network. It checks all six
-adjacent blocks, so it works whichever way you place it. A source block is
-all-or-nothing: the pump only takes it if the whole **5000 mL** fits, so a
-nearly full network cannot delete a lake a partial bucket at a time. Cauldrons go
-in thirds — 1667, 1667, 1666 mL — because a third of 5000 does not divide.
-
-**Liquid Drain** has two modes, cycled from the wrench menu:
-
-- `drain` — takes a world source into the network (like a pump, on a slower cycle).
-- `place` — spends **5000 mL** putting a source block of the network's primary
-  medium back into the world, on the first free side. Below 5000 mL it says
-  `not_enough` rather than placing a partial block.
-
-`place` mode is what makes a network worth building: carry lava from a pool to
-wherever you want it, or refill cauldrons across a base.
-
-### Infinite Sources
-
-A body of **nine or more** matching source blocks within two blocks of the one
-being taken counts as inexhaustible, and the block is left alone. Anything
-smaller is genuinely consumed, so small pools empty out.
-
-## Boiler and the EU Chain
-
-The Boiler sits **between two networks** — it is deliberately not a member of
-either. A node belongs to exactly one network, so a Boiler that joined would put
-its water side and its steam side into the same one. A network can hold both now,
-but that is precisely what you do not want here: the two would share one pool of
-volume, the steam would be drawn back through the Boiler's own inlet, and the EU
-Generator on the far side would be reading a run that is half water. Keeping it
-outside is what makes the chain directional.
+**Steam power chain:**
 
 ```text
-water network → [Boiler over a heat source] → steam network → [EU Generator] → EU
+water network → Boiler (over a heat source) → steam network → EU Generator → EU
 ```
 
-- Any block in `#ra_wires:heat_sources` under the Boiler will do: lava, fire,
-  soul fire, magma block, campfire, soul campfire, lava cauldron.
-- Consumes 1000 mL of water and produces 1000 mL of steam per cycle, once every
-  20 ticks.
-- The **EU Generator burns steam**, or solid fuel dropped straight into it — it
-  is a barrel wearing a furnace skin, so loading it is just putting coal in a box.
-  Either way it does not generate power from nothing.
-- The **Solar Panel** generates EU from sky light instead, scaling with the
-  vanilla daylight detector's own light reading — so night, rain, roofs and snow
-  cover all reduce it automatically. It offers what it makes **every tick**,
-  10 EU/t at the dimmest light it registers up to 50 EU/t in full noon sun, which
-  is a shade under one EU Generator. It stores nothing overnight by itself:
-  a panel contributes 50 EU of capacity, so a solar base wants Batteries.
+The Boiler needs one of these under it: lava, fire, soul fire, magma block, campfire, soul
+campfire, lava cauldron. It sits **between** the water pipe and the steam pipe and is not part of
+either.
 
-## Mixing media in one run
+### Using power
 
-A network holds **several media at once**. Water, lava and steam can share a pipe
-run, each with its own entry, and the run clogs only when the **sum** of
-everything in it reaches the capacity — not when any one medium does. A pipe run
-is one pool of volume that several media share, and you budget it as one number.
+| Block | Uses |
+| --- | --- |
+| **EU Consumer** | A power load: draws a fixed amount every tick, all or nothing (20 / **40** / 80 EU per tick, cycled with the Wrench). Sparks while running |
+| **Electric Furnace** | Smelts with EU instead of fuel (below) |
+| **Industrial Light** | With redstone **and** EU, shines a 10-block beam of light (stops at the first solid block). Uses 10 EU by default (`eu_use`) |
+| **Battery** | Stores 10000 EU for later |
 
-This is what changed: a network used to refuse any medium that was not the one it
-already held, so a run was single-purpose for as long as it held anything at all,
-and switching it over meant draining it first. Nothing refuses an offer now
-except a lack of room.
+### Electric Furnace
 
-The **primary medium** is whichever arrived first and has not run out. It is what
-a Valve or a Breaker moves when nobody told it otherwise, and what a Drain places
-when nobody named a medium. A medium drained to nothing leaves the network
-entirely, so a run that once carried lava stops claiming to.
+![Electric Furnace smelting on EU](images/screenshots/ElectricFurnace.png)
 
-Networks saved by an earlier version migrate the first time they are read. They
-cannot be enumerated by id from a function, so there is no sweep on load — the
-whole amount moves into the key of whatever medium the network was recorded as
-holding, and nothing is lost.
+1. Put items to smelt into the furnace (it opens like a chest; hoppers work from any side).
+2. Put a container on the **output face**: under, front, back or top — choose it with the
+   [Wrench](tools.md).
+3. Connect it to a powered grid.
 
-### Reading a mixed run
+Results always go to the output container, never back into the furnace. If that container is
+missing or full, the furnace stops and the Goggles show `Output blocked` — nothing is wasted.
 
-The **Goggles** name a single-medium run — `Medium: Water` — and say
-`Medium: Multimedium` for anything holding two or more, over the usual `Amount:`
-line for the total. They do not list the breakdown: a billboard is one short line
-read from across the room, and `Water 5000 mL, Lava 5000 mL, Steam 2000 mL` is
-neither short nor legible at that distance.
+| Power mode | Ticks per item | EU per item | EU per tick |
+| --- | --- | --- | --- |
+| low | 100 | 40 | 0.4 |
+| medium | 50 | 80 | 1.6 |
+| high | 20 | 160 | 8 |
+| superpowered | 5 | 300 | 60 |
 
-The **Multimeter** is where the breakdown lives, because chat has room for a line
-per medium:
+It smelts ores and raw metals, iron and gold gear back into nuggets, food, sand, clay, stone,
+cracked bricks, and logs into charcoal.
+
+## Creative sources
+
+For testing, with no recipe (`/function ra_wires:items/give_creative`):
+
+| Block | Does |
+| --- | --- |
+| Creative EU Source | Refills its grid to full every tick |
+| Creative Fluid Source | Adds `rate` mL of one fluid per tick (default 1000), until the network is full. Change the fluid with the Wrench |
+
+A network fed by a Creative Fluid Source fills up quickly, which leaves no room for a second fluid;
+for mixed-fluid tests, give the run extra tanks.
+
+## Checking a network
+
+- **[Goggles](tools.md):** each block shows its fluid (or `Multimedium` for several) and amount,
+  or its EU and whether it is running.
+- **[Multimeter](tools.md):** right-click a block for its network number, contents per fluid,
+  capacity and what this block adds.
 
 ```
 ── Copper Pipe ──
@@ -319,207 +197,32 @@ per medium:
     Lava  5000 mL
 ```
 
-A run holding one medium keeps it on a single line — `Holding  Water  5000 mL`.
-The media are listed in the order they arrived, so the first line is the primary.
-EU grids read the same way, in EU.
-
-## Liquid Filter
-
-![Liquid Filter recipe](images/recipes/ra_wires/liquid_filter.png){ width="260" }
-
-A Valve that passes only one medium. It is what turns a mixed run back into
-single-medium runs: put one on each branch, set each to a different medium, and a
-pipe carrying water and lava together sorts itself into two.
-
-| Property | Default | Meaning |
-| --- | --- | --- |
-| `filter_medium` | `water` | The only medium it will pass |
-| `rate` | `2000` | Millilitres per tick, the block's own |
-
-Set `filter_medium` by **shift+RMB with the [Data Handler](tools.md#data-handler)**
-and using **[Modify]** on that row. It takes a medium name — `water`, `lava`,
-`steam`, `potion` and the rest of the [Media](#media) table — not an item id.
-
-Like every bridge it belongs to neither network, breaks connectivity by existing,
-needs redstone to run, and finds its two sides itself whichever way round it was
-placed. It levels **per medium**: two runs each holding 5000 mL are not level to a
-water filter if one of them is all lava.
-
-The Goggles name the medium it is set to in that medium's own colour, and say so
-in red if the name is not one the pack knows — a filter set to a misspelt medium
-would otherwise look identical to one working correctly and passing nothing.
-
-## Potions keep their effects
-
-A potion emptied into a Drain is 1000 mL of the `potion` medium, and the network
-remembers **which** potion. A Drain set to output pours it over everyone within
-four blocks rather than placing it as a block, because a potion has no block.
-
-The duration follows the volume: the potion's own duration is what a full bottle
-gives, and a partial draw is a proportional share of it. 250 mL of a three-minute
-Strength potion is forty-five seconds. The level is the potion's own and is not
-scaled — half a bottle of Strength II is still Strength II, for less time.
-
-Preset potions get their effects from a table in `ra_wires:media/potions`, because
-a preset potion carries only its id and nothing that says Strength lasts three
-minutes. A potion brewed with commands carries `custom_effects` on the item and is
-read straight off it.
-
-**The first potion in wins.** A network already holding one potion keeps that
-identity when a different one is poured in. The alternatives were refusing the
-second pour — the single-medium behaviour this release removes — or averaging two
-effect lists, which means nothing.
-
-## Valves
-
-A valve genuinely **splits the network in two**. The halves
-then hold separate contents and separate media. Closing a valve is the supported
-way to isolate part of a system.
-
-The state is set with redstone; either way
-the network follows.
-
-## Visual Connectivity
-
-Each node draws only **its own half** of a connection — from its core out to its
-block boundary, never across into the neighbour. Displays are rebuilt only when a
-conduit appears or disappears at a marker, never on a tick where nothing changed.
-
-Fluid pipes render as a chunky 0.56 core in copper or iron. Electric wires are
-deliberately thinner (0.26) and use concrete, so the two are easy to tell apart
-at a glance.
-
-## Goggles and Tinkering
-
-Goggles show medium, amount, and per-block state lines.
-
-Tinkering — sneak and hold goggles in the main hand near a node:
-
-- Most nodes: nothing to cycle — the wrench says so.
-- Drain: cycle mode between `drain` and `place`.
-
-Pumps have nothing to configure; they take whatever they find next to them.
-
-## Extending New Media
-
-1. Add an entry to the registry in `ra_wires:media/init` — display name, state,
-   colour, particle, and optionally a world block and bucket.
-2. If it can be pumped out of the world, add a `source_blocks` entry naming the
-   block state, the medium, the volume, and what the block becomes when drained.
-
-That is all. Nothing else needs a per-medium branch.
-
----
+Two blocks showing different network numbers are not connected. A network keeps its number while
+you extend it.
 
 ![A fluid network](images/screenshots/Pipes.png)
 
-*A fluid network in millilitres. Contents live on the network, not in the pipes —
-a pipe only adds capacity.*
+---
 
-## Electric Furnace
+## Advanced
 
-![Electric Furnace smelting on EU](images/screenshots/ElectricFurnace.png)
-
-Smelts using EU instead of fuel. There is no fuel slot, because there is no fuel.
-
-![Electric Furnace recipe](images/recipes/ra_wires/electric_furnace.png){ width="260" }
-
-| Mode | Ticks per item | EU per item | EU per tick |
-| --- | --- | --- | --- |
-| low | 100 | 40 | 0.4 |
-| medium | 50 | 80 | 1.6 |
-| high | 20 | 160 | 8 |
-| superpowered | 5 | 300 | 60 |
-
-Cycle the mode with the wrench. EU per item rises faster than speed does on
-purpose: four times quicker for four times the power would leave no reason to
-run anything but superpowered, and "low" would never be a real choice on a small
-grid.
-
-The scale is anchored on the generators the pack ships. One **EU Generator**
-makes 60 EU/t, so superpowered is one generator running flat out. A **Solar
-Panel** peaks at 50 EU/t, so it is a couple of panels at noon, or a handful plus
-a **Battery** to carry the night. Low is still 7.5x cheaper per item than
-superpowered, which is what keeps it worth using for bulk smelting.
-
-### How input and output are split
-
-**Input** is the furnace's own barrel — any smeltable stack, any slot.
-
-**Output** is pushed into the container on one chosen face: **under**, **front**,
-**back** or **top**, chosen from the [wrench menu](tools.md#wrench). The power mode is in the
-wrench menu as well — shift+RMB lists Output, Power and Enabled together.
-
-Results never come back into the furnace. That is what stops it smelting its own
-output — cobblestone would otherwise become stone and then smooth stone — and it
-means there is no slot rule for anyone to remember. Feed it with a hopper from
-any side; take from the destination container with anything at all.
-
-If the destination is missing or full the furnace stops and the goggles read
-`Output blocked`. That is checked *before* any EU is spent and before the input
-is consumed, so a blocked output costs nothing and destroys nothing.
-
-### What it can smelt
-
-The recipe table is hand-maintained (`ra_wires:blocks/electric_furnace/init_recipes`),
-because a data pack cannot ask the game what a vanilla smelting recipe produces.
-It covers ores and raw metals, iron and gold gear back to nuggets, food, sand,
-clay, stone, cracked bricks and logs to charcoal. Anything not in the table is
-left alone.
-
-## Industrial Light
-
-Redstone **and** EU, projecting a ten-block beam of real `minecraft:light`. It
-stops at the first solid block, and the only block it will ever remove is a light
-of the exact level it places.
-
-| Unpowered | Lit |
-|---|---|
-| ![Industrial Light off](images/screenshots/IndustrialLightOff.png) | ![Industrial Light on](images/screenshots/IndustrialLightOn.png) |
-
-The goggles name whichever condition is missing — `No redstone` or `No EU` —
-rather than a bare "Dark".
-
-## Creative sources
-
-Two blocks that make something from nothing, for building and testing the
-consuming half of a system without also running a fuel farm or a pump farm to
-feed it. Neither has a recipe. Both are in the **Wires Bundle** with the rest of the
-module, or `/function ra_wires:items/give_creative` for just the two.
-
-| Block | Real block | What it does |
-| --- | --- | --- |
-| Creative EU Source | `minecraft:beacon` | Refills its grid to capacity every tick |
-| Creative Fluid Source | `minecraft:beacon` | Tops its network up with one medium, at `rate` per tick |
-
-The EU source fills to capacity rather than producing a fixed rate, so it does
-not matter how much the grid draws: whatever was spent last tick is back this
-tick and a machine on a creative grid never sees a brownout.
-
-The fluid source's medium is a property rather than a fixed choice, so one source
-can be used to test a water line and then a lava line. Cycle it with the wrench,
-which can only land on a medium that exists, or type it on the `medium` row of
-the Data Handler — free text is checked against the media registry first, because
-a junk key in a network is one nothing could ever drain.
-
-### Why the fluid source has a rate and the EU source does not
-
-The fluid source adds **`rate` mL per tick**, 1000 by default, and stops when the
-network is full. The EU source has no rate because a grid is emptied every tick
-by whatever is drawing on it; a pipe run is not.
-
-Filling a run to the brim in one tick is what a single-medium source wanted, and
-it is exactly wrong now that [a run can hold several media](#mixing-media-in-one-run).
-A source offering the whole of the free space took the entire network on the tick
-it was placed, and every other source, Pump and Drain feeding that run then found
-a full network for ever. A mixed run could not be built anywhere a Creative Fluid
-Source was attached, and the failure looked like the run refusing the new medium
-rather than like the source having already claimed it.
-
-With a rate, sources sharing a run interleave and the run ends up holding all of
-them. Set `rate` high on the Data Handler for a single-medium test rig where
-instant refill is what you want.
-
-A full network still refuses everything, correctly — mixing needs headroom. If
-you are building a mixed run to try it out, leave the creative source off it and
-fill from Drains, or give the run more tanks than one source will fill.
+- **Engine.** All networks run on `ra_lib:transport`: adjacent nodes of the same class are grouped
+  by flood fill when a node is placed or broken (debounced to one rebuild every 5 ticks). Pipes,
+  tanks, valves and wires do no work per tick; only blocks that move something between the world
+  and a network are ticked.
+- **Storage.** Each network is `storage ra:transport nets.n<id>`: `amount` (total), `capacity`,
+  `amounts` (per fluid), `media` (fluids in arrival order), `medium` (the primary), and `potion`.
+  See the [Developer Guide](developer-guide.md#transport) for the full model.
+- **Properties** (`data.properties`): Drain `mode`, `cooldown`; Filter `filter_medium`, `rate`
+  (2000); Creative Fluid Source `medium`, `rate`; Industrial Light `eu_use`; Electric Furnace
+  `output`, `mode`; switches `enabled`. Status for the Goggles is in `data.status`.
+- **Fixed rates** such as a generator's `generation_rate` are read-only: the Data Handler shows them
+  locked.
+- **Heat sources** are the block tag `#ra_wires:heat_sources`.
+- **Media registry** (`ra_wires:media/init`): display name, state, colour, particle, optional world
+  block and bucket; pumpable blocks are listed as `source_blocks`. Preset potions get their effects
+  from `ra_wires:media/potions`; a potion with `custom_effects` is read from the item.
+- **Bridges** (Valves, Filters, Breakers, the Boiler, the Ender Power Vault) belong to neither
+  network they touch, which is why a valve always splits a run in two.
+- **Visuals.** Each node draws its own half of each connection; fluid pipes are a 0.56 copper or
+  iron core, electric wires a thinner 0.26 concrete core.

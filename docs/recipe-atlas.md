@@ -22,11 +22,11 @@ what the pack actually contains rather than what someone remembered to add.
 | [Boxer](#storage) | [Storage](storage.md) | Crafting table |
 | [Breeder](#interactive-machines) | [Interactive Machines](interactive-machines.md) | Crafting table |
 | [Chunk Loader](#chunk-loader) | [Chunk Loader](chunk-loader.md) | Crafting table |
-| [Clipboard](#tools) | [Tools](index.md) | Crafting table |
+| [Clipboard](#tools) | [Tools](tools.md) | Crafting table |
 | [Clock](#logic-gates) | [Logic Gates](logic-gates.md) | Crafting table |
 | [Copper Multiblock Base](#multiblocks) | [Multiblocks](multiblocks.md) | Crafting table |
 | [Copper Pipe](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
-| [Data Handler](#tools) | [Tools](index.md) | Crafting table |
+| [Data Handler](#tools) | [Tools](tools.md) | Crafting table |
 | [Delayer](#logic-gates) | [Logic Gates](logic-gates.md) | Crafting table |
 | [Diamond Multiblock Base](#multiblocks) | [Multiblocks](multiblocks.md) | Crafting table |
 | [Electric Furnace](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
@@ -45,7 +45,7 @@ what the pack actually contains rather than what someone remembered to add.
 | [Gas Tank](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
 | [Gas Valve](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
 | [Generator Casing](#infinite-generators) | [Infinite Generators](infinite-generators.md) | Crafting table |
-| [Goggles](#tools) | [Tools](index.md) | Crafting table |
+| [Goggles](#tools) | [Tools](tools.md) | Crafting table |
 | [Gold Multiblock Base](#multiblocks) | [Multiblocks](multiblocks.md) | Crafting table |
 | [Industrial Light](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
 | [Infinite Iron Jetpack Kit](#not-crafted-won-on-an-enchanting-table) | [Jetpacks](jetpacks.md) | Enchanting table |
@@ -66,7 +66,7 @@ what the pack actually contains rather than what someone remembered to add.
 | [Message Block](#interactive-machines) | [Interactive Machines](interactive-machines.md) | Crafting table |
 | [Mineral Core](#not-crafted-won-on-an-enchanting-table) | [Infinite Generators](infinite-generators.md) | Enchanting table |
 | [Mineral Generator](#infinite-generators) | [Infinite Generators](infinite-generators.md) | Crafting table, shapeless |
-| [Multimeter](#tools) | [Tools](index.md) | Crafting table |
+| [Multimeter](#tools) | [Tools](tools.md) | Crafting table |
 | [Nether Core](#not-crafted-won-on-an-enchanting-table) | [Infinite Generators](infinite-generators.md) | Enchanting table |
 | [Nether Generator](#infinite-generators) | [Infinite Generators](infinite-generators.md) | Crafting table, shapeless |
 | [Netherite Multiblock Base](#multiblocks) | [Multiblocks](multiblocks.md) | Crafting table |
@@ -87,7 +87,7 @@ what the pack actually contains rather than what someone remembered to add.
 | [Wire](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
 | [Wireless Emitter](#wireless-redstone) | [Wireless Redstone](wireless-redstone.md) | Crafting table |
 | [Wireless Receiver](#wireless-redstone) | [Wireless Redstone](wireless-redstone.md) | Crafting table |
-| [Wrench](#tools) | [Tools](index.md) | Crafting table |
+| [Wrench](#tools) | [Tools](tools.md) | Crafting table |
 
 ## Chunk Loader
 
@@ -196,7 +196,7 @@ Module page: [Storage](storage.md) — give everything: `/function ra_storage:it
 
 ## Tools
 
-Module page: [Tools](index.md) — give everything: `/function ra:tools/give_all`
+Module page: [Tools](tools.md) — give everything: `/function ra:tools/give_all`
 
 | Item | Recipe | Station | Namespace id |
 | ---- | ------ | ------- | ------------ |
@@ -252,7 +252,7 @@ second, so a stack of 64 is 64 separate rolls. Full explanation on
 | Sacrifice | Becomes | Chance | Module |
 | --------- | ------- | ------ | ------ |
 | Coal | **Enchanted Coal** | 1% | [Interactive Machines](interactive-machines.md) |
-| Iron Jetpack Kit | **Infinite Iron Jetpack Kit** | 10% | [Jetpacks](jetpacks.md) |
+| Iron Jetpack Kit | **Infinite Iron Jetpack Kit** | 1% | [Jetpacks](jetpacks.md) |
 | Stone | **Mineral Core** | 1% | [Infinite Generators](infinite-generators.md) |
 | Netherrack | **Nether Core** | 1% | [Infinite Generators](infinite-generators.md) |
 | Poppy | **Poppy Core** | 1% | [Infinite Generators](infinite-generators.md) |

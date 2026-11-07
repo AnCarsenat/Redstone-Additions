@@ -1,15 +1,49 @@
 package ra.modules.sensors
 
+import io.github.ayfri.kore.commands.function
 import ra.core.GameplayModule
+import ra.core.GiveBundle
 import ra.core.Ns
 import ra.core.Ra
+import ra.core.define
+import ra.core.raw
+import ra.core.ref
+import ra.modules.infinite.loadMessage
+import ra.modules.sensors.EntityDetector.registerEntityDetector
+import ra.modules.sensors.TagAdder.registerTagAdder
+import ra.modules.sensors.TagRemover.registerTagRemover
 
-/** Sensors (`ra_sensors`). Not ported yet. */
+/** Sensors (`ra_sensors`): entity detection and tag manipulation blocks. */
 object SensorsModule : GameplayModule {
 	override val ns = Ns.SENSORS
 	override val title = "Sensors"
 
 	override fun Ra.register() {
-		// TODO(port)
+		// Registration order is the placement-handler order of the beet #ra:placement_handlers.
+		registerEntityDetector()
+		registerTagAdder()
+		registerTagRemover()
+
+		val blocks = listOf(EntityDetector.block, TagAdder.block, TagRemover.block)
+
+		pack.define(load) {
+			function(EntityDetector.registerBlock)
+			function(TagAdder.registerBlock)
+			function(TagRemover.registerBlock)
+			loadMessage("Sensors loaded!", "aqua")
+		}
+
+		// Called every game tick from ra:tick.
+		pack.define(tick!!) { for (b in blocks) function(b.tick) }
+
+		pack.define(ref(ns, "items/give_all")) {
+			for (b in blocks) function(b.give)
+			raw("""tellraw @s [{text:"[",color:"dark_gray"},{text:"RA",color:"gold",bold:true},{text:"] ",color:"dark_gray"},{text:"Given all sensor blocks!",color:"light_purple"}]""")
+		}
+
+		bundles += GiveBundle(
+			"sensors", "Sensors Bundle", "Entity detector and tag blocks", ns,
+			listOf(EntityDetector.item, TagAdder.item, TagRemover.item).map { it.stackNbt() },
+		)
 	}
 }

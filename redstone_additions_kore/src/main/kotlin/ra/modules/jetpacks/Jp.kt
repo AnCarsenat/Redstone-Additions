@@ -76,8 +76,6 @@ object Jp {
 	/** `#<name> ra.temp`. */
 	fun tmp(name: String) = literal(name)
 
-	const val PARTICLE_VIEWERS = "@a[scores={${Obj.USER_PARTICLES}=1..}]"
-	const val SOUND_LISTENERS = "@a[distance=..16,scores={${Obj.USER_SOUND}=1..}]"
 	const val SELF_IF_SOUND = "@s[scores={${Obj.USER_SOUND}=1..}]"
 }
 

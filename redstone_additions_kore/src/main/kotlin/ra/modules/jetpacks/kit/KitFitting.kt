@@ -13,17 +13,18 @@ import io.github.ayfri.kore.functions.Function
 import io.github.ayfri.kore.utils.nbt
 import io.github.ayfri.kore.utils.set
 import net.benwoodworth.knbt.NbtString
+import ra.core.block.particleViewersSel
+import ra.core.block.soundListenersSel
 import ra.core.Ns
 import ra.core.Obj
 import ra.core.Ra
 import ra.core.Storage
 import ra.core.define
+import ra.core.macroCall
 import ra.core.raw
 import ra.core.ref
 import ra.modules.jetpacks.Jp
-import ra.modules.jetpacks.Jp.PARTICLE_VIEWERS
 import ra.modules.jetpacks.Jp.SELF_IF_SOUND
-import ra.modules.jetpacks.Jp.SOUND_LISTENERS
 import ra.modules.jetpacks.Jp.tmp
 import ra.modules.jetpacks.Kits
 import ra.modules.jetpacks.selfItem
@@ -144,8 +145,8 @@ object KitFitting {
 		raw("""clear @s *[minecraft:custom_data~{ra:{jetpack_kit:1b,tier:"iron"}}] 1""")
 
 		raw("""title @s actionbar [{text:"Iron jetpack fitted",color:"green"},{text:" — sneak to fly",color:"gray"}]""")
-		raw("particle minecraft:enchant ~ ~1 ~ 0.4 0.6 0.4 0.6 40 normal $PARTICLE_VIEWERS")
-		raw("playsound minecraft:block.anvil.use player $SOUND_LISTENERS ~ ~ ~ 0.8 1.2")
+		raw("particle minecraft:enchant ~ ~1 ~ 0.4 0.6 0.4 0.6 40 normal ${particleViewersSel()}")
+		raw("playsound minecraft:block.anvil.use player ${soundListenersSel()} ~ ~ ~ 0.8 1.2")
 		raw("playsound minecraft:entity.player.levelup player $SELF_IF_SOUND ~ ~ ~ 0.6 1.6")
 	}
 
@@ -169,8 +170,8 @@ object KitFitting {
 
 		raw("""execute if score #jp.n ${Obj.TEMP} matches 1.. run title @s actionbar [{text:"Infinite jetpack fitted",color:"light_purple"},{text:" - fuel free, kits kept",color:"gray"}]""")
 		raw("""execute if score #jp.n ${Obj.TEMP} matches ..0 run title @s actionbar [{text:"Infinite jetpack fitted",color:"light_purple"},{text:" - no fuel needed",color:"gray"}]""")
-		raw("particle minecraft:enchant ~ ~1 ~ 0.4 0.6 0.4 0.8 60 normal $PARTICLE_VIEWERS")
-		raw("playsound minecraft:block.beacon.activate player $SOUND_LISTENERS ~ ~ ~ 0.7 1.4")
+		raw("particle minecraft:enchant ~ ~1 ~ 0.4 0.6 0.4 0.8 60 normal ${particleViewersSel()}")
+		raw("playsound minecraft:block.beacon.activate player ${soundListenersSel()} ~ ~ ~ 0.7 1.4")
 		raw("playsound minecraft:entity.player.levelup player $SELF_IF_SOUND ~ ~ ~ 0.6 1.8")
 	}
 
@@ -181,7 +182,7 @@ object KitFitting {
 			run { returnRun(needsJetpack) }
 		}
 
-		raw("\$execute if items entity @s armor.chest *[minecraft:custom_data~{ra:{\$(key):1b}}] run return run function ${alreadyFitted.asId()}")
+		raw("\$execute if items entity @s armor.chest *[minecraft:custom_data~{ra:{\$(key):1b}}] run return run ${macroCall(alreadyFitted)}")
 
 		function(readFitted)
 		raw("\$scoreboard players add #jp.n ${Obj.TEMP} \$(bit)")
@@ -190,8 +191,8 @@ object KitFitting {
 		raw("\$clear @s *[minecraft:custom_data~{ra:{jetpack_kit:1b,upgrade:\"\$(kit)\"}}] 1")
 
 		raw("\$title @s actionbar [{text:\"\$(name) kit fitted\",color:\"green\"},{text:\" - \$(hint)\",color:\"gray\"}]")
-		raw("particle minecraft:enchant ~ ~1 ~ 0.4 0.6 0.4 0.6 40 normal $PARTICLE_VIEWERS")
-		raw("playsound minecraft:block.anvil.use player $SOUND_LISTENERS ~ ~ ~ 0.8 1.4")
+		raw("particle minecraft:enchant ~ ~1 ~ 0.4 0.6 0.4 0.6 40 normal ${particleViewersSel()}")
+		raw("playsound minecraft:block.anvil.use player ${soundListenersSel()} ~ ~ ~ 0.8 1.4")
 		raw("playsound minecraft:entity.player.levelup player $SELF_IF_SOUND ~ ~ ~ 0.6 1.8")
 	}
 

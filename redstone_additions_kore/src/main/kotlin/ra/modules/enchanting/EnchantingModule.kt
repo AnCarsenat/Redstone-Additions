@@ -10,6 +10,7 @@ import io.github.ayfri.kore.commands.scoreboard.scoreboard
 import io.github.ayfri.kore.commands.tag
 import io.github.ayfri.kore.features.tags.functionTag
 import io.github.ayfri.kore.arguments.types.resources.tagged.FunctionTagArgument
+import io.github.ayfri.kore.functions.Function
 import io.github.ayfri.kore.generated.EntityTypes
 import io.github.ayfri.kore.utils.nbt
 import io.github.ayfri.kore.utils.set
@@ -96,7 +97,7 @@ object EnchantingModule : GameplayModule {
 	 * of every tick. A sacrificed stack rolls once per second, which is four scan steps -- see
 	 * sacrifice/on_table.
 	 */
-	private fun io.github.ayfri.kore.functions.Function.tick() {
+	private fun Function.tick() {
 		// Defaults to ON. A settings lookup that fails must not be able to switch a module off --
 		// see ra_settings:get for why this used to be possible.
 		execute {

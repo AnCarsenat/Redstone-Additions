@@ -9,6 +9,7 @@ import io.github.ayfri.kore.commands.scoreboard.scoreboard
 import io.github.ayfri.kore.functions.Function
 import io.github.ayfri.kore.utils.nbt
 import io.github.ayfri.kore.utils.set
+import ra.core.block.particleViewersSel
 import ra.core.Ns
 import ra.core.Obj
 import ra.core.Ra
@@ -16,7 +17,6 @@ import ra.core.define
 import ra.core.raw
 import ra.core.ref
 import ra.modules.jetpacks.Jp
-import ra.modules.jetpacks.Jp.PARTICLE_VIEWERS
 import ra.modules.jetpacks.Jp.SELF_IF_SOUND
 import ra.modules.jetpacks.Jp.tmp
 import ra.modules.jetpacks.Kits
@@ -161,7 +161,7 @@ object KitMenu {
 		}
 
 		raw("\$title @s actionbar [{text:\"\$(label) kit removed\",color:\"yellow\"}]")
-		raw("particle minecraft:enchant ~ ~1 ~ 0.4 0.6 0.4 0.4 25 normal $PARTICLE_VIEWERS")
+		raw("particle minecraft:enchant ~ ~1 ~ 0.4 0.6 0.4 0.4 25 normal ${particleViewersSel()}")
 		raw("playsound minecraft:block.grindstone.use player $SELF_IF_SOUND ~ ~ ~ 0.7 1.2")
 	}
 }

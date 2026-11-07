@@ -30,3 +30,9 @@ object InfiniteTags {
 		}
 	}
 }
+
+/** [InfiniteTags.growable] as command text (`#ra_infinite:growable`), for the raw block tests. */
+val GROWABLE = InfiniteTags.growable.asId()
+
+/** [InfiniteTags.flowerGround] as command text (`#ra_infinite:flower_ground`). */
+val FLOWER_GROUND = InfiniteTags.flowerGround.asId()

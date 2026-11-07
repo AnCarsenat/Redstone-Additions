@@ -1,17 +1,16 @@
 package ra.modules.infinite
 
 import io.github.ayfri.kore.commands.returnValue
-import io.github.ayfri.kore.features.recipes.recipesBuilder
 import io.github.ayfri.kore.features.recipes.types.RecipeCategory
-import io.github.ayfri.kore.features.recipes.types.craftingShaped
 import io.github.ayfri.kore.features.recipes.types.key
 import io.github.ayfri.kore.features.recipes.types.pattern
-import io.github.ayfri.kore.features.recipes.types.result
 import io.github.ayfri.kore.generated.Items
 import io.github.ayfri.kore.arguments.types.resources.ItemArgument
 import ra.core.Ns
 import ra.core.Ra
-import ra.core.block.recipeUnlock
+import ra.core.block.Unlock
+import ra.core.block.recipeResult
+import ra.core.block.shapedRecipe
 import ra.core.define
 import ra.core.raw
 import ra.core.ref
@@ -70,15 +69,14 @@ object InfiniteItems {
 		pack.define(giveCasing) { raw("give @s ${casing.giveArg()}") }
 		for (core in cores) pack.define(core.give) { raw("give @s ${core.item.giveArg()}") }
 
-		val recipe = pack.recipesBuilder.craftingShaped("generator_casing", Ns.INFINITE.id) {
-			category = RecipeCategory.MISC
+		pack.shapedRecipe(
+			Ns.INFINITE, "generator_casing", casing.recipeResult(Items.REPEATING_COMMAND_BLOCK),
+			Unlock(Items.NETHERITE_SCRAP), RecipeCategory.MISC,
+		) {
 			pattern("GGG", "GNG", "GGG")
 			key("G", Items.COPPER_GRATE)
 			key("N", Items.NETHERITE_SCRAP)
-			result(Items.REPEATING_COMMAND_BLOCK, 1) { casing.applyTo(this) }
-			showNotification = true
 		}
-		pack.recipeUnlock("generator_casing", Ns.INFINITE.id, recipe, Items.NETHERITE_SCRAP)
 
 		// Sacrifice recipes for the cores, listed in #ra_enchanting:recipes. Input: storage
 		// ra:enchant input. The first recipe that writes `result` wins, so each returns once matched.

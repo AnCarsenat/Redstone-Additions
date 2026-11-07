@@ -10,14 +10,6 @@ import io.github.ayfri.kore.commands.execute.execute
 import io.github.ayfri.kore.commands.function
 import io.github.ayfri.kore.commands.kill
 import io.github.ayfri.kore.commands.scoreboard.scoreboard
-import io.github.ayfri.kore.features.advancements.advancement
-import io.github.ayfri.kore.features.advancements.criteria
-import io.github.ayfri.kore.features.advancements.requirements
-import io.github.ayfri.kore.features.advancements.rewards
-import io.github.ayfri.kore.features.advancements.recipes
-import io.github.ayfri.kore.features.advancements.triggers.inventoryChanged
-import io.github.ayfri.kore.features.advancements.triggers.item
-import io.github.ayfri.kore.features.advancements.triggers.recipeUnlocked
 import io.github.ayfri.kore.features.predicates.sub.predicates
 import io.github.ayfri.kore.arguments.components.matchers.customData
 import io.github.ayfri.kore.features.recipes.recipesBuilder
@@ -29,10 +21,8 @@ import io.github.ayfri.kore.functions.Function
 import io.github.ayfri.kore.generated.Blocks
 import io.github.ayfri.kore.generated.EntityTypes
 import io.github.ayfri.kore.generated.Items
-import io.github.ayfri.kore.generated.arguments.types.AdvancementArgument
 import io.github.ayfri.kore.utils.nbt
 import io.github.ayfri.kore.utils.set
-import ra.api.RaLib
 import ra.core.Ns
 import ra.core.Obj
 import ra.core.Ra
@@ -47,7 +37,12 @@ import ra.core.define
 import ra.core.raw
 import ra.core.item.SComp
 import ra.core.item.loreItem
+import ra.core.block.Unlock
 import ra.core.block.breakCheck
+import ra.core.block.defaultProperty
+import ra.core.block.placementGuard
+import ra.core.block.readProperty
+import ra.core.block.recipeUnlock
 import ra.core.block.finishPlacement
 import ra.core.blockRegisterMessage
 
@@ -99,24 +94,12 @@ class Generator(
 
 		// Unlocked by holding the core, matched on its custom data: the base item alone is a
 		// command block anyone in creative has.
-		pack.advancement("recipes/unlock_${block.id}") {
-			namespace = block.ns.id
-			parent = AdvancementArgument("recipes/root", "minecraft")
-			criteria {
-				recipeUnlocked("has_the_recipe", recipe)
-				inventoryChanged("has_core") {
-					item {
-						items = listOf(core.base)
-						predicates { customData { this["ra"] = nbt { this[core.key] = true } } }
-					}
-				}
-			}
-			requirements(listOf("has_the_recipe", "has_core"))
-			rewards { recipes(recipe) }
-		}
+		pack.recipeUnlock(block.id, block.ns, recipe, Unlock(core.base, "has_core") {
+			predicates { customData { this["ra"] = nbt { this[core.key] = true } } }
+		})
 
 		pack.define(block.handlePlacement) {
-			raw("execute unless entity @s[tag=${block.placeTag}] run return 0")
+			placementGuard(block, checkExisting = false)
 			placeBlock(block)
 			data(newMarker(block)) { modify("data.properties.cooldown") { set(defaultCooldown) } }
 			finishPlacement(block, removePlaceTag = false, withinBlock = false)
@@ -128,7 +111,7 @@ class Generator(
 			breakCheck(block, Blocks.DROPPER, onBreak)
 
 			// The property is the authority for the period; the score is the countdown.
-			raw("execute as @e[type=marker,tag=${block.tag}] unless data entity @s data.properties.cooldown run data modify entity @s data.properties.cooldown set value $defaultCooldown")
+			defaultProperty(block, "cooldown", "$defaultCooldown")
 			extraTick()
 
 			// One block, one marker. A placement that ran twice -- a reload mid-place, or a
@@ -162,7 +145,7 @@ class Generator(
  * "long enough" to the comparison below -- the generator then ran every tick.
  */
 fun Function.cooldownGate() {
-	function(RaLib.Util.property, nbt { this["name"] = "cooldown"; this["default"] = 100; this["min"] = 1 })
+	readProperty("cooldown", default = 100, min = 1)
 	raw("execute unless score @s ${Obj.COOLDOWN} >= #prop ${Obj.TEMP} run return 0")
 	scoreboard.players.set(self(), Obj.COOLDOWN, 0)
 }
@@ -182,7 +165,3 @@ fun Function.rollTable(table: List<Pair<Int, BlockArgument>>, at: String = "^ ^ 
 		from = to + 1
 	}
 }
-
-/** Reference to the growable tag, used by every generator and the debug report. */
-const val GROWABLE = "#ra_infinite:growable"
-const val FLOWER_GROUND = "#ra_infinite:flower_ground"

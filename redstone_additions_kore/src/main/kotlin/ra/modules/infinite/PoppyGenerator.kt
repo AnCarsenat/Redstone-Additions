@@ -12,6 +12,9 @@ import io.github.ayfri.kore.generated.Blocks
 import ra.core.Obj
 import ra.core.Ra
 import ra.core.block.gogglesHeader
+import ra.core.block.markerSel
+import ra.core.block.particleViewersSel
+import ra.core.block.soundListenersSel
 import ra.core.block.stackReset
 import ra.core.block.stackedPropLine
 import ra.core.block.stackedTextLine
@@ -54,7 +57,7 @@ object PoppyGenerator {
 			registerGenerator {
 				// `mode` is gone with the patch. Removed from anything still carrying it so the
 				// Data Handler stops offering a setting that decides nothing.
-				raw("execute as @e[type=marker,tag=${block.tag}] run data remove entity @s data.properties.mode")
+				raw("execute as ${block.markerSel()} run data remove entity @s data.properties.mode")
 			}
 		}
 
@@ -152,8 +155,8 @@ object PoppyGenerator {
 			raw("execute if score #gen.roll ${Obj.TEMP} matches ${i + 1} run setblock ~ ~ ~ ${flower.asId()}")
 		}
 
-		raw("particle minecraft:happy_villager ~ ~0.4 ~ 0.3 0.3 0.3 0.01 4 normal @a[scores={${Obj.USER_PARTICLES}=1..}]")
-		raw("playsound minecraft:block.grass.place block @a[distance=..12,scores={${Obj.USER_SOUND}=1..}] ~ ~ ~ 0.3 1.3")
+		raw("particle minecraft:happy_villager ~ ~0.4 ~ 0.3 0.3 0.3 0.01 4 normal ${particleViewersSel()}")
+		raw("playsound minecraft:block.grass.place block ${soundListenersSel(12)} ~ ~ ~ 0.3 1.3")
 
 		// Single mode stops searching once something has been planted.
 		scoreboard.players.set(done, Obj.TEMP, 1)

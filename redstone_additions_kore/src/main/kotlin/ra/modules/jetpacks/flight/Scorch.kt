@@ -9,6 +9,8 @@ import io.github.ayfri.kore.commands.function
 import io.github.ayfri.kore.commands.scoreboard.scoreboard
 import io.github.ayfri.kore.commands.tag
 import io.github.ayfri.kore.functions.Function
+import ra.core.ensureScore
+import ra.core.block.particleViewersSel
 import ra.core.Ns
 import ra.core.Obj
 import ra.core.Ra
@@ -16,7 +18,6 @@ import ra.core.define
 import ra.core.raw
 import ra.core.ref
 import ra.modules.jetpacks.Jp
-import ra.modules.jetpacks.Jp.PARTICLE_VIEWERS
 import ra.modules.jetpacks.Jp.tmp
 
 /**
@@ -93,7 +94,7 @@ object Scorch {
 		// would be twenty hits a second, which kills anything under a hovering player instantly and
 		// makes the burning itself pointless. Every ten ticks is a pressure rather than a delete
 		// button.
-		raw("execute unless score @s ${Jp.SCORCH_CD} matches -2147483648.. run scoreboard players set @s ${Jp.SCORCH_CD} 0")
+		ensureScore("@s", Jp.SCORCH_CD)
 		scoreboard.players.remove(self(), Jp.SCORCH_CD, 1)
 		scoreboard.players.set(tmp("#jp.hit"), t, 0)
 		raw("execute if score @s ${Jp.SCORCH_CD} matches ..0 run scoreboard players set #jp.hit $t 1")
@@ -155,12 +156,12 @@ object Scorch {
 	 * from the count. A wide, thin plume looks like thrust; a narrow dense one looks like a campfire.
 	 */
 	private fun Function.scorchParticles() {
-		raw("particle minecraft:flame ~ ~-0.3 ~ 0.55 0.25 0.55 0.04 10 normal $PARTICLE_VIEWERS")
-		raw("particle minecraft:small_flame ~ ~-0.5 ~ 0.65 0.4 0.65 0.04 8 normal $PARTICLE_VIEWERS")
+		raw("particle minecraft:flame ~ ~-0.3 ~ 0.55 0.25 0.55 0.04 10 normal ${particleViewersSel()}")
+		raw("particle minecraft:small_flame ~ ~-0.5 ~ 0.65 0.4 0.65 0.04 8 normal ${particleViewersSel()}")
 
 		// Down the column it is burning, so the six block reach is visible rather than inferred from
 		// something catching fire. Widening with depth, the way an exhaust plume actually spreads.
-		raw("particle minecraft:flame ~ ~-2.0 ~ 0.75 0.8 0.75 0.02 7 normal $PARTICLE_VIEWERS")
-		raw("particle minecraft:small_flame ~ ~-4.5 ~ 0.95 1.2 0.95 0.02 6 normal $PARTICLE_VIEWERS")
+		raw("particle minecraft:flame ~ ~-2.0 ~ 0.75 0.8 0.75 0.02 7 normal ${particleViewersSel()}")
+		raw("particle minecraft:small_flame ~ ~-4.5 ~ 0.95 1.2 0.95 0.02 6 normal ${particleViewersSel()}")
 	}
 }

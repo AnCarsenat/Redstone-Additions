@@ -79,9 +79,9 @@ internal fun DataPack.gateGoggles(block: CustomBlock, nameY: Double, prop: Strin
  * `blocks/<id>/on_break` of the timing blocks (Delayer, Extender, Shortener, Randomizer): put the
  * output out, swap the vanilla drop for the custom item, break effects, remove the marker.
  *
- * The custom item is summoned WITHOUT the `ra.drop_temp` tag, as the beet version did: several
- * interactive blocks fill "the" `ra.drop_temp` item with their contents, and an untagged drop
- * cannot be picked by them.
+ * The custom item is summoned WITHOUT the `ra.drop_temp` tag, exactly as the beet version did.
+ * Keep it that way: some interactive blocks overwrite the first `ra.drop_temp` item they find
+ * with their container contents, so a tagged drop lying nearby could be replaced.
  */
 internal fun DataPack.timingOnBreak(block: CustomBlock, breakSound: String): FunctionArgument = define(block.fn("on_break")) {
 	killVanillaDrop(block.physical)

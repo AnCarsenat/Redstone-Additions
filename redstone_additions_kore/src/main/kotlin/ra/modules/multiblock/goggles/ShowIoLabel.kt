@@ -1,5 +1,6 @@
 package ra.modules.multiblock.goggles
 
+import io.github.ayfri.kore.commands.data
 import io.github.ayfri.kore.DataPack
 import io.github.ayfri.kore.commands.execute.execute
 import io.github.ayfri.kore.commands.function
@@ -28,8 +29,8 @@ object ShowIoLabel {
 		}
 
 		raw("\$data modify storage ra:temp io set value {x:$(x),y:$(y),z:$(z),label:\"$(label)\",color:\"$(color)\"}")
-		for (axis in listOf("x", "y", "z")) raw("data modify storage ra:temp io.o$axis set from storage ra:display offsets.multiblock_io.$axis")
-		raw("data modify storage ra:temp io.scale set from storage ra:display offsets.multiblock_io.scale")
+		for (axis in listOf("x", "y", "z")) data(Storage.TEMP) { modify("io.o$axis") { set(Storage.DISPLAY, "offsets.multiblock_io.$axis") } }
+		data(Storage.TEMP) { modify("io.scale") { set(Storage.DISPLAY, "offsets.multiblock_io.scale") } }
 
 		function(Goggles.Billboard.showIoLine)
 	}

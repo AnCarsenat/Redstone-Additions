@@ -1,5 +1,9 @@
 package ra.modules.multiblock.blastforge
 
+import io.github.ayfri.kore.commands.data
+import io.github.ayfri.kore.commands.returnValue
+import io.github.ayfri.kore.commands.scoreboard.scoreboard
+import io.github.ayfri.kore.arguments.types.literals.literal
 import io.github.ayfri.kore.arguments.types.literals.self
 import io.github.ayfri.kore.commands.execute.execute
 import io.github.ayfri.kore.commands.function
@@ -68,7 +72,7 @@ object BlastForgeTick {
 		raw("\$execute if block $(ctrl) minecraft:redstone_block run return 0")
 
 		// Heat decay: -1 every 2 ticks (passive cooling).
-		raw("scoreboard players add @s ${Obj.MB_TIMER} 1")
+		scoreboard.players.add(self(), Obj.MB_TIMER, 1)
 		raw("execute if score @s ${Obj.MB_TIMER} matches 2.. run scoreboard players remove @s $h 1")
 		raw("execute if score @s ${Obj.MB_TIMER} matches 2.. run scoreboard players set @s ${Obj.MB_TIMER} 0")
 
@@ -97,12 +101,12 @@ object BlastForgeTick {
 		// Speed scales with heat:
 		//   100-299: every 100 ticks (5 s)    300-599: every 60 ticks (3 s)
 		//   600-899: every 40 ticks (2 s)     900+:    every 20 ticks (1 s)
-		raw("scoreboard players add @s ${Obj.COOLDOWN} 1")
+		scoreboard.players.add(self(), Obj.COOLDOWN, 1)
 		raw("execute if score @s $h matches 100..299 unless score @s ${Obj.COOLDOWN} matches 100.. run return 0")
 		raw("execute if score @s $h matches 300..599 unless score @s ${Obj.COOLDOWN} matches 60.. run return 0")
 		raw("execute if score @s $h matches 600..899 unless score @s ${Obj.COOLDOWN} matches 40.. run return 0")
 		raw("execute if score @s $h matches 900.. unless score @s ${Obj.COOLDOWN} matches 20.. run return 0")
-		raw("scoreboard players set @s ${Obj.COOLDOWN} 0")
+		scoreboard.players.set(self(), Obj.COOLDOWN, 0)
 
 		raw("\$function ${processFacing.asId()} with storage ra:multiblock bf_dir.$(facing)")
 	}
@@ -112,20 +116,20 @@ object BlastForgeTick {
 	 * barrel); output: out1. Fuel is consumed separately by consume_fuel.
 	 */
 	private fun Function.processFacing() {
-		raw("data remove storage ra:temp bf")
+		data(Storage.TEMP) { remove("bf") }
 
 		raw("\$data modify storage ra:temp bf.material set from block $(in1) Items[0]")
 		raw("execute unless data storage ra:temp bf.material run return 0")
 
 		// Recipe matching (data-driven, see recipes/).
-		raw("data remove storage ra:temp bf.result")
+		data(Storage.TEMP) { remove("bf.result") }
 		function(BlastForgeRecipes.matchAll)
 		raw("execute unless data storage ra:temp bf.result run return 0")
 
 		raw("\$execute positioned $(in1) run function ${consumeFirstItem.asId()}")
 
 		// insert_or_drop, not insert: a full output barrel used to delete the smelt.
-		raw("data modify storage ra:inventory item set from storage ra:temp bf.result")
+		data(Storage.INVENTORY) { modify("item") { set(Storage.TEMP, "bf.result") } }
 		raw("\$execute positioned $(out1) run function ${RaLib.Inventory.insertOrDrop.asId()}")
 
 		raw("execute store result entity @s data.status.heat int 1 run scoreboard players get @s ${Obj.HEAT}")
@@ -162,10 +166,10 @@ object BlastForgeTick {
 		// Cap heat at 1000.
 		raw("execute if score @s ${Obj.HEAT} matches 1001.. run scoreboard players set @s ${Obj.HEAT} 1000")
 
-		raw("data remove storage ra:temp bf.fuel_check")
+		data(Storage.TEMP) { remove("bf.fuel_check") }
 
 		// No valid fuel found.
-		raw("return 0")
+		returnValue(0)
 	}
 
 	/** Removes one item from the first occupied slot of the container here. Returns 1 if it did. */
@@ -178,7 +182,7 @@ object BlastForgeTick {
 		raw("execute if score #bf_count ${Obj.TEMP} matches 1 run data remove block ~ ~ ~ Items[0]")
 		raw("execute if score #bf_count ${Obj.TEMP} matches 1 run return 1")
 
-		raw("scoreboard players remove #bf_count ${Obj.TEMP} 1")
+		scoreboard.players.remove(literal("#bf_count"), Obj.TEMP, 1)
 		raw("execute store result block ~ ~ ~ Items[0].count int 1 run scoreboard players get #bf_count ${Obj.TEMP}")
 	}
 }

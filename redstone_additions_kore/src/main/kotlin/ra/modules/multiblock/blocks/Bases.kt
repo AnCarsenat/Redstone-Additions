@@ -12,6 +12,8 @@ import ra.core.Tag
 import io.github.ayfri.kore.arguments.types.literals.self
 import io.github.ayfri.kore.commands.execute.execute
 import io.github.ayfri.kore.commands.function
+import io.github.ayfri.kore.commands.kill
+import io.github.ayfri.kore.commands.returnValue
 import io.github.ayfri.kore.commands.returnRun
 import io.github.ayfri.kore.features.recipes.recipesBuilder
 import io.github.ayfri.kore.features.recipes.types.RecipeCategory
@@ -109,7 +111,7 @@ object Bases {
 		raw("\$playsound $(place_sound) block @a[distance=..16,scores={ra.u.snd=1..}] ~ ~ ~ $(place_volume) $(place_pitch)")
 		raw("particle minecraft:electric_spark ~ ~0.5 ~ 0.3 0.3 0.3 0.05 15 normal @a[scores={ra.u.par=1..}]")
 
-		raw("return 1")
+		returnValue(1)
 	}
 
 	/** As the base marker, at its position. Macro: tier data. */
@@ -134,7 +136,7 @@ object Bases {
 		raw("\$playsound $(break_sound) block @a[distance=..16,scores={ra.u.snd=1..}] ~ ~ ~ $(break_volume) $(break_pitch)")
 		raw("particle minecraft:cloud ~ ~ ~ 0.2 0.2 0.2 0.02 5 normal @a[scores={ra.u.par=1..}]")
 
-		raw("kill @s")
+		kill(self())
 	}
 
 	private fun Ra.recipe(t: BaseTier) {

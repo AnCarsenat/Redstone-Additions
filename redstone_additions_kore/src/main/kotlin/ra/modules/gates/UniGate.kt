@@ -44,6 +44,9 @@ import ra.core.block.killVanillaDrop
 import ra.core.block.markers
 import ra.core.block.newMarker
 import ra.core.block.placeBlock
+import ra.core.block.placementGuard
+import io.github.ayfri.kore.arguments.numbers.ranges.rangeOrDoubleEnd
+import io.github.ayfri.kore.arguments.types.literals.allEntities
 import ra.core.define
 import ra.core.raw
 
@@ -106,8 +109,7 @@ object UniGate {
 	 * tag alone, as the beet version did.
 	 */
 	private fun Function.handlePlacement() {
-		raw("execute unless entity @s[tag=${block.placeTag}] run return 0")
-		raw("execute if entity @e[type=marker,tag=${block.tag},distance=..0.5,limit=1] run return 0")
+		placementGuard(block)
 		placeBlock(block)
 
 		// Display offsets are measured from the marker, which sits at the BLOCK CENTRE (y + 0.5),
@@ -115,23 +117,33 @@ object UniGate {
 		// -- half a block clear of a slab's top face, which is why these displays floated. The
 		// offset is (surface height - 0.5) plus a hair to keep the item out of the surface.
 		// Slab top face is at 0.5, so the offset from the centre is 0.
-		raw("kill @e[type=item_display,tag=${block.tag},distance=..0.6]")
-		raw("kill @e[type=item_display,tag=$DISPLAY_TAG,distance=..0.6]")
+		killDisplays(0.6)
 		raw("""summon item_display ~ ~0.01 ~ {item:{id:"minecraft:comparator",count:1},item_display:"fixed",transformation:{left_rotation:[0.7071f,0f,0f,0.7071f],right_rotation:[0f,0f,0f,1f],translation:[0f,0f,0f],scale:[0.5f,0.5f,0.5f]},Tags:["ra","ra.custom_block.display_item","$DISPLAY_TAG"]}""")
 
 		// Default gate_type: and (also or, not, xor, nand, nor, xnor).
 		data(newMarker(block)) { modify("data.properties.gate_type") { set("and") } }
-		raw("scoreboard players set @e[type=marker,tag=${block.tag},tag=${Tag.NEW},distance=..0.5] ${Obj.COOLDOWN} 0")
+		val fresh = allEntities {
+			type = EntityTypes.MARKER
+			tag = block.tag
+			tag = Tag.NEW
+			distance = rangeOrDoubleEnd(0.5)
+		}
+		scoreboard.players.set(fresh, Obj.COOLDOWN, 0)
 
-		raw("tag @e[type=marker,tag=${block.tag},tag=${Tag.NEW},distance=..0.5] remove ${Tag.NEW}")
+		tag(fresh) { remove(Tag.NEW) }
 		returnValue(1)
+	}
+
+	/** Kills the gate's item displays within [radius]. */
+	private fun Function.killDisplays(radius: Double) {
+		kill(allEntities { type = EntityTypes.ITEM_DISPLAY; tag = block.tag; distance = rangeOrDoubleEnd(radius) })
+		kill(allEntities { type = EntityTypes.ITEM_DISPLAY; tag = DISPLAY_TAG; distance = rangeOrDoubleEnd(radius) })
 	}
 
 	/** Cleans up a broken gate and returns its item. As the marker, at its position. */
 	private fun Function.onBreakDrop() {
 		killVanillaDrop(block.physical)
-		raw("kill @e[type=item_display,tag=${block.tag},distance=..2]")
-		raw("kill @e[type=item_display,tag=$DISPLAY_TAG,distance=..2]")
+		killDisplays(2.0)
 		shell(on = false)
 		summon(EntityTypes.ITEM, vec3(), nbt {
 			this["Item"] = block.itemStackNbt()

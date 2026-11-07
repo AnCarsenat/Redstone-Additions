@@ -1,5 +1,8 @@
 package ra.modules.multiblock.upgradeplatform
 
+import io.github.ayfri.kore.commands.data
+import io.github.ayfri.kore.commands.returnValue
+import ra.core.Storage
 import io.github.ayfri.kore.commands.function
 import ra.core.Ns
 import ra.core.Ra
@@ -36,10 +39,10 @@ object UpgradeRecipes {
 
 	fun Ra.registerRecipes() {
 		pack.define(matchAll) {
-			raw("data remove storage ra:temp upgrade.chance")
+			data(Storage.TEMP) { remove("upgrade.chance") }
 			function(tierUpgrades)
 			raw("execute if data storage ra:temp upgrade.result run return 1")
-			raw("return 0")
+			returnValue(0)
 		}
 		pack.define(tierUpgrades) {
 			for ((input, result) in tiers) {

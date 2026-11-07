@@ -1,5 +1,10 @@
 package ra.modules.multiblock.upgradeplatform
 
+import io.github.ayfri.kore.commands.data
+import io.github.ayfri.kore.commands.returnValue
+import io.github.ayfri.kore.commands.scoreboard.scoreboard
+import io.github.ayfri.kore.commands.tag
+import ra.core.Storage
 import io.github.ayfri.kore.arguments.maths.vec3
 import io.github.ayfri.kore.arguments.selector.Sort
 import io.github.ayfri.kore.arguments.types.literals.allEntities
@@ -29,6 +34,9 @@ object UpgradePlatform {
 
 	const val TAG = "ra.multiblock.upgrade_platform"
 
+	/** On a dropped item whose upgrade roll failed, for the rest of try_upgrade. */
+	private const val FAILED = "ra.upgrade_failed"
+
 	val checkBlocks = fn("check_blocks")
 	val checkStructure = fn("check_structure")
 	val validate = fn("validate")
@@ -45,7 +53,7 @@ object UpgradePlatform {
 		pack.define(checkBlocks) {
 			for ((x, z) in listOf(-1 to -1, 0 to -1, 1 to -1, -1 to 0, 1 to 0, -1 to 1, 0 to 1, 1 to 1))
 				raw("execute unless block ~$x ~ ~$z minecraft:smooth_stone run return 0")
-			raw("return 1")
+			returnValue(1)
 		}
 
 		// Periodic integrity check. As the marker. Sets @s ra.multiblock to 1 (intact) or 0.
@@ -111,9 +119,9 @@ object UpgradePlatform {
 		raw("execute if block ~ ~-1 ~ minecraft:redstone_block run return 0")
 
 		// Every 40 ticks (2 s).
-		raw("scoreboard players add @s ${Obj.COOLDOWN} 1")
+		scoreboard.players.add(self(), Obj.COOLDOWN, 1)
 		raw("execute unless score @s ${Obj.COOLDOWN} matches 40.. run return 0")
-		raw("scoreboard players set @s ${Obj.COOLDOWN} 0")
+		scoreboard.players.set(self(), Obj.COOLDOWN, 0)
 
 		// One dropped item in the 3x1x3 box just above the surface: (~-1, ~0.5, ~-1) to (~1, ~1.5, ~1).
 		execute {
@@ -130,10 +138,10 @@ object UpgradePlatform {
 	/** As the dropped item, on the platform. */
 	private fun Function.tryUpgrade() {
 		val t = Obj.TEMP
-		raw("data remove storage ra:temp upgrade")
-		raw("data modify storage ra:temp upgrade.input set from entity @s Item")
+		data(Storage.TEMP) { remove("upgrade") }
+		data(Storage.TEMP) { modify("upgrade.input") { set(self(), "Item") } }
 
-		raw("data remove storage ra:temp upgrade.result")
+		data(Storage.TEMP) { remove("upgrade.result") }
 		function(UpgradeRecipes.matchAll)
 		raw("execute unless data storage ra:temp upgrade.result run return 0")
 
@@ -142,18 +150,18 @@ object UpgradePlatform {
 		raw("execute store result score #up_chance $t run data get storage ra:temp upgrade.chance 1")
 
 		// A failed roll destroys the item without producing anything.
-		raw("execute unless score #up_roll $t <= #up_chance $t run tag @s add ra.upgrade_failed")
+		raw("execute unless score #up_roll $t <= #up_chance $t run tag @s add $FAILED")
 
 		// Consume one from the input stack.
 		raw("execute store result score #up_count $t run data get entity @s Item.count")
-		raw("scoreboard players remove #up_count $t 1")
+		scoreboard.players.remove(literal("#up_count"), t, 1)
 		raw("execute if score #up_count $t matches 0 run kill @s")
 		raw("execute if score #up_count $t matches 1.. store result entity @s Item.count int 1 run scoreboard players get #up_count $t")
 
 		// Failed: break feedback, and stop.
-		raw("execute if entity @s[tag=ra.upgrade_failed] at @s run particle minecraft:smoke ~ ~0.5 ~ 0.15 0.15 0.15 0.01 10")
-		raw("execute if entity @s[tag=ra.upgrade_failed] at @s run playsound minecraft:block.grindstone.use block @a[distance=..16] ~ ~ ~ 0.7 0.7")
-		raw("tag @s remove ra.upgrade_failed")
+		raw("execute if entity @s[tag=$FAILED] at @s run particle minecraft:smoke ~ ~0.5 ~ 0.15 0.15 0.15 0.01 10")
+		raw("execute if entity @s[tag=$FAILED] at @s run playsound minecraft:block.grindstone.use block @a[distance=..16] ~ ~ ~ 0.7 0.7")
+		tag(self()) { remove(FAILED) }
 		raw("execute if score #up_roll $t > #up_chance $t run return 0")
 
 		// Spawn the upgraded item.

@@ -1,5 +1,6 @@
 package ra.modules.multiblock.drills
 
+import io.github.ayfri.kore.commands.scoreboard.scoreboard
 import io.github.ayfri.kore.arguments.types.literals.allEntities
 import io.github.ayfri.kore.arguments.types.literals.self
 import io.github.ayfri.kore.commands.execute.execute
@@ -75,9 +76,9 @@ object RockMetallicDrill {
 		raw("execute if score #mb_ctrl ${Obj.MULTIBLOCK} matches 1 run return 0")
 
 		// One rock every 40 ticks. The original produced one every single tick.
-		raw("scoreboard players add @s ${Obj.COOLDOWN} 1")
+		scoreboard.players.add(self(), Obj.COOLDOWN, 1)
 		raw("execute unless score @s ${Obj.COOLDOWN} matches 40.. run return 0")
-		raw("scoreboard players set @s ${Obj.COOLDOWN} 0")
+		scoreboard.players.set(self(), Obj.COOLDOWN, 0)
 
 		raw("particle minecraft:smoke ~ ~1 ~ 0.5 0.2 0.5 0.1 5 force @a[scores={ra.u.par=1..}]")
 		raw("playsound minecraft:block.stone.break block @a[distance=..12,scores={ra.u.snd=1..}] ~ ~ ~ 0.4 0.7")

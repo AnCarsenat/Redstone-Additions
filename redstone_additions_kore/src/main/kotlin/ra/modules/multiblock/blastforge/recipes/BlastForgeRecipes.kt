@@ -1,5 +1,6 @@
 package ra.modules.multiblock.blastforge.recipes
 
+import io.github.ayfri.kore.commands.returnValue
 import io.github.ayfri.kore.commands.function
 import io.github.ayfri.kore.functions.Function
 import ra.core.Ns
@@ -66,7 +67,7 @@ object BlastForgeRecipes {
 				function(category)
 				raw("execute if data storage ra:temp bf.result run return 1")
 			}
-			raw("return 0")
+			returnValue(0)
 		}
 		pack.define(smelting) { table(smeltingRecipes) }
 		pack.define(recycling) { table(recyclingRecipes) }
@@ -78,6 +79,6 @@ object BlastForgeRecipes {
 			raw("execute if data storage ra:temp bf.result run return 1")
 		}
 		// No match.
-		raw("return 0")
+		returnValue(0)
 	}
 }

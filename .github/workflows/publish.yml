@@ -2,7 +2,7 @@
 # Fabric / Quilt / Forge / NeoForge jar (the "+mod" version).
 #
 # Built from the Kotlin sources in redstone_additions/ with Kore (JDK 25).
-# Triggered by pushing a tag like "v5.1.17", or manually from the Actions tab. The tag
+# Triggered by pushing a tag like "v6.2.0", or manually from the Actions tab. The tag
 # must equal `version` in redstone_additions/gradle.properties.
 # Needs a MODRINTH_TOKEN repository secret with the "Create versions" scope. The
 # Modrinth project (52z5jQjy) already exists; this only adds versions to it.

@@ -1,15 +1,61 @@
 package ra.modules.wireless
 
+import io.github.ayfri.kore.commands.function
+import io.github.ayfri.kore.commands.scoreboard.scoreboard
 import ra.core.GameplayModule
+import ra.core.GiveBundle
 import ra.core.Ns
 import ra.core.Ra
+import ra.core.define
+import ra.core.ref
+import ra.modules.infinite.loadMessage
+import ra.modules.sensors.exec
+import ra.modules.wireless.Emitter.registerEmitter
+import ra.modules.wireless.Receiver.registerReceiver
+import ra.modules.wireless.tools.Remote
+import ra.modules.wireless.tools.Remote.registerRemote
 
-/** Wireless Redstone (`ra_wireless`). Not ported yet. */
+/** Wireless Redstone (`ra_wireless`): emitters, receivers on string channels, and the Redstone Remote. */
 object WirelessModule : GameplayModule {
 	override val ns = Ns.WIRELESS
 	override val title = "Wireless Redstone"
 
 	override fun Ra.register() {
-		// TODO(port)
+		// Registration order is the placement-handler order of the beet #ra:placement_handlers.
+		registerEmitter()
+		registerReceiver()
+		registerRemote()
+
+		pack.define(load) {
+			// Pulse timer (remote pulse duration).
+			scoreboard.objectives.add(Receiver.PULSE_TIMER)
+			scoreboard.objectives.add(Remote.PENDING)
+			scoreboard.objectives.add(Remote.SLOT)
+
+			function(Emitter.registerBlock)
+			function(Receiver.registerBlock)
+
+			loadMessage("Wireless Redstone loaded!", "aqua")
+		}
+
+		// Called every game tick from ra:tick.
+		pack.define(tick!!) {
+			function(Emitter.block.tick)
+			function(Receiver.block.tick)
+
+			// Finish channel entry for anyone who has a book request outstanding.
+			exec("as @a[scores={${Remote.PENDING}=1..}]", Remote.applyPending)
+		}
+
+		pack.define(ref(ns, "items/give_all")) {
+			function(Emitter.block.give)
+			function(Receiver.block.give)
+			function(Remote.give)
+		}
+
+		bundles += GiveBundle(
+			"wireless", "Wireless Bundle", "Emitter, receiver, and remote", ns,
+			listOf(Emitter.item.stackNbt(), Receiver.item.stackNbt(), Remote.item.stackNbt()),
+		)
 	}
 }

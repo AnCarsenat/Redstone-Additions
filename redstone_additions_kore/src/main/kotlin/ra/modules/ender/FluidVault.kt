@@ -1,0 +1,205 @@
+package ra.modules.ender
+
+import io.github.ayfri.kore.arguments.types.literals.self
+import io.github.ayfri.kore.commands.function
+import io.github.ayfri.kore.commands.returnValue
+import io.github.ayfri.kore.commands.scoreboard.scoreboard
+import io.github.ayfri.kore.commands.tag
+import io.github.ayfri.kore.features.recipes.types.RecipeCategory
+import io.github.ayfri.kore.features.recipes.types.key
+import io.github.ayfri.kore.features.recipes.types.pattern
+import io.github.ayfri.kore.functions.Function
+import io.github.ayfri.kore.generated.Blocks
+import io.github.ayfri.kore.generated.Items
+import io.github.ayfri.kore.utils.nbt
+import io.github.ayfri.kore.utils.set
+import ra.api.RaLib
+import ra.core.Ns
+import ra.core.Obj
+import ra.core.Ra
+import ra.core.Storage
+import ra.core.WrenchCycle
+import ra.core.block.CustomBlock
+import ra.core.block.gogglesHeader
+import ra.core.block.placeBlock
+import ra.core.block.stackReset
+import ra.core.block.stackedPropLine
+import ra.core.define
+import ra.core.raw
+import ra.modules.ender.link.Link
+import ra.modules.infinite.breakCheck
+import ra.modules.infinite.loreLine
+import ra.modules.sensors.batGuard
+import ra.modules.sensors.clearNew
+import ra.modules.sensors.exec
+import ra.modules.sensors.execReturn
+import ra.modules.sensors.newSel
+import ra.modules.sensors.setOnNew
+
+/**
+ * Ender Fluid Vault: an ordinary fluid node with a small buffer, so pipes, pumps and tanks
+ * connect to it with no special case. What it adds is the link: whatever reaches its network can
+ * be pushed to the network of the vault on its channel.
+ */
+object FluidVault {
+	val block = CustomBlock(Ns.ENDER, "ender_fluid_vault", "Ender Fluid Vault", model = "minecraft:purpur_block", dir = "fluid_vault")
+	val item = block.enderItem(
+		"rare",
+		loreLine("Shares liquid and gas with the vault on its channel", "gray"),
+		loreLine("Joins the fluid network like a tank", "gray"),
+		loreLine("Shift+RMB with the wrench: link / send / receive", "dark_gray"),
+	)
+
+	val process = block.fn("process")
+	private val level = block.fn("level")
+	val cycleMode = block.fn("cycle_mode")
+	val registerBlock = block.fn("register_block")
+
+	private const val T = Obj.TEMP
+
+	fun Ra.registerFluidVault() {
+		block(block)
+		wrenchCycle(block.id, WrenchCycle("Mode", "mode", cycleMode))
+		readonly(block.id, "transfer_rate")
+		pack.enderRegisterBlock(block)
+		pack.enderGive(block, item, """{text:" — pipe into it like a tank",color:"gray"}""")
+		pack.enderRecipe(block, item, RecipeCategory.MISC) {
+			pattern("CPC", "UKU", "CUC")
+			key("C", Items.COPPER_INGOT)
+			key("P", Items.ENDER_PEARL)
+			key("U", Items.PURPUR_BLOCK)
+			key("K", Items.BUCKET)
+		}
+
+		// As bat, at bat position.
+		pack.define(block.handlePlacement) {
+			batGuard(block)
+			placeBlock(block)
+			setOnNew(block, "data.properties.channel", "\"default\"")
+			setOnNew(block, "data.properties.mode", "\"link\"")
+			setOnNew(block, "data.properties.transfer_rate", "200")
+
+			// Fluid network membership, and the fluid flag the wires status readouts look for.
+			raw("tag @e[type=marker,tag=${block.tag},tag=ra.new,distance=..0.5] add ${EnderIds.FLUID_NODE}")
+			exec("as ${block.newSel()}", RaLib.Transport.Net.join, "{class:\"fluid\",capacity:1000}")
+
+			clearNew(block)
+			tag(self()) { remove(block.placeTag) }
+			returnValue(1)
+		}
+
+		pack.cycleLinkSendReceive(block)
+		pack.define(process) { process() }
+		pack.define(level) { level() }
+		pack.define(block.goggles) { goggles() }
+
+		// The node has to leave its network before the marker dies, or the network's contents go
+		// with it.
+		val onBreak = pack.enderOnBreak(block, item) { function(RaLib.Transport.Net.leave) }
+
+		pack.define(block.tick) {
+			breakCheck(block, Blocks.PURPUR_BLOCK, onBreak)
+
+			// Defaults, and a node that lost its network membership on reload rejoins.
+			enderDefault(block, "channel", "\"default\"")
+			enderDefault(block, "mode", "\"link\"")
+			enderDefault(block, "transfer_rate", "200")
+			exec("as @e[type=marker,tag=${block.tag},tag=!ra.tr.node]", RaLib.Transport.Net.rejoin, "{class:\"fluid\"}")
+
+			raw("tag @e[type=marker,tag=${EnderIds.RECV_FLUID}] remove ${EnderIds.RECV_FLUID}")
+			tagUnlessMode(block, "send", EnderIds.RECV_FLUID)
+
+			// Every 10 ticks, so a link is a steady trickle rather than a spike.
+			raw("scoreboard players add @e[type=marker,tag=${block.tag}] ${EnderIds.CD} 1")
+			exec("as @e[type=marker,tag=${block.tag},scores={${EnderIds.CD}=10..}] at @s", process)
+		}
+	}
+
+	/**
+	 * Move a slice of fluid between this network and the partner's. As a vault marker, at the block.
+	 *
+	 * Two-way here is easier than for items, because fluid is not made of stacks: a pair of linked
+	 * networks can simply find their level. Only the fuller side ever pushes, and it pushes half the
+	 * difference, so the two converge and neither ever hands the same fluid back. A dead zone stops
+	 * the last few units bouncing.
+	 *
+	 * Take first, then offer, then hand back whatever the far side would not accept. In that order
+	 * the fluid is only ever in one network, and a full receiver or a medium mismatch costs nothing.
+	 */
+	private fun Function.process() {
+		scoreboard.players.set(self(), EnderIds.CD, 0)
+		tag(self()) { add(EnderIds.SELF) }
+
+		execReturn("if data entity @s data.properties{mode:\"receive\"}", Link.done)
+
+		function(RaLib.Transport.Net.read)
+		execReturn("if score #net_amount ra.tr.tmp matches ..0", Link.done)
+		execReturn("unless data storage ra:transport cur.medium", Link.done)
+
+		raw("scoreboard players operation #ender.mine $T = #net_amount ra.tr.tmp")
+		function(RaLib.Util.property, nbt { this["name"] = "transfer_rate"; this["default"] = 200; this["min"] = 1 })
+		raw("scoreboard players operation #ender.rate $T = #prop $T")
+
+		raw("data modify storage ra:ender fluid set value {}")
+		raw("data modify storage ra:ender fluid.medium set from storage ra:transport cur.medium")
+		raw("data modify storage ra:ender fluid.channel set from entity @s data.properties.channel")
+
+		// A one-way sender moves up to its rate and does not care what the far side holds.
+		raw("scoreboard players operation #ender.want $T = #ender.rate $T")
+
+		// A two-way link moves half the gap instead, and only when it is the fuller side.
+		exec("if data entity @s data.properties{mode:\"link\"}", level)
+
+		execReturn("if score #ender.want $T matches ..0", Link.done)
+		raw("execute if score #ender.want $T > #ender.rate $T run scoreboard players operation #ender.want $T = #ender.rate $T")
+		raw("execute store result storage ra:ender fluid.rate int 1 run scoreboard players get #ender.want $T")
+
+		function(Link.sendFluid, Storage.ENDER, "fluid")
+
+		function(Link.done)
+	}
+
+	/**
+	 * How much a two-way link should move: half the gap, or nothing.
+	 * As the sending vault marker. Reads #ender.mine, writes #ender.want.
+	 */
+	private fun Function.level() {
+		// What the partner's network holds. -1 means there is no partner.
+		raw("scoreboard players set #ender.theirs $T -1")
+		raw("data modify storage ra:ender probe set value {}")
+		raw("data modify storage ra:ender probe.channel set from entity @s data.properties.channel")
+		function(Link.probeFluid, Storage.ENDER, "probe")
+
+		raw("execute if score #ender.theirs $T matches ..-1 run return run scoreboard players set #ender.want $T 0")
+
+		raw("scoreboard players operation #ender.gap $T = #ender.mine $T")
+		raw("scoreboard players operation #ender.gap $T -= #ender.theirs $T")
+
+		// Dead zone: below this the pair is level enough, and pushing would just be noise.
+		raw("execute if score #ender.gap $T matches ..20 run return run scoreboard players set #ender.want $T 0")
+
+		raw("scoreboard players set #ender.two $T 2")
+		raw("scoreboard players operation #ender.want $T = #ender.gap $T")
+		raw("scoreboard players operation #ender.want $T /= #ender.two $T")
+	}
+
+	private fun Function.goggles() {
+		gogglesHeader(block, nameY = 1.4)
+		stackReset(top = 120, step = 16)
+		stackedPropLine("channel", "Channel: ", "light_purple")
+		stackedPropLine("mode", "Mode: ", "aqua")
+		stackedPropLine("transfer_rate", "Rate: ", "yellow", suffix = "/s")
+
+		// What the local network holds, read live rather than stored on the marker.
+		function(RaLib.Transport.Net.read)
+		raw("execute store result score #ender.amount $T run scoreboard players get #net_amount ra.tr.tmp")
+		raw("data modify storage ra:temp ender_line set value {label:\"Holding: \",value:\"empty\",color:\"gray\",suffix:\"\"}")
+		raw("execute if data storage ra:transport cur.medium run data modify storage ra:temp ender_line.value set from storage ra:transport cur.medium")
+		raw("execute if data storage ra:transport cur.medium run data modify storage ra:temp ender_line.color set value \"aqua\"")
+		stackedTextLineFromStorage()
+	}
+}
+
+/** `function ra:tools/goggles/billboard/stacked_text_line with storage ra:temp ender_line`. */
+internal fun Function.stackedTextLineFromStorage() =
+	function(ra.api.Goggles.Billboard.stackedTextLine, Storage.TEMP, "ender_line")

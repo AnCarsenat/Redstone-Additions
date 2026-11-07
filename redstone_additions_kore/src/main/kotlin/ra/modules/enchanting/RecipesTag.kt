@@ -11,17 +11,12 @@ import ra.core.ref
 private val interactiveRecipes = ref(Ns.INTERACTIVE, "enchant_recipes")
 
 /**
- * Adds [fn] to `#ra_enchanting:recipes`, ahead of ra_interactive's list.
+ * Adds [fn] to `#ra_enchanting:recipes`, ahead of ra_interactive's list, which keeps the beet
+ * order (infinite, jetpacks, interactive).
  *
- * The order of the tag is observable. `function #ra_enchanting:recipes` runs EVERY list, and a
- * list's `return 1` only ends that list. Each list also ends a recipe with
- * `execute if data storage ra:enchant result run data modify storage ra:enchant chance set value N`,
- * which fires on any result, its own or an earlier list's. So the last list in the tag sets the
- * chance of every match. The beet tag was infinite, jetpacks, interactive, which made every
- * sacrifice roll at 1% (ra_interactive's chance). Modules register in `ra:load` order,
- * ra_interactive first, so plain appending would put ra_jetpacks last and turn every chance into
- * 10%. Inserting this group's lists before ra_interactive's entry restores the beet order whatever
- * order the modules register in.
+ * The order no longer decides any chance: [sacrificeRecipe] makes the first matching recipe win
+ * and keep its own chance. It only matters if two lists ever accept the same input, where the
+ * earlier list wins.
  */
 fun DataPack.hookEnchantRecipes(fn: FunctionArgument) {
 	functionTag(EnchantingModule.recipesTag.name, EnchantingModule.recipesTag.namespace) {

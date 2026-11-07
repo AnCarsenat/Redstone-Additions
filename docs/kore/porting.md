@@ -94,8 +94,6 @@ A port reproduces behaviour, including behaviour that looks wrong. A bug found w
 gets a comment beside the line and is fixed in its own later change, so the port's diff stays
 reviewable. Found during the port reviews, still to be commented and fixed:
 
-- Enchant crafting: the 10% Iron-to-Infinite jetpack kit recipe (`modules/jetpacks/Kits.kt`)
-  actually rolls at 1%, because the last recipe list's chance-setting line fires on every match.
 - `ra_settings:act/user` is called `with storage ra:settings cur`; the review flagged the macro
   arguments of its int branch as a beet bug carried over unchanged (`settings/act/ActFns.kt`).
 

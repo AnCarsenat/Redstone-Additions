@@ -15,7 +15,7 @@ writes components onto it.
 | Kit | Obtained | Fuel |
 | --- | -------- | ---- |
 | Iron Jetpack Kit | Crafted — blaze rod, iron ingots, a redstone block and a coal block | 1 coal (or charcoal) per 2 minutes of flight |
-| Infinite Iron Jetpack Kit | Sacrifice an Iron Jetpack Kit on an enchanting table, 10% per kit — see [Enchant Crafting](enchant-crafting.md) | none |
+| Infinite Iron Jetpack Kit | Sacrifice an Iron Jetpack Kit on an enchanting table, 1% per kit — see [Enchant Crafting](enchant-crafting.md) | none |
 
 ![Iron Jetpack Kit recipe](images/recipes/ra_jetpacks/iron_jetpack_kit.png){ width="260" }
 

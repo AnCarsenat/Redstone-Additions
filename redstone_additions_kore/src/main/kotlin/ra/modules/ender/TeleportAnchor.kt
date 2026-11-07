@@ -93,18 +93,18 @@ object TeleportAnchor {
 			raw("\$data modify storage ra:ender anchor.want set from entity @s data.properties.targets[\$(i)]")
 		}
 
-		// Macro {want}: tag the nearest enabled anchor carrying this id. As the sending anchor
-		// marker, wearing ra.ender.self.
+		// Macro {want}: tag the nearest OTHER anchor whose anchor_id is `want`. As the sending
+		// anchor marker, wearing ra.ender.self.
 		//
-		// EMPTY, AS IN THE BEET BUILD. Its only line was
-		//   $execute as @e[type=marker,tag=ra.custom_block.teleport_anchor,tag=!ra.ender.self,
-		//     limit=1,sort=nearest] if data entity @s data.properties{anchor_id:"$(want)"}
-		//     unless data entity @s data.properties{enabled:0b} run tag @s add ra.ender.tp_dest
-		// and v5.1.8 deleted the whole line while removing the `enabled` clause -- the same
-		// mistake that cost the vaults their receive tags. With nothing ever tagged
-		// ra.ender.tp_dest, process stops at its "no destination" check and no anchor teleports.
-		// Ported as found: the runtime contract is the beet build's.
-		pack.define(findDest) {}
+		// The id test sits INSIDE the selector (`nbt=`), before `sort=nearest,limit=1`. The beet
+		// line (`as @e[...,limit=1,sort=nearest] if data entity @s data.properties{anchor_id:...}`)
+		// limited first and tested after, so it only ever looked at the single nearest anchor:
+		// with a third anchor closer than the target, nothing was tagged. v5.1.8 then deleted
+		// that line altogether while dropping the `enabled` clause, and from then on no anchor
+		// teleported. The nbt= scan is only paid on a redstone pulse with a player in range.
+		pack.define(findDest) {
+			raw("\$execute as @e[type=marker,tag=${block.tag},tag=!${EnderIds.SELF},nbt={data:{properties:{anchor_id:\"\$(want)\"}}},sort=nearest,limit=1] run tag @s add ${EnderIds.TP_DEST}")
+		}
 
 		// Tag this anchor if its id is the one being aimed at, first match wins. As a candidate
 		// anchor marker. Nothing calls it any more (ids became strings, matched in find_dest's

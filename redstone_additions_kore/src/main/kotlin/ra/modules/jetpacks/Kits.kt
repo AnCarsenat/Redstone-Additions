@@ -139,12 +139,13 @@ object Kits {
 		}
 
 		// Sacrifice recipes, listed in #ra_enchanting:recipes: Iron Jetpack Kit -> Infinite Iron
-		// Jetpack Kit, 10%.
+		// Jetpack Kit, 1%. The beet list said 10, but the tag order overrode it to 1 and that is
+		// the rate players have had; 1% is the intended rate.
 		pack.define(enchantRecipes) {
 			sacrificeRecipe(
 				"{components:{\"minecraft:custom_data\":{ra:{jetpack_kit:1b,tier:\"iron\"}}}}",
 				withoutSoundHint(infiniteKit).stackSnbt(),
-				chance = 10,
+				chance = 1,
 			)
 			returnValue(0)
 		}

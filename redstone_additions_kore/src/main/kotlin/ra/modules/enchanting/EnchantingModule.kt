@@ -36,8 +36,8 @@ import ra.modules.infinite.loadMessage
  * Recipes come from the function tag `#ra_enchanting:recipes`; each addon adds one function there
  * and never needs to touch this namespace. A recipe function reads `storage ra:enchant input` (the
  * sacrificed item compound) and writes `result` (the item to produce, absent = not mine) and
- * `chance` (percent, 1..100, defaults to 5). The first list that writes `result` wins, so a
- * recipe function must return early once it has matched.
+ * `chance` (percent, 1..100, defaults to 5). The first recipe that matches wins: write recipes
+ * with [sacrificeRecipe], which steps aside when an earlier recipe already wrote `result`.
  */
 object EnchantingModule : GameplayModule {
 	override val ns = Ns.ENCHANTING
@@ -59,8 +59,8 @@ object EnchantingModule : GameplayModule {
 	val match = ref(Ns.ENCHANTING, "recipes/match")
 
 	override fun Ra.register() {
-		// Owned here; ra_infinite, ra_jetpacks and ra_interactive add their own enchant_recipes. The
-		// order matters (the last list sets every chance), see hookEnchantRecipes.
+		// Owned here; ra_infinite, ra_jetpacks and ra_interactive add their own enchant_recipes,
+		// see hookEnchantRecipes.
 		pack.functionTag(recipesTag.name, recipesTag.namespace)
 
 		registerSacrifice()

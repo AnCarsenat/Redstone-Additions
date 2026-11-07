@@ -4,7 +4,7 @@
     Drop items on a plain enchanting table. Once a second it eats **one** of them and
     rolls: a hit hands back an upgrade, a miss destroys the item. Stone, netherrack
     and poppies each give a **1%** shot at a generator Core; an Iron Jetpack Kit has a
-    **10%** shot at the infinite one. Anything with no recipe is left alone.
+    **1%** shot at the infinite one. Anything with no recipe is left alone.
 
 The `ra_enchanting` module turns a plain vanilla enchanting table into a gamble:
 throw items on top of it and each one has a small chance of coming back as
@@ -36,7 +36,7 @@ stack back up at any point to stop.
 | `minecraft:netherrack` | Nether Core | 1% |
 | `minecraft:poppy` | Poppy Core | 1% |
 | `minecraft:coal` | Enchanted Coal | 1% |
-| Iron Jetpack Kit | Infinite Iron Jetpack Kit | 10% |
+| Iron Jetpack Kit | Infinite Iron Jetpack Kit | 1% |
 
 Cores are half of an [Infinite Generator](infinite-generators.md) — the other
 half is the crafted Generator Casing.

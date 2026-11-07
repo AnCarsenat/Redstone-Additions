@@ -1,5 +1,6 @@
 package ra.modules.sensors
 
+import io.github.ayfri.kore.commands.returnValue
 import io.github.ayfri.kore.features.recipes.types.key
 import io.github.ayfri.kore.features.recipes.types.pattern
 import io.github.ayfri.kore.generated.Items
@@ -45,7 +46,7 @@ object TagAdder {
 			placeBlock(block)
 			setOnNew(block, "data.properties", """{entity_selector:"@e[type=pig,distance=..5]",tag:"custom_tag"}""")
 			clearNew(block)
-			raw("return 1")
+			returnValue(1)
 		}
 
 		// Macro {tag, entity_selector}. As the marker, at its position.

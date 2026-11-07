@@ -2,6 +2,8 @@ package ra.modules.ender
 
 import io.github.ayfri.kore.arguments.types.literals.self
 import io.github.ayfri.kore.commands.function
+import io.github.ayfri.kore.commands.returnValue
+import io.github.ayfri.kore.commands.scoreboard.scoreboard
 import io.github.ayfri.kore.commands.tag
 import io.github.ayfri.kore.features.recipes.types.RecipeCategory
 import io.github.ayfri.kore.features.recipes.types.key
@@ -77,8 +79,8 @@ object TeleportAnchor {
 			setOnNew(block, "data.properties.anchor_id", "\"A\"")
 			setOnNew(block, "data.properties.targets", EMPTY_TABLE)
 			clearNew(block)
-			raw("tag @s remove ${block.placeTag}")
-			raw("return 1")
+			tag(self()) { remove(block.placeTag) }
+			returnValue(1)
 		}
 
 		pack.define(process) { process() }
@@ -124,7 +126,7 @@ object TeleportAnchor {
 
 			// Long enough that an anchor which is itself powered does not bounce the player straight
 			// back, short enough to be usable as a two-way door.
-			raw("scoreboard players set @s ${EnderIds.GRACE} 30")
+			scoreboard.players.set(self(), EnderIds.GRACE, 30)
 
 			raw("playsound minecraft:entity.enderman.teleport player @s[scores={ra.u.snd=1..}] ~ ~ ~ 0.8 1")
 			raw("execute at @s run particle minecraft:portal ~ ~1 ~ 0.4 0.8 0.4 0.3 40")
@@ -184,7 +186,7 @@ object TeleportAnchor {
 		exec("as @a[distance=..2,scores={${EnderIds.GRACE}=..0},limit=1,sort=nearest]", sendPlayer)
 
 		raw("tag @e[type=marker,tag=${EnderIds.TP_DEST}] remove ${EnderIds.TP_DEST}")
-		raw("scoreboard players set @s ${EnderIds.TP_CD} 20")
+		scoreboard.players.set(self(), EnderIds.TP_CD, 20)
 	}
 
 	private fun Function.goggles() {

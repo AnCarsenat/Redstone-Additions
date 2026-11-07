@@ -3,6 +3,7 @@ package ra.modules.wireless
 import io.github.ayfri.kore.arguments.types.literals.self
 import io.github.ayfri.kore.commands.execute.execute
 import io.github.ayfri.kore.commands.function
+import io.github.ayfri.kore.commands.returnValue
 import io.github.ayfri.kore.commands.tag
 import io.github.ayfri.kore.features.recipes.types.key
 import io.github.ayfri.kore.features.recipes.types.pattern
@@ -73,8 +74,8 @@ object Receiver {
 			setOnNew(block, "data.properties.channel", "\"default\"")
 			setOnNew(block, "data.properties.enabled", "1b")
 			clearNew(block)
-			raw("tag @s remove ${block.placeTag}")
-			raw("return 1")
+			tag(self()) { remove(block.placeTag) }
+			returnValue(1)
 		}
 
 		pack.define(process) { process() }

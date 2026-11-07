@@ -3,6 +3,8 @@ package ra.modules.wireless
 import io.github.ayfri.kore.arguments.types.literals.self
 import io.github.ayfri.kore.commands.execute.execute
 import io.github.ayfri.kore.commands.function
+import io.github.ayfri.kore.commands.returnValue
+import io.github.ayfri.kore.commands.tag
 import io.github.ayfri.kore.features.recipes.types.key
 import io.github.ayfri.kore.features.recipes.types.pattern
 import io.github.ayfri.kore.generated.Blocks
@@ -66,8 +68,8 @@ object Emitter {
 			setOnNew(block, "data.properties.enabled", "1b")
 			clearNew(block)
 			// Remove the placement tag.
-			raw("tag @s remove ${block.placeTag}")
-			raw("return 1")
+			tag(self()) { remove(block.placeTag) }
+			returnValue(1)
 		}
 
 		// As the marker, at its position.

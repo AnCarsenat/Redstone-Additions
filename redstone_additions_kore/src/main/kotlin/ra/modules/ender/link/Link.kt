@@ -2,6 +2,7 @@ package ra.modules.ender.link
 
 import io.github.ayfri.kore.arguments.types.literals.self
 import io.github.ayfri.kore.commands.function
+import io.github.ayfri.kore.commands.returnValue
 import io.github.ayfri.kore.commands.tag
 import ra.api.ModulesApi
 import ra.api.RaLib
@@ -50,7 +51,7 @@ object Link {
 		// Returns 0 so it can be used as `return run function ...`. As the vault marker.
 		pack.define(done) {
 			tag(self()) { remove(EnderIds.SELF) }
-			raw("return 0")
+			returnValue(0)
 		}
 
 		registerItems()

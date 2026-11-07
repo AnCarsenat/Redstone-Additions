@@ -3,6 +3,7 @@ package ra.modules.sensors
 import io.github.ayfri.kore.arguments.types.literals.self
 import io.github.ayfri.kore.commands.execute.execute
 import io.github.ayfri.kore.commands.function
+import io.github.ayfri.kore.commands.returnValue
 import io.github.ayfri.kore.commands.scoreboard.scoreboard
 import io.github.ayfri.kore.commands.tag
 import io.github.ayfri.kore.features.recipes.types.key
@@ -60,7 +61,7 @@ object EntityDetector {
 			setOnNew(block, "data.properties", """{entity_selector:"@e[type=minecraft:pig,distance=..5]"}""")
 			// Remove ra.new now that setup is complete.
 			clearNew(block)
-			raw("return 1")
+			returnValue(1)
 		}
 
 		// Detect entities in range. As the marker, at its position: the selector is stored for the macro.

@@ -3,6 +3,7 @@ package ra.modules.wireless.tools
 import io.github.ayfri.kore.arguments.components.matchers.customData
 import io.github.ayfri.kore.arguments.types.literals.self
 import io.github.ayfri.kore.commands.function
+import io.github.ayfri.kore.commands.returnValue
 import io.github.ayfri.kore.commands.scoreboard.scoreboard
 import io.github.ayfri.kore.commands.tag
 import io.github.ayfri.kore.features.advancements.advancement
@@ -258,7 +259,7 @@ object Remote {
 			raw("\$execute unless data entity @s Inventory[{Slot:\$(slot)b,components:{\"minecraft:custom_data\":{ra:{remote:1b}}}}] run return 0")
 
 			raw("\$item modify entity @s hotbar.\$(slot) ra_wireless:set_channel")
-			raw("return 1")
+			returnValue(1)
 		}
 
 		// Macro {slot}: stamp the channel onto a remote sitting in hotbar slot N, unchecked.

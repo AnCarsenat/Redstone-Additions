@@ -1,5 +1,6 @@
 package ra.modules.sensors
 
+import io.github.ayfri.kore.commands.returnValue
 import io.github.ayfri.kore.features.recipes.types.key
 import io.github.ayfri.kore.features.recipes.types.pattern
 import io.github.ayfri.kore.generated.Items
@@ -46,7 +47,7 @@ object TagRemover {
 			placeBlock(block)
 			setOnNew(block, "data.properties", """{entity_selector:"@e[distance=..3]",tag:"custom_tag"}""")
 			clearNew(block)
-			raw("return 1")
+			returnValue(1)
 		}
 
 		// Macro {tag, entity_selector}. As the marker, at its position.

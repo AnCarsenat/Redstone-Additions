@@ -2,6 +2,8 @@ package ra.modules.ender
 
 import io.github.ayfri.kore.arguments.types.literals.self
 import io.github.ayfri.kore.commands.function
+import io.github.ayfri.kore.commands.returnValue
+import io.github.ayfri.kore.commands.scoreboard.scoreboard
 import io.github.ayfri.kore.commands.tag
 import io.github.ayfri.kore.features.recipes.types.RecipeCategory
 import io.github.ayfri.kore.features.recipes.types.key
@@ -85,8 +87,8 @@ object PowerVault {
 			raw("tag @e[type=marker,tag=${block.tag},tag=ra.new,distance=..0.5] add ${EnderIds.ELECTRIC_NODE}")
 
 			clearNew(block)
-			raw("tag @s remove ${block.placeTag}")
-			raw("return 1")
+			tag(self()) { remove(block.placeTag) }
+			returnValue(1)
 		}
 
 		pack.cycleLinkSendReceive(block)
@@ -145,7 +147,7 @@ object PowerVault {
 	 * full receiving grid costs nothing rather than voiding the difference.
 	 */
 	private fun Function.process() {
-		raw("scoreboard players set @s ${EnderIds.CD} 0")
+		scoreboard.players.set(self(), EnderIds.CD, 0)
 		tag(self()) { add(EnderIds.SELF) }
 
 		execReturn("if data entity @s data.properties{mode:\"receive\"}", Link.done)

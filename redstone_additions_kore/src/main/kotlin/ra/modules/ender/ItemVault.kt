@@ -2,6 +2,8 @@ package ra.modules.ender
 
 import io.github.ayfri.kore.arguments.types.literals.self
 import io.github.ayfri.kore.commands.function
+import io.github.ayfri.kore.commands.returnValue
+import io.github.ayfri.kore.commands.scoreboard.scoreboard
 import io.github.ayfri.kore.commands.tag
 import io.github.ayfri.kore.features.recipes.types.RecipeCategory
 import io.github.ayfri.kore.features.recipes.types.key
@@ -79,8 +81,8 @@ object ItemVault {
 			setOnNew(block, "data.properties.channel", "\"default\"")
 			setOnNew(block, "data.properties.mode", "\"link\"")
 			clearNew(block)
-			raw("tag @s remove ${block.placeTag}")
-			raw("return 1")
+			tag(self()) { remove(block.placeTag) }
+			returnValue(1)
 		}
 
 		pack.define(cycleMode) { cycleMode() }
@@ -134,7 +136,7 @@ object ItemVault {
 	 * an insert and bounced back.
 	 */
 	private fun Function.process() {
-		raw("scoreboard players set @s ${EnderIds.CD} 0")
+		scoreboard.players.set(self(), EnderIds.CD, 0)
 
 		// Held for the length of this call (see EnderIds.SELF).
 		tag(self()) { add(EnderIds.SELF) }

@@ -100,9 +100,13 @@ object Generic {
 			mbRemove("chk_marker")
 		}
 
-		pack.hook(Ns.LIB_MULTIBLOCK, MultiblockLib.Hooks.CHECK_STRUCTURE, checkStructure)
-		pack.hook(Ns.LIB_MULTIBLOCK, MultiblockLib.Hooks.SETUP_TYPE, setupType)
-		pack.hook(Ns.LIB_MULTIBLOCK, MultiblockLib.Hooks.VALIDATE, validate)
+		// Last in each tag, as in beet: the generic handlers only cover types no structure-specific
+		// hook claimed, so every other part must have appended its entries first.
+		afterAllParts {
+			pack.hook(Ns.LIB_MULTIBLOCK, MultiblockLib.Hooks.CHECK_STRUCTURE, checkStructure)
+			pack.hook(Ns.LIB_MULTIBLOCK, MultiblockLib.Hooks.SETUP_TYPE, setupType)
+			pack.hook(Ns.LIB_MULTIBLOCK, MultiblockLib.Hooks.VALIDATE, validate)
+		}
 	}
 
 	/**

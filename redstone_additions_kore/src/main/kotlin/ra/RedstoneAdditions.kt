@@ -96,6 +96,7 @@ object RedstoneAdditions {
 
 		val ra = Ra(this)
 		for (part in parts) with(part) { ra.register() }
+		ra.runDeferred()
 
 		if (strict) PackValidator.validate(this) else PackValidator.report(this)
 	}

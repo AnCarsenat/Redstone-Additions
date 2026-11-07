@@ -101,6 +101,7 @@ def canon(line: str) -> str:
     line = sort_selectors(line)
     line = BARE_QUOTED.sub(r"\1", line)
     line = DOUBLE_SUFFIX.sub("", line)
+    line = line.replace(":true", ":1b").replace(":false", ":0b")  # SNBT booleans are bytes
     return line
 
 
@@ -146,7 +147,13 @@ def canon_json(v):
     if STRICT:
         return v
     if isinstance(v, dict):
-        return {k.replace("minecraft:", ""): canon_json(x) for k, x in v.items()}
+        out = {k.replace("minecraft:", ""): canon_json(x) for k, x in v.items()}
+        # Defaults Kore always writes and the game assumes when absent.
+        if out.get("replace") is False:
+            del out["replace"]
+        if out.get("frame") == "task":
+            del out["frame"]
+        return out
     if isinstance(v, list):
         items = [canon_json(x) for x in v]
         return items[0] if len(items) == 1 and isinstance(items[0], str) else items

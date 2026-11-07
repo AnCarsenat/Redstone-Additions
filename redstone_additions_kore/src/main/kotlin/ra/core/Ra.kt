@@ -79,6 +79,24 @@ class Ra(val pack: DataPack) {
 	/** Bundles for `ra:give_all_items`, in hand-out order. */
 	val bundles = mutableListOf<GiveBundle>()
 
+	/**
+	 * Work deferred until every part has registered, run in the order added. For a part whose
+	 * entry must come AFTER entries other parts append to the same shared file -- e.g.
+	 * `ra_lib_multiblock:generic/validate` closes `#ra_lib_multiblock:validate`, after every
+	 * structure's own validator, because it only covers types nobody else handled.
+	 */
+	private val deferred = mutableListOf<() -> Unit>()
+
+	fun afterAllParts(action: () -> Unit) {
+		deferred += action
+	}
+
+	/** Called once by [ra.RedstoneAdditions] after the last part. */
+	internal fun runDeferred() {
+		deferred.forEach { it() }
+		deferred.clear()
+	}
+
 	/** Registers a placeable block, its placement handler and its goggles readout. */
 	fun block(block: CustomBlock, placement: Boolean = true, goggles: Boolean = true): CustomBlock {
 		blocks += block

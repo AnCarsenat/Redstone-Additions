@@ -13,6 +13,7 @@ import ra.core.Obj
 import ra.core.Ra
 import ra.core.define
 import ra.core.hook
+import ra.core.macroCall
 import ra.core.raw
 import ra.core.ref
 import ra.multiblocklib.MB
@@ -117,8 +118,8 @@ object Generic {
 		raw("\$execute unless data storage ra:multiblock {type:\"\$(type)\"} run return 0")
 		for (facing in FACINGS) {
 			val args = "{type:\"\$(type)\",facing:\"$facing\"}"
-			raw("\$execute store result score #mb_result ${Obj.MULTIBLOCK} run function ${Structure.check.asId()} $args")
-			raw("\$execute if score #mb_result ${Obj.MULTIBLOCK} matches 1 run function ${accept.asId()} $args")
+			raw("\$execute store result score #mb_result ${Obj.MULTIBLOCK} run ${macroCall(Structure.check, args)}")
+			raw("\$execute if score #mb_result ${Obj.MULTIBLOCK} matches 1 run ${macroCall(accept, args)}")
 			returnIfMbScore("#mb_result", 1, 1)
 		}
 		returnValue(0)

@@ -11,6 +11,7 @@ import ra.api.RaLib
 import ra.core.Obj
 import ra.core.Ra
 import ra.core.define
+import ra.core.macroCall
 import ra.core.raw
 import ra.lib.fake
 import ra.lib.lib
@@ -133,7 +134,7 @@ internal object SideReaders {
 
 		// Analog sources that power every neighbour regardless of orientation: the two weighted
 		// pressure plates and the daylight detector. No connection test needed.
-		raw("\$execute if block $AT ${RedstoneTags.ANALOG_OMNI} run function ${Rules.analog.asId()} {dx:\$(dx),dy:\$(dy),dz:\$(dz)}")
+		raw("\$execute if block $AT ${RedstoneTags.ANALOG_OMNI} run ${macroCall(Rules.analog, "{dx:\$(dx),dy:\$(dy),dz:\$(dz)}")}")
 
 		// Everything with a `powered` flag that drives all its neighbours at full strength when set:
 		// levers, every button, the non-weighted pressure plates, tripwire hooks, lightning rods.

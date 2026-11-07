@@ -7,6 +7,7 @@ import io.github.ayfri.kore.commands.function
 import io.github.ayfri.kore.commands.scoreboard.scoreboard
 import io.github.ayfri.kore.commands.tag
 import net.benwoodworth.knbt.NbtByte
+import ra.api.Tools
 import ra.core.Obj
 import ra.core.Ra
 import ra.core.Storage
@@ -44,7 +45,7 @@ object WrenchMenu {
 	val rememberTarget = tool("wrench/remember_target")
 	val menuRow = tool("wrench/menu_row")
 	val menuRowNext = tool("wrench/menu_row_next")
-	val menuAction = tool("wrench/menu_action")
+	val menuAction = Tools.Wrench.menuAction
 	val menuAt = tool("wrench/menu_at")
 	val runEntry = tool("wrench/run_entry")
 	val runPick = tool("wrench/run_pick")

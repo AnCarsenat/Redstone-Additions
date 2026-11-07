@@ -17,6 +17,7 @@ import ra.core.Obj
 import ra.core.Ra
 import ra.core.Storage
 import ra.core.define
+import ra.core.macroCall
 import ra.core.raw
 import ra.core.ref
 import ra.multiblocklib.MB
@@ -42,7 +43,7 @@ object Io {
 	val at = MultiblockLib.Io.at
 	val atRun = ref(Ns.LIB_MULTIBLOCK, "io/at_run")
 	val insert = ref(Ns.LIB_MULTIBLOCK, "io/insert")
-	val insertHere = ref(Ns.LIB_MULTIBLOCK, "io/insert_here")
+	val insertHere = MultiblockLib.Io.insertHere
 	val extract = ref(Ns.LIB_MULTIBLOCK, "io/extract")
 	val extractHere = ref(Ns.LIB_MULTIBLOCK, "io/extract_here")
 	val peek = ref(Ns.LIB_MULTIBLOCK, "io/peek")
@@ -75,7 +76,7 @@ object Io {
 		// itself may still be refused by a full container).
 		pack.define(insert) {
 			raw("\$data modify storage ra:multiblock io_item set value {id:\"\$(id)\",count:\$(count),components:\$(components)}")
-			raw("\$return run function ${at.asId()} {name:\"\$(name)\",run:\"${insertHere.asId()}\"}")
+			raw("\$return run " + macroCall(at, "{name:\"\$(name)\",run:\"${insertHere.asId()}\"}"))
 		}
 
 		// insert_or_drop: a multiblock producing into a full output barrel used to have its
@@ -158,6 +159,6 @@ object Io {
 
 	/** `$function ra_lib_multiblock:io/at {name:"$(name)",run:"<here>"}`. */
 	private fun Function.callAt(here: FunctionArgument) {
-		raw("\$function ${at.asId()} {name:\"\$(name)\",run:\"${here.asId()}\"}")
+		raw("\$" + macroCall(at, "{name:\"\$(name)\",run:\"${here.asId()}\"}"))
 	}
 }

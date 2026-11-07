@@ -5,6 +5,7 @@ import io.github.ayfri.kore.arguments.types.literals.self
 import io.github.ayfri.kore.commands.function
 import io.github.ayfri.kore.commands.scoreboard.scoreboard
 import ra.api.RaLib
+import ra.api.Tools
 import ra.core.Obj
 import ra.core.Ra
 import ra.core.callWith
@@ -28,7 +29,7 @@ import ra.tools.tool
  * serves every property instead of a branch per name.
  */
 object DataHandlerActions {
-	val tick = tool("data_handler/tick")
+	val tick = Tools.DataHandler.tick
 	val runAction = tool("data_handler/run_action")
 	val applyPending = tool("data_handler/apply_pending")
 	val genericAction = tool("data_handler/generic_action")

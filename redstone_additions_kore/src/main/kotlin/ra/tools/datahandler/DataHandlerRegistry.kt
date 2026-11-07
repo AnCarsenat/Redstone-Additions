@@ -1,9 +1,9 @@
 package ra.tools.datahandler
 
+import ra.api.Tools
 import ra.core.Ra
 import ra.core.define
 import ra.core.raw
-import ra.tools.tool
 
 /**
  * `ra:tools/data_handler/init_registry`: the property names the Handler knows how to show, in
@@ -31,7 +31,7 @@ import ra.tools.tool
  * /reload would edit the wrong property when clicked. New names go on the end.
  */
 object DataHandlerRegistry {
-	val initRegistry = tool("data_handler/init_registry")
+	val initRegistry = Tools.DataHandler.initRegistry
 
 	/** Menu order. Append only (see above). */
 	private val PROPERTIES = listOf(

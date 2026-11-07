@@ -15,6 +15,9 @@ import ra.lib.placement.Placement
 import ra.lib.placement.Placement.registerPlacement
 import ra.lib.redstone.Redstone
 import ra.lib.redstone.Redstone.registerRedstone
+import ra.lib.skin.Skin.registerSkin
+import ra.lib.transport.Transport
+import ra.lib.transport.Transport.registerTransport
 import ra.lib.util.Util.registerUtil
 
 /**
@@ -30,6 +33,8 @@ object RaLibPart : PackPart {
 		registerPlacement()
 		registerInventory()
 		registerRedstone()
+		registerSkin()
+		registerTransport()
 		registerUtil()
 
 		// Initialize every sub-system. Called on datapack load, from ra:load.
@@ -38,6 +43,7 @@ object RaLibPart : PackPart {
 			function(Placement.init)
 			function(Inventory.init)
 			function(Redstone.init)
+			function(Transport.init)
 		}
 	}
 }

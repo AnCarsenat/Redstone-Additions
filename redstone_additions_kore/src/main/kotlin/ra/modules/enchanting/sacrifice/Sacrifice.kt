@@ -12,6 +12,8 @@ import ra.core.Ns
 import ra.core.Obj
 import ra.core.Ra
 import ra.core.Storage
+import ra.core.block.particleViewersSel
+import ra.core.block.soundListenersSel
 import ra.core.define
 import ra.core.raw
 import ra.core.ref
@@ -23,9 +25,6 @@ object Sacrifice {
 	val attempt = ref(Ns.ENCHANTING, "sacrifice/attempt")
 	val success = ref(Ns.ENCHANTING, "sacrifice/success")
 	val fail = ref(Ns.ENCHANTING, "sacrifice/fail")
-
-	private const val PARTICLE_VIEWERS = "@a[scores={${Obj.USER_PARTICLES}=1..}]"
-	private const val SOUND_LISTENERS = "@a[distance=..16,scores={${Obj.USER_SOUND}=1..}]"
 
 	fun Ra.registerSacrifice() {
 		pack.define(onTable) { onTable() }
@@ -94,17 +93,17 @@ object Sacrifice {
 		raw("data modify entity @e[type=item,tag=ra.ench.product,distance=..0.6,limit=1,sort=nearest] Item set from storage ra:enchant result")
 		raw("tag @e[type=item,tag=ra.ench.product,distance=..0.6,limit=1,sort=nearest] remove ra.ench.product")
 
-		raw("particle minecraft:enchant ~ ~0.6 ~ 0.3 0.4 0.3 0.8 60 normal $PARTICLE_VIEWERS")
-		raw("particle minecraft:end_rod ~ ~0.4 ~ 0.15 0.15 0.15 0.05 12 normal $PARTICLE_VIEWERS")
-		raw("playsound minecraft:block.enchantment_table.use block $SOUND_LISTENERS ~ ~ ~ 1 1.2")
-		raw("playsound minecraft:entity.player.levelup block $SOUND_LISTENERS ~ ~ ~ 0.8 1.4")
+		raw("particle minecraft:enchant ~ ~0.6 ~ 0.3 0.4 0.3 0.8 60 normal ${particleViewersSel()}")
+		raw("particle minecraft:end_rod ~ ~0.4 ~ 0.15 0.15 0.15 0.05 12 normal ${particleViewersSel()}")
+		raw("playsound minecraft:block.enchantment_table.use block ${soundListenersSel()} ~ ~ ~ 1 1.2")
+		raw("playsound minecraft:entity.player.levelup block ${soundListenersSel()} ~ ~ ~ 0.8 1.4")
 	}
 
 	/** The roll missed -- the item is gone, nothing comes back. */
 	private fun Function.fail() {
-		raw("particle minecraft:lava ~ ~0.4 ~ 0.2 0.2 0.2 0.05 10 normal $PARTICLE_VIEWERS")
-		raw("particle minecraft:smoke ~ ~0.4 ~ 0.2 0.2 0.2 0.02 12 normal $PARTICLE_VIEWERS")
-		raw("playsound minecraft:block.fire.extinguish block $SOUND_LISTENERS ~ ~ ~ 1 0.6")
-		raw("playsound minecraft:entity.item.break block $SOUND_LISTENERS ~ ~ ~ 0.8 0.8")
+		raw("particle minecraft:lava ~ ~0.4 ~ 0.2 0.2 0.2 0.05 10 normal ${particleViewersSel()}")
+		raw("particle minecraft:smoke ~ ~0.4 ~ 0.2 0.2 0.2 0.02 12 normal ${particleViewersSel()}")
+		raw("playsound minecraft:block.fire.extinguish block ${soundListenersSel()} ~ ~ ~ 1 0.6")
+		raw("playsound minecraft:entity.item.break block ${soundListenersSel()} ~ ~ ~ 0.8 0.8")
 	}
 }

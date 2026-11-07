@@ -78,7 +78,7 @@ object ChunkLoader {
 
 			// Redstone power detection
 			execute {
-				asTarget(markers(skipNew = true))
+				asTarget(placedMarkers())
 				at(self())
 				run { function(RaLib.Redstone.detectSwitch) }
 			}
@@ -99,10 +99,11 @@ object ChunkLoader {
 		}
 	}
 
-	private fun markers(skipNew: Boolean) = allEntities {
+	/** Every Chunk Loader marker but one placed this tick (still tagged `ra.new`). */
+	private fun placedMarkers() = allEntities {
 		type = EntityTypes.MARKER
 		tag = block.tag
-		if (skipNew) tag = "!${Tag.NEW}"
+		tag = "!${Tag.NEW}"
 	}
 
 	/** As the spawned bat, at its position. */

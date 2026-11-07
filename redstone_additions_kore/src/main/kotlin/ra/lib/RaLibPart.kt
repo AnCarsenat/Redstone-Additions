@@ -6,6 +6,8 @@ import ra.core.PackPart
 import ra.core.Ra
 import ra.core.define
 import ra.lib.BlockTags.registerBlockTags
+import ra.lib.input.Input
+import ra.lib.input.Input.registerInput
 import ra.lib.inventory.Inventory
 import ra.lib.inventory.Inventory.registerInventory
 import ra.lib.light.LightPredicates.registerLightPredicates
@@ -34,6 +36,7 @@ object RaLibPart : PackPart {
 		registerInventory()
 		registerRedstone()
 		registerSkin()
+		registerInput()
 		registerTransport()
 		registerUtil()
 
@@ -43,6 +46,7 @@ object RaLibPart : PackPart {
 			function(Placement.init)
 			function(Inventory.init)
 			function(Redstone.init)
+			function(Input.init)
 			function(Transport.init)
 		}
 	}

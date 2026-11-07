@@ -56,13 +56,13 @@ internal val facings = listOf(Side.DOWN, Side.UP, Side.NORTH, Side.SOUTH, Side.W
  * facings are a convention rather than a fact -- see `facing/up`. Only front and back are
  * unambiguous for a vertically placed block.
  */
-internal enum class LocalSide(val objective: String, val byFacing: List<Side>, val fallback: Side, val title: String) {
-	FRONT(Obj.POWER_FRONT, listOf(Side.DOWN, Side.UP, Side.NORTH, Side.SOUTH, Side.WEST, Side.EAST), Side.SOUTH, "front side"),
-	BACK(Obj.POWER_BACK, listOf(Side.UP, Side.DOWN, Side.SOUTH, Side.NORTH, Side.EAST, Side.WEST), Side.NORTH, "back side"),
-	LEFT(Obj.POWER_LEFT, listOf(Side.EAST, Side.EAST, Side.WEST, Side.EAST, Side.SOUTH, Side.NORTH), Side.EAST, "left-hand side"),
-	RIGHT(Obj.POWER_RIGHT, listOf(Side.WEST, Side.WEST, Side.EAST, Side.WEST, Side.NORTH, Side.SOUTH), Side.WEST, "right-hand side"),
-	UP(Obj.POWER_LOCAL_UP, listOf(Side.SOUTH, Side.NORTH, Side.UP, Side.UP, Side.UP, Side.UP), Side.UP, "local up side"),
-	DOWN(Obj.POWER_LOCAL_DOWN, listOf(Side.NORTH, Side.SOUTH, Side.DOWN, Side.DOWN, Side.DOWN, Side.DOWN), Side.DOWN, "local down side");
+internal enum class LocalSide(val objective: String, val byFacing: List<Side>, val fallback: Side) {
+	FRONT(Obj.POWER_FRONT, listOf(Side.DOWN, Side.UP, Side.NORTH, Side.SOUTH, Side.WEST, Side.EAST), Side.SOUTH),
+	BACK(Obj.POWER_BACK, listOf(Side.UP, Side.DOWN, Side.SOUTH, Side.NORTH, Side.EAST, Side.WEST), Side.NORTH),
+	LEFT(Obj.POWER_LEFT, listOf(Side.EAST, Side.EAST, Side.WEST, Side.EAST, Side.SOUTH, Side.NORTH), Side.EAST),
+	RIGHT(Obj.POWER_RIGHT, listOf(Side.WEST, Side.WEST, Side.EAST, Side.WEST, Side.NORTH, Side.SOUTH), Side.WEST),
+	UP(Obj.POWER_LOCAL_UP, listOf(Side.SOUTH, Side.NORTH, Side.UP, Side.UP, Side.UP, Side.UP), Side.UP),
+	DOWN(Obj.POWER_LOCAL_DOWN, listOf(Side.NORTH, Side.SOUTH, Side.DOWN, Side.DOWN, Side.DOWN, Side.DOWN), Side.DOWN);
 
 	val id = name.lowercase()
 

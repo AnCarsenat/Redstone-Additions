@@ -1,7 +1,7 @@
 # Project Reference
 
 Where every generated path comes from. Paths below are relative to
-`redstone_additions_kore/src/main/kotlin/ra/`.
+`redstone_additions/src/main/kotlin/ra/`.
 
 **Rule of thumb:** the Kotlin package mirrors the generated path. `ra_gates:blocks/clock/process`
 is written by `modules/gates/Clock.kt`; `ra_lib_multiblock:io/at` by `multiblocklib/io/Io.kt`;
@@ -16,7 +16,7 @@ grep -rn '"wrench/init_registry"\|"tools/wrench/init_registry"' src/main/kotlin
 
 | File | Writes / does |
 | --- | --- |
-| `Main.kt` | Entry point: `RedstoneAdditions.build(output).generate()` |
+| `Main.kt` | Entry point: `RedstoneAdditions.build(output).generate()`, then copies the loose files (`updater.py`, `CHANGELOG.md`) into the pack folder |
 | `RedstoneAdditions.kt` | `VERSION`, `PACK_NAME`, `modules`, `parts`, `pack.mcmeta`, the validator call |
 
 ## Foundation: `core/` and `api/`
@@ -174,4 +174,14 @@ Each module has `<Name>Module.kt` (the `GameplayModule` object: registration ord
 | `gradle.properties` | `version` (the pack version) and Gradle flags |
 | `gradle/libs.versions.toml` | Kore and Kotlin versions |
 | `pack.png` | The pack icon |
-| `tools/compare_reference.py` | Diff against the beet build |
+| `updater.py` | Self-updater shipped inside the pack (`python updater.py` from the pack folder) |
+| `CHANGELOG.md` | Release notes; shipped inside the pack and read by the publish workflow |
+
+Paths above are relative to `redstone_additions/`. Repository-root `tools/` holds the scripts
+that are not part of the pack:
+
+| Path | What |
+| --- | --- |
+| `tools/compare_reference.py` | Diff the generated pack against a reference pack folder (`--reference`) |
+| `tools/recipe_render/` | Recipe pictures and the Recipe Atlas, from the generated recipes ([Recipe Renderer](recipe-renderer.md)) |
+| `tools/md_to_bbcode.py` | `readme.md` → `readme.bbcode` ([Markdown to BBCode](markdown-to-bbcode.md)) |

@@ -1,6 +1,4 @@
 # Python Virtual Environment
-redstone_additions/.venv/
-redstone_additions/venv/
 
 # Python cache and build artifacts
 __pycache__/
@@ -15,7 +13,7 @@ eggs/
 .eggs/
 lib/
 # The Kore rewrite has a Kotlin package named lib (ra_lib); it is source, not a Python venv.
-!redstone_additions_kore/src/main/kotlin/**/lib/
+!redstone_additions/src/main/kotlin/**/lib/
 lib64/
 parts/
 sdist/
@@ -38,10 +36,9 @@ wheels/
 Thumbs.db
 
 # Project specific
-redstone_additions/builds/
 
 # Cached vanilla assets for tools/recipe_render (re-downloaded on demand)
-redstone_additions/tools/recipe_render/assets/
+tools/recipe_render/assets/
 *.jar
 
 # mkdocs build output. The published wiki is built from docs/ by

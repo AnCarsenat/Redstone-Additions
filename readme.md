@@ -216,7 +216,7 @@ recipes and usage.
 
 ## Development Setup
 
-The pack is Kotlin in `redstone_additions_kore/`, turned into the data pack by
+The pack is Kotlin in `redstone_additions/`, turned into the data pack by
 **[Kore](https://kore.ayfri.com)** with Gradle.
 
 ### Prerequisites
@@ -227,7 +227,7 @@ The pack is Kotlin in `redstone_additions_kore/`, turned into the data pack by
 
 ```bash
 git clone https://github.com/AnCarsenat/Redstone-Additions.git
-cd Redstone-Additions/redstone_additions_kore
+cd Redstone-Additions/redstone_additions
 
 ./gradlew koreBuild                                  # build into build/kore/redstone_additions/
 ./gradlew koreRun -Pworld="My World"                 # build and install into a world
@@ -250,12 +250,15 @@ and [Getting Started](https://ancarsenat.github.io/Redstone-Additions/getting-st
 2. Place it in `.minecraft/saves/<your_world>/datapacks/`.
 3. Run `/reload`.
 
+To update later, run `python updater.py` from inside the pack's folder in `datapacks/` (or
+next to the zip): it checks Modrinth and installs a newer version after asking.
+
 ### Option B (from source)
 Build it with Gradle and install it straight into a world — see
 [Development Setup](#development-setup):
 
 ```bash
-cd redstone_additions_kore && ./gradlew koreRun -Pworld="<your world>"
+cd redstone_additions && ./gradlew koreRun -Pworld="<your world>"
 ```
 
 Then run `/reload`.

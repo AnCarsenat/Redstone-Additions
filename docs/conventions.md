@@ -1,6 +1,6 @@
 # Conventions
 
-Rules for every Kotlin file in `redstone_additions_kore/`. They exist for the same reason the old
+Rules for every Kotlin file in `redstone_additions/`. They exist for the same reason the old
 [Contributing Guidelines](contributing-guidelines.md) did: most data pack bugs are one
 identifier spelled two ways, or one rule applied in nine places but forgotten in the tenth.
 
@@ -103,9 +103,10 @@ Comments stay in Kotlin. They are not emitted into the `.mcfunction` output.
 
 ## Before you push
 
-1. `./gradlew koreBuild` (strict) passes. While other parts are unported, use
-   `-Pra.strict=false` and check that no unresolved call points into **your** namespaces.
-2. `python3 tools/compare_reference.py <your namespaces> --diff` shows only
-   [expected differences](porting-history.md#differences-that-are-expected), or ones you can explain in
-   the commit message.
+1. `./gradlew koreBuild` (strict) passes. Generation also fails on a macro line with no
+   `$(variable)`, whatever the mode ([Kore Gotchas](gotchas.md#macro-lines-need-a-variable)).
+2. For a change meant to keep behaviour: copy the previous `build/kore/redstone_additions/`
+   aside, rebuild, and run
+   `python3 tools/compare_reference.py --reference <copy> <your namespaces> --diff` from the
+   repository root; explain every difference in the commit message.
 3. No file over ~300 lines; no string calls to the pack's own functions.

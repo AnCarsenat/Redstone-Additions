@@ -1,9 +1,9 @@
 # Publishes a release to Modrinth: the data pack zip, and the same pack as a
 # Fabric / Quilt / Forge / NeoForge jar (the "+mod" version).
 #
-# Built from the Kotlin sources in redstone_additions_kore/ with Kore (JDK 25).
+# Built from the Kotlin sources in redstone_additions/ with Kore (JDK 25).
 # Triggered by pushing a tag like "v5.1.17", or manually from the Actions tab. The tag
-# must equal `version` in redstone_additions_kore/gradle.properties.
+# must equal `version` in redstone_additions/gradle.properties.
 # Needs a MODRINTH_TOKEN repository secret with the "Create versions" scope. The
 # Modrinth project (52z5jQjy) already exists; this only adds versions to it.
 
@@ -72,15 +72,15 @@ jobs:
         env:
           VERSION: ${{ steps.version.outputs.value }}
         run: |
-          declared="$(sed -n 's/^[[:space:]]*version[[:space:]]*=[[:space:]]*//p' redstone_additions_kore/gradle.properties | head -n1)"
+          declared="$(sed -n 's/^[[:space:]]*version[[:space:]]*=[[:space:]]*//p' redstone_additions/gradle.properties | head -n1)"
           if [ "$declared" != "$VERSION" ]; then
-            echo "::error::publishing $VERSION, but redstone_additions_kore/gradle.properties says version=$declared" >&2
+            echo "::error::publishing $VERSION, but redstone_additions/gradle.properties says version=$declared" >&2
             exit 1
           fi
 
       # Strict by default: generation fails on a call to a function the pack never defines.
       - name: Build with Kore
-        working-directory: redstone_additions_kore
+        working-directory: redstone_additions
         run: ./gradlew koreBuild --no-daemon
 
       - name: Publish

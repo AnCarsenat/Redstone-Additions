@@ -9,7 +9,7 @@ on:
       - main
     paths:
       - readme.md
-      - redstone_additions/tools/md_to_bbcode.py
+      - tools/md_to_bbcode.py
       - .github/workflows/bbcode.yml
   workflow_dispatch:
 
@@ -34,11 +34,10 @@ jobs:
 
       # md_to_bbcode.py is pure standard library, so there is nothing to install.
       - name: Convert readme.md to readme.bbcode
-        working-directory: redstone_additions
         run: |
-          python3 tools/md_to_bbcode.py ../readme.md \
+          python3 tools/md_to_bbcode.py readme.md \
             --base-url https://github.com/AnCarsenat/Redstone-Additions/raw/main/ \
-            -o ../readme.bbcode
+            -o readme.bbcode
 
       - name: Upload readme.bbcode
         uses: actions/upload-artifact@v4

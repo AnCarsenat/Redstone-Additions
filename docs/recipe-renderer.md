@@ -7,20 +7,19 @@ which meant opening the game for every new item.
 Needs Pillow (`pip install pillow`) and, on the first run only, network access.
 
 !!! note "Where it reads recipes"
-    `--all` and `--atlas` scan the beet source tree, `redstone_additions/src/data/*/recipe/`,
-    which still holds every recipe as of the move to Kotlin. The pack's recipes are now written
-    by Kotlin into `redstone_additions_kore/build/kore/redstone_additions/data/<ns>/recipe/`
-    (run `./gradlew koreBuild` first); pass one of those files to render a recipe added or
-    changed since. The output name only depends on the `<ns>/recipe/<name>.json` end of the
-    path, so it lands in the same `docs/images/recipes/<ns>/<name>.png`.
+    Recipes are written by Kotlin, so the renderer reads the **generated** pack:
+    `redstone_additions/build/kore/redstone_additions/data/<ns>/recipe/`. Run
+    `./gradlew koreBuild` in `redstone_additions/` first, or `--all` and `--atlas` find nothing
+    new. The output name only depends on the `<ns>/recipe/<name>.json` end of the path, so a
+    picture lands in `docs/images/recipes/<ns>/<name>.png`.
 
 ## Quick commands
 
-Run from `redstone_additions/`.
+Run from the repository root, after `(cd redstone_additions && ./gradlew koreBuild)`.
 
 ```bash
 # one recipe -> docs/images/recipes/<namespace>/<name>.png
-python3 tools/recipe_render/render.py src/data/ra_infinite/recipe/mineral_generator.json
+python3 tools/recipe_render/render.py redstone_additions/build/kore/redstone_additions/data/ra_infinite/recipe/mineral_generator.json
 
 # every crafting recipe in the pack
 python3 tools/recipe_render/render.py --all
@@ -29,7 +28,7 @@ python3 tools/recipe_render/render.py --all
 python3 tools/recipe_render/render.py --all --only ra_jetpacks
 
 # somewhere else, bigger
-python3 tools/recipe_render/render.py src/data/ra/recipe/wrench.json -o /tmp/wrench.png --scale 6
+python3 tools/recipe_render/render.py redstone_additions/build/kore/redstone_additions/data/ra/recipe/wrench.json -o /tmp/wrench.png --scale 6
 
 # regenerate the Recipe Atlas page from the recipe files
 python3 tools/recipe_render/render.py --atlas
@@ -188,9 +187,10 @@ deliberately absent — the Item Crate keeps that one and is never an ingredient
 
 ## Adding a picture for a new recipe
 
-1. Write `src/data/<namespace>/recipe/<name>.json`.
-2. If it consumes a disguised RA item, add it to `overrides.json`.
-3. `python3 tools/recipe_render/render.py src/data/<namespace>/recipe/<name>.json`
+1. Declare the recipe in Kotlin (see [Custom Blocks](custom-blocks.md)) and run
+   `./gradlew koreBuild` in `redstone_additions/`.
+2. If it consumes a disguised RA item, add it to `tools/recipe_render/overrides.json`.
+3. `python3 tools/recipe_render/render.py redstone_additions/build/kore/redstone_additions/data/<namespace>/recipe/<name>.json`
 4. Reference the PNG from the module page.
 
 Non-crafting recipe types — smelting, stonecutting, smithing — are skipped with a

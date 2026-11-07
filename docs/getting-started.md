@@ -20,7 +20,7 @@ kotlin = "2.4.20"
 ## Building
 
 ```bash
-cd redstone_additions_kore
+cd redstone_additions
 ./gradlew koreBuild
 ```
 
@@ -69,25 +69,28 @@ Then `/reload` in game. Without `-Pworld`, `koreRun` builds but installs nowhere
 reference (the untracked `local.properties`, launcher instances, RCON, removing the pack again)
 is [Installing into a world](contributing-guidelines.md#installing-into-a-world).
 
-!!! warning "Never load the beet build and the Kore build together"
+!!! warning "Never load the old beet release and the Kore build together"
     Both write the same namespaces. With both enabled every function exists twice, the pack
     that loads last wins file by file, and `ra:tick` is scheduled by both: you get a mix of two
     versions running at once. Remove `redstone_additions_data_pack` from the world first.
 
-## Comparing against the beet build
+## Comparing against a reference pack
 
-`tools/compare_reference.py` diffs the Kore output against the committed beet build. The
-reference is what 26.3 actually loaded:
-`redstone_additions/build/redstone_additions_data_pack/data/`, with `overlay_102/` and then
-`overlay_121/` laid over it file by file.
+`tools/compare_reference.py` (repository root) diffs the generated pack against another data
+pack folder, given with `--reference`: typically the last beet release, v5.1.17, unzipped
+somewhere outside the repository. The beet source tree is no longer in the repository, so the
+reference always comes from a release. The tool reads the reference's `data/` with every
+`overlay_*/data/` it has laid over it in name order, which is what 26.3 loads. The generated
+pack is read from `redstone_additions/build/kore/redstone_additions/` (`--kore` to change it).
 
 ```bash
-./gradlew koreBuild -Pra.strict=false
-python3 tools/compare_reference.py ra_gates            # summary for one namespace
-python3 tools/compare_reference.py ra_gates ra_sensors # several
-python3 tools/compare_reference.py ra_gates --diff     # plus a unified diff per mismatch
-python3 tools/compare_reference.py --all
-python3 tools/compare_reference.py ra_gates --strict   # no normalisation (see below)
+(cd redstone_additions && ./gradlew koreBuild)
+REF=~/packs/redstone_additions_v5.1.17   # an unzipped release
+python3 tools/compare_reference.py --reference $REF ra_gates            # summary for one namespace
+python3 tools/compare_reference.py --reference $REF ra_gates ra_sensors # several
+python3 tools/compare_reference.py --reference $REF ra_gates --diff     # plus a unified diff per mismatch
+python3 tools/compare_reference.py --reference $REF --all
+python3 tools/compare_reference.py --reference $REF ra_gates --strict   # no normalisation (see below)
 ```
 
 Output:
@@ -124,7 +127,7 @@ explains how to read it.
 
 ## IDE
 
-Open `redstone_additions_kore/` in IntelliJ IDEA and let it import the Gradle project. Running
+Open `redstone_additions/` in IntelliJ IDEA and let it import the Gradle project. Running
 `ra.MainKt` directly works: without the plugin's `kore.output` property, `Main.kt` writes to
 `out/` in the working directory, and `RedstoneAdditions.VERSION` reads `version` from
 `gradle.properties` in that same directory (see [Release and Versioning](release.md)).

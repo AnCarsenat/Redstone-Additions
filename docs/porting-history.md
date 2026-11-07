@@ -1,13 +1,24 @@
 # Porting History
 
 Up to v5.1.17 Redstone Additions was hand-written `.mcfunction` / JSON, built by
-[beet](https://github.com/mcbeet/beet) from `redstone_additions/src/`. It is now Kotlin that
-[Kore](https://kore.ayfri.com) turns into the data pack, in `redstone_additions_kore/`.
+[beet](https://github.com/mcbeet/beet) from `redstone_additions/src/data/`. It is now Kotlin that
+[Kore](https://kore.ayfri.com) turns into the data pack, in `redstone_additions/`.
 
 This page records why and how that move was made, what was kept and what changed, and how a
 port was checked against the old build. For working on the pack today, start at
-[Getting Started](getting-started.md); the beet tree stays in the repository as the reference
-`tools/compare_reference.py` diffs against.
+[Getting Started](getting-started.md).
+
+!!! note "Layout during the port, and after"
+    While the port ran, both trees were in the repository: the beet pack in
+    `redstone_additions/` (sources in `src/data/`, committed build in
+    `build/redstone_additions_data_pack/`) and the Kore project beside it in
+    `redstone_additions_kore/`. Once every part was ported and reviewed, the beet tree was
+    removed and `redstone_additions_kore/` was renamed to `redstone_additions/`. The
+    `redstone_additions/src/data/…` and `build/redstone_additions_data_pack/…` paths below are
+    therefore the **beet** layout, which now only exists in the git history and in the v5.1.17
+    release. The tools worth keeping (`md_to_bbcode.py`, `recipe_render/`, `compare_reference.py`)
+    moved to the repository-root `tools/`; `compare_reference.py` now takes the reference pack as
+    `--reference <folder>`, an unzipped release rather than an in-tree build.
 
 The rewrite changed how the pack is **written**, not its behaviour: the same commands, in the
 same functions, at the same paths.
@@ -52,14 +63,14 @@ differences the rewrite allows.
 
 | | beet | Kore |
 | --- | --- | --- |
-| Source | `redstone_additions/src/**/*.mcfunction`, `*.json` | `redstone_additions_kore/src/main/kotlin/ra/**/*.kt` |
+| Source | `redstone_additions/src/**/*.mcfunction`, `*.json` | `redstone_additions/src/main/kotlin/ra/**/*.kt` |
 | Build | `beet build` (Python 3.14, beet 0.116) | `./gradlew koreBuild` (JDK 25, Kore 2.28.0-26.3) |
 | Minecraft versions | 1.21.9 – 26.3 (formats 88 – 121) through overlays | **26.3 only** (format 121) |
 | 26.3 shapes | rewritten at build time by `tools/port_26_3.py` into `overlay_121/` | written directly by Kore |
-| Macro checks | `tools/lint_macros.py` | typed `nbt { }` macro arguments + `PackValidator` |
+| Macro checks | `tools/lint_macros.py` | typed `nbt { }` macro arguments + `PackValidator`, which also took over its "macro line with no `$(variable)`" check |
 | Settings | `tools/settings/*.json` + `tools/settings_gen.py` | Kotlin data in `ra.settings.pages`, generator in `ra.settings.gen` |
 | Placement handlers, goggles dispatch, wrench / read-only / Data Handler registries, give bundles | hand-edited per block | built from the `Ra` registry |
-| Version | typed in six files (see the old release checklist) | `version` in `redstone_additions_kore/gradle.properties` |
+| Version | typed in six files (see the old release checklist) | `version` in `redstone_additions/gradle.properties` |
 
 Supporting older Minecraft versions was dropped on purpose. Kore checks its output against one
 game version only, and the overlays plus `port_26_3.py` existed only to bridge shapes that changed
@@ -183,7 +194,7 @@ that shape.
 | Difference | Why |
 | --- | --- |
 | A block's `tick` differs and a new `on_break` exists | `blockTick` / `blockOnBreak` route each broken marker through one function ([Custom Blocks](custom-blocks.md#breaking-the-standard-shape-and-its-variants)) |
-| `MISSING ra_enchanting/README.md`, `ra_lib_multiblock/README.md` | loose files are not shipped; their content moves to the docs |
+| `MISSING ra_enchanting/README.md`, `ra_lib_multiblock/README.md` | module READMEs are not shipped; their content moved to the docs |
 | `schedule function ra:tick 1t` → `schedule function ra:tick 1 replace` | Kore spells the unit-less tick count and the default mode out; same behaviour |
 | `tp` → `teleport` | alias |
 | Registry-built files list entries in a different but equivalent order | only where order is not observable (the placement tag keeps registration order; bundles keep `HAND_OUT_ORDER`) |
@@ -209,6 +220,6 @@ reviewable. Found during the port reviews, still to be commented and fixed:
 | --- | --- |
 | `tools/port_26_3.py`, `overlay_121/` | Kore writes the 26.3 shapes directly |
 | `overlay_102/` | the 26.3 shape is the only one |
-| `tools/lint_macros.py` | typed `nbt { }` macro arguments + `PackValidator` |
-| `tools/keep_loose_files.py` | no loose files ship; changelog and READMEs live in the docs |
+| `tools/lint_macros.py` | typed `nbt { }` macro arguments + `PackValidator`, which also took over its "macro line with no `$(variable)`" check |
+| `tools/keep_loose_files.py` | `Main.kt` copies the two loose files that ship, `updater.py` and `CHANGELOG.md`, into the pack folder; module READMEs live in the docs |
 | `tools/settings_gen.py` | `ra.settings.gen` |

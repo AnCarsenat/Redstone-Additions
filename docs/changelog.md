@@ -2,7 +2,7 @@
 
 This page mirrors key datapack milestones from the main project changelog.
 
-## Unreleased
+## v6.0.0 (2026-11-07) — Kore rewrite
 
 **Supported version:** 26.3 (data pack format 121).
 

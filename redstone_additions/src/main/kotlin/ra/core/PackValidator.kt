@@ -16,7 +16,8 @@ object PackValidator {
 	private val call = Regex("""function (#?)([a-z0-9_.-]+):([a-z0-9_./$()-]+)""")
 	private val ownNamespaces = Ns.entries.filter { it != Ns.MINECRAFT }.map { it.id }.toSet()
 
-	private val macroVariable = Regex("""\$\([A-Za-z_][A-Za-z_0-9]*\)""")
+	// Minecraft accepts names that start with a digit (`$(1a)`), so no letter-first rule here.
+	private val macroVariable = Regex("""\$\([A-Za-z0-9_]+\)""")
 
 	/**
 	 * A line starting with `$` must contain at least one `$(name)`. One that does not raises
@@ -69,7 +70,7 @@ object PackValidator {
 					add("advancement ${adv.namespace ?: pack.name}:${adv.fileName}: reward function ${fn.asId()} is never defined")
 			}
 			for (fn in all) for (line in fn.lines) {
-				if (line.startsWith("#")) continue
+				if (line.trimStart().startsWith("#")) continue
 				for (m in call.findAll(line)) {
 					val (isTag, ns, path) = m.destructured
 					if (ns !in ownNamespaces || "$" in path) continue

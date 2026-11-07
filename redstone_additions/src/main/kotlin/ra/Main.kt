@@ -10,8 +10,13 @@ import java.io.File
  */
 fun main() {
 	val output = System.getProperty("kore.output") ?: "out"
+	// Checked before generating, so a missing file never leaves a half-written pack behind.
+	val loose = LOOSE_FILES.map { File(it) }.onEach {
+		check(it.isFile) { "${it.name} not found in ${File("").absolutePath}; it ships inside the pack" }
+	}
 	RedstoneAdditions.build(output).generate()
-	shipLooseFiles(File(output, RedstoneAdditions.PACK_NAME))
+	val pack = File(output, RedstoneAdditions.PACK_NAME)
+	loose.forEach { it.copyTo(File(pack, it.name), overwrite = true) }
 }
 
 /**
@@ -22,11 +27,3 @@ fun main() {
  * relative to the project directory, which is the working directory under the Gradle plugin.
  */
 private val LOOSE_FILES = listOf("updater.py", "CHANGELOG.md")
-
-private fun shipLooseFiles(pack: File) {
-	for (name in LOOSE_FILES) {
-		val source = File(name)
-		check(source.isFile) { "$name not found in ${File("").absolutePath}; it ships inside the pack" }
-		source.copyTo(File(pack, name), overwrite = true)
-	}
-}

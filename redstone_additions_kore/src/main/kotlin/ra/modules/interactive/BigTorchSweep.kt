@@ -1,11 +1,7 @@
 package ra.modules.interactive
 
 import io.github.ayfri.kore.arguments.types.resources.FunctionArgument
-import io.github.ayfri.kore.commands.function
 import io.github.ayfri.kore.functions.Function
-import io.github.ayfri.kore.utils.nbt
-import io.github.ayfri.kore.utils.set
-import ra.api.RaLib
 import ra.core.Ns
 import ra.core.Obj
 import ra.core.Ra
@@ -13,6 +9,9 @@ import ra.core.define
 import ra.core.raw
 import io.github.ayfri.kore.arguments.types.literals.literal
 import io.github.ayfri.kore.commands.scoreboard.scoreboard
+import ra.core.callWith
+import ra.core.block.particleViewersSel
+import ra.core.block.readProperty
 
 /**
  * The Big Torch's mob denial: `blocks/big_torch/sweep` and `sweep_at`.
@@ -49,7 +48,7 @@ object BigTorchSweep {
 
 	/** One torch's sweep. As the torch marker, at the torch position. */
 	private fun Function.sweep() {
-		function(RaLib.Util.property, nbt { this["name"] = "radius"; this["default"] = 16; this["min"] = 1 })
+		readProperty("radius", default = 16, min = 1)
 
 		// THE 100-BLOCK CEILING IS WRITTEN BACK, NOT ONLY APPLIED. The selector cost is the reason
 		// for it: `distance` describes a sphere, so doubling the radius is eight times the volume
@@ -86,7 +85,7 @@ object BigTorchSweep {
 		// Count first, because the drop below is what makes them stop matching.
 		raw("\$execute store result score #bt.killed ${Obj.TEMP} run execute if entity $unseen")
 
-		raw("\$execute as $unseen at @s run particle minecraft:smoke ~ ~0.5 ~ 0.2 0.3 0.2 0.01 6 normal @a[distance=..24,scores={${Obj.USER_PARTICLES}=1..}]")
+		raw("\$execute as $unseen at @s run particle minecraft:smoke ~ ~0.5 ~ 0.2 0.3 0.2 0.01 6 normal ${particleViewersSel(24)}")
 
 		// DROPPED INTO THE VOID RATHER THAN KILLED. A kill fires the death, which means drops and
 		// experience at the torch: a Big Torch in a dark room was a passive mob farm that also lit

@@ -11,6 +11,11 @@ import ra.core.define
 import ra.core.raw
 import io.github.ayfri.kore.arguments.types.literals.self
 import io.github.ayfri.kore.commands.tag
+import ra.core.executeRun
+import ra.core.executeStoreRun
+import ra.core.callWith
+import ra.core.macroCall
+import ra.core.Tag
 
 /**
  * How an Item Pipe moves a stack: forward (`transfer`), or sideways after a filter match
@@ -34,7 +39,7 @@ object ItemPipeTransfer {
 
 	/** `#ra_lib:containers` that is not a vanilla dispenser (which would fire what it is given). */
 	private const val NOT_VANILLA_DISPENSER =
-		"if block ~ ~ ~ minecraft:dispenser unless entity @e[type=marker,tag=ra.custom_block,distance=..0.75,limit=1,sort=nearest]"
+		"if block ~ ~ ~ minecraft:dispenser unless entity @e[type=marker,tag=${Tag.CUSTOM_BLOCK},distance=..0.75,limit=1,sort=nearest]"
 
 	/** Defines the six functions; returns `check_filter` and `transfer`, which `process` calls. */
 	fun Ra.registerItemPipeTransfer(): Pair<FunctionArgument, FunctionArgument> {
@@ -101,7 +106,7 @@ object ItemPipeTransfer {
 		raw("execute $NOT_VANILLA_DISPENSER run return 0")
 
 		// Fast path: the whole stack in one move when the destination has a free slot.
-		if (macro) raw("\$execute store result score #stack ${Obj.TEMP} run function ${moveStack.asId()} {sx:\"\$(sx)\"}")
+		if (macro) raw("\$execute store result score #stack ${Obj.TEMP} run ${macroCall(moveStack, "{sx:\"\$(sx)\"}")}")
 		else executeStoreRun("", "#stack", moveStack, "{sx:\"^ ^ ^-1\"}")
 		raw("execute if score #stack ${Obj.TEMP} matches 1 run return 1")
 

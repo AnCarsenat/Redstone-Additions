@@ -32,6 +32,14 @@ import io.github.ayfri.kore.commands.scoreboard.scoreboard
 import ra.core.block.breakCheck
 import ra.core.block.finishPlacement
 import ra.core.blockRegisterMessage
+import ra.core.block.forEachMarker
+import ra.core.block.breakSound
+import ra.core.block.placementGuard
+import ra.core.block.dropItem
+import ra.core.block.recipeResult
+import ra.core.block.shapedRecipe
+import io.github.ayfri.kore.features.recipes.types.pattern
+import io.github.ayfri.kore.features.recipes.types.key
 
 /**
  * Big Torch: an end rod drawn as an oversized torch that denies its area to hostile mobs that
@@ -54,13 +62,11 @@ object BigTorch {
 		pack.specGive(block, item)
 		// Crafted from the Enchanted Coal Block (a barrier, see EnchantedCoal) and a stick. The beet
 		// pack gave it no unlock advancement and no recipe notification; kept that way.
-		pack.shapedRecipe(
-			block.ns.id, block.id, item,
-			pattern = listOf("B", "S"),
-			keys = listOf("B" to listOf(Items.BARRIER), "S" to listOf(Items.STICK)),
-			count = 1,
-			notify = false,
-		)
+		pack.shapedRecipe(block.ns, block.id, item.recipeResult(), unlock = null, notify = false) {
+			pattern("B", "S")
+			key("B", listOf(Items.BARRIER))
+			key("S", listOf(Items.STICK))
+		}
 
 		pack.entityTypeTag(SPAWN_BLOCKED, Ns.INTERACTIVE.id) {
 			for (e in listOf(
@@ -85,9 +91,12 @@ object BigTorch {
 		// it killed whatever end rod happened to be within two blocks of wherever the tick function
 		// stood -- never the one that had just dropped out of the torch. Breaking a Big Torch handed
 		// back both the item and an end rod.
+		//
+		// Hand-composed rather than blockOnBreak: the skin is cleared AFTER the sound, and
+		// blockOnBreak runs its cleanup first.
 		val onBreak = pack.define(block.fn("on_break")) {
 			killVanillaDrop(block.physical)
-			dropSpec(item)
+			dropItem(item)
 			breakSound(listenersOnly = true)
 			function(RaLib.Skin.clear, nbt { this["id"] = block.id })
 			kill(self())
@@ -115,7 +124,7 @@ object BigTorch {
 
 	/** As the spawned bat, at its position. */
 	private fun Function.handlePlacement() {
-		placeGuard(block)
+		placementGuard(block, checkExisting = false)
 		// An end rod, and always standing up.
 		//
 		// dir_type 0 places the block plain, and an end rod's default facing is `up`, so vertical

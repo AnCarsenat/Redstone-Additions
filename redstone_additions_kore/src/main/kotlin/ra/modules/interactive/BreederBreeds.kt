@@ -9,6 +9,7 @@ import ra.core.define
 import ra.core.raw
 import io.github.ayfri.kore.commands.scoreboard.scoreboard
 import io.github.ayfri.kore.arguments.types.literals.self
+import ra.core.executeRun
 
 /**
  * The Breeder's food table: `blocks/breeder/try_breed` and one `blocks/breeder/breed/<name>`

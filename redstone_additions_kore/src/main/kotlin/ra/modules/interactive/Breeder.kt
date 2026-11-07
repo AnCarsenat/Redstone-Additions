@@ -5,7 +5,6 @@ import io.github.ayfri.kore.arguments.types.literals.self
 import io.github.ayfri.kore.commands.execute.execute
 import io.github.ayfri.kore.commands.function
 import ra.core.block.markers
-import io.github.ayfri.kore.commands.kill
 import io.github.ayfri.kore.features.tags.entityTypeTag
 import io.github.ayfri.kore.functions.Function
 import io.github.ayfri.kore.generated.Blocks
@@ -20,7 +19,6 @@ import ra.core.Ra
 import ra.core.Tag
 import ra.core.block.CustomBlock
 import ra.core.block.gogglesHeader
-import ra.core.block.killVanillaDrop
 import ra.core.block.placeBlock
 import ra.core.define
 import ra.core.raw
@@ -31,6 +29,21 @@ import io.github.ayfri.kore.commands.scoreboard.scoreboard
 import ra.core.block.breakCheck
 import ra.core.block.finishPlacement
 import ra.core.blockRegisterMessage
+import ra.core.executeRun
+import ra.core.callWith
+import ra.core.macroCall
+import ra.core.block.placementGuard
+import ra.core.block.dropItem
+import ra.core.block.blockOnBreak
+import ra.core.block.STONE_BREAK_SOUND
+import ra.core.block.Unlock
+import ra.core.block.recipeResult
+import ra.core.block.shapedRecipe
+import ra.core.block.markerSel
+import ra.core.block.soundListenersSel
+import ra.core.block.particleViewersSel
+import io.github.ayfri.kore.features.recipes.types.pattern
+import io.github.ayfri.kore.features.recipes.types.key
 
 /**
  * Breeder: feeds the animals in front of it from its own inventory while powered.
@@ -59,12 +72,13 @@ object Breeder {
 		block(block)
 		pack.blockRegisterMessage(block)
 		pack.specGive(block, item)
-		pack.shapedRecipe(
-			block.ns.id, block.id, item,
-			pattern = listOf("CCC", "ADK", "CCC"),
-			keys = listOf("C" to listOf(Items.COBBLESTONE), "A" to listOf(Items.APPLE), "D" to listOf(Items.DISPENSER), "K" to listOf(Items.COPPER_INGOT)),
-			unlock = has(Items.DISPENSER),
-		)
+		pack.shapedRecipe(block.ns, block.id, item.recipeResult(), Unlock(Items.DISPENSER), count = null) {
+			pattern("CCC", "ADK", "CCC")
+			key("C", listOf(Items.COBBLESTONE))
+			key("A", listOf(Items.APPLE))
+			key("D", listOf(Items.DISPENSER))
+			key("K", listOf(Items.COPPER_INGOT))
+		}
 
 		pack.entityTypeTag("breedable", Ns.INTERACTIVE.id) {
 			for (e in listOf(
@@ -85,7 +99,7 @@ object Breeder {
 		pack.define(breedSuccessBucket) { breedSuccess(bucket = true) }
 		pack.define(consumeItem) {
 			// Macro `{breed_item}`: the item id without its `minecraft:` prefix.
-			raw("\$function ${RaLib.Inventory.remove.asId()} {id:\"minecraft:\$(breed_item)\",count:1}")
+			raw("\$${macroCall(RaLib.Inventory.remove)} {id:\"minecraft:\$(breed_item)\",count:1}")
 		}
 		pack.define(dropItems) { dropItems() }
 		registerBreederBreeds()
@@ -94,20 +108,15 @@ object Breeder {
 		// killed whatever barrel happened to be within two blocks of wherever the tick function
 		// stood -- never the one that had just dropped out of this block. Breaking one handed back
 		// both items.
-		val onBreak = pack.define(block.fn("on_break")) {
+		val onBreak = pack.blockOnBreak(block, drop = { dropItem(item) }, sound = STONE_BREAK_SOUND, cloud = true) {
 			function(RaLib.Skin.clear, nbt { this["id"] = block.id })
-			killVanillaDrop(block.physical)
-			dropSpec(item)
-			breakSound()
-			breakCloud()
-			kill(self())
 		}
 
 		pack.define(block.tick) {
 			breakCheck(block, Blocks.BARREL, onBreak)
 
 			// Repaint the skin if it has gone missing.
-			executeRun("as @e[type=marker,tag=${block.tag}] at @s align xyz positioned ~0.5 ~0.5 ~0.5 unless entity @e[type=block_display,tag=ra.skin.breeder,distance=..0.4,limit=1]", refreshDisplay)
+			executeRun("as ${block.markerSel()} at @s align xyz positioned ~0.5 ~0.5 ~0.5 unless entity @e[type=block_display,tag=ra.skin.breeder,distance=..0.4,limit=1]", refreshDisplay)
 
 			// A barrel has no `triggered` state to read, so the redstone is read directly.
 			// ra_lib:redstone/any is the cheap reader: it stops at the first live side.
@@ -123,7 +132,7 @@ object Breeder {
 
 	/** As the spawned bat, at its position. */
 	private fun Function.handlePlacement() {
-		placeGuard(block)
+		placementGuard(block, checkExisting = false)
 		placeBlock(block)
 		executeRun("at @e[type=marker,tag=${block.tag},tag=${Tag.NEW},limit=1,sort=nearest]", refreshDisplay)
 		finishPlacement(block, removePlaceTag = false, withinBlock = false)
@@ -148,8 +157,8 @@ object Breeder {
 	 * container; the bucket one turns the tropical fish bucket back into a water bucket.
 	 */
 	private fun Function.breedSuccess(bucket: Boolean) {
-		raw("playsound minecraft:entity.experience_orb.pickup block @a[distance=..8,scores={${Obj.USER_SOUND}=1..}] ^ ^ ^1 0.5 1.2")
-		raw("particle minecraft:heart ^ ^ ^1 0.5 0.5 0.5 0.02 5 normal @a[scores={${Obj.USER_PARTICLES}=1..}]")
+		raw("playsound minecraft:entity.experience_orb.pickup block ${soundListenersSel(8)} ^ ^ ^1 0.5 1.2")
+		raw("particle minecraft:heart ^ ^ ^1 0.5 0.5 0.5 0.02 5 normal ${particleViewersSel()}")
 		if (bucket) raw("""data modify block ~ ~ ~ Items[{id:"minecraft:tropical_fish_bucket"}].id set value "minecraft:water_bucket"""")
 		else callWith(consumeItem, "storage ra:temp")
 		// Mark success: the rest of try_breed is skipped.

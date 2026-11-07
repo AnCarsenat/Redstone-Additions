@@ -13,7 +13,6 @@ import ra.api.RaLib
 import ra.core.Ns
 import ra.core.Obj
 import ra.core.Ra
-import ra.core.Tag
 import ra.core.block.CustomBlock
 import ra.core.block.gogglesHeader
 import ra.core.block.killVanillaDrop
@@ -27,6 +26,21 @@ import io.github.ayfri.kore.commands.tag
 import ra.core.block.breakCheck
 import ra.core.block.finishPlacement
 import ra.core.blockRegisterMessage
+import ra.core.executeRun
+import ra.core.executeStoreRun
+import ra.core.block.forEachMarker
+import ra.core.block.breakSound
+import ra.core.block.breakCloud
+import ra.core.block.placementGuard
+import ra.core.block.dropItem
+import ra.core.block.Unlock
+import ra.core.block.recipeResult
+import ra.core.block.shapedRecipe
+import ra.core.block.markerSel
+import ra.core.block.newMarkerSel
+import ra.core.block.setOnNew
+import io.github.ayfri.kore.features.recipes.types.pattern
+import io.github.ayfri.kore.features.recipes.types.key
 
 /**
  * Item Pipe: a dispenser that pushes its first stack into the container in front, or into a side
@@ -46,23 +60,24 @@ object ItemPipe {
 		block(block)
 		pack.blockRegisterMessage(block)
 		pack.specGive(block, item)
-		pack.shapedRecipe(
-			block.ns.id, block.id, item,
-			pattern = listOf("CCC", "IHI", "CCC"),
-			keys = listOf("I" to listOf(Items.COPPER_INGOT), "H" to listOf(Items.HOPPER), "C" to listOf(Items.COBBLESTONE)),
-			count = 8,
-			unlock = has(Items.HOPPER),
-		)
+		pack.shapedRecipe(block.ns, block.id, item.recipeResult(), Unlock(Items.HOPPER), count = 8) {
+			pattern("CCC", "IHI", "CCC")
+			key("I", listOf(Items.COPPER_INGOT))
+			key("H", listOf(Items.HOPPER))
+			key("C", listOf(Items.COBBLESTONE))
+		}
 
 		pack.define(block.handlePlacement) { handlePlacement() }
 		pack.define(block.goggles) { goggles() }
 		val (checkFilter, transfer) = registerItemPipeTransfer()
 		pack.define(process) { process(checkFilter, transfer) }
 
+		// Hand-composed rather than blockOnBreak: the pipe leaves its network AFTER the break
+		// effects, and blockOnBreak runs its cleanup first.
 		val onBreak = pack.define(block.fn("on_break")) {
 			killVanillaDrop(block.physical)
 			dropFirstSlot()
-			dropSpec(item)
+			dropItem(item)
 			breakSound()
 			breakCloud()
 			function(RaLib.Transport.Net.leave)
@@ -71,12 +86,12 @@ object ItemPipe {
 
 		pack.define(block.tick) {
 			// Keep marker anchors snapped to centred block coordinates.
-			raw("execute as @e[type=marker,tag=${block.tag}] at @s align xyz positioned ~0.5 ~0.5 ~0.5 run tp @s ~ ~ ~")
+			raw("execute as ${block.markerSel()} at @s align xyz positioned ~0.5 ~0.5 ~0.5 run tp @s ~ ~ ~")
 
 			breakCheck(block, Blocks.DISPENSER, onBreak)
 
 			// Clear the per-tick chain traversal tags.
-			raw("tag @e[type=marker,tag=${block.tag},tag=$VISITED] remove $VISITED")
+			raw("tag ${block.markerSel("tag=$VISITED")} remove $VISITED")
 
 			forEachMarker(block, process)
 		}
@@ -84,10 +99,10 @@ object ItemPipe {
 
 	/** As the spawned bat, at its position. */
 	private fun Function.handlePlacement() {
-		placeGuard(block)
+		placementGuard(block, checkExisting = false)
 		placeBlock(block)
 
-		val fresh = "@e[type=marker,tag=${block.tag},tag=${Tag.NEW},distance=..0.5,sort=nearest,limit=1]"
+		val fresh = block.newMarkerSel()
 
 		// Snap the marker to centred world-grid coordinates.
 		raw("execute as $fresh at @s align xyz positioned ~0.5 ~0.5 ~0.5 run tp @s ~ ~ ~")
@@ -100,7 +115,7 @@ object ItemPipe {
 		// block actually has -- props/render returns before drawing when the name is missing -- so
 		// an absent filter_item meant a pipe with no way to set one. Empty string is the
 		// "no filter" value, which check_filter tests for.
-		raw("data modify entity $fresh data.properties.filter_item set value \"\"")
+		setOnNew(block, "data.properties.filter_item", "\"\"")
 
 		finishPlacement(block, removePlaceTag = false, withinBlock = false)
 	}

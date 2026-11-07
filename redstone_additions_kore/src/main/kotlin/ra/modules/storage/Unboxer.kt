@@ -22,17 +22,25 @@ import ra.core.raw
 import ra.core.item.loreItem
 import ra.core.item.loreLine
 import ra.modules.interactive.CHEST_HALVES
-import ra.modules.interactive.breakCloud
-import ra.modules.interactive.breakSound
-import ra.modules.interactive.dropSpec
-import ra.modules.interactive.executeRun
-import ra.modules.interactive.has
-import ra.modules.interactive.shapedRecipe
 import ra.modules.interactive.specGive
 import io.github.ayfri.kore.arguments.types.literals.literal
 import io.github.ayfri.kore.commands.scoreboard.scoreboard
 import ra.core.block.breakCheck
 import ra.core.blockRegisterMessage
+import ra.core.executeRun
+import ra.core.macroCall
+import ra.modules.interactive.hopperCooldown
+import ra.core.block.breakSound
+import ra.core.block.breakCloud
+import ra.core.block.dropItem
+import ra.core.block.Unlock
+import ra.core.block.recipeResult
+import ra.core.block.shapedRecipe
+import ra.core.block.markerSel
+import ra.core.block.soundListenersSel
+import ra.core.block.particleViewersSel
+import io.github.ayfri.kore.features.recipes.types.pattern
+import io.github.ayfri.kore.features.recipes.types.key
 
 /**
  * Unboxer: while powered, empties one Item Crate from `input1` into `output1`, completely.
@@ -54,12 +62,13 @@ object Unboxer {
 		block(block)
 		pack.blockRegisterMessage(block)
 		pack.specGive(block, item)
-		pack.shapedRecipe(
-			block.ns.id, block.id, item,
-			pattern = listOf("III", "RDR", "PPP"),
-			keys = listOf("I" to listOf(Items.IRON_INGOT), "R" to listOf(Items.REDSTONE), "D" to listOf(Items.DISPENSER), "P" to listOf(Items.PAPER)),
-			unlock = has(Items.DISPENSER),
-		)
+		pack.shapedRecipe(block.ns, block.id, item.recipeResult(), Unlock(Items.DISPENSER), count = null) {
+			pattern("III", "RDR", "PPP")
+			key("I", listOf(Items.IRON_INGOT))
+			key("R", listOf(Items.REDSTONE))
+			key("D", listOf(Items.DISPENSER))
+			key("P", listOf(Items.PAPER))
+		}
 
 		pack.define(block.handlePlacement) {
 			// Lay the dispenser skin over the barrel once the IO is seeded.
@@ -75,9 +84,11 @@ object Unboxer {
 			function(RaLib.Skin.apply, nbt { this["real"] = block.physical; this["skin"] = block.model; this["id"] = block.id })
 		}
 
+		// Hand-composed rather than blockOnBreak: the skin is cleared AFTER the break effects, and
+		// blockOnBreak runs its cleanup first.
 		val onBreak = pack.define(block.fn("on_break")) {
 			killVanillaDrop(block.physical)
-			dropSpec(item)
+			dropItem(item)
 			breakSound()
 			breakCloud()
 			function(RaLib.Skin.clear, nbt { this["id"] = block.id })
@@ -99,13 +110,13 @@ object Unboxer {
 			// of adjacent Unboxers could settle with one skin between them and never fix it. This
 			// also drives the migration off the old corner anchor: a pre-centre skin is 0.866 away,
 			// fails this test, and the refresh it triggers replaces it.
-			executeRun("as @e[type=marker,tag=${block.tag}] at @s align xyz positioned ~0.5 ~0.5 ~0.5 unless entity @e[type=block_display,tag=ra.skin.unboxer,distance=..0.4,limit=1]", refreshDisplay)
+			executeRun("as ${block.markerSel()} at @s align xyz positioned ~0.5 ~0.5 ~0.5 unless entity @e[type=block_display,tag=ra.skin.unboxer,distance=..0.4,limit=1]", refreshDisplay)
 
-			executeRun("as @e[type=marker,tag=${block.tag}] at @s", RaLib.Redstone.detectSwitch)
+			executeRun("as ${block.markerSel()} at @s", RaLib.Redstone.detectSwitch)
 			// Powered to run, as originally designed. The redstone lock introduced earlier only
 			// existed to avoid arming the vanilla dispenser trigger; a barrel has no such trigger, so
 			// there is no reason to invert the control.
-			executeRun("as @e[type=marker,tag=${block.tag},tag=${Tag.POWERED}] at @s", process, "with entity @s data.properties")
+			executeRun("as ${block.markerSel("tag=${Tag.POWERED}")} at @s", process, "with entity @s data.properties")
 		}
 	}
 
@@ -121,15 +132,13 @@ object Unboxer {
 	 */
 	private fun Function.process() {
 		// Hopper-like cooldown.
-		raw("execute unless score @s ${Obj.COOLDOWN} matches -2147483648.. run scoreboard players set @s ${Obj.COOLDOWN} 0")
-		scoreboard.players.add(self(), Obj.COOLDOWN, 1)
-		raw("execute if score @s ${Obj.COOLDOWN} matches ..3 run return 0")
+		hopperCooldown()
 
 		raw("\$execute positioned \$(input1) unless block ~ ~ ~ #ra_lib:containers run return 0")
 		raw("\$execute positioned \$(output1) unless block ~ ~ ~ #ra_lib:containers run return 0")
 
 		// One candidate crate from input1 (or the partner chest half).
-		raw("\$execute positioned \$(input1) run function ${ModulesApi.Interactive.itemMoverSelectInput.asId()}")
+		raw("\$execute positioned \$(input1) run ${macroCall(ModulesApi.Interactive.itemMoverSelectInput)}")
 		raw("execute if score #mover_has_input ${Obj.TEMP} matches 0 run return 0")
 
 		// Only crates (new key or legacy key). An already-empty crate is accepted too, so it gets
@@ -142,15 +151,15 @@ object Unboxer {
 		raw("\$data modify storage ra:temp unboxer.output set value \"\$(output1)\"")
 		scoreboard.players.set(literal("#unboxer_moved"), Obj.TEMP, 0)
 
-		raw("\$execute positioned \$(input1) run execute if score #mover_input_partner ${Obj.TEMP} matches 0 run function ${StorageBox.emptyCrateHere.asId()}")
-		raw("\$execute positioned \$(input1) if score #mover_input_partner ${Obj.TEMP} matches 1 run function ${partner.asId()}")
+		raw("\$execute positioned \$(input1) run execute if score #mover_input_partner ${Obj.TEMP} matches 0 run ${macroCall(StorageBox.emptyCrateHere)}")
+		raw("\$execute positioned \$(input1) if score #mover_input_partner ${Obj.TEMP} matches 1 run ${macroCall(partner)}")
 
 		raw("data remove storage ra:temp unboxer")
 		raw("execute if score #unboxer_moved ${Obj.TEMP} matches 0 run return 0")
 
 		scoreboard.players.set(self(), Obj.COOLDOWN, 0)
-		raw("playsound minecraft:block.wood.break block @a[distance=..16,scores={${Obj.USER_SOUND}=1..}] ~ ~ ~ 0.8 1.1")
-		raw("particle minecraft:cloud ~ ~0.2 ~ 0.2 0.2 0.2 0.01 5 normal @a[scores={${Obj.USER_PARTICLES}=1..}]")
+		raw("playsound minecraft:block.wood.break block ${soundListenersSel()} ~ ~ ~ 0.8 1.1")
+		raw("particle minecraft:cloud ~ ~0.2 ~ 0.2 0.2 0.2 0.01 5 normal ${particleViewersSel()}")
 	}
 
 	/**

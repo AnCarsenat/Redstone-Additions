@@ -7,13 +7,17 @@ import ra.core.Ns
 import ra.core.Ra
 import ra.core.define
 import ra.core.hook
-import ra.core.ref
+import ra.api.ModulesApi
 import ra.modules.enchanting.EnchantingModule
 import ra.modules.enchanting.sacrificeRecipe
 import ra.core.item.flag
 import ra.core.item.itemSpec
 import ra.core.item.loreLine
 import ra.core.item.raData
+import ra.core.block.recipeResult
+import ra.core.block.shapedRecipe
+import io.github.ayfri.kore.features.recipes.types.pattern
+import io.github.ayfri.kore.features.recipes.types.key
 
 /**
  * Enchanted Coal and the Enchanted Coal Block, the way to the Big Torch: coal sacrificed at an
@@ -45,7 +49,7 @@ object EnchantedCoal {
 	}
 
 	/** Sacrifice recipes for this module. Input: storage ra:enchant input (see ra_enchanting). */
-	val enchantRecipes = ref(Ns.INTERACTIVE, "enchant_recipes")
+	val enchantRecipes = ModulesApi.Interactive.enchantRecipes
 
 	fun Ra.registerEnchantedCoal() {
 		pack.define(enchantRecipes) {
@@ -58,12 +62,11 @@ object EnchantedCoal {
 		pack.hook(Ns.ENCHANTING, EnchantingModule.recipesTag.name, enchantRecipes)
 
 		pack.shapedRecipe(
-			Ns.INTERACTIVE.id, "enchanted_coal_block", coalBlock, resultItem = Items.BARRIER,
-			pattern = listOf("CCC", "CCC", "CCC"),
-			keys = listOf("C" to listOf(Items.STRUCTURE_VOID)),
-			category = RecipeCategory.BUILDING,
-			count = 1,
-			notify = false,
-		)
+			Ns.INTERACTIVE, "enchanted_coal_block", coalBlock.recipeResult(Items.BARRIER), unlock = null,
+			RecipeCategory.BUILDING, notify = false,
+		) {
+			pattern("CCC", "CCC", "CCC")
+			key("C", listOf(Items.STRUCTURE_VOID))
+		}
 	}
 }

@@ -6,8 +6,6 @@ import io.github.ayfri.kore.commands.kill
 import io.github.ayfri.kore.functions.Function
 import io.github.ayfri.kore.generated.Blocks
 import io.github.ayfri.kore.generated.Items
-import io.github.ayfri.kore.utils.nbt
-import io.github.ayfri.kore.utils.set
 import ra.api.RaLib
 import ra.core.Ns
 import ra.core.Obj
@@ -15,7 +13,6 @@ import ra.core.Ra
 import ra.core.Tag
 import ra.core.block.CustomBlock
 import ra.core.block.gogglesHeader
-import ra.core.block.killVanillaDrop
 import ra.core.block.placeBlock
 import ra.core.block.stackReset
 import ra.core.block.stackedDataLine
@@ -30,6 +27,23 @@ import io.github.ayfri.kore.commands.scoreboard.scoreboard
 import ra.core.block.breakCheck
 import ra.core.block.finishPlacement
 import ra.core.blockRegisterMessage
+import ra.core.executeStoreRun
+import ra.core.callWith
+import ra.core.macroCall
+import ra.core.ensureScore
+import ra.core.block.forEachMarker
+import ra.core.block.placementGuard
+import ra.core.block.dropItem
+import ra.core.block.blockOnBreak
+import ra.core.block.STONE_BREAK_SOUND
+import ra.core.block.Unlock
+import ra.core.block.recipeResult
+import ra.core.block.shapedRecipe
+import ra.core.block.soundListenersSel
+import ra.core.block.particleViewersSel
+import ra.core.block.readProperty
+import io.github.ayfri.kore.features.recipes.types.pattern
+import io.github.ayfri.kore.features.recipes.types.key
 
 /** Magic Crate: a barrel that pulls dropped items in from around it, every `cooldown` ticks. */
 object MagicCrate {
@@ -47,15 +61,14 @@ object MagicCrate {
 		block(block)
 		pack.blockRegisterMessage(block)
 		pack.specGive(block, item)
-		pack.shapedRecipe(
-			block.ns.id, block.id, item,
-			pattern = listOf("EPE", "IHI", "ECE"),
-			keys = listOf(
-				"E" to listOf(Items.ENDER_PEARL), "P" to listOf(Items.ENDER_EYE), "I" to listOf(Items.IRON_INGOT),
-				"H" to listOf(Items.HOPPER), "C" to listOf(Items.CHEST),
-			),
-			unlock = has(Items.ENDER_PEARL),
-		)
+		pack.shapedRecipe(block.ns, block.id, item.recipeResult(), Unlock(Items.ENDER_PEARL), count = null) {
+			pattern("EPE", "IHI", "ECE")
+			key("E", listOf(Items.ENDER_PEARL))
+			key("P", listOf(Items.ENDER_EYE))
+			key("I", listOf(Items.IRON_INGOT))
+			key("H", listOf(Items.HOPPER))
+			key("C", listOf(Items.CHEST))
+		}
 
 		pack.define(block.handlePlacement) { handlePlacement() }
 		pack.define(block.goggles) { goggles() }
@@ -68,13 +81,10 @@ object MagicCrate {
 		// killed whatever barrel happened to be within two blocks of wherever the tick function
 		// stood -- never the one that had just dropped out of this block. Breaking one handed back
 		// both items.
-		val onBreak = pack.define(block.fn("on_break")) {
-			killVanillaDrop(block.physical)
-			function(dropAll)
-			dropSpec(item)
-			breakSound()
-			kill(self())
-		}
+		val onBreak = pack.blockOnBreak(
+			block, drop = { dropItem(item) }, sound = STONE_BREAK_SOUND,
+			afterVanillaKill = { function(dropAll) },
+		)
 
 		pack.define(block.tick) {
 			breakCheck(block, Blocks.BARREL, onBreak)
@@ -84,7 +94,7 @@ object MagicCrate {
 
 	/** As the spawned bat, at its position. */
 	private fun Function.handlePlacement() {
-		placeGuard(block)
+		placementGuard(block, checkExisting = false)
 		// dir_type 0: it reaches in every direction, so which way it was placed means nothing and a
 		// facing would only be one more thing to get wrong.
 		//
@@ -142,8 +152,8 @@ object MagicCrate {
 		raw("data modify block ~ ~ ~ Items append from storage ra:interactive mh.stack")
 
 		raw("execute at @s run particle minecraft:portal ~ ~0.2 ~ 0.2 0.2 0.2 0.05 12")
-		raw("particle minecraft:enchant ~ ~1 ~ 0.3 0.3 0.3 0.4 8 normal @a[scores={${Obj.USER_PARTICLES}=1..}]")
-		raw("playsound minecraft:entity.enderman.teleport block @a[distance=..12,scores={${Obj.USER_SOUND}=1..}] ~ ~ ~ 0.2 1.8")
+		raw("particle minecraft:enchant ~ ~1 ~ 0.3 0.3 0.3 0.4 8 normal ${particleViewersSel()}")
+		raw("playsound minecraft:entity.enderman.teleport block ${soundListenersSel(12)} ~ ~ ~ 0.2 1.8")
 
 		scoreboard.players.add(literal("#mh.pulled"), Obj.TEMP, 1)
 		kill(self())
@@ -161,7 +171,7 @@ object MagicCrate {
 	 * clears a pile quickly and never spikes.
 	 */
 	private fun Function.sweep() {
-		raw("\$execute as @e[type=item,distance=..\$(r),sort=nearest,limit=8] run function ${pull.asId()}")
+		raw("\$execute as @e[type=item,distance=..\$(r),sort=nearest,limit=8] run ${macroCall(pull)}")
 	}
 
 	/**
@@ -170,21 +180,20 @@ object MagicCrate {
 	 * THE COOLDOWN GUARD. A score that has never been set reads as ABSENT, and every comparison
 	 * against an absent score is false -- including `matches 1..`, which is how a missing cooldown
 	 * used to mean "fire this tick" and made the block run every tick regardless of what the
-	 * player configured. `matches -2147483648..` is true for any value at all, so `unless` on it is
-	 * the test for "no score yet".
+	 * player configured. [ensureScore] gives it a starting value first.
 	 */
 	private fun Function.tickOne() {
-		raw("execute unless score @s ${Obj.COOLDOWN} matches -2147483648.. run scoreboard players set @s ${Obj.COOLDOWN} 0")
+		ensureScore("@s", Obj.COOLDOWN)
 		scoreboard.players.remove(self(), Obj.COOLDOWN, 1)
 		raw("execute if score @s ${Obj.COOLDOWN} matches 1.. run return 0")
 
-		function(RaLib.Util.property, nbt { this["name"] = "cooldown"; this["default"] = 20; this["min"] = 1 })
+		readProperty("cooldown", default = 20, min = 1)
 		raw("scoreboard players operation @s ${Obj.COOLDOWN} = #prop ${Obj.TEMP}")
 
 		// Radius is clamped at both ends. The floor lives in util/property; the ceiling is here
 		// because a radius the player could raise without limit would turn one block into a
 		// server-wide entity selector.
-		function(RaLib.Util.property, nbt { this["name"] = "radius"; this["default"] = 8; this["min"] = 5 })
+		readProperty("radius", default = 8, min = 5)
 		scoreboard.players.set(literal("#mh.max"), Obj.TEMP, 20)
 		raw("execute if score #prop ${Obj.TEMP} > #mh.max ${Obj.TEMP} run scoreboard players operation #prop ${Obj.TEMP} = #mh.max ${Obj.TEMP}")
 

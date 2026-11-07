@@ -5,6 +5,7 @@ import io.github.ayfri.kore.commands.function
 import io.github.ayfri.kore.commands.scoreboard.scoreboard
 import io.github.ayfri.kore.commands.tag
 import io.github.ayfri.kore.functions.Function
+import ra.core.block.soundListenersSel
 import ra.core.Ns
 import ra.core.Obj
 import ra.core.Ra
@@ -13,7 +14,6 @@ import ra.core.raw
 import ra.core.ref
 import ra.modules.jetpacks.Jp
 import ra.modules.jetpacks.Jp.SELF_IF_SOUND
-import ra.modules.jetpacks.Jp.SOUND_LISTENERS
 
 /** The engine sound, fuel, and handing the player back to vanilla. */
 object Engine {
@@ -52,7 +52,7 @@ object Engine {
 		scoreboard.players.set(self(), Jp.SND, 0)
 
 		raw("stopsound @a[distance=..20] player $ENGINE")
-		raw("playsound $ENGINE player $SOUND_LISTENERS ~ ~ ~ 0.35 0.6")
+		raw("playsound $ENGINE player ${soundListenersSel()} ~ ~ ~ 0.35 0.6")
 	}
 
 	/**

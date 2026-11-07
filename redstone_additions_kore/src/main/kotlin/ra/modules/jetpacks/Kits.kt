@@ -1,18 +1,17 @@
 package ra.modules.jetpacks
 
 import io.github.ayfri.kore.arguments.types.resources.ItemArgument
-import io.github.ayfri.kore.features.recipes.recipesBuilder
 import io.github.ayfri.kore.features.recipes.types.CraftingShaped
 import io.github.ayfri.kore.features.recipes.types.RecipeCategory
 import io.github.ayfri.kore.functions.Function
-import io.github.ayfri.kore.features.recipes.types.craftingShaped
 import io.github.ayfri.kore.features.recipes.types.key
 import io.github.ayfri.kore.features.recipes.types.pattern
-import io.github.ayfri.kore.features.recipes.types.result
 import io.github.ayfri.kore.generated.Items
 import ra.core.Ns
 import ra.core.Ra
-import ra.core.block.recipeUnlock
+import ra.core.block.Unlock
+import ra.core.block.recipeResult
+import ra.core.block.shapedRecipe
 import ra.core.define
 import ra.core.raw
 import ra.core.ref
@@ -163,13 +162,7 @@ object Kits {
 		count: Short? = null,
 		shape: CraftingShaped.() -> Unit,
 	) {
-		val recipe = pack.recipesBuilder.craftingShaped(name, Ns.JETPACKS.id) {
-			category = RecipeCategory.EQUIPMENT
-			shape()
-			result(Items.FIREWORK_STAR, count) { kit.applyTo(this) }
-			showNotification = true
-		}
-		pack.recipeUnlock(name, Ns.JETPACKS.id, recipe, unlockedBy)
+		pack.shapedRecipe(Ns.JETPACKS, name, kit.recipeResult(Items.FIREWORK_STAR), Unlock(unlockedBy), RecipeCategory.EQUIPMENT, count, shape = shape)
 	}
 }
 

@@ -7,6 +7,7 @@ import io.github.ayfri.kore.commands.function
 import io.github.ayfri.kore.commands.scoreboard.scoreboard
 import io.github.ayfri.kore.functions.Function
 import io.github.ayfri.kore.generated.Tags
+import ra.core.block.particleViewersSel
 import ra.core.Ns
 import ra.core.Obj
 import ra.core.Ra
@@ -14,7 +15,6 @@ import ra.core.define
 import ra.core.raw
 import ra.core.ref
 import ra.modules.jetpacks.Jp
-import ra.modules.jetpacks.Jp.PARTICLE_VIEWERS
 import ra.modules.jetpacks.Jp.tmp
 import ra.modules.jetpacks.Kits
 import ra.modules.jetpacks.mode.Modes
@@ -127,8 +127,8 @@ object Hover {
 		// Idle wash: the thrusters are holding the player's weight even standing still, so the
 		// smoke never stops. Count 0 turns the delta into a velocity, which is the only way to make
 		// campfire smoke fall instead of rise.
-		raw("particle minecraft:campfire_cosy_smoke ~0.15 ~-0.2 ~0.15 0 -1 0 0.08 0 normal $PARTICLE_VIEWERS")
-		raw("particle minecraft:campfire_cosy_smoke ~-0.15 ~-0.2 ~-0.15 0 -1 0 0.08 0 normal $PARTICLE_VIEWERS")
+		raw("particle minecraft:campfire_cosy_smoke ~0.15 ~-0.2 ~0.15 0 -1 0 0.08 0 normal ${particleViewersSel()}")
+		raw("particle minecraft:campfire_cosy_smoke ~-0.15 ~-0.2 ~-0.15 0 -1 0 0.08 0 normal ${particleViewersSel()}")
 
 		// Under thrust: the same smoke, more of it and pushed harder. No end rods -- the white
 		// streaks read as glitch geometry rather than exhaust.

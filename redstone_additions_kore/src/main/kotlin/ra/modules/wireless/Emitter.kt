@@ -1,10 +1,6 @@
 package ra.modules.wireless
 
-import io.github.ayfri.kore.arguments.types.literals.self
-import io.github.ayfri.kore.commands.execute.execute
 import io.github.ayfri.kore.commands.function
-import io.github.ayfri.kore.commands.returnValue
-import io.github.ayfri.kore.commands.tag
 import io.github.ayfri.kore.features.recipes.types.key
 import io.github.ayfri.kore.features.recipes.types.pattern
 import io.github.ayfri.kore.generated.Blocks
@@ -16,7 +12,6 @@ import ra.core.TagRoute
 import ra.core.block.CustomBlock
 import ra.core.block.blockGive
 import ra.core.block.gogglesHeader
-import ra.core.block.markers
 import ra.core.block.placeBlock
 import ra.core.block.propLine
 import ra.core.define
@@ -28,11 +23,14 @@ import ra.core.block.Unlock
 import ra.core.block.blockOnBreak
 import ra.core.block.dropItem
 import ra.core.block.STONE_BREAK_SOUND
-import ra.core.block.breakCheck
 import ra.core.blockRegisterMessage
 import ra.core.block.placementGuard
 import ra.core.block.setOnNew
-import ra.core.block.clearNewTag
+import ra.core.block.finishPlacement
+import ra.core.Tag
+import ra.core.block.blockTick
+import ra.core.block.BreakTest
+import ra.core.block.forEachMarker
 
 /**
  * Wireless Emitter: transmits its redstone input to every receiver on the same `channel` string.
@@ -48,7 +46,6 @@ object Emitter {
 
 	private val process = block.fn("process")
 	val toggle = block.fn("toggle")
-	val registerBlock = block.fn("register_block")
 
 	fun Ra.registerEmitter() {
 		block(block)
@@ -70,10 +67,8 @@ object Emitter {
 			// Default channel (a string) and enabled state.
 			setOnNew(block, "data.properties.channel", "\"default\"")
 			setOnNew(block, "data.properties.enabled", "1b")
-			clearNewTag(block)
-			// Remove the placement tag.
-			tag(self()) { remove(block.placeTag) }
-			returnValue(1)
+			// Remove ra.new and the placement tag.
+			finishPlacement(block)
 		}
 
 		// As the marker, at its position.
@@ -87,8 +82,8 @@ object Emitter {
 			raw("execute unless data entity @s data.properties{enabled:1b} run return 0")
 
 			// If powered, tag as transmitting.
-			raw("execute if entity @s[tag=ra.powered] run tag @s add $TRANSMITTING")
-			raw("execute unless entity @s[tag=ra.powered] run tag @s remove $TRANSMITTING")
+			raw("execute if entity @s[tag=${Tag.POWERED}] run tag @s add $TRANSMITTING")
+			raw("execute unless entity @s[tag=${Tag.POWERED}] run tag @s remove $TRANSMITTING")
 		}
 
 		// Toggle enabled (called by the wrench, as the marker).
@@ -100,14 +95,7 @@ object Emitter {
 		}
 
 		val onBreak = pack.blockOnBreak(block, drop = { dropItem(item) }, sound = STONE_BREAK_SOUND, cloud = true)
-		pack.define(block.tick) {
-			// Break detection: the emitter is end stone bricks, anything else means it is gone.
-			breakCheck(block, Blocks.END_STONE_BRICKS, onBreak)
-			execute {
-				asTarget(markers(block))
-				at(self())
-				run { function(process) }
-			}
-		}
+		// Break detection: the emitter is end stone bricks, anything else means it is gone.
+		pack.blockTick(block, onBreak, BreakTest.NotBlock(Blocks.END_STONE_BRICKS)) { forEachMarker(block, process) }
 	}
 }

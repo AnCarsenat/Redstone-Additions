@@ -1,9 +1,7 @@
 package ra.modules.sensors
 
 import io.github.ayfri.kore.arguments.types.literals.self
-import io.github.ayfri.kore.commands.execute.execute
 import io.github.ayfri.kore.commands.function
-import io.github.ayfri.kore.commands.returnValue
 import io.github.ayfri.kore.commands.scoreboard.scoreboard
 import io.github.ayfri.kore.commands.tag
 import io.github.ayfri.kore.features.recipes.types.key
@@ -18,7 +16,6 @@ import ra.core.block.CustomBlock
 import ra.core.block.blockGive
 import ra.core.block.blockTick
 import ra.core.block.gogglesHeader
-import ra.core.block.markers
 import ra.core.block.placeBlock
 import ra.core.block.propLine
 import ra.core.define
@@ -33,8 +30,10 @@ import ra.core.block.STONE_BREAK_SOUND
 import ra.core.blockRegisterMessage
 import ra.core.block.placementGuard
 import ra.core.block.setOnNew
-import ra.core.block.clearNewTag
 import ra.core.block.outputShell
+import ra.core.block.finishPlacement
+import ra.core.Tag
+import ra.core.block.forEachMarker
 
 /**
  * Entity Detector: powers its shell while any entity matches its `entity_selector` property.
@@ -49,7 +48,6 @@ object EntityDetector {
 
 	private val detect = block.fn("detect")
 	private val detectMacro = block.fn("detect_macro")
-	val registerBlock = block.fn("register_block")
 
 	fun Ra.registerEntityDetector() {
 		block(block)
@@ -70,8 +68,7 @@ object EntityDetector {
 			// Initialize default properties first.
 			setOnNew(block, "data.properties", """{entity_selector:"@e[type=minecraft:pig,distance=..5]"}""")
 			// Remove ra.new now that setup is complete.
-			clearNewTag(block)
-			returnValue(1)
+			finishPlacement(block, removePlaceTag = false)
 		}
 
 		// Detect entities in range. As the marker, at its position: the selector is stored for the macro.
@@ -87,7 +84,7 @@ object EntityDetector {
 			scoreboard.players.set(self(), Obj.TEMP, 0)
 
 			// Find matching entities, exclude custom blocks, set the score on the checking marker.
-			raw("\$execute at @s as \$(entity_selector) unless entity @s[tag=ra.custom_block] run scoreboard players set @e[type=marker,tag=$CHECKING,limit=1] ${Obj.TEMP} 1")
+			raw("\$execute at @s as \$(entity_selector) unless entity @s[tag=${Tag.CUSTOM_BLOCK}] run scoreboard players set @e[type=marker,tag=$CHECKING,limit=1] ${Obj.TEMP} 1")
 
 			tag(self()) { remove(CHECKING) }
 
@@ -101,11 +98,7 @@ object EntityDetector {
 		val onBreak = pack.blockOnBreak(block, drop = { dropItem(item) }, sound = STONE_BREAK_SOUND, cloud = true)
 		pack.blockTick(block, onBreak) {
 			// Check for entities in range.
-			execute {
-				asTarget(markers(block))
-				at(self())
-				run { function(detect) }
-			}
+			forEachMarker(block, detect)
 		}
 	}
 

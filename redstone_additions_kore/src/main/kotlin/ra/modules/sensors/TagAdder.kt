@@ -1,6 +1,5 @@
 package ra.modules.sensors
 
-import io.github.ayfri.kore.commands.returnValue
 import io.github.ayfri.kore.features.recipes.types.key
 import io.github.ayfri.kore.features.recipes.types.pattern
 import io.github.ayfri.kore.generated.Items
@@ -26,8 +25,9 @@ import ra.core.blockRegisterMessage
 import ra.core.executeRun
 import ra.core.block.placementGuard
 import ra.core.block.setOnNew
-import ra.core.block.clearNewTag
 import ra.core.block.outputShell
+import ra.core.block.finishPlacement
+import ra.core.Tag
 
 /**
  * Tag Adder: on a rising redstone edge, adds `tag` to every entity matching `entity_selector`.
@@ -38,7 +38,6 @@ object TagAdder {
 	val item = block.loreItem {}
 
 	private val addTagMacro = block.fn("add_tag_macro")
-	val registerBlock = block.fn("register_block")
 
 	fun Ra.registerTagAdder() {
 		block(block)
@@ -56,23 +55,22 @@ object TagAdder {
 			// Green glazed terracotta with a marker (dir_type 0 = non-directional).
 			placeBlock(block)
 			setOnNew(block, "data.properties", """{entity_selector:"@e[type=pig,distance=..5]",tag:"custom_tag"}""")
-			clearNewTag(block)
-			returnValue(1)
+			finishPlacement(block, removePlaceTag = false)
 		}
 
 		// Macro {tag, entity_selector}. As the marker, at its position.
 		pack.define(addTagMacro) {
 			// Anchor position to the marker for distance calculations in the selector.
-			raw("\$execute store success score @s ${Obj.TEMP} at @s run execute as \$(entity_selector) if entity @s[tag=!ra.custom_block] run tag @s add \$(tag)")
+			raw("\$execute store success score @s ${Obj.TEMP} at @s run execute as \$(entity_selector) if entity @s[tag=!${Tag.CUSTOM_BLOCK}] run tag @s add \$(tag)")
 
 			raw("execute if score @s ${Obj.TEMP} matches 1.. at @s run playsound minecraft:block.note_block.bit block @a[distance=..16] ~ ~ ~ 0.5 1.5")
 			raw("execute if score @s ${Obj.TEMP} matches 0 at @s run playsound minecraft:block.note_block.bass block @a[distance=..16] ~ ~ ~ 0.5 0.5")
 		}
 
-		// Macro {entity_selector, range}: detection only. Nothing in the pack calls it any more;
-		// kept because the beet pack shipped it.
+		// kept: beet contract. Macro {entity_selector, range}: detection only. Nothing in the pack
+		// calls it any more; kept because the beet pack shipped it.
 		pack.define(block.fn("detect_macro")) {
-			raw("\$execute store success score @s ${Obj.TEMP} run execute as \$(entity_selector) if entity @s[tag=!ra.custom_block]")
+			raw("\$execute store success score @s ${Obj.TEMP} run execute as \$(entity_selector) if entity @s[tag=!${Tag.CUSTOM_BLOCK}]")
 
 			// Output redstone signal based on detection.
 			outputShell(on = false)

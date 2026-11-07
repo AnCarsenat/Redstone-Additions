@@ -32,8 +32,8 @@ object WirelessModule : GameplayModule {
 			scoreboard.objectives.add(Remote.PENDING)
 			scoreboard.objectives.add(Remote.SLOT)
 
-			function(Emitter.registerBlock)
-			function(Receiver.registerBlock)
+			function(Emitter.block.fn("register_block"))
+			function(Receiver.block.fn("register_block"))
 
 			moduleLoaded("Wireless Redstone loaded!", "aqua")
 		}

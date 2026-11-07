@@ -7,33 +7,13 @@ import io.github.ayfri.kore.commands.data
 import io.github.ayfri.kore.commands.execute.execute
 import io.github.ayfri.kore.commands.function
 import io.github.ayfri.kore.commands.kill
-import io.github.ayfri.kore.commands.returnValue
 import io.github.ayfri.kore.commands.scoreboard.scoreboard
-import io.github.ayfri.kore.commands.summon
 import io.github.ayfri.kore.commands.tag
-import io.github.ayfri.kore.features.advancements.advancement
-import io.github.ayfri.kore.features.advancements.criteria
-import io.github.ayfri.kore.features.advancements.recipes
-import io.github.ayfri.kore.features.advancements.requirements
-import io.github.ayfri.kore.features.advancements.rewards
-import io.github.ayfri.kore.features.advancements.triggers.inventoryChanged
-import io.github.ayfri.kore.features.advancements.triggers.item
-import io.github.ayfri.kore.features.advancements.triggers.recipeUnlocked
-import io.github.ayfri.kore.features.recipes.recipesBuilder
-import io.github.ayfri.kore.features.recipes.types.RecipeCategory
-import io.github.ayfri.kore.features.recipes.types.craftingShaped
 import io.github.ayfri.kore.features.recipes.types.key
 import io.github.ayfri.kore.features.recipes.types.pattern
-import io.github.ayfri.kore.features.recipes.types.result
 import io.github.ayfri.kore.functions.Function
 import io.github.ayfri.kore.generated.Items
-import io.github.ayfri.kore.generated.arguments.types.AdvancementArgument
-import io.github.ayfri.kore.arguments.maths.vec3
 import io.github.ayfri.kore.generated.EntityTypes
-import io.github.ayfri.kore.utils.nbt
-import io.github.ayfri.kore.utils.set
-import net.benwoodworth.knbt.NbtList
-import net.benwoodworth.knbt.NbtString
 import ra.core.Ns
 import ra.core.Obj
 import ra.core.Ra
@@ -51,6 +31,14 @@ import ra.core.define
 import ra.core.raw
 import ra.core.blockRegisterMessage
 import ra.core.block.outputShell
+import ra.core.block.shapedRecipe
+import ra.core.block.recipeResult
+import ra.core.block.Unlock
+import ra.core.block.finishPlacement
+import ra.core.block.dropBlockItem
+import ra.core.block.brokenMarkers
+import ra.core.block.forEachMarker
+import ra.api.RaLib
 
 /**
  * UNI Gate: one universal logic gate whose `gate_type` property picks the function (and, or,
@@ -80,29 +68,16 @@ object UniGate {
 	}
 
 	/**
-	 * The recipe, and its unlock advancement written by hand rather than through `blockRecipe`:
+	 * The recipe and its unlock advancement, through `shapedRecipe` rather than `blockRecipe`:
 	 * its criterion has always been called `has_slab`, and a renamed criterion drops the progress
 	 * saved under the old name.
 	 */
 	private fun Ra.recipe() {
-		val recipe = pack.recipesBuilder.craftingShaped(block.id, block.ns.id) {
-			category = RecipeCategory.REDSTONE
-			showNotification = true
+		pack.shapedRecipe(block.ns, block.id, block.recipeResult(), Unlock(Items.SMOOTH_STONE_SLAB, "has_slab")) {
 			pattern(" S ", "TRT", " S ")
 			key("S", Items.SMOOTH_STONE_SLAB)
 			key("R", Items.REPEATER)
 			key("T", Items.REDSTONE_TORCH)
-			result(Items.BAT_SPAWN_EGG, 1) { with(block) { blockItemComponents() } }
-		}
-		pack.advancement("recipes/unlock_${block.id}") {
-			namespace = block.ns.id
-			parent = AdvancementArgument("recipes/root", "minecraft")
-			criteria {
-				recipeUnlocked("has_the_recipe", recipe)
-				inventoryChanged("has_slab") { item { items = listOf(Items.SMOOTH_STONE_SLAB) } }
-			}
-			requirements(listOf("has_the_recipe", "has_slab"))
-			rewards { recipes(recipe) }
 		}
 	}
 
@@ -132,8 +107,7 @@ object UniGate {
 		}
 		scoreboard.players.set(fresh, Obj.COOLDOWN, 0)
 
-		tag(fresh) { remove(Tag.NEW) }
-		returnValue(1)
+		finishPlacement(block, removePlaceTag = false)
 	}
 
 	/** Kills the gate's item displays within [radius]. */
@@ -147,10 +121,7 @@ object UniGate {
 		killVanillaDrop(block.physical)
 		killDisplays(2.0)
 		outputShell(on = false)
-		summon(EntityTypes.ITEM, vec3(), nbt {
-			this["Item"] = block.itemStackNbt()
-			this["Tags"] = NbtList(listOf(NbtString(Tag.RA), NbtString(Tag.DROP_TEMP)))
-		})
+		dropBlockItem(block)
 		kill(self())
 	}
 
@@ -158,11 +129,11 @@ object UniGate {
 		// Already one function per broken marker in the beet version, so kept as it was.
 		raw("execute as @e[type=marker,tag=${block.tag}] at @s unless block ~ ~ ~ smooth_stone_slab run tag @s add ${Tag.BROKEN}")
 		execute {
-			asTarget(brokenMarkers())
+			asTarget(brokenMarkers(block))
 			at(self())
 			run { function(onBreakDrop) }
 		}
-		tag(brokenMarkers()) { remove(Tag.BROKEN) }
+		tag(brokenMarkers(block)) { remove(Tag.BROKEN) }
 
 		// Force the physical output back in sync every 40 ticks. process only rewrites the shell
 		// when its own result changes, so this is what repairs a gate whose blocks were altered by
@@ -178,14 +149,8 @@ object UniGate {
 			run { scoreboard.players.set(resync, Obj.TEMP, 0) }
 		}
 
-		execute {
-			asTarget(markers(block))
-			at(self())
-			run { function(process) }
-		}
+		forEachMarker(block, process)
 	}
-
-	private fun brokenMarkers() = ra.core.block.brokenMarkers(block)
 
 	/** As the marker, at its position. */
 	private fun Function.process() {
@@ -199,14 +164,14 @@ object UniGate {
 		// Detect redstone for this gate. ignore_blocks stays on for the input census too,
 		// otherwise the gate's own redstone_block output shell would read back as six extra inputs.
 		tag(self()) { add(IGNORE_BLOCKS) }
-		function(ra.api.RaLib.Redstone.detect)
+		function(RaLib.Redstone.detect)
 
 		// AND and NAND are the only modes that must tell "input present but off" apart from "no
 		// input on that side", so the census only runs for them.
 		scoreboard.players.set(self(), Obj.RS_INPUTS, 0)
 		for (type in listOf("and", "nand")) execute {
 			ifCondition { data(self(), gate(type)) }
-			run { function(ra.api.RaLib.Redstone.countInputs) }
+			run { function(RaLib.Redstone.countInputs) }
 		}
 
 		tag(self()) { remove(IGNORE_BLOCKS) }

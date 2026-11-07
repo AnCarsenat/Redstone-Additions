@@ -6,12 +6,12 @@ import ra.core.GiveBundle
 import ra.core.Ns
 import ra.core.Ra
 import ra.core.define
-import ra.core.raw
 import ra.core.ref
 import ra.modules.sensors.EntityDetector.registerEntityDetector
 import ra.modules.sensors.TagAdder.registerTagAdder
 import ra.modules.sensors.TagRemover.registerTagRemover
 import ra.core.moduleLoaded
+import ra.core.raMessage
 
 /** Sensors (`ra_sensors`): entity detection and tag manipulation blocks. */
 object SensorsModule : GameplayModule {
@@ -27,9 +27,7 @@ object SensorsModule : GameplayModule {
 		val blocks = listOf(EntityDetector.block, TagAdder.block, TagRemover.block)
 
 		pack.define(load) {
-			function(EntityDetector.registerBlock)
-			function(TagAdder.registerBlock)
-			function(TagRemover.registerBlock)
+			for (b in blocks) function(b.fn("register_block"))
 			moduleLoaded("Sensors loaded!", "aqua")
 		}
 
@@ -38,7 +36,7 @@ object SensorsModule : GameplayModule {
 
 		pack.define(ref(ns, "items/give_all")) {
 			for (b in blocks) function(b.give)
-			raw("""tellraw @s [{text:"[",color:"dark_gray"},{text:"RA",color:"gold",bold:true},{text:"] ",color:"dark_gray"},{text:"Given all sensor blocks!",color:"light_purple"}]""")
+			raMessage("@s", "Given all sensor blocks!", "light_purple")
 		}
 
 		bundles += GiveBundle(

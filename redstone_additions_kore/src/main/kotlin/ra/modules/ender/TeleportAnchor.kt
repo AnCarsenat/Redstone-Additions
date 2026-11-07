@@ -2,7 +2,6 @@ package ra.modules.ender
 
 import io.github.ayfri.kore.arguments.types.literals.self
 import io.github.ayfri.kore.commands.function
-import io.github.ayfri.kore.commands.returnValue
 import io.github.ayfri.kore.commands.scoreboard.scoreboard
 import io.github.ayfri.kore.commands.tag
 import io.github.ayfri.kore.features.recipes.types.RecipeCategory
@@ -25,13 +24,17 @@ import ra.core.block.stackedPropLine
 import ra.core.define
 import ra.core.raw
 import ra.core.item.loreLine
-import ra.core.block.breakCheck
 import ra.core.blockRegisterMessage
 import ra.core.executeRun
 import ra.core.block.placementGuard
 import ra.core.block.setOnNew
-import ra.core.block.clearNewTag
 import ra.core.block.defaultProperty
+import ra.core.block.finishPlacement
+import ra.core.block.blockTick
+import ra.core.block.BreakTest
+import ra.core.block.markerSel
+import ra.core.block.soundListenersSel
+import ra.core.block.particleViewersSel
 
 /**
  * Teleport Anchor: sends whoever stands on it to the anchor the redstone strength names.
@@ -56,7 +59,6 @@ object TeleportAnchor {
 	val readTarget = block.fn("read_target")
 	private val findDest = block.fn("find_dest")
 	private val sendPlayer = block.fn("send_player")
-	val registerBlock = block.fn("register_block")
 
 	private const val T = Obj.TEMP
 
@@ -80,9 +82,7 @@ object TeleportAnchor {
 			placeBlock(block)
 			setOnNew(block, "data.properties.anchor_id", "\"A\"")
 			setOnNew(block, "data.properties.targets", EMPTY_TABLE)
-			clearNewTag(block)
-			tag(self()) { remove(block.placeTag) }
-			returnValue(1)
+			finishPlacement(block)
 		}
 
 		pack.define(process) { process() }
@@ -105,12 +105,14 @@ object TeleportAnchor {
 		// that line altogether while dropping the `enabled` clause, and from then on no anchor
 		// teleported. The nbt= scan is only paid on a redstone pulse with a player in range.
 		pack.define(findDest) {
-			raw("\$execute as @e[type=marker,tag=${block.tag},tag=!${EnderIds.SELF},nbt={data:{properties:{anchor_id:\"\$(want)\"}}},sort=nearest,limit=1] run tag @s add ${EnderIds.TP_DEST}")
+			// The id test before sort/limit, as explained above.
+			val dest = block.markerSel("tag=!${EnderIds.SELF}", "nbt={data:{properties:{anchor_id:\"\$(want)\"}}}", "sort=nearest", "limit=1")
+			raw("\$execute as $dest run tag @s add ${EnderIds.TP_DEST}")
 		}
 
-		// Tag this anchor if its id is the one being aimed at, first match wins. As a candidate
-		// anchor marker. Nothing calls it any more (ids became strings, matched in find_dest's
-		// macro); kept because the beet pack shipped it.
+		// kept: beet contract. Tag this anchor if its id is the one being aimed at, first match
+		// wins. As a candidate anchor marker. Nothing calls it any more (ids became strings,
+		// matched in find_dest's macro); kept because the beet pack shipped it.
 		pack.define(block.fn("match_target")) {
 			raw("execute if entity @e[type=marker,tag=${EnderIds.TP_DEST},limit=1] run return 0")
 
@@ -130,25 +132,23 @@ object TeleportAnchor {
 			// back, short enough to be usable as a two-way door.
 			scoreboard.players.set(self(), EnderIds.GRACE, 30)
 
-			raw("playsound minecraft:entity.enderman.teleport player @s[scores={ra.u.snd=1..}] ~ ~ ~ 0.8 1")
+			raw("playsound minecraft:entity.enderman.teleport player @s[scores={${Obj.USER_SOUND}=1..}] ~ ~ ~ 0.8 1")
 			raw("execute at @s run particle minecraft:portal ~ ~1 ~ 0.4 0.8 0.4 0.3 40")
 		}
 
 		pack.define(block.goggles) { goggles() }
 
 		val onBreak = pack.enderOnBreak(block, item)
-		pack.define(block.tick) {
-			breakCheck(block, Blocks.CRYING_OBSIDIAN, onBreak)
-
+		pack.blockTick(block, onBreak, BreakTest.NotBlock(Blocks.CRYING_OBSIDIAN)) {
 			// Defaults for anchors placed before a property existed.
 			defaultProperty(block, "anchor_id", "\"A\"")
 			defaultProperty(block, "targets", EMPTY_TABLE)
 
 			// A selector on scores skips entities that have no score at all, so every anchor needs
 			// one before the cooldown gate can mean anything. Adding zero creates it.
-			raw("scoreboard players add @e[type=marker,tag=${block.tag}] ${EnderIds.TP_CD} 0")
-			raw("scoreboard players remove @e[type=marker,tag=${block.tag},scores={${EnderIds.TP_CD}=1..}] ${EnderIds.TP_CD} 1")
-			executeRun("as @e[type=marker,tag=${block.tag},scores={${EnderIds.TP_CD}=..0}] at @s", process)
+			raw("scoreboard players add ${block.markerSel()} ${EnderIds.TP_CD} 0")
+			raw("scoreboard players remove ${block.markerSel("scores={${EnderIds.TP_CD}=1..}")} ${EnderIds.TP_CD} 1")
+			executeRun("as ${block.markerSel("scores={${EnderIds.TP_CD}=..0}")} at @s", process)
 		}
 	}
 
@@ -182,8 +182,8 @@ object TeleportAnchor {
 		tag(self()) { remove(EnderIds.SELF) }
 		raw("execute unless entity @e[type=marker,tag=${EnderIds.TP_DEST}] run return 0")
 
-		raw("playsound minecraft:entity.enderman.teleport block @a[distance=..12,scores={ra.u.snd=1..}] ~ ~ ~ 0.7 1.2")
-		raw("particle minecraft:portal ~ ~0.6 ~ 0.3 0.5 0.3 0.2 30 normal @a[scores={ra.u.par=1..}]")
+		raw("playsound minecraft:entity.enderman.teleport block ${soundListenersSel(12)} ~ ~ ~ 0.7 1.2")
+		raw("particle minecraft:portal ~ ~0.6 ~ 0.3 0.5 0.3 0.2 30 normal ${particleViewersSel()}")
 
 		executeRun("as @a[distance=..2,scores={${EnderIds.GRACE}=..0},limit=1,sort=nearest]", sendPlayer)
 

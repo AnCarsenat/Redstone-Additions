@@ -2,7 +2,6 @@ package ra.modules.ender
 
 import io.github.ayfri.kore.arguments.types.literals.self
 import io.github.ayfri.kore.commands.function
-import io.github.ayfri.kore.commands.returnValue
 import io.github.ayfri.kore.commands.scoreboard.scoreboard
 import io.github.ayfri.kore.commands.tag
 import io.github.ayfri.kore.features.recipes.types.RecipeCategory
@@ -11,7 +10,6 @@ import io.github.ayfri.kore.features.recipes.types.pattern
 import io.github.ayfri.kore.functions.Function
 import io.github.ayfri.kore.generated.Blocks
 import io.github.ayfri.kore.generated.Items
-import io.github.ayfri.kore.utils.nbt
 import io.github.ayfri.kore.utils.set
 import ra.api.ModulesApi
 import ra.api.RaLib
@@ -30,14 +28,19 @@ import ra.core.define
 import ra.core.raw
 import ra.modules.ender.link.Link
 import ra.core.item.loreLine
-import ra.core.block.breakCheck
 import ra.core.blockRegisterMessage
 import ra.core.executeRun
 import ra.core.executeReturnRun
 import ra.core.block.placementGuard
 import ra.core.block.setOnNew
-import ra.core.block.clearNewTag
 import ra.core.block.defaultProperty
+import ra.core.block.finishPlacement
+import ra.core.block.blockTick
+import ra.core.block.BreakTest
+import ra.core.block.markerSel
+import ra.core.Tag
+import ra.core.block.readProperty
+import ra.core.executeStoreRun
 
 /**
  * Ender Power Vault: a wireless bridge between two electric grids. It carries
@@ -60,7 +63,6 @@ object PowerVault {
 	private val level = block.fn("level")
 	private val refund = block.fn("refund")
 	val cycleMode = block.fn("cycle_mode")
-	val registerBlock = block.fn("register_block")
 
 	private const val T = Obj.TEMP
 
@@ -86,11 +88,9 @@ object PowerVault {
 			setOnNew(block, "data.properties.mode", "\"link\"")
 			setOnNew(block, "data.properties.transfer_rate", "80")
 
-			raw("tag @e[type=marker,tag=${block.tag},tag=ra.new,distance=..0.5] add ${EnderIds.ELECTRIC_NODE}")
+			raw("tag ${block.markerSel("tag=${Tag.NEW}", "distance=..0.5")} add ${EnderIds.ELECTRIC_NODE}")
 
-			clearNewTag(block)
-			tag(self()) { remove(block.placeTag) }
-			returnValue(1)
+			finishPlacement(block)
 		}
 
 		pack.cycleLinkSendReceive(block)
@@ -119,20 +119,18 @@ object PowerVault {
 		}
 
 		val onBreak = pack.enderOnBreak(block, item)
-		pack.define(block.tick) {
-			breakCheck(block, Blocks.PURPUR_PILLAR, onBreak)
-
+		pack.blockTick(block, onBreak, BreakTest.NotBlock(Blocks.PURPUR_PILLAR)) {
 			// Defaults, including the electric-node tag a vault placed by an older build lacks.
 			defaultProperty(block, "channel", "\"default\"")
 			defaultProperty(block, "mode", "\"link\"")
 			defaultProperty(block, "transfer_rate", "80")
-			raw("tag @e[type=marker,tag=${block.tag}] add ${EnderIds.ELECTRIC_NODE}")
+			raw("tag ${block.markerSel()} add ${EnderIds.ELECTRIC_NODE}")
 
 			raw("tag @e[type=marker,tag=${EnderIds.RECV_POWER}] remove ${EnderIds.RECV_POWER}")
 			tagUnlessMode(block, "send", EnderIds.RECV_POWER)
 
-			raw("scoreboard players add @e[type=marker,tag=${block.tag}] ${EnderIds.CD} 1")
-			executeRun("as @e[type=marker,tag=${block.tag},scores={${EnderIds.CD}=5..}] at @s", process)
+			raw("scoreboard players add ${block.markerSel()} ${EnderIds.CD} 1")
+			executeRun("as ${block.markerSel("scores={${EnderIds.CD}=5..}")} at @s", process)
 		}
 	}
 
@@ -156,8 +154,8 @@ object PowerVault {
 
 		// What this grid can spare.
 		function(RaLib.Transport.Net.read)
-		raw("scoreboard players operation #ender.eu $T = #net_amount ra.tr.tmp")
-		function(RaLib.Util.property, nbt { this["name"] = "transfer_rate"; this["default"] = 80; this["min"] = 1 })
+		raw("scoreboard players operation #ender.eu $T = #net_amount ${Obj.TR_TMP}")
+		readProperty("transfer_rate", default = 80, min = 1)
 		raw("scoreboard players operation #ender.rate $T = #prop $T")
 		executeReturnRun("if score #ender.eu $T matches ..0", Link.done)
 
@@ -172,7 +170,7 @@ object PowerVault {
 		// Take first, so the receiver cannot be handed EU that still exists here. The refund below
 		// puts back anything it turns out not to want.
 		raw("execute store result storage ra:wires eu.amount int 1 run scoreboard players get #ender.carry $T")
-		executeRun("store result score #ender.carry $T", ModulesApi.Wires.takeEu, "with storage ra:wires eu")
+		executeStoreRun("", "#ender.carry", ModulesApi.Wires.takeEu, "with storage ra:wires eu")
 		executeReturnRun("if score #ender.carry $T matches ..0", Link.done)
 
 		raw("data modify storage ra:ender power set value {}")

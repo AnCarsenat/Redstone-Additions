@@ -16,6 +16,9 @@ import ra.core.ref
 import ra.modules.ender.EnderIds
 import ra.modules.ender.ItemVault
 import ra.core.executeRun
+import ra.core.block.soundListenersSel
+import ra.core.block.particleViewersSel
+import ra.core.executeStoreRun
 
 /**
  * `ra_ender:link/...`: the transfer half of every vault. The channel is a string, so finding the
@@ -97,8 +100,8 @@ object Link {
 			function(ItemVault.mark)
 
 			raw("scoreboard players set #ender.moved $T 1")
-			raw("playsound minecraft:entity.enderman.teleport block @a[distance=..8,scores={ra.u.snd=1..}] ~ ~ ~ 0.25 1.6")
-			raw("particle minecraft:portal ~ ~1 ~ 0.2 0.2 0.2 0.05 6 normal @a[scores={ra.u.par=1..}]")
+			raw("playsound minecraft:entity.enderman.teleport block ${soundListenersSel(8)} ~ ~ ~ 0.25 1.6")
+			raw("particle minecraft:portal ~ ~1 ~ 0.2 0.2 0.2 0.05 6 normal ${particleViewersSel()}")
 		}
 
 		// Macro {channel, recv}: find a vault on this channel willing to give, and run its push.
@@ -124,14 +127,14 @@ object Link {
 		// The partner reports its own network's amount. As the partner vault marker.
 		pack.define(probeFluidRead) {
 			function(RaLib.Transport.Net.read)
-			raw("scoreboard players operation #ender.theirs $T = #net_amount ra.tr.tmp")
+			raw("scoreboard players operation #ender.theirs $T = #net_amount ${Obj.TR_TMP}")
 		}
 
 		// Macro {channel, medium, rate}, as the sending vault marker.
 		pack.define(sendFluid) {
 			// Take our slice out of the local network first.
 			raw("\$function ${RaLib.Transport.Net.take.asId()} {amount:\$(rate),medium:\"\$(medium)\"}")
-			raw("scoreboard players operation #ender.carry $T = #net_moved ra.tr.tmp")
+			raw("scoreboard players operation #ender.carry $T = #net_moved ${Obj.TR_TMP}")
 			raw("execute if score #ender.carry $T matches ..0 run return 0")
 
 			// Offer it to the partner. A partner that takes less than everything leaves the
@@ -149,10 +152,10 @@ object Link {
 			raw("data modify storage ra:ender offer.medium set from storage ra:ender fluid.medium")
 
 			function(offerFluid, Storage.ENDER, "offer")
-			raw("scoreboard players operation #ender.carry $T -= #net_moved ra.tr.tmp")
+			raw("scoreboard players operation #ender.carry $T -= #net_moved ${Obj.TR_TMP}")
 
-			raw("execute if score #net_moved ra.tr.tmp matches 1.. run playsound minecraft:entity.enderman.teleport block @a[distance=..8] ~ ~ ~ 0.2 1.9")
-			raw("execute if score #net_moved ra.tr.tmp matches 1.. run particle minecraft:portal ~ ~1 ~ 0.2 0.2 0.2 0.05 4")
+			raw("execute if score #net_moved ${Obj.TR_TMP} matches 1.. run playsound minecraft:entity.enderman.teleport block @a[distance=..8] ~ ~ ~ 0.2 1.9")
+			raw("execute if score #net_moved ${Obj.TR_TMP} matches 1.. run particle minecraft:portal ~ ~1 ~ 0.2 0.2 0.2 0.05 4")
 		}
 
 		// Macro {medium}, as the sending vault marker. Puts the unaccepted remainder back.
@@ -179,7 +182,7 @@ object Link {
 		// it, so the caller's `store result` had nothing to capture.
 		pack.define(probePowerRead) {
 			function(RaLib.Transport.Net.read)
-			raw("scoreboard players operation #ender.theirs $T = #net_amount ra.tr.tmp")
+			raw("scoreboard players operation #ender.theirs $T = #net_amount ${Obj.TR_TMP}")
 		}
 
 		// Macro {channel}, as the sending vault marker. Reads #ender.carry, writes #ender.sent.
@@ -199,12 +202,12 @@ object Link {
 			raw("scoreboard players set #ender.sent $T 0")
 
 			raw("execute store result storage ra:wires eu.amount int 1 run scoreboard players get #ender.carry $T")
-			executeRun("store result score #ender.sent $T", ModulesApi.Wires.offerEu, "with storage ra:wires eu")
+			executeStoreRun("", "#ender.sent", ModulesApi.Wires.offerEu, "with storage ra:wires eu")
 
 			raw("execute if score #ender.sent $T matches ..0 run return 0")
 
-			raw("playsound minecraft:block.beacon.activate block @a[distance=..8,scores={ra.u.snd=1..}] ~ ~ ~ 0.12 1.9")
-			raw("particle minecraft:portal ~ ~1 ~ 0.2 0.2 0.2 0.05 3 normal @a[scores={ra.u.par=1..}]")
+			raw("playsound minecraft:block.beacon.activate block ${soundListenersSel(8)} ~ ~ ~ 0.12 1.9")
+			raw("particle minecraft:portal ~ ~1 ~ 0.2 0.2 0.2 0.05 3 normal ${particleViewersSel()}")
 		}
 	}
 }

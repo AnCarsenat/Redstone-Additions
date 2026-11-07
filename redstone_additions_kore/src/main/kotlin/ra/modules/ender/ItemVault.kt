@@ -2,7 +2,6 @@ package ra.modules.ender
 
 import io.github.ayfri.kore.arguments.types.literals.self
 import io.github.ayfri.kore.commands.function
-import io.github.ayfri.kore.commands.returnValue
 import io.github.ayfri.kore.commands.scoreboard.scoreboard
 import io.github.ayfri.kore.commands.tag
 import io.github.ayfri.kore.features.recipes.types.RecipeCategory
@@ -25,14 +24,16 @@ import ra.core.define
 import ra.core.raw
 import ra.modules.ender.link.Link
 import ra.core.item.loreLine
-import ra.core.block.breakCheck
 import ra.core.blockRegisterMessage
 import ra.core.executeRun
 import ra.core.executeReturnRun
 import ra.core.block.placementGuard
 import ra.core.block.setOnNew
-import ra.core.block.clearNewTag
 import ra.core.block.defaultProperty
+import ra.core.block.finishPlacement
+import ra.core.block.blockTick
+import ra.core.block.BreakTest
+import ra.core.block.markerSel
 
 /**
  * Ender Item Vault: a real barrel whose stacks move to the vault on its channel. The vault's
@@ -60,7 +61,6 @@ object ItemVault {
 	val pushToPuller = block.fn("push_to_puller")
 	val where = block.fn("where")
 	val cycleMode = block.fn("cycle_mode")
-	val registerBlock = block.fn("register_block")
 
 	private const val T = Obj.TEMP
 
@@ -82,9 +82,7 @@ object ItemVault {
 			placeBlock(block)
 			setOnNew(block, "data.properties.channel", "\"default\"")
 			setOnNew(block, "data.properties.mode", "\"link\"")
-			clearNewTag(block)
-			tag(self()) { remove(block.placeTag) }
-			returnValue(1)
+			finishPlacement(block)
 		}
 
 		pack.define(cycleMode) { cycleMode() }
@@ -99,7 +97,7 @@ object ItemVault {
 		}
 
 		val onBreak = pack.enderOnBreak(block, item)
-		pack.define(block.tick) { tick(onBreak) }
+		pack.blockTick(block, onBreak, BreakTest.NotBlock(Blocks.BARREL)) { tick() }
 	}
 
 	/** Cycle link -> send -> receive. As the vault marker, at the block. */
@@ -163,14 +161,13 @@ object ItemVault {
 		function(Link.done)
 	}
 
-	private fun Function.tick(onBreak: io.github.ayfri.kore.arguments.types.resources.FunctionArgument) {
-		breakCheck(block, Blocks.BARREL, onBreak)
-
+	/** The tick after break detection: defaults, the per-tick mode tags, the hopper-rate timer. */
+	private fun Function.tick() {
 		// Defaults for vaults placed before a property existed.
 		defaultProperty(block, "channel", "\"default\"")
 		// Migration: `shared` is gone. A vault still set to it becomes `link`, which is the closest
 		// of the three that remain -- two-way and demand driven.
-		raw("execute as @e[type=marker,tag=${block.tag}] if data entity @s data.properties{mode:\"shared\"} run data modify entity @s data.properties.mode set value \"link\"")
+		raw("execute as ${block.markerSel()} if data entity @s data.properties{mode:\"shared\"} run data modify entity @s data.properties.mode set value \"link\"")
 		defaultProperty(block, "mode", "\"link\"")
 
 		// The `ra.ender.occupied` and `ra.ender.share` bookkeeping went with `shared`: both existed
@@ -182,8 +179,8 @@ object ItemVault {
 		tagUnlessMode(block, "receive", EnderIds.SEND_ITEM)
 
 		// Hopper rate: one stack every 4 ticks per sending vault.
-		raw("scoreboard players add @e[type=marker,tag=${block.tag}] ${EnderIds.CD} 1")
-		executeRun("as @e[type=marker,tag=${block.tag},scores={${EnderIds.CD}=4..}] at @s", process)
+		raw("scoreboard players add ${block.markerSel()} ${EnderIds.CD} 1")
+		executeRun("as ${block.markerSel("scores={${EnderIds.CD}=4..}")} at @s", process)
 	}
 
 	private fun Ra.registerMoves() {

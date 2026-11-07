@@ -1,19 +1,14 @@
 package ra.modules.gates
 
-import io.github.ayfri.kore.arguments.maths.vec3
 import io.github.ayfri.kore.arguments.numbers.ranges.rangeOrDoubleEnd
 import io.github.ayfri.kore.arguments.types.literals.allEntities
 import io.github.ayfri.kore.arguments.types.literals.literal
 import io.github.ayfri.kore.arguments.types.literals.self
 import io.github.ayfri.kore.commands.data
 import io.github.ayfri.kore.commands.execute.execute
-import io.github.ayfri.kore.commands.fill
-import io.github.ayfri.kore.commands.function
 import io.github.ayfri.kore.commands.kill
-import io.github.ayfri.kore.commands.returnValue
 import io.github.ayfri.kore.commands.scoreboard.scoreboard
 import io.github.ayfri.kore.commands.tag
-import io.github.ayfri.kore.generated.Blocks
 import io.github.ayfri.kore.generated.EntityTypes
 import io.github.ayfri.kore.generated.Items
 import io.github.ayfri.kore.features.recipes.types.key
@@ -21,7 +16,6 @@ import io.github.ayfri.kore.features.recipes.types.pattern
 import ra.core.Ns
 import ra.core.Obj
 import ra.core.Ra
-import ra.core.Tag
 import ra.core.block.CustomBlock
 import ra.core.block.blockGive
 import ra.core.block.blockOnBreak
@@ -33,10 +27,14 @@ import ra.core.block.placeBlock
 import ra.core.block.placementGuard
 import ra.core.block.propLine
 import io.github.ayfri.kore.functions.Function
-import ra.core.block.markers
 import ra.core.block.newMarker
 import ra.core.define
 import ra.core.raw
+import ra.core.blockRegisterMessage
+import ra.core.block.outputShell
+import ra.core.block.forEachMarker
+import ra.core.block.markerSel
+import ra.core.ensureScore
 
 /**
  * Clock: pulses a ring of redstone for one tick every `cooldown` ticks.
@@ -48,7 +46,7 @@ object Clock {
 	val block = CustomBlock(Ns.GATES, "clock", "Clock", model = "minecraft:daylight_detector")
 
 	/** Latch: the pulse fired last tick and must be put out this tick. */
-	private const val ON = "ra.clock_on"
+	internal const val ON = "ra.clock_on"
 
 	/** The floating clock item. */
 	private const val DISPLAY_TAG = "ra.custom_block.display_item.clock"
@@ -65,9 +63,7 @@ object Clock {
 			key("S", Items.STONE)
 		}
 		// Registration is a debug message only; kept so `/function ra_gates:load` stays verbose for ra.debug.
-		pack.define(block.fn("register_block")) {
-			raw("""tellraw @a[tag=ra.debug] [{text:"[RA] ",color:"gold"},{text:"Clock registered",color:"gray"}]""")
-		}
+		pack.blockRegisterMessage(block)
 		pack.define(block.handlePlacement) { handlePlacement() }
 		pack.define(process) { process() }
 		pack.define(block.goggles) { goggles() }
@@ -77,7 +73,7 @@ object Clock {
 			// lit ring keeps powering whatever it touched.
 			kill(allEntities { type = EntityTypes.ITEM_DISPLAY; tag = block.tag; distance = rangeOrDoubleEnd(2.0) })
 			kill(allEntities { type = EntityTypes.ITEM_DISPLAY; tag = DISPLAY_TAG; distance = rangeOrDoubleEnd(2.0) })
-			fill(vec3(-1, -1, -1).relative, vec3(1, 1, 1).relative, Blocks.IRON_BLOCK, Blocks.REDSTONE_BLOCK)
+			outputShell(on = false)
 			tag(self()) { remove(ON) }
 		}
 
@@ -86,16 +82,12 @@ object Clock {
 			// on, because it means the same thing on every timed block. Whichever a marker carries
 			// ends up as `cooldown`, and `delay` is then removed unconditionally -- leaving both is
 			// what made this block look broken.
-			raw("execute as @e[type=marker,tag=${block.tag}] if data entity @s data.properties.delay unless data entity @s data.properties.cooldown run data modify entity @s data.properties.cooldown set from entity @s data.properties.delay")
-			raw("execute as @e[type=marker,tag=${block.tag}] run data remove entity @s data.properties.delay")
+			raw("execute as ${block.markerSel()} if data entity @s data.properties.delay unless data entity @s data.properties.cooldown run data modify entity @s data.properties.cooldown set from entity @s data.properties.delay")
+			raw("execute as ${block.markerSel()} run data remove entity @s data.properties.delay")
 
 			// No macro call: `with entity @s data.properties` fails outright on a clock with no
 			// `cooldown`, which is every clock placed before it existed, and that clock never ticks.
-			execute {
-				asTarget(markers(block))
-				at(self())
-				run { function(process) }
-			}
+			forEachMarker(block, process)
 		}
 	}
 
@@ -150,7 +142,7 @@ object Clock {
 		execute {
 			ifCondition { score(was, Obj.TEMP) equalTo 1 }
 			at(self())
-			run { fill(vec3(-1, -1, -1).relative, vec3(1, 1, 1).relative, Blocks.IRON_BLOCK, Blocks.REDSTONE_BLOCK) }
+			run { outputShell(on = false) }
 		}
 
 		// The period. Guarded, because `store result` writes ZERO when its command fails, and zero
@@ -165,7 +157,7 @@ object Clock {
 
 		// A score that was never set reads as absent, and comparing against an absent score is
 		// false -- which would fire every tick.
-		raw("execute unless score @s ${Obj.COOLDOWN} matches -2147483648.. run scoreboard players set @s ${Obj.COOLDOWN} 0")
+		ensureScore("@s", Obj.COOLDOWN)
 
 		scoreboard.players.add(self(), Obj.COOLDOWN, 1)
 		raw("execute if score @s ${Obj.COOLDOWN} < #clk.max ${Obj.TEMP} run return 0")
@@ -175,7 +167,7 @@ object Clock {
 		tag(self()) { add(ON) }
 		execute {
 			at(self())
-			run { fill(vec3(-1, -1, -1).relative, vec3(1, 1, 1).relative, Blocks.REDSTONE_BLOCK, Blocks.IRON_BLOCK) }
+			run { outputShell(on = true) }
 		}
 	}
 

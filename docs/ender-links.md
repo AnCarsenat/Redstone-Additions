@@ -138,9 +138,10 @@ changes nothing is a match; the nearest match wins. Before 6.0.1 the name was pa
 `nbt=` selector, and a target containing `"}` could add commands to it.
 
 An anchor whose `targets` is not a list of fifteen (an old Data Handler edit could store
-anything) is repaired the first time it runs: `ra_ender:blocks/teleport_anchor/repair_targets`,
+anything) is repaired once, the first time it is loaded, by the 6.0.1 migration
+(`ra_migrations:6.0.0-to-6.0.1/teleport_anchor`): `ra_ender:blocks/teleport_anchor/repair_targets`,
 as the anchor marker, pads a short list with `""`, trims a long one and replaces anything else
-with fifteen empty entries; the anchor is then tagged `ra.ender.anchor_checked`.
+with fifteen empty entries.
 
 ### How `link` decides
 
@@ -165,7 +166,6 @@ with fifteen empty entries; the anchor is then tagged `ra.ender.anchor_checked`.
 | `ra.ender.pull_target` | The vault a refill is being fetched for, for one command |
 | `ra.ender.tp_dest` | The anchor a teleport is aimed at, for one command |
 | `ra.ender.tp_cand` | An anchor whose name matches, while the nearest is picked |
-| `ra.ender.anchor_checked` | An anchor whose target table was checked (`repair_targets`) |
 
 Vault channels are matched in macro commands: the sender writes its channel into storage and the
 generated command carries it into the selector. A channel may only hold letters, digits, spaces

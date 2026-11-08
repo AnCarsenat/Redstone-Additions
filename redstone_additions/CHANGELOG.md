@@ -27,6 +27,13 @@ predicates built when the pack is generated. Worlds on v6.0.0 carry on without a
 
 ### Changed
 
+- **Worlds are upgraded once, not on every load.** The world now remembers which version of the
+  pack it was last loaded with, and the one-time fixes for older worlds run only when that
+  version is older than the fix, instead of on every load. Each custom block also remembers its
+  version: a block from an older version is brought up to date once, the first time its chunk is
+  loaded, rather than by checks that several blocks (the Liquid Drain, Poppy Generator, Clock,
+  Boxer, Unboxer, Valves and Filter, Teleport Anchor) ran on every tick. Blocks in chunks that
+  were not loaded when the pack updated are now fixed too.
 - **The Liquid Drain pours out on redstone, and its speed is a server setting.** The drain's
   `mode` property is gone: an unpowered drain takes in, a drain powered by redstone pours its
   network's contents back out (a source block on a free side, experience orbs, or a potion over
@@ -63,7 +70,7 @@ predicates built when the pack is generated. Worlds on v6.0.0 carry on without a
   first check.
 - **Custom blocks are no longer re-centred every tick.** Every custom block in the world was
   moved back onto its block centre on every tick, though nothing ever moves them. They are
-  placed at the centre, and straightened out once when the pack loads.
+  placed at the centre, and one an older version left off-centre is straightened out once.
 
 - **Every block declares its settings.** Each kind of block now lists its settings, the type
   of each (number with its range, on/off, text, list, item) and whether it is read-only,
@@ -318,6 +325,12 @@ predicates built when the pack is generated. Worlds on v6.0.0 carry on without a
 
 ### For contributors
 
+- Migrations are versioned. `storage ra:migrations version` holds the world's version and the
+  `ra.ver` score (plus tag `ra.ver.<version>`) each custom block marker's; a step is declared with
+  `migration("6.0.0", "6.0.1") { world { ... }; entity("<type>") { ... } }` in `ra/migrations`
+  and runs only where the recorded version is older. Block code no longer carries one-time fixes
+  (`ra_wires:fluid/drain_migrate`, the `ra.wires.drain_v2`, `ra.ender.anchor_checked` and
+  `ra.storage.io_default_migrated` tags are gone). See [Migrations](https://ancarsenat.github.io/Redstone-Additions/architecture/#migrations).
 - A property can set `goggles = true` to show on the Goggles label even when `visible = false`
   hides it from the Data Handler, or `goggles = false` to keep a visible one off the label;
   unset, it follows `visible`. Generated as a resolved `goggles` byte in

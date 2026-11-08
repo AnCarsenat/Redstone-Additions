@@ -228,8 +228,8 @@ you extend it.
   ticks); Filter `filter_medium`, `rate` (2000); Creative Fluid Source `medium`, `rate`; EU
   Consumer and Industrial Light `eu_use`; Electric Furnace `output`, `mode`. Status for the
   Goggles is in `data.status`. Drains from before 6.0.1 have their `cooldown` turned into `speed`
-  (`100 / cooldown`) and `mode` removed the first time they tick (`ra_wires:fluid/drain_migrate`,
-  tag `ra.wires.drain_v2`).
+  (`100 / cooldown`) and `mode` removed once, the first time they are loaded, by the 6.0.1
+  migration (`ra_migrations:6.0.0-to-6.0.1/liquid_drain`).
 - **Media `drip`.** A medium may name a `drip` particle (`falling_water`, `falling_lava`) that a
   drain shows on itself while taking that medium in (`ra_wires:fluid/drip`); without one it shows
   the medium's `particle`.

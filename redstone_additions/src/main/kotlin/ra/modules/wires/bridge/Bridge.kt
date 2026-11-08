@@ -3,9 +3,12 @@ package ra.modules.wires.bridge
 import io.github.ayfri.kore.features.predicates.providers.constant
 import io.github.ayfri.kore.features.predicates.providers.floorDiv
 import io.github.ayfri.kore.features.predicates.providers.min
-import io.github.ayfri.kore.features.predicates.providers.mul
+import io.github.ayfri.kore.features.predicates.providers.div
+import io.github.ayfri.kore.features.predicates.providers.fromInt
 import io.github.ayfri.kore.features.predicates.providers.sub
 import ra.core.computeScore
+import ra.core.computeScoreScaled
+import ra.core.floatProvider
 import ra.core.provider
 import ra.core.scoreOf
 import io.github.ayfri.kore.arguments.types.literals.literal
@@ -66,13 +69,23 @@ object Bridge : PackPart {
 			function(RaLib.Transport.Net.read)
 			scoreboard.players.add(literal("#br.found"), "ra.wires.tmp", 1)
 
-			// fill = amount * 10000 / capacity, floored like the scoreboard `/=` it replaced. The
-			// capacity guard stays: a zero divisor is an error for /compute, and a network with
+			// fill = amount / capacity, in ten-thousandths. The division is done in floats and
+			// the 10000 is /compute's scale, not a multiplication in the provider: the integer
+			// form, amount * 10000 / capacity, needs the product to fit in 32 bits, which stops
+			// being true at 214,748 mL -- a modest tank farm. A scoreboard `*=` would have
+			// wrapped to a garbage negative fill; /compute's `mul` cancels the whole evaluation
+			// instead, so a large network read as 0 and looked empty to every bridge. A ratio
+			// in floats is at most 1 whatever the network size, so nothing can overflow, and
+			// float precision only matters in the last ten-thousandth, which is finer than any
+			// comparison below cares about.
+			//
+			// The capacity guard stays: dividing by zero makes /compute fail, and a network with
 			// no capacity reads as empty.
 			scoreboard.players.set(literal("#br.fill"), "ra.wires.tmp", 0)
-			computeScore(
+			computeScoreScaled(
 				"#br.fill", "ra.wires.tmp",
-				provider { floorDiv(mul(scoreOf("#net_amount", "ra.tr.tmp"), constant(10000)), scoreOf("#net_capacity", "ra.tr.tmp")) },
+				floatProvider { div(fromInt(scoreOf("#net_amount", "ra.tr.tmp")), fromInt(scoreOf("#net_capacity", "ra.tr.tmp"))) },
+				scale = 10000,
 				chain = "if score #net_capacity ra.tr.tmp matches 1..",
 			)
 

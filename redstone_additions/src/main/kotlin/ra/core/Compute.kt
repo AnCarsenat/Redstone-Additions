@@ -125,9 +125,9 @@ fun Function.computeInto(store: String, value: ContextIntProvider, source: Strin
 
 /**
  * `execute [<chain> ]store result score <holder> <objective> run compute <source> float <value> <scale>`.
- * The float result is multiplied by [scale] and stored as the command's integer result,
- * rounded down. The way to keep a scaled ratio such as `amount * 10000 / capacity` in range: the
- * division happens in floats, so no intermediate product has to fit in 32 bits.
+ * The float result times [scale] becomes the command's integer result, which is what the
+ * score store captures. This keeps a scaled ratio such as `amount * 10000 / capacity` in range:
+ * the division happens in floats, so no intermediate product has to fit in 32 bits.
  */
 fun Function.computeScoreScaled(
 	holder: String,

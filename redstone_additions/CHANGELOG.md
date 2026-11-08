@@ -24,6 +24,16 @@ predicates built when the pack is generated. Worlds on v6.0.0 carry on without a
 - **Players may edit entity selectors and tags** (server setting, Sensors page, off by
   default): lets players without server-settings access change the selectors and tags of the
   Entity Detector, Tag Adder, Tag Remover and Message Block.
+- **Purge entities** (server settings, **[Purge entities]**): remove Redstone Additions'
+  entities from a world while keeping the pack, its settings and scoreboards. **Everything**
+  turns every placed RA block into a plain block and clears transport networks, the Teleport
+  Anchor name list and pending Data Handler edits; narrower purges remove only **orphaned
+  displays** (skins and pipe or wire displays whose block is gone), **goggles readouts**, or
+  **dropped RA items**. Each one first shows what it would remove and how many are loaded, and
+  its **[CONFIRM]** works only for the admin who asked, for 30 seconds. A purge reaches loaded
+  chunks only; after **Everything**, RA blocks from before the purge are removed as the rest of
+  the world loads, until you stop that on the Purge page. Other server-settings holders are told
+  who purged what.
 
 ### Changed
 

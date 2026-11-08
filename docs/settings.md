@@ -107,6 +107,34 @@ operator gives you the tag automatically.
     The tag survives reloads and is **not** removed when someone loses operator status. Use
     `/function ra_settings:admin/revoke` (or `/tag <player> remove ra.admin`).
 
+## Purging entities
+
+**[Purge entities]** on the first server-settings page (or `/function ra_settings:admin/purge/show`)
+removes Redstone Additions' **entities** and keeps the pack installed: settings, disabled blocks,
+player preferences and scoreboards stay. Placed blocks stay too, as ordinary vanilla blocks.
+
+| Option | Removes | Keeps |
+|---|---|---|
+| **Everything** | every RA marker (so every machine, network and multiblock), block skins, pipe and wire displays, goggles readouts, RA-tagged dropped items, abandoned input books; releases the chunks powered Chunk Loaders kept loaded; clears transport networks, the Teleport Anchor name list and pending Data Handler edits | settings, disabled blocks, player preferences, clipboards |
+| **Orphaned displays** | skins, pipe and wire displays and floating block items with no block under them | working blocks, goggles readouts |
+| **Goggles readouts** | the floating goggles text and icons (redrawn for anyone still wearing goggles) | everything else |
+| **Dropped RA items** | RA-tagged items on the ground (including a dropped Clock, UNI Gate or Message Block nobody picked up) and Data Handler or settings input books lying around | everything else |
+
+Clicking an option **removes nothing**. It prints, in red, what will go and how many of each are
+loaded right now, with **[CONFIRM]** and **[Cancel]**. **[CONFIRM]** works only for you, only for
+that option, and only for 30 seconds; after that, review again. You get a summary of what was
+removed, and every other player with server-settings access is told who purged what.
+
+!!! warning "Only loaded chunks"
+    Minecraft can only reach entities in loaded chunks, so a purge counts and removes what is
+    loaded. After **Everything**, the Purge page shows **Unloaded chunks: cleaning**: every RA
+    block from before the purge is removed (marker, skin and displays, and its Chunk Loader
+    forceload) the moment its chunk loads. Blocks placed after the purge are never touched.
+    **[Stop]** ends that (old blocks then come back as they load, with their networks gone);
+    **[Resume]** starts it again. Purging **Everything** again restarts it.
+
+There is no undo — copy the world first if you want a backup.
+
 ## Uninstalling
 
 ```

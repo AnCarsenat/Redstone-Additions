@@ -381,6 +381,9 @@ predicates built when the pack is generated. Worlds on v6.0.0 carry on without a
   multiblock falling apart, the Message Block's chime, Ender Links, the Ender Power Vault and the
   Teleport Anchor's portal cloud. They now all respect both settings.
 
+- **The Spitter shows when it throws.** A small puff now comes out of its face with each stack,
+  for players with *Machine particles* on.
+
 ### For contributors
 
 - Migrations are versioned. `storage ra:migrations version` holds the world's version and the

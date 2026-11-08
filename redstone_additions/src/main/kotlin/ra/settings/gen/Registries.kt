@@ -83,7 +83,6 @@ internal class Registries(private val pack: DataPack, private val gen: SettingsG
 		pack.define(Settings.uninstall) {
 			for (obj in gen.userSeed.mapNotNull { it.obj }.toSortedSet()) scoreboard.objectives.remove(obj)
 			for (obj in SettingsObjectives.REMOVED_ON_UNINSTALL) scoreboard.objectives.remove(obj)
-			data(S) { remove("{}") }
 			tag(allPlayers()) { remove(SettingsObjectives.ADMIN_TAG) }
 		}
 

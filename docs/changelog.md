@@ -45,7 +45,11 @@ predicates built when the pack is generated. Worlds on v6.0.0 carry on without a
   cobblestone that received one more ended up with four stacks of one instead of a stack of
   two, and filled up long before it was full. Deliveries now top up matching partial stacks
   first (same item, same name and enchantments), up to the item's own stack size, then use
-  free slots, and only drop what really does not fit.
+  free slots, and only drop what really does not fit. Custom items such as the drill's Rocks
+  stack too: the machine's item is compared in the form the chest actually stores it in, so a
+  Rock no longer looks different from the Rocks already there. The Item Mover also sees room
+  on partial stacks now: a container with every slot taken used to count as full even when its
+  stacks could still take more.
 
 - **Personal settings toggle again.** Clicking a toggle on the *You* page (machine sounds,
   particles, debug messages) did nothing, and the menu kept showing the old value. The click

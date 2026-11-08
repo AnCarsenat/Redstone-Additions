@@ -46,7 +46,7 @@ What Shift + right-click does depends on the block:
 | UNI Gate | gate type |
 | Liquid Drain | mode, rate |
 | Electric Furnace | output face, power mode |
-| EU Consumer | rate |
+| EU Consumer | draw (20 / 40 / 80 EU per tick) |
 | Creative Fluid Source | fluid |
 | Ender Item / Fluid / Power Vault | mode |
 

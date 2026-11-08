@@ -158,7 +158,7 @@ object WiresBlocks : PackPart {
 		bundles += GiveBundle("wires", "Wires Bundle", "Fluid and electric network blocks", Ns.WIRES, items.map { it.stackNbt() })
 
 		wrenchCycle("creative_fluid", WrenchCycle("Medium", "medium", CreativeFluid.cycleMedium))
-		wrenchCycle("electric_consumer", WrenchCycle("Rate", "cooldown", ElectricConsumer.cycleRate))
+		wrenchCycle("electric_consumer", WrenchCycle("Draw", "eu_use", ElectricConsumer.cycleRate))
 		wrenchCycle("electric_furnace",
 			WrenchCycle("Output", "output", ElectricFurnaceSettings.cycleOutput),
 			WrenchCycle("Power", "mode", ElectricFurnaceSettings.cycleMode))
@@ -185,10 +185,8 @@ object WiresBlocks : PackPart {
 		}
 		properties("electric_generator") { number("generation_rate", min = 1, max = 10000, readonly = true) }
 		properties("solar_panel") { number("generation_rate", min = 1, max = 10000, readonly = true) }
-		properties("electric_consumer") {
-			number("eu_use", min = 1, readonly = true)
-			number("cooldown", min = 1, max = 1200)
-		}
+		// eu_use is the consumer's setting, not a fixed rate: the wrench cycles it 20 / 40 / 80.
+		properties("electric_consumer") { number("eu_use", min = 1, max = 10000) }
 		properties("industrial_light") { number("eu_use", min = 0, max = 1000, readonly = true) }
 		properties("creative_fluid") {
 			text("medium")

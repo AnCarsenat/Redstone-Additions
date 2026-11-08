@@ -68,6 +68,11 @@ predicates built when the pack is generated. Worlds on v6.0.0 carry on without a
 
 ### Fixed
 
+- **The EU Consumer's draw is a setting again.** Its Wrench row was called "Rate" and showed a
+  `cooldown` value the Consumer never uses, while its [ CYCLE ] button changed the draw, which
+  the Data Handler showed locked as a fixed value. The row is now "Draw" and shows the 20 / 40 /
+  80 EU per tick it cycles, and the Data Handler lets you set the draw directly.
+
 - **Tanks and batteries out of view keep what they hold.** Placing or breaking any pipe or wire
   recounted every network in the world from the blocks that were loaded at the time. A network
   out of view lost its contents for good, and came back showing 0 / 0, with its pumps and

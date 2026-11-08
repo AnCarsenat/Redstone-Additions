@@ -66,6 +66,9 @@ object Remote {
 	/** Hotbar slot the remote occupied when its channel prompt opened. */
 	const val SLOT = "ra.remote.slot"
 
+	/** The ra_lib:input request this player opened FOR THE REMOTE, so it never consumes another tool's answer. */
+	const val REQ = "ra.remote.req"
+
 	private val buttons = listOf(
 		Items.OAK_BUTTON, Items.SPRUCE_BUTTON, Items.BIRCH_BUTTON, Items.JUNGLE_BUTTON, Items.ACACIA_BUTTON,
 		Items.DARK_OAK_BUTTON, Items.CHERRY_BUTTON, Items.PALE_OAK_BUTTON, Items.MANGROVE_BUTTON, Items.BAMBOO_BUTTON,
@@ -204,6 +207,8 @@ object Remote {
 
 			scoreboard.players.set(self(), PENDING, 1)
 			function(RaLib.Input.openText)
+			// Which request is ours: the settings menu and the Data Handler share the library.
+			raw("scoreboard players operation @s $REQ = @s ra.input.req")
 
 			raw("playsound minecraft:block.note_block.bell block @s[scores={${Obj.USER_SOUND}=1..}] ~ ~ ~ 0.5 1.2")
 		}
@@ -225,6 +230,11 @@ object Remote {
 			// became available.
 			raw("execute unless entity @s[tag=ra.input.active] unless score @s ra.input.state matches 2 run scoreboard players set @s $PENDING 0")
 			raw("execute unless entity @s[tag=ra.input.active] unless score @s ra.input.state matches 2 run return 0")
+
+			// Not our answer. Consuming another tool's session would hand it an empty result; and ours
+			// was cancelled when that one opened, so it is never coming back -- stop waiting for it.
+			raw("execute unless score @s $REQ = @s ra.input.req run scoreboard players set @s $PENDING 0")
+			raw("execute unless score @s $REQ = @s ra.input.req run return 0")
 
 			executeStoreRun("", "#remote_state", RaLib.Input.poll)
 			raw("execute unless score #remote_state ${Obj.TEMP} matches 2 run return 0")

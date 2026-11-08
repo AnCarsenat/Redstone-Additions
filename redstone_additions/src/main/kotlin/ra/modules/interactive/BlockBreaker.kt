@@ -11,6 +11,8 @@ import ra.core.Ra
 import ra.core.block.CustomBlock
 import ra.core.block.gogglesHeader
 import ra.core.block.placeBlock
+import ra.core.block.readProperty
+import ra.core.block.setOnNew
 import ra.core.define
 import ra.core.raw
 import ra.core.item.loreItem
@@ -31,20 +33,22 @@ import io.github.ayfri.kore.features.recipes.types.pattern
 import io.github.ayfri.kore.features.recipes.types.key
 
 /**
- * Block Breaker: a dispenser that breaks the block in front of it when powered, at most once a
- * second (`ra.cooldown`, shared with ra_lib).
+ * Block Breaker: a dispenser that breaks the block in front of it when powered, at most once per
+ * `cooldown` ticks (20 by default; the countdown is `ra.cooldown`, shared with ra_lib).
  */
 object BlockBreaker {
 	val block = CustomBlock(Ns.INTERACTIVE, "block_breaker", "Block Breaker", model = "minecraft:dispenser", dirType = 2)
 	val item = block.loreItem {}
 	val registerBlock = block.fn("register_block")
 	private val fire = block.fn("fire")
+	private const val DEFAULT_COOLDOWN = 20
 
 	fun Ra.registerBlockBreaker() {
 		block(block)
-		// The cooldown is the block's own clock, not a setting.
+		// Ticks between two breaks. A server admin's setting, not a player's: a fast breaker is a
+		// fast quarry. Read with a default, so a breaker placed before it was seeded acts at 20.
 		properties(block) {
-			number("cooldown", min = 1, readonly = true)
+			number("cooldown", min = 1, max = 1200, adminOnly = true, goggles = false)
 		}
 		pack.blockRegisterMessage(block)
 		pack.specGive(block, item)
@@ -58,6 +62,7 @@ object BlockBreaker {
 		pack.define(block.handlePlacement) {
 			placementGuard(block, checkExisting = false)
 			placeBlock(block)
+			setOnNew(block, "data.properties.cooldown", "$DEFAULT_COOLDOWN")
 			finishPlacement(block, removePlaceTag = false, withinBlock = false)
 		}
 		pack.define(block.goggles) { gogglesHeader(block, nameY = 1.0) }
@@ -72,8 +77,8 @@ object BlockBreaker {
 
 			// One gated call instead of five identical selector sweeps that each re-tested the
 			// same conditions -- and re-tested them AFTER the first had already changed the
-			// world. See fire.
-			executeRun("as ${block.markerSel("scores={${Obj.COOLDOWN}=20..}")} at @s if block ~ ~ ~ dispenser[triggered=true] unless block ^ ^ ^1 #air", fire)
+			// world. See fire, which also waits out the breaker's own cooldown.
+			executeRun("as ${block.markerSel()} at @s if block ~ ~ ~ dispenser[triggered=true] unless block ^ ^ ^1 #air", fire)
 		}
 	}
 
@@ -92,6 +97,10 @@ object BlockBreaker {
 	 * the same mistake the Clock's latch made in miniature.
 	 */
 	private fun Function.fire() {
+		// The breaker's own period. A powered breaker with nothing in reach keeps counting, so the
+		// first block to arrive is broken at once -- as before, when the period was a fixed 20.
+		readProperty("cooldown", default = DEFAULT_COOLDOWN, min = 1)
+		raw("execute unless score @s ${Obj.COOLDOWN} >= #prop ${Obj.TEMP} run return 0")
 		scoreboard.players.set(self(), Obj.COOLDOWN, 0)
 		raw("execute positioned ^ ^ ^1 unless block ~ ~ ~ #ra_lib:unbreakable run fill ~ ~ ~ ~ ~ ~ air destroy")
 		raw("playsound minecraft:block.stone.break block ${soundListenersSel()} ~ ~ ~ 1 0.8")

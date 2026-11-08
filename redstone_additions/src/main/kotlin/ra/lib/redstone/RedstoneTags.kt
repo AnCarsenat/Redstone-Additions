@@ -114,8 +114,9 @@ internal object RedstoneTags {
 			add(Blocks.LIGHTNING_ROD)
 		}
 
-		// Sources that drive one direction only, and strongly: `facing` is where they output,
-		// `powered` whether they are.
+		// Sources that drive one direction only, and strongly. They output towards the OPPOSITE of
+		// `facing` (a repeater's and comparator's `facing` points at their input, an observer's at
+		// the block it watches); `powered` is whether they are on.
 		blockTag("redstone/directional_sources", ns) {
 			add(Blocks.REPEATER)
 			add(Blocks.COMPARATOR)

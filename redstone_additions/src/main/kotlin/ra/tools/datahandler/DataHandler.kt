@@ -19,6 +19,7 @@ import ra.core.raw
 import ra.tools.REACH_4
 import ra.tools.ToolItems
 import ra.tools.datahandler.DataHandlerActions.registerDataHandlerActions
+import ra.tools.datahandler.DataHandlerSelection.registerDataHandlerSelection
 import ra.tools.datahandler.props.DataHandlerProps
 import ra.tools.datahandler.props.DataHandlerProps.registerDataHandlerProps
 import ra.tools.raycast
@@ -44,7 +45,7 @@ object DataHandler {
 	val setProperty = tool("data_handler/set_property")
 	val setType = tool("data_handler/set_type")
 
-	private const val TARGET = "@e[type=marker,tag=ra.dh_target,limit=1]"
+	private const val TARGET = DataHandlerSelection.TARGET
 	private const val PREFIX = """{text:"[Data Handler] ",color:"gold"}"""
 
 	fun Ra.registerDataHandler() {
@@ -63,10 +64,12 @@ object DataHandler {
 			tag(self()) { add("ra.dh_active") }
 			// Only works when sneaking.
 			raw("execute unless predicate ra:is_sneaking run return 0")
-			// Remove the target tag from any previously selected block.
-			raw("tag @e[type=marker,tag=ra.dh_target] remove ra.dh_target")
+			// Forget this player's previous block. Only theirs: other players keep their own selection.
+			scoreboard.players.set(self(), DataHandlerSelection.SEL, 0)
 			data(Storage.TEMP) { remove("dh_found") }
 			raycast(REACH_4, "dh_found", foundBlock)
+			raw("execute if data storage ra:temp dh_found run scoreboard players operation @s ${DataHandlerSelection.SEL} = #dh.found ${Obj.TEMP}")
+			function(DataHandlerSelection.select)
 			executeRun("if data storage ra:temp dh_found", refresh)
 			raw("""execute unless data storage ra:temp dh_found run tellraw @s [$PREFIX,{text:"No custom block found nearby.",color:"gray"}]""")
 			data(Storage.TEMP) { remove("dh_found") }
@@ -75,7 +78,12 @@ object DataHandler {
 		// A custom block was found. As its marker, at the marker.
 		pack.define(foundBlock) {
 			data(Storage.TEMP) { modify("dh_found", NbtByte(1)) }
-			tag(self()) { add("ra.dh_target") }
+			tag(self()) { add(DataHandlerSelection.TARGET_TAG) }
+			// A number of its own the first time anybody selects it, so a player can point at it.
+			val mid = DataHandlerSelection.MID
+			raw("execute unless score @s $mid matches 1.. run scoreboard players add #next $mid 1")
+			raw("execute unless score @s $mid matches 1.. run scoreboard players operation @s $mid = #next $mid")
+			raw("scoreboard players operation #dh.found ${Obj.TEMP} = @s $mid")
 			raw("data modify storage ra:dh target set from entity @s UUID")
 			// Resolve the block's display name. Each block declares its own name in its goggles
 			// function; this used to be a hand-written tag-to-name table duplicated between the two
@@ -168,21 +176,27 @@ object DataHandler {
 			raw("\$data modify storage ra:dh hidden set from storage ra:dh readonly.\"\$(type)\"")
 		}
 
+		registerDataHandlerSelection()
 		registerManualEdits()
 		registerDataHandlerActions()
 		registerDataHandlerProps()
 	}
 
-	/** Chat-command editing, kept for players and scripts that call it (`/function ... {name:...}`). */
+	/**
+	 * Chat-command editing, kept for players and scripts that call it (`/function ... {name:...}`).
+	 * Each acts on the calling player's own selected block.
+	 */
 	private fun Ra.registerManualEdits() {
 		// {name, value, type}: add a property to the target block. As the player.
 		pack.define(addProperty) {
+			function(DataHandlerSelection.select)
 			raw("\$data modify entity $TARGET data.properties.\$(name) set value \$(value)")
 			raw("""${'$'}tellraw @s [$PREFIX,{text:"Added property ",color:"gray"},{text:"$(name)",color:"yellow"},{text:" = ",color:"gray"},{text:"$(value)",color:"green"},{text:" (",color:"gray"},{text:"$(type)",color:"aqua"},{text:")",color:"gray"}]""")
 			function(refresh)
 		}
 		// {name}
 		pack.define(removeProperty) {
+			function(DataHandlerSelection.select)
 			raw("\$data remove entity $TARGET data.properties.\$(name)")
 			raw("""${'$'}tellraw @s [$PREFIX,{text:"Removed property ",color:"gray"},{text:"$(name)",color:"red"}]""")
 			function(refresh)
@@ -191,6 +205,7 @@ object DataHandler {
 		//   /data modify storage ra:dh set_value set value "Hello friend !"
 		//   /function ra:tools/data_handler/set_property {name:"message_block"}
 		pack.define(setProperty) {
+			function(DataHandlerSelection.select)
 			raw("\$data modify entity $TARGET data.properties.\$(name) set from storage ra:dh set_value")
 			raw("""${'$'}tellraw @s [$PREFIX,{text:"Set ",color:"gray"},{text:"$(name)",color:"yellow"},{text:" = ",color:"gray"},{nbt:"set_value",storage:"ra:dh",color:"green"}]""")
 			function(refresh)

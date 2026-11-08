@@ -120,6 +120,10 @@ private fun Function.scoreboards() {
 	scoreboard.objectives.add(EDIT_TYPE, ScoreboardCriteria.TRIGGER)
 	scoreboard.objectives.add(DH_ACTION, ScoreboardCriteria.TRIGGER)
 	scoreboard.objectives.add(DH_PENDING)
+	// Per-player selection and pending edit: see ra.tools.datahandler.DataHandlerSelection.
+	scoreboard.objectives.add(ra.tools.datahandler.DataHandlerSelection.MID)
+	scoreboard.objectives.add(ra.tools.datahandler.DataHandlerSelection.SEL)
+	scoreboard.objectives.add(ra.tools.datahandler.DataHandlerSelection.REQ)
 
 	// How long a tool's menu triggers stay usable after it was last in hand. An enabled trigger
 	// appears in everyone's /trigger completion whether it can do anything or not, so they are

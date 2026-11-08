@@ -39,7 +39,9 @@ private val OBJECTIVES = listOf(
 )
 
 /** Added after the list above was written. Two repeat entries of it, harmlessly. */
-private val LATE_OBJECTIVES = listOf("ra.clip.id", "ra.dh.pending", "ra.edit_type")
+private val LATE_OBJECTIVES = listOf(
+	"ra.clip.id", "ra.dh.pending", "ra.edit_type", "ra.dh.mid", "ra.dh.sel", "ra.dh.req", "ra.remote.req",
+)
 
 private val STORAGES = listOf(
 	Storage.MULTIBLOCK, Storage.TEMP, Storage.BLOCK, Storage.CDH, Storage.DH, Storage.INPUT,
@@ -76,6 +78,7 @@ internal fun DataPack.registerUninstallConfirm() = define(confirm) {
 
 	PLAYER_TAGS.forEach { t -> tag(allPlayers()) { remove(t) } }
 	untagMarkers("ra.dh_target")
+	untagMarkers("ra.dh_selected")
 	tag(allPlayers()) { remove("ra.wrench_user") }
 	untagMarkers("ra.wires.node")
 	untagMarkers("ra.wrench.sel")

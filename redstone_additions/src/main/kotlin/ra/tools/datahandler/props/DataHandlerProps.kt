@@ -17,6 +17,7 @@ import ra.core.macroCall
 import ra.core.raw
 import ra.tools.datahandler.DataHandler
 import ra.tools.datahandler.DataHandlerActions
+import ra.tools.datahandler.props.DataHandlerList.registerDataHandlerList
 import ra.tools.datahandler.props.PropRows.registerPropRows
 import ra.tools.tool
 
@@ -35,9 +36,8 @@ object DataHandlerProps {
 	val askText = tool("data_handler/props/ask_text")
 	val writeNumber = tool("data_handler/props/write_number")
 	val writeText = tool("data_handler/props/write_text")
-	val writeList = tool("data_handler/props/write_list")
 
-	internal const val TARGET = "@e[type=marker,tag=ra.dh_target,limit=1]"
+	internal const val TARGET = ra.tools.datahandler.DataHandlerSelection.TARGET
 	internal const val PREFIX = """{text:"[Data Handler] ",color:"gold"}"""
 
 	fun Ra.registerDataHandlerProps() {
@@ -162,12 +162,12 @@ object DataHandlerProps {
 			function(DataHandlerActions.requestText)
 		}
 
-		// {name} / {name,text}: the three writes, one per input kind.
+		// {name}: the number and text writes. A list goes through DataHandlerList, which checks it first.
 		pack.define(writeNumber) { raw("\$data modify entity $TARGET data.properties.\$(name) set from storage ra:input consume.number") }
 		pack.define(writeText) { raw("\$data modify entity $TARGET data.properties.\$(name) set from storage ra:input consume.text") }
-		pack.define(writeList) { raw("\$data modify entity $TARGET data.properties.\$(name) set value \$(text)") }
 
 		registerRender()
+		registerDataHandlerList()
 		registerPropRows()
 	}
 

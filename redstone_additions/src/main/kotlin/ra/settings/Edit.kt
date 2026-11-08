@@ -13,6 +13,7 @@ import io.github.ayfri.kore.functions.Function
 import ra.api.RaLib
 import ra.core.Ns
 import ra.core.Obj
+import ra.core.Storage
 import ra.core.Ra
 import ra.core.Tag
 import ra.core.define
@@ -133,6 +134,8 @@ private fun Function.editStart() {
 
 	function(RaLib.Input.sessionCreate)
 	function(RaLib.Input.routerSelectBackend)
+	// What is being asked for, so the number prompt can say "Enter a number for <label> (min–max)".
+	execute { ifCondition { data(S, "edit.label") }; run { data(Storage.INPUT) { modify("label") { set(S, "edit.label") } } } }
 	function(RaLib.Input.routerOpen)
 
 	// Which request is ours. ra_lib:input is shared with the Data Handler, and consume() tears a

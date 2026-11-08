@@ -111,7 +111,7 @@ internal object AdminRows {
 		define(action(pageId, row.label, "edit")) {
 			edit(buildNbtCompound {
 				put("kind", "prop"); put("block", row.block); put("prop", row.prop)
-				put("type", "int"); put("min", row.min); put("max", row.max)
+				put("type", "int"); put("min", row.min); put("max", row.max); put("label", row.label)
 			})
 		}
 	}
@@ -141,7 +141,7 @@ internal object AdminRows {
 		// Stepping is one click; typing is for when the target is far from where the value sits.
 		define(action(pageId, row.label, "edit")) {
 			edit(buildNbtCompound {
-				put("kind", "global"); put("key", row.key); put("type", "int"); put("min", row.min); put("max", row.max)
+				put("kind", "global"); put("key", row.key); put("type", "int"); put("min", row.min); put("max", row.max); put("label", row.label)
 			})
 		}
 	}

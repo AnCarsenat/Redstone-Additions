@@ -45,6 +45,17 @@ Every setting is also a command, so you can tab-complete your way through them:
 /function ra_settings:admin/wires/electric_furnace/disable
 ```
 
+### Typing a value
+
+**edit** asks for the value in one of two ways:
+
+- **A number** is typed with `/trigger ra.input.trigger set <n>` (the chat shows a ready-made
+  link). The prompt waits 30 seconds.
+- **Text** is written on page 1 of an **Input Form** book; close the book to submit. You may
+  hold the form in either hand. The prompt waits 5 minutes, and the wait starts again whenever
+  you hold the form, so it never runs out while you are writing. Dropping the form, or putting it
+  in a chest, bundle or lectern, cancels the prompt and the form disappears.
+
 ### What you can change
 
 | Page | Settings |
@@ -121,7 +132,7 @@ are usable, so your `/trigger` list stays short:
 | `ra.settings.admin` | which server-settings button you clicked; bare, opens the index | for `ra.admin` holders |
 | `ra.wrench` | Wrench menu | while holding the Wrench, plus 10 seconds |
 | `ra.dh.action`, `ra.edit_type` | Data Handler menu | while holding the Data Handler, plus 10 seconds |
-| `ra.input.trigger` | number prompts when no book is used | during a prompt |
+| `ra.input.trigger` | number prompts ([Typing a value](#typing-a-value)) | while a number prompt waits for you |
 | `ra.jp.mode`, `.sound`, `.power`, `.kits` | [Jetpacks](jetpacks.md) | while wearing a jetpack |
 
 The two uninstall confirmations use ordinary command links on purpose, so Minecraft's own

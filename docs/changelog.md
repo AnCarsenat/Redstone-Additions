@@ -63,6 +63,28 @@ predicates built when the pack is generated. Worlds on v6.0.0 carry on without a
   and be filled from, or drained into, the wrong side. The ratio is now computed in floating
   point and is right at any size.
 
+- **Text prompts give you time to write.** Typing a channel, a name or a setting value in the
+  Input Form ran out 30 seconds after the prompt opened, however busy you were writing, and
+  the text was thrown away with "Input request expired." A text prompt now lasts 5 minutes,
+  and the clock starts again whenever you hold the form in either hand, so it only expires
+  once you have really left it alone.
+
+- **One Input Form per prompt.** The prompt looked for its form only in your main inventory.
+  Swapping it to your offhand, putting it in a chest, bundle or lectern, or carrying it on the
+  cursor handed you a second form, text written in the offhand was never picked up, and a form
+  left in a chest stayed behind as a free Book and Quill. The form now works from the offhand
+  too, is never handed out twice, and putting it away cancels the prompt just like dropping it
+  does. A leftover form is taken back as soon as someone picks it up outside a prompt.
+
+- **Dropping your form cancels even next to someone else's prompt.** A player finishing a text
+  prompt removed every dropped Input Form within 8 blocks, including one another player had
+  just dropped to cancel theirs, whose prompt then stayed open. Each prompt now removes only its
+  own form.
+
+- **`ra.input.trigger` leaves your `/trigger` list.** After your first number prompt the input
+  trigger stayed in your `/trigger` suggestions for good. It is now offered only while a number
+  prompt is waiting for you, and removed from everyone online on the next load.
+
 ### For contributors
 
 - `ra/core/Compute.kt` builds and emits `/compute` providers; the [Developer Guide](developer-guide.md#arithmetic-with-compute)

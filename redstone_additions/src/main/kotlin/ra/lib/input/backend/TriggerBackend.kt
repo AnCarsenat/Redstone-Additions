@@ -27,6 +27,9 @@ object TriggerBackend {
 	fun Ra.registerTriggerBackend() {
 		// Prompt the player to submit numeric input using /trigger.
 		pack.define(openChoice) {
+			// Enabled here, for number prompts only; session/cleanup resets it when the prompt ends.
+			scoreboard.players.enable(self(), InputObj.TRIGGER)
+
 			raw("tellraw @s \"\"")
 			inputMessage("Numeric input requested.", "aqua")
 			raw("""tellraw @s [{text:"Range: ",color:"gray"},{score:{name:"@s",objective:"${InputObj.MIN}"},color:"yellow"},{text:"..",color:"dark_gray"},{score:{name:"@s",objective:"${InputObj.MAX}"},color:"yellow"}]""")
@@ -59,6 +62,9 @@ object TriggerBackend {
 			scoreboard.players.operation(self(), InputObj.RESULT, Operation.SET, self(), InputObj.VALUE)
 			scoreboard.players.set(self(), InputObj.STATE, 2)
 			tag(self()) { remove(InputObj.ACTIVE) }
+			// Answered: nothing more to submit, so take the trigger off the /trigger list now
+			// rather than when the caller consumes.
+			scoreboard.players.reset(self(), InputObj.TRIGGER)
 
 			storeReq()
 			raw("execute store result storage ra:input tmp.value int 1 run scoreboard players get @s ${InputObj.VALUE}")

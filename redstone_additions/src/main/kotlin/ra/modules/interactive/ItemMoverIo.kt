@@ -71,12 +71,15 @@ object ItemMoverIo {
 		raw("execute if data block ~ ~ ~ Items[0] run data modify storage ra:temp mover_item set from block ~ ~ ~ Items[0]")
 		raw("execute if data block ~ ~ ~ Items[0] run scoreboard players set #mover_has_input ${Obj.TEMP} 1")
 
-		// Empty: probe the partner half.
+		// Empty: probe the partner half. The partner flag is set BEFORE #mover_has_input, under the
+		// same "nothing selected yet" guard. It used to be set after, on "has_input matches 1", which
+		// was also true when the item came from the primary half -- so a double chest with items in
+		// both halves duplicated the primary's first stack and deleted the partner's.
 		for (h in CHEST_HALVES) {
 			val at = "${h.toPartner} if data block ~ ~ ~ Items[0] run"
 			raw("execute if score #mover_has_input ${Obj.TEMP} matches 0 $at data modify storage ra:temp mover_item set from block ~ ~ ~ Items[0]")
+			raw("execute if score #mover_has_input ${Obj.TEMP} matches 0 $at scoreboard players set #mover_input_partner ${Obj.TEMP} 1")
 			raw("execute if score #mover_has_input ${Obj.TEMP} matches 0 $at scoreboard players set #mover_has_input ${Obj.TEMP} 1")
-			raw("execute if score #mover_has_input ${Obj.TEMP} matches 1 $at scoreboard players set #mover_input_partner ${Obj.TEMP} 1")
 		}
 
 		raw("return run scoreboard players get #mover_has_input ${Obj.TEMP}")

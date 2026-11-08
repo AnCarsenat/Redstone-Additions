@@ -316,6 +316,11 @@ predicates built when the pack is generated. Worlds on v6.0.0 carry on without a
   an old Data Handler edit wrote something else) is padded, trimmed or emptied the first time
   the anchor runs.
 
+- **Item Movers, Boxers and Unboxers no longer duplicate items from a double chest.** When both
+  halves of a double chest held items, the machine took the first stack of the half it faces but
+  then removed the items from the other half: the stack it moved was copied, and the other
+  half's first stack disappeared. It now removes items from the half it actually took them from.
+
 ### For contributors
 
 - A property can set `goggles = true` to show on the Goggles label even when `visible = false`

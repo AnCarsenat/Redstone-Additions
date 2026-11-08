@@ -52,8 +52,9 @@ Pipes move items forward from one container (or pipe) to the next, a whole stack
 there is room, every 4 ticks. When the next container is full, items wait in the pipe — nothing
 is dropped.
 
-**Sorting:** a pipe can have a **filter**. Items matching it are pushed into a container at the
-side of the pipe instead of continuing forward; everything else carries on.
+**Sorting:** a pipe can have a **filter**. Items matching it are pushed into a container at one
+of the pipe's four sides instead of continuing forward (never back into the container feeding
+it); everything else carries on.
 
 1. Shift + right-click the pipe with the [Data Handler](tools.md).
 2. On the `filter_item` row, hold the item to sort and press **[Set from hand]** (or type an item

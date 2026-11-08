@@ -323,6 +323,11 @@ predicates built when the pack is generated. Worlds on v6.0.0 carry on without a
   then removed the items from the other half: the stack it moved was copied, and the other
   half's first stack disappeared. It now removes items from the half it actually took them from.
 
+- **Item Pipe filters use all four sides.** On a pipe pointing up or down, filtered items were
+  only ever sent into containers at two of its sides, and could be pushed back into the container
+  feeding the pipe. A filtering pipe now tries the four containers around it, whichever way it
+  points, and never the one behind it.
+
 ### For contributors
 
 - A property can set `goggles = true` to show on the Goggles label even when `visible = false`

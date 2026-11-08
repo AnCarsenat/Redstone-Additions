@@ -79,8 +79,10 @@ redstone needed.
 
 ## Breeder
 
-1. Put the right food in the Breeder (it has a chest-like inventory and never throws its items).
-2. Keep two adult animals of the same kind in the block in front of it.
+1. Put the right food in the Breeder itself (it has a chest-like inventory and never throws its
+   items). It feeds only from its own inventory, not from a container next to it.
+2. Keep two adult animals of the same kind in front of it (within two blocks of the block it
+   faces).
 3. Power it. It uses one food per pair it feeds.
 
 | Animal | Food |

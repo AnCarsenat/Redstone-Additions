@@ -155,7 +155,8 @@ object Breeder {
 
 	/**
 	 * A pair bred. Positioned at the breeder. The plain one consumes one `breed_item` from the
-	 * container; the bucket one turns the tropical fish bucket back into a water bucket.
+	 * breeder's own inventory; the bucket one turns the tropical fish bucket back into a water
+	 * bucket. The hearts and the sound are in front, where the animals are.
 	 */
 	private fun Function.breedSuccess(bucket: Boolean) {
 		raw("playsound minecraft:entity.experience_orb.pickup block ${soundListenersSel(8)} ^ ^ ^1 0.5 1.2")

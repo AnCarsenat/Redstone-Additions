@@ -353,6 +353,11 @@ predicates built when the pack is generated. Worlds on v6.0.0 carry on without a
   never reached past 20; it now refuses values above what the crate uses. Its pull interval
   (`cooldown`) is now a server admin's setting.
 
+- **The Breeder feeds from its own inventory.** It looked for food in the container behind it
+  (except for horses and llamas), and only ran when its own inventory had something in it, so a
+  Breeder stocked with food bred nothing. It now takes the food from its own inventory for every
+  animal, and looks for the animals in front of it.
+
 ### For contributors
 
 - A property can set `goggles = true` to show on the Goggles label even when `visible = false`

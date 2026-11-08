@@ -126,9 +126,12 @@ object BreederBreeds {
 	/**
 	 * Try to breed the animals in front. As the breeder marker, at the breeder.
 	 *
-	 * Every line below is measured from `^ ^ ^-1`, and each breed function opens with
-	 * `positioned ^ ^ ^1`, which undoes it exactly -- so the container test happens one block
-	 * behind and the animal search back at this block. Kept as the beet pack wrote it.
+	 * THE FOOD IS THE BREEDER'S OWN. Every container test and every consume runs at the breeder
+	 * (`block ~ ~ ~`); only the animal searches move one block forward (`positioned ^ ^ ^1`). The
+	 * beet pack ran the breed functions from `^ ^ ^-1`, so the food was looked for in whatever
+	 * container stood BEHIND the breeder -- while the tick only called this when the breeder's own
+	 * inventory had something in it, and the tamed animals (horses, llamas) ate from the breeder's
+	 * own inventory. A breeder stocked the way the docs say bred nothing.
 	 */
 	fun Function.tryBreed() {
 		scoreboard.players.set(self(), Obj.TEMP, 0)
@@ -146,16 +149,13 @@ object BreederBreeds {
 		// function does for itself, which is the point -- those tests were the reason the chain ran
 		// to the end and found nothing.
 		//
-		// Measured from the breeder itself, with the same radius and the same NBT test the breed
-		// functions use. Note that they are NOT measured from the `^ ^ ^-1` the lines below use:
-		// each breed function opens with `positioned ^ ^ ^1`, which undoes it exactly, so the
-		// animal search happens back at this block. Putting the gate a block behind would test
-		// empty air and stop every breeder working.
-		raw("execute unless entity ${ready("#${Breeder.BREEDABLE_ID}")} run return 0")
+		// Measured from the block in front, with the same radius and the same NBT test the breed
+		// functions use.
+		raw("execute positioned ^ ^ ^1 unless entity ${ready("#${Breeder.BREEDABLE_ID}")} run return 0")
 
 		for (b in breeds) {
 			val items = if (b.gate == null) "" else " if items block ~ ~ ~ container.* ${b.gate}"
-			executeRun("if score @s ${Obj.TEMP} matches 0 positioned ^ ^ ^-1$items", b.fn)
+			executeRun("if score @s ${Obj.TEMP} matches 0$items", b.fn)
 		}
 	}
 
@@ -178,7 +178,8 @@ object BreederBreeds {
 			raw("execute positioned ^ ^ ^1 if entity ${ready(animal, tame)} as ${ready(animal, tame)} run data modify entity @s InLove set value 600")
 			val adult = "@e[type=$animal,distance=..2,limit=1,nbt={Age:0$tame}]"
 			raw("execute positioned ^ ^ ^1 if entity $adult run data modify storage ra:temp breed_item set value \"${b.food}\"")
-			executeRun("positioned ^ ^ ^1 if entity $adult", Breeder.breedSuccess)
+			// Tested in front, consumed back at the breeder.
+			executeRun("positioned ^ ^ ^1 if entity $adult positioned ^ ^ ^-1", Breeder.breedSuccess)
 		}
 	}
 

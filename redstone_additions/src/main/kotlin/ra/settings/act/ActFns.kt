@@ -35,6 +35,9 @@ internal object ActFns {
 	val at = ref(Ns.SETTINGS, "act/at")
 	val ask = ref(Ns.SETTINGS, "act/ask")
 	val user = ref(Ns.SETTINGS, "act/user")
+	val userBool = ref(Ns.SETTINGS, "act/user/bool")
+	val userInt = ref(Ns.SETTINGS, "act/user/int")
+	val userList = ref(Ns.SETTINGS, "act/user/list")
 
 	fun Ra.registerAct() {
 		pack.define(Fns.act) { act() }
@@ -52,6 +55,9 @@ internal object ActFns {
 		}
 
 		pack.define(user) { user() }
+		pack.define(userBool) { userBool() }
+		pack.define(userInt) { userInt() }
+		pack.define(userList) { userList() }
 	}
 
 	/**
@@ -123,33 +129,59 @@ internal object ActFns {
 		execute { ifCondition { data(S, str) }; run { returnValue(0) } }
 		execute { ifCondition { data(S, int) }; ifCondition { score(tmp("#dir"), Obj.SET_TMP) equalTo 0 }; run { returnValue(0) } }
 
-		function(user, S, "cur")
+		function(user)
 		function(Fns.pageOpen)
 	}
 
-	/** `act/user {obj, type, default, min, max, step, values}`: change this player's own value. */
+	/**
+	 * `act/user`: change this player's own value for the row in storage ra:settings cur.
+	 *
+	 * ONE MACRO PER TYPE. A macro call fails outright when any `$(name)` it uses is missing from
+	 * the compound, and a bool row carries no min, max or step. The single `act/user` macro this
+	 * replaces used all three, so every bool click was dropped before a command ran: personal
+	 * toggles never flipped, and the menu, redrawn from the unchanged score, showed the old value.
+	 * Each branch below only names the fields its own row type always has.
+	 */
 	private fun Function.user() {
-		val c = "execute if data storage ra:settings cur"
+		val c = "storage ra:settings cur"
 		setTmp("#n", 0)
+		raw("execute if data $c{type:\"bool\"} run function ${userBool.asId()} with $c")
+		raw("execute if data $c{type:\"int\"} run function ${userInt.asId()} with $c")
+		raw("execute if data $c{type:\"list\"} run function ${userList.asId()} with $c")
+	}
+
+	/** Reads the player's current value into #n; an unset score stays 0. */
+	private fun Function.readCurrent() {
 		raw("\$execute if score @s \$(obj) matches -2147483648.. store result score #n ${Obj.SET_TMP} run scoreboard players get @s \$(obj)")
+	}
 
-		// bool: flip it.
-		raw("\$$c{type:\"bool\"} if score #n ${Obj.SET_TMP} matches 1.. run scoreboard players set @s \$(obj) 0")
-		raw("\$$c{type:\"bool\"} if score #n ${Obj.SET_TMP} matches ..0 run scoreboard players set @s \$(obj) 1")
+	/** `act/user/bool {obj}`: flip it. */
+	private fun Function.userBool() {
+		readCurrent()
+		raw("\$execute if score #n ${Obj.SET_TMP} matches 1.. run return run scoreboard players set @s \$(obj) 0")
+		raw("\$scoreboard players set @s \$(obj) 1")
+	}
 
-		// int: step, then clamp. Clamping here rather than refusing keeps the button always doing
-		// something visible at the ends of the range.
-		raw("\$$c{type:\"int\"} if score #dir ${Obj.SET_TMP} matches 1 run scoreboard players add #n ${Obj.SET_TMP} \$(step)")
-		raw("\$$c{type:\"int\"} if score #dir ${Obj.SET_TMP} matches ..-1 run scoreboard players remove #n ${Obj.SET_TMP} \$(step)")
+	/**
+	 * `act/user/int {obj, min, max, step}`: step, then clamp. Clamping here rather than refusing
+	 * keeps the button always doing something visible at the ends of the range.
+	 */
+	private fun Function.userInt() {
+		readCurrent()
+		raw("\$execute if score #dir ${Obj.SET_TMP} matches 1 run scoreboard players add #n ${Obj.SET_TMP} \$(step)")
+		raw("\$execute if score #dir ${Obj.SET_TMP} matches ..-1 run scoreboard players remove #n ${Obj.SET_TMP} \$(step)")
 		// The bounds are macro text, so the provider is too: min(max(n, min), max).
 		val n = scoreOf("#n", Obj.SET_TMP).snbt()
 		val clamp = "{type:\"minecraft:min\",inputs:[{type:\"minecraft:max\",inputs:[$n,\$(min)]},\$(max)]}"
-		raw("\$$c{type:\"int\"} store result score @s \$(obj) run compute default integer $clamp")
+		raw("\$execute store result score @s \$(obj) run compute default integer $clamp")
+	}
 
-		// list: step forward and wrap.
-		raw("$c{type:\"list\"} run scoreboard players add #n ${Obj.SET_TMP} 1")
-		raw("$c{type:\"list\"} store result score #len ${Obj.SET_TMP} run data get storage ra:settings cur.values")
-		raw("$c{type:\"list\"} if score #len ${Obj.SET_TMP} matches 1.. run scoreboard players operation #n ${Obj.SET_TMP} %= #len ${Obj.SET_TMP}")
-		raw("\$$c{type:\"list\"} run scoreboard players operation @s \$(obj) = #n ${Obj.SET_TMP}")
+	/** `act/user/list {obj}`: step forward through cur.values and wrap. */
+	private fun Function.userList() {
+		readCurrent()
+		scoreboard.players.add(tmp("#n"), Obj.SET_TMP, 1)
+		raw("execute store result score #len ${Obj.SET_TMP} run data get storage ra:settings cur.values")
+		raw("execute if score #len ${Obj.SET_TMP} matches 1.. run scoreboard players operation #n ${Obj.SET_TMP} %= #len ${Obj.SET_TMP}")
+		raw("\$scoreboard players operation @s \$(obj) = #n ${Obj.SET_TMP}")
 	}
 }

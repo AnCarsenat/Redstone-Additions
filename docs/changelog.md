@@ -40,6 +40,12 @@ predicates built when the pack is generated. Worlds on v6.0.0 carry on without a
 
 ### Fixed
 
+- **Personal settings toggle again.** Clicking a toggle on the *You* page (machine sounds,
+  particles, debug messages) did nothing, and the menu kept showing the old value. The click
+  handler asked every row for a range and a step that only number rows have, so the game
+  refused the whole call for an on/off row. Each kind of row now has its own handler. Server
+  settings were not affected.
+
 - **Bridges on large networks.** A Valve, Filter, Breaker, Boiler or Ender Power Vault judges
   which neighbouring network is fuller by its fill ratio. On a network holding more than about
   214,748 mL that ratio wrapped round to a nonsense value, so a big tank farm could look empty

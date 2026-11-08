@@ -105,6 +105,15 @@ by a constant and the leftover `$` took the function down). `PackValidator` fail
 such a line in strict and report mode alike, naming the function and line. Fix it by dropping
 the `$` (the line no longer needs to be a macro) or by putting the variable back.
 
+## Every macro variable must be in the compound
+
+`function f with storage s path` fails as a whole when `f` names any `$(name)` that the compound
+at `path` lacks — even on a line an `execute if` would have skipped. Nothing is logged and no
+command in `f` runs. When one function serves compounds of different shapes (settings rows of
+several types, say), dispatch to one macro per shape and let each name only fields its shape
+always has. v6.0.0's `ra_settings:act/user` read `$(min)`/`$(max)`/`$(step)` for its int
+branch, so every bool row's click failed and personal toggles never flipped.
+
 ## Calls through macros are unchecked
 
 `PackValidator` checks every `function ns:path` and `function #ns:tag` in the generated

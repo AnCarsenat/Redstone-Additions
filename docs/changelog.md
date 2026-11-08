@@ -40,6 +40,13 @@ predicates built when the pack is generated. Worlds on v6.0.0 carry on without a
 
 ### Fixed
 
+- **Machines stack their output again.** The Blast Forge, the Rock Metallic Drill and
+  Storage Box deliveries put each delivery into a new slot. A chest holding three single
+  cobblestone that received one more ended up with four stacks of one instead of a stack of
+  two, and filled up long before it was full. Deliveries now top up matching partial stacks
+  first (same item, same name and enchantments), up to the item's own stack size, then use
+  free slots, and only drop what really does not fit.
+
 - **Personal settings toggle again.** Clicking a toggle on the *You* page (machine sounds,
   particles, debug messages) did nothing, and the menu kept showing the old value. The click
   handler asked every row for a range and a step that only number rows have, so the game

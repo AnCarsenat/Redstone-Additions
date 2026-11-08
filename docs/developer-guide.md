@@ -148,7 +148,8 @@ Source-specific detectors are split under `ra_lib:redstone/detect/*`.
 Key functions:
 
 - `ra_lib:inventory/move_slot` — whole-slot transfer with `/item replace`
-- `ra_lib:inventory/insert_or_drop` — insert what fits, drop the rest
+- `ra_lib:inventory/insert_or_drop` — insert what fits (partial stacks first, then free slots), drop the rest
+- `ra_lib:inventory/stack_size {n}` — stack size of the item in slot n, into `#inv_stack ra.temp`
 - `ra_lib:inventory/insert` — raw `loot insert`
 - `ra_lib:inventory/remove`
 - `ra_lib:inventory/find_free_slot`, `has_free_slot`, `container_size`
@@ -157,8 +158,8 @@ Key functions:
 !!! danger "`insert` destroys overflow"
     `loot insert` silently deletes whatever the destination cannot hold. Only use
     `insert` directly with a count of 1, where the item either fits or the call
-    returns 0. For anything larger use `insert_or_drop`, which recovers the
-    difference and drops it as an item entity.
+    returns 0. For anything larger use `insert_or_drop`, which writes every count
+    itself and drops only what really does not fit.
 
 `move_slot` is the preferred primitive for moving an existing stack: it copies
 the stack verbatim, with no loot table to parse and no NBT arithmetic.

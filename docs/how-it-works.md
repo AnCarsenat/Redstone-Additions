@@ -174,8 +174,10 @@ Runtime usage note:
 - `move_slot`: whole-slot transfer via `/item replace block ... from block ...`.
   The preferred primitive — the stack crosses verbatim, with no loot table and no
   NBT arithmetic.
-- `insert_or_drop`: insert what fits, drop the rest as an item entity. Use this
-  rather than `insert` for anything larger than a single item.
+- `insert_or_drop`: insert what fits, drop the rest as an item entity. Like a
+  shift-click: it tops up partial stacks of the same item (same id and components)
+  first, then fills free slots, then drops. Use this rather than `insert` for
+  anything larger than a single item.
 - `insert`: raw `loot insert`. **Destroys** whatever the destination cannot hold,
   so it is only safe with a count of 1 or behind `insert_or_drop`.
 - `remove`: counted removal, any container size, handling amounts split across

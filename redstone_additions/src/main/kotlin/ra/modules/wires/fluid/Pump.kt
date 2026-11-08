@@ -28,8 +28,10 @@ object Pump : PackPart {
 			// Internal: move one world source block into the network, if it fits.
 
 			// A liquid pump will not lift a gas, and a gas pump will not lift a liquid.
-			raw("\$execute if entity @s[tag=ra.custom_block.liquid_pump] unless data storage ra:wires media.\$(medium){state:\"liquid\"} run return 0")
-			raw("\$execute if entity @s[tag=ra.custom_block.gas_pump] unless data storage ra:wires media.\$(medium){state:\"gas\"} run return 0")
+			// Said on the block, not just skipped: a Gas Pump beside water used to keep whatever
+			// state it last had, so it looked as if it were about to work.
+			raw("\$execute if entity @s[tag=ra.custom_block.liquid_pump] unless data storage ra:wires media.\$(medium){state:\"liquid\"} run return run data modify entity @s data.status.pump_state set value \"not_a_liquid\"")
+			raw("\$execute if entity @s[tag=ra.custom_block.gas_pump] unless data storage ra:wires media.\$(medium){state:\"gas\"} run return run data modify entity @s data.status.pump_state set value \"not_a_gas\"")
 
 			// A source block is all or nothing. Offering a partial amount and then removing
 			// the block anyway is how a nearly full network would quietly delete a lake.

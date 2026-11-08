@@ -46,9 +46,9 @@ A block declares the properties the wrench may cycle, keyed by its marker's `dat
 ```kotlin
 // ra/modules/wires/WiresBlocks.kt
 wrenchCycle("electric_consumer", WrenchCycle("Draw", "eu_use", ElectricConsumer.cycleRate))
-wrenchCycle("liquid_drain",
-	WrenchCycle("Mode", "mode", LiquidDrain.cycleMode),
-	WrenchCycle("Rate", "cooldown", LiquidDrain.cycleRate))
+wrenchCycle("electric_furnace",
+	WrenchCycle("Output", "output", ElectricFurnaceSettings.cycleOutput),
+	WrenchCycle("Power", "mode", ElectricFurnaceSettings.cycleMode))
 ```
 
 | Field | Meaning |
@@ -104,8 +104,11 @@ properties(block) {
 
 // ra/modules/wires/WiresBlocks.kt -- keyed by the marker type, which is not the item id here
 properties("liquid_drain") {
-	text("mode")
-	number("cooldown", min = 1, max = 1200)
+	number("speed", min = 1, max = 100, adminOnly = true, goggles = false)
+	// Pre-6.0.1 names, read only by the drain's migration, which removes them.
+	number("cooldown", readonly = true, visible = false)
+	number("interval", readonly = true, visible = false)
+	text("mode", readonly = true, visible = false)
 }
 properties("electric_generator") { number("generation_rate", min = 1, max = 10000, readonly = true) }
 ```
@@ -152,8 +155,8 @@ The Creative Data Handler shows and edits everything regardless; it is an operat
 load, unguarded — configuration, not world state:
 
 ```mcfunction
-data modify storage ra:dh types."liquid_drain" set value {mode:{type:"text",code:0,readonly:0b,admin_only:0b,visible:1b,goggles:1b,i:0},cooldown:{type:"number",code:1,min:1,max:1200,readonly:0b,admin_only:0b,visible:1b,goggles:1b,i:1}}
-data modify storage ra:dh order."liquid_drain" set value ["mode","cooldown"]
+data modify storage ra:dh types."liquid_drain" set value {speed:{type:"number",code:1,min:1,max:100,readonly:0b,admin_only:1b,visible:1b,goggles:0b,i:0},cooldown:{type:"number",code:1,min:0,max:9999,readonly:1b,admin_only:0b,visible:0b,goggles:0b,i:1},interval:{type:"number",code:1,min:0,max:9999,readonly:1b,admin_only:0b,visible:0b,goggles:0b,i:2},mode:{type:"text",code:0,readonly:1b,admin_only:0b,visible:0b,goggles:0b,i:3}}
+data modify storage ra:dh order."liquid_drain" set value ["speed","cooldown","interval","mode"]
 data modify storage ra:dh known set value ["anchor_id","chance","channel",...]
 ```
 

@@ -35,10 +35,12 @@ object Media : PackPart {
 			// state     "liquid" or "gas" — tanks of the wrong state refuse it
 			// color     text colour for status lines
 			// particle  particle shown by drains and placers handling it
+			// drip      optional falling particle a Liquid Drain shows while it takes the medium in
+			//           (falls back to `particle`)
 			// block     world block this medium places and drains as, when it has one
 			// bucket    bucket item, when it has one
 
-			raw("""data modify storage ra:wires media set value {water:{name:"Water",state:"liquid",color:"aqua",particle:"minecraft:splash",block:"minecraft:water",bucket:"minecraft:water_bucket"},lava:{name:"Lava",state:"liquid",color:"gold",particle:"minecraft:lava",block:"minecraft:lava",bucket:"minecraft:lava_bucket"},powder_snow:{name:"Powder Snow",state:"liquid",color:"white",particle:"minecraft:snowflake",block:"minecraft:powder_snow",bucket:"minecraft:powder_snow_bucket"},milk:{name:"Milk",state:"liquid",color:"white",particle:"minecraft:item_slime",bucket:"minecraft:milk_bucket"},experience:{name:"Experience",state:"liquid",color:"green",particle:"minecraft:glow",orb:1b},potion:{name:"Potion",state:"liquid",color:"light_purple",particle:"minecraft:effect",effect:1b},steam:{name:"Steam",state:"gas",color:"gray",particle:"minecraft:cloud"},smoke:{name:"Smoke",state:"gas",color:"dark_gray",particle:"minecraft:smoke"},oxygen:{name:"Oxygen",state:"gas",color:"blue",particle:"minecraft:bubble"}}""")
+			raw("""data modify storage ra:wires media set value {water:{name:"Water",state:"liquid",color:"aqua",particle:"minecraft:splash",drip:"minecraft:falling_water",block:"minecraft:water",bucket:"minecraft:water_bucket"},lava:{name:"Lava",state:"liquid",color:"gold",particle:"minecraft:lava",drip:"minecraft:falling_lava",block:"minecraft:lava",bucket:"minecraft:lava_bucket"},powder_snow:{name:"Powder Snow",state:"liquid",color:"white",particle:"minecraft:snowflake",block:"minecraft:powder_snow",bucket:"minecraft:powder_snow_bucket"},milk:{name:"Milk",state:"liquid",color:"white",particle:"minecraft:item_slime",bucket:"minecraft:milk_bucket"},experience:{name:"Experience",state:"liquid",color:"green",particle:"minecraft:glow",orb:1b},potion:{name:"Potion",state:"liquid",color:"light_purple",particle:"minecraft:effect",effect:1b},steam:{name:"Steam",state:"gas",color:"gray",particle:"minecraft:cloud"},smoke:{name:"Smoke",state:"gas",color:"dark_gray",particle:"minecraft:smoke"},oxygen:{name:"Oxygen",state:"gas",color:"blue",particle:"minecraft:bubble"}}""")
 
 			// Which world blocks a pump or drain can pick a medium up from. Kept separate
 			// from the registry above because several block states map to one medium, and

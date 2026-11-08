@@ -11,17 +11,14 @@ import ra.core.GiveBundle
 import ra.core.Ns
 import ra.core.Obj
 import ra.core.Ra
-import ra.core.Storage
 import ra.core.define
 import ra.core.hook
 import ra.core.raw
-import ra.core.ref
 import ra.modules.multiblock.blastforge.BlastForge.registerBlastForge
 import ra.modules.multiblock.blastforge.BlastForgeData.writeDirections
 import ra.modules.multiblock.blocks.BaseTier
 import ra.modules.multiblock.blocks.Bases
 import ra.modules.multiblock.blocks.Bases.registerBases
-import ra.modules.multiblock.drills.RockMetallicDrill
 import ra.modules.multiblock.drills.RockMetallicDrill.registerRockMetallicDrill
 import ra.modules.multiblock.goggles.ShowIoLabel
 import ra.modules.multiblock.upgradeplatform.UpgradePlatform.registerUpgradePlatform
@@ -35,8 +32,6 @@ object MultiblockModule : GameplayModule {
 	override val ns = Ns.MULTIBLOCK
 	override val title = "Multiblocks"
 
-	val registerTypes = ref(Ns.MULTIBLOCK, "register_types")
-
 	override fun Ra.register() {
 		registerBases()
 		ShowIoLabel.register(pack)
@@ -45,15 +40,9 @@ object MultiblockModule : GameplayModule {
 		registerUpgradePlatform()
 		registerRockMetallicDrill()
 
-		// Registers this module's structure-driven multiblocks. Hook: #ra_lib_multiblock:load.
+		// The Rock Metallic Drill is a compiled spec (registered in registerRockMetallicDrill).
 		// Blast Forge and Upgrade Platform still use their own validators registered directly in
-		// the #ra_lib_multiblock tags; they work, so they were left alone. New structures use
-		// this path.
-		pack.define(registerTypes) {
-			raw("data modify storage ra:multiblock spec set value ${RockMetallicDrill.SPEC}")
-			function(MultiblockLib.register, Storage.MULTIBLOCK, "spec")
-		}
-		pack.hook(Ns.LIB_MULTIBLOCK, MultiblockLib.Hooks.LOAD, registerTypes)
+		// the #ra_lib_multiblock tags.
 
 		pack.define(load) {
 			raw("""tellraw @a[tag=ra.debug] [{text:"[RA] ",color:"gold"},{text:"Multiblock module loaded",color:"gray"}]""")

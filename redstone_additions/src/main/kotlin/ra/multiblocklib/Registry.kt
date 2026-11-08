@@ -14,6 +14,7 @@ import ra.core.Storage
 import ra.core.define
 import ra.core.raw
 import ra.multiblocklib.build.Build
+import ra.multiblocklib.spec.Compiled
 import io.github.ayfri.kore.features.tags.functionTag
 import io.github.ayfri.kore.functions.Function
 
@@ -36,9 +37,15 @@ internal fun Ra.registerLifecycle() {
 		// Type registry. Rebuilt from scratch on every load so a removed or edited type cannot
 		// linger. A module registers its structures from #ra_lib_multiblock:load; everything the
 		// library derives from them (rotations, IO maps) is regenerated right after.
+		//
+		// `registry` lists every type, compiled or not, for anything that enumerates them;
+		// `registry_runtime` only the storage-registered ones, which build/all, generic/validate
+		// and try_tier still have to walk at runtime. Compiled specs (spec/load) skip all three.
 		data(MB) { modify("registry") { set(buildNbtList<Nothing> { }) } }
+		data(MB) { modify("registry_runtime") { set(buildNbtList<Nothing> { }) } }
 		data(MB) { modify("types") { set(buildNbtCompound { }) } }
 
+		function(Compiled.load)
 		function(hookTag(MultiblockLib.Hooks.LOAD))
 		function(Build.all)
 	}
@@ -60,6 +67,7 @@ internal fun Ra.registerLifecycle() {
 	pack.define(MultiblockLib.register) {
 		raw("\$data modify storage ra:multiblock types.\$(id) set from storage ra:multiblock spec")
 		raw("\$data modify storage ra:multiblock registry append value \"\$(id)\"")
+		raw("\$data modify storage ra:multiblock registry_runtime append value \"\$(id)\"")
 		mbRemove("spec")
 	}
 }

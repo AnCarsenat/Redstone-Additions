@@ -187,6 +187,8 @@ predicates built when the pack is generated. Worlds on v6.0.0 carry on without a
   disabled on the server), the item was used up anyway, and only the disabled case said
   anything. You now get the item back in survival and adventure, with a message saying why.
   An item fired from a dispenser is dropped in front of it.
+  Older pipes and wires still sitting in chests (L2 pipes and wires, gas pipes) are covered too:
+  they give back the Copper Pipe or Wire they now place.
 
 - **Breaking a custom block no longer deletes nearby items.** Removing the plain vanilla item a
   broken custom block drops took the nearest item of the same kind, whatever it was: a stack of

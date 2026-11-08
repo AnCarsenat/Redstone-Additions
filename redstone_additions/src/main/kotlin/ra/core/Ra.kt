@@ -91,6 +91,19 @@ class Ra(val pack: DataPack) {
 	val bundles = mutableListOf<GiveBundle>()
 
 	/**
+	 * Placeable items (item stacks whose `entity_data` carries a `ra.place.<id>` tag) that are in
+	 * no bundle and no [block], so the refund of a refused placement can still give them back.
+	 */
+	val extraPlaceables = mutableListOf<NbtCompound>()
+
+	/**
+	 * Retired place tag -> the place tag of the item refunded in its stead. A retired item still
+	 * sitting in a chest places its successor's block, so a refused placement gives back the
+	 * successor: what breaking the block it would have placed gives back anyway.
+	 */
+	val retiredPlaceTags = linkedMapOf<String, String>()
+
+	/**
 	 * Work deferred until every part has registered, run in the order added. For a part whose
 	 * entry must come AFTER entries other parts append to the same shared file -- e.g.
 	 * `ra_lib_multiblock:generic/validate` closes `#ra_lib_multiblock:validate`, after every

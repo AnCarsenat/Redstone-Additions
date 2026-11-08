@@ -19,6 +19,7 @@ import ra.core.GiveBundle
 import ra.core.Ns
 import ra.core.PackPart
 import ra.core.Ra
+import ra.core.Tag
 import ra.core.TagRoute
 import ra.core.WrenchCycle
 import ra.core.block.CustomBlock
@@ -156,6 +157,12 @@ object WiresBlocks : PackPart {
 		for (it in items) it.recipe?.let { r -> recipe(it, r) }
 
 		bundles += GiveBundle("wires", "Wires Bundle", "Fluid and electric network blocks", Ns.WIRES, items.map { it.stackNbt() })
+
+		// The retired pipe and wire tiers (see SPECS) place a Copper Pipe or a Wire; a refused
+		// placement gives that back.
+		for (old in listOf("liquid_pipe_netherite", "gas_pipe_copper", "gas_pipe_netherite"))
+			retiredPlaceTags[Tag.place(old)] = Tag.place("liquid_pipe_copper")
+		retiredPlaceTags[Tag.place("electric_wire_netherite")] = Tag.place("electric_wire_copper")
 
 		wrenchCycle("creative_fluid", WrenchCycle("Medium", "medium", CreativeFluid.cycleMedium))
 		wrenchCycle("electric_consumer", WrenchCycle("Draw", "eu_use", ElectricConsumer.cycleRate))

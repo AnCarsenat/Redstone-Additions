@@ -64,11 +64,20 @@ data class PropSpec(
 	val adminOnly: Boolean = false,
 	val visible: Boolean = true,
 	val dynamic: Boolean = false,
+	/** What a text value may contain; see [TextFormat]. Null: [TextFormat.ID] for text, items and list entries. */
+	val format: TextFormat? = null,
+	/** With [adminOnly]: the GLOBAL bool setting that, when on, lets every player edit it. */
+	val adminSetting: String? = null,
+	/** A list whose entries can be picked from `storage <first> <second>` (the Data Handler's [Choose]). */
+	val choices: Pair<String, String>? = null,
+	/** The Data Handler's label before a list entry's number ("Strength " -> "Strength 3"). */
+	val entryLabel: String? = null,
 ) {
 	init {
 		require(name.matches(Regex("[a-z_][a-z0-9_]*"))) { "property name '$name' must be [a-z_][a-z0-9_]*" }
 		require(type == PropType.NUMBER || (min == null && max == null)) { "$name: only a number has bounds" }
 		require(type == PropType.LIST || (of == null && maxLength == null && !pad)) { "$name: only a list has of / max / pad" }
+		require(adminSetting == null || adminOnly) { "$name: adminSetting needs adminOnly" }
 	}
 
 	/** The registry entry, `{type:"number",min:1,...}`, at menu position [index]. */
@@ -85,12 +94,17 @@ data class PropSpec(
 		add("readonly:${if (readonly) 1 else 0}b")
 		add("admin_only:${if (adminOnly) 1 else 0}b")
 		add("visible:${if (visible) 1 else 0}b")
+		if (type == PropType.TEXT || type == PropType.ITEM || type == PropType.LIST) add("fmt:${(format ?: TextFormat.ID).code}")
+		adminSetting?.let { add("admin_setting:\"$it\"") }
+		choices?.let { (st, path) -> add("choices:{storage:\"$st\",path:\"$path\"}") }
+		entryLabel?.let { add("entry_label:\"$it\"") }
 		add("i:$index")
 	}.joinToString(",", "{", "}")
 }
 
 /** The `properties { }` builder. */
 class PropertiesBuilder {
+	/** Text formats, admin settings and pickers have their own builders: see PropFormats.kt. */
 	internal val specs = mutableListOf<PropSpec>()
 
 	private fun add(spec: PropSpec) {

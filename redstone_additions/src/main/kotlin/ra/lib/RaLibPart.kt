@@ -21,6 +21,8 @@ import ra.lib.skin.Skin.registerSkin
 import ra.lib.transport.Transport
 import ra.lib.transport.Transport.registerTransport
 import ra.lib.util.Util.registerUtil
+import ra.lib.safe.SafeText
+import ra.lib.safe.SafeText.registerSafeText
 
 /**
  * Shared library (`ra_lib`): placement, orientation, redstone reading, inventories, the transport
@@ -39,6 +41,7 @@ object RaLibPart : PackPart {
 		registerInput()
 		registerTransport()
 		registerUtil()
+		registerSafeText()
 
 		// Initialize every sub-system. Called on datapack load, from ra:load.
 		pack.define(RaLib.init) {
@@ -48,6 +51,7 @@ object RaLibPart : PackPart {
 			function(Redstone.init)
 			function(Input.init)
 			function(Transport.init)
+			function(SafeText.init)
 		}
 	}
 }

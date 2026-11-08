@@ -117,7 +117,13 @@ A redstone block directly under the Netherite Base locks the platform.
   `data.type`, `data.facing`, `data.properties`, `data.inputs`, `data.outputs` and
   `data.controls`; machine state goes in `data.data` and `data.status`.
 - Blast Forge heat is the `ra.heat` score on its marker; `ra.mb_timer` paces machines.
-- The structure registry and per-facing data live in `storage ra:multiblock`.
+- The structure registry and each type's rotated block and IO lists live in
+  `storage ra:multiblock types.<id>`; the checks themselves are predicates,
+  `ra_lib_multiblock:structure/<id>/<facing>` (`structure/upgrade_platform` for the platform).
 - Bricks are the block tag `#ra_multiblock:blast_forge_bricks`.
 - If a machine will not assemble: check there is exactly one base in the middle, the structure
-  matches block for block, and nothing else is assembled at the same spot.
+  matches block for block, and nothing else is assembled at the same spot. To see which block is
+  wrong, run `/tag @s add ra.debug`, then
+  `/execute positioned <base x y z> run function ra_lib_multiblock:spec/<id>/debug/<facing>`
+  (`<id>` is `blast_forge`, `rock_metallic_drill` or `upgrade_platform`; the platform's facing is
+  `none`). While you have the `ra.debug` tag, a machine that falls apart reports the same way.

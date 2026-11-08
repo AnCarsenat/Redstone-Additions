@@ -128,7 +128,6 @@ file, in registration order. The part that **owns the hooked function** register
 
 ```kotlin
 // ra/modules/multiblock/blastforge/BlastForge.kt
-pack.hook(Ns.LIB_MULTIBLOCK, MultiblockLib.Hooks.VALIDATE, validate)
 pack.hook(Ns.LIB_MULTIBLOCK, MultiblockLib.Hooks.TICK, tickDispatch)
 ```
 

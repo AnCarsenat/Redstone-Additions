@@ -288,11 +288,10 @@ from the registry.
 
 The full API is in [Multiblock Library](multiblock-library.md).
 
-- [ ] Describe the structure once, facing **north**, offsets relative to the base: `id`, `name`,
-      `tier` (the wrench assembles it from that base), `hint`, `blocks`, and the named `inputs`,
-      `outputs`, `controls`. The library derives the other three facings.
-- [ ] Register it from the function hooked into `#ra_lib_multiblock:load`
-      (`pack.hook(Ns.LIB_MULTIBLOCK, MultiblockLib.Hooks.LOAD, …)`).
+- [ ] Describe the structure once with `multiblockSpec(id, name, tier) { … }`, facing **north**,
+      offsets relative to the base: `hint`, the blocks, and the named `inputs`, `outputs`,
+      `controls` (`rotates = false` for a symmetric one). The library derives the other facings.
+- [ ] Register it with `Ra.multiblock(spec)` from the part's `register()`.
 - [ ] A `tick_dispatch` selecting `ra.multiblock.<id>`, hooked into `MultiblockLib.Hooks.TICK`.
       Reach IO blocks through `MultiblockLib.Io.at` / `isBlock` rather than branching on facing.
 - [ ] Optional `on_break` hook (`MultiblockLib.Hooks.ON_BREAK`) for cleanup beyond removing the marker.
@@ -301,7 +300,7 @@ The full API is in [Multiblock Library](multiblock-library.md).
 
 Assembly, rotation, periodic validation, disassembly and the marker tag come from the library.
 Structure-specific `validate`, `check_structure` and `setup_type` hooks are only for shapes a
-block list cannot express; the Blast Forge and Upgrade Platform still use them.
+block list cannot express; none of the pack's structures needs them.
 
 ---
 

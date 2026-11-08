@@ -9,8 +9,9 @@ import io.github.ayfri.kore.DataPack
  *
  * WHY READ IT BACK. The uninstall used to be a hand-written list, and by 6.0.0 it had missed
  * more than it caught: the transport, jetpack, ender, enchanting and hold-timer objectives, and
- * eight storages. Reading the pack's own commands cannot fall behind it. It runs after every part
- * has registered ([ra.core.Ra.afterAllParts]), so it sees the whole pack.
+ * eight storages. Reading the pack's own commands cannot fall behind it. It runs once the pack is
+ * complete ([ra.core.Ra.whenPackComplete]), after every part and every deferred step, and
+ * [uncovered] re-checks the finished pack, so a miss fails the build instead of shipping.
  */
 internal object PackFootprint {
 	private val objectiveAdd = Regex("""scoreboard objectives add ([^\s$]+)""")
@@ -19,12 +20,56 @@ internal object PackFootprint {
 	// what follows each one is read from the line directly.
 	private val storageUse = Regex("""storage ([a-z0-9_.-]+:[a-z0-9_./-]+) (?=\S)""")
 
-	/** Every objective the pack adds whose name starts with `ra.`, in first-seen order. */
+	/**
+	 * Every objective the pack adds, in first-seen order. Not only `ra.*`: whatever the pack adds
+	 * is the pack's to remove, and a name outside the convention is no reason to leave it behind.
+	 */
 	fun objectives(pack: DataPack): List<String> = lines(pack)
 		.flatMap { line -> objectiveAdd.findAll(line).map { it.groupValues[1] } }
-		.filter { it.startsWith("ra.") }
 		.distinct()
 		.toList()
+
+	private val macroObjectiveAdd = Regex("""scoreboard objectives add \S*\$\(""")
+	// Writes only: reading a key named by a macro (`... from storage ra:dh $(list)[$(i)]`,
+	// `data get`, `if data`) leaves nothing behind.
+	private val macroStorage = Regex("""(?<!from |get |if data |unless data )storage (\S*\$\(|ra[a-z0-9_]*:\S+ \$\()""")
+	private val objectiveRemove = Regex("""^scoreboard objectives remove (\S+)$""")
+	private val storageRemove = Regex("""^data remove storage (\S+) (\S+)$""")
+	private val functionCall = Regex("""^function (\S+)$""")
+
+	/**
+	 * What the finished pack creates that the function [uninstall] (with every function it calls)
+	 * does not remove, one line per problem; empty when the uninstall is complete. Run on the
+	 * finished pack, so it catches a function defined after the uninstall read the pack, and the
+	 * one thing the scan cannot read: an objective or storage whose NAME comes from a macro,
+	 * known only in game.
+	 */
+	fun uncovered(pack: DataPack, uninstall: String): List<String> {
+		val byId = (pack.functions + pack.generatedFunctions).associateBy { it.asId() }
+		val removes = mutableListOf<String>()
+		val seen = mutableSetOf<String>()
+		fun collect(id: String) {
+			if (!seen.add(id)) return
+			for (line in byId[id]?.lines.orEmpty()) {
+				removes += line
+				functionCall.find(line)?.let { collect(it.groupValues[1]) }
+			}
+		}
+		collect(uninstall)
+		val removedObjectives = removes.mapNotNull { objectiveRemove.find(it)?.groupValues?.get(1) }.toSet()
+		val removedKeys = removes.mapNotNull { storageRemove.find(it)?.groupValues }.map { it[1] to it[2] }.toSet()
+
+		val problems = mutableListOf<String>()
+		objectives(pack).filter { it !in removedObjectives }.forEach { problems += "objective $it is never removed" }
+		for ((id, keys) in storageKeys(pack)) for (key in keys) {
+			if (id to key !in removedKeys) problems += "storage $id key $key is never removed"
+		}
+		for (line in lines(pack)) {
+			if (macroObjectiveAdd.containsMatchIn(line)) problems += "objective named by a macro, which the uninstall cannot know: $line"
+			if (macroStorage.containsMatchIn(line)) problems += "storage named by a macro, which the uninstall cannot know: $line"
+		}
+		return problems.distinct()
+	}
 
 	/**
 	 * Storage id → the top-level keys the pack writes under it, both sorted. Only storages in a

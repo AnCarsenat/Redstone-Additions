@@ -151,6 +151,8 @@ internal object Assembly {
 	private fun Function.setupMarker() {
 		// One merge, so the compound and every key exist before the individual writes.
 		raw("""data merge entity @s {data:{type:"unknown",facing:"none",properties:{},inputs:{},outputs:{},controls:{}}}""")
+		// Born after the latest admin purge: the unloaded-area clean-up leaves it alone.
+		raw(ra.api.Settings.Purge.stampLine("@s"))
 
 		data(self()) { modify("data.type") { set(MB, "type") } }
 		data(self()) { modify("data.facing") { set(MB, "facing") } }

@@ -8,6 +8,7 @@ import ra.settings.gen.SettingsGenerator
 import ra.settings.page.PageFns.registerPage
 import ra.settings.pages.SettingsPages
 import ra.settings.placement.PlacementFns.registerPlacement
+import ra.settings.purge.Purge.registerPurge
 import ra.settings.row.RowFns.registerRows
 
 /**
@@ -32,6 +33,7 @@ object SettingsPart : PackPart {
 		registerAdmin()
 		registerDisabled()
 		registerPlacement()
+		registerPurge()
 		SettingsGenerator(pack, SettingsPages.all).generate()
 	}
 }

@@ -98,6 +98,7 @@ object Cauldrons {
 			raw("setblock ~ ~ ~ ${c.full}")
 			raw("""summon marker ~ ~ ~ {Tags:["${Tag.RA}","${Tag.CUSTOM_BLOCK}","${block.tag}"]}""")
 			stampNew("@e[type=marker,tag=${block.tag},distance=..0.1,sort=nearest,limit=1]")
+			raw(ra.api.Settings.Purge.stampLine("@e[type=marker,tag=${block.tag},distance=..0.1,sort=nearest,limit=1]"))
 			raw("playsound minecraft:block.stone.place block ${soundListenersSel()} ~ ~ ~ 1 1")
 			returnValue(1)
 		}

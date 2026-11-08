@@ -116,6 +116,27 @@ object Settings {
 		val show = ref(Ns.SETTINGS, "admin/show")
 	}
 
+	/** The admin entity purge (`ra/settings/purge`). */
+	object Purge {
+		/** Called from ra:load (through ra_settings:init). */
+		val init = ref(Ns.SETTINGS, "purge/init")
+
+		/** Called every tick from ra:tick, before the migration pass. One score test while idle. */
+		val tick = ref(Ns.SETTINGS, "purge/tick")
+
+		/** Macro `{e}`, as a marker: stamp it with the current purge epoch. */
+		val stamp = ref(Ns.SETTINGS, "purge/stamp")
+
+		/**
+		 * The line that stamps [selector] (one freshly summoned persistent marker) as born after
+		 * the latest purge, so the unloaded-area clean-up never takes it for a leftover. Every
+		 * path that summons a marker meant to stay calls this next to its other stamps; it does
+		 * nothing in a world that has never been purged.
+		 */
+		fun stampLine(selector: String) =
+			"execute if score #epoch ra.purge matches 1.. as $selector run function ${stamp.asId()} with storage ra:purge cur"
+	}
+
 	object Placement {
 		val check = ref(Ns.SETTINGS, "placement/check")
 		val refuse = ref(Ns.SETTINGS, "placement/refuse")

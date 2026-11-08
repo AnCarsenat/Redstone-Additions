@@ -16,6 +16,7 @@ import ra.core.Ra
 import ra.example.ExamplePart
 import ra.hub.HubPart
 import ra.hub.uninstall.uninstallGaps
+import ra.settings.purge.Purge
 import ra.lib.RaLibPart
 import ra.migrations.MigrationsPart
 import ra.modules.chunkloader.ChunkLoaderModule
@@ -112,6 +113,10 @@ object RedstoneAdditions {
 		// objectives or storage after an uninstall is a bug however the pack was built.
 		uninstallGaps(this).let { gaps ->
 			check(gaps.isEmpty()) { "The uninstall leaves these behind:\n" + gaps.joinToString("\n") { "  - $it" } }
+		}
+
+		Purge.unstampedMarkers(this).let { bad ->
+			check(bad.isEmpty()) { "Persistent RA markers summoned without the purge stamp (the unloaded-area clean-up would kill them):\n" + bad.joinToString("\n") { "  - $it" } }
 		}
 
 		PackValidator.macroLinesWithoutVariables(this).let { bad ->

@@ -118,6 +118,9 @@ internal class Registries(private val pack: DataPack, private val gen: SettingsG
 		}
 		val disabled = Text.btn("Disabled blocks", Fns.disabled, "red", "List every block that cannot be placed", gen.actions.act(Fns.disabled, nav = true))
 		val uninstall = Text.btn("Uninstall", Hub.uninstall, "dark_red", "Remove Redstone Additions from this world", gen.actions.act(Hub.uninstall, nav = true))
+		// Appended after every existing code, so no button already in someone's chat changes meaning.
+		val purge = Text.btn("Purge entities", AdminPurge.show, "red", "Remove Redstone Additions entities, keep the pack and its settings", gen.actions.act(AdminPurge.show, nav = true))
+		AdminPurge(pack, gen.actions).write()
 
 		pack.define(AdminTree.show) {
 			function(Fns.adminGrant)
@@ -125,6 +128,7 @@ internal class Registries(private val pack: DataPack, private val gen: SettingsG
 			pageButtons.forEach { raw(Text.buttonLine(it)) }
 			raw("""tellraw @s [{text:""}]""")
 			raw(Text.buttonLine(disabled))
+			raw(Text.buttonLine(purge))
 			raw(Text.buttonLine(uninstall))
 			raw("""tellraw @s [{text:"Players change their own preferences with ",color:"gray"},{text:"/trigger ra.settings.open",color:"yellow"},{text:" — no operator needed.",color:"gray"}]""")
 		}

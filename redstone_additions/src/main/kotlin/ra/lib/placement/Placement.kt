@@ -104,6 +104,8 @@ object Placement {
 		raw("data modify entity @e[type=marker,tag=ra.new,distance=..0.1,sort=nearest,limit=1] Rotation set from storage ra:temp Rotation")
 		// Born in this version's shape: the migration pass (ra_migrations:entities) never visits it.
 		stampNew("@e[type=marker,tag=ra.new,distance=..0.1,sort=nearest,limit=1]")
+		// Born after the latest admin purge: the unloaded-area clean-up leaves it alone.
+		raw(ra.api.Settings.Purge.stampLine("@e[type=marker,tag=ra.new,distance=..0.1,sort=nearest,limit=1]"))
 
 		// Seed the marker's facing from the scratch score rather than from the placer, so the
 		// marker always ends up with a facing score even when no player was found.

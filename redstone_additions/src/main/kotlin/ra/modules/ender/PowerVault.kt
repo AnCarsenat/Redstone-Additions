@@ -160,8 +160,7 @@ object PowerVault {
 		executeReturnRun("if score #ender.eu $T matches ..0", Link.done)
 
 		// One-way: up to the rate, whatever the far side holds.
-		raw("scoreboard players operation #ender.carry $T = #ender.eu $T")
-		raw("execute if score #ender.carry $T > #ender.rate $T run scoreboard players operation #ender.carry $T = #ender.rate $T")
+		storeCompute("store result score #ender.carry $T", EnderCip.min(EnderCip.score("#ender.eu", T), EnderCip.score("#ender.rate", T)))
 
 		// Two-way: half the gap between the two GRIDS, and only downhill.
 		executeRun("if data entity @s data.properties{mode:\"link\"}", level)
@@ -178,8 +177,7 @@ object PowerVault {
 		function(Link.sendPower, Storage.ENDER, "power")
 
 		// Refund whatever the partner's grid could not hold.
-		raw("scoreboard players operation #ender.back $T = #ender.carry $T")
-		raw("scoreboard players operation #ender.back $T -= #ender.sent $T")
+		storeCompute("store result score #ender.back $T", EnderCip.sub(EnderCip.score("#ender.carry", T), EnderCip.score("#ender.sent", T)))
 		executeRun("if score #ender.back $T matches 1..", refund)
 
 		raw("execute if score #ender.sent $T matches 1.. run particle minecraft:portal ~ ~1 ~ 0.2 0.2 0.2 0.05 3")
@@ -196,13 +194,10 @@ object PowerVault {
 
 		raw("execute if score #ender.theirs $T matches ..-1 run return run scoreboard players set #ender.carry $T 0")
 
-		raw("scoreboard players operation #ender.gap $T = #ender.eu $T")
-		raw("scoreboard players operation #ender.gap $T -= #ender.theirs $T")
+		storeCompute("store result score #ender.gap $T", EnderCip.sub(EnderCip.score("#ender.eu", T), EnderCip.score("#ender.theirs", T)))
 		raw("execute if score #ender.gap $T matches ..4 run return run scoreboard players set #ender.carry $T 0")
 
-		raw("scoreboard players set #ender.two $T 2")
-		raw("scoreboard players operation #ender.carry $T = #ender.gap $T")
-		raw("scoreboard players operation #ender.carry $T /= #ender.two $T")
-		raw("execute if score #ender.carry $T > #ender.rate $T run scoreboard players operation #ender.carry $T = #ender.rate $T")
+		// carry = min(gap / 2, rate); the gap is at least 5 here, so the floor is a plain halving.
+		storeCompute("store result score #ender.carry $T", EnderCip.min(EnderCip.floorDiv(EnderCip.score("#ender.gap", T), 2), EnderCip.score("#ender.rate", T)))
 	}
 }

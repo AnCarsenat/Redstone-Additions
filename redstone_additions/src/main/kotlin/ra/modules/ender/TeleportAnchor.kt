@@ -62,6 +62,12 @@ object TeleportAnchor {
 
 	private const val T = Obj.TEMP
 
+	/**
+	 * The zero-based targets row the signal names, for `/compute entity @s`: min(power, 15) - 1.
+	 * ra_lib reports 16 for a redstone block; the table only has fifteen rows, so that is 15.
+	 */
+	private val ANCHOR_SLOT = EnderCip.sub(EnderCip.min(EnderCip.thisScore(Obj.POWER), 15), 1)
+
 	fun Ra.registerTeleportAnchor() {
 		block(block)
 		pack.blockRegisterMessage(block)
@@ -161,13 +167,8 @@ object TeleportAnchor {
 		// stronger than any dust can be; the table only has fifteen rows, so it is treated as 15.
 		function(RaLib.Redstone.detect)
 		raw("execute if score @s ${Obj.POWER} matches ..0 run return 0")
-		raw("scoreboard players operation #ender.level $T = @s ${Obj.POWER}")
-		raw("execute if score #ender.level $T matches 16.. run scoreboard players set #ender.level $T 15")
-
-		// targets is zero-based, the signal is one-based.
-		raw("scoreboard players operation #ender.slot $T = #ender.level $T")
-		raw("scoreboard players remove #ender.slot $T 1")
-		raw("execute store result storage ra:ender anchor.i int 1 run scoreboard players get #ender.slot $T")
+		// targets is zero-based, the signal is one-based: anchor.i = min(power, 15) - 1.
+		storeCompute("store result storage ra:ender anchor.i int 1", ANCHOR_SLOT, source = "entity @s")
 
 		function(readTarget, Storage.ENDER, "anchor")
 		raw("execute unless data storage ra:ender anchor.want run return 0")
@@ -204,9 +205,7 @@ object TeleportAnchor {
 		raw("execute if score @s ${Obj.POWER} matches 1.. run data modify storage ra:temp ender_line.color set value \"yellow\"")
 		stackedTextLineFromStorage()
 
-		raw("scoreboard players operation #ender.slot $T = @s ${Obj.POWER}")
-		raw("execute if score #ender.slot $T matches 16.. run scoreboard players set #ender.slot $T 15")
-		raw("scoreboard players remove #ender.slot $T 1")
+		storeCompute("store result score #ender.slot $T", ANCHOR_SLOT, source = "entity @s")
 		raw("data remove storage ra:ender anchor.want")
 		raw("execute if score #ender.slot $T matches 0..14 store result storage ra:ender anchor.i int 1 run scoreboard players get #ender.slot $T")
 		executeRun("if score #ender.slot $T matches 0..14", readTarget, "with storage ra:ender anchor")

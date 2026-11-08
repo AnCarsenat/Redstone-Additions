@@ -132,3 +132,33 @@ internal fun Function.tagUnlessMode(block: CustomBlock, notMode: String, tag: St
 /** `function ra:tools/goggles/billboard/stacked_text_line with storage ra:temp ender_line`. */
 internal fun Function.stackedTextLineFromStorage() =
 	function(Goggles.Billboard.stackedTextLine, Storage.TEMP, "ender_line")
+
+/**
+ * 26.3 context int providers, as the SNBT `/compute` takes, for the vaults' and anchor's
+ * scoreboard arithmetic. One `execute store result ... run compute ... integer {...}` replaces a
+ * `scoreboard players operation` chain and the constant fake players it needed.
+ *
+ * Same semantics as the ops replaced: division is [floorDiv] (scoreboard `/=` floors), a min is
+ * the `if score A > B run ... = B` clamp, and an unset score reads as 0.
+ */
+internal object EnderCip {
+	/** A fake player's score. */
+	fun score(holder: String, objective: String) =
+		"""{type:"score",target:{type:"fixed",name:"$holder"},score:"$objective"}"""
+
+	/** The score of the entity `/compute entity <e>` runs for. */
+	fun thisScore(objective: String) = """{type:"score",target:"this",score:"$objective"}"""
+
+	fun min(vararg inputs: Any) = """{type:"min",inputs:[${inputs.joinToString(",")}]}"""
+	fun sub(left: Any, right: Any) = """{type:"sub",left:$left,right:$right}"""
+
+	/** Floor division: what scoreboard `/=` does. */
+	fun floorDiv(left: Any, right: Any) = """{type:"floor_div",left:$left,right:$right}"""
+}
+
+/**
+ * `execute <store> run compute <source> integer <provider>`: [store] is the `store result ...`
+ * clause, [source] `default` or `entity @s`.
+ */
+internal fun Function.storeCompute(store: String, provider: String, source: String = "default") =
+	raw("execute $store run compute $source integer $provider")

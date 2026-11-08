@@ -15,7 +15,6 @@ import net.benwoodworth.knbt.buildNbtList
 import ra.api.RaLib
 import ra.core.Obj
 import ra.core.Ra
-import ra.core.Storage
 import ra.core.define
 import ra.core.raw
 import ra.lib.dummyObjectives
@@ -27,8 +26,6 @@ import ra.lib.inventory.Remove.registerRemove
 /** `ra_lib:inventory/...`: container helpers, all at the container's position. */
 object Inventory {
 	val init = lib("inventory/init")
-	val canAcceptComponents = lib("inventory/can_accept_components")
-	val canAcceptIdOnly = lib("inventory/can_accept_id_only")
 
 	internal val here = vec3().relative
 	internal val canInsert = fake("#inv_can_insert")
@@ -60,14 +57,6 @@ object Inventory {
 
 		pack.define(RaLib.Inventory.canAcceptOne) { canAcceptOne() }
 
-		// `can_accept_components {id, components}`: set #inv_can_insert when a compatible partial stack exists.
-		pack.define(canAcceptComponents) {
-			raw("\$execute if data block ~ ~ ~ Items[{id:\"\$(id)\",components:\$(components),count:..63}] run scoreboard players set #inv_can_insert ${Obj.TEMP} 1")
-		}
-		// `can_accept_id_only {id}`: set #inv_can_insert when a same-id partial stack exists.
-		pack.define(canAcceptIdOnly) {
-			raw("\$execute if data block ~ ~ ~ Items[{id:\"\$(id)\",count:..63}] run scoreboard players set #inv_can_insert ${Obj.TEMP} 1")
-		}
 
 		// `consume_entry0`: consume one item from Items[0] at the current container position.
 		// Returns 1 on success, 0 if the slot is empty.
@@ -134,11 +123,9 @@ object Inventory {
 	 * inv_item? Output: #inv_can_insert ra.temp (1 = yes, 0 = no), also returned.
 	 */
 	private fun Function.canAcceptOne() {
-		val compLen = fake("#inv_comp_len")
 		scoreboard.players.set(canInsert, Obj.TEMP, 0)
 		scoreboard.players.set(len, Obj.TEMP, 0)
 		scoreboard.players.set(max, Obj.TEMP, 27)
-		scoreboard.players.set(compLen, Obj.TEMP, 0)
 
 		// Capacity by container type.
 		for ((block, size) in listOf(Blocks.HOPPER to 5, Blocks.DROPPER to 9, Blocks.DISPENSER to 9)) execute {
@@ -153,17 +140,14 @@ object Inventory {
 			run { scoreboard.players.set(canInsert, Obj.TEMP, 1) }
 		}
 
-		// With no free entry, allow stacking onto a compatible partial stack.
-		raw("execute if score #inv_can_insert ${Obj.TEMP} matches 0 if data storage ra:temp inv_item.components store result score #inv_comp_len ${Obj.TEMP} run data get storage ra:temp inv_item.components")
+		// With no free entry, allow stacking onto a compatible partial stack. This used to be an
+		// Items[{id:...,count:..63}] filter, which never matched anything: an NBT filter compares
+		// values exactly, `..63` is not a range there. A full container with room on its partial
+		// stacks always reported full.
 		execute {
 			ifCondition { score(canInsert, Obj.TEMP) equalTo 0 }
-			ifCondition { score(compLen, Obj.TEMP) greaterThanOrEqualTo 1 }
-			run { function(canAcceptComponents, Storage.TEMP, "inv_item") }
-		}
-		execute {
-			ifCondition { score(canInsert, Obj.TEMP) equalTo 0 }
-			ifCondition { score(compLen, Obj.TEMP) equalTo 0 }
-			run { function(canAcceptIdOnly, Storage.TEMP, "inv_item") }
+			ifCondition { data(here, "Items[0]") }
+			run { function(InsertOrDrop.canAcceptPartial) }
 		}
 
 		returnRun { scoreboard.players.get(canInsert, Obj.TEMP) }

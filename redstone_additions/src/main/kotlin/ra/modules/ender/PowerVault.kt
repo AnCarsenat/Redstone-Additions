@@ -159,6 +159,13 @@ object PowerVault {
 
 		executeReturnRun("if data entity @s data.properties{mode:\"receive\"}", Link.done)
 
+		// The send's macro input, built and checked before anything is taken. send_power is a macro
+		// on {channel}: without it the whole call fails, nothing is delivered, and EU taken
+		// beforehand would have been refunded from whatever #ender.sent the previous vault left.
+		raw("data modify storage ra:ender power set value {}")
+		raw("data modify storage ra:ender power.channel set from entity @s data.properties.channel")
+		executeReturnRun("unless data storage ra:ender power.channel", Link.done)
+
 		// What this grid can spare.
 		function(RaLib.Transport.Net.read)
 		raw("scoreboard players operation #ender.eu $T = #net_amount ${Obj.TR_TMP}")
@@ -179,8 +186,9 @@ object PowerVault {
 		executeStoreRun("", "#ender.carry", ModulesApi.Wires.takeEu, "with storage ra:wires eu")
 		executeReturnRun("if score #ender.carry $T matches ..0", Link.done)
 
-		raw("data modify storage ra:ender power set value {}")
-		raw("data modify storage ra:ender power.channel set from entity @s data.properties.channel")
+		// Zero before the call, not only inside it: a send that fails to run at all (a channel the
+		// macro cannot splice) must read as nothing delivered, so the refund below returns it all.
+		raw("scoreboard players set #ender.sent $T 0")
 		function(Link.sendPower, Storage.ENDER, "power")
 
 		// Refund whatever the partner's grid could not hold.

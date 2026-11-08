@@ -13,6 +13,8 @@ import ra.core.block.placeBlock
 import ra.core.block.propLine
 import ra.core.define
 import ra.core.raw
+import ra.core.Storage
+import io.github.ayfri.kore.commands.function
 import ra.core.item.loreItem
 import ra.core.block.shapedRecipe
 import ra.core.block.recipeResult
@@ -39,6 +41,7 @@ object TagRemover {
 
 	private val removeTagMacro = block.fn("remove_tag_macro")
 	private val clearAllTagsMacro = block.fn("clear_all_tags_macro")
+	private val fire = block.fn("fire")
 
 	fun Ra.registerTagRemover() {
 		block(block)
@@ -72,6 +75,23 @@ object TagRemover {
 			raw("playsound minecraft:block.note_block.bit block ${soundListenersSel()} ~ ~ ~ 0.5 0.5")
 		}
 
+		// One rising edge. As the marker, at its position.
+		//
+		// Per marker, not per command line: with `execute as <every rising marker>` on each copy,
+		// the last marker's values were in storage by the time any of them ran a macro. The paths
+		// are removed before the copy so a marker missing its selector cannot run with the previous
+		// marker's; it does nothing instead. A missing or empty tag still means "clear them all".
+		pack.define(fire) {
+			raw("data remove storage ra:temp tag")
+			raw("data remove storage ra:temp entity_selector")
+			raw("data modify storage ra:temp tag set from entity @s data.properties.tag")
+			raw("data modify storage ra:temp entity_selector set from entity @s data.properties.entity_selector")
+			raw("execute unless data storage ra:temp entity_selector run return 0")
+			raw("execute unless data storage ra:temp tag run return run function ${clearAllTagsMacro.asId()} with storage ra:temp")
+			raw("execute if data storage ra:temp {tag:\"\"} run return run function ${clearAllTagsMacro.asId()} with storage ra:temp")
+			function(removeTagMacro, Storage.TEMP)
+		}
+
 		pack.define(block.goggles) {
 			gogglesHeader(block, nameY = 1.0)
 			propLine("tag", "Tag: ", "aqua", y = 0.8)
@@ -82,14 +102,7 @@ object TagRemover {
 			detectAll(block)
 
 			// Trigger on rising edge (just powered).
-			val edge = risingEdge(block)
-			val rising = "as $edge at @s run execute"
-			raw("execute as $edge at @s run data modify storage ra:temp tag set from entity @s data.properties.tag")
-			raw("execute as $edge at @s run data modify storage ra:temp entity_selector set from entity @s data.properties.entity_selector")
-			// A named tag removes that tag; an empty or missing one clears them all.
-			executeRun("$rising if data entity @s data.properties.tag run execute unless data entity @s {data:{properties:{tag:\"\"}}}", removeTagMacro, "with storage ra:temp")
-			executeRun("$rising if data entity @s {data:{properties:{tag:\"\"}}}", clearAllTagsMacro, "with storage ra:temp")
-			executeRun("$rising unless data entity @s data.properties.tag", clearAllTagsMacro, "with storage ra:temp")
+			executeRun("as ${risingEdge(block)} at @s", fire)
 
 			trackPower(block)
 		}

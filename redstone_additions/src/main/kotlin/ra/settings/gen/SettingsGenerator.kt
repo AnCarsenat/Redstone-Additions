@@ -78,7 +78,13 @@ internal class SettingsGenerator(private val pack: DataPack, private val pages: 
 
 		for (row in page.rows) {
 			if (row is ScopedRow && row.scope == Scope.USER) {
-				val obj = requireNotNull(row.obj) { "user row ${row.key} on page ${page.id} needs an objective" }
+				// Every user row, whatever its type: act/ask copies cur.obj unchecked and the
+				// act/user/* macros splice $(obj) into commands, so a missing or malformed objective
+				// would only show up as a dead menu row in game. Fail the build here instead.
+				val obj = requireNotNull(row.obj) { "user ${row.type} row ${row.key} on page ${page.id} needs an objective (obj)" }
+				require(OBJECTIVE.matches(obj)) {
+					"user ${row.type} row ${row.key} on page ${page.id}: objective \"$obj\" must be 1-16 characters of A-Z a-z 0-9 _ . + -"
+				}
 				defaults += { scoreboard.objectives.add(obj) }
 				if (row is BoolRow || row is IntRow || row is ListRow) userSeed += row
 				userRows += row
@@ -169,6 +175,9 @@ internal class SettingsGenerator(private val pack: DataPack, private val pages: 
 		}
 	}
 }
+
+/** A USER row's objective: spliced unquoted into macros, so plain scoreboard characters only. */
+private val OBJECTIVE = Regex("[A-Za-z0-9_.+-]{1,16}")
 
 /** Paths of the operator tree that are not per-row actions. */
 internal object AdminTree {

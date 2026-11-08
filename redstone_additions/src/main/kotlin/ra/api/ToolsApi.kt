@@ -25,8 +25,9 @@ object Goggles {
 	/**
 	 * Billboard line writers, called from a block's `goggles` function as the marker.
 	 * `prop_line` reads `data.properties`, `data_line` reads `data.status`; the `stacked_*`
-	 * variants read properties / status / `data.data` respectively and lay lines out from
-	 * [stackReset]. Asking the wrong one renders "N/A".
+	 * variants read properties / status / `data.data` respectively. Asking the wrong one renders
+	 * "N/A". Every writer appends one line to the billboard being built ([begin] .. [flushHere]),
+	 * in call order; their `y` arguments and [stackReset] are accepted and ignored.
 	 */
 	object Billboard {
 		val handleBillboard = ref(Ns.RA, "tools/goggles/billboard/handle_billboard")
@@ -51,7 +52,20 @@ object Goggles {
 		val renderName = ref(Ns.RA, "tools/goggles/billboard/render_name")
 		val renderLiteralLine = ref(Ns.RA, "tools/goggles/billboard/render_literal_line")
 		val renderIoLine = ref(Ns.RA, "tools/goggles/billboard/render_io_line")
-		val stackNext = ref(Ns.RA, "tools/goggles/billboard/stack_next")
+
+		/** Starts an empty billboard (storage `ra:temp gg`, score `#gg.lines`). */
+		val begin = ref(Ns.RA, "tools/goggles/billboard/begin")
+		/** Appends `storage ra:temp gg.line` (a text component) as the next line. */
+		val append = ref(Ns.RA, "tools/goggles/billboard/append")
+		/** Summons the billboard built since [begin], its bottom edge here. Nothing if empty. */
+		val flushHere = ref(Ns.RA, "tools/goggles/billboard/flush_here")
+		/** As the freshly summoned text_display: style and text. */
+		val spawnText = ref(Ns.RA, "tools/goggles/billboard/spawn_text")
+		/** Macro `{id, y}`: the item of an [itemLine], `y` above here. */
+		val spawnItem = ref(Ns.RA, "tools/goggles/billboard/spawn_item")
+		/** As the marker: its type's property schema into `storage ra:temp gg.schema`, once per billboard. */
+		val loadSchema = ref(Ns.RA, "tools/goggles/billboard/load_schema")
+		val loadSchemaAt = ref(Ns.RA, "tools/goggles/billboard/load_schema_at")
 	}
 
 	object Status {

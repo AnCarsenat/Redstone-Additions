@@ -16,7 +16,11 @@ import ra.core.raw
  * 3. draw the name billboard, then one line per readout.
  *
  * [gogglesHeader] does 1-3; the line helpers wrap the billboard macros with named arguments.
- * Offsets (`y`, `nameY`) are in blocks from the marker, which sits at the block CENTRE.
+ *
+ * Lines are appended in call order to ONE text_display that the goggles summon after this function,
+ * 0.3 above the block, growing upward with the line count (see ra.tools.goggles.billboard). The
+ * `y` / `nameY` offsets and [stackReset] are kept for source compatibility and ignored: call the
+ * helpers top line first. A property line also obeys its schema's `goggles` flag (ra.core.Properties).
  */
 fun Function.gogglesHeader(block: CustomBlock, nameY: Double = 1.0) = gogglesHeader(block.name, nameY)
 
@@ -46,7 +50,7 @@ fun Function.textLine(label: String, value: String, color: String, y: Double, su
 		this["label"] = label; this["value"] = value; this["color"] = color; this["suffix"] = suffix; this["y"] = y
 	})
 
-/** Starts a stacked ladder: lines go down from [top] by [step], both in hundredths of a block. */
+/** Ignored (the billboard lays its own lines out); kept so existing callers compile. */
 fun Function.stackReset(top: Int, step: Int) =
 	function(Goggles.Billboard.stackReset, nbt { this["top"] = top; this["step"] = step })
 

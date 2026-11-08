@@ -18,6 +18,7 @@ import ra.core.Storage
 import ra.core.TagRoute
 import ra.core.define
 import ra.core.hook
+import ra.core.executeRun
 import ra.core.raw
 import ra.core.ref
 import ra.modules.multiblock.blastforge.BlastForgeTick.registerBlastForgeTick
@@ -104,10 +105,12 @@ object BlastForge {
 
 	/** As the marker, at the base: name, status, and I/O labels above the structure. */
 	private fun Function.goggles() {
-		// Name billboard, above the ceiling.
-		raw("""summon text_display ~ ~2.5 ~ {Tags:["ra","ra.billboard","ra.display"],billboard:"center",text:{text:"Blast Forge",color:"green",bold:true},background:1073741824,shadow:true,see_through:false,line_width:200,transformation:{left_rotation:[0f,0f,0f,1f],right_rotation:[0f,0f,0f,1f],translation:[0f,0f,0f],scale:[0.6f,0.6f,0.6f]}}""")
-
+		// Name and status as one billboard (see ra.tools.goggles.billboard), its base 0.3 above the
+		// ceiling: the marker stands on the base block's floor and the ceiling's top face is 2 up.
+		raw("""data modify storage ra:temp gg.line set value {text:"Blast Forge",color:"green",bold:true}""")
+		function(Goggles.Billboard.append)
 		function(Goggles.Status.readStatusMultiblock)
+		executeRun("positioned ~ ~2.3 ~", Goggles.Billboard.flushHere)
 
 		// I/O indicators: copy the IO block offset to temp storage, add label + color, and call
 		// the shared show_io_label macro.

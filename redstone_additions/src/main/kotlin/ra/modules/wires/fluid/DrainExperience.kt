@@ -51,7 +51,7 @@ object DrainExperience : PackPart {
 			// Context: as a vertical drain marker, at the drain position.
 			//
 			// One experience point is 100 mL, and that rate is used in both directions: what
-			// a player pours in is exactly what comes back out of a drain set to place. The
+			// a player pours in is exactly what comes back out of a powered drain. The
 			// conversion is deliberately a round number so a player can read a billboard in
 			// litres and know what they will get back.
 			//
@@ -131,7 +131,7 @@ object DrainExperience : PackPart {
 
 		pack.define(DrainExperience.drainPlace) {
 			// Spend network contents placing the medium into the world.
-			// Context: as a drain marker in "place" mode, at the drain position.
+			// Context: as a redstone-powered drain marker, at the drain position.
 
 			function(RaLib.Transport.Net.read)
 
@@ -146,7 +146,7 @@ object DrainExperience : PackPart {
 
 		pack.define(DrainExperience.drainPlaceExp) {
 			// Give experience back to the world as orbs.
-			// Context: as a drain marker in "place" mode, at the drain position.
+			// Context: as a redstone-powered drain marker, at the drain position.
 			//
 			// The same 100 mL a point that drain_exp charges, so a network filled by standing
 			// on one drain empties at exactly the rate it filled — ten points a cycle. What

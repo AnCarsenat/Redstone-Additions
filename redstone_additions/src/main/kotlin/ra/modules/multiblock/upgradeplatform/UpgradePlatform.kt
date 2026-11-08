@@ -24,6 +24,8 @@ import ra.core.TagRoute
 import ra.core.block.particleViewersSel
 import ra.core.define
 import ra.core.hook
+import ra.core.executeRun
+import ra.api.Goggles
 import ra.core.raw
 import ra.core.ref
 import ra.modules.multiblock.forEachMarker
@@ -70,9 +72,11 @@ object UpgradePlatform {
 		pack.define(tick) { tick() }
 		pack.define(tryUpgrade) { tryUpgrade() }
 
-		// Name only: no IO ports, no status. The platform is 1 block tall, so y+1.5 is well above.
+		// Name only: no IO ports, no status. One billboard line, 0.3 above the 1-tall platform.
 		pack.define(UpgradePlatform.goggles) {
-			raw("""summon text_display ~ ~1.5 ~ {Tags:["ra","ra.billboard","ra.display"],billboard:"center",text:{text:"Upgrade Platform",color:"green",bold:true},background:1073741824,shadow:true,see_through:false,line_width:200,transformation:{left_rotation:[0f,0f,0f,1f],right_rotation:[0f,0f,0f,1f],translation:[0f,0f,0f],scale:[0.6f,0.6f,0.6f]}}""")
+			raw("""data modify storage ra:temp gg.line set value {text:"Upgrade Platform",color:"green",bold:true}""")
+			function(Goggles.Billboard.append)
+			executeRun("positioned ~ ~1.3 ~", Goggles.Billboard.flushHere)
 		}
 
 		with(UpgradeRecipes) { registerRecipes() }

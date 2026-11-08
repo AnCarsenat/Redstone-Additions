@@ -27,6 +27,15 @@ predicates built when the pack is generated. Worlds on v6.0.0 carry on without a
 
 ### Changed
 
+- **The Liquid Drain pours out on redstone, and its speed is a server setting.** The drain's
+  `mode` property is gone: an unpowered drain takes in, a drain powered by redstone pours its
+  network's contents back out (a source block on a free side, experience orbs, or a potion over
+  nearby players), so you can switch it from a lever. The Wrench no longer cycles the drain.
+  Its `cooldown` is replaced by `speed`, in litres per second (1 – 100, default 5: one bucket's
+  worth a second, the old default rate), which only operators can change — with the Data
+  Handler, or for new drains in the Server Settings. Existing drains keep their rate (a drain
+  set to 10 ticks becomes speed 10, one set to 40 ticks speed 2); one that was set to `place`
+  now needs a redstone signal to pour.
 - **The Thruster Kit costs a quarter of what it did.** Its push is worked out with
   `/compute` instead of a chain of scoreboard operations, and only while you sprint:
   52 → 14 commands per tick for each airborne player using it. Jetpack hover holding and other
@@ -80,6 +89,17 @@ predicates built when the pack is generated. Worlds on v6.0.0 carry on without a
   names, several of which no block uses, and none of the Wires, Ender, storage or multiblock
   settings. It now shows the block's declared settings, each with its type, then any
   undeclared ones, flagged.
+- **Goggles labels sit just above the block and fit their content.** A label is now one
+  display that starts a little above the block's top face and grows upward with the number of
+  lines, instead of a stack of separate lines placed at fixed heights well above it: a block
+  with one line no longer floats as high as one with five, and no line can end up inside its
+  block. The name and lines share one size, and an Item Pipe's filter item floats just above
+  its label. Each label is one entity instead of one per line, so a redraw summons fewer and
+  costs fewer commands.
+- **The Goggles hide what the Data Handler hides.** A setting hidden from players is no longer
+  shown on its block's Goggles label either, and a few fixed or uninteresting values are left
+  off the label while staying in the Data Handler: the Mineral, Nether and Poppy Generators'
+  cooldown and the Magic Crate's pulse cooldown.
 
 - **Entity selectors and tags are for admins.** The `entity_selector` and `tag` of the Entity
   Detector, Tag Adder, Tag Remover and Message Block can only be changed by players with
@@ -102,6 +122,18 @@ predicates built when the pack is generated. Worlds on v6.0.0 carry on without a
   (`eu_use`, default 40), so **Apply to placed** writes a setting the block uses.
 
 ### Fixed
+
+- **The Liquid Drain drains.** A drain points where you look when you place it, so one put
+  down beside a pool usually ended up facing up — and an upright drain only ever took buckets,
+  bottles and experience, never the water or lava next to it, whatever its mode said. An
+  upright drain still loads containers and experience first, and with nothing to load it now
+  takes in the source block beside it like any other drain. Water and lava fall onto the drain
+  as it takes them in (other fluids show their own particle), for players with block particles
+  on, with the sound of a bucket filling; its "no source" smoke also respects that setting.
+
+- **Pumps say when a source is the wrong kind.** A Gas Pump next to water, or a Liquid Pump
+  next to a gas, skipped it without a word and kept showing its last status; the Goggles now
+  read `not_a_gas` or `not_a_liquid`.
 
 - **The EU Consumer's draw is a setting again.** Its Wrench row was called "Rate" and showed a
   `cooldown` value the Consumer never uses, while its [ CYCLE ] button changed the draw, which
@@ -286,6 +318,12 @@ predicates built when the pack is generated. Worlds on v6.0.0 carry on without a
 
 ### For contributors
 
+- A property can set `goggles = true` to show on the Goggles label even when `visible = false`
+  hides it from the Data Handler, or `goggles = false` to keep a visible one off the label;
+  unset, it follows `visible`. Generated as a resolved `goggles` byte in
+  `storage ra:dh types."<type>".<name>` (not for `dynamic` properties, which read
+  `data.property_types.<name>`). Goggles line writers now append to one `text_display` per
+  billboard, in call order: their `y` arguments and `stack_reset` are accepted and ignored.
 - Block properties are declared per block type with `properties(block) { number(...); bool(...);
   text(...); list(...); item(...) }` (`ra/core/Properties.kt`), replacing `ra.readonly(...)`,
   `ra.dataHandlerProperties(...)` and the Data Handler's global name lists. They are generated

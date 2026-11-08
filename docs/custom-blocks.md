@@ -200,7 +200,7 @@ Data Handlers. The helpers in `core/block/GogglesLines.kt` keep that contract:
 
 ```kotlin
 private fun Function.goggles() {
-	gogglesHeader(block, nameY = 0.7)   // 1. name → ra:temp block_name  2. return if name_only  3. name billboard
+	gogglesHeader(block)   // 1. name → ra:temp block_name  2. return if name_only  3. name line
 	propLine("cooldown", "Cooldown: ", "aqua", y = 0.45, suffix = "t")
 }
 ```
@@ -210,15 +210,19 @@ private fun Function.goggles() {
 | `propLine(path, label, color, y, suffix)` | `prop_line` | `data.properties.<path>` |
 | `dataLine(path, label, color, y, suffix)` | `data_line` | `data.status.<path>` |
 | `textLine(label, value, color, y, suffix)` | `text_line` | the literal `value` |
-| `stackReset(top, step)` | `stack_reset` | starts a ladder; hundredths of a block |
+| `stackReset(top, step)` | `stack_reset` | nothing any more (kept so old callers load) |
 | `stackedPropLine(…)` | `stacked_prop_line` | `data.properties` |
 | `stackedStatusLine(…)` | `stacked_status_line` | `data.status` |
 | `stackedDataLine(…)` | `stacked_data_line` | **`data.data`** (private working state) |
 | `stackedTextLine(…)` | `stacked_text_line` | a literal |
 
-Offsets are blocks above the marker, which sits at the block **centre**: a slab-height block
-wants `nameY` around `0.7`. A missing value renders "N/A" in red; asking the wrong helper
-(`stackedDataLine` for a status value) is the usual cause, and it is silent.
+Each helper appends one line to the block's billboard, in call order (name first, then top to
+bottom); `goggles/draw_block` summons it afterwards as **one** `text_display`, 0.3 above the
+block's top face, growing upward with the line count (0.1 block per line at the billboard's
+0.4 scale). The `y` / `nameY` arguments are accepted and ignored. A property line is drawn only
+when the property's `goggles` flag allows it ([Property schemas](tools-and-registries.md#property-schemas)).
+A missing value renders "N/A" in red; asking the wrong helper (`stackedDataLine` for a status
+value) is the usual cause, and it is silent.
 
 ## Checklist: adding a block
 

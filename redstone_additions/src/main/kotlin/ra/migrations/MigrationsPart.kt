@@ -32,6 +32,7 @@ object MigrationsPart : PackPart {
 			pack.migrate5_1_9(),
 			pack.migrate5_1_11(),
 			pack.migrate5_1_15(),
+			pack.migrate6_0_0(),
 		)
 		pack.define(ModulesApi.Migrations.run) { steps.forEach { function(it) } }
 	}

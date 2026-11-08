@@ -8,7 +8,7 @@ val WiresPage = Page(
 		PropRow("electric_generator", "generation_rate", "Generator EU/tick", default = 60, min = 1, max = 10000, step = 10),
 		PropRow("electric_consumer", "eu_use", "Consumer EU draw", default = 40, min = 1, max = 10000, step = 10),
 		PropRow("industrial_light", "eu_use", "Industrial Light EU", default = 10, min = 0, max = 1000, step = 5),
-		PropRow("liquid_drain", "cooldown", "Liquid Drain interval", default = 20, min = 1, max = 1200, step = 5),
+		PropRow("liquid_drain", "speed", "Liquid Drain speed", default = 5, min = 1, max = 100, step = 1),
 	) + blocks(
 		"electric_generator" to "EU Generator",
 		"electric_furnace" to "Electric Furnace",

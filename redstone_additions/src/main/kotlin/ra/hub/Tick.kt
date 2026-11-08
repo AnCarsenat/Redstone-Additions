@@ -37,6 +37,13 @@ private val ACTIVE_TOOLS = listOf("cdh", "dh", "wrench", "clip", "meter", "remot
 
 internal fun Ra.registerTick() {
 	pack.define(tick) {
+		// RESCHEDULE FIRST. A tick that runs past maxCommandChainLength is cut off where it
+		// stands, and when this line sat near the end, the cut took the reschedule with it: the
+		// whole pack stopped until somebody ran /reload. Up here it has already happened. Nothing
+		// below depends on it running late -- `replace` only moves the next run, and the next run
+		// is a tick away either way.
+		schedule(tick).replace(1.ticks)
+
 		toolTagCleanup()
 
 		// Settings: seed per-player defaults and collect menu clicks. Early, because the module
@@ -70,8 +77,6 @@ internal fun Ra.registerTick() {
 		for (module in RedstoneAdditions.modules) module.tick?.let { function(it) }
 
 		function(Goggles.tick)
-
-		schedule(tick).replace(1.ticks)
 
 		menuTriggers()
 	}

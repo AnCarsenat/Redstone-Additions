@@ -115,7 +115,7 @@ Sources live in block tags, so adding one is a data edit rather than a code edit
 
 - `#ra_lib:redstone/binary_sources` — full power when `powered=true`: levers,
   buttons, non-weighted pressure plates, tripwire hooks, lightning rods.
-- `#ra_lib:redstone/directional_sources` — strong power into the block they face:
+- `#ra_lib:redstone/directional_sources` — strong power out of the face opposite their `facing` (`facing` is the input side of a repeater or comparator and the watched side of an observer):
   repeaters, comparators, observers.
 - `#ra_lib:redstone/analog_omni` — carry a level in `power` and give it to every
   neighbour: both weighted pressure plates, daylight detectors.

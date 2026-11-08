@@ -127,6 +127,14 @@ predicates built when the pack is generated. Worlds on v6.0.0 carry on without a
   nothing (the detector's output stays off); a Tag Remover with no tag still clears every tag,
   as before.
 
+- **Repeaters, comparators and observers drive gates again.** A repeater pointing into a logic
+  gate or any other redstone-reading block was not seen at all, while one pointing away from it
+  powered it at full strength. The pack read these three backwards: their `facing` names the
+  input side (for a repeater or comparator) or the watched side (for an observer), and they
+  output from the opposite face. A repeater, comparator or observer now powers only the block
+  its output faces, from every side including above and below, and one pointing away no longer
+  counts as an input on the AND, NAND and other gates that check which sides are wired.
+
 ### For contributors
 
 - `ra/core/Compute.kt` builds and emits `/compute` providers; the [Developer Guide](developer-guide.md#arithmetic-with-compute)

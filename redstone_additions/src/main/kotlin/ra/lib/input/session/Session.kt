@@ -41,9 +41,14 @@ object Session {
 			scoreboard.players.set(self(), InputObj.VALUE, 0)
 
 			// Use an int-min sentinel to detect changes from /trigger, including submissions of 0.
+			// Setting a score does not enable it: the trigger backend's open_choice does, so a text
+			// prompt does not put ra.input.trigger in the player's /trigger list.
 			scoreboard.players.set(self(), InputObj.TRIGGER, InputObj.SENTINEL)
 			scoreboard.players.set(self(), InputObj.LAST, InputObj.SENTINEL)
-			scoreboard.players.enable(self(), InputObj.TRIGGER)
+
+			// A player only ever has one session, so any Input Form already on them is left over
+			// from an earlier one (fetched back out of a chest, say). It must not become a free book.
+			raw("clear @s ${BookBackend.ANY_FORM_ITEM}")
 
 			scoreboard.players.operation(self(), InputObj.REQ, Operation.SET, fake("#next"), InputObj.NEXT)
 			scoreboard.players.add(fake("#next"), InputObj.NEXT, 1)
@@ -73,8 +78,13 @@ object Session {
 			for ((objective, value) in listOf(
 				InputObj.STATE to 0, InputObj.BACKEND to 0, InputObj.MODE to 0, InputObj.MIN to 0, InputObj.MAX to 0,
 				InputObj.RESULT to -1, InputObj.TTL to 0, InputObj.REQ to 0, InputObj.LAST to InputObj.SENTINEL,
-				InputObj.VALUE to 0, InputObj.TRIGGER to InputObj.SENTINEL,
+				InputObj.VALUE to 0,
 			)) scoreboard.players.set(self(), objective, value)
+
+			// RESET, not a sentinel: a reset score is no longer enabled, so ra.input.trigger leaves
+			// the player's /trigger list once the prompt is over. Setting it kept it listed forever
+			// after a player's first prompt. sessionCreate sets the sentinel again before any read.
+			scoreboard.players.reset(self(), InputObj.TRIGGER)
 		}
 
 		// Expire an active session that exceeded its TTL.

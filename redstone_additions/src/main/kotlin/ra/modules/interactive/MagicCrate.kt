@@ -65,10 +65,12 @@ object MagicCrate {
 	fun Ra.registerMagicCrate() {
 		block(block)
 		properties(block) {
-			number("radius", min = 5, max = 32)
-			// Configurable, but a pulse interval is not what you look at a crate to learn: the
-			// Goggles show its state, radius and last pulse instead.
-			number("cooldown", min = 1, max = 1200, goggles = false)
+			// The same ceiling tick_one clamps to: a schema that allowed 32 let players type a
+			// radius the crate silently ignored.
+			number("radius", min = 5, max = 20)
+			// A server admin's setting (a fast pulse is a server cost), and not what you look at a
+			// crate to learn: the Goggles show its state, radius and last pulse instead.
+			number("cooldown", min = 1, max = 1200, adminOnly = true, goggles = false)
 		}
 		pack.blockRegisterMessage(block)
 		pack.specGive(block, item)

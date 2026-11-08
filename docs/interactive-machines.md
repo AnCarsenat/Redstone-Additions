@@ -117,7 +117,7 @@ A barrel that pulls dropped items into itself.
 | Setting | Default | Range | Meaning |
 | --- | --- | --- | --- |
 | `radius` | 8 | 5–20 | How far it reaches, in blocks |
-| `cooldown` | 20 | 1+ | Ticks between pulls |
+| `cooldown` | 20 | 1–1200 | Ticks between pulls; a server admin's setting, locked for other players |
 
 It takes up to eight items (whole stacks, enchantments and names kept) per pull, and stops when it
 has no empty slot left — the Goggles then show `Full`. Breaking it drops everything inside.

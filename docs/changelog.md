@@ -349,6 +349,10 @@ predicates built when the pack is generated. Worlds on v6.0.0 carry on without a
   item only when it placed a block, and only then plays its sound. It also places into cave air,
   which it used to treat as occupied.
 
+- **The Magic Crate's radius stops at 20.** The Data Handler accepted up to 32, but the crate
+  never reached past 20; it now refuses values above what the crate uses. Its pull interval
+  (`cooldown`) is now a server admin's setting.
+
 ### For contributors
 
 - A property can set `goggles = true` to show on the Goggles label even when `visible = false`

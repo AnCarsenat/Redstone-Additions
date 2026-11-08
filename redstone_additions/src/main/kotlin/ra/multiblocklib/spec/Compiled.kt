@@ -69,7 +69,7 @@ object Compiled {
 	/**
 	 * Queued with afterAllParts from the library's register(), so it runs once every module has
 	 * registered its specs, and before generic's own afterAllParts: the compiled hooks therefore
-	 * sit after the hand-written structures' and ahead of `generic/` in each tag.
+	 * sit after any structure's own hook and ahead of `generic/` in each tag.
 	 */
 	fun Ra.registerCompiled() {
 		afterAllParts {

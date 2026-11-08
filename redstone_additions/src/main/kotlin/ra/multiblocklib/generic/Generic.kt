@@ -26,8 +26,8 @@ import ra.multiblocklib.structure.Structure
 /**
  * `ra_lib_multiblock:generic/` functions: the assembly validator, marker tagging and integrity check for
  * every structure registered with `ra_lib_multiblock:register`. They run from the same hook tags
- * as the hand-written validators (blast_forge, upgrade_platform), which answer for their own
- * types; these only answer for registered ones.
+ * as the compiled specs (`spec/` functions, which answer for their own types) and any structure-specific
+ * hooks; these only answer for storage-registered types.
  */
 object Generic {
 	val validate = ref(Ns.LIB_MULTIBLOCK, "generic/validate")

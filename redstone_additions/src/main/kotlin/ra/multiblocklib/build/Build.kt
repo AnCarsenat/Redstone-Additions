@@ -25,9 +25,9 @@ import ra.multiblocklib.returnUnlessMb
  * structure from its north-facing spec. Runs once per load, straight after
  * `#ra_lib_multiblock:load`.
  *
- * This is the part that used to be manual. The Blast Forge still carries four hand-written
+ * This is the part that used to be manual. The Blast Forge carried four hand-written
  * coordinate tables of 26 positions each -- 104 offsets rotated by hand, every one of them a
- * chance to transpose a sign.
+ * chance to transpose a sign. (It is a compiled spec now, rotated in Kotlin instead.)
  */
 object Build {
 	val all = ref(Ns.LIB_MULTIBLOCK, "build/all")

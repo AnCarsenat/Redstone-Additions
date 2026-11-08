@@ -31,7 +31,7 @@ import ra.multiblocklib.returnUnlessMb
  *
  * All of these take the marker as `@s`, positioned at the base, and resolve names against the
  * marker's own `data.inputs` / `data.outputs` / `data.controls`. They work for any multiblock that
- * went through setup_marker, including the hand-written ones -- a tick function never needs to
+ * went through setup_marker, compiled or storage-registered -- a tick function never needs to
  * branch on facing. That was the main reason every multiblock ended up with four near-identical
  * copies of its processing logic.
  *

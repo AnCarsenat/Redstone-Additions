@@ -63,7 +63,7 @@ object Wrench {
 	/** RMB, not sneaking: toggle wireless blocks, or assemble/toggle multiblocks. As the player. */
 	private fun Function.rmb() {
 		data(Storage.TEMP) { remove("wrench_found") }
-		raycast(REACH_4, "wrench_found", foundBlock)
+		raycast("wrench_found", foundBlock)
 
 		// If no custom block found, try multiblock assembly/interaction at the looked-at block.
 		for (step in REACH_4) executeRun(
@@ -81,9 +81,8 @@ object Wrench {
 		// The menu and every cycler message this player specifically; the wrench runs `as` the
 		// marker from here on and would otherwise have no idea who swung it.
 		tag(self()) { add("ra.wrench_user") }
-		// Half-block steps: the cycle menu should land on the block the crosshair is on, and the
-		// first probe starts right at the eyes.
-		raycast(listOf("0.5", "1.5", "2.5", "3.5", "4.5"), "wrench_found", WrenchMenu.cycleBlock)
+		// The block the crosshair is on.
+		raycast("wrench_found", WrenchMenu.cycleBlock)
 
 		raw("""execute unless data storage ra:temp wrench_found run tellraw @s [{text:"[Wrench] ",color:"gold"},{text:"No cyclable block found nearby.",color:"gray"}]""")
 		data(Storage.TEMP) { remove("wrench_found") }

@@ -19,7 +19,6 @@ import ra.core.define
 import ra.core.executeReturnRun
 import ra.core.executeRun
 import ra.core.raw
-import ra.tools.REACH_4
 import ra.tools.ToolItems
 import ra.tools.raycast
 import ra.tools.tool
@@ -55,7 +54,7 @@ object Multimeter {
 			raw("execute if entity @s[tag=ra.meter_active] run return fail")
 			tag(self()) { add("ra.meter_active") }
 			data(Storage.TEMP) { remove("meter_found") }
-			raycast(REACH_4, "meter_found", report)
+			raycast("meter_found", report)
 			raw("""execute unless data storage ra:temp meter_found run tellraw @s [{text:"[Multimeter] ",color:"gold"},{text:"No custom block in front of you.",color:"gray"}]""")
 			data(Storage.TEMP) { remove("meter_found") }
 		}

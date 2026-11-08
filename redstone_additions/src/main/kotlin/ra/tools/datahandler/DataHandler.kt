@@ -16,7 +16,6 @@ import ra.core.Storage
 import ra.core.define
 import ra.core.executeRun
 import ra.core.raw
-import ra.tools.REACH_4
 import ra.tools.ToolItems
 import ra.tools.datahandler.DataHandlerActions.registerDataHandlerActions
 import ra.tools.datahandler.DataHandlerSelection.claim
@@ -69,7 +68,7 @@ object DataHandler {
 			// Forget this player's previous block. Only theirs: other players keep their own selection.
 			scoreboard.players.set(self(), DataHandlerSelection.SEL, 0)
 			data(Storage.TEMP) { remove("dh_found") }
-			raycast(REACH_4, "dh_found", foundBlock)
+			raycast("dh_found", foundBlock)
 			raw("execute if data storage ra:temp dh_found run scoreboard players operation @s ${DataHandlerSelection.SEL} = #dh.found ${Obj.TEMP}")
 			function(DataHandlerSelection.select)
 			executeRun("if data storage ra:temp dh_found", refresh)

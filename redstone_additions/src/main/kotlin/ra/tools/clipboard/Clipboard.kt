@@ -16,8 +16,7 @@ import ra.core.define
 import ra.core.executeReturnRun
 import ra.core.executeRun
 import ra.core.raw
-import ra.tools.RAY_TARGET
-import ra.tools.REACH_4
+import ra.tools.raycast
 import ra.tools.ToolItems
 import ra.tools.tool
 
@@ -50,7 +49,6 @@ object Clipboard {
 	val store = tool("clipboard/store")
 	val clear = tool("clipboard/clear")
 	val clearSlot = tool("clipboard/clear_slot")
-	val raycastQuiet = tool("clipboard/raycast_quiet")
 	val copy = tool("clipboard/copy")
 	val paste = tool("clipboard/paste")
 	val checkKind = tool("clipboard/check_kind")
@@ -83,8 +81,9 @@ object Clipboard {
 			data(Storage.TEMP) { remove("clip.kind") }
 			callWith(load, "storage ra:temp clip")
 			data(Storage.TEMP) { remove("clip_found") }
-			executeRun("if data storage ra:temp clip.kind", raycastQuiet, "{action:\"paste\"}")
-			executeRun("unless data storage ra:temp clip.kind", raycastQuiet, "{action:\"copy\"}")
+			// No "nothing there" complaint from the cast: a miss is meaningful here (see below).
+			raycast("clip_found", paste, guard = "if data storage ra:temp clip.kind ")
+			raycast("clip_found", copy, guard = "unless data storage ra:temp clip.kind ")
 			// Nothing in front of you is the deliberate way to empty it. Clearing on a miss rather than
 			// on a hit means a slightly-off click can never wipe a working origin.
 			executeRun("unless data storage ra:temp clip_found", clear)
@@ -119,16 +118,6 @@ object Clipboard {
 		}
 		pack.define(clearSlot) { raw("\$data remove storage ra:clipboard boards.p\$(slot)") }
 
-		// {action:"copy"|"paste"}: the same four-step reach as the other tools, without the "nothing
-		// there" complaint -- the caller treats a miss as meaningful rather than as an error. The
-		// action names a function in this folder, pasted in by the macro.
-		pack.define(raycastQuiet) {
-			val action = "${copy.asId().substringBeforeLast('/')}/\$(action)"
-			REACH_4.forEachIndexed { i, step ->
-				val guard = if (i == 0) "" else " unless data storage ra:temp clip_found"
-				raw("\$execute at @s anchored eyes positioned ^ ^ ^$step$guard as $RAY_TARGET run function $action")
-			}
-		}
 
 		registerCopyPaste()
 	}

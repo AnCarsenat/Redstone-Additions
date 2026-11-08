@@ -25,8 +25,8 @@ give function (`/function ra:tools/wrench/give`, `ra:tools/goggles/give`,
 | Action | Does |
 | --- | --- |
 | Shift + right-click a block | Cycles its settings |
-| Right-click a Wireless Emitter or Receiver | Turns it on or off |
-| Right-click a Multiblock Base | Assembles the machine built around it ([Multiblocks](multiblocks.md)) |
+| Right-click a Wireless Emitter | Turns it on or off |
+| Right-click a Multiblock Base | Assembles the machine built around it ([Multiblocks](multiblocks.md)); on one already assembled it only says so |
 
 What Shift + right-click does depends on the block:
 

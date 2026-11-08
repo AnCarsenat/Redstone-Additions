@@ -3,7 +3,6 @@ package ra.lib.transport
 import io.github.ayfri.kore.arguments.maths.vec3
 import io.github.ayfri.kore.arguments.numbers.ranges.rangeOrDoubleEnd
 import io.github.ayfri.kore.arguments.types.literals.allEntities
-import io.github.ayfri.kore.arguments.types.literals.self
 import io.github.ayfri.kore.commands.data
 import io.github.ayfri.kore.commands.execute.execute
 import io.github.ayfri.kore.commands.function
@@ -107,10 +106,8 @@ object Transport {
 			}
 
 			raw("execute store result entity @s data.status.connections int 1 run scoreboard players get #conn ${Obj.TEMP}")
-			execute {
-				ifCondition { data(self(), "data.properties.enabled") }
-				run { data(self()) { modify("data.status.enabled") { set(self(), "data.properties.enabled") } } }
-			}
+			// It also used to copy `data.properties.enabled` into `data.status.enabled`. No wires
+			// block has an `enabled` property any more (see WrenchRegistry), and nothing read the copy.
 		}
 
 		registerNet()

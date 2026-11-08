@@ -69,8 +69,6 @@ object RockMetallicDrill {
 	 * library already rotated to the assembled facing.
 	 */
 	private fun Function.tick() {
-		raw("execute unless data entity @s data.properties{enabled:1b} run return 0")
-
 		// A redstone block on the control side halts the drill.
 		execute {
 			storeResult { score(literal("#mb_ctrl"), Obj.MULTIBLOCK) }

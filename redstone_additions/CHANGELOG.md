@@ -27,6 +27,10 @@ predicates built when the pack is generated. Worlds on v6.0.0 carry on without a
 
 ### Changed
 
+- **Only admins can change a Message Block's text.** The text is shown as rich chat text, so it
+  can carry a clickable command that runs as whoever clicks it. Players without server-settings
+  access now see it locked in the Data Handler.
+
 - **Worlds are upgraded once, not on every load.** The world now remembers which version of the
   pack it was last loaded with, and the one-time fixes for older worlds run only when that
   version is older than the fix, instead of on every load. Each custom block also remembers its
@@ -43,6 +47,13 @@ predicates built when the pack is generated. Worlds on v6.0.0 carry on without a
   Handler, or for new drains in the Server Settings. Existing drains keep their rate (a drain
   set to 10 ticks becomes speed 10, one set to 40 ticks speed 2); one that was set to `place`
   now needs a redstone signal to pour.
+- **Wireless Receivers and multiblocks no longer have a hidden on/off switch.** Right-clicking
+  one with the Wrench used to flip an `enabled` property that nothing on the block showed, so a
+  Receiver or a machine could sit switched off with no sign of why. That property is gone: a
+  Receiver is controlled by its channel, and a Blast Forge, Rock Metallic Drill or Upgrade
+  Platform by its redstone control. Any of them that had been switched off works again. The
+  Wrench on an assembled multiblock now just says it is already assembled, and the Blast Forge's
+  Goggles readout no longer has an "Enabled" line. The Wireless Emitter keeps its switch.
 - **The Thruster Kit costs a quarter of what it did.** Its push is worked out with
   `/compute` instead of a chain of scoreboard operations, and only while you sprint:
   52 → 14 commands per tick for each airborne player using it. Jetpack hover holding and other

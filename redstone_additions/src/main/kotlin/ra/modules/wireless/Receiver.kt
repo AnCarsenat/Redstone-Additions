@@ -11,7 +11,6 @@ import io.github.ayfri.kore.generated.Items
 import ra.core.Ns
 import ra.core.Obj
 import ra.core.Ra
-import ra.core.TagRoute
 import ra.core.block.CustomBlock
 import ra.core.block.blockGive
 import ra.core.block.gogglesHeader
@@ -40,7 +39,12 @@ import ra.core.block.markerSel
 
 /**
  * Wireless Receiver: powers its shell while an emitter on its `channel` string transmits, or for a
- * few ticks after a Redstone Remote pulses its channel. The wrench (plain RMB) toggles `enabled`.
+ * few ticks after a Redstone Remote pulses its channel.
+ *
+ * No on/off switch: the channel is the control. Until v6.0.1 it also had an `enabled` property the
+ * wrench toggled, invisible on the block, which left a receiver silently dead. Markers placed
+ * before then may still carry `enabled`; nothing reads it, and the schema declares it hidden and
+ * read-only so the Data Handler does not list it as undeclared.
  */
 object Receiver {
 	val block = CustomBlock(Ns.WIRELESS, "receiver", "Wireless Receiver", model = "minecraft:purpur_block")
@@ -56,16 +60,15 @@ object Receiver {
 
 	private val process = block.fn("process")
 	private val checkEmitterChannel = block.fn("check_emitter_channel")
-	val toggle = block.fn("toggle")
 
 	fun Ra.registerReceiver() {
 		block(block)
 		properties(block) {
 			// Compared as a value, never pasted into a command.
 			text("channel", TextFormat.NAME)
-			bool("enabled")
+			// Retired in v6.0.1, still on markers placed before it. Nothing reads it.
+			bool("enabled", readonly = true, visible = false)
 		}
-		wrenchToggles += TagRoute(block.tag, toggle)
 		pack.blockRegisterMessage(block)
 		pack.blockGive(block)
 		pack.shapedRecipe(block.ns, block.id, item.recipeResult(), Unlock(Items.PURPUR_BLOCK)) {
@@ -80,9 +83,8 @@ object Receiver {
 			placementGuard(block, checkExisting = false)
 			// Purpur block with a marker.
 			placeBlock(block)
-			// Default channel (a string) and enabled state.
+			// Default channel (a string).
 			setOnNew(block, "data.properties.channel", "\"default\"")
-			setOnNew(block, "data.properties.enabled", "1b")
 			finishPlacement(block)
 		}
 
@@ -101,9 +103,6 @@ object Receiver {
 			raw("execute if score @s ${Obj.TEMP} matches 0 run tag @e[type=marker,tag=$CHECKING] add $RECEIVING")
 		}
 
-		// Toggle enabled (called by the wrench, as the marker).
-		pack.define(toggle) { toggleEnabled("Receiver", "light_purple") }
-
 		pack.define(block.goggles) {
 			gogglesHeader(block, nameY = 1.0)
 			propLine("channel", "Channel: ", "aqua", y = 0.8)
@@ -117,11 +116,7 @@ object Receiver {
 
 	/** As the marker, at its position. */
 	private fun Function.process() {
-		defaultsChannelEnabled()
-
-		// Only receive if enabled.
-		raw("execute unless data entity @s data.properties{enabled:1b} at @s run fill ~-1 ~-1 ~-1 ~1 ~1 ~1 iron_block replace redstone_block")
-		raw("execute unless data entity @s data.properties{enabled:1b} run return 0")
+		defaultChannel()
 
 		// Pulsing from a remote.
 		raw("execute if entity @s[tag=$PULSING] at @s run fill ~-1 ~-1 ~-1 ~1 ~1 ~1 redstone_block replace iron_block")

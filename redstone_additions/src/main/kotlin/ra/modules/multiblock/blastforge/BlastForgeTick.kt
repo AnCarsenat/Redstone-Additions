@@ -68,11 +68,8 @@ object BlastForgeTick {
 	)
 
 	fun Ra.registerBlastForgeTick() {
-		// As the marker, at the base. Skips a disabled forge, then dispatches by facing.
-		pack.define(BlastForge.tick) {
-			raw("execute unless data entity @s data.properties{enabled:1b} run return 0")
-			dispatch { it.tickFacing }
-		}
+		// As the marker, at the base. Dispatches by facing; the redstone control is checked there.
+		pack.define(BlastForge.tick) { dispatch { it.tickFacing } }
 		// kept: beet contract. Manual entry point (debug / external calls); in normal operation
 		// tick_facing calls process_facing directly.
 		pack.define(process) { dispatch { it.processFacing } }
@@ -91,7 +88,7 @@ object BlastForgeTick {
 			raw("execute if data entity @s data{facing:\"${at.facing}\"} run return run function ${target(at).asId()}")
 	}
 
-	/** Per-tick logic for one facing (already checked enabled). */
+	/** Per-tick logic for one facing. */
 	private fun Function.tickFacing(at: At) {
 		val h = Obj.HEAT
 		// Redstone control: a redstone block behind the base locks the forge, like a hopper.

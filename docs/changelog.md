@@ -49,13 +49,15 @@ predicates built when the pack is generated. Worlds on v6.0.0 carry on without a
   Handler, or for new drains in the Server Settings. Existing drains keep their rate (a drain
   set to 10 ticks becomes speed 10, one set to 40 ticks speed 2); one that was set to `place`
   now needs a redstone signal to pour.
-- **Wireless Receivers and multiblocks no longer have a hidden on/off switch.** Right-clicking
-  one with the Wrench used to flip an `enabled` property that nothing on the block showed, so a
-  Receiver or a machine could sit switched off with no sign of why. That property is gone: a
-  Receiver is controlled by its channel, and a Blast Forge, Rock Metallic Drill or Upgrade
-  Platform by its redstone control. Any of them that had been switched off works again. The
-  Wrench on an assembled multiblock now just says it is already assembled, and the Blast Forge's
-  Goggles readout no longer has an "Enabled" line. The Wireless Emitter keeps its switch.
+- **Wireless Emitters, Receivers and multiblocks no longer have a hidden on/off switch.**
+  Right-clicking one with the Wrench used to flip an `enabled` property that nothing on the block
+  showed, so an Emitter, a Receiver or a machine could sit switched off with no sign of why. That
+  property is gone: an Emitter is controlled by its redstone input and its channel, a Receiver by
+  its channel, and a Blast Forge, Rock Metallic Drill or Upgrade Platform by its redstone control.
+  Any of them that had been switched off works again. Right-clicking an Emitter or Receiver with
+  the Wrench now says the block cannot be toggled; on an assembled multiblock it says it is
+  already assembled, and the Blast Forge's Goggles readout no longer has an "Enabled" line.
+  Multiblocks also no longer carry an unused `speed` property.
 - **The Thruster Kit costs a quarter of what it did.** Its push is worked out with
   `/compute` instead of a chain of scoreboard operations, and only while you sprint:
   52 → 14 commands per tick for each airborne player using it. Jetpack hover holding and other

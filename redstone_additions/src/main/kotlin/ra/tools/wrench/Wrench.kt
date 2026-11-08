@@ -95,7 +95,9 @@ object Wrench {
 	 * Plain RMB landed on a custom block. As its marker.
 	 *
 	 * The toggles come from the registry (`ra.wrenchToggles`): each block with a plain-RMB action
-	 * registers its tag and function, so this list never names a module.
+	 * registers its tag and function, so this list never names a module. No shipped block registers
+	 * one as of v6.0.1 (the Wireless Emitter and Receiver were the last, toggling a hidden `enabled`
+	 * property); the registry stays for extensions.
 	 */
 	private fun Function.foundBlock(ra: Ra) {
 		data(Storage.TEMP) { modify("wrench_found", NbtByte(1)) }

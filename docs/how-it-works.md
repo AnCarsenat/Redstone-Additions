@@ -264,9 +264,10 @@ target block is remembered on the player as three scores, because a chat button
 is clicked some time after the menu is drawn and has no idea what it was aimed
 at.
 
-**Plain RMB** toggles the blocks that have a single on/off state worth reaching
-for — the Wireless Emitter and Receiver — and runs multiblock assembly attempts
-on base blocks.
+**Plain RMB** runs multiblock assembly attempts on base blocks, and any toggle an
+extension registers in `ra.wrenchToggles`. No shipped block has one since v6.0.1
+removed the Wireless Emitter's and Receiver's hidden `enabled` switch; anything
+else gets "This block cannot be toggled."
 
 Cyclers run **as the marker, at the block**, and message `@a[distance=..10]`.
 The wrench never touches the player, so anything addressed to a player-side tag

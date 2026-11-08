@@ -162,8 +162,8 @@ object Clipboard {
 			data(Storage.TEMP) { remove("clip.kind") }
 			callWith(load, "storage ra:temp clip")
 			raw("""execute unless data storage ra:temp clip.kind run return run tellraw $HOLDER [$PREFIX,{text:"No origin set — click a block to choose one.",color:"gray"}]""")
-			// Same kind only. Property names overlap between unrelated blocks -- half the pack has
-			// `enabled` -- so without this a Gas Valve's rate would happily land on a Randomizer's
+			// Same kind only. Property names overlap between unrelated blocks -- half the pack once
+			// had `enabled` -- so without this a Gas Valve's rate would happily land on a Randomizer's
 			// chance and quietly mean something else.
 			blockNameOnly()
 			callWith(checkKind, "storage ra:temp clip")

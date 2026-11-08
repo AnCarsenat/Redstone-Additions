@@ -59,8 +59,9 @@ object MessageBlock {
 	fun Ra.registerMessageBlock() {
 		block(block)
 		properties(block) {
-			// Shown, never pasted into a command: any text.
-			text("message_block", TextFormat.FREE)
+			// Shown, never pasted into a command, but drawn with interpret:true: the text can carry
+			// a click_event that runs a command as whoever clicks it. So any text, admins only.
+			text("message_block", TextFormat.FREE, adminOnly = true)
 			// Pasted into a command: admins only unless the server allows it (Sensors settings).
 			text("entity_selector", TextFormat.SELECTOR, adminOnly = true, adminSetting = SELECTOR_SETTING)
 			number("range", min = 1, max = 128)

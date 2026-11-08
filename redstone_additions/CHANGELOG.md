@@ -27,6 +27,10 @@ predicates built when the pack is generated. Worlds on v6.0.0 carry on without a
 
 ### Changed
 
+- **Only admins can change a Message Block's text.** The text is shown as rich chat text, so it
+  can carry a clickable command that runs as whoever clicks it. Players without server-settings
+  access now see it locked in the Data Handler.
+
 - **Worlds are upgraded once, not on every load.** The world now remembers which version of the
   pack it was last loaded with, and the one-time fixes for older worlds run only when that
   version is older than the fix, instead of on every load. Each custom block also remembers its

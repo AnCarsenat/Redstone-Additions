@@ -136,6 +136,9 @@ When it gets powered, it sends its message to the players picked by its selector
 | `message_block` (the text) | `Hello World!` |
 | `entity_selector` (who reads it) | `@a[distance=..16]` |
 
+Both are admin-only. The text is shown as rich chat text, so it can carry a clickable command that runs
+as whoever clicks it.
+
 ## Changing settings
 
 Every setting above is edited with the [Data Handler](tools.md): Shift + right-click the block,

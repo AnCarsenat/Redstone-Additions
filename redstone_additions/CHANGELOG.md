@@ -374,6 +374,13 @@ predicates built when the pack is generated. Worlds on v6.0.0 carry on without a
   Breeder stocked with food bred nothing. It now takes the food from its own inventory for every
   animal, and looks for the animals in front of it.
 
+- **Machine sounds and particles follow your settings everywhere.** With *Machine sounds* or
+  *Machine particles* turned off you still got some of them: the break sound and puff of almost
+  every block, the Block Breaker's dust, the Magic Crate's portal swirl, the Mineral and Nether
+  Generators, the Randomizer, the Blast Forge's smoke and flames, the Upgrade Platform, a
+  multiblock falling apart, the Message Block's chime, Ender Links, the Ender Power Vault and the
+  Teleport Anchor's portal cloud. They now all respect both settings.
+
 ### For contributors
 
 - Migrations are versioned. `storage ra:migrations version` holds the world's version and the

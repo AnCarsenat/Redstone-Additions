@@ -1,5 +1,6 @@
 package ra.modules.interactive
 
+import ra.core.block.soundListenersSel
 import ra.core.TextFormat
 import ra.core.text
 import ra.lib.safe.SafeText.guardProperty
@@ -135,12 +136,12 @@ object MessageBlock {
 		for ((range, dist) in listOf("..8" to 8, "9..16" to 16, "17..32" to 32, "33.." to 64))
 			raw("execute if score @s ${Obj.TEMP} matches $range run tellraw @a[distance=..$dist] $MESSAGE")
 		for ((range, dist) in listOf("..16" to 16, "17..32" to 32, "33.." to 64))
-			raw("execute if score @s ${Obj.TEMP} matches $range run playsound minecraft:block.note_block.chime block @a[distance=..$dist] ~ ~ ~ 0.5 1.2")
+			raw("execute if score @s ${Obj.TEMP} matches $range run playsound minecraft:block.note_block.chime block ${soundListenersSel(dist)} ~ ~ ~ 0.5 1.2")
 	}
 
 	/** Macro `{entity_selector}`: the send path using the block's own selector. */
 	private fun Function.sendMacro() {
 		raw("\$execute at @s as \$(entity_selector) if entity @s[type=player] run tellraw @s $MESSAGE")
-		raw("\$execute at @s as \$(entity_selector) if entity @s[type=player] run playsound minecraft:block.note_block.chime block @s ~ ~ ~ 0.5 1.2")
+		raw("\$execute at @s as \$(entity_selector) if entity @s[type=player] run playsound minecraft:block.note_block.chime block @s[scores={${Obj.USER_SOUND}=1..}] ~ ~ ~ 0.5 1.2")
 	}
 }

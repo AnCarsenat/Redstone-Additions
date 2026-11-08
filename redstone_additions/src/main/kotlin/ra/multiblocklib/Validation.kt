@@ -1,5 +1,7 @@
 package ra.multiblocklib
 
+import ra.core.block.soundListenersSel
+import ra.core.block.particleViewersSel
 import io.github.ayfri.kore.arguments.types.literals.allEntities
 import io.github.ayfri.kore.arguments.types.literals.self
 import io.github.ayfri.kore.commands.execute.execute
@@ -63,8 +65,8 @@ internal object Validation {
 			// Type-specific cleanup via registered hooks.
 			function(hookTag(MultiblockLib.Hooks.ON_BREAK))
 
-			raw("execute at @s run playsound minecraft:block.anvil.land block @a[distance=..16] ~ ~ ~ 0.5 0.8")
-			raw("execute at @s run particle minecraft:smoke ~ ~0.5 ~ 0.3 0.3 0.3 0.02 15")
+			raw("execute at @s run playsound minecraft:block.anvil.land block ${soundListenersSel(16)} ~ ~ ~ 0.5 0.8")
+			raw("execute at @s run particle minecraft:smoke ~ ~0.5 ~ 0.3 0.3 0.3 0.02 15 normal ${particleViewersSel()}")
 			raw("""tellraw @a[distance=..16] [{text:"[RA] ",color:"gold"},{text:"Multiblock disassembled.",color:"yellow"}]""")
 
 			kill(self())

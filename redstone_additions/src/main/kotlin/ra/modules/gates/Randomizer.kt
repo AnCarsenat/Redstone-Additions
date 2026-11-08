@@ -1,5 +1,6 @@
 package ra.modules.gates
 
+import ra.core.block.particleViewersSel
 import io.github.ayfri.kore.arguments.numbers.ranges.rangeOrIntEnd
 import io.github.ayfri.kore.arguments.numbers.ranges.rangeOrIntStart
 import io.github.ayfri.kore.arguments.types.literals.self
@@ -131,7 +132,7 @@ object Randomizer {
 		raw("execute unless score #rng ${Obj.TEMP} < @s ${Obj.TEMP} at @s run fill ~-1 ~-1 ~-1 ~1 ~1 ~1 iron_block replace redstone_block")
 
 		// Particle feedback.
-		raw("execute if score #rng ${Obj.TEMP} < @s ${Obj.TEMP} run particle minecraft:happy_villager ~ ~1 ~ 0.3 0.3 0.3 0.02 5")
-		raw("execute unless score #rng ${Obj.TEMP} < @s ${Obj.TEMP} run particle minecraft:smoke ~ ~1 ~ 0.3 0.3 0.3 0.02 5")
+		raw("execute if score #rng ${Obj.TEMP} < @s ${Obj.TEMP} run particle minecraft:happy_villager ~ ~1 ~ 0.3 0.3 0.3 0.02 5 normal ${particleViewersSel()}")
+		raw("execute unless score #rng ${Obj.TEMP} < @s ${Obj.TEMP} run particle minecraft:smoke ~ ~1 ~ 0.3 0.3 0.3 0.02 5 normal ${particleViewersSel()}")
 	}
 }

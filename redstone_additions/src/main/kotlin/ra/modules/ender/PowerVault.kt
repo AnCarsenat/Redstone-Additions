@@ -1,5 +1,6 @@
 package ra.modules.ender
 
+import ra.core.block.particleViewersSel
 import ra.core.TextFormat
 import ra.core.text
 import ra.lib.safe.SafeText.guardProperty
@@ -205,7 +206,7 @@ object PowerVault {
 		computeScore("#ender.back", T, provider { sub(scoreOf("#ender.carry", T), scoreOf("#ender.sent", T)) })
 		executeRun("if score #ender.back $T matches 1..", refund)
 
-		raw("execute if score #ender.sent $T matches 1.. run particle minecraft:portal ~ ~1 ~ 0.2 0.2 0.2 0.05 3")
+		raw("execute if score #ender.sent $T matches 1.. run particle minecraft:portal ~ ~1 ~ 0.2 0.2 0.2 0.05 3 normal ${particleViewersSel()}")
 
 		function(Link.done)
 	}

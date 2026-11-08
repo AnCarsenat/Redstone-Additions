@@ -154,8 +154,8 @@ object Link {
 			function(offerFluid, Storage.ENDER, "offer")
 			raw("scoreboard players operation #ender.carry $T -= #net_moved ${Obj.TR_TMP}")
 
-			raw("execute if score #net_moved ${Obj.TR_TMP} matches 1.. run playsound minecraft:entity.enderman.teleport block @a[distance=..8] ~ ~ ~ 0.2 1.9")
-			raw("execute if score #net_moved ${Obj.TR_TMP} matches 1.. run particle minecraft:portal ~ ~1 ~ 0.2 0.2 0.2 0.05 4")
+			raw("execute if score #net_moved ${Obj.TR_TMP} matches 1.. run playsound minecraft:entity.enderman.teleport block ${soundListenersSel(8)} ~ ~ ~ 0.2 1.9")
+			raw("execute if score #net_moved ${Obj.TR_TMP} matches 1.. run particle minecraft:portal ~ ~1 ~ 0.2 0.2 0.2 0.05 4 normal ${particleViewersSel()}")
 		}
 
 		// Macro {medium}, as the sending vault marker. Puts the unaccepted remainder back.

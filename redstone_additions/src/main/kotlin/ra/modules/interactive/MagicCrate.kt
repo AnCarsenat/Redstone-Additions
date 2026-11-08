@@ -163,7 +163,7 @@ object MagicCrate {
 		raw("execute store result storage ra:interactive mh.stack.Slot byte 1 run scoreboard players get #mh.slot ${Obj.TEMP}")
 		raw("data modify block ~ ~ ~ Items append from storage ra:interactive mh.stack")
 
-		raw("execute at @s run particle minecraft:portal ~ ~0.2 ~ 0.2 0.2 0.2 0.05 12")
+		raw("execute at @s run particle minecraft:portal ~ ~0.2 ~ 0.2 0.2 0.2 0.05 12 normal ${particleViewersSel()}")
 		raw("particle minecraft:enchant ~ ~1 ~ 0.3 0.3 0.3 0.4 8 normal ${particleViewersSel()}")
 		raw("playsound minecraft:entity.enderman.teleport block ${soundListenersSel(12)} ~ ~ ~ 0.2 1.8")
 

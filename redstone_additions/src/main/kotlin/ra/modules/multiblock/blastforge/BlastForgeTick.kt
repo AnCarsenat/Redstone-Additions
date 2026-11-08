@@ -105,16 +105,16 @@ object BlastForgeTick {
 		// Visual feedback, scaling with heat.
 		val smoke = at.smoke
 		// Low (1-249): light smoke.
-		raw("execute if score @s $h matches 1..249 run particle minecraft:smoke $smoke 1 1 1 0.003 1")
+		raw("execute if score @s $h matches 1..249 run particle minecraft:smoke $smoke 1 1 1 0.003 1 normal ${particleViewersSel()}")
 		// Medium (250-499): smoke + occasional flame.
-		raw("execute if score @s $h matches 250..499 run particle minecraft:smoke $smoke 1 1 1 0.005 2")
-		raw("execute if score @s $h matches 250..499 run particle minecraft:flame $smoke 1 1 1 0.005 1")
+		raw("execute if score @s $h matches 250..499 run particle minecraft:smoke $smoke 1 1 1 0.005 2 normal ${particleViewersSel()}")
+		raw("execute if score @s $h matches 250..499 run particle minecraft:flame $smoke 1 1 1 0.005 1 normal ${particleViewersSel()}")
 		// High (500-749): dense smoke + flames.
-		raw("execute if score @s $h matches 500..749 run particle minecraft:smoke $smoke 2 2 2 0.01 2")
-		raw("execute if score @s $h matches 500..749 run particle minecraft:flame $smoke 1 1 1 0.01 2")
+		raw("execute if score @s $h matches 500..749 run particle minecraft:smoke $smoke 2 2 2 0.01 2 normal ${particleViewersSel()}")
+		raw("execute if score @s $h matches 500..749 run particle minecraft:flame $smoke 1 1 1 0.01 2 normal ${particleViewersSel()}")
 		// Max (750-1000): flames + lava drips.
-		raw("execute if score @s $h matches 750.. run particle minecraft:flame $smoke 2 2 2 0.015 2")
-		raw("execute if score @s $h matches 750.. run particle minecraft:lava $smoke 1 1 1 0.005 1")
+		raw("execute if score @s $h matches 750.. run particle minecraft:flame $smoke 2 2 2 0.015 2 normal ${particleViewersSel()}")
+		raw("execute if score @s $h matches 750.. run particle minecraft:lava $smoke 1 1 1 0.005 1 normal ${particleViewersSel()}")
 
 		// Fuel: only below 1000 heat, and only when there is material to process.
 		raw("execute if score @s $h matches ..999 run function ${at.consumeFuel.asId()}")

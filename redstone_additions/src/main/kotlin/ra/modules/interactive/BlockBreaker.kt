@@ -1,5 +1,6 @@
 package ra.modules.interactive
 
+import ra.core.block.particleViewersSel
 import io.github.ayfri.kore.arguments.types.literals.self
 import io.github.ayfri.kore.commands.scoreboard.scoreboard
 import io.github.ayfri.kore.functions.Function
@@ -104,6 +105,6 @@ object BlockBreaker {
 		scoreboard.players.set(self(), Obj.COOLDOWN, 0)
 		raw("execute positioned ^ ^ ^1 unless block ~ ~ ~ #ra_lib:unbreakable run fill ~ ~ ~ ~ ~ ~ air destroy")
 		raw("playsound minecraft:block.stone.break block ${soundListenersSel()} ~ ~ ~ 1 0.8")
-		raw("""execute positioned ^ ^ ^1 run particle minecraft:block{block_state:"minecraft:stone"} ~ ~ ~ 0.3 0.3 0.3 0.1 20""")
+		raw("""execute positioned ^ ^ ^1 run particle minecraft:block{block_state:"minecraft:stone"} ~ ~ ~ 0.3 0.3 0.3 0.1 20 normal ${particleViewersSel()}""")
 	}
 }

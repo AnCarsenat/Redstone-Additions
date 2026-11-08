@@ -21,6 +21,8 @@ import ra.modules.wires.liquid.LiquidBreak
 import ra.modules.wires.media.Media
 
 object Fluid : PackPart {
+	val drip = ref(Ns.WIRES, "fluid/drip")
+	val dripRun = ref(Ns.WIRES, "fluid/drip_run")
 	val particles = ref(Ns.WIRES, "fluid/particles")
 	val particlesRun = ref(Ns.WIRES, "fluid/particles_run")
 	val potionStore = ref(Ns.WIRES, "fluid/potion_store")
@@ -34,6 +36,26 @@ object Fluid : PackPart {
 			// Show the particle a medium is registered with, at the current position.
 
 			raw("\$execute if data storage ra:wires media.\$(medium).particle run function ${Fluid.particlesRun.asId()} with storage ra:wires media.\$(medium)")
+		}
+
+		pack.define(Fluid.drip) {
+			// Show a medium going INTO a Liquid Drain, on the drain itself.
+			// Context: at the drain position. Macro: {medium}.
+			//
+			// Fluid.particles draws at the source block, which is often under water or behind
+			// the drain, so a working drain could look idle. This one falls onto the drain's
+			// top: the medium's `drip` particle (falling water, falling lava) when it has one,
+			// its ordinary `particle` otherwise. Players who turned block particles off see
+			// neither.
+
+			raw("\$execute if data storage ra:wires media.\$(medium).drip run return run function ${Fluid.dripRun.asId()} with storage ra:wires media.\$(medium)")
+			raw("\$execute if data storage ra:wires media.\$(medium).particle run function ${Fluid.particlesRun.asId()} with storage ra:wires media.\$(medium)")
+		}
+
+		pack.define(Fluid.dripRun) {
+			// Internal: the falling half of drip, spread over the drain's top face.
+
+			raw("\$particle \$(drip) ~ ~0.9 ~ 0.3 0.1 0.3 0 10 normal ${particleViewersSel()}")
 		}
 
 		pack.define(Fluid.particlesRun) {

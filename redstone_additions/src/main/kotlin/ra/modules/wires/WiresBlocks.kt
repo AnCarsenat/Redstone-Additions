@@ -31,7 +31,6 @@ import ra.modules.wires.blocks.Placement
 import ra.modules.wires.blocks.creative_fluid.CreativeFluid
 import ra.modules.wires.blocks.electric_consumer.ElectricConsumer
 import ra.modules.wires.blocks.electric_furnace.ElectricFurnaceSettings
-import ra.modules.wires.blocks.liquid_drain.LiquidDrain
 
 /**
  * Every Wires item, described once: its egg, recipe, unlock advancement and place in the bundle.
@@ -169,9 +168,6 @@ object WiresBlocks : PackPart {
 		wrenchCycle("electric_furnace",
 			WrenchCycle("Output", "output", ElectricFurnaceSettings.cycleOutput),
 			WrenchCycle("Power", "mode", ElectricFurnaceSettings.cycleMode))
-		wrenchCycle("liquid_drain",
-			WrenchCycle("Mode", "mode", LiquidDrain.cycleMode),
-			WrenchCycle("Rate", "cooldown", LiquidDrain.cycleRate))
 
 		// Property schemas, by marker type (what data.type holds -- liquid_pipe, not
 		// liquid_pipe_copper). `readonly` ones are the block's own working numbers: shown by the Data
@@ -184,11 +180,14 @@ object WiresBlocks : PackPart {
 			number("rate", min = 1, max = 1000000, readonly = true)
 			text("filter_medium")
 		}
+		// Litres per second: one 5 L source block every 100 / speed ticks (5 = one a second).
+		// An admin knob, kept off the Goggles; the role (take in / pour out) is redstone.
 		properties("liquid_drain") {
-			text("mode")
-			number("cooldown", min = 1, max = 1200)
-			// The old name of cooldown, folded into it every tick.
+			number("speed", min = 1, max = 100, adminOnly = true, goggles = false)
+			// Pre-6.0.1 names, only ever read by ra_wires:fluid/drain_migrate, which removes them.
+			number("cooldown", readonly = true, visible = false)
 			number("interval", readonly = true, visible = false)
+			text("mode", readonly = true, visible = false)
 		}
 		properties("electric_generator") { number("generation_rate", min = 1, max = 10000, readonly = true) }
 		properties("solar_panel") { number("generation_rate", min = 1, max = 10000, readonly = true) }

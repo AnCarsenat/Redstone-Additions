@@ -95,7 +95,7 @@ object DrainItems : PackPart {
 
 			scoreboard.players.set(literal("#dr.took"), "ra.wires.tmp", 1)
 			raw("data modify entity @s data.status.drain_state set value \"emptied_container\"")
-			raw("\$function ${Fluid.particles.asId()} {medium:\"\$(medium)\"}")
+			raw("\$function ${Fluid.drip.asId()} {medium:\"\$(medium)\"}")
 			raw("playsound minecraft:item.bucket_empty block ${soundListenersSel(8)} ~ ~ ~ 0.7 1.2")
 		}
 
@@ -105,10 +105,10 @@ object DrainItems : PackPart {
 			//
 			// WHY VERTICAL
 			// A drain lying flat is working on the world: it takes a source block beside it,
-			// or puts one back. Stood on end it has nothing sensible to do with the block
-			// above or below, so that placement is given the other job — it becomes the point
-			// where a base's contents go in. One block, two roles, decided by how you place
-			// it, with no extra property to discover.
+			// or puts one back. Stood on end it is also the point where a base's contents go
+			// in. Since 6.0.1 it still takes a world source beside it when it has nothing to
+			// load (see ra_wires:fluid/drain_tick): placing a drain while looking down makes it
+			// vertical, and such a drain used to never touch the pool it sat beside.
 			//
 			// THREE WAYS IN, TRIED IN THAT ORDER
 			// 1. a sneaking player's main hand
@@ -139,7 +139,10 @@ object DrainItems : PackPart {
 			// vertical drain can give it: their own experience.
 			executeRun("if score #dr.took ra.wires.tmp matches 0", DrainExperience.drainExp)
 
-			raw("execute if score #dr.took ra.wires.tmp matches 0 unless data entity @s data.status{drain_state:\"absorbing_xp\"} unless data entity @s data.status{drain_state:\"network_full\"} unless data entity @s data.status{drain_state:\"wrong_medium\"} run data modify entity @s data.status.drain_state set value \"nothing_to_empty\"")
+			// drain_tick sets "idle" before calling this, so a state still "idle" here means none
+			// of the four ways in acted or had anything to report this cycle -- and only then does
+			// drain_tick go on to scan the world for a source.
+			raw("execute if score #dr.took ra.wires.tmp matches 0 if data entity @s data.status{drain_state:\"idle\"} run data modify entity @s data.status.drain_state set value \"nothing_to_empty\"")
 			data(Storage.WIRES) { remove("iq") }
 		}
 
@@ -209,7 +212,7 @@ object DrainItems : PackPart {
 
 			scoreboard.players.set(literal("#dr.took"), "ra.wires.tmp", 1)
 			raw("data modify entity @s data.status.drain_state set value \"emptied_container\"")
-			raw("\$function ${Fluid.particles.asId()} {medium:\"\$(medium)\"}")
+			raw("\$function ${Fluid.drip.asId()} {medium:\"\$(medium)\"}")
 			raw("playsound minecraft:item.bucket_empty block ${soundListenersSel(8)} ~ ~ ~ 0.7 1.2")
 		}
 	}

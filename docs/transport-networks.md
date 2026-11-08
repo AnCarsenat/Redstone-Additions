@@ -72,7 +72,7 @@ Different families never mix, so an electric wire and a pipe can run side by sid
 | **Liquid Drain** | Same as the pump, taking in a source block next to it. Water and lava fall onto the drain as it does |
 | **Liquid Drain**, powered by redstone | Pours out instead: spends 5000 mL to put a source block back into the world on a free side (says `not_enough` below 5000 mL) |
 | **Liquid Drain**, facing up or down | Also a **loading point**: takes filled buckets/bottles from you (sneak while holding one), from a container on top of it, or from items dropped on it, and gives the empties back; with none of those, a sneaking player's **experience**. With nothing to load, it takes in a source block next to it like any drain |
-| **Gas Pump** | Like the Liquid Pump, for gases. No world block holds a gas, so today a Gas Pump has nothing to pull: fill gas networks from a Boiler |
+| **Gas Pump** | Like the Liquid Pump, for gases: draws **Smoke** from a lit campfire or soul campfire next to it, 500 mL a second. The campfire keeps burning and is never used up. Steam comes from a Boiler |
 
 A drain points where you look when you place it, so looking down to place one makes it face up.
 That is fine: an upright drain still drains the pool beside it.
@@ -237,7 +237,9 @@ you extend it.
   locked.
 - **Heat sources** are the block tag `#ra_wires:heat_sources`.
 - **Media registry** (`ra_wires:media/init`): display name, state, colour, particle, optional world
-  block and bucket; pumpable blocks are listed as `source_blocks`. Preset potions get their effects
+  block and bucket; pumpable blocks are listed as `source_blocks`, each with its medium's
+  `state` (a pump or drain only considers sources of the state it carries) and `keep:1b` on a
+  source that is never used up (the campfires). Preset potions get their effects
   from `ra_wires:media/potions`; a potion with `custom_effects` is read from the item.
 - **Bridges** (Valves, Filters, Breakers, the Boiler, the Ender Power Vault) belong to neither
   network they touch, which is why a valve always splits a run in two. A bridge picks

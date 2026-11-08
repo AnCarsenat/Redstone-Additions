@@ -328,6 +328,12 @@ predicates built when the pack is generated. Worlds on v6.0.0 carry on without a
   feeding the pipe. A filtering pipe now tries the four containers around it, whichever way it
   points, and never the one behind it.
 
+- **The Gas Pump has something to pump.** No world block counted as a gas, so a Gas Pump could
+  never pull anything. It now draws Smoke from a lit campfire or soul campfire next to it,
+  500 mL a second, and leaves the campfire burning. Pumps and drains also look only for sources
+  they can take: a Liquid Pump or Liquid Drain beside both a campfire and water takes the water,
+  and a drain never pulls smoke into a liquid network.
+
 ### For contributors
 
 - A property can set `goggles = true` to show on the Goggles label even when `visible = false`

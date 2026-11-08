@@ -192,33 +192,36 @@ Hooked into `#minecraft:load` by Hub (`ra/hub/Load.kt`). In order:
 3. `ra:tools/goggles/billboard/init_offsets`.
 4. `ra_lib:init`.
 5. `ra_lib:redstone/clear` as every custom-block marker (one-off sweep of pre-5.1.16 tags).
-6. Every module's `load`, in `modules` order.
-7. `ra_lib_multiblock:init`.
-8. Wrench menu objectives (`ra.wrench`, `ra.wr.x/y/z`).
-9. `ra_settings:init`: after the modules, which register their settings pages.
-10. `ra:tools/wrench/init_registry`, `ra:tools/readonly/init_registry`,
+6. Re-centre every loaded custom-block marker on its block. Once, here, not every tick: nothing
+   moves a marker, and placement summons it at the centre.
+7. Every module's `load`, in `modules` order.
+8. `ra_lib_multiblock:init`.
+9. Wrench menu objectives (`ra.wrench`, `ra.wr.x/y/z`).
+10. `ra_settings:init`: after the modules, which register their settings pages.
+11. `ra:tools/wrench/init_registry`, `ra:tools/readonly/init_registry`,
     `ra:tools/data_handler/init_registry`: configuration, rewritten on every load.
-11. `ra_migrations:run`.
-12. `schedule function ra:tick 1t replace`.
-13. The disabled-blocks notice, then (if the `welcome` setting is on) the welcome messages.
+12. `ra_migrations:run`.
+13. `schedule function ra:tick 1t replace`.
+14. The disabled-blocks notice, then (if the `welcome` setting is on) the welcome messages.
 
 ### `ra:tick`
 
 Rescheduled every tick by itself, not run from `#minecraft:tick` (`ra/hub/Tick.kt`). In order:
 
-1. Tool "active" tag cleanup (`cdh`, `dh`, `wrench`, `clip`, `meter`, `remote`).
-2. `ra_settings:tick`: per-player defaults, menu clicks. Early, because module ticks filter
+1. `schedule function ra:tick 1t replace`. **First**, so a tick cut short by
+   `maxCommandChainLength` has already scheduled the next one; at the end, the cut took the
+   reschedule with it and the pack stopped until `/reload`.
+2. Tool "active" tag cleanup (`cdh`, `dh`, `wrench`, `clip`, `meter`, `remote`).
+3. `ra_settings:tick`: per-player defaults, menu clicks. Early, because module ticks filter
    sounds and particles on those scores.
-3. `ra_lib:transport/tick`: debounced network rebuild.
-4. `ra_lib:input/tick`: input sessions.
-5. `ra:tools/data_handler/tick`.
-6. `ra_settings:input_tick`: **after** `input/tick`, so a form finished this tick is seen this tick.
-7. `ra:placement/detect_bats`: the placement router.
-8. Re-centre every custom-block marker on its block.
+4. `ra_lib:transport/tick`: debounced network rebuild.
+5. `ra_lib:input/tick`: input sessions.
+6. `ra:tools/data_handler/tick`.
+7. `ra_settings:input_tick`: **after** `input/tick`, so a form finished this tick is seen this tick.
+8. `ra:placement/detect_bats`: the placement router.
 9. Every module's `tick`, in `modules` order.
 10. `ra:tools/goggles/tick`.
-11. `schedule function ra:tick 1t replace`.
-12. Tool menu triggers: hold timers, `enable` / `reset` of `ra.wrench`, `ra.dh.action`,
+11. Tool menu triggers: hold timers, `enable` / `reset` of `ra.wrench`, `ra.dh.action`,
     `ra.edit_type`, then `ra:tools/wrench/menu_action` for players who clicked.
 
 The order is load-bearing; [How It Works](how-it-works.md#2-tick-orchestration) explains the

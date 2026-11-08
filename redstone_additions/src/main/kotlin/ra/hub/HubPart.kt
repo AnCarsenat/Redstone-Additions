@@ -22,7 +22,7 @@ object HubPart : PackPart {
 		registerTick()
 		registerPlacement()
 		registerBundles()
-		pack.registerUninstall()
+		registerUninstall()
 
 		// `/function ra:settings`: open the server settings, the short way in. ra_settings:admin/show
 		// is the real entry point and does the work; this exists because that path is four segments

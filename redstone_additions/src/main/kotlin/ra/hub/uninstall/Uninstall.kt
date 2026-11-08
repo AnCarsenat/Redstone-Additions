@@ -1,9 +1,9 @@
 package ra.hub.uninstall
 
-import io.github.ayfri.kore.DataPack
 import ra.api.Hub
 import ra.core.Ns
 import ra.core.RA_CHAT_PREFIX
+import ra.core.Ra
 import ra.core.define
 import ra.core.raMessage
 import ra.core.raw
@@ -25,7 +25,7 @@ private fun button(label: String, color: String, hover: String, target: String) 
 
 private val cancelButton get() = button("[ Cancel ]", "green", "Leave everything alone", cancel.asId())
 
-internal fun DataPack.registerUninstall() {
+internal fun Ra.registerUninstall() = with(pack) {
 	// First of two warnings. Nothing is removed by this function.
 	define(Hub.uninstall) {
 		raw("""tellraw @s [{text:"\n"},$RA_CHAT_PREFIX,{text:"Uninstall Redstone Additions?",color:"red",bold:true}]""")
@@ -50,5 +50,6 @@ internal fun DataPack.registerUninstall() {
 		raMessage("@a", "Uninstall cancelled.", "green")
 	}
 
-	registerUninstallConfirm()
+	// After every part: the confirm step reads the finished pack for what to remove.
+	afterAllParts { registerUninstallConfirm() }
 }

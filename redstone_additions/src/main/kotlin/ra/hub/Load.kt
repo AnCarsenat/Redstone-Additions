@@ -1,14 +1,18 @@
 package ra.hub
 
+import io.github.ayfri.kore.arguments.maths.Axes
+import io.github.ayfri.kore.arguments.maths.vec3
 import io.github.ayfri.kore.arguments.scores.ScoreboardCriteria
 import io.github.ayfri.kore.arguments.types.literals.allEntities
 import io.github.ayfri.kore.arguments.types.literals.literal
+import io.github.ayfri.kore.arguments.types.literals.self
 import io.github.ayfri.kore.commands.data
 import io.github.ayfri.kore.commands.execute.execute
 import io.github.ayfri.kore.commands.function
 import io.github.ayfri.kore.commands.returnValue
 import io.github.ayfri.kore.commands.schedule
 import io.github.ayfri.kore.commands.scoreboard.scoreboard
+import io.github.ayfri.kore.commands.tp
 import io.github.ayfri.kore.functions.Function
 import io.github.ayfri.kore.generated.EntityTypes
 import io.github.ayfri.kore.utils.nbt
@@ -83,6 +87,17 @@ internal fun Ra.registerLoad() {
 		execute {
 			asTarget(allEntities { type = EntityTypes.MARKER; tag = Tag.CUSTOM_BLOCK })
 			run { function(RaLib.Redstone.clear) }
+		}
+
+		// Centre every loaded custom block marker on its block, once. ra:tick used to do this
+		// every tick, for every marker, though nothing moves them; this keeps the one thing it
+		// was good for, straightening out markers an older version left off-centre.
+		execute {
+			asTarget(allEntities { type = EntityTypes.MARKER; tag = Tag.CUSTOM_BLOCK })
+			at(self())
+			align(Axes.XYZ)
+			positioned(vec3(0.5, 0.5, 0.5).relative)
+			run { tp(self(), vec3()) }
 		}
 
 		for (module in RedstoneAdditions.modules) function(module.load)

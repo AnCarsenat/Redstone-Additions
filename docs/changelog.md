@@ -37,6 +37,9 @@ predicates built when the pack is generated. Worlds on v6.0.0 carry on without a
 - **Old saved data is tidied.** The Blast Forge's `bf_dir` coordinate tables are removed from
   saved worlds on load, and drill markers drop their outdated `registry_driven` flag on their
   first check.
+- **Custom blocks are no longer re-centred every tick.** Every custom block in the world was
+  moved back onto its block centre on every tick, though nothing ever moves them. They are
+  placed at the centre, and straightened out once when the pack loads.
 
 ### Fixed
 
@@ -134,6 +137,31 @@ predicates built when the pack is generated. Worlds on v6.0.0 carry on without a
   output from the opposite face. A repeater, comparator or observer now powers only the block
   its output faces, from every side including above and below, and one pointing away no longer
   counts as an input on the AND, NAND and other gates that check which sides are wired.
+
+- **Custom blocks place on flowers, rails and torches.** Using a custom block on a flower,
+  sapling, rail, pressure plate, button, lever, torch or redstone dust did nothing and the item
+  was gone. The block now goes against the face you clicked, as a vanilla block would.
+
+- **A refused placement gives the item back and says why.** When a custom block could not be
+  placed (another custom block already there, no room, a player in the way, or the block
+  disabled on the server), the item was used up anyway, and only the disabled case said
+  anything. You now get the item back in survival and adventure, with a message saying why.
+  An item fired from a dispenser is dropped in front of it.
+
+- **Breaking a custom block no longer deletes nearby items.** Removing the plain vanilla item a
+  broken custom block drops took the nearest item of the same kind, whatever it was: a stack of
+  64 quartz you had dropped beside a Shortener, or the contents a container had just spilled.
+  Only the block's own fresh drop is removed now.
+
+- **The pack no longer stops after a very heavy tick.** If one tick ran past the game's command
+  limit, the pack's main loop never scheduled the next one and every machine stopped until
+  `/reload`. The loop now schedules its next tick first.
+
+- **Uninstall removes everything.** It left powered Chunk Loaders' chunks force-loaded for good,
+  left the Clock and UNI Gate's floating items and the Goggles' item lines in the world, kept
+  more than thirty scoreboards (networks, jetpacks, Ender links, enchanting, tool timers) and did not
+  actually empty any of the pack's saved data. The lists of what to remove are now read from the
+  pack itself, so nothing the pack creates is left behind.
 
 ### For contributors
 

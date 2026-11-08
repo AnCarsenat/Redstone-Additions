@@ -6,10 +6,15 @@ import io.github.ayfri.kore.commands.function
 import io.github.ayfri.kore.commands.returnValue
 import io.github.ayfri.kore.commands.scoreboard.Operation
 import io.github.ayfri.kore.commands.scoreboard.scoreboard
+import io.github.ayfri.kore.features.predicates.providers.sub
 import io.github.ayfri.kore.functions.Function
 import io.github.ayfri.kore.utils.nbt
 import ra.core.Obj
 import ra.core.Ra
+import ra.core.computeScore
+import ra.core.computeStorage
+import ra.core.provider
+import ra.core.scoreOf
 import ra.core.define
 import ra.core.raw
 import ra.lib.lib
@@ -88,8 +93,7 @@ internal object Clamp {
 		// exactly the excess and the walk stops on the next test. Both cases leave #net_amt_c
 		// holding the new total.
 		pack.define(clampOne) {
-			scoreboard.players.operation(over, Obj.TR_TMP, Operation.SET, amt, Obj.TR_TMP)
-			scoreboard.players.operation(over, Obj.TR_TMP, Operation.REMOVE, cap, Obj.TR_TMP)
+			computeScore("#net_over_c", Obj.TR_TMP, provider { sub(scoreOf("#net_amt_c", Obj.TR_TMP), scoreOf("#net_cap_c", Obj.TR_TMP)) })
 
 			raw("\$execute store result score #net_med_c ${Obj.TR_TMP} run data get storage ra:transport nets.n\$(id).amounts.\$(medium)")
 
@@ -107,8 +111,7 @@ internal object Clamp {
 			}
 
 			// Bigger: it absorbs the whole overflow and the network is back within capacity.
-			scoreboard.players.operation(med, Obj.TR_TMP, Operation.REMOVE, over, Obj.TR_TMP)
-			raw("\$execute store result storage ra:transport nets.n\$(id).amounts.\$(medium) int 1 run scoreboard players get #net_med_c ${Obj.TR_TMP}")
+			computeStorage(TR, "nets.n\$(id).amounts.\$(medium)", provider { sub(scoreOf("#net_med_c", Obj.TR_TMP), scoreOf("#net_over_c", Obj.TR_TMP)) })
 			scoreboard.players.operation(amt, Obj.TR_TMP, Operation.SET, cap, Obj.TR_TMP)
 		}
 	}

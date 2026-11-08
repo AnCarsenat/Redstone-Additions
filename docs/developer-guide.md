@@ -213,9 +213,11 @@ elements.
 
 Totals live in storage rather than in scoreboards because a scoreboard gives one
 number per network and a compound gave `amounts` a place to go without moving
-anything that was already there. Arithmetic still goes through scoreboards,
-because commands have no other way to add two numbers; storage is where values
-live between operations, not where they are computed.
+anything that was already there. Arithmetic reads them where they are: 26.3's
+`data modify ... set compute` and `/compute` evaluate a context int provider
+(`add`, `sub`, `min` over `storage` and `score` leaves) in one command, so a
+read-modify-write is one line instead of read, scoreboard operation, write. The
+helpers are in `ra/core/Compute.kt`.
 
 **Writing.** `net/offer` and `net/take` read the network, work out how much
 actually moves, then hand the id and the medium to `net/offer_write` /
@@ -229,9 +231,10 @@ the medium name.
   a mixed run. `net/take_any` takes the primary and parks its name in
   `storage ra:transport took.medium`, for callers like a Valve that move contents
   without caring what they are but must tell the far side what arrived.
-- **First arrival.** `data get` on a path that is not there fails, a failed
-  command stores 0, and 0 is the right starting value for a medium arriving for
-  the first time. That is the test for "append to `media`".
+- **First arrival.** A `storage` provider reads a path that is not there as 0
+  (its `fallback`), and 0 is the right starting value for a medium arriving for
+  the first time. The new figure is no more than the amount added exactly when
+  the old one was 0 or less, and that is the test for "append to `media`".
 - **Drained to nothing.** The key goes from `amounts`, the entry goes from
   `media`, and `medium` is recomputed from the new `media[0]` — removed first, so
   an emptied network is left with no medium at all rather than a stale one, since

@@ -729,27 +729,25 @@ worked example.
 - One entry and shift+RMB cycles it immediately; two or more and the wrench opens
   a menu. Nothing else changes.
 
-### Read-only properties
+### Property schemas and read-only properties
 
-A property the block owns and the player must not edit is registered with
-`ra.readonly(type, props…)`, keyed by block type. The Tools part builds
-`ra:tools/readonly/init_registry` from every registration:
+Every block type declares its properties, their types and their flags next to the block, with
+`properties(block) { ... }`:
 
 ```kotlin
-ra.readonly("electric_generator", "generation_rate")
+properties("electric_generator") { number("generation_rate", min = 1, max = 10000, readonly = true) }
 ```
 
 ```mcfunction
-data modify storage ra:dh readonly set value {"electric_generator":{generation_rate:1b}}
+data modify storage ra:dh types."electric_generator" set value {generation_rate:{type:"number",code:1,min:1,max:10000,readonly:1b,admin_only:0b,visible:1b,i:0}}
 ```
 
-Both tools obey it from that one place: the Data Handler shows the row with a
-struck-through `[Modify]` and a reason on hover, and the wrench drops it from the
-cycle menu. A block left with no cyclable properties after filtering reports that
-it does not cycle, rather than silently cycling the one thing you locked.
-
-It is a compound rather than a list because both readers ask "is *this* name
-read-only?" — one command against a compound, a walk against a list.
+The Data Handler, the wrench and the clipboard all obey it from that one place: a read-only
+property is shown with a struck-through `[Modify]` and a reason on hover, and the wrench drops it
+from the cycle menu. A block left with no cyclable properties after filtering reports that it
+does not cycle, rather than silently cycling the one thing you locked. `adminOnly` and
+`visible = false` work the same way for players without `ra.admin`. See
+[Property schemas](tools-and-registries.md#property-schemas).
 
 Cyclers run **as the marker, at the block**, and message `@a[distance=..10]` —
 the wrench never touches the player, so anything addressed to a player-side tag

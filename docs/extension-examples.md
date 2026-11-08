@@ -284,13 +284,31 @@ Register your type in relevant `ra_lib_multiblock` function tags:
 
 Also ensure wrench assembly flow can set your intended type in `storage ra:multiblock` before assembly.
 
+## Declaring your block's properties
+
+The Data Handler, the wrench and the clipboard read each block type's property schema from
+`storage ra:dh types."<data.type>"` and the menu order from `order."<data.type>"`. Redstone
+Additions writes its own types one by one on load, so an add-on writes its types the same way in
+its own load function, in either order:
+
+```mcfunction
+# /ra_myaddon:load
+data modify storage ra:dh types."ra_myaddon.pulse_beacon" set value {interval:{type:"number",code:1,min:1,max:200,readonly:0b,admin_only:0b,visible:1b,i:0},owner_only:{type:"bool",code:2,readonly:0b,admin_only:1b,visible:1b,i:1}}
+data modify storage ra:dh order."ra_myaddon.pulse_beacon" set value ["interval","owner_only"]
+```
+
+`code` is 0 text, 1 number, 2 bool, 3 list, 4 item id; the flags are bytes. A list also takes
+`of:"text",of_code:0`, `max_length` and `pad:1b`. A property you do not declare still works, but
+the Data Handler only guesses its type, and flags its row with a warning. See
+[Property schemas](tools-and-registries.md#property-schemas).
+
 ## Sanity Checklist For New Blocks
 
 1. Give item custom_data matches placement handler tag.
 2. Placement handler returns success only for matching bats.
 3. Tick includes break cleanup.
 4. Recipe output entity tags exactly match give item tags.
-5. CDH and Goggles are extended if your block has properties/status.
+5. Your block's properties are declared (see below) and Goggles are extended if it has status.
 6. `#ra:placement_handlers` includes your new handler (a `"replace": false` tag file in your addon).
 
 ---

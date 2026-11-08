@@ -85,8 +85,9 @@ The `ra` namespace is split between two parts by path.
 | `tools/wrench/WrenchMenu.kt` | Shift+RMB cycle menu, `menu_action` |
 | `tools/wrench/WrenchMultiblock.kt` | Assembly on multiblock bases |
 | `tools/wrench/WrenchRegistry.kt` | `init_registry` from `ra.wrenchCycles`; the UNI gate cycler |
-| `tools/readonly/Readonly.kt` | `ra:tools/readonly/init_registry` from `ra.readonly` |
-| `tools/datahandler/DataHandlerRegistry.kt` | `ra:tools/data_handler/init_registry`: property list, numeric list, item-name list |
+| `tools/readonly/Readonly.kt` | `ra:tools/readonly/init_registry`: removes the pre-schema `storage ra:dh readonly` |
+| `core/Properties.kt` | The `properties { }` builder: `PropType`, `PropSpec` |
+| `tools/datahandler/DataHandlerRegistry.kt` | `ra:tools/data_handler/init_registry`: every block type's property schema; the undeclared-property build warnings |
 | `tools/datahandler/DataHandler.kt`, `DataHandlerActions.kt`, `props/*` | The Data Handler |
 | `tools/creativedatahandler/*` | The Creative Data Handler |
 | `tools/inputdatahandler/InputDataHandler.kt` | The debug Input Data Handler |

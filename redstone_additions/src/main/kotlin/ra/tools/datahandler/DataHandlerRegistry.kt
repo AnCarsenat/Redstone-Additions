@@ -38,15 +38,16 @@ object DataHandlerRegistry {
 
 	fun Ra.registerDataHandlerRegistry() {
 		val schemas = blockProperties.toSortedMap()
-		val types = schemas.entries.joinToString(",", "{", "}") { (type, specs) ->
-			"\"$type\":" + specs.withIndex().joinToString(",", "{", "}") { (i, p) -> "${p.name}:${p.snbt(i)}" }
-		}
-		val order = schemas.entries.joinToString(",", "{", "}") { (type, specs) -> "\"$type\":" + specs.map { it.name }.snbt() }
 		val known = schemas.values.flatten().filter { !it.dynamic }.map { it.name }.distinct().sorted()
 
 		pack.define(initRegistry) {
-			raw("data modify storage ra:dh types set value $types")
-			raw("data modify storage ra:dh order set value $order")
+			// One line per type, each replacing that type whole, rather than one `set` of the whole
+			// compound: an add-on pack's own types (see Extension Examples) survive our load,
+			// whichever pack loads first.
+			for ((type, specs) in schemas) {
+				raw("data modify storage ra:dh types.\"$type\" set value " + specs.withIndex().joinToString(",", "{", "}") { (i, p) -> "${p.name}:${p.snbt(i)}" })
+				raw("data modify storage ra:dh order.\"$type\" set value ${specs.map { it.name }.snbt()}")
+			}
 			raw("data modify storage ra:dh known set value ${known.snbt()}")
 			// Lists of v6.0.1 and earlier, read by nothing now.
 			for (old in listOf("registry", "numeric", "item_names", "readonly")) raw("data remove storage ra:dh $old")

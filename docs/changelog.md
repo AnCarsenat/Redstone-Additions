@@ -186,7 +186,8 @@ predicates built when the pack is generated. Worlds on v6.0.0 carry on without a
 - **Breaking a custom block no longer deletes nearby items.** Removing the plain vanilla item a
   broken custom block drops took the nearest item of the same kind, whatever it was: a stack of
   64 quartz you had dropped beside a Shortener, or the contents a container had just spilled.
-  Only the block's own fresh drop is removed now.
+  Only the block's own fresh drop is removed now, for every custom block: pipes, wires, tanks,
+  pumps, the electric blocks and Multiblock Bases included.
 
 - **The pack no longer stops after a very heavy tick.** If one tick ran past the game's command
   limit, the pack's main loop never scheduled the next one and every machine stopped until

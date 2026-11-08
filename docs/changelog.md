@@ -114,6 +114,19 @@ predicates built when the pack is generated. Worlds on v6.0.0 carry on without a
   `ra_ender:tools/anchor/set_table` does. Anything else is refused with a message and leaves the
   block unchanged.
 
+- **The Ender Power Vault never loses EU over a broken channel.** A vault whose channel was
+  missing, or held text the transfer could not use, still took its share of EU from the grid
+  every cycle and then failed to send it. What it gave back was worked out from the previous
+  vault's transfer, so the grid could lose EU, or be handed back the wrong amount. A vault now
+  checks its channel before taking anything, and a send that fails puts everything back.
+
+- **Tag Adders, Tag Removers and Entity Detectors use their own settings.** Several Tag Adders
+  or Tag Removers switched on in the same tick all used the tag and target of the last one, and
+  a block missing its tag or target borrowed the one before it. Each block now reads only its
+  own settings. A Tag Adder or Entity Detector with no target, or a Tag Adder with no tag, does
+  nothing (the detector's output stays off); a Tag Remover with no tag still clears every tag,
+  as before.
+
 ### For contributors
 
 - `ra/core/Compute.kt` builds and emits `/compute` providers; the [Developer Guide](developer-guide.md#arithmetic-with-compute)

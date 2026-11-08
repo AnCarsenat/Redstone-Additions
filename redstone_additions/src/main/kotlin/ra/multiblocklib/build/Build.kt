@@ -47,7 +47,7 @@ object Build {
 
 	fun Ra.registerBuild() {
 		pack.define(all) {
-			mbCopy("build_q", "registry")
+			mbCopy("build_q", "registry_runtime")
 			function(next)
 			mbRemove("build_q", "build", "work_q", "work", "work_cur")
 		}

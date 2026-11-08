@@ -45,7 +45,7 @@ object Generic {
 		// holds the type being attempted.
 		pack.define(validate) {
 			returnIfMbScore("#mb_result", 1, 0)
-			mbCopy("scan_q", "registry")
+			mbCopy("scan_q", "registry_runtime")
 			function(validateNext)
 			mbRemove("scan_q", "scan")
 		}
@@ -81,6 +81,8 @@ object Generic {
 		// generic/check_structure knows it can validate it from the spec.
 		pack.define(setupTypeRun) {
 			raw("\$execute unless data storage ra:multiblock types.\$(type) run return 0")
+			// A compiled type is tagged by spec/setup_type and checked by its own predicate.
+			raw("\$execute if data storage ra:multiblock types.\$(type){compiled:1b} run return 0")
 			raw("\$tag @s add ra.multiblock.\$(type)")
 			data(self()) { modify("data.registry_driven") { set(NbtByte(1)) } }
 		}

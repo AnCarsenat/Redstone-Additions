@@ -69,6 +69,12 @@ class Ra(val pack: DataPack) {
 	/** `ra:tools/goggles/draw_multiblock`: multiblock marker tag -> readout. */
 	val multiblockGoggles = mutableListOf<TagRoute>()
 
+	/** Compiled multiblock structures (see [ra.api.multiblock]), compiled by ra_lib_multiblock after all parts. */
+	val multiblockSpecs = mutableListOf<ra.api.MultiblockSpec>()
+
+	/** Set once ra_lib_multiblock has compiled [multiblockSpecs]; registering after that is an error. */
+	var multiblockSpecsCompiled = false
+
 	/** Wrench Shift+RMB cycle rows, keyed by the marker's `data.type`. */
 	val wrenchCycles = linkedMapOf<String, MutableList<WrenchCycle>>()
 

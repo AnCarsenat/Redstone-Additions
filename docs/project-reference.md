@@ -41,6 +41,7 @@ grep -rn '"wrench/init_registry"\|"tools/wrench/init_registry"' src/main/kotlin
 | `core/block/Selectors.kt` | `markers`, `brokenMarkers`, `newMarker`, `soundListeners`; as text: `markerSel`, `newMarkerSel`, `soundListenersSel`, `particleViewersSel` |
 | `core/block/GogglesLines.kt` | `gogglesHeader`, `propLine`, `dataLine`, `textLine`, `stackReset`, `stacked*Line` |
 | `api/LibApi.kt` | `RaLib` (every public `ra_lib` entry point), `MultiblockLib` (+ `Hooks` tag names) |
+| `api/MultiblockSpec.kt` | `MultiblockSpec`, `multiblockSpec { }`, `Ra.multiblock(spec)`: compiled multiblock structures |
 | `api/ToolsApi.kt` | `Goggles` (tick, dispatch, billboard writers), `Tools` (registries, per-tick), `Hub` (`ra:uninstall`), `Settings` (read API, lifecycle), `ModulesApi` (cross-module calls) |
 
 ## `ra_lib` → `lib/`
@@ -129,9 +130,10 @@ See [Settings](settings-internals.md).
 | `multiblocklib/Registry.kt` | `init`, `register`; declares the six empty hook tags |
 | `multiblocklib/Assembly.kt` | `try_assemble`, `try_tier`, marker creation and setup |
 | `multiblocklib/Validation.kt` | `validate_all`, `validate_single`, `disassemble` |
-| `multiblocklib/build/Build.kt` | `build/*`: rotates registered structures into the other three facings |
+| `multiblocklib/spec/Compiled.kt` | `spec/*` and the `structure/<id>/<facing>` predicates: Kotlin specs (`Ra.multiblock`) compiled at build time |
+| `multiblocklib/build/Build.kt` | `build/*`: rotates storage-registered structures into the other three facings |
 | `multiblocklib/structure/Structure.kt` | `structure/*`: checks every required block |
-| `multiblocklib/generic/Generic.kt` | `generic/*`: validator / setup / check for registry-described types (hooked last via `afterAllParts`) |
+| `multiblocklib/generic/Generic.kt` | `generic/*`: validator / setup / check for storage-registered types (hooked last via `afterAllParts`) |
 | `multiblocklib/io/Io.kt` | `io/*`: named IO positions |
 | `multiblocklib/MbCommands.kt` | Helpers for `storage ra:multiblock` |
 

@@ -24,6 +24,7 @@ import ra.core.Tag
 import ra.core.define
 import ra.core.raw
 import ra.core.ref
+import ra.multiblocklib.spec.Compiled
 
 /** Assembly: `try_assemble`, `try_tier` and the marker it creates. */
 internal object Assembly {
@@ -47,8 +48,11 @@ internal object Assembly {
 		// functions ask the registry instead of naming one hardcoded type each.
 		pack.define(MultiblockLib.tryTier) {
 			scoreboard.players.set(tierDone, Obj.TEMP, 0)
-			mbCopy("tier_q", "registry")
 			raw("\$data modify storage ra:multiblock tier_scan.tier set value \"\$(tier)\"")
+			// Compiled specs first: a static list per tier, no macro walk.
+			function(Compiled.tryTier)
+			// Then the storage-registered types (tier_next returns at once if one already assembled).
+			mbCopy("tier_q", "registry_runtime")
 			function(tierNext)
 			mbRemove("tier_q", "tier_scan")
 			returnRun { scoreboard.players.get(tierDone, Obj.TEMP) }

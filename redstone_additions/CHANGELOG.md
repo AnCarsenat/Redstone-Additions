@@ -24,6 +24,13 @@ predicates built when the pack is generated. Worlds on v6.0.0 carry on without a
 - **Players may edit entity selectors and tags** (server setting, Sensors page, off by
   default): lets players without server-settings access change the selectors and tags of the
   Entity Detector, Tag Adder, Tag Remover and Message Block.
+- **Inverted Item Pipe filters.** A pipe's new `invert` setting (off by default) sends every
+  item that does **not** match the filter to the side and lets the filtered item carry on; the
+  Goggles show *Mode: Inverted*.
+- **Settings subcategories.** A server settings page can have subcategories, listed at the bottom
+  of the page. The Goggles settings moved into **General › Goggles**, which also has the new
+  *Filter previews* switch: turn it off and the Goggles stop drawing an Item Pipe's filter item
+  above its readout. Values already set carry over.
 - **Purge entities** (server settings, **[Purge entities]**): remove Redstone Additions'
   entities from a world while keeping the pack, its settings and scoreboards. **Everything**
   turns every placed RA block into a plain block and clears transport networks, the Teleport
@@ -152,6 +159,14 @@ predicates built when the pack is generated. Worlds on v6.0.0 carry on without a
   (`eu_use`, default 40), so **Apply to placed** writes a setting the block uses.
 
 ### Fixed
+
+- **An Item Pipe filter can be removed again.** Item settings in the Data Handler have a
+  **[Clear]** button; until now nothing could empty `filter_item` once it was set.
+- **The Data Handler edited the wrong block.** Picking the block under the crosshair took the
+  nearest block within a block and a half of four points along your look, so a block beside or
+  below you often won over the one you were looking at, and a block behind a wall could be
+  picked. The Data Handler, Creative Data Handler, Wrench, Multimeter and Clipboard now follow
+  your look block by block and take the first block it enters, stopping at walls.
 
 - **No more lag spikes from broken Magic Crates.** When the barrel under a Magic Crate was
   replaced by another container, the crate tried to "spill its contents" by summoning empty item

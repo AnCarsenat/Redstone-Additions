@@ -38,6 +38,7 @@ import ra.tools.tool
  *   90..93                    menu actions (internal data, refresh, menu, cancel input)
  *   stamp * 1000 + 100 + i    edit row i of the block's schema (storage ra:dh block_order)
  *   stamp * 1000 + 400 + i    [Set from hand] of row i
+ *   stamp * 1000 + 550 + i    [Clear] of item row i
  *   stamp * 1000 + 700 + i    edit an undeclared property, by its index in storage ra:dh known
  *   stamp * 1000 + 1000..     a list entry's buttons (DataHandlerEntries)
  *   picker stamp * 1000 + 100 + k   choice k of a picker (DataHandlerEntries)
@@ -97,7 +98,8 @@ object DataHandlerActions {
 			val kind = DataHandlerRegistry.KIND
 			executeRun("if score #dh.fresh ${Obj.TEMP} matches 1 if score @s $kind matches 1 if score #dh.code ${Obj.TEMP} matches 100..", DataHandlerEntries.pickAction)
 			val main = "if score #dh.fresh ${Obj.TEMP} matches 1 unless score @s $kind matches 1"
-			executeRun("$main if score #dh.code ${Obj.TEMP} matches 400..699", DataHandlerProps.handAction)
+			executeRun("$main if score #dh.code ${Obj.TEMP} matches ${DataHandlerProps.HAND_BASE}..${DataHandlerProps.CLEAR_BASE - 1}", DataHandlerProps.handAction)
+			executeRun("$main if score #dh.code ${Obj.TEMP} matches ${DataHandlerProps.CLEAR_BASE}..699", DataHandlerProps.clearAction)
 			executeRun("$main if score #dh.code ${Obj.TEMP} matches 100..399", genericAction)
 			executeRun("$main if score #dh.code ${Obj.TEMP} matches 700..999", genericAction)
 			executeRun("$main if score #dh.code ${Obj.TEMP} matches 1000..", DataHandlerEntries.entryAction)

@@ -260,7 +260,8 @@ Anything else is refused with a red message and the block is left unchanged.
 ### Menu buttons
 
 A row's button runs `/trigger ra.dh.action set <stamp × 10000 + code>`: code `100 + i` edits row
-`i` of `order."<type>"`, `400 + i` is that row's **[Set from hand]**, `700 + i` edits the
+`i` of `order."<type>"`, `400 + i` is that row's **[Set from hand]**, `550 + i` its **[Clear]**
+(item rows), `700 + i` edits the
 undeclared property `known[i]`. A declared list's entries (rows 0–29, entries 0–98) use
 `1000 + 300 i + j` (**[Edit]** entry `j`), `+ 99` (**[Append]**), `+ 100 + j` (**[Remove]** /
 **[Clear]**) and `+ 200 + j` (**[Choose]**). A picker is a menu of its own (`ra.dh.mkind` 1)
@@ -301,7 +302,7 @@ the shared `executeRun` / `executeReturnRun` / `callWith` of `ra.core` (`core/Ex
 | Helper | Writes |
 | --- | --- |
 | `tool("wrench/menu")` | `ref(Ns.RA, "tools/wrench/menu")` |
-| `raycast(steps, foundFlag, fn)` | one probe per step along the player's look, stopping once `fn` sets `foundFlag` |
+| `raycast(foundFlag, fn, guard, reach)` | walks the player's look in 0.1-block steps (5 blocks) and runs `fn` as the custom block whose block the look enters first, at its centre; a non-replaceable block with no marker ends it. One generated walker per `fn`, `ra:tools/ray/<fn path>` |
 
 The chain stays vanilla text because the typed `execute { }` builder writes these
 `anchored eyes positioned ^ ^ ^2 unless data storage …` chains three times longer; the called

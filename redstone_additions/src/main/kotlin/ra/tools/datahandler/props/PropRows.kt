@@ -50,11 +50,13 @@ internal object PropRows {
 		// minecraft:polished_blackstone_slab.
 		//
 		// Its action is 400 + the row index (in $(hand_action)), a second action space over the
-		// same list, so no per-property handler is needed for it either.
+		// same list, so no per-property handler is needed for it either. [Clear] ($(clear_action),
+		// 550 + the row index) empties it again.
 		row(
 			rowItem, head(), """{text:"item",color:"aqua"}""", """{text:" "}""",
 			button("[Modify]", "Type an item id in the input book"), """{text:" "}""",
-			button("[Set from hand]", "Copy the id of the item you are holding", color = "aqua", action = "hand_action"),
+			button("[Set from hand]", "Copy the id of the item you are holding", color = "aqua", action = "hand_action"), """{text:" "}""",
+			button("[Clear]", "Set no item", color = "red", action = "clear_action"),
 		)
 
 		// A compound: shown, with no editor. There is no safe way to type one in (see DataHandlerList

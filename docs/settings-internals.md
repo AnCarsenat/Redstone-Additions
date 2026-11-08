@@ -24,7 +24,11 @@ val GatesPage = Page(
 )
 ```
 
-`Page(id, title, namespace, rows)`. Every page is listed in `SettingsPages.all`
+`Page(id, title, namespace, rows, parent = null)`. A page with a `parent` is a **subcategory**:
+it is left off the server settings index, its parent's page lists it under "subcategories", its
+title bar reads `Parent › Title` and its Back returns to the parent. One level deep, and both
+pages need server rows; the generator fails the build otherwise. `GogglesPage` (parent
+`general`) is the one today. Every page is listed in `SettingsPages.all`
 (`pages/SettingsPages.kt`), in the order the beet build read its JSON files: sorted by file name.
 **The order is observable.** It numbers the admin pages and every clickable action code, and
 those codes are what the chat buttons on a player's screen carry.

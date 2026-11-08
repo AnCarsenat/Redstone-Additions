@@ -35,7 +35,8 @@ These only change what **you** see and hear.
 
 Needs permission level 2 (operator). The first page is a row of buttons, one per module; each
 opens a page with buttons beside every value: step it up or down, or **edit** to type an exact
-number.
+number. Some pages have **subcategories**, listed at the bottom of the page (General has
+**Goggles**); a subcategory's **[Back]** returns to its page.
 
 Every setting is also a command, so you can tab-complete your way through them:
 
@@ -61,7 +62,8 @@ Every setting is also a command, so you can tab-complete your way through them:
 
 | Page | Settings |
 | --- | --- |
-| General | show the load message; chat prefix (`RA`); Goggles range (16 blocks); Goggles refresh (20 ticks) |
+| General | show the load message; chat prefix (`RA`); subcategory **Goggles** |
+| General › Goggles | Goggles range (16 blocks); Goggles redraw (20 ticks); *Filter previews* (on): draw the item an Item Pipe filters for above its readout |
 | Logic Gates | default Clock interval (20), Delayer delay (20), Extender duration (20), Shortener pulse (2), Randomizer chance (50%) |
 | Interactive | default Magic Crate radius (8) and interval (20), Message Block range (16) |
 | Power & Fluids | default Generator EU/tick (60), Consumer EU draw (40), Industrial Light EU use (10), Liquid Drain speed (5 L per second) |

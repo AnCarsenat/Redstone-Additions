@@ -16,7 +16,6 @@ import ra.core.callWith
 import ra.core.define
 import ra.core.executeRun
 import ra.core.raw
-import ra.tools.REACH_4
 import ra.tools.ToolItems
 import ra.tools.creativedatahandler.props.CdhProps
 import ra.tools.creativedatahandler.props.CdhProps.registerCdhProps
@@ -75,7 +74,7 @@ object CreativeDataHandler {
 			// Forget this player's previous block, and only theirs.
 			scoreboard.players.set(self(), DataHandlerSelection.SEL, 0)
 			data(Storage.TEMP) { remove("cdh_found") }
-			raycast(REACH_4, "cdh_found", foundBlock)
+			raycast("cdh_found", foundBlock)
 			raw("execute if data storage ra:temp cdh_found run scoreboard players operation @s ${DataHandlerSelection.SEL} = #dh.found ${Obj.TEMP}")
 			executeRun("if data storage ra:temp cdh_found", refresh)
 			raw("""execute unless data storage ra:temp cdh_found run tellraw @s [$PREFIX,{text:"No custom block found nearby.",color:"gray"}]""")

@@ -63,9 +63,15 @@ it); everything else carries on.
 1. Shift + right-click the pipe with the [Data Handler](tools.md).
 2. On the `filter_item` row, hold the item to sort and press **[Set from hand]** (or type an item
    id with **[Modify]**).
-3. Clear the value to remove the filter.
+3. **[Clear]** on the same row removes the filter.
 
-Wear the [Goggles](tools.md) to see each pipe's filter item floating above it.
+**Inverted filter:** toggle the pipe's `invert` setting (off by default) and the filter works the
+other way round: items that do **not** match go to the side, and the filtered item carries on
+forward. Without a filter, `invert` does nothing.
+
+Wear the [Goggles](tools.md) to see each pipe's filter (and *Mode: Inverted* when it is), with the
+filter item floating above it. The item preview can be turned off for the whole server under
+Server Settings › General › **Goggles** › *Filter previews*.
 
 ## Item Mover
 
@@ -165,7 +171,8 @@ then change the row. The [Goggles](tools.md) show the current values.
   mob list is the entity type tag `#ra_interactive:spawn_blocked`.
 - **Magic Crate.** Skips items with a permanent pickup delay. The radius limit is enforced, since
   an unlimited radius would be a world-wide entity scan.
-- **Item Pipe.** The filter is `data.properties.filter_item` (an item id, empty = none). Pipes
+- **Item Pipe.** The filter is `data.properties.filter_item` (an item id, empty = none);
+  `data.properties.invert` (`1b`) sends non-matching stacks to the side instead. Pipes
   built when filters were item frames are converted on load; the frames are left in place.
 - **Properties** live in each block marker's `data.properties`; machines pace themselves with the
   `ra.cooldown` score.

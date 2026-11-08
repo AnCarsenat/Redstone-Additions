@@ -72,6 +72,9 @@ object GogglesTool {
 			executeRun("store result storage ra:temp goggles.range int 1", Settings.get, "{key:\"goggles_range\",default:16}")
 			raw("execute if data storage ra:temp goggles{range:0} run data modify storage ra:temp goggles.range set value 16")
 			callWith(Goggles.scanRange, "storage ra:temp goggles")
+			// Whether blocks draw the item they filter for above their readout (Goggles page). Read
+			// once per redraw, here, so a block's draw tests a score instead of reading a setting.
+			executeRun("store result score ${Goggles.FILTER_PREVIEW} ${Obj.TEMP}", Settings.get, "{key:\"goggles_filter_preview\",default:1}")
 
 			executeRun("as @e[type=marker,tag=ra.goggles_seen,tag=${Tag.CUSTOM_BLOCK}] at @s", Goggles.drawBlock)
 			executeRun("as @e[type=marker,tag=ra.goggles_seen,tag=${Tag.MULTIBLOCK}] at @s", Goggles.drawMultiblock)

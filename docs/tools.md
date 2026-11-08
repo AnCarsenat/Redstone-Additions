@@ -80,6 +80,7 @@ Shift + right-click a block to open its settings in chat.
 | **[Choose]** | Pick an entry from a list of known values (a Teleport Anchor's destinations: every anchor named so far) |
 | **[Edit whole list]** | Write the whole list at once, like `["A","B","C"]` |
 | **[Set from hand]** | For item settings (an Item Pipe filter): use the item you are holding |
+| **[Clear]** | On item settings: set no item (removes an Item Pipe filter) |
 | **[Cancel Input]** | Abandon an edit you started |
 | **[Refresh]** | Redraw the menu with current values |
 

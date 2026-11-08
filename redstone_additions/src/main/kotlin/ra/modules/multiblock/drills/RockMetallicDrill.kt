@@ -88,7 +88,7 @@ object RockMetallicDrill {
 
 		// Build the item first, then let the library position the insert. Passing an item's
 		// components through macro arguments would mean quoting them twice.
-		raw("""data modify storage ra:multiblock io_item set value {id:"minecraft:command_block",count:1,components:{"minecraft:item_name":"Rock","minecraft:item_model":"dead_brain_coral_block","minecraft:rarity":"common"}}""")
+		raw("""data modify storage ra:multiblock io_item set value {id:"minecraft:command_block",count:1,components:{"minecraft:item_name":"Rock","minecraft:item_model":"minecraft:dead_brain_coral_block","minecraft:rarity":"common"}}""")
 		// io/insert_here is passed by id, as io/at's `run` argument.
 		function(MultiblockLib.Io.at, nbt { this["name"] = "output_1"; this["run"] = MultiblockLib.Io.insertHere.asId() })
 	}

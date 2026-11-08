@@ -29,6 +29,10 @@ internal object InsertOrDrop {
 	val findFreeSlotTest = lib("inventory/find_free_slot/test")
 	val mergeNext = lib("inventory/insert_or_drop/merge_next")
 	val mergeOne = lib("inventory/insert_or_drop/merge_one")
+	val normalizeProbe = lib("inventory/normalize_probe")
+	val canAcceptPartial = lib("inventory/can_accept_partial")
+	val canAcceptNext = lib("inventory/can_accept_partial/next")
+	val canAcceptCheck = lib("inventory/can_accept_partial/check")
 	val placeNext = lib("inventory/insert_or_drop/place_next")
 	val stackSize = lib("inventory/stack_size")
 	val writeCount = lib("inventory/insert_or_drop/write_count")
@@ -36,6 +40,9 @@ internal object InsertOrDrop {
 	private val INV = Storage.INVENTORY
 	private val slot = fake("#inv_slot")
 	private val probe = fake("#inv_probe")
+
+	private const val NORM_TAG = "ra.inv.norm"
+	private const val NORM_SEL = "@e[type=minecraft:item_display,tag=$NORM_TAG,distance=..0.01,limit=1]"
 
 	fun Ra.registerInsertOrDrop() {
 		// `insert {id, count, components}`: insert an item into the container at the current
@@ -67,6 +74,10 @@ internal object InsertOrDrop {
 		pack.define(mergeNext) { mergeNext() }
 		pack.define(mergeOne) { mergeOne() }
 		pack.define(placeNext) { placeNext() }
+		pack.define(normalizeProbe) { normalizeProbe() }
+		pack.define(canAcceptPartial) { canAcceptPartial() }
+		pack.define(canAcceptNext) { canAcceptNext() }
+		pack.define(canAcceptCheck) { canAcceptCheck() }
 
 		// `stack_size {n}`: the most items slot n of the container here can hold of what is in it,
 		// into #inv_stack ra.temp. Read off the stack itself, so it is exact for any item: vanilla
@@ -209,6 +220,8 @@ internal object InsertOrDrop {
 	 * "Same item" is tested without macros: a copy of each stack and a copy of the incoming item,
 	 * both stripped of Slot and count, are compared with `data modify ... set from`, which fails
 	 * when the value would not change -- exactly when the two are equal, components included.
+	 * The incoming copy is first put in the form the container stores items in (normalize_probe):
+	 * compared raw, an item built from a hand-written literal never matched its own stacks.
 	 */
 	private fun Function.insertOrDrop() {
 		val put = fake("#inv_put")
@@ -239,12 +252,9 @@ internal object InsertOrDrop {
 			run { data(here) { modify("Items") { set(buildNbtList<Nothing> { }) } } }
 		}
 
-		// 1. Top up matching partial stacks. A block's Items never carries an empty components
-		// map, so an empty one on the incoming item is removed to keep the comparison exact.
+		// 1. Top up matching partial stacks.
 		raw("data modify storage ra:inventory probe set from storage ra:inventory item")
-		raw("data remove storage ra:inventory probe.count")
-		raw("execute store result score #inv_clen ${Obj.TEMP} run data get storage ra:inventory probe.components")
-		raw("execute if score #inv_clen ${Obj.TEMP} matches 0 run data remove storage ra:inventory probe.components")
+		function(normalizeProbe)
 		raw("data modify storage ra:inventory scan set from block ~ ~ ~ Items")
 		function(mergeNext)
 		raw("data remove storage ra:inventory scan")
@@ -260,6 +270,82 @@ internal object InsertOrDrop {
 		raw("execute if score #inv_amount ${Obj.TEMP} matches 1.. run function ${dropItem.asId()}")
 
 		returnRun { scoreboard.players.get(put, Obj.TEMP) }
+	}
+
+	/**
+	 * `normalize_probe`: turn storage ra:inventory probe (an item, any count) into the exact form
+	 * a container stores it in, minus Slot and count, so it can be compared with `data modify ...
+	 * set from` against a stack read off Items. Run positioned at the container.
+	 *
+	 * A container does not keep the NBT it is handed: every stack goes through the item codec on
+	 * the way in and is written back out in canonical form. An item built from a hand-written
+	 * literal can differ from that while being the same item to the game -- an `item_model` of
+	 * `dead_brain_coral_block` is stored as `minecraft:dead_brain_coral_block`, components equal
+	 * to the item's defaults are dropped, text is re-encoded. That is why the Rock Metallic
+	 * Drill's rocks never matched the rock already in its barrel and took a new slot each time.
+	 *
+	 * So the probe takes the same round trip: it is written onto a throwaway item_display, which
+	 * decodes it with the same codec, and read back. No macro is involved, so player-authored
+	 * names are safe, and the display only ever holds a copy: the real item stays in storage
+	 * ra:inventory item. The display is summoned empty, so if the game refuses the item there is
+	 * nothing to read back and the probe is kept as it was, never replaced by something else.
+	 */
+	private fun Function.normalizeProbe() {
+		raw("data remove storage ra:inventory probe.Slot")
+		raw("data modify storage ra:inventory probe.count set value 1")
+		// The codec drops an empty components map too; done here as well so the comparison
+		// holds wherever the round trip is not available.
+		raw("execute store result score #inv_clen ${Obj.TEMP} run data get storage ra:inventory probe.components")
+		raw("execute if score #inv_clen ${Obj.TEMP} matches 0 run data remove storage ra:inventory probe.components")
+
+		raw("data remove storage ra:inventory norm")
+		raw("summon minecraft:item_display ~ ~ ~ {Tags:[\"ra\",\"$NORM_TAG\"]}")
+		raw("data modify entity $NORM_SEL item set from storage ra:inventory probe")
+		raw("data modify storage ra:inventory norm set from entity $NORM_SEL item")
+		raw("kill @e[type=minecraft:item_display,tag=$NORM_TAG,distance=..0.01]")
+		raw("execute if data storage ra:inventory norm.id run data modify storage ra:inventory probe set from storage ra:inventory norm")
+		raw("data remove storage ra:inventory norm")
+
+		raw("data remove storage ra:inventory probe.count")
+	}
+
+	/**
+	 * `can_accept_partial`: is there a stack of storage ra:temp inv_item in the container here
+	 * that is below its stack size? Sets #inv_can_insert ra.temp to 1 if so, leaves it alone
+	 * otherwise. Same matching as insert_or_drop's top-up step (same id and components, after
+	 * normalize_probe), and the same stack size (stack_size), so the Item Mover's "is there
+	 * room" agrees with what an insert would really do.
+	 */
+	private fun Function.canAcceptPartial() {
+		raw("data modify storage ra:inventory probe set from storage ra:temp inv_item")
+		function(normalizeProbe)
+		raw("data modify storage ra:inventory scan set from block ~ ~ ~ Items")
+		function(canAcceptNext)
+		raw("data remove storage ra:inventory scan")
+		raw("data remove storage ra:inventory cmp")
+		raw("data remove storage ra:inventory probe")
+		data(INV) { remove("slotq") }
+	}
+
+	/** Walk storage ra:inventory scan until a matching stack with room turns up. */
+	private fun Function.canAcceptNext() {
+		raw("execute if score #inv_can_insert ${Obj.TEMP} matches 1.. run return 0")
+		raw("execute unless data storage ra:inventory scan[0] run return 0")
+		raw("data modify storage ra:inventory cmp set from storage ra:inventory scan[0]")
+		raw("data remove storage ra:inventory cmp.Slot")
+		raw("data remove storage ra:inventory cmp.count")
+		raw("execute store success score #inv_diff ${Obj.TEMP} run data modify storage ra:inventory cmp set from storage ra:inventory probe")
+		raw("execute if score #inv_diff ${Obj.TEMP} matches 0 run function ${canAcceptCheck.asId()}")
+		raw("data remove storage ra:inventory scan[0]")
+		function(canAcceptNext)
+	}
+
+	/** scan[0] matches: room left on it? */
+	private fun Function.canAcceptCheck() {
+		raw("execute store result score #inv_c ${Obj.TEMP} run data get storage ra:inventory scan[0].count")
+		raw("execute store result storage ra:inventory slotq.n int 1 run data get storage ra:inventory scan[0].Slot")
+		function(stackSize, INV, "slotq")
+		raw("execute if score #inv_c ${Obj.TEMP} < #inv_stack ${Obj.TEMP} run scoreboard players set #inv_can_insert ${Obj.TEMP} 1")
 	}
 
 	/** Walk storage ra:inventory scan (a copy of Items), topping up each stack equal to probe. */

@@ -139,11 +139,10 @@ internal object ActFns {
 		// something visible at the ends of the range.
 		raw("\$$c{type:\"int\"} if score #dir ${Obj.SET_TMP} matches 1 run scoreboard players add #n ${Obj.SET_TMP} \$(step)")
 		raw("\$$c{type:\"int\"} if score #dir ${Obj.SET_TMP} matches ..-1 run scoreboard players remove #n ${Obj.SET_TMP} \$(step)")
-		raw("\$$c{type:\"int\"} run scoreboard players set #lo ${Obj.SET_TMP} \$(min)")
-		raw("\$$c{type:\"int\"} run scoreboard players set #hi ${Obj.SET_TMP} \$(max)")
-		raw("$c{type:\"int\"} if score #n ${Obj.SET_TMP} < #lo ${Obj.SET_TMP} run scoreboard players operation #n ${Obj.SET_TMP} = #lo ${Obj.SET_TMP}")
-		raw("$c{type:\"int\"} if score #n ${Obj.SET_TMP} > #hi ${Obj.SET_TMP} run scoreboard players operation #n ${Obj.SET_TMP} = #hi ${Obj.SET_TMP}")
-		raw("\$$c{type:\"int\"} run scoreboard players operation @s \$(obj) = #n ${Obj.SET_TMP}")
+		// The bounds are macro text, so the provider is too: min(max(n, min), max).
+		val n = "{type:\"minecraft:score\",score:\"${Obj.SET_TMP}\",target:{type:\"minecraft:fixed\",name:\"#n\"}}"
+		val clamp = "{type:\"minecraft:min\",inputs:[{type:\"minecraft:max\",inputs:[$n,\$(min)]},\$(max)]}"
+		raw("\$$c{type:\"int\"} store result score @s \$(obj) run compute default integer $clamp")
 
 		// list: step forward and wrap.
 		raw("$c{type:\"list\"} run scoreboard players add #n ${Obj.SET_TMP} 1")

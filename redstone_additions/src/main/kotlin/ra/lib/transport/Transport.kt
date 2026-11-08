@@ -38,6 +38,10 @@ import ra.lib.transport.rebuild.Rebuild.registerRebuild
  */
 object Transport {
 	val init = lib("transport/init")
+	val pendingTick = lib("transport/pending_tick")
+
+	/** Ticks between retries of networks held back for reaching out of view. */
+	private const val PENDING_RETRY = 100
 
 	/** The wires node marker update_connection_status counts. */
 	private const val WIRES_NODE = "ra.wires.node"
@@ -54,6 +58,11 @@ object Transport {
 			val cooldown = fake("#rebuild_cd")
 			scoreboard.players.remove(cooldown, Obj.TR_TMP, 1)
 
+			// A network held back because it reached out of view (rebuild/scope) is retried now
+			// and then, so a split or a join made while it was half loaded settles once it is whole.
+			// Slow on purpose: until then nothing is lost, its parts just share one pool.
+			raw("execute if data storage ra:transport pending[0] run function ${pendingTick.asId()}")
+
 			execute {
 				unlessCondition { data(TR, "{dirty:1b}") }
 				run { returnValue(0) }
@@ -67,6 +76,17 @@ object Transport {
 			data(TR) { modify("dirty") { set(NbtByte(0)) } }
 
 			function(Rebuild.run)
+		}
+
+		pack.define(pendingTick) {
+			val cd = fake("#pending_cd")
+			scoreboard.players.remove(cd, Obj.TR_TMP, 1)
+			execute {
+				ifCondition { score(cd, Obj.TR_TMP) greaterThanOrEqualTo 1 }
+				run { returnValue(0) }
+			}
+			scoreboard.players.set(cd, Obj.TR_TMP, PENDING_RETRY)
+			data(TR) { modify("dirty") { set(NbtByte(1)) } }
 		}
 
 		// `mark_dirty`: request a network rebuild. Call whenever a transport node is placed, broken
@@ -155,8 +175,12 @@ object Transport {
 		}
 
 		// Always ask for a rebuild on load: markers may have been added or removed while the pack
-		// was off, and a rebuild is cheap next to being wrong.
+		// was off, and a rebuild is cheap next to being wrong. `full` puts every loaded network in
+		// scope for that one rebuild instead of only the ones named in `dirtyq`; a network reaching
+		// out of the loaded area is still held back (rebuild/scope), and one wholly out of it is
+		// not seen at all, so its record survives the load untouched.
 		data(TR) { modify("dirty") { set(NbtByte(1)) } }
+		data(TR) { modify("full") { set(NbtByte(1)) } }
 	}
 
 	/** The six face neighbours, in the order the beet functions tested them (+x -x +z -z +y -y). */

@@ -17,6 +17,15 @@ internal object TrTag {
 	const val ROOT = "ra.tr.root"
 	const val FRONTIER = "ra.tr.frontier"
 	const val WAVE = "ra.tr.wave"
+
+	/** Rebuild only: a node of a network this rebuild is allowed to take apart and put back. */
+	const val SCOPE = "ra.tr.scope"
+
+	/** Rebuild only: a node given a network during this rebuild, whose capacity and carry still have to be added. */
+	const val CLAIMED = "ra.tr.claimed"
+
+	/** Rebuild only: the root of a network created from nothing in this rebuild, the only kind the clamp may trim. */
+	const val FRESH = "ra.tr.fresh"
 }
 
 /** `@e[type=marker,tag=<tag>]`, optionally narrowed further. */

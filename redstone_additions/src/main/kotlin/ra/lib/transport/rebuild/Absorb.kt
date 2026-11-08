@@ -9,6 +9,10 @@ import io.github.ayfri.kore.commands.returnValue
 import io.github.ayfri.kore.commands.scoreboard.Operation
 import io.github.ayfri.kore.commands.scoreboard.scoreboard
 import io.github.ayfri.kore.features.predicates.providers.add
+import io.github.ayfri.kore.features.predicates.providers.constant
+import ra.core.macroCall
+import ra.core.snbt
+import ra.lib.transport.net.Read
 import ra.core.Obj
 import ra.core.Ra
 import ra.core.computeScore
@@ -35,7 +39,8 @@ internal object Absorb {
 	val adoptMediumWrite = lib("transport/rebuild/adopt_medium_write")
 
 	fun Ra.registerAbsorb() {
-		// Internal: fold one node's capacity and carried contents into its new network.
+		// Internal: fold one node's capacity and carried contents into the network it was given in
+		// this rebuild -- a fresh one, or a kept one it was adopted into.
 		pack.define(accumulateNode) {
 			raw("execute store result score #node_cap ${Obj.TR_TMP} run scoreboard players get @s ${Obj.TR_CAP}")
 			raw("execute store result score #node_carry ${Obj.TR_TMP} run scoreboard players get @s ${Obj.TR_CARRY}")
@@ -45,10 +50,22 @@ internal object Absorb {
 
 		// `accumulate {id}`, internal: the dynamic-name half of accumulate_node.
 		pack.define(accumulate) {
+			// Adopted into a network with no record: one emptied by the old rebuild while it was out
+			// of view. Adding to it would make a record counting only this node; have the whole
+			// network rebuilt instead, now that it has a loaded node to start from.
+			raw("\$execute unless data storage ra:transport nets.n\$(id) run return run ${macroCall(Read.requestRebuild, "{id:\$(id)}")}")
+
 			for ((key, node) in listOf("capacity" to "#node_cap", "amount" to "#node_carry")) {
 				val path = "nets.n\$(id).$key"
 				computeStorage(TR, path, provider { add(storageOf(TR, path), scoreOf(node, Obj.TR_TMP)) })
 			}
+
+			// The node count net/leave_record uses to tell "last node gone" from "rest out of view".
+			// Only a record that already counts is counted into: a record written before counts
+			// existed would otherwise start at 1 with the rest of its nodes unknown, and the next
+			// leave would delete a network that still has nodes.
+			val nodes = "nets.n\$(id).nodes"
+			raw("\$execute if data storage ra:transport $nodes run data modify storage ra:transport $nodes set compute default integer ${provider { add(storageOf(TR, nodes), constant(1)) }.snbt()}")
 		}
 
 		// Internal: fold one node's carried contents into the network it landed in, medium by

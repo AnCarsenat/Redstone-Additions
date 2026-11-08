@@ -105,6 +105,15 @@ by a constant and the leftover `$` took the function down). `PackValidator` fail
 such a line in strict and report mode alike, naming the function and line. Fix it by dropping
 the `$` (the line no longer needs to be a macro) or by putting the variable back.
 
+## Every macro variable must be in the compound
+
+`function f with storage s path` fails as a whole when `f` names any `$(name)` that the compound
+at `path` lacks — even on a line an `execute if` would have skipped. Nothing is logged and no
+command in `f` runs. When one function serves compounds of different shapes (settings rows of
+several types, say), dispatch to one macro per shape and let each name only fields its shape
+always has. v6.0.0's `ra_settings:act/user` read `$(min)`/`$(max)`/`$(step)` for its int
+branch, so every bool row's click failed and personal toggles never flipped.
+
 ## Calls through macros are unchecked
 
 `PackValidator` checks every `function ns:path` and `function #ns:tag` in the generated
@@ -130,3 +139,59 @@ module's blocks a second time. It compiled because both are lists of `CustomBloc
 
 The registry list is now `Ra.allBlocks`. Still: give module-level collections specific names
 (`gateBlocks`), or declare them as locals inside `register()`, where they shadow correctly.
+
+## `set string` accepts a number
+
+`data modify storage s p set string storage s v` succeeds when `v` is a number too: it writes the
+number's digits as a string. It fails only for a list or a compound. Used as "is `v` a string?",
+it called every number a string — which is how the Data Handler gave numeric properties a text
+editor until 6.0.1. To tell types apart, use a test only that type passes:
+
+- number: two `/compute`s of a storage provider with different fallbacks,
+  `compute default integer {type:"minecraft:storage",storage:"s",path:"v",fallback:0}` and the
+  same with `fallback:1`. The provider returns its fallback when the value is absent or not a
+  number (a string, even `"5"`), so the results agree exactly when `v` is a number. Two
+  fallbacks, not one "impossible" sentinel: every int is a possible value.
+- list: `data modify storage s v insert 0 value 0b` succeeds only on a list (copy it first).
+  `if data storage s v[]` is no test: an empty list has no element to match.
+- compound: `execute if data storage s v{}`.
+- byte flag: `execute if data storage s {v:1b}` — an NBT match is typed, so the int `1` fails it.
+
+If you need "is it a string?" without those, `set string` and then `set from` over the copy: the
+second changes nothing only when the value was a string already (`DataHandlerList.isText`).
+
+## Kore's `compute { }` can hoist a provider out of a macro line
+
+Kore's own `compute { }` command may move an inline context int provider into a registry file
+and reference it by id. A provider whose storage path holds `$(id)` then loses its macro
+substitution. Build `/compute` lines with `ra/core/Compute.kt` (`computeScore`, `computeInto`,
+`computeStorage`), which render the provider as SNBT in the command itself and add the `$`
+prefix when the line contains `$(`. See
+[Arithmetic with `/compute`](developer-guide.md#arithmetic-with-compute).
+
+## `/compute` cancels where a scoreboard operation wraps
+
+A scoreboard `*=` that leaves 32 bits wraps round; the same product in `/compute` cancels the
+whole evaluation, and so does a division by zero. Under `execute store result` the target gets
+**0**, and `data modify … set compute` writes nothing — no error in the log either way. The
+bridge fill ratio (`amount * 10000 / capacity`) read 0 on any network above ~214,748 mL for
+this reason until it moved to a float provider (`computeScoreScaled`). Guard divisors, and
+divide in floats when a scaled product can grow large.
+
+Also: scoreboard `/=` and `%=` round towards negative infinity. Their `/compute` equivalents are
+`floor_div` and `floor_mod` (Kore `floorDiv`, `floorMod`), not `div` and `mod`.
+
+## A property pasted into a macro is part of the command
+
+`$execute as $(entity_selector) run tag @s add $(tag)` does not receive a selector: it receives
+text, and the game parses the whole line after substituting it. A player who can set
+`entity_selector` to `@a[limit=1] if function <any> run say` makes the block run any function,
+with the server's permission; `"}` in a value pasted inside quotes ends the string. Until 6.0.1
+the sensors, the Message Block, the Boxer/Unboxer, the vaults and the Teleport Anchor all did
+this with values any Data Handler could write.
+
+Declare such a property with its [text format](tools-and-registries.md#text-formats)
+(`text("entity_selector", TextFormat.SELECTOR)`) and call `guardProperty(name, format)`
+(`ra/lib/safe/SafeText.kt`) on the marker before the macro call. Better still, do not paste it
+at all: compare two strings with `data modify storage s a set from storage s b` (success 0 means
+equal), as the Teleport Anchor and the Wireless Receiver do.

@@ -1,5 +1,8 @@
 package ra.modules.storage
 
+import ra.core.TextFormat
+import ra.core.text
+import ra.lib.safe.SafeText.guardProperty
 import io.github.ayfri.kore.arguments.types.literals.self
 import io.github.ayfri.kore.commands.function
 import io.github.ayfri.kore.commands.kill
@@ -55,11 +58,17 @@ object Unboxer {
 	val item = block.loreItem { lore(loreLine("Put crates inside; unboxes them into the block in front", "gray")) }
 	val registerBlock = block.fn("register_block")
 	private val process = block.fn("process")
+	private val guarded = block.fn("guarded_process")
 	private val partner = block.fn("partner")
 	private val refreshDisplay = block.fn("refresh_display")
 
 	fun Ra.registerUnboxer() {
 		block(block)
+		properties(block) {
+			// Pasted into `execute positioned`: three relative coordinates, nothing else.
+			text("input1", TextFormat.COORDS)
+			text("output1", TextFormat.COORDS)
+		}
 		pack.blockRegisterMessage(block)
 		pack.specGive(block, item)
 		pack.shapedRecipe(block.ns, block.id, item.recipeResult(), Unlock(Items.DISPENSER), count = null) {
@@ -76,6 +85,12 @@ object Unboxer {
 		}
 		pack.define(block.goggles) { gogglesHeader(block, nameY = 1.0) }
 		pack.define(process) { process() }
+		// The offsets are pasted into commands: refuse anything but three relative coordinates.
+		pack.define(guarded) {
+			guardProperty("input1", TextFormat.COORDS)
+			guardProperty("output1", TextFormat.COORDS)
+			raw("function ${process.asId()} with entity @s data.properties")
+		}
 		pack.define(partner) { partner() }
 		pack.define(refreshDisplay) {
 			// The block underneath is a barrel, because the Unboxer holds the crates it is unboxing in
@@ -98,8 +113,6 @@ object Unboxer {
 		pack.define(block.tick) {
 			breakCheck(block, Blocks.BARREL, onBreak)
 
-			// Matches handle_placement: the Unboxer reads the crates in its own inventory.
-			ioDefaults(block, input = "~ ~ ~")
 
 			// Rebuild a skin that went missing (chunk reload, /kill, a rotation). Only the Unboxers
 			// actually lacking one do any work.
@@ -116,7 +129,7 @@ object Unboxer {
 			// Powered to run, as originally designed. The redstone lock introduced earlier only
 			// existed to avoid arming the vanilla dispenser trigger; a barrel has no such trigger, so
 			// there is no reason to invert the control.
-			executeRun("as ${block.markerSel("tag=${Tag.POWERED}")} at @s", process, "with entity @s data.properties")
+			executeRun("as ${block.markerSel("tag=${Tag.POWERED}")} at @s", guarded)
 		}
 	}
 

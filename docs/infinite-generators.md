@@ -47,7 +47,9 @@ hour; a Nether Generator makes ancient debris about every ten minutes.
 - It only grows when that block is empty (or grass, fern, dead bush or snow). Mine what it grew
   and it grows again.
 - No redstone needed: it runs whenever its chunk is loaded.
-- Change how fast it grows (`cooldown`, in ticks) with the [Data Handler](tools.md). Operators can
+- How fast it grows is its `cooldown`, in ticks (100 for the Mineral and Nether Generators, 80 for
+  the Poppy Generator; 1–1200). It is a server admin's setting: players with server-settings
+  access change it with the [Data Handler](tools.md), other players see it locked. Operators can
   change the default for new generators in [Settings](settings.md).
 
 ### Poppy Generator

@@ -19,6 +19,7 @@ import ra.core.GiveBundle
 import ra.core.Ns
 import ra.core.PackPart
 import ra.core.Ra
+import ra.core.Tag
 import ra.core.TagRoute
 import ra.core.WrenchCycle
 import ra.core.block.CustomBlock
@@ -30,7 +31,6 @@ import ra.modules.wires.blocks.Placement
 import ra.modules.wires.blocks.creative_fluid.CreativeFluid
 import ra.modules.wires.blocks.electric_consumer.ElectricConsumer
 import ra.modules.wires.blocks.electric_furnace.ElectricFurnaceSettings
-import ra.modules.wires.blocks.liquid_drain.LiquidDrain
 
 /**
  * Every Wires item, described once: its egg, recipe, unlock advancement and place in the bundle.
@@ -157,24 +157,53 @@ object WiresBlocks : PackPart {
 
 		bundles += GiveBundle("wires", "Wires Bundle", "Fluid and electric network blocks", Ns.WIRES, items.map { it.stackNbt() })
 
+		// The retired pipe and wire tiers (see SPECS) place a Copper Pipe or a Wire; a refused
+		// placement gives that back.
+		for (old in listOf("liquid_pipe_netherite", "gas_pipe_copper", "gas_pipe_netherite"))
+			retiredPlaceTags[Tag.place(old)] = Tag.place("liquid_pipe_copper")
+		retiredPlaceTags[Tag.place("electric_wire_netherite")] = Tag.place("electric_wire_copper")
+
 		wrenchCycle("creative_fluid", WrenchCycle("Medium", "medium", CreativeFluid.cycleMedium))
-		wrenchCycle("electric_consumer", WrenchCycle("Rate", "cooldown", ElectricConsumer.cycleRate))
+		wrenchCycle("electric_consumer", WrenchCycle("Draw", "eu_use", ElectricConsumer.cycleRate))
 		wrenchCycle("electric_furnace",
 			WrenchCycle("Output", "output", ElectricFurnaceSettings.cycleOutput),
 			WrenchCycle("Power", "mode", ElectricFurnaceSettings.cycleMode))
-		wrenchCycle("liquid_drain",
-			WrenchCycle("Mode", "mode", LiquidDrain.cycleMode),
-			WrenchCycle("Rate", "cooldown", LiquidDrain.cycleRate))
 
-		// The block's own working numbers: shown, never edited (see ra:tools/readonly).
-		readonly("electric_breaker", "rate")
-		readonly("electric_consumer", "eu_use")
-		readonly("electric_generator", "generation_rate")
-		readonly("gas_valve", "rate")
-		readonly("industrial_light", "eu_use")
-		readonly("liquid_filter", "rate")
-		readonly("liquid_valve", "rate")
-		readonly("solar_panel", "generation_rate")
+		// Property schemas, by marker type (what data.type holds -- liquid_pipe, not
+		// liquid_pipe_copper). `readonly` ones are the block's own working numbers: shown by the Data
+		// Handler, never edited there or cycled by the wrench.
+		for (t in listOf("liquid_pipe", "liquid_tank", "gas_tank", "liquid_pump", "gas_pump", "electric_wire", "electric_switch", "battery", "creative_eu", "boiler"))
+			properties(t) {}
+		for (t in listOf("liquid_valve", "gas_valve", "electric_breaker"))
+			properties(t) { number("rate", min = 1, max = 1000000, readonly = true) }
+		properties("liquid_filter") {
+			number("rate", min = 1, max = 1000000, readonly = true)
+			text("filter_medium")
+		}
+		// Litres per second: one 5 L source block every 100 / speed ticks (5 = one a second).
+		// An admin knob, kept off the Goggles; the role (take in / pour out) is redstone.
+		properties("liquid_drain") {
+			number("speed", min = 1, max = 100, adminOnly = true, goggles = false)
+			// Pre-6.0.1 names, removed by the 6.0.1 migration (ra_migrations:6.0.0-to-6.0.1/liquid_drain).
+			number("cooldown", readonly = true, visible = false)
+			number("interval", readonly = true, visible = false)
+			text("mode", readonly = true, visible = false)
+		}
+		properties("electric_generator") { number("generation_rate", min = 1, max = 10000, readonly = true) }
+		// No properties: a Solar Panel's output comes from the daylight detector's power level
+		// (blocks/solar_panel/tick), never from a generation_rate.
+		properties("solar_panel") {}
+		// eu_use is the consumer's setting, not a fixed rate: the wrench cycles it 20 / 40 / 80.
+		properties("electric_consumer") { number("eu_use", min = 1, max = 10000) }
+		properties("industrial_light") { number("eu_use", min = 0, max = 1000, readonly = true) }
+		properties("creative_fluid") {
+			text("medium")
+			number("rate", min = 0, max = 1000000)
+		}
+		properties("electric_furnace") {
+			text("mode")
+			text("output")
+		}
 
 		// Removes one item from a stack in place (`item modify ... ra_wires:take_one`).
 		pack.itemModifier("take_one") {

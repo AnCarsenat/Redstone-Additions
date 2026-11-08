@@ -1,5 +1,8 @@
 package ra.modules.ender
 
+import ra.core.TextFormat
+import ra.core.text
+import ra.lib.safe.SafeText.guardProperty
 import io.github.ayfri.kore.arguments.types.literals.self
 import io.github.ayfri.kore.commands.function
 import io.github.ayfri.kore.commands.scoreboard.scoreboard
@@ -66,6 +69,11 @@ object ItemVault {
 
 	fun Ra.registerItemVault() {
 		block(block)
+		properties(block) {
+			// Pasted inside quotes into the link commands: no quote, no backslash.
+			text("channel", TextFormat.NAME)
+			text("mode")
+		}
 		wrenchCycle(block.id, WrenchCycle("Mode", "mode", cycleMode))
 		pack.blockRegisterMessage(block)
 		pack.enderGive(block, item, """{text:" — set the channel with the Data Handler",color:"gray"}""")
@@ -238,6 +246,8 @@ object ItemVault {
 	private fun Function.linkRequest(recv: String) {
 		raw("data modify storage ra:ender link set value {}")
 		raw("data modify storage ra:ender link.channel set from entity @s data.properties.channel")
+		// Pasted into the link macro: an unsafe channel links nothing.
+		guardProperty("channel", TextFormat.NAME, onFail = "data remove storage ra:ender link.channel")
 		raw("data modify storage ra:ender link.recv set value \"$recv\"")
 	}
 

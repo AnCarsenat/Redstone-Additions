@@ -111,7 +111,7 @@ internal object AdminRows {
 		define(action(pageId, row.label, "edit")) {
 			edit(buildNbtCompound {
 				put("kind", "prop"); put("block", row.block); put("prop", row.prop)
-				put("type", "int"); put("min", row.min); put("max", row.max)
+				put("type", "int"); put("min", row.min); put("max", row.max); put("label", row.label)
 			})
 		}
 	}
@@ -141,7 +141,7 @@ internal object AdminRows {
 		// Stepping is one click; typing is for when the target is far from where the value sits.
 		define(action(pageId, row.label, "edit")) {
 			edit(buildNbtCompound {
-				put("kind", "global"); put("key", row.key); put("type", "int"); put("min", row.min); put("max", row.max)
+				put("kind", "global"); put("key", row.key); put("type", "int"); put("min", row.min); put("max", row.max); put("label", row.label)
 			})
 		}
 	}
@@ -196,8 +196,16 @@ internal object AdminRows {
 		}
 	}
 
-	/** Describe the edit in storage ra:settings edit and ask for a typed value. */
+	/**
+	 * Describe the edit in storage ra:settings edit and ask for a typed value.
+	 *
+	 * The value is only applied to a player holding ra.admin (see ra_settings:apply_edit), so this
+	 * grants it first, as ra_settings:admin/show does. Reaching this function at all takes
+	 * permission level 2 or the tag already, so an operator who typed the /function path directly
+	 * gets what opening the panel would have given them, and nobody else gets anything.
+	 */
 	private fun Function.edit(payload: net.benwoodworth.knbt.NbtCompound) {
+		function(Fns.adminGrant)
 		data(S) { modify("edit") { set(payload) } }
 		function(Fns.editStart)
 	}

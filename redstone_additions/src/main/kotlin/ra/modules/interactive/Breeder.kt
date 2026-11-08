@@ -61,7 +61,6 @@ object Breeder {
 	val breedSuccess = block.fn("breed_success")
 	val breedSuccessBucket = block.fn("breed_success_bucket")
 	private val consumeItem = block.fn("consume_item")
-	private val dropItems = block.fn("drop_items")
 	private val refreshDisplay = block.fn("refresh_display")
 	private val tryBreed = block.fn("try_breed")
 
@@ -70,6 +69,7 @@ object Breeder {
 
 	fun Ra.registerBreeder() {
 		block(block)
+		properties(block) {}
 		pack.blockRegisterMessage(block)
 		pack.specGive(block, item)
 		pack.shapedRecipe(block.ns, block.id, item.recipeResult(), Unlock(Items.DISPENSER), count = null) {
@@ -101,7 +101,6 @@ object Breeder {
 			// Macro `{breed_item}`: the item id without its `minecraft:` prefix.
 			raw("\$${macroCall(RaLib.Inventory.remove)} {id:\"minecraft:\$(breed_item)\",count:1}")
 		}
-		pack.define(dropItems) { dropItems() }
 		registerBreederBreeds()
 
 		// The vanilla drop goes, and the custom item is summoned in its place. This ran bare, so it
@@ -154,7 +153,8 @@ object Breeder {
 
 	/**
 	 * A pair bred. Positioned at the breeder. The plain one consumes one `breed_item` from the
-	 * container; the bucket one turns the tropical fish bucket back into a water bucket.
+	 * breeder's own inventory; the bucket one turns the tropical fish bucket back into a water
+	 * bucket. The hearts and the sound are in front, where the animals are.
 	 */
 	private fun Function.breedSuccess(bucket: Boolean) {
 		raw("playsound minecraft:entity.experience_orb.pickup block ${soundListenersSel(8)} ^ ^ ^1 0.5 1.2")
@@ -165,15 +165,4 @@ object Breeder {
 		scoreboard.players.set(self(), Obj.TEMP, 1)
 	}
 
-	/**
-	 * Drop the first nine stacks of the container. Nothing in the pack calls it (a broken barrel
-	 * spills its contents by itself); kept because other packs or players may.
-	 */
-	private fun Function.dropItems() {
-		for (slot in 0..8) {
-			raw("execute if data block ~ ~ ~ Items[$slot] run summon item ~ ~0.5 ~ {Tags:[\"${Tag.RA}\",\"${Tag.DROP_TEMP}\"]}")
-			raw("execute if entity @e[type=item,tag=${Tag.DROP_TEMP},limit=1] run data modify entity @e[type=item,tag=${Tag.DROP_TEMP},limit=1] Item set from block ~ ~ ~ Items[$slot]")
-			raw("execute as @e[type=item,tag=${Tag.DROP_TEMP}] run tag @s remove ${Tag.DROP_TEMP}")
-		}
-	}
 }

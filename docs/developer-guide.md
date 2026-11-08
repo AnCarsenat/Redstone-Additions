@@ -115,7 +115,7 @@ Sources live in block tags, so adding one is a data edit rather than a code edit
 
 - `#ra_lib:redstone/binary_sources` — full power when `powered=true`: levers,
   buttons, non-weighted pressure plates, tripwire hooks, lightning rods.
-- `#ra_lib:redstone/directional_sources` — strong power into the block they face:
+- `#ra_lib:redstone/directional_sources` — strong power out of the face opposite their `facing` (`facing` is the input side of a repeater or comparator and the watched side of an observer):
   repeaters, comparators, observers.
 - `#ra_lib:redstone/analog_omni` — carry a level in `power` and give it to every
   neighbour: both weighted pressure plates, daylight detectors.
@@ -148,7 +148,8 @@ Source-specific detectors are split under `ra_lib:redstone/detect/*`.
 Key functions:
 
 - `ra_lib:inventory/move_slot` — whole-slot transfer with `/item replace`
-- `ra_lib:inventory/insert_or_drop` — insert what fits, drop the rest
+- `ra_lib:inventory/insert_or_drop` — insert what fits (partial stacks first, then free slots), drop the rest
+- `ra_lib:inventory/stack_size {n}` — stack size of the item in slot n, into `#inv_stack ra.temp`
 - `ra_lib:inventory/insert` — raw `loot insert`
 - `ra_lib:inventory/remove`
 - `ra_lib:inventory/find_free_slot`, `has_free_slot`, `container_size`
@@ -157,8 +158,8 @@ Key functions:
 !!! danger "`insert` destroys overflow"
     `loot insert` silently deletes whatever the destination cannot hold. Only use
     `insert` directly with a count of 1, where the item either fits or the call
-    returns 0. For anything larger use `insert_or_drop`, which recovers the
-    difference and drops it as an item entity.
+    returns 0. For anything larger use `insert_or_drop`, which writes every count
+    itself and drops only what really does not fit.
 
 `move_slot` is the preferred primitive for moving an existing stack: it copies
 the stack verbatim, with no loot table to parse and no NBT arithmetic.
@@ -177,7 +178,8 @@ Key functions:
 The engine groups adjacent nodes of the same class into networks by flood fill.
 Contents belong to the network, not to individual nodes, so a pipe run costs
 nothing per tick and transfer is order-independent. Rebuilds happen only on
-placement or break, debounced to at most one every 5 ticks.
+placement or break, debounced to at most one every 5 ticks, and only touch the
+networks the change concerns (see [Scoped rebuilds](#scoped-rebuilds)).
 
 Classes (`fluid`, `item`, `electric`) never merge, so an item pipe and a fluid
 pipe can share a block line without interacting.
@@ -198,7 +200,8 @@ Every bug this system has had was that invariant breaking somewhere.
 | Field | Example | What it is |
 | --- | --- | --- |
 | `amount` | `10000` | The total across every medium. Capacity is checked against **this**, so a run clogs on the sum and not on any one medium. |
-| `capacity` | `20000` | Summed from `ra.tr.cap` on every node at rebuild. |
+| `capacity` | `20000` | Summed from `ra.tr.cap` on every node at rebuild; a leave takes its node's share off at once. |
+| `nodes` | `14` | How many nodes it has, so a leave can tell "last node gone" (record deleted) from "the rest is out of view". Absent on records written before v6.0.1, which are then never counted or deleted by count. |
 | `amounts` | `{water:5000,lava:5000}` | The per-medium breakdown. |
 | `media` | `[{m:"water"},{m:"lava"}]` | The same keys as a list, in arrival order. |
 | `medium` | `"water"` | A copy of `media[0].m`, because every display and every bridge already reads it. |
@@ -213,9 +216,11 @@ elements.
 
 Totals live in storage rather than in scoreboards because a scoreboard gives one
 number per network and a compound gave `amounts` a place to go without moving
-anything that was already there. Arithmetic still goes through scoreboards,
-because commands have no other way to add two numbers; storage is where values
-live between operations, not where they are computed.
+anything that was already there. Arithmetic reads them where they are: 26.3's
+`data modify ... set compute` and `/compute` evaluate a context int provider
+(`add`, `sub`, `min` over `storage` and `score` leaves) in one command, so a
+read-modify-write is one line instead of read, scoreboard operation, write. The
+helpers are in `ra/core/Compute.kt` ([Arithmetic with `/compute`](#arithmetic-with-compute)).
 
 **Writing.** `net/offer` and `net/take` read the network, work out how much
 actually moves, then hand the id and the medium to `net/offer_write` /
@@ -229,9 +234,10 @@ the medium name.
   a mixed run. `net/take_any` takes the primary and parks its name in
   `storage ra:transport took.medium`, for callers like a Valve that move contents
   without caring what they are but must tell the far side what arrived.
-- **First arrival.** `data get` on a path that is not there fails, a failed
-  command stores 0, and 0 is the right starting value for a medium arriving for
-  the first time. That is the test for "append to `media`".
+- **First arrival.** A `storage` provider reads a path that is not there as 0
+  (its `fallback`), and 0 is the right starting value for a medium arriving for
+  the first time. The new figure is no more than the amount added exactly when
+  the old one was 0 or less, and that is the test for "append to `media`".
 - **Drained to nothing.** The key goes from `amounts`, the entry goes from
   `media`, and `medium` is recomputed from the new `media[0]` — removed first, so
   an emptied network is left with no medium at all rather than a stale one, since
@@ -239,20 +245,71 @@ the medium name.
   standing.
 
 **The rebuild is where it gets hard.** Contents belong to the network, and a
-rebuild discards every network, so the contents have to survive outside one:
+rebuild takes networks apart, so the contents have to survive outside one:
 
-1. `rebuild/snapshot` — each network's root marker parks the **whole breakdown**
-   as `data.data.carry`, a list of `{m,a}`, and `ra.tr.carry` is summed from
-   those entries rather than read off `amount`. Summing it is what keeps the
-   total and the breakdown from disagreeing on the way back.
-2. `nets` is wiped. Ids are reissued, old roots first, so a component containing
-   an old root inherits its number and a retired number is never reissued.
-3. `rebuild/accumulate_node` — capacity and carried total per new network.
-4. `rebuild/absorb` — folds each carrier's `{m,a}` list back in, medium by
+1. `rebuild/scope` — decides which networks are taken apart (below). Everything
+   else is left exactly as it is.
+2. `rebuild/snapshot` — each of those networks' root marker parks the **whole
+   breakdown** as `data.data.carry`, a list of `{m,a}`, and `ra.tr.carry` is
+   summed from those entries rather than read off `amount`. Summing it is what
+   keeps the total and the breakdown from disagreeing on the way back. The
+   record is then deleted. Only the first root of an id snapshots, so a network
+   that somehow has two roots is never carried twice.
+3. `rebuild/adopt` — every unassigned node (new, or from a network taken apart)
+   touching a **kept** network joins it, and a flood carries that number on
+   through the unassigned nodes behind it.
+4. `rebuild/assign_next` — what is left gets fresh networks, old roots first, so
+   a component containing an old root inherits its number. A fresh id comes from
+   `#net_seq`, which only goes up, and skips any id that still has a record.
+5. `rebuild/accumulate_node` — capacity, carried total and node count of every
+   node placed in this rebuild, added to its network: a fresh record, or a kept
+   one it was adopted into.
+6. `rebuild/absorb` — folds each carrier's `{m,a}` list back in, medium by
    medium, so two runs joined by a new pipe arrive as two breakdowns that add up.
-5. `rebuild/clamp` — a network that lost a tank can be over capacity. The excess
+7. `rebuild/clamp` — a network that lost a tank can be over capacity. The excess
    comes off the **newest** medium first, walked from `media[-1]`, which is the
-   same rule the primary follows from the other end.
+   same rule the primary follows from the other end. Only networks built fresh
+   in this rebuild are clamped: they were wholly in view.
+
+#### Scoped rebuilds
+
+`@e` only sees **loaded** entities. Until v6.0.1 a rebuild reset `nets` to `{}`
+and recounted every network from the markers it could see, so a network whose
+root was in an unloaded chunk lost its record with nobody to carry it, and one
+half in view was recounted from that half and clamped to its capacity. Laying
+one pipe anywhere emptied every tank out of view.
+
+A rebuild now works on a **scope**:
+
+- **Named networks.** `net/leave` appends its network's id to `dirtyq` (and takes
+  the node's capacity and count off the record at once). `net/read` does the same
+  for a node whose network has no record, which is how networks emptied by the
+  old bug repair themselves the first time something reads them. `pending` holds
+  networks held back last time.
+- **On load**, `full:1b` puts every loaded network in scope once, because markers
+  may have been added or removed while the pack was off.
+- **Held back.** A network in scope with a loaded node standing next to a chunk
+  that is not loaded — or in one — may continue out of view. `rebuild/edge`
+  tests the node's own position and its four horizontal sides with `execute if
+  loaded`, which is only true once a chunk's **entities** are loaded too, so a
+  marker `@e` cannot see yet always counts as out of view. A held network keeps
+  its record, its root and its number; its id is pushed under `#net_seq` so it is
+  never reissued. If it was named on purpose it goes back on `pending`, which
+  `transport/tick` retries every 100 ticks; until then a split made while it was
+  half in view is not applied, and its parts share one pool. A network with no
+  record is never held: there is nothing to protect, and rebuilding it repairs it.
+- **Not in scope** at all: every other network. A new pipe next to one joins it
+  through adoption, without the network being recounted, so a rebuild costs the
+  size of what changed, not the number of pipes in the world.
+- **Two kept networks meeting** (a pipe laid between them) are found by
+  `rebuild/meet` during the adoption flood. Both go on `pending` and the rebuild
+  goes round once more straight away; whichever is wholly in view is taken apart
+  and adopted by the other.
+- **A root leaving with no loaded survivor** marks the record `rootless`; the
+  next rebuild that sees one of its nodes makes it the root.
+
+No migration is needed: the new record fields are optional, and a record without
+`nodes` is simply never counted down.
 
 Two rules in there are load-bearing and were both learned the hard way:
 
@@ -454,6 +511,66 @@ Keep IDs consistent across:
 - recipe result custom_data
 - on-break drop item data
 
+### Arithmetic with `/compute`
+
+26.3's `/compute` and `data modify … set compute` evaluate a **context int provider** — a tree
+of `add`, `sub`, `min`, `max`, `mul`, `floor_div`, `abs`… over `score` and `storage` leaves — in
+one command. The pack uses them for every multi-step sum, clamp or storage read-modify-write
+that used to be a copy, a chain of `scoreboard players operation` lines and a write back, often
+with constant fake players (`#jp.cap`, `#br.two`) set up just to hold an operand. Those fake
+players are gone; a constant is a literal in the provider.
+
+**Reach for it** when a result needs two or more operations, or reads storage, does arithmetic
+and writes storage. A single copy or a single `+=` stays a scoreboard operation, and anything
+that reads entity NBT still goes through `data get` (providers read only scores and storage).
+
+All of it goes through `ra/core/Compute.kt`. Providers are Kore's typed ones; the file adds the
+leaves and the commands that consume them:
+
+| Helper | Writes |
+| --- | --- |
+| `provider { … }` | a provider built with Kore's functions in scope: `provider { min(a, sub(b, c)) }` (Kore's `+`, `-`, `*`, unary `-` also work) |
+| `scoreOf(holder, obj, fallback)` | `{type:"minecraft:score",target:{type:"minecraft:fixed",name:"#x"},score:"…"}` |
+| `thisScoreOf(obj)` | the score of the entity the compute runs for (use with `source = COMPUTE_SELF`, `compute entity @s`) |
+| `storageOf(storage, path)` | `{type:"minecraft:storage",storage:"ra:x",path:"…"}`; `path` may hold `$(id)` |
+| `computeScore(holder, obj, value, vararg alsoStore)` | `execute store result score … [<more stores>] run compute default integer <value>`; pass `storeInt(storage, path)` in `alsoStore` to land the same result in storage too |
+| `computeInto(store, value)` | the same with only the store you give it (`storeInt`, `storeDouble`) |
+| `computeStorage(storage, path, value)` | `data modify storage … <path> set compute default integer <value>` |
+| `floatProvider { … }`, `computeScoreScaled(holder, obj, value, scale)` | `compute default float <value> <scale>` into a score: the float result times `scale`, as an integer |
+
+`computeScore`, `computeInto` and `computeScoreScaled` take `chain` (execute subcommands placed
+before the stores, such as `if score #cap x matches 1..`) and `source` (`COMPUTE_DEFAULT` or
+`COMPUTE_SELF`).
+
+```kotlin
+// Bridge: how much moves, written to a score in one line
+computeScore("#br.dst_free", "ra.wires.tmp",
+    provider { sub(scoreOf("#net_capacity", "ra.tr.tmp"), scoreOf("#net_amount", "ra.tr.tmp")) })
+
+// Transport: add to a per-medium total in storage and keep a copy in a score (macro path)
+computeScore("#net_med", Obj.TR_TMP,
+    provider { add(storageOf(TR, medPath), wantP) }, storeInt(TR, medPath))
+```
+
+Rules that matter:
+
+- **Rendered inline.** Providers are turned into SNBT text in the command, not through Kore's
+  `compute { }`, which may move a provider into a registry file. A provider whose storage path
+  holds `$(id)` must stay in the macro line that substitutes it. The `$` prefix is added
+  automatically to any line containing `$(`.
+- **Scoreboard `/=` is `floor_div`**, and `%=` is `floor_mod`: both round towards negative
+  infinity. `div` and `mod` truncate and give different answers for negative values.
+- **A missing value reads as 0.** An unset score, an absent storage path or a non-number reads
+  as its `fallback`, 0 unless you pass one (`scoreOf("#x", obj, 1)`). That replaces the old
+  "set it to 0 if it has no score yet" guards, and it is what makes "first arrival of a medium"
+  work in transport.
+- **Arithmetic failures cancel, they do not wrap.** Division by zero, or any intermediate result
+  outside 32 bits, cancels the evaluation: under `execute store result` the store gets 0, and a
+  `data modify … set compute` writes nothing. Guard a divisor that can be 0 first. A product
+  that can leave 32 bits — a ratio scaled up before dividing, like a fill level in
+  ten-thousandths — goes through `computeScoreScaled` so the division happens in floats (the
+  bridge fill ratio, see the v6.0.1 fix).
+
 ### Minecraft versions
 
 The pack targets **26.3 only** (data pack format 121). Kore writes every resource in the shape
@@ -482,7 +599,7 @@ has, `props/render` probes the value's type and draws the matching row:
 | Type | Detected by | Editor |
 | ---- | ----------- | ------ |
 | string | `data modify … set string` accepts it | `[Modify]`, text input |
-| list | `<name>[0]` exists | `[Edit list]`, text input pasted as SNBT |
+| list | `<name>[0]` exists | `[Edit list]`, text input parsed as SNBT into storage and checked before it is written (`props/DataHandlerList.kt`) |
 | bool | the value matches `0b` or `1b` | `[Toggle]`, applied at once |
 | number | none of the above | `[Modify]`, number input |
 
@@ -665,27 +782,25 @@ worked example.
 - One entry and shift+RMB cycles it immediately; two or more and the wrench opens
   a menu. Nothing else changes.
 
-### Read-only properties
+### Property schemas and read-only properties
 
-A property the block owns and the player must not edit is registered with
-`ra.readonly(type, props…)`, keyed by block type. The Tools part builds
-`ra:tools/readonly/init_registry` from every registration:
+Every block type declares its properties, their types and their flags next to the block, with
+`properties(block) { ... }`:
 
 ```kotlin
-ra.readonly("electric_generator", "generation_rate")
+properties("electric_generator") { number("generation_rate", min = 1, max = 10000, readonly = true) }
 ```
 
 ```mcfunction
-data modify storage ra:dh readonly set value {"electric_generator":{generation_rate:1b}}
+data modify storage ra:dh types."electric_generator" set value {generation_rate:{type:"number",code:1,min:1,max:10000,readonly:1b,admin_only:0b,visible:1b,i:0}}
 ```
 
-Both tools obey it from that one place: the Data Handler shows the row with a
-struck-through `[Modify]` and a reason on hover, and the wrench drops it from the
-cycle menu. A block left with no cyclable properties after filtering reports that
-it does not cycle, rather than silently cycling the one thing you locked.
-
-It is a compound rather than a list because both readers ask "is *this* name
-read-only?" — one command against a compound, a walk against a list.
+The Data Handler, the wrench and the clipboard all obey it from that one place: a read-only
+property is shown with a struck-through `[Modify]` and a reason on hover, and the wrench drops it
+from the cycle menu. A block left with no cyclable properties after filtering reports that it
+does not cycle, rather than silently cycling the one thing you locked. `adminOnly` and
+`visible = false` work the same way for players without `ra.admin`. See
+[Property schemas](tools-and-registries.md#property-schemas).
 
 Cyclers run **as the marker, at the block**, and message `@a[distance=..10]` —
 the wrench never touches the player, so anything addressed to a player-side tag
@@ -793,6 +908,8 @@ strict mode fails the build on a call to an undefined function. What is left:
 - A property the Data Handlers should list but `DataHandlerRegistry` does not name.
 - Multiblock setup data missing required fields in storage before assembly.
 - Assuming numeric wireless channels; runtime channels are string values.
+- A `/compute` that silently stores 0: a divisor of 0 or a product beyond 32 bits cancels the
+  evaluation instead of wrapping — see [Arithmetic with `/compute`](#arithmetic-with-compute).
 - A module-level collection named like a registry list (`blocks`) inside `Ra.register()`
   resolving to the registry — see [Kore Gotchas](gotchas.md).
 

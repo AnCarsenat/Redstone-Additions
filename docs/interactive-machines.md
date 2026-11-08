@@ -42,9 +42,13 @@ Operators: `/function ra_interactive:items/give_all`.
 ## Block Breaker and Block Placer
 
 - Face them at the spot to work on and power them (a lever keeps them running, a clock works too).
-- Each acts at most once a second (20 ticks).
+- Each acts at most once per `cooldown` ticks: 20 (once a second) by default, 1–1200. The
+  cooldown is a server admin's setting: players with server-settings access change it with the
+  [Data Handler](tools.md); for everyone else it is locked.
 - The Block Breaker cannot break unbreakable blocks such as bedrock.
-- The Block Placer places the first block in its inventory, and only into air.
+- The Block Placer places the first stack in its inventory, and only into air (cave air
+  counts too). If that stack is not a block (a diamond, say), it waits and uses none of it: take
+  it out to let the placer carry on.
 
 ## Item Pipe
 
@@ -52,15 +56,22 @@ Pipes move items forward from one container (or pipe) to the next, a whole stack
 there is room, every 4 ticks. When the next container is full, items wait in the pipe — nothing
 is dropped.
 
-**Sorting:** a pipe can have a **filter**. Items matching it are pushed into a container at the
-side of the pipe instead of continuing forward; everything else carries on.
+**Sorting:** a pipe can have a **filter**. Items matching it are pushed into a container at one
+of the pipe's four sides instead of continuing forward (never back into the container feeding
+it); everything else carries on.
 
 1. Shift + right-click the pipe with the [Data Handler](tools.md).
 2. On the `filter_item` row, hold the item to sort and press **[Set from hand]** (or type an item
    id with **[Modify]**).
-3. Clear the value to remove the filter.
+3. **[Clear]** on the same row removes the filter.
 
-Wear the [Goggles](tools.md) to see each pipe's filter item floating above it.
+**Inverted filter:** toggle the pipe's `invert` setting (off by default) and the filter works the
+other way round: items that do **not** match go to the side, and the filtered item carries on
+forward. Without a filter, `invert` does nothing.
+
+Wear the [Goggles](tools.md) to see each pipe's filter (and *Mode: Inverted* when it is), with the
+filter item floating above it. The item preview can be turned off for the whole server under
+Server Settings › General › **Goggles** › *Filter previews*.
 
 ## Item Mover
 
@@ -74,8 +85,10 @@ redstone needed.
 
 ## Breeder
 
-1. Put the right food in the Breeder (it has a chest-like inventory and never throws its items).
-2. Keep two adult animals of the same kind in the block in front of it.
+1. Put the right food in the Breeder itself (it has a chest-like inventory and never throws its
+   items). It feeds only from its own inventory, not from a container next to it.
+2. Keep two adult animals of the same kind in front of it (within two blocks of the block it
+   faces).
 3. Power it. It uses one food per pair it feeds.
 
 | Animal | Food |
@@ -112,7 +125,7 @@ A barrel that pulls dropped items into itself.
 | Setting | Default | Range | Meaning |
 | --- | --- | --- | --- |
 | `radius` | 8 | 5–20 | How far it reaches, in blocks |
-| `cooldown` | 20 | 1+ | Ticks between pulls |
+| `cooldown` | 20 | 1–1200 | Ticks between pulls; a server admin's setting, locked for other players |
 
 It takes up to eight items (whole stacks, enchantments and names kept) per pull, and stops when it
 has no empty slot left — the Goggles then show `Full`. Breaking it drops everything inside.
@@ -136,6 +149,9 @@ When it gets powered, it sends its message to the players picked by its selector
 | `message_block` (the text) | `Hello World!` |
 | `entity_selector` (who reads it) | `@a[distance=..16]` |
 
+Both are admin-only. The text is shown as rich chat text, so it can carry a clickable command that runs
+as whoever clicks it.
+
 ## Changing settings
 
 Every setting above is edited with the [Data Handler](tools.md): Shift + right-click the block,
@@ -155,7 +171,8 @@ then change the row. The [Goggles](tools.md) show the current values.
   mob list is the entity type tag `#ra_interactive:spawn_blocked`.
 - **Magic Crate.** Skips items with a permanent pickup delay. The radius limit is enforced, since
   an unlimited radius would be a world-wide entity scan.
-- **Item Pipe.** The filter is `data.properties.filter_item` (an item id, empty = none). Pipes
+- **Item Pipe.** The filter is `data.properties.filter_item` (an item id, empty = none);
+  `data.properties.invert` (`1b`) sends non-matching stacks to the side instead. Pipes
   built when filters were item frames are converted on load; the frames are left in place.
 - **Properties** live in each block marker's `data.properties`; machines pace themselves with the
   `ra.cooldown` score.

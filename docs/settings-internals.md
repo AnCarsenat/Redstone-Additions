@@ -24,7 +24,11 @@ val GatesPage = Page(
 )
 ```
 
-`Page(id, title, namespace, rows)`. Every page is listed in `SettingsPages.all`
+`Page(id, title, namespace, rows, parent = null)`. A page with a `parent` is a **subcategory**:
+it is left off the server settings index, its parent's page lists it under "subcategories", its
+title bar reads `Parent › Title` and its Back returns to the parent. One level deep, and both
+pages need server rows; the generator fails the build otherwise. `GogglesPage` (parent
+`general`) is the one today. Every page is listed in `SettingsPages.all`
 (`pages/SettingsPages.kt`), in the order the beet build read its JSON files: sorted by file name.
 **The order is observable.** It numbers the admin pages and every clickable action code, and
 those codes are what the chat buttons on a player's screen carry.
@@ -95,6 +99,18 @@ Everything else in `ra/settings/` is the hand-written runtime: the menu (`Menu.k
 panel (`Admin.kt`), the disabled-blocks list (`Disabled.kt`), placement (`placement/`) and the
 read API (`Read.kt`).
 
+### Typed values
+
+An `edit` action or a typed user row writes what is being edited into `storage ra:settings edit`
+and calls `ra_settings:edit_start`. That slot is only a working copy: once the input request is
+open, the payload moves to `edits.r<id>`, keyed by the player's `ra.settings.req`, and `edit` is
+emptied. `ra_settings:apply_pending` copies the player's own slot back into `edit` for the one
+call that applies it. Every path that stops the wait (applied, session gone or expired, another
+tool's request replacing it, a new edit started) removes `edits.r<id>` through
+`ra_settings:edit/drop` or `edit/forget`. `global` and `prop` edits are applied only to a player
+who still holds `ra.admin` when the value arrives; the generated `edit` actions grant it first,
+as `admin/show` does.
+
 ## Reading a setting
 
 Through `ra.api.Settings`:
@@ -125,9 +141,59 @@ any reason switched features off. A settings read must never be able to disable 
 four commands with no sub-calls. Applying at placement also stops a retune from silently
 re-balancing existing builds. `apply_to_existing` is the explicit opt-in.
 
+## Purge
+
+The Purge page is generated with the index (`gen/AdminPurge.kt`); its buttons register their
+action codes after every existing one, so nothing on screen changed meaning. What it runs is in
+`ra/settings/purge/Purge.kt`.
+
+| Function | Does |
+| --- | --- |
+| `admin/purge/show` | the page: one button per option, the clean-up status, Back |
+| `admin/purge/<option>/review` | counts (`purge/<option>/count`), prints the warning, arms the player: `ra.purge` = the option's code, `ra.purge.t` = game time + 600 |
+| `admin/purge/<option>/confirm` | re-checks `ra.admin`, the armed code and the deadline, disarms, counts again, runs `purge/<option>/run`, reports, tells the other `ra.admin` holders |
+| `admin/purge/cancel`, `expired` | disarm |
+| `admin/purge/cleanup/stop`, `resume` | set `#sweep ra.purge` |
+
+Options are `all` (1), `orphans` (2), `billboards` (3), `items` (4). A count leaves one
+`#p.<n> ra.set.tmp` per category and tags what it picked by hand (orphans, input books)
+`ra.purge.hit`; the review removes that tag, the run kills it.
+
+**Orphans** are display entities (`block_display`, `item_display`, `text_display`,
+`interaction`, billboards excluded) with no RA marker within 0.6 blocks. Every block display is
+summoned on its marker's position, so the two always share a chunk and an unloaded marker cannot
+make a loaded display look orphaned. Markers whose block is gone are not an option: each block's
+own tick already detects that and runs its break.
+
+**Everything** also clears the world state that named the killed entities: `ra:transport nets`
+(emptied) and its rebuild queues (`dirtyq`, `dirtyset`, `pending`, `full`, `dirty` = 0b),
+`ra:ender anchor_ids`, `ra:dh pend` and the hand-over slots, and every player's `ra.dh.sel` /
+`ra.dh.pending`. Scores on the killed entities go with them; allocators (`#net_seq`,
+`#next ra.dh.mid`) are kept so no id is reused. Data Handler input sessions are cancelled through
+`ra_lib:input/cancel`.
+
+### Unloaded chunks: the purge epoch
+
+`#epoch ra.purge` counts purges of everything (mirrored in `storage ra:purge cur.e` for macros);
+`#sweep ra.purge` is 1 while the clean-up runs. Once a world has been purged, every persistent
+marker is stamped `ra.pe.<epoch>` when it is summoned (`Settings.Purge.stampLine`, called beside
+`stampNew` in placement and the infinite cauldrons, and in multiblock `setup_marker`). While
+`#sweep` is 1, `ra_settings:purge/tick` (in `ra:tick`, before the migration pass) runs one
+selector, `@e[type=marker,tag=ra,tag=!ra.pe.<epoch>]`: a marker never stamped and one stamped by
+an older purge alike. Each one found releases its forceload, takes the displays within 0.6 with
+it and dies (`purge/sweep_one`). Idle, the tick is one score test.
+
+**A new persistent marker must call `stampLine`.** The build fails if a function summons an
+`ra`-tagged marker it does not also kill and nothing it calls stamps it
+(`Purge.unstampedMarkers`), because after a purge the clean-up would remove that marker the next
+tick.
+
 ## Ordering
 
-- `ra_settings:init` runs in `ra:load` **after** every module's load.
+- `ra_settings:init` runs in `ra:load` **after** every module's load; it creates the purge
+  objectives (`ra_settings:purge/init`).
+- `ra_settings:purge/tick` runs right after the tool tag cleanup in `ra:tick`, before
+  `ra_migrations:entities`: a leftover marker is removed before anything migrates or ticks it.
 - `ra_settings:tick` (seeding, menu clicks) runs early in `ra:tick`, before module ticks filter
   sounds and particles on `ra.u.snd` / `ra.u.par`.
 - `ra_settings:input_tick` runs **after** `ra_lib:input/tick`, so a form submitted this tick is

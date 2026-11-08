@@ -1,5 +1,14 @@
 package ra.modules.ender
 
+import ra.core.TextFormat
+import ra.core.text
+import ra.lib.safe.SafeText.guardProperty
+import io.github.ayfri.kore.features.predicates.providers.constant
+import io.github.ayfri.kore.features.predicates.providers.floorDiv
+import io.github.ayfri.kore.features.predicates.providers.sub
+import ra.core.computeScore
+import ra.core.provider
+import ra.core.scoreOf
 import io.github.ayfri.kore.arguments.types.literals.self
 import io.github.ayfri.kore.commands.function
 import io.github.ayfri.kore.commands.scoreboard.scoreboard
@@ -63,7 +72,12 @@ object FluidVault {
 	fun Ra.registerFluidVault() {
 		block(block)
 		wrenchCycle(block.id, WrenchCycle("Mode", "mode", cycleMode))
-		readonly(block.id, "transfer_rate")
+		properties(block) {
+			// Pasted inside quotes into the link commands: no quote, no backslash.
+			text("channel", TextFormat.NAME)
+			text("mode")
+			number("transfer_rate", min = 1, max = 10000, readonly = true)
+		}
 		pack.blockRegisterMessage(block)
 		pack.enderGive(block, item, """{text:" — pipe into it like a tank",color:"gray"}""")
 		pack.enderRecipe(block, item, RecipeCategory.MISC) {
@@ -142,6 +156,8 @@ object FluidVault {
 		raw("data modify storage ra:ender fluid set value {}")
 		raw("data modify storage ra:ender fluid.medium set from storage ra:transport cur.medium")
 		raw("data modify storage ra:ender fluid.channel set from entity @s data.properties.channel")
+		// Pasted into the link macro: an unsafe channel links nothing.
+		guardProperty("channel", TextFormat.NAME, onFail = "data remove storage ra:ender fluid.channel")
 
 		// A one-way sender moves up to its rate and does not care what the far side holds.
 		raw("scoreboard players operation #ender.want $T = #ender.rate $T")
@@ -167,19 +183,19 @@ object FluidVault {
 		raw("scoreboard players set #ender.theirs $T -1")
 		raw("data modify storage ra:ender probe set value {}")
 		raw("data modify storage ra:ender probe.channel set from entity @s data.properties.channel")
+		// Pasted into the link macro: an unsafe channel links nothing.
+		guardProperty("channel", TextFormat.NAME, onFail = "data remove storage ra:ender probe.channel")
 		function(Link.probeFluid, Storage.ENDER, "probe")
 
 		raw("execute if score #ender.theirs $T matches ..-1 run return run scoreboard players set #ender.want $T 0")
 
-		raw("scoreboard players operation #ender.gap $T = #ender.mine $T")
-		raw("scoreboard players operation #ender.gap $T -= #ender.theirs $T")
+		computeScore("#ender.gap", T, provider { sub(scoreOf("#ender.mine", T), scoreOf("#ender.theirs", T)) })
 
 		// Dead zone: below this the pair is level enough, and pushing would just be noise.
 		raw("execute if score #ender.gap $T matches ..20 run return run scoreboard players set #ender.want $T 0")
 
-		raw("scoreboard players set #ender.two $T 2")
-		raw("scoreboard players operation #ender.want $T = #ender.gap $T")
-		raw("scoreboard players operation #ender.want $T /= #ender.two $T")
+		// Half the gap, floored as scoreboard `/=` did. process() clamps it to the rate.
+		computeScore("#ender.want", T, provider { floorDiv(scoreOf("#ender.gap", T), constant(2)) })
 	}
 
 	private fun Function.goggles() {

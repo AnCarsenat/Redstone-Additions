@@ -2,6 +2,459 @@
 
 This page mirrors key datapack milestones from the main project changelog.
 
+## v6.0.1 (2026-11-08) — Leaner ticks
+
+**Supported version:** 26.3 (data pack format 121).
+
+A performance release. The pack does the same things with far fewer commands per tick, by
+moving its arithmetic onto 26.3's `/compute` and by checking multiblock structures with
+predicates built when the pack is generated. Worlds on v6.0.0 carry on without a migration.
+
+### Added
+
+- **Lists are edited one entry at a time.** In the Data Handler a list shows each entry on its
+  own line with **[Edit]** (type a new value for that entry) and **[Remove]**, and the list
+  itself has **[Append]** (greyed out once the list is at its maximum length) next to
+  **[Edit whole list]**. On a list whose positions mean something, such as a Teleport Anchor's
+  fifteen strengths, **[Remove]** is **[Clear]**: the slot is emptied and the others stay where
+  they are. Every entry is checked against the list's type before it is written.
+- **Pick a Teleport Anchor's destination by name.** Every anchor remembers its name in a shared
+  list, and the Data Handler shows one line per redstone strength — *Strength 3: Home* — with
+  **[Choose]**, which lists the anchors already named in the world: click one and that strength
+  leads there. No list typing needed. `/function ra_ender:tools/anchor/list` prints the names,
+  and `…/anchor/show` now prints one line per strength that leads somewhere.
+- **Players may edit entity selectors and tags** (server setting, Sensors page, off by
+  default): lets players without server-settings access change the selectors and tags of the
+  Entity Detector, Tag Adder, Tag Remover and Message Block.
+- **Inverted Item Pipe filters.** A pipe's new `invert` setting (off by default) sends every
+  item that does **not** match the filter to the side and lets the filtered item carry on; the
+  Goggles show *Mode: Inverted*.
+- **Settings subcategories.** A server settings page can have subcategories, listed at the bottom
+  of the page. The Goggles settings moved into **General › Goggles**, which also has the new
+  *Filter previews* switch: turn it off and the Goggles stop drawing an Item Pipe's filter item
+  above its readout. Values already set carry over.
+- **Purge entities** (server settings, **[Purge entities]**): remove Redstone Additions'
+  entities from a world while keeping the pack, its settings and scoreboards. **Everything**
+  turns every placed RA block into a plain block and clears transport networks, the Teleport
+  Anchor name list and pending Data Handler edits; narrower purges remove only **orphaned
+  displays** (skins and pipe or wire displays whose block is gone), **goggles readouts**, or
+  **dropped RA items**. Each one first shows what it would remove and how many are loaded, and
+  its **[CONFIRM]** works only for the admin who asked, for 30 seconds. A purge reaches loaded
+  chunks only; after **Everything**, RA blocks from before the purge are removed as the rest of
+  the world loads, until you stop that on the Purge page. Other server-settings holders are told
+  who purged what.
+
+### Changed
+
+- **Only admins can change a Message Block's text.** The text is shown as rich chat text, so it
+  can carry a clickable command that runs as whoever clicks it. Players without server-settings
+  access now see it locked in the Data Handler.
+
+- **Worlds are upgraded once, not on every load.** The world now remembers which version of the
+  pack it was last loaded with, and the one-time fixes for older worlds run only when that
+  version is older than the fix, instead of on every load. Each custom block also remembers its
+  version: a block from an older version is brought up to date once, the first time its chunk is
+  loaded, rather than by checks that several blocks (the Liquid Drain, Poppy Generator, Clock,
+  Boxer, Unboxer, Valves and Filter, Teleport Anchor) ran on every tick. Blocks in chunks that
+  were not loaded when the pack updated are now fixed too.
+- **The Liquid Drain pours out on redstone, and its speed is a server setting.** The drain's
+  `mode` property is gone: an unpowered drain takes in, a drain powered by redstone pours its
+  network's contents back out (a source block on a free side, experience orbs, or a potion over
+  nearby players), so you can switch it from a lever. The Wrench no longer cycles the drain.
+  Its `cooldown` is replaced by `speed`, in litres per second (1 – 100, default 5: one bucket's
+  worth a second, the old default rate), which only operators can change — with the Data
+  Handler, or for new drains in the Server Settings. Existing drains keep their rate (a drain
+  set to 10 ticks becomes speed 10, one set to 40 ticks speed 2); one that was set to `place`
+  now needs a redstone signal to pour.
+- **Wireless Emitters, Receivers and multiblocks no longer have a hidden on/off switch.**
+  Right-clicking one with the Wrench used to flip an `enabled` property that nothing on the block
+  showed, so an Emitter, a Receiver or a machine could sit switched off with no sign of why. That
+  property is gone: an Emitter is controlled by its redstone input and its channel, a Receiver by
+  its channel, and a Blast Forge, Rock Metallic Drill or Upgrade Platform by its redstone control.
+  Any of them that had been switched off works again. Right-clicking an Emitter or Receiver with
+  the Wrench now says the block cannot be toggled; on an assembled multiblock it says it is
+  already assembled, and the Blast Forge's Goggles readout no longer has an "Enabled" line.
+  Multiblocks also no longer carry an unused `speed` property.
+- **The Thruster Kit costs a quarter of what it did.** Its push is worked out with
+  `/compute` instead of a chain of scoreboard operations, and only while you sprint:
+  52 → 14 commands per tick for each airborne player using it. Jetpack hover holding and other
+  per-player steps shed a few commands each.
+- **Pipes, wires and Ender vaults do their sums in one command.** Adding to or taking from a
+  network, clamping it to capacity after a rebuild, and the bridge move between two networks
+  are each a single `/compute` now. A bridge transfer is 27 → 17 commands; a network offer or
+  take writes in 4 – 6 instead of 8 – 10; Experience and Potion drains, the Power and Fluid
+  Vault level displays and Teleport Anchors each run 3 – 8 fewer commands. The Big Torch sweep, the
+  Magic Crate, Goggles stacking and the settings menu get the same treatment.
+- **Multiblocks are checked by predicate.** A structure's blocks are known when the pack is
+  built, so each facing of the Blast Forge, the Rock Metallic Drill and the Upgrade Platform is
+  now one generated predicate instead of a walk over rotated coordinate tables. A wrench
+  assembly is about 37 commands where it was about 130, a periodic structure check 3 – 12
+  where it was 36 – 49, and loading the pack no longer rebuilds every structure (about 1,200
+  commands each, now 2).
+- **The Blast Forge runs without macros.** Its smelting, fuel and smoke steps are generated
+  once per facing, so a working forge no longer re-instantiates functions every tick.
+- **One debug report for every multiblock.** With the `ra.debug` tag,
+  `ra_lib_multiblock:spec/<id>/debug` lists each missing or wrong block and a `found/total`
+  count; a structure that falls apart while a debug player is online reports itself. It
+  replaces the Blast Forge's own debug function.
+- **Old saved data is tidied.** The Blast Forge's `bf_dir` coordinate tables are removed from
+  saved worlds on load, and drill markers drop their outdated `registry_driven` flag on their
+  first check.
+- **Custom blocks are no longer re-centred every tick.** Every custom block in the world was
+  moved back onto its block centre on every tick, though nothing ever moves them. They are
+  placed at the centre, and one an older version left off-centre is straightened out once.
+
+- **Every block declares its settings.** Each kind of block now lists its settings, the type
+  of each (number with its range, on/off, text, list, item) and whether it is read-only,
+  admin-only or hidden, in one place next to the block. The Data Handler, the Wrench and the
+  Clipboard all follow that list: the Data Handler shows a block's settings in the block's own
+  order and always offers the editor its type calls for, whatever value happens to be stored.
+- **Admin-only and hidden settings.** A setting can be kept for players with server-settings
+  access: other players see it locked, with the reason when they hover it, and a value they
+  typed is refused again at the moment it would be written. A hidden setting does not appear
+  for them at all; admins see it marked *(hidden from players)*. The Wrench and the Clipboard
+  skip what you may not change.
+- **Undeclared values are guessed, and flagged.** A value no block declares (added by an
+  add-on or with the Creative Data Handler) gets a row when its type can be told from the
+  value, marked with a yellow ⚠ that names the guess; players with the `ra.debug` tag get a
+  line naming the block and the setting. Anything else is listed under *Undeclared*.
+- **Typed values are converted and checked.** A number typed in the book must read as a
+  number, an on/off setting accepts `true`/`false`, `on`/`off` or `1`/`0`, and a number prompt
+  shows and enforces the setting's range. Text is kept exactly as typed, even when it looks like
+  a number. A refused value leaves the block unchanged and says why.
+- **Old menus no longer edit.** A Data Handler button in a menu other than the latest one you
+  were shown, or one drawn before a `/reload`, redraws the menu instead of changing a setting.
+- **The Creative Data Handler lists what the block actually has.** It showed a fixed list of 18
+  names, several of which no block uses, and none of the Wires, Ender, storage or multiblock
+  settings. It now shows the block's declared settings, each with its type, then any
+  undeclared ones, flagged.
+- **Goggles labels sit just above the block and fit their content.** A label is now one
+  display that starts a little above the block's top face and grows upward with the number of
+  lines, instead of a stack of separate lines placed at fixed heights well above it: a block
+  with one line no longer floats as high as one with five, and no line can end up inside its
+  block. The name and lines share one size, and an Item Pipe's filter item floats just above
+  its label. Each label is one entity instead of one per line, so a redraw summons fewer and
+  costs fewer commands.
+- **The Goggles hide what the Data Handler hides.** A setting hidden from players is no longer
+  shown on its block's Goggles label either, and a few fixed or uninteresting values are left
+  off the label while staying in the Data Handler: the Mineral, Nether and Poppy Generators'
+  cooldown and the Magic Crate's pulse cooldown.
+
+- **Entity selectors and tags are for admins.** The `entity_selector` and `tag` of the Entity
+  Detector, Tag Adder, Tag Remover and Message Block can only be changed by players with
+  server-settings access, unless the new *Players may edit entity selectors and tags* setting is
+  on. A selector reaches any entity in the world (`@a`, `@e`), and a Tag Adder can hand any tag to
+  anyone.
+- **Text settings say what they accept.** A text setting only takes the characters it can use:
+  a name or channel letters, digits, spaces and `_ . + - : / #`; a tag no spaces and never a
+  name starting with `ra.`; a selector one `@a`/`@e`/`@n`/`@p`/`@r`/`@s` with an optional
+  `[...]`; a Boxer or Unboxer input/output three relative coordinates within 9 blocks
+  (`^ ^ ^-1`). Anything else is refused with a message saying what is allowed. The Message
+  Block's text still takes anything.
+- **Number prompts show their range.** Every number you are asked for — Data Handler settings,
+  your own and the server's settings — reads *Enter a number for delay (1–1200)*, or *(≥ 1)* /
+  *(≤ 64)* when only one bound exists, and a value out of range is refused with the same range.
+- **The Teleport Anchor's help** starts with the Data Handler, and lists the operator commands
+  after.
+- **The EU Consumer's settings row sets its draw.** The server settings row for the EU Consumer
+  was a "Consumer interval" (`cooldown`) the block never reads; it is now *Consumer EU draw*
+  (`eu_use`, default 40), so **Apply to placed** writes a setting the block uses.
+
+### Fixed
+
+- **An Item Pipe filter can be removed again.** Item settings in the Data Handler have a
+  **[Clear]** button; until now nothing could empty `filter_item` once it was set.
+- **The Data Handler edited the wrong block.** Picking the block under the crosshair took the
+  nearest block within a block and a half of four points along your look, so a block beside or
+  below you often won over the one you were looking at, and a block behind a wall could be
+  picked. The Data Handler, Creative Data Handler, Wrench, Multimeter and Clipboard now follow
+  your look block by block and take the first block it enters, stopping at walls.
+
+- **No more lag spikes from broken Magic Crates.** When the barrel under a Magic Crate was
+  replaced by another container, the crate tried to "spill its contents" by summoning empty item
+  entities in a loop that never finished: thousands of "Tried to add entity minecraft:item but it
+  was marked as removed already" warnings per tick, the command limit hit every tick, and the
+  server falling minutes behind. The Block Placer, Item Pipe and Spitter had the same spill on a
+  smaller scale, and could overwrite the block's own dropped item with the container's first
+  stack. A broken barrel or dispenser already drops its own contents, so the spill is gone: these
+  blocks now only give back their own item. The pack also refuses to build if an item entity is
+  ever summoned empty again.
+
+- **Server settings defaults match the blocks.** The Poppy Generator's interval row said 100 where
+  the block uses 80, and the Magic Crate radius row allowed up to 32 where the crate stops at 20.
+  The Block Breaker and Block Placer intervals now have server-default rows too. The Poppy
+  Generator's tooltip no longer mentions the retired patch mode.
+
+- **The Liquid Drain drains.** A drain points where you look when you place it, so one put
+  down beside a pool usually ended up facing up — and an upright drain only ever took buckets,
+  bottles and experience, never the water or lava next to it, whatever its mode said. An
+  upright drain still loads containers and experience first, and with nothing to load it now
+  takes in the source block beside it like any other drain. Water and lava fall onto the drain
+  as it takes them in (other fluids show their own particle), for players with block particles
+  on, with the sound of a bucket filling; its "no source" smoke also respects that setting.
+
+- **Pumps say when a source is the wrong kind.** A Gas Pump next to water, or a Liquid Pump
+  next to a gas, skipped it without a word and kept showing its last status; the Goggles now
+  read `not_a_gas` or `not_a_liquid`.
+
+- **The EU Consumer's draw is a setting again.** Its Wrench row was called "Rate" and showed a
+  `cooldown` value the Consumer never uses, while its [ CYCLE ] button changed the draw, which
+  the Data Handler showed locked as a fixed value. The row is now "Draw" and shows the 20 / 40 /
+  80 EU per tick it cycles, and the Data Handler lets you set the draw directly.
+
+- **Tanks and batteries out of view keep what they hold.** Placing or breaking any pipe or wire
+  recounted every network in the world from the blocks that were loaded at the time. A network
+  out of view lost its contents for good, and came back showing 0 / 0, with its pumps and
+  generators unable to add anything; one only partly in view was recounted from the loaded part
+  and cut down to that part's capacity. Placing a block now only recounts the networks it
+  touches, and a network that reaches into unloaded chunks is never recounted or trimmed: a new
+  pipe simply joins it, and a break that splits it takes effect once the whole network is loaded
+  again. Networks already emptied this way work again as soon as one of their blocks is placed,
+  broken or read by a machine or the Goggles.
+
+- **Machines stack their output again.** The Blast Forge, the Rock Metallic Drill and
+  Storage Box deliveries put each delivery into a new slot. A chest holding three single
+  cobblestone that received one more ended up with four stacks of one instead of a stack of
+  two, and filled up long before it was full. Deliveries now top up matching partial stacks
+  first (same item, same name and enchantments), up to the item's own stack size, then use
+  free slots, and only drop what really does not fit. Custom items such as the drill's Rocks
+  stack too: the machine's item is compared in the form the chest actually stores it in, so a
+  Rock no longer looks different from the Rocks already there. The Item Mover also sees room
+  on partial stacks now: a container with every slot taken used to count as full even when its
+  stacks could still take more.
+
+- **Personal settings toggle again.** Clicking a toggle on the *You* page (machine sounds,
+  particles, debug messages) did nothing, and the menu kept showing the old value. The click
+  handler asked every row for a range and a step that only number rows have, so the game
+  refused the whole call for an on/off row. Each kind of row now has its own handler. Server
+  settings were not affected.
+
+- **Bridges on large networks.** A Valve, Filter, Breaker, Boiler or Ender Power Vault judges
+  which neighbouring network is fuller by its fill ratio. On a network holding more than about
+  214,748 mL that ratio wrapped round to a nonsense value, so a big tank farm could look empty
+  and be filled from, or drained into, the wrong side. The ratio is now computed in floating
+  point and is right at any size.
+
+- **Text prompts give you time to write.** Typing a channel, a name or a setting value in the
+  Input Form ran out 30 seconds after the prompt opened, however busy you were writing, and
+  the text was thrown away with "Input request expired." A text prompt now lasts 5 minutes,
+  and the clock starts again whenever you hold the form in either hand, so it only expires
+  once you have really left it alone.
+
+- **One Input Form per prompt.** The prompt looked for its form only in your main inventory.
+  Swapping it to your offhand, putting it in a chest, bundle or lectern, or carrying it on the
+  cursor handed you a second form, text written in the offhand was never picked up, and a form
+  left in a chest stayed behind as a free Book and Quill. The form now works from the offhand
+  too, is never handed out twice, and putting it away cancels the prompt just like dropping it
+  does. A leftover form is taken back as soon as someone picks it up outside a prompt.
+
+- **Dropping your form cancels even next to someone else's prompt.** A player finishing a text
+  prompt removed every dropped Input Form within 8 blocks, including one another player had
+  just dropped to cancel theirs, whose prompt then stayed open. Each prompt now removes only its
+  own form.
+
+- **`ra.input.trigger` leaves your `/trigger` list.** After your first number prompt the input
+  trigger stayed in your `/trigger` suggestions for good. It is now offered only while a number
+  prompt is waiting for you, and removed from everyone online on the next load.
+
+- **Typed settings edits are kept per player.** The value you were typing for a setting was
+  remembered in one place for the whole server: two people editing at once overwrote each
+  other, and a player's typed number could end up in a server setting an operator had just
+  asked to change. Each player's edit is now kept on its own, and is cleared once it is
+  applied, cancelled or expires. A server setting is only changed if the player typing it still
+  has server-settings access when the value arrives; running a setting's `edit` function now
+  grants that access, as opening the server settings already did.
+
+- **Tools no longer take each other's typed answers.** The Data Handler, the Redstone Remote
+  and the settings menu all ask for input through the same book and number form. The Data
+  Handler and the Remote took whichever answer came in, so starting one while another was
+  waiting could hand your channel name to a block property, or the other way round. Each now
+  only accepts the answer to its own question, and stops waiting when another tool's question
+  replaced it.
+
+- **The Data Handler works for several players at once.** Selecting a block used to deselect
+  every other player's, and the property being edited was shared too: player A's value could
+  be written onto the block player B had just selected, under B's property, even one B's block
+  does not allow changing. Each player now has their own selected block and their own pending
+  edit. The value is written to the block it was asked about, it is refused if you selected a
+  different block since, and the read-only check runs again just before the write.
+
+- **[Edit list] checks what you typed.** Anything that parsed was stored as is, so typing
+  `{a:1}` into a Teleport Anchor's targets replaced its table with something the anchor could
+  not read. The text must now be a list, every entry must be text when the property holds text,
+  and a Teleport Anchor's targets take at most 15 entries, padded with empty rows as
+  `ra_ender:tools/anchor/set_table` does. Anything else is refused with a message and leaves the
+  block unchanged.
+
+- **The Ender Power Vault never loses EU over a broken channel.** A vault whose channel was
+  missing, or held text the transfer could not use, still took its share of EU from the grid
+  every cycle and then failed to send it. What it gave back was worked out from the previous
+  vault's transfer, so the grid could lose EU, or be handed back the wrong amount. A vault now
+  checks its channel before taking anything, and a send that fails puts everything back.
+
+- **Tag Adders, Tag Removers and Entity Detectors use their own settings.** Several Tag Adders
+  or Tag Removers switched on in the same tick all used the tag and target of the last one, and
+  a block missing its tag or target borrowed the one before it. Each block now reads only its
+  own settings. A Tag Adder or Entity Detector with no target, or a Tag Adder with no tag, does
+  nothing (the detector's output stays off); a Tag Remover with no tag still clears every tag,
+  as before.
+
+- **Repeaters, comparators and observers drive gates again.** A repeater pointing into a logic
+  gate or any other redstone-reading block was not seen at all, while one pointing away from it
+  powered it at full strength. The pack read these three backwards: their `facing` names the
+  input side (for a repeater or comparator) or the watched side (for an observer), and they
+  output from the opposite face. A repeater, comparator or observer now powers only the block
+  its output faces, from every side including above and below, and one pointing away no longer
+  counts as an input on the AND, NAND and other gates that check which sides are wired.
+
+- **Custom blocks place on flowers, rails and torches.** Using a custom block on a flower,
+  sapling, rail, pressure plate, button, lever, torch or redstone dust did nothing and the item
+  was gone. The block now goes against the face you clicked, as a vanilla block would.
+
+- **A refused placement gives the item back and says why.** When a custom block could not be
+  placed (another custom block already there, no room, a player in the way, or the block
+  disabled on the server), the item was used up anyway, and only the disabled case said
+  anything. You now get the item back in survival and adventure, with a message saying why.
+  An item fired from a dispenser is dropped in front of it.
+  Older pipes and wires still sitting in chests (L2 pipes and wires, gas pipes) are covered too:
+  they give back the Copper Pipe or Wire they now place.
+
+- **Breaking a custom block no longer deletes nearby items.** Removing the plain vanilla item a
+  broken custom block drops took the nearest item of the same kind, whatever it was: a stack of
+  64 quartz you had dropped beside a Shortener, or the contents a container had just spilled.
+  Only the block's own fresh drop is removed now, for every custom block: pipes, wires, tanks,
+  pumps, the electric blocks and Multiblock Bases included.
+
+- **The pack no longer stops after a very heavy tick.** If one tick ran past the game's command
+  limit, the pack's main loop never scheduled the next one and every machine stopped until
+  `/reload`. The loop now schedules its next tick first.
+
+- **Uninstall removes everything.** It left powered Chunk Loaders' chunks force-loaded for good,
+  left the Clock and UNI Gate's floating items and the Goggles' item lines in the world, kept
+  more than thirty scoreboards (networks, jetpacks, Ender links, enchanting, tool timers) and did not
+  actually empty any of the pack's saved data. The lists of what to remove are now read from the
+  pack itself, so nothing the pack creates is left behind.
+
+- **Number settings get the number editor.** The Data Handler decided a setting was text
+  whenever the game would let it store the value as text, which it does for numbers too, so
+  every number setting it did not know by name was edited as text and saved back as text. Types
+  are now declared per block, and a value without a declaration is typed by tests only that
+  type passes.
+
+- **The Creative Data Handler works for several operators at once.** One shared marker tag
+  decided which block it edited, so a second operator's Shift+RMB moved it, and the first
+  operator's [Modify], [-] and [Refresh] then changed the other block. Its menu was also shown
+  to the player nearest the block rather than the one who clicked. Each operator now has their
+  own selected block (the same one the Data Handler uses), and the `/data` commands its buttons
+  suggest name that block by number, so they still reach it when typed later.
+
+- **Teleport Anchor targets show in the Data Handler.** The [Edit list] row's hover text broke
+  the chat message, so no list setting was ever shown and the anchor's table could not be
+  edited from the menu.
+
+- **Multiblock base tiers are locked.** The read-only rule for a base's `tier` and `tier_level`
+  was registered under a block type no base carries, so the Data Handler let players change a
+  base's tier.
+
+- **The UNI Gate's wrench menu shows its gate type.** The row read a property the gate does not
+  have and showed an empty value.
+
+- **The Data Handler names the block you selected.** It read the name from a field markers do
+  not carry, so after a refresh it kept whatever name the last player to select anything had
+  left behind, and a block with no settings showed the previous block's.
+
+- **Block settings could run any command.** Several blocks pasted a setting straight into a
+  command: a Tag Adder whose selector was `@a[limit=1] if function <any function> run say` ran
+  that function for whoever placed it, with the server's permission; a Boxer input of
+  `~ ~ ~ if function …` did the same; a vault channel or a Teleport Anchor target containing
+  `"}` broke out of its quotes. Any player with a Data Handler could set them. Each such setting
+  is now checked against what it may contain before the block uses it, every time, whoever
+  wrote it — and a Tag Adder can no longer hand out the pack's own `ra.` tags (`ra.admin` gave
+  server-settings access). A value that fails the check makes the block do nothing until it is
+  corrected.
+- **Teleport Anchors no longer put the target name in a command.** The destination is found by
+  comparing names directly, so any name works the same way.
+- **Damaged anchor tables are repaired.** A target table that was not a list of fifteen (after
+  an old Data Handler edit wrote something else) is padded, trimmed or emptied the first time
+  the anchor runs.
+
+- **Item Movers, Boxers and Unboxers no longer duplicate items from a double chest.** When both
+  halves of a double chest held items, the machine took the first stack of the half it faces but
+  then removed the items from the other half: the stack it moved was copied, and the other
+  half's first stack disappeared. It now removes items from the half it actually took them from.
+
+- **Item Pipe filters use all four sides.** On a pipe pointing up or down, filtered items were
+  only ever sent into containers at two of its sides, and could be pushed back into the container
+  feeding the pipe. A filtering pipe now tries the four containers around it, whichever way it
+  points, and never the one behind it.
+
+- **The Gas Pump has something to pump.** No world block counted as a gas, so a Gas Pump could
+  never pull anything. It now draws Smoke from a lit campfire or soul campfire next to it,
+  500 mL a second, and leaves the campfire burning. Pumps and drains also look only for sources
+  they can take: a Liquid Pump or Liquid Drain beside both a campfire and water takes the water,
+  and a drain never pulls smoke into a liquid network.
+
+- **Generator speed is an admin setting.** A generator's `cooldown` was shown locked to everyone.
+  Players with server-settings access can now change it per generator with the Data Handler;
+  for everyone else it stays locked. A Poppy Generator that had lost its cooldown value fell back
+  to 100 ticks instead of its own 80.
+
+- **Block Breaker and Block Placer speed is an admin setting.** Both showed a locked `cooldown`
+  that did nothing: they always acted once a second. The `cooldown` (in ticks, 20 by default) is
+  now what they wait between two actions, and players with server-settings access can change it
+  per block with the Data Handler.
+
+- **The Block Placer no longer eats items it cannot place.** With an item that is not a block
+  first in its inventory, it placed nothing but still used one up every second. It now uses an
+  item only when it placed a block, and only then plays its sound. It also places into cave air,
+  which it used to treat as occupied.
+
+- **The Magic Crate's radius stops at 20.** The Data Handler accepted up to 32, but the crate
+  never reached past 20; it now refuses values above what the crate uses. Its pull interval
+  (`cooldown`) is now a server admin's setting.
+
+- **The Breeder feeds from its own inventory.** It looked for food in the container behind it
+  (except for horses and llamas), and only ran when its own inventory had something in it, so a
+  Breeder stocked with food bred nothing. It now takes the food from its own inventory for every
+  animal, and looks for the animals in front of it.
+
+- **Machine sounds and particles follow your settings everywhere.** With *Machine sounds* or
+  *Machine particles* turned off you still got some of them: the break sound and puff of almost
+  every block, the Block Breaker's dust, the Magic Crate's portal swirl, the Mineral and Nether
+  Generators, the Randomizer, the Blast Forge's smoke and flames, the Upgrade Platform, a
+  multiblock falling apart, the Message Block's chime, Ender Links, the Ender Power Vault and the
+  Teleport Anchor's portal cloud. They now all respect both settings.
+
+- **The Spitter shows when it throws.** A small puff now comes out of its face with each stack,
+  for players with *Machine particles* on.
+
+### For contributors
+
+- Migrations are versioned. `storage ra:migrations version` holds the world's version and the
+  `ra.ver` score (plus tag `ra.ver.<version>`) each custom block marker's; a step is declared with
+  `migration("6.0.0", "6.0.1") { world { ... }; entity("<type>") { ... } }` in `ra/migrations`
+  and runs only where the recorded version is older. Block code no longer carries one-time fixes
+  (`ra_wires:fluid/drain_migrate`, the `ra.wires.drain_v2`, `ra.ender.anchor_checked` and
+  `ra.storage.io_default_migrated` tags are gone). See [Migrations](architecture.md#migrations).
+- A property can set `goggles = true` to show on the Goggles label even when `visible = false`
+  hides it from the Data Handler, or `goggles = false` to keep a visible one off the label;
+  unset, it follows `visible`. Generated as a resolved `goggles` byte in
+  `storage ra:dh types."<type>".<name>` (not for `dynamic` properties, which read
+  `data.property_types.<name>`). Goggles line writers now append to one `text_display` per
+  billboard, in call order: their `y` arguments and `stack_reset` are accepted and ignored.
+- Block properties are declared per block type with `properties(block) { number(...); bool(...);
+  text(...); list(...); item(...) }` (`ra/core/Properties.kt`), replacing `ra.readonly(...)`,
+  `ra.dataHandlerProperties(...)` and the Data Handler's global name lists. They are generated
+  into `storage ra:dh types."<type>"` and `order."<type>"`; the build warns about property names
+  a block uses without declaring and about every `dynamic(...)` declaration. See
+  [Property schemas](tools-and-registries.md#property-schemas).
+- `ra/core/Compute.kt` builds and emits `/compute` providers; the [Developer Guide](developer-guide.md#arithmetic-with-compute)
+  covers when and how to use it. The constant fake players the old chains needed (`#jp.cap`,
+  `#br.two`, `#dr.mul` and others) are gone.
+- Multiblocks are declared in Kotlin with `multiblockSpec { }` and `Ra.multiblock(spec)`; see
+  the [Multiblock Library](multiblock-library.md).
+  Add-ons registering through `ra_lib_multiblock:register` keep working unchanged.
+
 ## v6.0.0 (2026-11-07) — Kore rewrite
 
 **Supported version:** 26.3 (data pack format 121).

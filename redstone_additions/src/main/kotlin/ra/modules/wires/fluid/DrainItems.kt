@@ -1,10 +1,13 @@
 package ra.modules.wires.fluid
 
+import io.github.ayfri.kore.features.predicates.providers.sub
+import ra.core.computeScore
+import ra.core.provider
+import ra.core.scoreOf
 import io.github.ayfri.kore.arguments.types.literals.literal
 import io.github.ayfri.kore.commands.data
 import io.github.ayfri.kore.commands.function
 import io.github.ayfri.kore.commands.kill
-import io.github.ayfri.kore.commands.scoreboard.Operation
 import io.github.ayfri.kore.commands.scoreboard.scoreboard
 import io.github.ayfri.kore.commands.tag
 import io.github.ayfri.kore.utils.nbt
@@ -62,8 +65,7 @@ object DrainItems : PackPart {
 			// Room for the whole container, or nothing happens.
 			function(RaLib.Transport.Net.read)
 			raw("\$scoreboard players set #dr.need ra.wires.tmp \$(volume)")
-			scoreboard.players.operation(literal("#dr.free"), "ra.wires.tmp", Operation.SET, literal("#net_capacity"), "ra.tr.tmp")
-			scoreboard.players.operation(literal("#dr.free"), "ra.wires.tmp", Operation.REMOVE, literal("#net_amount"), "ra.tr.tmp")
+			computeScore("#dr.free", "ra.wires.tmp", provider { sub(scoreOf("#net_capacity", "ra.tr.tmp"), scoreOf("#net_amount", "ra.tr.tmp")) })
 			raw("execute if score #dr.free ra.wires.tmp < #dr.need ra.wires.tmp run data modify entity @s data.status.drain_state set value \"network_full\"")
 			raw("execute if score #dr.free ra.wires.tmp < #dr.need ra.wires.tmp run return run tag @a[tag=ra.wires.emptying] remove ra.wires.emptying")
 
@@ -93,7 +95,7 @@ object DrainItems : PackPart {
 
 			scoreboard.players.set(literal("#dr.took"), "ra.wires.tmp", 1)
 			raw("data modify entity @s data.status.drain_state set value \"emptied_container\"")
-			raw("\$function ${Fluid.particles.asId()} {medium:\"\$(medium)\"}")
+			raw("\$function ${Fluid.drip.asId()} {medium:\"\$(medium)\"}")
 			raw("playsound minecraft:item.bucket_empty block ${soundListenersSel(8)} ~ ~ ~ 0.7 1.2")
 		}
 
@@ -103,10 +105,10 @@ object DrainItems : PackPart {
 			//
 			// WHY VERTICAL
 			// A drain lying flat is working on the world: it takes a source block beside it,
-			// or puts one back. Stood on end it has nothing sensible to do with the block
-			// above or below, so that placement is given the other job — it becomes the point
-			// where a base's contents go in. One block, two roles, decided by how you place
-			// it, with no extra property to discover.
+			// or puts one back. Stood on end it is also the point where a base's contents go
+			// in. Since 6.0.1 it still takes a world source beside it when it has nothing to
+			// load (see ra_wires:fluid/drain_tick): placing a drain while looking down makes it
+			// vertical, and such a drain used to never touch the pool it sat beside.
 			//
 			// THREE WAYS IN, TRIED IN THAT ORDER
 			// 1. a sneaking player's main hand
@@ -137,7 +139,10 @@ object DrainItems : PackPart {
 			// vertical drain can give it: their own experience.
 			executeRun("if score #dr.took ra.wires.tmp matches 0", DrainExperience.drainExp)
 
-			raw("execute if score #dr.took ra.wires.tmp matches 0 unless data entity @s data.status{drain_state:\"absorbing_xp\"} unless data entity @s data.status{drain_state:\"network_full\"} unless data entity @s data.status{drain_state:\"wrong_medium\"} run data modify entity @s data.status.drain_state set value \"nothing_to_empty\"")
+			// drain_tick sets "idle" before calling this, so a state still "idle" here means none
+			// of the four ways in acted or had anything to report this cycle -- and only then does
+			// drain_tick go on to scan the world for a source.
+			raw("execute if score #dr.took ra.wires.tmp matches 0 if data entity @s data.status{drain_state:\"idle\"} run data modify entity @s data.status.drain_state set value \"nothing_to_empty\"")
 			data(Storage.WIRES) { remove("iq") }
 		}
 
@@ -186,8 +191,7 @@ object DrainItems : PackPart {
 
 			function(RaLib.Transport.Net.read)
 			raw("\$scoreboard players set #dr.need ra.wires.tmp \$(volume)")
-			scoreboard.players.operation(literal("#dr.free"), "ra.wires.tmp", Operation.SET, literal("#net_capacity"), "ra.tr.tmp")
-			scoreboard.players.operation(literal("#dr.free"), "ra.wires.tmp", Operation.REMOVE, literal("#net_amount"), "ra.tr.tmp")
+			computeScore("#dr.free", "ra.wires.tmp", provider { sub(scoreOf("#net_capacity", "ra.tr.tmp"), scoreOf("#net_amount", "ra.tr.tmp")) })
 			raw("execute if score #dr.free ra.wires.tmp < #dr.need ra.wires.tmp run data modify entity @s data.status.drain_state set value \"network_full\"")
 			raw("execute if score #dr.free ra.wires.tmp < #dr.need ra.wires.tmp run return run tag @e[type=item,tag=ra.wires.draining_item] remove ra.wires.draining_item")
 
@@ -208,7 +212,7 @@ object DrainItems : PackPart {
 
 			scoreboard.players.set(literal("#dr.took"), "ra.wires.tmp", 1)
 			raw("data modify entity @s data.status.drain_state set value \"emptied_container\"")
-			raw("\$function ${Fluid.particles.asId()} {medium:\"\$(medium)\"}")
+			raw("\$function ${Fluid.drip.asId()} {medium:\"\$(medium)\"}")
 			raw("playsound minecraft:item.bucket_empty block ${soundListenersSel(8)} ~ ~ ~ 0.7 1.2")
 		}
 	}

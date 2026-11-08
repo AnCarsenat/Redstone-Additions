@@ -1,12 +1,9 @@
 package ra.hub
 
-import io.github.ayfri.kore.arguments.maths.Axes
-import io.github.ayfri.kore.arguments.maths.vec3
 import io.github.ayfri.kore.arguments.numbers.ticks
 import io.github.ayfri.kore.arguments.selector.scores
 import io.github.ayfri.kore.arguments.scores.greaterThanOrEqualTo
 import io.github.ayfri.kore.arguments.scores.lessThanOrEqualTo
-import io.github.ayfri.kore.arguments.types.literals.allEntities
 import io.github.ayfri.kore.arguments.types.literals.allPlayers
 import io.github.ayfri.kore.arguments.types.literals.self
 import io.github.ayfri.kore.commands.execute.execute
@@ -14,16 +11,14 @@ import io.github.ayfri.kore.commands.function
 import io.github.ayfri.kore.commands.schedule
 import io.github.ayfri.kore.commands.scoreboard.scoreboard
 import io.github.ayfri.kore.commands.tag
-import io.github.ayfri.kore.commands.tp
 import io.github.ayfri.kore.functions.Function
-import io.github.ayfri.kore.generated.EntityTypes
 import ra.RedstoneAdditions
 import ra.api.Goggles
+import ra.api.ModulesApi
 import ra.api.RaLib
 import ra.api.Settings
 import ra.api.Tools
 import ra.core.Ra
-import ra.core.Tag
 import ra.core.define
 import ra.core.raw
 import ra.hub.placement.detectBats
@@ -37,7 +32,24 @@ private val ACTIVE_TOOLS = listOf("cdh", "dh", "wrench", "clip", "meter", "remot
 
 internal fun Ra.registerTick() {
 	pack.define(tick) {
+		// RESCHEDULE FIRST. A tick that runs past maxCommandChainLength is cut off where it
+		// stands, and when this line sat near the end, the cut took the reschedule with it: the
+		// whole pack stopped until somebody ran /reload. Up here it has already happened. Nothing
+		// below depends on it running late -- `replace` only moves the next run, and the next run
+		// is a tick away either way.
+		schedule(tick).replace(1.ticks)
+
 		toolTagCleanup()
+
+		// After an admin purge: remove Redstone Additions markers from before the purge as their
+		// chunks load, before the migration pass or any block tick sees them. One score test while
+		// no clean-up is running. See ra.settings.purge.
+		function(Settings.Purge.tick)
+
+		// Custom blocks saved by an older version, migrated before anything below reads them --
+		// including blocks in a chunk that has just loaded. One selector when there are none.
+		// See ra.migrations.MigrationsPart.
+		function(ModulesApi.Migrations.entities)
 
 		// Settings: seed per-player defaults and collect menu clicks. Early, because the module
 		// ticks below emit sounds and particles that are filtered on those scores.
@@ -58,20 +70,15 @@ internal fun Ra.registerTick() {
 
 		function(detectBats)
 
-		// Keep every custom block marker centred on the world grid.
-		execute {
-			asTarget(allEntities { type = EntityTypes.MARKER; tag = Tag.CUSTOM_BLOCK })
-			at(self())
-			align(Axes.XYZ)
-			positioned(vec3(0.5, 0.5, 0.5).relative)
-			run { tp(self(), vec3()) }
-		}
+		// Markers are NOT re-centred here any more. This used to teleport every custom block
+		// marker in the world onto its block centre, every tick; a marker has no physics and
+		// nothing in the pack moves one, and placement summons it at the centre already
+		// (#ra:placement_handlers runs at `align xyz positioned ~0.5 ~0.5 ~0.5`). A marker an
+		// older version left off-centre is straightened once by the 6.0.1 migration.
 
 		for (module in RedstoneAdditions.modules) module.tick?.let { function(it) }
 
 		function(Goggles.tick)
-
-		schedule(tick).replace(1.ticks)
 
 		menuTriggers()
 	}

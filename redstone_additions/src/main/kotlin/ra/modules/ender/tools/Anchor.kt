@@ -22,6 +22,8 @@ object Anchor {
 	private val copyRow = fn("copy_row")
 	private val copyRowWrite = fn("copy_row_write")
 	private val writeTarget = fn("write_target")
+	private val showRow = fn("show_row")
+	private val showLine = fn("show_line")
 
 	private const val T = Obj.TEMP
 
@@ -32,15 +34,29 @@ object Anchor {
 		"""tellraw @s [{text:"[RA] ",color:"gold"},{text:"No Teleport Anchor within 6 blocks",color:"red"}]"""
 
 	fun Ra.registerAnchorTools() {
-		// How to wire an anchor up, printed in chat.
+		// How to wire an anchor up, printed in chat. The Data Handler first: it needs no operator
+		// rights and no typing beyond a name.
 		pack.define(ModulesApi.Ender.anchorHelp) {
 			raw("""tellraw @s [{text:"— Teleport Anchor ",color:"light_purple",bold:true},{text:"—",color:"dark_gray"}]""")
-			raw("""tellraw @s [{text:"Every anchor has a string ",color:"gray"},{text:"id",color:"aqua"},{text:" and a table of 15 target ids, one per redstone strength.",color:"gray"}]""")
-			raw("""tellraw @s [{text:"/function ra_ender:tools/anchor/set_id {id:\"A\"}",color:"yellow"},{text:" — name the nearest anchor",color:"gray"}]""")
-			raw("""tellraw @s [{text:"/function ra_ender:tools/anchor/set_table {table:[\"A\",\"B\",\"C\"]}",color:"yellow"},{text:" — the whole table at once",color:"gray"}]""")
-			raw("""tellraw @s [{text:"/function ra_ender:tools/anchor/set_target {level:3,id:\"B\"}",color:"yellow"},{text:" — one row",color:"gray"}]""")
-			raw("""tellraw @s [{text:"/function ra_ender:tools/anchor/show",color:"yellow"},{text:" — print the nearest anchor's table",color:"gray"}]""")
-			raw("""tellraw @s [{text:"Stand within 2 blocks and power it: strength picks the row.",color:"gray"}]""")
+			raw("""tellraw @s [{text:"Each anchor has a name (",color:"gray"},{text:"anchor_id",color:"aqua"},{text:") and a destination for each redstone strength 1–15 (",color:"gray"},{text:"targets",color:"aqua"},{text:").",color:"gray"}]""")
+			raw("""tellraw @s [{text:"With the ",color:"gray"},{text:"Data Handler",color:"aqua"},{text:", Shift + right-click the anchor:",color:"gray"}]""")
+			raw("""tellraw @s [{text:"  • ",color:"dark_gray"},{text:"anchor_id [Modify]",color:"yellow"},{text:" — name it, e.g. Home",color:"gray"}]""")
+			raw("""tellraw @s [{text:"  • ",color:"dark_gray"},{text:"Strength N [Choose]",color:"yellow"},{text:" — pick the destination from the anchors already named; ",color:"gray"},{text:"[Edit]",color:"yellow"},{text:" types one, ",color:"gray"},{text:"[Clear]",color:"yellow"},{text:" empties it",color:"gray"}]""")
+			raw("""tellraw @s [{text:"Stand within 2 blocks and power it: the strength picks the destination.",color:"gray"}]""")
+			raw("""tellraw @s [{text:"Operators, on the nearest anchor within 6 blocks:",color:"dark_gray"}]""")
+			for ((cmd, does) in listOf(
+				"set_id {id:\\\"A\\\"}" to "name it",
+				"set_target {level:3,id:\\\"B\\\"}" to "one strength",
+				"set_table {table:[\\\"A\\\",\\\"B\\\"]}" to "strengths 1, 2… at once",
+				"show" to "its destinations",
+				"list" to "every known anchor name",
+			)) raw("""tellraw @s [{text:"  /function ra_ender:tools/anchor/$cmd",color:"yellow"},{text:" — $does",color:"gray"}]""")
+		}
+
+		// Every anchor id filed so far (storage ra:ender anchor_ids), the Data Handler's pick list.
+		pack.define(fn("list")) {
+			raw("""execute unless data storage ra:ender ${TeleportAnchor.REGISTRY}[0] run return run tellraw @s [{text:"[RA] ",color:"gold"},{text:"No anchor has been named yet.",color:"gray"}]""")
+			raw("""tellraw @s [{text:"[RA] ",color:"gold"},{text:"Known anchors: ",color:"gray"},{nbt:"${TeleportAnchor.REGISTRY}[]",storage:"ra:ender",color:"aqua",separator:{text:", ",color:"gray"}}]""")
 		}
 
 		// Macro {id}: name the nearest anchor. Ids are strings: "A", "base", "mine_2". Anything you can type.
@@ -117,7 +133,7 @@ object Anchor {
 			raw("\$data modify entity $NEAREST data.properties.targets[\$(i)] set value \"\$(id)\"")
 		}
 
-		// Print the nearest anchor's id and target table.
+		// Print the nearest anchor's id and, one line each, the strengths that lead somewhere.
 		pack.define(fn("show")) {
 			raw(NO_ANCHOR)
 
@@ -125,8 +141,26 @@ object Anchor {
 			raw("data modify storage ra:ender show.id set from entity $NEAREST data.properties.anchor_id")
 			raw("data modify storage ra:ender show.targets set from entity $NEAREST data.properties.targets")
 
-			raw("""tellraw @s [{text:"[RA] ",color:"gold"},{text:"Anchor id ",color:"gray"},{nbt:"show.id",storage:"ra:ender",color:"aqua"}]""")
-			raw("""tellraw @s [{text:"  targets 1-15: ",color:"gray"},{nbt:"show.targets",storage:"ra:ender",color:"white"}]""")
+			raw("""tellraw @s [{text:"[RA] ",color:"gold"},{text:"Anchor ",color:"gray"},{nbt:"show.id",storage:"ra:ender",color:"aqua"}]""")
+			raw("scoreboard players set #ender.lv $T 1")
+			function(showRow)
+			raw("""execute if score #ender.shown $T matches 0 run tellraw @s [{text:"  No destination set.",color:"gray",italic:true}]""")
+			raw("data remove storage ra:ender show")
+		}
+		pack.define(showRow) {
+			raw("execute if score #ender.lv $T matches 1 run scoreboard players set #ender.shown $T 0")
+			raw("execute unless data storage ra:ender show.targets[0] run return 0")
+			function(showLine)
+			raw("data remove storage ra:ender show.targets[0]")
+			raw("scoreboard players add #ender.lv $T 1")
+			function(showRow)
+		}
+		// Only for a non-empty first entry: "" is "nothing on this strength".
+		pack.define(showLine) {
+			raw("data modify storage ra:ender show.first set from storage ra:ender show.targets[0]")
+			raw("""execute if data storage ra:ender show{first:""} run return 0""")
+			raw("scoreboard players add #ender.shown $T 1")
+			raw("""tellraw @s [{text:"  Strength ",color:"gray"},{score:{name:"#ender.lv",objective:"$T"},color:"yellow"},{text:" → ",color:"dark_gray"},{nbt:"show.first",storage:"ra:ender",color:"aqua"}]""")
 		}
 	}
 }

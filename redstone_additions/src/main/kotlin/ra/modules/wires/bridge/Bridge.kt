@@ -1,5 +1,16 @@
 package ra.modules.wires.bridge
 
+import io.github.ayfri.kore.features.predicates.providers.constant
+import io.github.ayfri.kore.features.predicates.providers.floorDiv
+import io.github.ayfri.kore.features.predicates.providers.min
+import io.github.ayfri.kore.features.predicates.providers.div
+import io.github.ayfri.kore.features.predicates.providers.fromInt
+import io.github.ayfri.kore.features.predicates.providers.sub
+import ra.core.computeScore
+import ra.core.computeScoreScaled
+import ra.core.floatProvider
+import ra.core.provider
+import ra.core.scoreOf
 import io.github.ayfri.kore.arguments.types.literals.literal
 import io.github.ayfri.kore.arguments.types.literals.self
 import io.github.ayfri.kore.commands.data
@@ -58,11 +69,25 @@ object Bridge : PackPart {
 			function(RaLib.Transport.Net.read)
 			scoreboard.players.add(literal("#br.found"), "ra.wires.tmp", 1)
 
+			// fill = amount / capacity, in ten-thousandths. The division is done in floats and
+			// the 10000 is /compute's scale, not a multiplication in the provider: the integer
+			// form, amount * 10000 / capacity, needs the product to fit in 32 bits, which stops
+			// being true at 214,748 mL -- a modest tank farm. A scoreboard `*=` would have
+			// wrapped to a garbage negative fill; /compute's `mul` cancels the whole evaluation
+			// instead, so a large network read as 0 and looked empty to every bridge. A ratio
+			// in floats is at most 1 whatever the network size, so nothing can overflow, and
+			// float precision only matters in the last ten-thousandth, which is finer than any
+			// comparison below cares about.
+			//
+			// The capacity guard stays: dividing by zero makes /compute fail, and a network with
+			// no capacity reads as empty.
 			scoreboard.players.set(literal("#br.fill"), "ra.wires.tmp", 0)
-			scoreboard.players.set(literal("#br.scale"), "ra.wires.tmp", 10000)
-			raw("execute if score #net_capacity ra.tr.tmp matches 1.. run scoreboard players operation #br.fill ra.wires.tmp = #net_amount ra.tr.tmp")
-			raw("execute if score #net_capacity ra.tr.tmp matches 1.. run scoreboard players operation #br.fill ra.wires.tmp *= #br.scale ra.wires.tmp")
-			raw("execute if score #net_capacity ra.tr.tmp matches 1.. run scoreboard players operation #br.fill ra.wires.tmp /= #net_capacity ra.tr.tmp")
+			computeScoreScaled(
+				"#br.fill", "ra.wires.tmp",
+				floatProvider { div(fromInt(scoreOf("#net_amount", "ra.tr.tmp")), fromInt(scoreOf("#net_capacity", "ra.tr.tmp"))) },
+				scale = 10000,
+				chain = "if score #net_capacity ra.tr.tmp matches 1..",
+			)
 
 			raw("\$execute if score #br.fill ra.wires.tmp > #br.hi ra.wires.tmp run data modify storage ra:wires bridge.src set value {dx:\$(dx),dy:\$(dy),dz:\$(dz)}")
 			raw("execute if score #br.fill ra.wires.tmp > #br.hi ra.wires.tmp run scoreboard players operation #br.hi_net ra.wires.tmp = @s ra.tr.net")
@@ -102,8 +127,7 @@ object Bridge : PackPart {
 
 			function(RaLib.Transport.Net.read)
 
-			scoreboard.players.operation(literal("#br.dst_free"), "ra.wires.tmp", Operation.SET, literal("#net_capacity"), "ra.tr.tmp")
-			scoreboard.players.operation(literal("#br.dst_free"), "ra.wires.tmp", Operation.REMOVE, literal("#net_amount"), "ra.tr.tmp")
+			computeScore("#br.dst_free", "ra.wires.tmp", provider { sub(scoreOf("#net_capacity", "ra.tr.tmp"), scoreOf("#net_amount", "ra.tr.tmp")) })
 			raw("execute if score #br.dst_free ra.wires.tmp matches ..0 run return 0")
 
 			// Compared per medium, so the half-the-gap convergence in bridge/transfer levels
@@ -233,11 +257,11 @@ object Bridge : PackPart {
 
 			scoreboard.players.set(literal("#br.src"), "ra.wires.tmp", 0)
 			scoreboard.players.set(literal("#br.dst"), "ra.wires.tmp", 0)
-			scoreboard.players.set(literal("#br.move"), "ra.wires.tmp", 0)
 			data(Storage.WIRES) { remove("bridge") }
 
+			// The rate stays in #prop (ra.temp): nothing between here and the clamp below calls
+			// ra_lib:util/property again.
 			function(RaLib.Util.property, nbt { this["name"] = "rate"; this["default"] = 1000; this["min"] = 1 })
-			scoreboard.players.operation(literal("#br.rate"), "ra.wires.tmp", Operation.SET, literal("#prop"), "ra.temp")
 
 			// A Liquid Filter carries filter_medium and moves only that. Resolved here rather
 			// than in read_src because read_src runs `as` the neighbouring node, and the
@@ -250,10 +274,8 @@ object Bridge : PackPart {
 
 			raw("execute if score #br.dst ra.wires.tmp matches 0 run return run data modify entity @s data.status.bridge_state set value \"blocked\"")
 
-			scoreboard.players.operation(literal("#br.move"), "ra.wires.tmp", Operation.SET, literal("#br.rate"), "ra.wires.tmp")
-			raw("execute if score #br.src_amount ra.wires.tmp < #br.move ra.wires.tmp run scoreboard players operation #br.move ra.wires.tmp = #br.src_amount ra.wires.tmp")
-			raw("execute if score #br.dst_free ra.wires.tmp < #br.move ra.wires.tmp run scoreboard players operation #br.move ra.wires.tmp = #br.dst_free ra.wires.tmp")
-
+			// move = min(rate, src_amount, dst_free, (src_amount - dst_amount) / 2)
+			//
 			// Never move more than HALF the difference between the two sides.
 			//
 			// Moving the whole difference does not level them, it swaps them: 3000 and 2000
@@ -262,16 +284,25 @@ object Bridge : PackPart {
 			// actually doing — ping-ponging the same litre for ever.
 			//
 			// Half converges instead, and once the two are within one unit the halved gap
-			// rounds to zero and nothing moves at all.
-			scoreboard.players.operation(literal("#br.gap"), "ra.wires.tmp", Operation.SET, literal("#br.src_amount"), "ra.wires.tmp")
-			scoreboard.players.operation(literal("#br.gap"), "ra.wires.tmp", Operation.REMOVE, literal("#br.dst_amount"), "ra.wires.tmp")
-			scoreboard.players.set(literal("#br.two"), "ra.wires.tmp", 2)
-			scoreboard.players.operation(literal("#br.gap"), "ra.wires.tmp", Operation.DIVIDE, literal("#br.two"), "ra.wires.tmp")
-			raw("execute if score #br.gap ra.wires.tmp < #br.move ra.wires.tmp run scoreboard players operation #br.move ra.wires.tmp = #br.gap ra.wires.tmp")
+			// rounds to zero and nothing moves at all. The halving floors, as scoreboard `/=` did:
+			// a negative gap stays negative and the `..0` check below blocks it.
+			//
+			// Stored into bridge.amount in the same command. A blocked transfer leaves it there
+			// unused: nothing reads it on that path, and the next transfer clears `bridge` first.
+			computeScore(
+				"#br.move", "ra.wires.tmp",
+				provider {
+					min(
+						scoreOf("#prop", "ra.temp"),
+						scoreOf("#br.src_amount", "ra.wires.tmp"),
+						scoreOf("#br.dst_free", "ra.wires.tmp"),
+						floorDiv(sub(scoreOf("#br.src_amount", "ra.wires.tmp"), scoreOf("#br.dst_amount", "ra.wires.tmp")), constant(2)),
+					)
+				},
+				chain = "store result storage ra:wires bridge.amount int 1",
+			)
 
 			raw("execute if score #br.move ra.wires.tmp matches ..0 run return run data modify entity @s data.status.bridge_state set value \"blocked\"")
-
-			raw("execute store result storage ra:wires bridge.amount int 1 run scoreboard players get #br.move ra.wires.tmp")
 
 			raw("\$execute positioned ~\$(sx) ~\$(sy) ~\$(sz) as @e[type=marker,tag=ra.tr.node,distance=..0.75,limit=1] run function ${Bridge.take.asId()} with storage ra:wires bridge")
 			raw("\$execute positioned ~\$(dx) ~\$(dy) ~\$(dz) as @e[type=marker,tag=ra.tr.node,distance=..0.75,limit=1] run function ${Bridge.give.asId()} with storage ra:wires bridge")

@@ -9,10 +9,11 @@ import io.github.ayfri.kore.functions.Function
 import io.github.ayfri.kore.utils.nbt
 import io.github.ayfri.kore.utils.set
 import ra.api.MultiblockLib
+import ra.api.multiblock
+import ra.api.multiblockSpec
 import ra.core.Ns
 import ra.core.Obj
 import ra.core.Ra
-import ra.core.Tag
 import ra.core.block.particleViewersSel
 import ra.core.block.soundListenersSel
 import ra.core.define
@@ -22,8 +23,8 @@ import ra.core.ref
 import ra.modules.multiblock.forEachMarker
 
 /**
- * Rock Metallic Drill, copper tier: the first multiblock on the structure-driven
- * ra_lib_multiblock:register path. Its spec is registered by ra_multiblock:register_types.
+ * Rock Metallic Drill, copper tier: a compiled multiblock ([SPEC], registered with
+ * [ra.api.multiblock]). ra_lib_multiblock generates its predicates, validator, checker and tagger.
  *
  *   Side view, looking east, with the drill facing north (-Z):
  *
@@ -39,16 +40,25 @@ object RockMetallicDrill {
 	val tickDispatch = ref(Ns.MULTIBLOCK, "drills/rock_metallic/tick_dispatch")
 
 	/**
-	 * The spec handed to ra_lib_multiblock:register. Offsets are written once for a NORTH-facing
-	 * structure, relative to the base; ra_lib_multiblock:build derives south/east/west, so there
-	 * is no second (or third, or fourth) coordinate table to keep in step.
+	 * Offsets are written once for a NORTH-facing structure, relative to the base; the library
+	 * derives south/east/west when the pack is generated, so there is no second (or third, or
+	 * fourth) coordinate table to keep in step.
 	 */
-	const val SPEC = """{id:"rock_metallic_drill",name:"Rock Metallic Drill",tier:"copper",hint:"Need: barrel in front of the base, iron bars under the barrel, smooth stone under the base",blocks:[{x:0,y:0,z:0,match:"minecraft:waxed_copper_block"},{x:0,y:0,z:-1,match:"minecraft:barrel"},{x:0,y:-1,z:-1,match:"minecraft:iron_bars"},{x:0,y:-1,z:0,match:"minecraft:smooth_stone"}],inputs:[{name:"input_1",x:0,y:0,z:-1}],outputs:[{name:"output_1",x:0,y:0,z:-1}],controls:[{name:"redstone_in",x:0,y:0,z:1}]}"""
+	val SPEC = multiblockSpec(ID, "Rock Metallic Drill", "copper") {
+		hint = "Need: barrel in front of the base, iron bars under the barrel, smooth stone under the base"
+		block(0, 0, 0, "minecraft:waxed_copper_block")
+		block(0, 0, -1, "minecraft:barrel")
+		block(0, -1, -1, "minecraft:iron_bars")
+		block(0, -1, 0, "minecraft:smooth_stone")
+		input("input_1", 0, 0, -1)
+		output("output_1", 0, 0, -1)
+		control("redstone_in", 0, 0, 1)
+	}
 
 	fun Ra.registerRockMetallicDrill() {
-		// The tag comes from ra_lib_multiblock:generic/setup_type, derived from the registered
-		// id: ra.multiblock.<id>.
-		pack.define(tickDispatch) { forEachMarker(Tag.multiblock(ID), tick) }
+		multiblock(SPEC)
+		// The ra.multiblock.<id> tag comes from the library's generated spec/setup_type.
+		pack.define(tickDispatch) { forEachMarker(SPEC.tag, tick) }
 		pack.define(tick) { tick() }
 		pack.hook(Ns.LIB_MULTIBLOCK, MultiblockLib.Hooks.TICK, tickDispatch)
 	}
@@ -59,8 +69,6 @@ object RockMetallicDrill {
 	 * library already rotated to the assembled facing.
 	 */
 	private fun Function.tick() {
-		raw("execute unless data entity @s data.properties{enabled:1b} run return 0")
-
 		// A redstone block on the control side halts the drill.
 		execute {
 			storeResult { score(literal("#mb_ctrl"), Obj.MULTIBLOCK) }
@@ -78,7 +86,7 @@ object RockMetallicDrill {
 
 		// Build the item first, then let the library position the insert. Passing an item's
 		// components through macro arguments would mean quoting them twice.
-		raw("""data modify storage ra:multiblock io_item set value {id:"minecraft:command_block",count:1,components:{"minecraft:item_name":"Rock","minecraft:item_model":"dead_brain_coral_block","minecraft:rarity":"common"}}""")
+		raw("""data modify storage ra:multiblock io_item set value {id:"minecraft:command_block",count:1,components:{"minecraft:item_name":"Rock","minecraft:item_model":"minecraft:dead_brain_coral_block","minecraft:rarity":"common"}}""")
 		// io/insert_here is passed by id, as io/at's `run` argument.
 		function(MultiblockLib.Io.at, nbt { this["name"] = "output_1"; this["run"] = MultiblockLib.Io.insertHere.asId() })
 	}

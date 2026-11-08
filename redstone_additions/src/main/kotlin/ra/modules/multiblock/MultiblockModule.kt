@@ -11,17 +11,13 @@ import ra.core.GiveBundle
 import ra.core.Ns
 import ra.core.Obj
 import ra.core.Ra
-import ra.core.Storage
 import ra.core.define
 import ra.core.hook
 import ra.core.raw
-import ra.core.ref
 import ra.modules.multiblock.blastforge.BlastForge.registerBlastForge
-import ra.modules.multiblock.blastforge.BlastForgeData.writeDirections
 import ra.modules.multiblock.blocks.BaseTier
 import ra.modules.multiblock.blocks.Bases
 import ra.modules.multiblock.blocks.Bases.registerBases
-import ra.modules.multiblock.drills.RockMetallicDrill
 import ra.modules.multiblock.drills.RockMetallicDrill.registerRockMetallicDrill
 import ra.modules.multiblock.goggles.ShowIoLabel
 import ra.modules.multiblock.upgradeplatform.UpgradePlatform.registerUpgradePlatform
@@ -35,25 +31,15 @@ object MultiblockModule : GameplayModule {
 	override val ns = Ns.MULTIBLOCK
 	override val title = "Multiblocks"
 
-	val registerTypes = ref(Ns.MULTIBLOCK, "register_types")
-
 	override fun Ra.register() {
 		registerBases()
 		ShowIoLabel.register(pack)
-		// Hook order inside each #ra_lib_multiblock tag: Blast Forge, Upgrade Platform, Drill.
+		// All three are compiled specs. Registration order is the order the library tries them in
+		// (spec/validate, spec/tier/copper) and the tick hook order: Blast Forge, Upgrade
+		// Platform, Drill.
 		registerBlastForge()
 		registerUpgradePlatform()
 		registerRockMetallicDrill()
-
-		// Registers this module's structure-driven multiblocks. Hook: #ra_lib_multiblock:load.
-		// Blast Forge and Upgrade Platform still use their own validators registered directly in
-		// the #ra_lib_multiblock tags; they work, so they were left alone. New structures use
-		// this path.
-		pack.define(registerTypes) {
-			raw("data modify storage ra:multiblock spec set value ${RockMetallicDrill.SPEC}")
-			function(MultiblockLib.register, Storage.MULTIBLOCK, "spec")
-		}
-		pack.hook(Ns.LIB_MULTIBLOCK, MultiblockLib.Hooks.LOAD, registerTypes)
 
 		pack.define(load) {
 			raw("""tellraw @a[tag=ra.debug] [{text:"[RA] ",color:"gold"},{text:"Multiblock module loaded",color:"gray"}]""")
@@ -62,12 +48,10 @@ object MultiblockModule : GameplayModule {
 			// Heat, for the Blast Forge.
 			scoreboard.objectives.add(Obj.HEAT)
 
-			writeDirections()
+			// The pre-6.0.1 bf_dir table is removed by the 6.0.1 migration, not here.
 
 			// Tier data, the macro arguments of the base's give / placement / break.
 			for (t in BaseTier.all) raw("data modify storage ra:multiblock ${t.path} set value ${t.tierDataSnbt()}")
-
-			// The Upgrade Platform is rotationally symmetric: no direction data.
 		}
 
 		pack.define(tick!!) {

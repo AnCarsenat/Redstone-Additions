@@ -1,84 +1,121 @@
 package ra.tools.datahandler
 
 import ra.api.Tools
+import ra.core.PropSpec
 import ra.core.Ra
 import ra.core.define
 import ra.core.raw
 
 /**
- * `ra:tools/data_handler/init_registry`: the property names the Handler knows how to show, in
- * display order.
+ * `ra:tools/data_handler/init_registry`: every block type's property schema, from the
+ * `properties(type) { ... }` declarations next to each block (see ra/core/Properties.kt).
  *
- * A data pack cannot iterate the keys of a compound, which is why this list exists at all -- it is
- * the only hand-maintained part left. Adding a property to a block means adding its name here, and
- * nothing else: the row, the type and the editor are all worked out at runtime. Position matters
- * only in that it decides the action id a row's button carries (100 + index).
+ *   storage ra:dh types."<type>".<name>  {type:"number",min:1,max:9999,i:0,readonly:0b,admin_only:0b,visible:1b}
+ *   storage ra:dh order."<type>"         the names in declaration (menu) order
+ *   storage ra:dh known                  every name declared on any type, for guessing rows of
+ *                                        properties a block carries without declaring them
  *
- * CALLED UNCONDITIONALLY FROM ra:load, LIKE THE WRENCH AND READONLY REGISTRIES
+ * Every lookup is one compound key -- "what is <name> on this block?" -- so nothing walks a list
+ * per tick; the menu walks its own block's list when it is drawn.
+ *
+ * CALLED UNCONDITIONALLY FROM ra:load, LIKE THE WRENCH REGISTRY
  * This is configuration, not world state: it is the same on every world and it must match the
- * build that is running. It used to be seeded lazily instead, `unless data storage ra:dh numeric`,
- * from three call sites -- and that guard is exactly what broke the two filter properties. A world
- * upgraded from an earlier version already had `numeric`, so the guard passed, this function never
- * ran again, and the world kept an old `registry` with no filter_item or filter_medium in it and no
- * item_names list at all. Neither filter had a row in the editor, on any block, for ever.
+ * build that is running. An earlier version seeded its lists lazily, `unless data storage ra:dh
+ * numeric`, and an upgraded world kept an old list with the filter properties missing for good.
+ * Never guard this on the presence of one of its own entries.
  *
- * So: never guard this on the presence of one of its own lists. Every list is rewritten on every
- * load, and a name added here reaches an existing world on the next /reload.
- *
- * APPEND, DO NOT INSERT
- * A row's button carries 100 + its index, and those ids are baked into the chat message a player is
- * looking at. Inserting a name in the middle renumbers every row after it, so a menu drawn before a
- * /reload would edit the wrong property when clicked. New names go on the end.
+ * MENU BUTTONS AND /reload
+ * A row's button carries `<menu stamp> * 1000 + <code>`. The stamp is the number of the menu the
+ * player was last shown (ra.dh.menu); a click from any older menu -- scrolled back to, or drawn
+ * before a /reload that may have reordered a schema -- is refused and the menu redrawn. Loading
+ * resets every stamp, so a schema can be reordered freely.
  */
 object DataHandlerRegistry {
 	val initRegistry = Tools.DataHandler.initRegistry
 
-	/** Menu order. Append only (see above). */
-	private val PROPERTIES = listOf(
-		"inverted", "mode", "channel", "target", "tag", "entity_selector", "message_block", "gate", "gate_type",
-		"output", "range", "radius", "delay", "cooldown", "power", "distance", "extend", "pulse", "chance",
-		"transfer_rate", "generation_rate", "eu_use", "tier", "tier_level", "input1", "output1", "anchor_id",
-		"targets", "rate", "filter_item", "filter_medium", "medium", "enabled",
-	)
+	/** On a player: the stamp of the last Data Handler menu they were shown. */
+	const val MENU = "ra.dh.menu"
 
-	/**
-	 * Which of those names hold numbers, in one place beside the registry itself.
-	 *
-	 * props/probe works a type out from the value that is stored, which is right until the stored
-	 * value is already wrong: a delay that somehow became the string "5" probes as a string, so the
-	 * editor asks for text, the player types 5, and it writes a string again. The field can never
-	 * climb back out, and every reader of it is measuring the length of a word.
-	 *
-	 * `channel`, `anchor_id`, `tag` and `entity_selector` are deliberately absent: they are string
-	 * identifiers that blocks compare, and a channel called "5" must stay the text 5 -- turning one
-	 * into a number is the v5.1.6 bug that stopped a vault matching its partner.
-	 */
-	private val NUMERIC = listOf(
-		"range", "delay", "cooldown", "power", "distance", "extend", "pulse", "chance", "transfer_rate",
-		"generation_rate", "eu_use", "tier_level", "rate", "radius",
-	)
+	/** A button's action is `stamp * MUL + code`; stamps run 1..[STAMP_MAX], so it stays an int. */
+	const val MUL = 10000
+	const val STAMP_MAX = 200000
 
-	/**
-	 * Which of those names hold an item id, beside the registry for the same reason `numeric` is. An
-	 * item_name is a string as far as storage is concerned, so it would probe as one and get a plain
-	 * text row -- and the player would be typing item ids out by hand. Naming it here is what gets it
-	 * the [Set from hand] button, which is the only way anyone would actually want to fill one in.
-	 */
-	private val ITEM_NAMES = listOf("filter_item")
+	/** On a player: what their latest menu was, 0 the block's settings, 1 a picker. */
+	const val KIND = "ra.dh.mkind"
+
+	/** On a player: the stamp of their open picker, whose choices are in storage ra:dh pick.s<stamp>. */
+	const val PSTAMP = "ra.dh.pstamp"
+
+	fun Ra.registerDataHandlerRegistry() {
+		val schemas = blockProperties.toSortedMap()
+		val known = schemas.values.flatten().filter { !it.dynamic }.map { it.name }.distinct().sorted()
+
+		pack.define(initRegistry) {
+			// One line per type, each replacing that type whole, rather than one `set` of the whole
+			// compound: an add-on pack's own types (see Extension Examples) survive our load,
+			// whichever pack loads first.
+			for ((type, specs) in schemas) {
+				raw("data modify storage ra:dh types.\"$type\" set value " + specs.withIndex().joinToString(",", "{", "}") { (i, p) -> "${p.name}:${p.snbt(i)}" })
+				raw("data modify storage ra:dh order.\"$type\" set value ${specs.map { it.name }.snbt()}")
+			}
+			raw("data modify storage ra:dh known set value ${known.snbt()}")
+			// Lists of v6.0.1 and earlier, read by nothing now.
+			for (old in listOf("registry", "numeric", "item_names", "readonly")) raw("data remove storage ra:dh $old")
+			// Menus drawn before this load may name rows of a schema that changed: void them all.
+			raw("scoreboard objectives add $MENU dummy")
+			raw("scoreboard objectives add $KIND dummy")
+			raw("scoreboard objectives add $PSTAMP dummy")
+			// Pickers drawn before this load are void too.
+			raw("data remove storage ra:dh pick")
+			raw("scoreboard players reset * $PSTAMP")
+			raw("scoreboard players reset * $MENU")
+		}
+
+		afterAllParts { checkSchemas(schemas) }
+	}
 
 	private fun List<String>.snbt() = joinToString(",", "[", "]") { "\"$it\"" }
 
-	fun Ra.registerDataHandlerRegistry() {
-		// The tools port this list centrally, in its original order. Anything a module registered
-		// on top goes on the end, which is the only place a new name may go.
-		val names = PROPERTIES + dataHandlerProperties.filter { it !in PROPERTIES }
-		dataHandlerProperties.clear()
-		dataHandlerProperties += names
+	/** `data.properties.<name>`, and the keys of a property compound. */
+	private val path = Regex("""data\.properties\.([a-z_][a-z0-9_]*)""")
+	private val compound = Regex("""(?:data\.properties(?: set value | merge value |)|properties:|props:)\{([^{}]*)\}""")
+	private val key = Regex("""(?:^|,)\s*([a-z_][a-z0-9_]*)\s*:""")
 
-		pack.define(initRegistry) {
-			raw("data modify storage ra:dh registry set value ${names.snbt()}")
-			raw("data modify storage ra:dh numeric set value ${NUMERIC.snbt()}")
-			raw("data modify storage ra:dh item_names set value ${ITEM_NAMES.snbt()}")
+	/** Block-state properties of a skin's block_display, which share the word. Never reported. */
+	private val NOT_PROPERTIES = setOf("facing", "lit")
+
+	/**
+	 * Build warnings, never failures (the scan reads command text, and a heuristic should not be
+	 * able to stop a build):
+	 *   - each `dynamic` declaration, which is allowed but discouraged;
+	 *   - each property name a generated function reads or writes on a block without declaring it.
+	 *     In a function under `blocks/<dir>/`, the name must be in that block's schema; anywhere
+	 *     else, in some schema.
+	 */
+	private fun Ra.checkSchemas(schemas: Map<String, List<PropSpec>>) {
+		for ((type, specs) in schemas) for (p in specs.filter { it.dynamic })
+			println("[ra] warning: ${type}.${p.name} is declared dynamic: its type lives on each block instance (data.property_types), where nothing checks it. Declare a type if you can.")
+
+		val dirToType = allBlocks.associate { "${it.ns.id}:${it.dir}" to it.id } +
+			schemas.keys.associateBy { it } // wires markers: dir == type
+		val anywhere = schemas.values.flatten().map { it.name }.toSet()
+		val seen = sortedMapOf<String, MutableSet<String>>()
+		for (fn in pack.functions + pack.generatedFunctions) {
+			val id = fn.asId()
+			val (ns, p) = id.split(':', limit = 2)
+			val dir = if (p.startsWith("blocks/")) p.removePrefix("blocks/").substringBefore('/') else null
+			val type = dir?.let { dirToType["$ns:$it"] ?: dirToType[it] }
+			val allowed = type?.let { t -> schemas[t]?.map { it.name }?.toSet() } ?: anywhere
+			for (line in fn.lines) {
+				if (line.trimStart().startsWith("#")) continue
+				val names = path.findAll(line).map { it.groupValues[1] } +
+					compound.findAll(line).flatMap { m -> key.findAll(m.groupValues[1]).map { it.groupValues[1] } }
+				for (n in names) if (n !in allowed && n !in NOT_PROPERTIES)
+					seen.getOrPut(if (type != null) "$type.$n" else n) { sortedSetOf() } += id
+			}
 		}
+		if (seen.isEmpty()) return
+		println("[ra] warning: ${seen.size} block propert${if (seen.size == 1) "y is" else "ies are"} used without a declaration (properties(type) { ... }):")
+		for ((n, at) in seen) println("  - $n, in ${at.take(3).joinToString(", ")}${if (at.size > 3) " (+${at.size - 3})" else ""}")
 	}
 }

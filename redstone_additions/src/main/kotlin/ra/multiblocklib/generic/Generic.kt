@@ -26,8 +26,8 @@ import ra.multiblocklib.structure.Structure
 /**
  * `ra_lib_multiblock:generic/` functions: the assembly validator, marker tagging and integrity check for
  * every structure registered with `ra_lib_multiblock:register`. They run from the same hook tags
- * as the hand-written validators (blast_forge, upgrade_platform), which answer for their own
- * types; these only answer for registered ones.
+ * as the compiled specs (`spec/` functions, which answer for their own types) and any structure-specific
+ * hooks; these only answer for storage-registered types.
  */
 object Generic {
 	val validate = ref(Ns.LIB_MULTIBLOCK, "generic/validate")
@@ -45,7 +45,7 @@ object Generic {
 		// holds the type being attempted.
 		pack.define(validate) {
 			returnIfMbScore("#mb_result", 1, 0)
-			mbCopy("scan_q", "registry")
+			mbCopy("scan_q", "registry_runtime")
 			function(validateNext)
 			mbRemove("scan_q", "scan")
 		}
@@ -81,6 +81,8 @@ object Generic {
 		// generic/check_structure knows it can validate it from the spec.
 		pack.define(setupTypeRun) {
 			raw("\$execute unless data storage ra:multiblock types.\$(type) run return 0")
+			// A compiled type is tagged by spec/setup_type and checked by its own predicate.
+			raw("\$execute if data storage ra:multiblock types.\$(type){compiled:1b} run return 0")
 			raw("\$tag @s add ra.multiblock.\$(type)")
 			data(self()) { modify("data.registry_driven") { set(NbtByte(1)) } }
 		}

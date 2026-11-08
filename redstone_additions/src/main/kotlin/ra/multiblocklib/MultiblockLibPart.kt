@@ -8,6 +8,7 @@ import ra.multiblocklib.build.Build.registerBuild
 import ra.multiblocklib.generic.Generic.registerGeneric
 import ra.multiblocklib.io.Io.registerIo
 import ra.multiblocklib.structure.Structure.registerStructure
+import ra.multiblocklib.spec.Compiled.registerCompiled
 
 /**
  * Multiblock library (`ra_lib_multiblock`): assembly, validation and IO for multiblock structures.
@@ -26,6 +27,9 @@ object MultiblockLibPart : PackPart {
 		registerValidation()
 		registerBuild()
 		registerStructure()
+		// Before registerGeneric: both queue afterAllParts work, and the compiled hooks must land
+		// ahead of generic/* in each tag.
+		registerCompiled()
 		registerGeneric()
 		registerIo()
 	}

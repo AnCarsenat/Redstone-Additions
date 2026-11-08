@@ -23,8 +23,9 @@
 5. [Settings, triggers and input](#settings-triggers-and-input)
 6. [New block checklist](#new-block-checklist)
 7. [Multiblock checklist](#multiblock-checklist)
-8. [Before opening a pull request](#before-opening-a-pull-request)
-9. [Block template](#block-template)
+8. [Migrations](#migrations)
+9. [Before opening a pull request](#before-opening-a-pull-request)
+10. [Block template](#block-template)
 
 ---
 
@@ -247,7 +248,18 @@ seeding and the operator function tree from it ([Settings Internals](settings-in
   does not expect.
 - **Check the request id before consuming.** The library is shared; `consume`
   tears the session down as it reads, so consuming another tool's answer hands it
-  an empty result.
+  an empty result. Copy `ra.input.req` into a score of your own right after opening
+  (`ra.settings.req`, `ra.dh.req`, `ra.remote.req`), and before polling,
+  `execute unless score @s <tool>.req = @s ra.input.req` clears your pending flag
+  and returns: your request was cancelled when the other one opened, so it is never
+  coming back.
+- **Keep what the question was per player.** The answer arrives ticks later, after
+  other players may have asked their own. Store it keyed by your request id
+  (`ra:settings edits.r<id>`, `ra:dh pend.r<id>`), never in one shared slot, and
+  remove it on every path that stops the wait: applied, cancelled, expired,
+  superseded, or replaced by a new question.
+- **Re-check permissions when the answer arrives.** Whatever allowed the question
+  (operator access, a field not being read-only) can have changed by then.
 
 ---
 
@@ -272,10 +284,15 @@ from the registry.
       [Developer Guide](developer-guide.md#block-skins).
 - [ ] In the module object: call `register<Block>()`, add the block's `tick` to the module
       `tick`, its `give` to `items/give_all`, its item to the module's `GiveBundle`.
-- [ ] Tools, if needed ([Tools and Registries](tools-and-registries.md)):
-      `ra.wrenchCycle(...)`, `ra.wrenchToggles += TagRoute(...)`, `ra.readonly(...)`. A new Data
-      Handler property name goes in `PROPERTIES` in `tools/datahandler/DataHandlerRegistry.kt`
-      (menu order), or `ra.dataHandlerProperties(...)`, which appends after that list.
+- [ ] `properties(block) { ... }` right after `block(block)`: every `data.properties` entry the
+      block reads or writes, with its type (`number(min, max)`, `bool`, `text`, `item`,
+      `list(of, max, pad)`) and flags (`readonly`, `adminOnly`, `visible`). Declaration order is
+      the Data Handler's menu order. Declare `properties(block) {}` for a block with none. The
+      build warns about any property name a block's functions use without declaring it, and
+      about every `dynamic(...)` declaration. See
+      [Property schemas](tools-and-registries.md#property-schemas).
+- [ ] Wrench rows, if needed ([Tools and Registries](tools-and-registries.md)):
+      `ra.wrenchCycle(...)`, `ra.wrenchToggles += TagRoute(...)`.
 - [ ] Settings defaults, if any: a row on the module's page in `ra/settings/pages/`
       ([Settings Internals](settings-internals.md)).
 - [ ] An advancement in `ra/advancements/` if the block belongs in the tab.
@@ -288,11 +305,10 @@ from the registry.
 
 The full API is in [Multiblock Library](multiblock-library.md).
 
-- [ ] Describe the structure once, facing **north**, offsets relative to the base: `id`, `name`,
-      `tier` (the wrench assembles it from that base), `hint`, `blocks`, and the named `inputs`,
-      `outputs`, `controls`. The library derives the other three facings.
-- [ ] Register it from the function hooked into `#ra_lib_multiblock:load`
-      (`pack.hook(Ns.LIB_MULTIBLOCK, MultiblockLib.Hooks.LOAD, …)`).
+- [ ] Describe the structure once with `multiblockSpec(id, name, tier) { … }`, facing **north**,
+      offsets relative to the base: `hint`, the blocks, and the named `inputs`, `outputs`,
+      `controls` (`rotates = false` for a symmetric one). The library derives the other facings.
+- [ ] Register it with `Ra.multiblock(spec)` from the part's `register()`.
 - [ ] A `tick_dispatch` selecting `ra.multiblock.<id>`, hooked into `MultiblockLib.Hooks.TICK`.
       Reach IO blocks through `MultiblockLib.Io.at` / `isBlock` rather than branching on facing.
 - [ ] Optional `on_break` hook (`MultiblockLib.Hooks.ON_BREAK`) for cleanup beyond removing the marker.
@@ -301,9 +317,33 @@ The full API is in [Multiblock Library](multiblock-library.md).
 
 Assembly, rotation, periodic validation, disassembly and the marker tag come from the library.
 Structure-specific `validate`, `check_structure` and `setup_type` hooks are only for shapes a
-block list cannot express; the Blast Forge and Upgrade Platform still use them.
+block list cannot express; none of the pack's structures needs them.
 
 ---
+
+## Migrations
+
+Block code must not migrate. A block's tick, placement or menu never checks whether its marker
+comes from an older version, renames an old property, re-seeds a property placement already sets,
+or gates anything on a one-off "already fixed" tag (`*_v2`, `*_checked`, `*_migrated`). That code
+runs every tick for every block for ever, to fix something once.
+
+Put it in `ra/migrations` instead, as a part of the step for the version that changes the data:
+
+```kotlin
+// ra/migrations/Step6_0_1To6_0_2.kt -- then add m6_0_1 to MigrationsPart's list, oldest first
+internal val m6_0_1 = migration("6.0.1", "6.0.2") {
+    world { raw("data remove storage ra:foo old_key") }                    // once per world
+    entity("liquid_pump") { raw("data remove entity @s data.properties.old") } // once per pump
+}
+```
+
+An entity part runs as the marker (not positioned there: use `execute at @s` when it matters),
+once per marker, the first tick that marker is loaded with an older version. A world part runs
+once per world, at load. Both must be safe to run twice. See [Architecture](architecture.md#migrations).
+
+A default a block legitimately needs at read time (a property a player can clear, a value read
+with a fallback) is not a migration and stays where it is read.
 
 ## Before opening a pull request
 
@@ -315,6 +355,7 @@ block list cannot express; the Blast Forge and Upgrade Platform still use them.
       you changed; goggles and wrench on it.
 - [ ] No file over ~300 lines; Kotlin package mirrors the generated path ([Conventions](conventions.md)).
 - [ ] Docs and changelog updated.
+- [ ] No migration code in a block: one-time fixes are steps in `ra/migrations`.
 
 Releases follow [Release and Versioning](release.md).
 

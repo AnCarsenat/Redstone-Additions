@@ -31,9 +31,6 @@ internal object RedstoneTags {
 	const val BINARY_SOURCES = "#ra_lib:redstone/binary_sources"
 	const val DIRECTIONAL_SOURCES = "#ra_lib:redstone/directional_sources"
 
-	/** Per-source tags the old detect set and nothing ever read; still swept by clear. */
-	private val legacySourceTags = listOf("repeater", "comparator", "dust", "block", "lever", "button", "torch")
-
 	/** World then look-space direction tags, in the order tags / clear handle them. */
 	private val directionTags = listOf(Side.NORTH, Side.SOUTH, Side.EAST, Side.WEST, Side.UP, Side.DOWN).map { it.id to it.objective } +
 		LocalSide.entries.map { it.tagName to it.objective }
@@ -69,19 +66,15 @@ internal object RedstoneTags {
 
 		// Clear every redstone tag this library has ever set. As the marker.
 		//
-		// Two callers. ra_lib:redstone/detect_local runs it each pass, because direction tags have
-		// to be dropped before they are recomputed. ra:load runs it once over every custom block,
-		// to sweep up the per-source tags -- ra.powered.dust, .lever, .block and the rest -- that
-		// the old detect used to set and nothing ever read. They are no longer produced, so without
-		// that sweep a block that happened to be powered at the moment of the upgrade would carry
-		// them forever.
+		// ra_lib:redstone/detect_local runs it each pass, because direction tags have to be dropped
+		// before they are recomputed. The per-source tags the old detect set (ra.powered.dust,
+		// .lever...) are removed once per block by the 5.1.7 migration, not here.
 		//
 		// ra_lib:redstone/detect deliberately does NOT call this: it owns exactly two tags and
 		// removes those two itself, which is most of why it now costs a third of what it used to.
 		pack.define(RaLib.Redstone.clear) {
 			tag(self()) { remove("ra.powered") }
 			tag(self()) { remove("ra.powered.strong") }
-			for (t in legacySourceTags) tag(self()) { remove("ra.powered.$t") }
 			for ((name, _) in directionTags) tag(self()) { remove("ra.powered.$name") }
 		}
 	}
@@ -114,8 +107,9 @@ internal object RedstoneTags {
 			add(Blocks.LIGHTNING_ROD)
 		}
 
-		// Sources that drive one direction only, and strongly: `facing` is where they output,
-		// `powered` whether they are.
+		// Sources that drive one direction only, and strongly. They output towards the OPPOSITE of
+		// `facing` (a repeater's and comparator's `facing` points at their input, an observer's at
+		// the block it watches); `powered` is whether they are on.
 		blockTag("redstone/directional_sources", ns) {
 			add(Blocks.REPEATER)
 			add(Blocks.COMPARATOR)

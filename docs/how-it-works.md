@@ -18,13 +18,13 @@ flowchart TD
     B --> D[Module loads]
     B --> E[ra_lib_multiblock:init]
     B --> F[ra:tick]
+    F --> M[schedule ra:tick 1t]
     F --> G[Tool tag cleanup]
     F --> H[ra_lib:input/tick]
     F --> I[ra:tools/data_handler/tick]
     F --> J[ra:placement/detect_bats]
     F --> K[Module ticks]
     F --> L[Goggles scan]
-    F --> M[schedule ra:tick 1t]
 ```
 
 ## 1) Load Pipeline
@@ -44,13 +44,14 @@ Responsibilities:
 
 `ra:tick` is scheduled every tick and acts as the orchestrator:
 
-1. Clears stale click/active tool tags.
-2. Runs modular input sessions (`ra_lib:input/tick`).
-3. Runs Data Handler action/pending processing (`ra:tools/data_handler/tick`).
-4. Runs placement detection (`ra:placement/detect_bats`).
-5. Dispatches module ticks in fixed order.
-6. Runs goggles scan (`ra:tools/goggles/tick`).
-7. Re-schedules itself (`schedule function ra:tick 1t`).
+1. Re-schedules itself (`schedule function ra:tick 1t`), first, so a tick cut short by
+   `maxCommandChainLength` still schedules the next one.
+2. Clears stale click/active tool tags.
+3. Runs modular input sessions (`ra_lib:input/tick`).
+4. Runs Data Handler action/pending processing (`ra:tools/data_handler/tick`).
+5. Runs placement detection (`ra:placement/detect_bats`).
+6. Dispatches module ticks in fixed order.
+7. Runs goggles scan (`ra:tools/goggles/tick`).
 
 This architecture keeps all state transitions deterministic and centralized.
 
@@ -81,6 +82,19 @@ sequenceDiagram
     L->>L: Place physical block
     L->>M: Summon marker with tags + initialized data
 ```
+
+### Checks and refusals
+
+`ra:placement/process_bat` tags the placer and runs `ra:placement/try_place`, then always
+removes the `ra.placer` tag and kills the bat. `try_place` refuses when a custom block is
+already there, the spot is not `#minecraft:replaceable`, a player is in it, or the block type is
+disabled. A spawn egg puts its bat *inside* a clicked block with no collision (flowers, rails,
+torches, dust); before refusing for that, `ra:placement/face/retry` walks the placer's line of
+sight to the face they clicked and moves the bat in front of it, once.
+
+The egg is already used up when the bat appears, so every refusal runs `ra:placement/refund`:
+it maps the bat's `ra.place.<id>` tag to the item stack (generated from the give bundles and
+registered blocks) and drops it at the placer's feet with no pickup delay, except in creative.
 
 ### Handler Routing
 
@@ -174,8 +188,10 @@ Runtime usage note:
 - `move_slot`: whole-slot transfer via `/item replace block ... from block ...`.
   The preferred primitive — the stack crosses verbatim, with no loot table and no
   NBT arithmetic.
-- `insert_or_drop`: insert what fits, drop the rest as an item entity. Use this
-  rather than `insert` for anything larger than a single item.
+- `insert_or_drop`: insert what fits, drop the rest as an item entity. Like a
+  shift-click: it tops up partial stacks of the same item (same id and components)
+  first, then fills free slots, then drops. Use this rather than `insert` for
+  anything larger than a single item.
 - `insert`: raw `loot insert`. **Destroys** whatever the destination cannot hold,
   so it is only safe with a count of 1 or behind `insert_or_drop`.
 - `remove`: counted removal, any container size, handling amounts split across
@@ -248,9 +264,10 @@ target block is remembered on the player as three scores, because a chat button
 is clicked some time after the menu is drawn and has no idea what it was aimed
 at.
 
-**Plain RMB** toggles the blocks that have a single on/off state worth reaching
-for — the Wireless Emitter and Receiver — and runs multiblock assembly attempts
-on base blocks.
+**Plain RMB** runs multiblock assembly attempts on base blocks, and any toggle an
+extension registers in `ra.wrenchToggles`. No shipped block has one since v6.0.1
+removed the Wireless Emitter's and Receiver's hidden `enabled` switch; anything
+else gets "This block cannot be toggled."
 
 Cyclers run **as the marker, at the block**, and message `@a[distance=..10]`.
 The wrench never touches the player, so anything addressed to a player-side tag

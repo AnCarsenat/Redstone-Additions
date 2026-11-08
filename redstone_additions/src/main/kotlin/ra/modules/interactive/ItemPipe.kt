@@ -17,7 +17,6 @@ import ra.core.block.CustomBlock
 import ra.core.block.gogglesHeader
 import ra.core.block.killVanillaDrop
 import ra.core.block.placeBlock
-import ra.core.block.stackReset
 import ra.core.define
 import ra.core.raw
 import ra.core.item.loreItem
@@ -44,7 +43,7 @@ import io.github.ayfri.kore.features.recipes.types.key
 
 /**
  * Item Pipe: a dispenser that pushes its first stack into the container in front, or into a side
- * container when the stack matches the pipe's `filter_item`. The moving itself is in
+ * container when the stack matches the pipe's `filter_item` (does NOT match, with `invert` on). The moving itself is in
  * [ItemPipeTransfer].
  */
 object ItemPipe {
@@ -58,6 +57,12 @@ object ItemPipe {
 
 	fun Ra.registerItemPipe() {
 		block(block)
+		properties(block) {
+			item("filter_item")
+			// Off: a stack matching the filter goes to a side. On: a stack that does NOT match goes
+			// to a side, and matching ones carry on forward. No effect without a filter.
+			bool("invert")
+		}
 		pack.blockRegisterMessage(block)
 		pack.specGive(block, item)
 		pack.shapedRecipe(block.ns, block.id, item.recipeResult(), Unlock(Items.HOPPER), count = 8) {
@@ -76,7 +81,6 @@ object ItemPipe {
 		// effects, and blockOnBreak runs its cleanup first.
 		val onBreak = pack.define(block.fn("on_break")) {
 			killVanillaDrop(block.physical)
-			dropFirstSlot()
 			dropItem(item)
 			breakSound()
 			breakCloud()
@@ -116,13 +120,13 @@ object ItemPipe {
 		// an absent filter_item meant a pipe with no way to set one. Empty string is the
 		// "no filter" value, which check_filter tests for.
 		setOnNew(block, "data.properties.filter_item", "\"\"")
+		setOnNew(block, "data.properties.invert", "0b")
 
 		finishPlacement(block, removePlaceTag = false, withinBlock = false)
 	}
 
 	private fun Function.goggles() {
 		gogglesHeader(block, nameY = 1.0)
-		stackReset(80, 22)
 		val none = "{label:\"Filter: \",value:\"None\",color:\"gray\",suffix:\"\",y:0.55}"
 		executeRun("unless data entity @s data.properties.filter_item", Goggles.Billboard.textLine, none)
 		executeRun("if data entity @s data.properties{filter_item:\"\"}", Goggles.Billboard.textLine, none)
@@ -131,13 +135,15 @@ object ItemPipe {
 			Goggles.Billboard.stackedPropLine, "{path:\"filter_item\",label:\"Filter: \",color:\"aqua\",suffix:\"\"}",
 		)
 
-		// And the item itself, above the text. The id names it; this shows it, which is the
+		raw("""execute if data entity @s data.properties{invert:1b} unless data entity @s data.properties{filter_item:""} run function ${Goggles.Billboard.textLine.asId()} {label:"Mode: ",value:"Inverted (non-matching to the side)",color:"gold",suffix:"",y:0.4}""")
+
+		// And the item itself, drawn above the text by the billboard, unless the server turned
+		// filter previews off (Server Settings > General > Goggles; read once per redraw). The id names it; this shows it, which is the
 		// difference between reading "minecraft:polished_blackstone_slab" and recognising a sorting
 		// wall at a glance.
 		raw("data remove storage ra:temp pipefilter")
 		raw("execute unless data entity @s data.properties{filter_item:\"\"} run data modify storage ra:temp pipefilter.id set from entity @s data.properties.filter_item")
-		raw("data modify storage ra:temp pipefilter.y set value 0.55")
-		executeRun("if data storage ra:temp pipefilter.id", Goggles.Billboard.itemLine, "with storage ra:temp pipefilter")
+		executeRun("if score ${Goggles.FILTER_PREVIEW} ${Obj.TEMP} matches 1 if data storage ra:temp pipefilter.id", Goggles.Billboard.itemLine, "with storage ra:temp pipefilter")
 	}
 
 	/**

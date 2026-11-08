@@ -63,7 +63,7 @@ object Wrench {
 	/** RMB, not sneaking: toggle wireless blocks, or assemble/toggle multiblocks. As the player. */
 	private fun Function.rmb() {
 		data(Storage.TEMP) { remove("wrench_found") }
-		raycast(REACH_4, "wrench_found", foundBlock)
+		raycast("wrench_found", foundBlock)
 
 		// If no custom block found, try multiblock assembly/interaction at the looked-at block.
 		for (step in REACH_4) executeRun(
@@ -81,9 +81,8 @@ object Wrench {
 		// The menu and every cycler message this player specifically; the wrench runs `as` the
 		// marker from here on and would otherwise have no idea who swung it.
 		tag(self()) { add("ra.wrench_user") }
-		// Half-block steps: the cycle menu should land on the block the crosshair is on, and the
-		// first probe starts right at the eyes.
-		raycast(listOf("0.5", "1.5", "2.5", "3.5", "4.5"), "wrench_found", WrenchMenu.cycleBlock)
+		// The block the crosshair is on.
+		raycast("wrench_found", WrenchMenu.cycleBlock)
 
 		raw("""execute unless data storage ra:temp wrench_found run tellraw @s [{text:"[Wrench] ",color:"gold"},{text:"No cyclable block found nearby.",color:"gray"}]""")
 		data(Storage.TEMP) { remove("wrench_found") }
@@ -95,14 +94,16 @@ object Wrench {
 	 * Plain RMB landed on a custom block. As its marker.
 	 *
 	 * The toggles come from the registry (`ra.wrenchToggles`): each block with a plain-RMB action
-	 * registers its tag and function, so this list never names a module.
+	 * registers its tag and function, so this list never names a module. No shipped block registers
+	 * one as of v6.0.1 (the Wireless Emitter and Receiver were the last, toggling a hidden `enabled`
+	 * property); the registry stays for extensions.
 	 */
 	private fun Function.foundBlock(ra: Ra) {
 		data(Storage.TEMP) { modify("wrench_found", NbtByte(1)) }
 
 		for (route in ra.wrenchToggles) executeRun("if entity @s[tag=${route.tag}]", route.fn)
 
-		// Multiblock bases - try to assemble or toggle existing multiblock.
+		// Multiblock bases - try to assemble (an assembled one only says so).
 		for (tag in BASE_TAGS) executeRun("if entity @s[tag=$tag] at @s", WrenchMultiblock.handleMultiblockBase)
 
 		// No action for other blocks.

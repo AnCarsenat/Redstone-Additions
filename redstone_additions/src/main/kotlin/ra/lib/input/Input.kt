@@ -21,6 +21,7 @@ import ra.core.raw
 import ra.lib.dummyObjectives
 import ra.lib.fake
 import ra.lib.lib
+import ra.lib.input.backend.BookBackend
 import ra.lib.input.backend.BookBackend.registerBookBackend
 import ra.lib.input.backend.TriggerBackend.registerTriggerBackend
 import ra.lib.input.router.Router
@@ -57,6 +58,11 @@ object Input {
 				unlessCondition { score(next, InputObj.NEXT) greaterThanOrEqualTo 1 }
 				run { scoreboard.players.set(next, InputObj.NEXT, 1) }
 			}
+
+			// Earlier builds left ra.input.trigger enabled after a player's first prompt. Take it
+			// off the /trigger list of everyone online without a prompt open (session/cleanup does
+			// it for the rest when their prompt ends).
+			raw("scoreboard players reset @a[tag=!${InputObj.ACTIVE}] ${InputObj.TRIGGER}")
 
 			data(IN) {
 				merge(nbt {
@@ -105,6 +111,12 @@ object Input {
 
 	/** Tick active input sessions. */
 	private fun Function.tick() {
+		// An Input Form outside its session is inert: a form put in a chest during a prompt is
+		// taken away again the moment a player without an open prompt picks it up, so it never
+		// becomes a free writable book. One command; `clear` also reaches the cursor and the
+		// crafting grid.
+		raw("clear @a[tag=!${InputObj.ACTIVE}] ${BookBackend.ANY_FORM_ITEM}")
+
 		execute {
 			asTarget(allPlayers { tag = InputObj.ACTIVE })
 			run { function(Router.tick) }

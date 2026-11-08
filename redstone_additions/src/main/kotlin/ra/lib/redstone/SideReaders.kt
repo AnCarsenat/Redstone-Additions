@@ -115,7 +115,7 @@ internal object SideReaders {
 	 * LEVELS
 	 *   0       nothing
 	 *   1..15   ordinary power, the number the source is actually carrying
-	 *   16      superpower -- a repeater or comparator pointed into this block. Vanilla calls this
+	 *   16      superpower -- a repeater, comparator or observer pointed into this block. Vanilla calls this
 	 *           strong power at level 15; the pack numbers it 16 so a block can tell "a full dust
 	 *           line reached me" from "a repeater is driving me", which is the distinction that
 	 *           matters when deciding whether to pass a signal on.
@@ -151,14 +151,20 @@ internal object SideReaders {
 		raw("\$function ${Rules.torch.asId()}/\$(torch) $TORCH_ARGS")
 
 		// Sources that drive one direction only, and strongly: a repeater, a comparator, an
-		// observer pulsing. All three carry `facing` for the direction they output towards and
-		// `powered` for whether they are, so the one driving us is the one facing `$(back)` -- one
-		// tag test where this used to be three separate ones.
+		// observer pulsing. None of the three names its output with `facing`: on a repeater and a
+		// comparator `facing` points from the output towards the input, and on an observer it is
+		// the side being watched, with the output on the far side. Either way they output towards
+		// the OPPOSITE of `facing`, so the one driving us is the one whose `facing` is `$(side)` --
+		// the direction from us towards it. A repeater facing `$(back)` points AWAY from us and
+		// must not count. `powered` says whether it is on. One tag test where this used to be three.
+		//
+		// A comparator's real output level lives in its block entity (OutputSignal), not its block
+		// state; it is read as superpower like the other two, which is what an on/off input needs.
 		//
 		// This is the 16 the level scale reserves for superpower. Vanilla calls it strong power at
 		// 15; the pack numbers it above a full dust line so a block can tell "something is
 		// deliberately driving me" from "a signal happened to arrive".
-		raw("\$execute if block $AT ${RedstoneTags.DIRECTIONAL_SOURCES}[facing=\$(back),powered=true] run scoreboard players set $R 16")
+		raw("\$execute if block $AT ${RedstoneTags.DIRECTIONAL_SOURCES}[facing=\$(side),powered=true] run scoreboard players set $R 16")
 
 		returnRun { scoreboard.players.get(fake("#rs"), Obj.TEMP) }
 	}
@@ -186,7 +192,8 @@ internal object SideReaders {
 		raw("\$execute store result score #rs.dust ${Obj.TEMP} run function ${Rules.dustAny.asId()}/\$(dust) $DUST_ARGS")
 		dustAnswer()
 
-		raw("\$execute if block $AT ${RedstoneTags.DIRECTIONAL_SOURCES}[facing=\$(back),powered=true] run return 1")
+		// Pointing at us, i.e. `facing` is `$(side)` -- see ra_lib:redstone/side.
+		raw("\$execute if block $AT ${RedstoneTags.DIRECTIONAL_SOURCES}[facing=\$(side),powered=true] run return 1")
 
 		raw("\$execute if block $AT ${RedstoneTags.ANALOG_OMNI} unless block $AT ${RedstoneTags.ANALOG_OMNI}[power=0] run return 1")
 
@@ -218,7 +225,8 @@ internal object SideReaders {
 		raw("\$execute store result score #rs.dust ${Obj.TEMP} run function ${Rules.dustPresent.asId()}/\$(dust) $DUST_ARGS")
 		dustAnswer()
 
-		raw("\$execute if block $AT ${RedstoneTags.DIRECTIONAL_SOURCES}[facing=\$(back)] run return 1")
+		// Only one pointing at us is an input; one pointing away is just a neighbour.
+		raw("\$execute if block $AT ${RedstoneTags.DIRECTIONAL_SOURCES}[facing=\$(side)] run return 1")
 
 		raw("\$execute if block $AT ${RedstoneTags.ANALOG_OMNI} run return 1")
 

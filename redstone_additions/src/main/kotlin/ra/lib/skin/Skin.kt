@@ -112,19 +112,13 @@ object Skin {
 	}
 
 	/**
-	 * Both kills are anchored to the block centre, where ra_lib:skin/spawn stands its displays, so
-	 * our own skin is at distance 0 and the neighbour's at a full 1.0. Any radius under 0.5
-	 * separates them cleanly; 0.4 leaves room for a caller that is not exactly centred.
-	 *
-	 * The second is a migration for worlds built before skins moved to the centre. Old skins stand
-	 * on the block's minimum corner, which the centre-anchored kill cannot reach -- without it the
-	 * stale one would sit there forever with a new skin drawn on top of it. Anchored to the corner
-	 * and just as narrow, so it cannot reach a neighbour's skin of either vintage. Safe to delete
-	 * once no old worlds remain.
+	 * Anchored to the block centre, where ra_lib:skin/spawn stands its displays, so our own skin is
+	 * at distance 0 and the neighbour's at a full 1.0. Any radius under 0.5 separates them cleanly;
+	 * 0.4 leaves room for a caller that is not exactly centred. A pre-5.1.7 skin on the block's
+	 * corner is removed by the 5.1.7 migration (ra.migrations), once per block.
 	 */
 	private fun Function.killSkins() {
 		raw("\$execute align xyz positioned ~0.5 ~0.5 ~0.5 run kill @e[type=block_display,tag=ra.skin.\$(id),distance=..0.4]")
-		raw("\$execute align xyz run kill @e[type=block_display,tag=ra.skin.\$(id),distance=..0.4]")
 	}
 
 	/**

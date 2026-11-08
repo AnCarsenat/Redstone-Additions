@@ -114,6 +114,9 @@ private fun Function.init() {
 	// objective logs a complaint every one of them.
 	scoreboard.objectives.add(DBG_WAS)
 
+	// The entity purge's epoch and clean-up state (ra.settings.purge).
+	function(Settings.Purge.init)
+
 	// Rebuilds the menu registry and seeds any setting that has no value yet. Values already
 	// chosen are never overwritten -- see the generated ra_settings:defaults.
 	function(datapack.functionTag("register", Ns.SETTINGS.id))
@@ -170,8 +173,8 @@ private fun Function.dispatch(objective: String, fn: io.github.ayfri.kore.argume
  * themselves -- every playsound and particle in the pack carries the matching scores= filter.
  *
  * DEBUG IS MIRRORED, NOT OWNED. The pack gates its debug messages on the ra.debug tag, and that
- * tag predates this system: /tag @s add ra.debug is still how
- * ra_multiblock:blast_forge/debug_structure tells you to turn it on. An earlier version set the
+ * tag predates this system: /tag @s add ra.debug is still the documented way to see the
+ * multiblock debug reports (ra_lib_multiblock:spec/debug). An earlier version set the
  * tag from the score in both directions, which quietly stripped the tag from anyone who had added
  * it by hand -- the setting fought the documented command and won, every tick. So the score only
  * ever ADDS; turning the setting off removes the tag once, on the tick it changes.

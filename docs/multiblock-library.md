@@ -1,8 +1,7 @@
 # Multiblock Library
 
 How to add a multiblock structure from Kotlin. The gameplay side is in [Multiblocks](multiblocks.md);
-the library's runtime (assembly, rotation, validation, disassembly) is unchanged from the beet
-pack, and its contract — coordinates, IO helpers, hooks — is at the
+the library's runtime contract — coordinates, IO helpers, hooks — is at the
 [end of this page](#runtime-contract).
 
 Two parts are involved:
@@ -18,7 +17,7 @@ Two parts are involved:
 
 | Reference | Path | Use |
 | --- | --- | --- |
-| `register` | `ra_lib_multiblock:register` | register a structure from `storage ra:multiblock spec` |
+| `register` | `ra_lib_multiblock:register` | register a structure from `storage ra:multiblock spec` (add-ons) |
 | `tryAssemble`, `tryTier` | `try_assemble`, `try_tier` | called by the wrench on a base |
 | `validateAll` | `validate_all` | the periodic integrity pass |
 | `disassemble` | `disassemble` | teardown |
@@ -26,103 +25,164 @@ Two parts are involved:
 | `init` | `init` | called from `ra:load` |
 | `Hooks.LOAD`, `TICK`, `VALIDATE`, `SETUP_TYPE`, `CHECK_STRUCTURE`, `ON_BREAK` | `#ra_lib_multiblock:<name>` | the hook tags |
 
+Kotlin structures use `MultiblockSpec`, `multiblockSpec { }` and `Ra.multiblock(spec)` from
+`ra.api` instead of `register` ([below](#adding-a-structure-a-kotlin-spec)).
+
 The six hook tags are declared empty by the library (`Registry.kt`, `declareHookTags`) so its own
 `function #ra_lib_multiblock:*` calls resolve whatever has hooked in. Structures add themselves
 with `pack.hook`.
 
-## Adding a structure: the registry path
+## Adding a structure: a Kotlin spec
 
-New structures describe themselves as data; the library does the rest. The Rock Metallic Drill
-(`modules/multiblock/drills/RockMetallicDrill.kt`) is the worked example.
+Structures written in Kotlin describe themselves with a `MultiblockSpec` (`ra/api/MultiblockSpec.kt`)
+and are **compiled when the pack is generated**. Every structure the pack ships is one: the Rock
+Metallic Drill (`modules/multiblock/drills/RockMetallicDrill.kt`) is the small worked example, the
+Blast Forge (`modules/multiblock/blastforge/BlastForge.kt`) a 26-block one, and the Upgrade
+Platform (`modules/multiblock/upgradeplatform/UpgradePlatform.kt`) a non-rotating one.
 
 **1. The spec**, written once for a structure facing **north**, offsets relative to the base:
 
 ```kotlin
-const val SPEC = """{id:"rock_metallic_drill",name:"Rock Metallic Drill",tier:"copper",
-	hint:"Need: barrel in front of the base, ...",
-	blocks:[{x:0,y:0,z:0,match:"minecraft:waxed_copper_block"},{x:0,y:0,z:-1,match:"minecraft:barrel"},...],
-	inputs:[{name:"input_1",x:0,y:0,z:-1}],
-	outputs:[{name:"output_1",x:0,y:0,z:-1}],
-	controls:[{name:"redstone_in",x:0,y:0,z:1}]}"""
+val SPEC = multiblockSpec("rock_metallic_drill", "Rock Metallic Drill", "copper") {
+	hint = "Need: barrel in front of the base, iron bars under the barrel, smooth stone under the base"
+	block(0, 0, 0, "minecraft:waxed_copper_block")
+	block(0, 0, -1, "minecraft:barrel")
+	block(0, -1, -1, "minecraft:iron_bars")
+	block(0, -1, 0, "minecraft:smooth_stone")
+	input("input_1", 0, 0, -1)
+	output("output_1", 0, 0, -1)
+	control("redstone_in", 0, 0, 1)
+}
 ```
 
-| Field | Meaning |
+| Builder | Meaning |
 | --- | --- |
-| `id` | the type; the marker gets `ra.multiblock.<id>` (`Tag.multiblock(id)`) |
-| `name` | shown by the goggles |
-| `tier` | the base tier the wrench assembles it from |
+| `multiblockSpec(id, name, tier) { … }` | `id` is the type (`[a-z0-9_]`); the marker gets `ra.multiblock.<id>` (`spec.tag`). `name` is shown by the goggles, `tier` is the base tier the wrench assembles it from |
 | `hint` | what the wrench tells a player whose structure is incomplete |
-| `blocks` | required blocks; `match` is a block id, block state or `#tag`, passed to `execute if block` |
-| `inputs`, `outputs`, `controls` | named IO positions |
-| `rotates` | optional; `0b` for a rotationally symmetric structure |
+| `block(x, y, z, match)` | one required block. `match` is a block id, a `#tag`, or an id with states (`minecraft:furnace[lit=true]`); NBT is not supported |
+| `blocks(match, pos(x, y, z), …)` | the same block at several offsets |
+| `box(xs, ys, zs, match) { except }` | every position of an inclusive box, minus those `except` rejects — a 3x3 floor is `box(-1..1, -1..-1, -2..0, BRICKS)` |
+| `input`, `output`, `control(name, x, y, z)` | named IO positions |
+| `rotates = false` | rotationally symmetric: one predicate, and the marker's facing is ignored when checking |
+| `symmetricFacing` | the `data.facing` a non-rotating structure is assembled with (`"north"` by default, or `"none"`) |
 
-The library's `build/*` functions derive the south, east and west variants from it. There is no
-per-facing coordinate table to keep in step.
-
-**2. Register it** from `#ra_lib_multiblock:load`. `MultiblockModule` owns one function for all
-its structures:
-
-```kotlin
-pack.define(registerTypes) {
-	raw("data modify storage ra:multiblock spec set value ${RockMetallicDrill.SPEC}")
-	function(MultiblockLib.register, Storage.MULTIBLOCK, "spec")
-}
-pack.hook(Ns.LIB_MULTIBLOCK, MultiblockLib.Hooks.LOAD, registerTypes)
-```
-
-The registry is rebuilt from scratch on every load, so a removed or edited type cannot linger.
-
-**3. Tick it.** A dispatcher selects the type's markers and runs its logic, hooked into
-`#ra_lib_multiblock:tick`:
+**2. Register it** from the part's `register()`:
 
 ```kotlin
-pack.define(tickDispatch) {
-	execute {
-		asTarget(allEntities { type = EntityTypes.MARKER; tag = Tag.multiblock(ID) })
-		at(self())
-		run { function(tick) }
-	}
+fun Ra.registerRockMetallicDrill() {
+	multiblock(SPEC)
+	pack.define(tickDispatch) { forEachMarker(SPEC.tag, tick) }
+	pack.hook(Ns.LIB_MULTIBLOCK, MultiblockLib.Hooks.TICK, tickDispatch)
 }
-pack.hook(Ns.LIB_MULTIBLOCK, MultiblockLib.Hooks.TICK, tickDispatch)
 ```
 
-**4. Use named IO**, never facing-specific coordinates. The marker carries IO maps the library
-already rotated to its facing:
+`Ra.multiblock` only records the spec; the library compiles every recorded spec once all parts
+have registered (registering from inside an `afterAllParts` block is an error).
+
+**3. Tick it**, as above: a dispatcher hooked into `#ra_lib_multiblock:tick` selects the type's
+markers and runs its logic. Hook `#ra_lib_multiblock:on_break` too if the type needs cleanup.
+
+**4. Use named IO**, never facing-specific coordinates. The marker carries IO maps already
+rotated to its facing:
 
 ```kotlin
 function(MultiblockLib.Io.isBlock, nbt { this["name"] = "redstone_in"; this["block"] = "minecraft:redstone_block" })
 ```
 
-That is all a registry-described structure needs. Validation, the setup that writes `type`,
-`facing`, `properties`, `inputs`, `outputs`, `controls` onto the marker, and the integrity check
-come from the library's `generic/*` functions.
+### What the library generates
+
+For every spec, from `multiblocklib/spec/Compiled.kt`:
+
+| Output | Role |
+| --- | --- |
+| `ra_lib_multiblock:structure/<id>/<facing>` predicate (`structure/<id>` when `rotates = false`) | `all_of` of one `location_check` per block (`offsetX`/`offsetY`/`offsetZ` + block predicate). The offsets are rotated in Kotlin, so the whole pattern is one `execute if predicate` |
+| `spec/<id>/validate`, `spec/<id>/accept/<facing>` | tries the facings' predicates; the winner sets `#mb_result` and writes `facing`, `inputs`, `outputs`, `controls` to storage as SNBT literals |
+| `spec/<id>/check` | the periodic integrity check: the predicate of the marker's `data.facing`, stored into `@s ra.multiblock` |
+| `spec/<id>/debug/<facing>`, `spec/<id>/debug` | the per-block report ([below](#debugging-a-structure)) |
+| `spec/validate`, `spec/check_structure`, `spec/setup_type`, `spec/debug` | static dispatchers (one line per type, no macro, no registry walk), hooked after any structure's own hook and ahead of `generic/*` |
+| `spec/try_tier`, `spec/tier/<tier>` | the compiled types of each tier, tried by `try_tier` before the storage registry |
+| `spec/load` | called from `init` before `#ra_lib_multiblock:load`: writes `types.<id>` as one literal and appends the id to `registry` |
+
+`spec.facings`, `spec.blocksFacing(facing)`, `spec.portsFacing(spec.inputs, facing)` and
+`spec.predicate(facing)` give the rotated data and the predicate id in Kotlin, for a custom check
+or for positions a tick needs. The Blast Forge's tick uses `MultiblockSpec.Pos.rotated(facing)` to
+write its furnace, barrel and control coordinates into one generated function per facing, so it
+never macro-substitutes a position while running.
+
+### Debugging a structure
+
+`ra_lib_multiblock:spec/<id>/debug/<facing>` checks each block of the spec turned to that facing,
+at the current position, and tells `@a[tag=ra.debug]` which ones are wrong and what belongs there,
+then `<ok>/<total> blocks OK`. It needs no marker, so it also explains a structure the wrench
+refuses to assemble:
+
+```mcfunction
+tag @s add ra.debug
+execute positioned <base x y z> run function ra_lib_multiblock:spec/blast_forge/debug/north
+```
+
+As an assembled marker, `spec/<id>/debug` picks the marker's `data.facing`, and `spec/debug` picks
+the type from the marker's tag:
+
+```mcfunction
+execute as @e[type=marker,tag=ra.multiblock,limit=1,sort=nearest] at @s run function ra_lib_multiblock:spec/debug
+```
+
+`validate_single` runs `spec/debug` itself for a marker that fails its periodic check while a
+player with `ra.debug` is online, just before the structure is taken apart.
+
+### The storage view stays
+
+Everything that read `storage ra:multiblock` keeps working: `types.<id>` holds the authored spec
+(`id`, `name`, `tier`, `hint`, `blocks`, `inputs`, `outputs`, `controls`, `rotates` when false)
+plus `facings.<f>.{blocks,inputs,outputs,controls}` in exactly the shape `build/*` derives, and
+`compiled:1b`. `registry` lists every type, compiled or not. The wrench, goggles, `io/*` and
+add-ons see no difference.
+
+## Adding a structure from an add-on: `ra_lib_multiblock:register`
+
+A data pack that cannot run Kotlin registers its structure as data, at runtime. This path is
+unchanged; the library rotates and checks these specs with its macro functions.
+
+```mcfunction
+# from a function listed in #ra_lib_multiblock:load
+data modify storage ra:multiblock spec set value {id:"my_drill",name:"My Drill",tier:"iron",hint:"...",blocks:[{x:0,y:0,z:0,match:"minecraft:iron_block"},{x:0,y:0,z:-1,match:"minecraft:barrel"}],inputs:[{name:"input_1",x:0,y:0,z:-1}],outputs:[],controls:[]}
+function ra_lib_multiblock:register with storage ra:multiblock spec
+```
+
+| Field | Meaning |
+| --- | --- |
+| `id` | the type; the marker gets `ra.multiblock.<id>` |
+| `name` | shown by the goggles |
+| `tier` | the base tier the wrench assembles it from |
+| `hint` | what the wrench tells a player whose structure is incomplete |
+| `blocks` | required blocks; `match` is a block id, block state or `#tag`, passed to `execute if block` (NBT works here) |
+| `inputs`, `outputs`, `controls` | named IO positions |
+| `rotates` | optional; `0b` for a rotationally symmetric structure |
+
+`register` appends the id to `registry` and to `registry_runtime`. The library's `build/*`
+functions derive the south, east and west variants of every `registry_runtime` type on load;
+`generic/validate`, `generic/setup_type` and `generic/check_structure` validate, tag and check
+them; `try_tier` walks `registry_runtime` after the compiled types. The registry is rebuilt from
+scratch on every load, so a removed or edited type cannot linger.
 
 ### Why `generic/*` is registered last
 
 `generic/check_structure`, `generic/setup_type` and `generic/validate` cover every type nobody
-else handled, so they must run **after** every structure's own hook in the same tag. The beet
-tags listed them last. Since the multiblock library registers before the modules, it queues
-those three hooks with `ra.afterAllParts { … }`
-([Architecture](architecture.md#after-all-parts-afterallparts)).
+else handled, so they must run **after** every structure's own hook in the same tag. Since the
+multiblock library registers before the modules, it queues those three hooks with
+`ra.afterAllParts { … }` ([Architecture](architecture.md#after-all-parts-afterallparts)). The
+compiled-spec dispatchers are queued the same way, just before them.
 
-## The older structures
+## Structure-specific hooks
 
-The Blast Forge and the Upgrade Platform predate the registry. They keep hand-written
-per-facing data and their own hooks in every tag:
-
-```kotlin
-// modules/multiblock/blastforge/BlastForge.kt
-pack.hook(Ns.LIB_MULTIBLOCK, MultiblockLib.Hooks.VALIDATE, validate)
-pack.hook(Ns.LIB_MULTIBLOCK, MultiblockLib.Hooks.SETUP_TYPE, setupType)
-pack.hook(Ns.LIB_MULTIBLOCK, MultiblockLib.Hooks.TICK, tickDispatch)
-pack.hook(Ns.LIB_MULTIBLOCK, MultiblockLib.Hooks.CHECK_STRUCTURE, checkStructure)
-pack.hook(Ns.LIB_MULTIBLOCK, MultiblockLib.Hooks.ON_BREAK, onBreak)
-multiblockGoggles += TagRoute(TAG, BlastForge.goggles)
-```
-
-They work; leave them alone unless you are deliberately migrating one to a spec. Their hook
-order inside each tag is Blast Forge, Upgrade Platform, Drill, which is the order
-`MultiblockModule.register` calls them in.
+A shape a block list cannot express can still hook its own `validate`, `setup_type` and
+`check_structure` into the tags with `pack.hook`; such hooks run before the library's `spec/*`
+dispatchers and `generic/*`. None of the pack's structures needs one any more: the Blast Forge
+and the Upgrade Platform, which used to carry hand-written per-facing tables and validators,
+are compiled specs. Their markers kept the same data (`facing`, `inputs`, `outputs`,
+`controls`; `facing:"none"` for the platform), so structures assembled before the change keep
+running and validating.
 
 ## Bases
 
@@ -154,19 +214,17 @@ What the generated `ra_lib_multiblock` functions promise, for anyone calling the
 ### Coordinates
 
 Offsets are relative to the base block, for a structure facing **north**, where
-"in front of the base" is `-Z`. the library's `build/*` functions produce south, east
-and west by quarter turns about the vertical axis.
-
-This is the part that used to be manual. The Blast Forge still carries four
-hand-written coordinate tables of 26 positions each — 104 offsets rotated by
-hand, every one of them a chance to transpose a sign.
+"in front of the base" is `-Z`. South, east and west are quarter turns about the
+vertical axis — north `( x, y, z)`, south `(-x, y, -z)`, east `(-z, y, x)`, west
+`( z, y, -x)` — computed in Kotlin for a compiled spec and by `build/*` for a
+storage-registered one.
 
 ### IO helpers
 
 All of these take the marker as `@s`, positioned at the base, and resolve names
 against the marker's own `data.inputs` / `data.outputs` / `data.controls`. They
-work for any multiblock that went through `setup_marker`, including the
-hand-written ones — a tick function never needs to branch on facing.
+work for any multiblock that went through `setup_marker`, compiled or
+storage-registered — a tick function never needs to branch on facing.
 
 | Function | Purpose |
 |---|---|
@@ -185,11 +243,11 @@ quoting a component compound through a macro argument.
 
 | Tag | When |
 |---|---|
-| `#ra_lib_multiblock:load` | Register types. |
+| `#ra_lib_multiblock:load` | Register storage-described types. Compiled specs need no entry. |
 | `#ra_lib_multiblock:tick` | Per-type tick dispatch. |
-| `#ra_lib_multiblock:validate` | Assembly. Registered types are covered by `generic/validate`. |
-| `#ra_lib_multiblock:check_structure` | Periodic integrity check. Registered types are covered by `generic/check_structure`. |
-| `#ra_lib_multiblock:setup_type` | Marker tagging. Registered types are covered by `generic/setup_type`. |
+| `#ra_lib_multiblock:validate` | Assembly. Compiled types are covered by `spec/validate`, registered ones by `generic/validate`. |
+| `#ra_lib_multiblock:check_structure` | Periodic integrity check. Covered by `spec/check_structure` / `generic/check_structure`. |
+| `#ra_lib_multiblock:setup_type` | Marker tagging. Covered by `spec/setup_type` / `generic/setup_type`. |
 | `#ra_lib_multiblock:on_break` | Optional cleanup on disassembly. |
 
-Only `load` and `tick` need an entry for a registered type.
+A compiled type needs only `tick`; a storage-registered one needs `load` and `tick`.

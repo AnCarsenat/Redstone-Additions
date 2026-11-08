@@ -30,7 +30,6 @@ object ElectricBreaker : PackPart {
 
 			execute { ifCondition { data(self(), "data.status{bridge_state:\"transferring\"}") }; run { textLine("State: ", "Transferring", "green", y = 0.55) } }
 			execute { ifCondition { data(self(), "data.status{bridge_state:\"unpowered\"}") }; run { textLine("State: ", "No redstone", "gray", y = 0.55) } }
-			execute { ifCondition { data(self(), "data.status{bridge_state:\"disabled\"}") }; run { textLine("State: ", "Disabled", "gray", y = 0.55) } }
 			execute { ifCondition { data(self(), "data.status{bridge_state:\"needs_two_networks\"}") }; run { textLine("State: ", "Needs a wire on two sides", "red", y = 0.55) } }
 			execute { ifCondition { data(self(), "data.status{bridge_state:\"same_network\"}") }; run { textLine("State: ", "Both sides one grid", "red", y = 0.55) } }
 			execute { ifCondition { data(self(), "data.status{bridge_state:\"level\"}") }; run { textLine("State: ", "Balanced", "aqua", y = 0.55) } }

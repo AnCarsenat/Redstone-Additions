@@ -21,6 +21,7 @@ object Read {
 	val readRun = lib("transport/net/read_run")
 	val migratePick = lib("transport/net/migrate_pick")
 	val migrateRun = lib("transport/net/migrate_run")
+	val requestRebuild = lib("transport/net/request_rebuild")
 
 	/**
 	 * `execute if data ...nets.n$(id).medium unless data ...media[0] run function migrate_pick {id}`,
@@ -59,8 +60,9 @@ object Read {
 		// and gained its `amounts` map without moving anything. And in millilitres the numbers are a
 		// thousand times what they were, so the headroom matters.
 		//
-		// Arithmetic still goes through scoreboards, because commands have no other way to add two
-		// numbers; storage is where the values live between operations, not where they are computed.
+		// Arithmetic reads the values where they live: a `data modify ... set compute` adds a score
+		// to a storage path in one command (ra/core/Compute.kt), so nothing has to be copied into a
+		// scoreboard and back just to change it.
 		//
 		// WHAT A NETWORK HOLDS
 		//   amount    the total across every medium. This is what capacity is checked against, so a
@@ -72,6 +74,13 @@ object Read {
 		//   medium    a copy of media[0].m, kept because every display and every bridge already reads it.
 		pack.define(readRun) {
 			raw("\$execute store result score #net_capacity ${Obj.TR_TMP} run data get storage ra:transport nets.n\$(id).capacity")
+
+			// A node pointing at a network with no record -- left behind by the rebuild that used to
+			// wipe every network, including the ones out of loaded range -- or at a record whose root
+			// went with no loaded survivor, asks for its network to be rebuilt. Asking is all this
+			// does; the rebuild is what writes.
+			raw("\$execute unless data storage ra:transport nets.n\$(id) run ${macroCall(requestRebuild, "{id:\$(id)}")}")
+			raw("\$execute if data storage ra:transport nets.n\$(id).rootless run ${macroCall(requestRebuild, "{id:\$(id)}")}")
 
 			// A network written before multi-medium has `medium` and `amount` and no breakdown.
 			// Backfill it the first time it is read rather than sweeping every network on load: the
@@ -101,6 +110,14 @@ object Read {
 			for (key in listOf("medium", "amounts", "media")) {
 				raw("\$execute if data storage ra:transport nets.n\$(id).$key run data modify storage ra:transport cur.$key set from storage ra:transport nets.n\$(id).$key")
 			}
+		}
+
+		// `request_rebuild {id}`, internal: queue network <id> for the next rebuild, once.
+		pack.define(requestRebuild) {
+			raw("\$execute if data storage ra:transport dirtyset.n\$(id) run return 0")
+			raw("\$data modify storage ra:transport dirtyset.n\$(id) set value 1b")
+			raw("\$data modify storage ra:transport dirtyq append value \$(id)")
+			function(RaLib.Transport.markDirty)
 		}
 
 		// `migrate_pick {id}`, internal: read the old single-medium shape off a network, so

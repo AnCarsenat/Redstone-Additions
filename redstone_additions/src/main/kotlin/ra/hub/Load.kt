@@ -1,7 +1,6 @@
 package ra.hub
 
 import io.github.ayfri.kore.arguments.scores.ScoreboardCriteria
-import io.github.ayfri.kore.arguments.types.literals.allEntities
 import io.github.ayfri.kore.arguments.types.literals.literal
 import io.github.ayfri.kore.commands.data
 import io.github.ayfri.kore.commands.execute.execute
@@ -10,7 +9,6 @@ import io.github.ayfri.kore.commands.returnValue
 import io.github.ayfri.kore.commands.schedule
 import io.github.ayfri.kore.commands.scoreboard.scoreboard
 import io.github.ayfri.kore.functions.Function
-import io.github.ayfri.kore.generated.EntityTypes
 import io.github.ayfri.kore.utils.nbt
 import io.github.ayfri.kore.utils.set
 import ra.RedstoneAdditions
@@ -25,7 +23,6 @@ import ra.core.Obj
 import ra.core.RA_CHAT_PREFIX
 import ra.core.Ra
 import ra.core.Storage
-import ra.core.Tag
 import ra.core.define
 import ra.core.hook
 import ra.core.raMessage
@@ -77,14 +74,6 @@ internal fun Ra.registerLoad() {
 
 		function(RaLib.init)
 
-		// One-off sweep for worlds built before the redstone library stopped producing per-source
-		// tags. See ra_lib:redstone/clear. Harmless on a fresh world, and on an upgraded one it
-		// costs a handful of commands per loaded custom block, once.
-		execute {
-			asTarget(allEntities { type = EntityTypes.MARKER; tag = Tag.CUSTOM_BLOCK })
-			run { function(RaLib.Redstone.clear) }
-		}
-
 		for (module in RedstoneAdditions.modules) function(module.load)
 
 		function(MultiblockLib.init)
@@ -103,7 +92,8 @@ internal fun Ra.registerLoad() {
 		function(Tools.Readonly.initRegistry)
 		function(Tools.DataHandler.initRegistry)
 
-		// Bring a world saved by an older version up to date. See ra_migrations:run.
+		// Bring a world saved by an older version up to date: the world steps it has not had yet.
+		// Its blocks are brought up to date one by one from ra:tick. See ra.migrations.MigrationsPart.
 		function(ModulesApi.Migrations.run)
 
 		// Next tick rather than now, to avoid a load-time command burst. `replace` is what a bare
@@ -120,6 +110,10 @@ private fun Function.scoreboards() {
 	scoreboard.objectives.add(EDIT_TYPE, ScoreboardCriteria.TRIGGER)
 	scoreboard.objectives.add(DH_ACTION, ScoreboardCriteria.TRIGGER)
 	scoreboard.objectives.add(DH_PENDING)
+	// Per-player selection and pending edit: see ra.tools.datahandler.DataHandlerSelection.
+	scoreboard.objectives.add(ra.tools.datahandler.DataHandlerSelection.MID)
+	scoreboard.objectives.add(ra.tools.datahandler.DataHandlerSelection.SEL)
+	scoreboard.objectives.add(ra.tools.datahandler.DataHandlerSelection.REQ)
 
 	// How long a tool's menu triggers stay usable after it was last in hand. An enabled trigger
 	// appears in everyone's /trigger completion whether it can do anything or not, so they are

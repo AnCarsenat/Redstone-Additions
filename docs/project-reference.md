@@ -31,6 +31,7 @@ grep -rn '"wrench/init_registry"\|"tools/wrench/init_registry"' src/main/kotlin
 | `core/Exec.kt` | `executeRun`, `executeReturnRun`, `executeStoreRun`, `callWith`, `returnRun`, `macroCall`: calls behind a vanilla-text chain, the function still a value |
 | `core/Messages.kt` | `RA_CHAT_PREFIX`, `raMessage`, `moduleLoaded`, `registeredLine`, `blockRegisterMessage` |
 | `core/Scores.kt` | `ensureScore` (start a score only when it has none) |
+| `core/Compute.kt` | 26.3 `/compute`: `provider`, `floatProvider`, `scoreOf`, `thisScoreOf`, `storageOf`, `snbt`, `computeScore`, `computeInto`, `computeStorage`, `computeScoreScaled`, `storeScore`, `storeInt`, `storeDouble`, `COMPUTE_DEFAULT` / `COMPUTE_SELF` ([Developer Guide](developer-guide.md#arithmetic-with-compute)) |
 | `core/item/` | `ItemSpec` (+ `fromSnbt`), `itemSpec { }`, the `Snbt` value classes (`SStr`, `SBool`, `SByte`, `SRaw`...), `loreLine`, `raData`, `flag`, `parseSnbt`; `CustomBlock.loreItem`, `entityDataSnbt` |
 | `core/block/CustomBlock.kt` | `CustomBlock`: one placeable block described once |
 | `core/block/BlockFunctions.kt` | `blockGive` |
@@ -41,6 +42,7 @@ grep -rn '"wrench/init_registry"\|"tools/wrench/init_registry"' src/main/kotlin
 | `core/block/Selectors.kt` | `markers`, `brokenMarkers`, `newMarker`, `soundListeners`; as text: `markerSel`, `newMarkerSel`, `soundListenersSel`, `particleViewersSel` |
 | `core/block/GogglesLines.kt` | `gogglesHeader`, `propLine`, `dataLine`, `textLine`, `stackReset`, `stacked*Line` |
 | `api/LibApi.kt` | `RaLib` (every public `ra_lib` entry point), `MultiblockLib` (+ `Hooks` tag names) |
+| `api/MultiblockSpec.kt` | `MultiblockSpec`, `multiblockSpec { }`, `Ra.multiblock(spec)`: compiled multiblock structures |
 | `api/ToolsApi.kt` | `Goggles` (tick, dispatch, billboard writers), `Tools` (registries, per-tick), `Hub` (`ra:uninstall`), `Settings` (read API, lifecycle), `ModulesApi` (cross-module calls) |
 
 ## `ra_lib` → `lib/`
@@ -83,8 +85,9 @@ The `ra` namespace is split between two parts by path.
 | `tools/wrench/WrenchMenu.kt` | Shift+RMB cycle menu, `menu_action` |
 | `tools/wrench/WrenchMultiblock.kt` | Assembly on multiblock bases |
 | `tools/wrench/WrenchRegistry.kt` | `init_registry` from `ra.wrenchCycles`; the UNI gate cycler |
-| `tools/readonly/Readonly.kt` | `ra:tools/readonly/init_registry` from `ra.readonly` |
-| `tools/datahandler/DataHandlerRegistry.kt` | `ra:tools/data_handler/init_registry`: property list, numeric list, item-name list |
+| `tools/readonly/Readonly.kt` | `ra:tools/readonly/init_registry`: removes the pre-schema `storage ra:dh readonly` |
+| `core/Properties.kt` | The `properties { }` builder: `PropType`, `PropSpec` |
+| `tools/datahandler/DataHandlerRegistry.kt` | `ra:tools/data_handler/init_registry`: every block type's property schema; the undeclared-property build warnings |
 | `tools/datahandler/DataHandler.kt`, `DataHandlerActions.kt`, `props/*` | The Data Handler |
 | `tools/creativedatahandler/*` | The Creative Data Handler |
 | `tools/inputdatahandler/InputDataHandler.kt` | The debug Input Data Handler |
@@ -129,9 +132,10 @@ See [Settings](settings-internals.md).
 | `multiblocklib/Registry.kt` | `init`, `register`; declares the six empty hook tags |
 | `multiblocklib/Assembly.kt` | `try_assemble`, `try_tier`, marker creation and setup |
 | `multiblocklib/Validation.kt` | `validate_all`, `validate_single`, `disassemble` |
-| `multiblocklib/build/Build.kt` | `build/*`: rotates registered structures into the other three facings |
+| `multiblocklib/spec/Compiled.kt` | `spec/*` and the `structure/<id>/<facing>` predicates: Kotlin specs (`Ra.multiblock`) compiled at build time |
+| `multiblocklib/build/Build.kt` | `build/*`: rotates storage-registered structures into the other three facings |
 | `multiblocklib/structure/Structure.kt` | `structure/*`: checks every required block |
-| `multiblocklib/generic/Generic.kt` | `generic/*`: validator / setup / check for registry-described types (hooked last via `afterAllParts`) |
+| `multiblocklib/generic/Generic.kt` | `generic/*`: validator / setup / check for storage-registered types (hooked last via `afterAllParts`) |
 | `multiblocklib/io/Io.kt` | `io/*`: named IO positions |
 | `multiblocklib/MbCommands.kt` | Helpers for `storage ra:multiblock` |
 

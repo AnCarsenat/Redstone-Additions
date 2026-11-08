@@ -3,6 +3,7 @@ package ra.hub.uninstall
 import io.github.ayfri.kore.DataPack
 import io.github.ayfri.kore.arguments.types.literals.allEntities
 import io.github.ayfri.kore.arguments.types.literals.allPlayers
+import io.github.ayfri.kore.arguments.types.resources.storage
 import io.github.ayfri.kore.commands.data
 import io.github.ayfri.kore.commands.function
 import io.github.ayfri.kore.commands.kill
@@ -13,18 +14,18 @@ import io.github.ayfri.kore.generated.EntityTypes
 import io.github.ayfri.kore.generated.arguments.types.EntityTypeArgument
 import ra.api.Settings
 import ra.core.RA_CHAT_PREFIX
-import ra.core.Storage
 import ra.core.Tag
 import ra.core.define
 import ra.core.raw
 import ra.hub.tick
+import ra.modules.chunkloader.ChunkLoader
 
 /**
- * Every objective the pack created before settings existed, in the order beet removed them.
- * Hand-written in beet and kept verbatim: removing an objective that does not exist is harmless,
- * and some of these (ra.edit_step, ra.filter_cd...) only exist in old worlds.
+ * Objectives only old worlds have (`ra.edit_step`, `ra.filter_cd`...), in the order beet removed
+ * them. Hand-written in beet and kept: nothing in the pack adds these any more, so the generated
+ * list below cannot know them. Removing an objective that does not exist is harmless.
  */
-private val OBJECTIVES = listOf(
+private val LEGACY_OBJECTIVES = listOf(
 	"ra.edit_type", "ra.edit_step", "ra.dh.action", "ra.dh.pending", "ra.input_handler.action",
 	"ra.cooldown", "ra.filter_cd", "ra.temp", "ra.facing", "ra.yaw", "ra.pitch",
 	"ra.power", "ra.power.up", "ra.power.down", "ra.power.north", "ra.power.south", "ra.power.east",
@@ -38,12 +39,12 @@ private val OBJECTIVES = listOf(
 	"ra.wires.tmp", "ra.wires.tmp2", "ra.wrench", "ra.wr.x", "ra.wr.y", "ra.wr.z",
 )
 
-/** Added after the list above was written. Two repeat entries of it, harmlessly. */
-private val LATE_OBJECTIVES = listOf("ra.clip.id", "ra.dh.pending", "ra.edit_type")
-
-private val STORAGES = listOf(
-	Storage.MULTIBLOCK, Storage.TEMP, Storage.BLOCK, Storage.CDH, Storage.DH, Storage.INPUT,
-	Storage.WIRES, Storage.WRENCH, Storage.TRANSPORT, Storage.INVENTORY,
+/**
+ * Every entity type the pack summons and keeps (everything it summons carries [Tag.RA]). Items
+ * are left alone on purpose: a dropped custom block lying on the ground is a player's item.
+ */
+private val PACK_ENTITY_TYPES = listOf(
+	EntityTypes.MARKER, EntityTypes.TEXT_DISPLAY, EntityTypes.ITEM_DISPLAY, EntityTypes.BLOCK_DISPLAY,
 )
 
 private val PLAYER_TAGS = listOf(
@@ -52,44 +53,68 @@ private val PLAYER_TAGS = listOf(
 	"ra.input_handler_active", "ra.input_handler_clicked", "ra.input.active", Tag.DEBUG,
 )
 
-/** Full cleanup: removes ALL Redstone Additions data from the world. From the [ UNINSTALL ] button. */
-internal fun DataPack.registerUninstallConfirm() = define(confirm) {
-	fun killAll(type: EntityTypeArgument, tag: String) = kill(allEntities { this.type = type; this.tag = tag })
-	fun untagMarkers(tag: String) = tag(allEntities { type = EntityTypes.MARKER; this.tag = tag }) { remove(tag) }
+/**
+ * Full cleanup: removes ALL Redstone Additions data from the world. From the [ UNINSTALL ] button.
+ *
+ * Called after every part has registered: the objective and storage lists are read back from the
+ * finished pack by [PackFootprint], so a module adding an objective is covered without touching
+ * this file.
+ */
+internal fun DataPack.registerUninstallConfirm() {
+	val settingsRemoves = functions.firstOrNull { it.asId() == Settings.uninstall.asId() }?.lines.orEmpty()
+		.mapNotNull { Regex("""^scoreboard objectives remove (\S+)$""").find(it)?.groupValues?.get(1) }
+		.toSet()
+	val generatedObjectives = PackFootprint.objectives(this)
+		.filter { it !in LEGACY_OBJECTIVES && it !in settingsRemoves }
+	val storageKeys = PackFootprint.storageKeys(this)
 
-	killAll(EntityTypes.MARKER, Tag.CUSTOM_BLOCK)
-	killAll(EntityTypes.MARKER, Tag.MULTIBLOCK)
-	killAll(EntityTypes.TEXT_DISPLAY, Tag.BILLBOARD)
-	killAll(EntityTypes.TEXT_DISPLAY, Tag.DISPLAY)
+	define(confirm) {
+		fun killAll(type: EntityTypeArgument, tag: String) = kill(allEntities { this.type = type; this.tag = tag })
+		fun untagMarkers(tag: String) = tag(allEntities { type = EntityTypes.MARKER; this.tag = tag }) { remove(tag) }
 
-	OBJECTIVES.forEach { scoreboard.objectives.remove(it) }
+		// FORCELOADS FIRST. A powered Chunk Loader holds its chunk until its on_break or
+		// on_unpowered says otherwise, and killing the marker runs neither: the chunk would stay
+		// loaded for ever, with nothing left in the world that knows why. `ra.was_powered` is
+		// exactly the set that forceloaded (see ChunkLoader.kt), so a chunk an operator forceloaded
+		// by hand next to an unpowered loader is left alone.
+		raw("execute as @e[type=minecraft:marker,tag=${ChunkLoader.block.tag},tag=ra.was_powered] at @s run forceload remove ~ ~")
 
-	// Generated, so it lists exactly what ra_settings created. The hand-written list above is why
-	// this is not another hand-written list.
-	function(Settings.uninstall)
+		// Markers, goggles billboards (text and item lines), the Clock and UNI Gate's floating
+		// items, skins, pipe and wire displays.
+		PACK_ENTITY_TYPES.forEach { killAll(it, Tag.RA) }
 
-	LATE_OBJECTIVES.forEach { scoreboard.objectives.remove(it) }
+		LEGACY_OBJECTIVES.forEach { scoreboard.objectives.remove(it) }
 
-	STORAGES.forEach { data(it) { remove("{}") } }
+		// Generated, so it lists exactly what ra_settings created.
+		function(Settings.uninstall)
 
-	schedules { clear(tick) }
+		generatedObjectives.forEach { scoreboard.objectives.remove(it) }
 
-	PLAYER_TAGS.forEach { t -> tag(allPlayers()) { remove(t) } }
-	untagMarkers("ra.dh_target")
-	tag(allPlayers()) { remove("ra.wrench_user") }
-	untagMarkers("ra.wires.node")
-	untagMarkers("ra.wrench.sel")
-	untagMarkers("ra.wires.fluid_node")
-	untagMarkers("ra.wires.liquid_node")
-	untagMarkers("ra.wires.gas_node")
-	untagMarkers("ra.wires.electric_node")
-	untagMarkers("ra.wires.legacy_gas_pipe")
-	killAll(EntityTypes.BLOCK_DISPLAY, "ra.skin")
-	tag(allPlayers()) { remove("ra.settings_admin") }
-	tag(allPlayers()) { remove("ra.admin") }
-	killAll(EntityTypes.BLOCK_DISPLAY, "ra.wires.pipe_display")
-	killAll(EntityTypes.BLOCK_DISPLAY, "ra.wires.wire_display")
+		// KEY BY KEY. `data remove storage <id> {}` changes nothing: `{}` is a root match, and
+		// the game neither removes nor replaces the root of a storage. Removing each top-level key
+		// is what actually empties it.
+		for ((id, keys) in storageKeys) {
+			val st = storage(id.substringAfter(':'), id.substringBefore(':'))
+			keys.forEach { key -> data(st) { remove(key) } }
+		}
 
-	raw("""tellraw @a [{text:"\n"},$RA_CHAT_PREFIX,{text:"Redstone Additions has been uninstalled.",color:"red"}]""")
-	raw("""tellraw @a [{text:"  "},{text:"You may now disable the datapack with: ",color:"gray"},{text:"/datapack disable \"file/redstone_additions\"",color:"yellow",click_event:{action:"suggest_command",command:"/datapack disable \"file/redstone_additions\""},hover_event:{action:"show_text",value:"Click to run"}}]""")
+		schedules { clear(tick) }
+
+		PLAYER_TAGS.forEach { t -> tag(allPlayers()) { remove(t) } }
+		untagMarkers("ra.dh_target")
+		untagMarkers("ra.dh_selected")
+		tag(allPlayers()) { remove("ra.wrench_user") }
+		untagMarkers("ra.wires.node")
+		untagMarkers("ra.wrench.sel")
+		untagMarkers("ra.wires.fluid_node")
+		untagMarkers("ra.wires.liquid_node")
+		untagMarkers("ra.wires.gas_node")
+		untagMarkers("ra.wires.electric_node")
+		untagMarkers("ra.wires.legacy_gas_pipe")
+		tag(allPlayers()) { remove("ra.settings_admin") }
+		tag(allPlayers()) { remove("ra.admin") }
+
+		raw("""tellraw @a [{text:"\n"},$RA_CHAT_PREFIX,{text:"Redstone Additions has been uninstalled.",color:"red"}]""")
+		raw("""tellraw @a [{text:"  "},{text:"You may now disable the datapack with: ",color:"gray"},{text:"/datapack disable \"file/redstone_additions\"",color:"yellow",click_event:{action:"suggest_command",command:"/datapack disable \"file/redstone_additions\""},hover_event:{action:"show_text",value:"Click to run"}}]""")
+	}
 }

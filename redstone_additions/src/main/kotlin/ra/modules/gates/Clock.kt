@@ -33,7 +33,6 @@ import ra.core.raw
 import ra.core.blockRegisterMessage
 import ra.core.block.outputShell
 import ra.core.block.forEachMarker
-import ra.core.block.markerSel
 import ra.core.ensureScore
 
 /**
@@ -55,6 +54,11 @@ object Clock {
 
 	fun Ra.registerClock() {
 		block(block)
+		properties(block) {
+			number("cooldown", min = 2, max = 1200)
+			// The pre-5.1 name of cooldown, folded into it every tick.
+			number("delay", readonly = true, visible = false)
+		}
 		pack.blockGive(block)
 		pack.blockRecipe(block, unlockedBy = Items.DAYLIGHT_DETECTOR) {
 			pattern("RCR", "SSS")
@@ -78,13 +82,7 @@ object Clock {
 		}
 
 		pack.blockTick(block, onBreak) {
-			// Migration. Clocks have been through both names; `cooldown` is the one the pack settled
-			// on, because it means the same thing on every timed block. Whichever a marker carries
-			// ends up as `cooldown`, and `delay` is then removed unconditionally -- leaving both is
-			// what made this block look broken.
-			raw("execute as ${block.markerSel()} if data entity @s data.properties.delay unless data entity @s data.properties.cooldown run data modify entity @s data.properties.cooldown set from entity @s data.properties.delay")
-			raw("execute as ${block.markerSel()} run data remove entity @s data.properties.delay")
-
+			// An old clock's `delay` becomes `cooldown` in the 5.1.7 migration, not here.
 			// No macro call: `with entity @s data.properties` fails outright on a clock with no
 			// `cooldown`, which is every clock placed before it existed, and that clock never ticks.
 			forEachMarker(block, process)

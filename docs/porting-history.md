@@ -211,8 +211,10 @@ A port reproduces behaviour, including behaviour that looks wrong. A bug found w
 gets a comment beside the line and is fixed in its own later change, so the port's diff stays
 reviewable. Found during the port reviews, still to be commented and fixed:
 
-- `ra_settings:act/user` is called `with storage ra:settings cur`; the review flagged the macro
-  arguments of its int branch as a beet bug carried over unchanged (`settings/act/ActFns.kt`).
+- Fixed in v6.0.1: `ra_settings:act/user` was one macro called `with storage ra:settings cur`
+  whose int branch named `$(min)`, `$(max)` and `$(step)`. Bool rows carry none of them, so every
+  personal toggle failed. It now dispatches to `act/user/{bool,int,list}`, each naming only its
+  own row type's fields (`settings/act/ActFns.kt`).
 
 ### Things the beet build did that Kore no longer needs
 

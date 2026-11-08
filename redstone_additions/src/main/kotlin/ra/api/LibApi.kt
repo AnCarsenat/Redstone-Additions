@@ -98,6 +98,14 @@ object RaLib {
 		val routerSelectBackend = ref(Ns.LIB, "input/router/select_backend")
 	}
 
+	/** Is a text value safe to paste into a command? See ra/core/PropFormats.kt. */
+	object Safe {
+		/** storage ra:safe {s, f} -> 1 when s is a string in TextFormat f. */
+		val check = ref(Ns.LIB, "safe/check")
+		/** Macro `{p, f}`, as a marker: 1 when data.properties.<p> is safe; cached by value. */
+		val guard = ref(Ns.LIB, "safe/guard")
+	}
+
 	object Util {
 		/** Macro `{name, default, min}`: reads numeric `data.properties.<name>` into `#prop ra.temp`. Hot path, keep it tiny. */
 		val property = ref(Ns.LIB, "util/property")

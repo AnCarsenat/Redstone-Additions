@@ -5,7 +5,6 @@ import io.github.ayfri.kore.commands.data
 import io.github.ayfri.kore.commands.function
 import io.github.ayfri.kore.commands.scoreboard.scoreboard
 import io.github.ayfri.kore.commands.tag
-import ra.api.RaLib
 import ra.core.Ns
 import ra.core.PackPart
 import ra.core.Ra
@@ -21,6 +20,8 @@ import ra.modules.wires.liquid.LiquidBreak
 import ra.modules.wires.media.Media
 
 object Fluid : PackPart {
+	val drip = ref(Ns.WIRES, "fluid/drip")
+	val dripRun = ref(Ns.WIRES, "fluid/drip_run")
 	val particles = ref(Ns.WIRES, "fluid/particles")
 	val particlesRun = ref(Ns.WIRES, "fluid/particles_run")
 	val potionStore = ref(Ns.WIRES, "fluid/potion_store")
@@ -34,6 +35,26 @@ object Fluid : PackPart {
 			// Show the particle a medium is registered with, at the current position.
 
 			raw("\$execute if data storage ra:wires media.\$(medium).particle run function ${Fluid.particlesRun.asId()} with storage ra:wires media.\$(medium)")
+		}
+
+		pack.define(Fluid.drip) {
+			// Show a medium going INTO a Liquid Drain, on the drain itself.
+			// Context: at the drain position. Macro: {medium}.
+			//
+			// Fluid.particles draws at the source block, which is often under water or behind
+			// the drain, so a working drain could look idle. This one falls onto the drain's
+			// top: the medium's `drip` particle (falling water, falling lava) when it has one,
+			// its ordinary `particle` otherwise. Players who turned block particles off see
+			// neither.
+
+			raw("\$execute if data storage ra:wires media.\$(medium).drip run return run function ${Fluid.dripRun.asId()} with storage ra:wires media.\$(medium)")
+			raw("\$execute if data storage ra:wires media.\$(medium).particle run function ${Fluid.particlesRun.asId()} with storage ra:wires media.\$(medium)")
+		}
+
+		pack.define(Fluid.dripRun) {
+			// Internal: the falling half of drip, spread over the drain's top face.
+
+			raw("\$particle \$(drip) ~ ~0.9 ~ 0.3 0.1 0.3 0 10 normal ${particleViewersSel()}")
 		}
 
 		pack.define(Fluid.particlesRun) {
@@ -130,21 +151,8 @@ object Fluid : PackPart {
 			executeRun("as @e[type=marker,tag=ra.custom_block.gas_valve] at @s unless block ~ ~ ~ smooth_basalt", LiquidBreak.gasValve)
 			executeRun("as @e[type=marker,tag=ra.custom_block.boiler] at @s unless block ~ ~ ~ furnace", LiquidBreak.boiler)
 
-			// Valves are bridges now: they belong to no network and pump between the two they
-			// sit between. Two things have to be true of a valve built by an older version.
-			//
-			// It must stop being a member -- a valve that stayed in a network would merge the
-			// very runs it is supposed to keep apart, and the bridge would then find the same
-			// network on both sides and refuse to move anything.
-			executeRun("as @e[type=marker,tag=ra.custom_block.liquid_valve,tag=ra.tr.node]", RaLib.Transport.Net.leave)
-			executeRun("as @e[type=marker,tag=ra.custom_block.gas_valve,tag=ra.tr.node]", RaLib.Transport.Net.leave)
-			executeRun("as @e[type=marker,tag=ra.custom_block.liquid_filter,tag=ra.tr.node]", RaLib.Transport.Net.leave)
-
-			// And it must be tagged as a bridge so ra_wires:tick drives it at all. Idempotent,
-			// so this costs one tag write on a set that is almost always empty.
-			raw("tag @e[type=marker,tag=ra.custom_block.liquid_valve,tag=!ra.wires.bridge] add ra.wires.bridge")
-			raw("tag @e[type=marker,tag=ra.custom_block.gas_valve,tag=!ra.wires.bridge] add ra.wires.bridge")
-			raw("tag @e[type=marker,tag=ra.custom_block.liquid_filter,tag=!ra.wires.bridge] add ra.wires.bridge")
+			// A valve built before valves were bridges leaves its network and is tagged a bridge
+			// by the 5.1.7 migration (ra.migrations), not here.
 
 			// --- World <-> network ---
 			executeRun("as @e[type=marker,tag=ra.custom_block.liquid_pump] at @s", Pump.pumpTick)

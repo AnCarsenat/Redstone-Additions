@@ -31,6 +31,7 @@ object WirelessModule : GameplayModule {
 			scoreboard.objectives.add(Receiver.PULSE_TIMER)
 			scoreboard.objectives.add(Remote.PENDING)
 			scoreboard.objectives.add(Remote.SLOT)
+			scoreboard.objectives.add(Remote.REQ)
 
 			function(Emitter.block.fn("register_block"))
 			function(Receiver.block.fn("register_block"))

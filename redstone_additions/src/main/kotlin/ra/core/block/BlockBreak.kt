@@ -17,6 +17,7 @@ import io.github.ayfri.kore.utils.nbt
 import io.github.ayfri.kore.utils.set
 import net.benwoodworth.knbt.NbtList
 import net.benwoodworth.knbt.NbtString
+import ra.core.Obj
 import ra.core.Tag
 import ra.core.define
 import ra.core.item.ItemSpec
@@ -149,22 +150,43 @@ fun Function.dropItem(item: ItemSpec, tagged: Boolean = false) {
 	raw("summon item ~ ~ ~ {Item:${item.stackSnbt()}$tags}")
 }
 
+/** Candidates for [killVanillaDrop], for the four lines it takes to choose one. */
+private const val VANILLA_DROP = "ra.vanilla_drop"
+
 /**
  * Removes the vanilla item the physical block dropped when it was broken, so only the custom item
- * is left. Nearest one within 2 blocks: the break happened this tick, here.
+ * is left. Run as the marker, at the block.
+ *
+ * ONLY THE FRESH DROP. This used to kill the nearest item of that id within 2 blocks, whatever it
+ * was: a stack of 64 quartz a player had thrown down beside a Shortener, or the contents a broken
+ * container had just spilled. A block's own drop is a single plain item (count 1, no components)
+ * spawned at the break, and the break is noticed within a tick or two, so it is the nearest such
+ * item no more than 5 ticks old. Item age is not a selector argument, hence the score; `0..` and
+ * not `..5`, because an item that never despawns carries a negative age. When no item qualifies,
+ * nothing is killed.
+ *
+ * [itemId] may be a macro argument (`$(block_id)`), in which case the one line that uses it is
+ * emitted as a macro line; the calling function must then be run with that argument.
  */
 fun Function.killVanillaDrop(itemId: String) {
-	raw("kill @e[type=item,nbt={Item:{id:\"$itemId\"}},distance=..2,limit=1,sort=nearest]")
+	val macro = if ("\$(" in itemId) "\$" else ""
+	raw("${macro}tag @e[type=item,distance=..2,nbt={Item:{id:\"$itemId\",count:1}},nbt=!{Item:{components:{}}}] add $VANILLA_DROP")
+	raw("execute as @e[type=item,tag=$VANILLA_DROP,distance=..2] store result score @s ${Obj.TEMP} run data get entity @s Age")
+	raw("kill @e[type=item,tag=$VANILLA_DROP,distance=..2,scores={${Obj.TEMP}=0..5},limit=1,sort=nearest]")
+	raw("scoreboard players reset @e[type=item,tag=$VANILLA_DROP,distance=..2] ${Obj.TEMP}")
+	raw("tag @e[type=item,tag=$VANILLA_DROP,distance=..2] remove $VANILLA_DROP")
 }
 
 /**
- * `playsound <sound> block <who> ~ ~ ~ 1 1`: everyone within 16 blocks, or only those who asked
- * for block sounds ([listenersOnly], user setting `ra.u.snd`).
+ * `playsound <sound> block <who> ~ ~ ~ 1 1` for the players within 16 blocks who asked for block
+ * sounds (user setting `ra.u.snd`). [listenersOnly] is kept for callers and no longer changes
+ * anything: every block's break sound used to reach everyone in range except the few that passed
+ * it, whatever the player had chosen.
  */
-fun Function.breakSound(sound: String = STONE_BREAK_SOUND, listenersOnly: Boolean = false) {
-	val who = if (listenersOnly) soundListenersSel(16) else "@a[distance=..16]"
-	raw("playsound $sound block $who ~ ~ ~ 1 1")
+@Suppress("UNUSED_PARAMETER")
+fun Function.breakSound(sound: String = STONE_BREAK_SOUND, listenersOnly: Boolean = true) {
+	raw("playsound $sound block ${soundListenersSel(16)} ~ ~ ~ 1 1")
 }
 
-/** The puff of cloud a broken block leaves. */
-fun Function.breakCloud() = raw("particle minecraft:cloud ~ ~ ~ 0.2 0.2 0.2 0.02 5")
+/** The puff of cloud a broken block leaves, for players with block particles on (`ra.u.par`). */
+fun Function.breakCloud() = raw("particle minecraft:cloud ~ ~ ~ 0.2 0.2 0.2 0.02 5 normal ${particleViewersSel()}")

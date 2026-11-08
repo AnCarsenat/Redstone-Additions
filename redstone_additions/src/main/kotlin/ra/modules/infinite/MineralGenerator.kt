@@ -1,5 +1,7 @@
 package ra.modules.infinite
 
+import ra.core.block.soundListenersSel
+import ra.core.block.particleViewersSel
 import io.github.ayfri.kore.functions.Function
 import io.github.ayfri.kore.generated.Blocks
 import ra.core.Ra
@@ -40,15 +42,15 @@ object MineralGenerator {
 
 	/** As the generator's marker, at the generator, rotated with it. */
 	private fun Function.process() {
-		cooldownGate()
+		cooldownGate(generator.defaultCooldown)
 
 		// Somebody has to take the last one away first.
 		raw("execute unless block ^ ^ ^1 $GROWABLE run return 0")
 
 		rollTable(table)
 
-		raw("execute positioned ^ ^ ^1 run particle minecraft:crit ~ ~0.5 ~ 0.3 0.2 0.3 0.05 6")
-		raw("execute positioned ^ ^ ^1 run playsound minecraft:block.stone.place block @a[distance=..12] ~ ~ ~ 0.4 1.4")
+		raw("execute positioned ^ ^ ^1 run particle minecraft:crit ~ ~0.5 ~ 0.3 0.2 0.3 0.05 6 normal ${particleViewersSel()}")
+		raw("execute positioned ^ ^ ^1 run playsound minecraft:block.stone.place block ${soundListenersSel(12)} ~ ~ ~ 0.4 1.4")
 	}
 }
 

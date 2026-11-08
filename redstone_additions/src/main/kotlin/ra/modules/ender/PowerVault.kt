@@ -1,5 +1,16 @@
 package ra.modules.ender
 
+import ra.core.block.particleViewersSel
+import ra.core.TextFormat
+import ra.core.text
+import ra.lib.safe.SafeText.guardProperty
+import io.github.ayfri.kore.features.predicates.providers.constant
+import io.github.ayfri.kore.features.predicates.providers.floorDiv
+import io.github.ayfri.kore.features.predicates.providers.min
+import io.github.ayfri.kore.features.predicates.providers.sub
+import ra.core.computeScore
+import ra.core.provider
+import ra.core.scoreOf
 import io.github.ayfri.kore.arguments.types.literals.self
 import io.github.ayfri.kore.commands.function
 import io.github.ayfri.kore.commands.scoreboard.scoreboard
@@ -69,7 +80,12 @@ object PowerVault {
 	fun Ra.registerPowerVault() {
 		block(block)
 		wrenchCycle(block.id, WrenchCycle("Mode", "mode", cycleMode))
-		readonly(block.id, "transfer_rate")
+		properties(block) {
+			// Pasted inside quotes into the link commands: no quote, no backslash.
+			text("channel", TextFormat.NAME)
+			text("mode")
+			number("transfer_rate", min = 1, max = 10000, readonly = true)
+		}
 		pack.blockRegisterMessage(block)
 		pack.enderGive(block, item, """{text:" — wire into it like a switch",color:"gray"}""")
 		pack.enderRecipe(block, item, RecipeCategory.REDSTONE) {
@@ -152,6 +168,15 @@ object PowerVault {
 
 		executeReturnRun("if data entity @s data.properties{mode:\"receive\"}", Link.done)
 
+		// The send's macro input, built and checked before anything is taken. send_power is a macro
+		// on {channel}: without it the whole call fails, nothing is delivered, and EU taken
+		// beforehand would have been refunded from whatever #ender.sent the previous vault left.
+		raw("data modify storage ra:ender power set value {}")
+		raw("data modify storage ra:ender power.channel set from entity @s data.properties.channel")
+		// Pasted into the link macro: an unsafe channel links nothing.
+		guardProperty("channel", TextFormat.NAME, onFail = "data remove storage ra:ender power.channel")
+		executeReturnRun("unless data storage ra:ender power.channel", Link.done)
+
 		// What this grid can spare.
 		function(RaLib.Transport.Net.read)
 		raw("scoreboard players operation #ender.eu $T = #net_amount ${Obj.TR_TMP}")
@@ -160,8 +185,7 @@ object PowerVault {
 		executeReturnRun("if score #ender.eu $T matches ..0", Link.done)
 
 		// One-way: up to the rate, whatever the far side holds.
-		raw("scoreboard players operation #ender.carry $T = #ender.eu $T")
-		raw("execute if score #ender.carry $T > #ender.rate $T run scoreboard players operation #ender.carry $T = #ender.rate $T")
+		computeScore("#ender.carry", T, provider { min(scoreOf("#ender.eu", T), scoreOf("#ender.rate", T)) })
 
 		// Two-way: half the gap between the two GRIDS, and only downhill.
 		executeRun("if data entity @s data.properties{mode:\"link\"}", level)
@@ -173,16 +197,16 @@ object PowerVault {
 		executeStoreRun("", "#ender.carry", ModulesApi.Wires.takeEu, "with storage ra:wires eu")
 		executeReturnRun("if score #ender.carry $T matches ..0", Link.done)
 
-		raw("data modify storage ra:ender power set value {}")
-		raw("data modify storage ra:ender power.channel set from entity @s data.properties.channel")
+		// Zero before the call, not only inside it: a send that fails to run at all (a channel the
+		// macro cannot splice) must read as nothing delivered, so the refund below returns it all.
+		raw("scoreboard players set #ender.sent $T 0")
 		function(Link.sendPower, Storage.ENDER, "power")
 
 		// Refund whatever the partner's grid could not hold.
-		raw("scoreboard players operation #ender.back $T = #ender.carry $T")
-		raw("scoreboard players operation #ender.back $T -= #ender.sent $T")
+		computeScore("#ender.back", T, provider { sub(scoreOf("#ender.carry", T), scoreOf("#ender.sent", T)) })
 		executeRun("if score #ender.back $T matches 1..", refund)
 
-		raw("execute if score #ender.sent $T matches 1.. run particle minecraft:portal ~ ~1 ~ 0.2 0.2 0.2 0.05 3")
+		raw("execute if score #ender.sent $T matches 1.. run particle minecraft:portal ~ ~1 ~ 0.2 0.2 0.2 0.05 3 normal ${particleViewersSel()}")
 
 		function(Link.done)
 	}
@@ -192,17 +216,16 @@ object PowerVault {
 		raw("scoreboard players set #ender.theirs $T -1")
 		raw("data modify storage ra:ender probe set value {}")
 		raw("data modify storage ra:ender probe.channel set from entity @s data.properties.channel")
+		// Pasted into the link macro: an unsafe channel links nothing.
+		guardProperty("channel", TextFormat.NAME, onFail = "data remove storage ra:ender probe.channel")
 		function(Link.probePower, Storage.ENDER, "probe")
 
 		raw("execute if score #ender.theirs $T matches ..-1 run return run scoreboard players set #ender.carry $T 0")
 
-		raw("scoreboard players operation #ender.gap $T = #ender.eu $T")
-		raw("scoreboard players operation #ender.gap $T -= #ender.theirs $T")
+		computeScore("#ender.gap", T, provider { sub(scoreOf("#ender.eu", T), scoreOf("#ender.theirs", T)) })
 		raw("execute if score #ender.gap $T matches ..4 run return run scoreboard players set #ender.carry $T 0")
 
-		raw("scoreboard players set #ender.two $T 2")
-		raw("scoreboard players operation #ender.carry $T = #ender.gap $T")
-		raw("scoreboard players operation #ender.carry $T /= #ender.two $T")
-		raw("execute if score #ender.carry $T > #ender.rate $T run scoreboard players operation #ender.carry $T = #ender.rate $T")
+		// carry = min(gap / 2, rate); the gap is at least 5 here, so the floor is a plain halving.
+		computeScore("#ender.carry", T, provider { min(floorDiv(scoreOf("#ender.gap", T), constant(2)), scoreOf("#ender.rate", T)) })
 	}
 }

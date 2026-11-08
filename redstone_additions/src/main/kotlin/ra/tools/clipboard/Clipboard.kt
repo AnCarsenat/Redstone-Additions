@@ -16,8 +16,7 @@ import ra.core.define
 import ra.core.executeReturnRun
 import ra.core.executeRun
 import ra.core.raw
-import ra.tools.RAY_TARGET
-import ra.tools.REACH_4
+import ra.tools.raycast
 import ra.tools.ToolItems
 import ra.tools.tool
 
@@ -50,12 +49,14 @@ object Clipboard {
 	val store = tool("clipboard/store")
 	val clear = tool("clipboard/clear")
 	val clearSlot = tool("clipboard/clear_slot")
-	val raycastQuiet = tool("clipboard/raycast_quiet")
 	val copy = tool("clipboard/copy")
 	val paste = tool("clipboard/paste")
 	val checkKind = tool("clipboard/check_kind")
 	val apply = tool("clipboard/apply")
 	val refuse = tool("clipboard/refuse")
+	private val strip = tool("clipboard/strip")
+	private val stripNext = tool("clipboard/strip_next")
+	private val stripOne = tool("clipboard/strip_one")
 
 	private const val HOLDER = "@a[tag=ra.clip_active,limit=1]"
 	private const val PREFIX = """{text:"[Clipboard] ",color:"gold"}"""
@@ -80,8 +81,9 @@ object Clipboard {
 			data(Storage.TEMP) { remove("clip.kind") }
 			callWith(load, "storage ra:temp clip")
 			data(Storage.TEMP) { remove("clip_found") }
-			executeRun("if data storage ra:temp clip.kind", raycastQuiet, "{action:\"paste\"}")
-			executeRun("unless data storage ra:temp clip.kind", raycastQuiet, "{action:\"copy\"}")
+			// No "nothing there" complaint from the cast: a miss is meaningful here (see below).
+			raycast("clip_found", paste, guard = "if data storage ra:temp clip.kind ")
+			raycast("clip_found", copy, guard = "unless data storage ra:temp clip.kind ")
 			// Nothing in front of you is the deliberate way to empty it. Clearing on a miss rather than
 			// on a hit means a slightly-off click can never wipe a working origin.
 			executeRun("unless data storage ra:temp clip_found", clear)
@@ -116,16 +118,6 @@ object Clipboard {
 		}
 		pack.define(clearSlot) { raw("\$data remove storage ra:clipboard boards.p\$(slot)") }
 
-		// {action:"copy"|"paste"}: the same four-step reach as the other tools, without the "nothing
-		// there" complaint -- the caller treats a miss as meaningful rather than as an error. The
-		// action names a function in this folder, pasted in by the macro.
-		pack.define(raycastQuiet) {
-			val action = "${copy.asId().substringBeforeLast('/')}/\$(action)"
-			REACH_4.forEachIndexed { i, step ->
-				val guard = if (i == 0) "" else " unless data storage ra:temp clip_found"
-				raw("\$execute at @s anchored eyes positioned ^ ^ ^$step$guard as $RAY_TARGET run function $action")
-			}
-		}
 
 		registerCopyPaste()
 	}
@@ -159,12 +151,13 @@ object Clipboard {
 			data(Storage.TEMP) { remove("clip.kind") }
 			callWith(load, "storage ra:temp clip")
 			raw("""execute unless data storage ra:temp clip.kind run return run tellraw $HOLDER [$PREFIX,{text:"No origin set — click a block to choose one.",color:"gray"}]""")
-			// Same kind only. Property names overlap between unrelated blocks -- half the pack has
-			// `enabled` -- so without this a Gas Valve's rate would happily land on a Randomizer's
+			// Same kind only. Property names overlap between unrelated blocks -- half the pack once
+			// had `enabled` -- so without this a Gas Valve's rate would happily land on a Randomizer's
 			// chance and quietly mean something else.
 			blockNameOnly()
 			callWith(checkKind, "storage ra:temp clip")
 			executeReturnRun("unless data storage ra:temp clip_ok", refuse)
+			function(strip)
 			callWith(apply, "storage ra:temp clip")
 			raw("""tellraw $HOLDER [$PREFIX,{text:"Matched this ",color:"gray"},{nbt:"block_name",storage:"ra:temp",color:"yellow"},{text:" to the origin.",color:"gray"}]""")
 			raw("playsound minecraft:block.amethyst_block.chime block @a[tag=ra.clip_active,limit=1,scores={${Obj.USER_SOUND}=1..}] ~ ~ ~ 0.7 1.4")
@@ -188,6 +181,40 @@ object Clipboard {
 		pack.define(apply) {
 			raw("data merge entity @s {data:{properties:{}}}")
 			raw("data modify entity @s data.properties merge from storage ra:temp clip.props")
+		}
+
+		// Take out of the copied settings what the holder may not set on this block, by its type's
+		// schema: read-only values (the target keeps its own working numbers), and admin-only or
+		// hidden ones unless the holder has server-settings access. As the target marker.
+		pack.define(strip) {
+			function(ra.tools.datahandler.DataHandler.loadSchema)
+			raw("execute store success score #clip.adm ${Obj.TEMP} if entity @a[tag=ra.clip_active,tag=ra.admin,limit=1]")
+			raw("data modify storage ra:temp clip_iter set from storage ra:dh block_order")
+			function(stripNext)
+			raw("data remove storage ra:temp clip_iter")
+		}
+		pack.define(stripNext) {
+			raw("execute unless data storage ra:temp clip_iter[0] run return 0")
+			raw("data modify storage ra:temp clip_q set value {}")
+			raw("data modify storage ra:temp clip_q.name set from storage ra:temp clip_iter[0]")
+			callWith(stripOne, "storage ra:temp clip_q")
+			raw("data remove storage ra:temp clip_iter[0]")
+			function(stripNext)
+		}
+		// {name}
+		pack.define(stripOne) {
+			raw("\$execute store result score #clip.ro ${Obj.TEMP} run data get storage ra:dh schema.\$(name).readonly")
+			raw("\$execute store result score #clip.ao ${Obj.TEMP} run data get storage ra:dh schema.\$(name).admin_only")
+			// Admin-only unless its server setting lets every player edit it (the Data Handler's rule).
+			raw("scoreboard players set #clip.wv ${Obj.TEMP} 0")
+			raw("\$execute if score #clip.ao ${Obj.TEMP} matches 1 if data storage ra:dh schema.\$(name).admin_setting store result score #clip.wv ${Obj.TEMP} run function ${ra.tools.datahandler.props.DataHandlerEntries.waived.asId()} with storage ra:dh schema.\$(name)")
+			raw("execute if score #clip.wv ${Obj.TEMP} matches 1 run scoreboard players set #clip.ao ${Obj.TEMP} 0")
+			raw("scoreboard players set #clip.vis ${Obj.TEMP} 1")
+			raw("\$execute if data storage ra:dh schema.\$(name).visible store result score #clip.vis ${Obj.TEMP} run data get storage ra:dh schema.\$(name).visible")
+			raw("\$execute if score #clip.ro ${Obj.TEMP} matches 1 run return run data remove storage ra:temp clip.props.\$(name)")
+			raw("execute if score #clip.adm ${Obj.TEMP} matches 1 run return 0")
+			raw("\$execute if score #clip.ao ${Obj.TEMP} matches 1 run return run data remove storage ra:temp clip.props.\$(name)")
+			raw("\$execute if score #clip.vis ${Obj.TEMP} matches 0 run data remove storage ra:temp clip.props.\$(name)")
 		}
 
 		// Say why the paste did not happen, naming both kinds.

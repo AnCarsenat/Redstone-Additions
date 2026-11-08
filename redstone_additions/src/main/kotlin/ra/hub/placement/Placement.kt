@@ -13,20 +13,19 @@ import io.github.ayfri.kore.commands.execute.Execute
 import io.github.ayfri.kore.commands.execute.execute
 import io.github.ayfri.kore.commands.function
 import io.github.ayfri.kore.commands.kill
-import io.github.ayfri.kore.commands.returnValue
 import io.github.ayfri.kore.commands.tag
 import io.github.ayfri.kore.features.tags.blockTag
 import io.github.ayfri.kore.features.tags.functionTag
 import io.github.ayfri.kore.functions.Function
 import io.github.ayfri.kore.generated.Blocks
 import io.github.ayfri.kore.generated.EntityTypes
-import io.github.ayfri.kore.generated.Tags
 import ra.api.Settings
 import ra.core.Ns
 import ra.core.Obj
 import ra.core.Ra
 import ra.core.Tag
 import ra.core.define
+import ra.core.executeReturnRun
 import ra.core.ref
 
 /**
@@ -36,6 +35,7 @@ import ra.core.ref
  */
 internal val detectBats = ref(Ns.RA, "placement/detect_bats")
 private val processBat = ref(Ns.RA, "placement/process_bat")
+private val tryPlace = ref(Ns.RA, "placement/try_place")
 private val handlers = FunctionTagArgument("placement_handlers", Ns.RA.id)
 
 internal fun Ra.registerPlacement() {
@@ -61,6 +61,9 @@ internal fun Ra.registerPlacement() {
 	}
 
 	pack.define(processBat) { processBat() }
+	pack.define(tryPlace) { tryPlace() }
+	registerFace(tryPlace)
+	registerRefund()
 }
 
 private val markerHere = allEntities {
@@ -76,56 +79,60 @@ private fun Execute.blockCentre() {
 	positioned(vec3(0.5, 0.5, 0.5).relative)
 }
 
-/** As the bat, at the bat. */
+/**
+ * As the bat, at the bat.
+ *
+ * ONE WAY OUT. Every check lives in [tryPlace], which returns as soon as it refuses; the placer
+ * tag is removed and the bat killed here, after it, whatever happened. The checks used to return
+ * from this function directly, and the first two forgot the placer tag on the way out: a stale
+ * `ra.placer` attached the next placement's facing and messages to the wrong player.
+ */
 private fun Function.processBat() {
 	tag(self()) { add(Tag.PROCESSED) }
 
 	// The nearest player is the one who spawned the bat.
 	tag(nearestPlayer()) { add(Tag.PLACER) }
 
+	function(tryPlace)
+
+	tag(allPlayers { tag = Tag.PLACER }) { remove(Tag.PLACER) }
+	kill(self())
+}
+
+/**
+ * As the bat, at the bat. Each refusal goes through `ra:placement/refuse`, which tells the placer
+ * why and gives the item back: the spawn egg was used up before the pack ever saw the bat.
+ */
+private fun Function.tryPlace() {
 	// A custom block marker already here: a duplicate placement attempt.
-	execute {
-		blockCentre()
-		ifCondition { entity(markerHere) }
-		run { kill(self()) }
-	}
-	execute {
-		blockCentre()
-		ifCondition { entity(markerHere) }
-		run { returnValue(0) }
-	}
+	executeReturnRun("align xyz positioned ~0.5 ~0.5 ~0.5 if entity @e[type=minecraft:marker,tag=${Tag.CUSTOM_BLOCK},distance=..0.9]", refuse, """{why:"There is already a custom block there."}""")
 
 	// REPLACEABLE, NOT AIR
-	// This asked for #air, which is air, cave air and void air and nothing else. That is not
-	// where a spawn egg puts its mob. Vanilla spawns at the clicked block's own position when that
-	// block has an EMPTY COLLISION SHAPE, and only at the adjacent position otherwise -- so
-	// clicking tall grass, a flower, a rail, a pressure plate or a carpet put the bat inside that
-	// block rather than beside it, the test found something that was not air, and the placement
-	// was refused. Every custom block in the pack was unplaceable onto anything soft, which is
-	// most of a grassy field.
+	// This asked for #air once, which is air, cave air and void air and nothing else. That is not
+	// where a spawn egg puts its mob: vanilla spawns at the clicked block's own position when
+	// that block has an EMPTY COLLISION SHAPE, and at the adjacent position otherwise. Clicking
+	// tall grass put the bat inside the grass, the test found something that was not air, and the
+	// placement was refused.
 	//
 	// #minecraft:replaceable is the tag that means exactly "a placed block may take this space" --
 	// the same set vanilla itself overwrites when you place a stone on grass -- so it is the right
-	// question, and set_block's `replace` mode then does what the name says.
-	execute {
-		unlessCondition { block(vec3(), Tags.Block.REPLACEABLE) }
-		run { kill(self()) }
-	}
-	execute {
-		unlessCondition { block(vec3(), Tags.Block.REPLACEABLE) }
-		run { returnValue(0) }
-	}
+	// question, and set_block's `replace` mode then does what the name says. It covers grass,
+	// ferns, snow layers, water and the like. It does NOT cover the other blocks with no
+	// collision -- flowers, saplings, rails, pressure plates, buttons, levers, torches, dust --
+	// where the bat also lands inside the clicked block. Those get one retry against the face the
+	// player clicked (see Face.kt), and are refused only if that spot is taken too.
+	executeReturnRun("unless block ~ ~ ~ #minecraft:replaceable unless entity @s[tag=$TRIED]", faceRetry)
+	executeReturnRun("unless block ~ ~ ~ #minecraft:replaceable", refuse, """{why:"There is no room to place a block there."}""")
+
+	// The block would go inside a player: vanilla never places a solid block there either.
+	executeReturnRun("align xyz if entity @a[dx=0,dy=0,dz=0,gamemode=!spectator]", refuse, """{why:"Something is in the way."}""")
 
 	// Is this block type switched off in the settings? Checked before the handlers run, so a
-	// disabled block never gets as far as creating a marker.
+	// disabled block never gets as far as creating a marker. ra_settings:placement/refuse says
+	// why; the item comes back here.
 	function(Settings.Placement.check)
 	ifBlocked { function(Settings.Placement.refuse) }
-	// The placer tag is cleaned up here as well as at the end, because this path returns before
-	// ever reaching the end and a stale ra.placer would attach the next placement to the wrong
-	// person.
-	ifBlocked { tag(allPlayers { tag = Tag.PLACER }) { remove(Tag.PLACER) } }
-	ifBlocked { kill(self()) }
-	ifBlocked { returnValue(0) }
+	executeReturnRun("if score #blocked ${Obj.SET_TMP} matches 1", refund)
 
 	// Route to every registered handler; the one whose place tag the bat carries places its block.
 	execute {
@@ -139,9 +146,6 @@ private fun Function.processBat() {
 		asTarget(markerHere)
 		run { function(Settings.Placement.seed) }
 	}
-
-	tag(allPlayers { tag = Tag.PLACER }) { remove(Tag.PLACER) }
-	kill(self())
 }
 
 /** `execute if score #blocked ra.set.tmp matches 1 run <command>`; ra_settings:placement/check writes `#blocked`. */

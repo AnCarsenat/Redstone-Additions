@@ -17,29 +17,56 @@ import ra.lib.transport.TR
 import ra.lib.transport.net.Read
 import ra.lib.transport.tr
 
-/** Parking each old network's contents on its root node before every network is discarded. */
+/** Parking the contents of each network a rebuild takes apart on its root node, then dropping its record. */
 internal object Snapshot {
 	val snapshot = lib("transport/rebuild/snapshot")
 	val snapshotRead = lib("transport/rebuild/snapshot_read")
 	val snapshotNext = lib("transport/rebuild/snapshot_next")
 	val snapshotOne = lib("transport/rebuild/snapshot_one")
+	val snapshotClaim = lib("transport/rebuild/snapshot_claim")
+	val dropNet = lib("transport/rebuild/drop_net")
 
 	fun Ra.registerSnapshot() {
 		// Internal: park one network's contents on its root node.
 		// Context: as the root marker of a network that is about to be discarded.
 		pack.define(snapshot) {
-			// The number goes on the node with the contents, so rebuild/seed can give it back to
-			// whatever component this node ends up in. The counter is dragged up past it at the same
-			// time: a fresh id must never collide with one that is about to be inherited, and after
-			// this pass the counter is above every id in use.
-			scoreboard.players.operation(self(), Obj.TR_OLD, Operation.SET, self(), Obj.TR_NET)
+			raw("execute store result storage ra:transport arg.id int 1 run scoreboard players get @s ${Obj.TR_NET}")
+
+			// ONE ROOT PER NETWORK, EVEN WHEN THERE ARE TWO
+			// A network held back while partly out of view can come back with a second root: the
+			// rootless repair in rebuild/scope_id, or a split that was settled while one half was
+			// unloaded. Both would park the whole record, and the network would come back doubled.
+			// The first root in a rebuild takes the contents; any other one is just a node.
+			scoreboard.players.set(tr("#snap.ok"), Obj.TR_TMP, 0)
+			function(snapshotClaim, TR, "arg")
 			execute {
-				ifCondition { score(self(), Obj.TR_NET) greaterThan score(tr("#net_seq"), Obj.TR_TMP) }
-				run { scoreboard.players.operation(tr("#net_seq"), Obj.TR_TMP, Operation.SET, self(), Obj.TR_NET) }
+				ifCondition { score(tr("#snap.ok"), Obj.TR_TMP) equalTo 0 }
+				run { returnValue(0) }
 			}
 
-			raw("execute store result storage ra:transport arg.id int 1 run scoreboard players get @s ${Obj.TR_NET}")
+			// The number goes on the node with the contents, so rebuild/seed can give it back to
+			// whatever component this node ends up in. The counter is dragged up past it at the same
+			// time: a fresh id must never collide with one that is about to be inherited.
+			scoreboard.players.operation(self(), Obj.TR_OLD, Operation.SET, self(), Obj.TR_NET)
+			scoreboard.players.operation(tr("#net_seq"), Obj.TR_TMP, Operation.MAX, self(), Obj.TR_NET)
+
 			function(snapshotRead, TR, "arg")
+
+			// The record goes once its contents are on the root. Only networks taken apart lose
+			// theirs; every other record in `nets` is left alone (see rebuild/scope).
+			function(dropNet, TR, "arg")
+		}
+
+		// `snapshot_claim {id}`, internal: #snap.ok = 1 for the first root of <id> this rebuild.
+		pack.define(snapshotClaim) {
+			raw("\$execute if data storage ra:transport rb.snap.n\$(id) run return 0")
+			raw("\$data modify storage ra:transport rb.snap.n\$(id) set value 1b")
+			scoreboard.players.set(tr("#snap.ok"), Obj.TR_TMP, 1)
+		}
+
+		// `drop_net {id}`, internal.
+		pack.define(dropNet) {
+			raw("\$data remove storage ra:transport nets.n\$(id)")
 		}
 
 		pack.define(snapshotRead) { snapshotRead() }
@@ -97,7 +124,7 @@ internal object Snapshot {
 
 	/**
 	 * `snapshot_read {id}`, internal: copy the network's contents onto the root node, so they
-	 * survive the rebuild that is about to discard every network.
+	 * survive the rebuild that is about to take the network apart.
 	 *
 	 * THE WHOLE BREAKDOWN TRAVELS, NOT JUST THE TOTAL
 	 * This used to park `amount` and `medium` and nothing else. A rebuild therefore turned a run

@@ -1,5 +1,10 @@
 package ra.modules.interactive
 
+import ra.core.block.soundListenersSel
+import ra.core.TextFormat
+import ra.core.text
+import ra.lib.safe.SafeText.guardProperty
+import ra.modules.sensors.SensorsModule.SELECTOR_SETTING
 import io.github.ayfri.kore.arguments.types.literals.allEntities
 import io.github.ayfri.kore.commands.tag
 import io.github.ayfri.kore.functions.Function
@@ -54,6 +59,14 @@ object MessageBlock {
 
 	fun Ra.registerMessageBlock() {
 		block(block)
+		properties(block) {
+			// Shown, never pasted into a command, but drawn with interpret:true: the text can carry
+			// a click_event that runs a command as whoever clicks it. So any text, admins only.
+			text("message_block", TextFormat.FREE, adminOnly = true)
+			// Pasted into a command: admins only unless the server allows it (Sensors settings).
+			text("entity_selector", TextFormat.SELECTOR, adminOnly = true, adminSetting = SELECTOR_SETTING)
+			number("range", min = 1, max = 128)
+		}
 		pack.blockRegisterMessage(block)
 		pack.specGive(block, item)
 		pack.shapedRecipe(block.ns, block.id, item.recipeResult(), Unlock(Items.NOTE_BLOCK), count = null) {
@@ -108,6 +121,9 @@ object MessageBlock {
 
 		// Preferred targeting model: an explicit entity selector string.
 		raw("execute if data entity @s data.properties.entity_selector run data modify storage ra:temp entity_selector set from entity @s data.properties.entity_selector")
+		// Pasted into the command: an unsafe selector sends nothing (ra_lib:safe/guard).
+		raw("execute if data entity @s data.properties.entity_selector store result score #sf.g ${Obj.TEMP} run function ${ra.api.RaLib.Safe.guard.asId()} {p:\"entity_selector\",f:${TextFormat.SELECTOR.code}}")
+		raw("execute if data entity @s data.properties.entity_selector unless score #sf.g ${Obj.TEMP} matches 1 run return 0")
 		executeRun("if data entity @s data.properties.entity_selector", sendMacro, "with storage ra:temp")
 		raw("execute if data entity @s data.properties.entity_selector run return 1")
 
@@ -120,12 +136,12 @@ object MessageBlock {
 		for ((range, dist) in listOf("..8" to 8, "9..16" to 16, "17..32" to 32, "33.." to 64))
 			raw("execute if score @s ${Obj.TEMP} matches $range run tellraw @a[distance=..$dist] $MESSAGE")
 		for ((range, dist) in listOf("..16" to 16, "17..32" to 32, "33.." to 64))
-			raw("execute if score @s ${Obj.TEMP} matches $range run playsound minecraft:block.note_block.chime block @a[distance=..$dist] ~ ~ ~ 0.5 1.2")
+			raw("execute if score @s ${Obj.TEMP} matches $range run playsound minecraft:block.note_block.chime block ${soundListenersSel(dist)} ~ ~ ~ 0.5 1.2")
 	}
 
 	/** Macro `{entity_selector}`: the send path using the block's own selector. */
 	private fun Function.sendMacro() {
 		raw("\$execute at @s as \$(entity_selector) if entity @s[type=player] run tellraw @s $MESSAGE")
-		raw("\$execute at @s as \$(entity_selector) if entity @s[type=player] run playsound minecraft:block.note_block.chime block @s ~ ~ ~ 0.5 1.2")
+		raw("\$execute at @s as \$(entity_selector) if entity @s[type=player] run playsound minecraft:block.note_block.chime block @s[scores={${Obj.USER_SOUND}=1..}] ~ ~ ~ 0.5 1.2")
 	}
 }

@@ -69,20 +69,39 @@ class Ra(val pack: DataPack) {
 	/** `ra:tools/goggles/draw_multiblock`: multiblock marker tag -> readout. */
 	val multiblockGoggles = mutableListOf<TagRoute>()
 
+	/** Compiled multiblock structures (see [ra.api.multiblock]), compiled by ra_lib_multiblock after all parts. */
+	val multiblockSpecs = mutableListOf<ra.api.MultiblockSpec>()
+
+	/** Set once ra_lib_multiblock has compiled [multiblockSpecs]; registering after that is an error. */
+	var multiblockSpecsCompiled = false
+
 	/** Wrench Shift+RMB cycle rows, keyed by the marker's `data.type`. */
 	val wrenchCycles = linkedMapOf<String, MutableList<WrenchCycle>>()
 
 	/** Wrench plain-RMB toggles: marker tag -> toggle function, run as the marker. */
 	val wrenchToggles = mutableListOf<TagRoute>()
 
-	/** Properties neither tool may edit, keyed by `data.type`. */
-	val readonly = linkedMapOf<String, MutableSet<String>>()
-
-	/** Property names the Data Handlers list, in menu order. */
-	val dataHandlerProperties = linkedSetOf<String>()
+	/**
+	 * Each block type's property schema (see [PropertiesBuilder]), keyed by the marker's
+	 * `data.type`, in declaration order -- which is menu order.
+	 */
+	val blockProperties = linkedMapOf<String, List<PropSpec>>()
 
 	/** Bundles for `ra:give_all_items`, in hand-out order. */
 	val bundles = mutableListOf<GiveBundle>()
+
+	/**
+	 * Placeable items (item stacks whose `entity_data` carries a `ra.place.<id>` tag) that are in
+	 * no bundle and no [block], so the refund of a refused placement can still give them back.
+	 */
+	val extraPlaceables = mutableListOf<NbtCompound>()
+
+	/**
+	 * Retired place tag -> the place tag of the item refunded in its stead. A retired item still
+	 * sitting in a chest places its successor's block, so a refused placement gives back the
+	 * successor: what breaking the block it would have placed gives back anyway.
+	 */
+	val retiredPlaceTags = linkedMapOf<String, String>()
 
 	/**
 	 * Work deferred until every part has registered, run in the order added. For a part whose
@@ -96,10 +115,26 @@ class Ra(val pack: DataPack) {
 		deferred += action
 	}
 
+	/**
+	 * Work that reads the FINISHED pack, run once every [afterAllParts] action has run (including
+	 * those queued by other deferred actions). Only for steps that must see every function, such
+	 * as the uninstall reading back what the pack creates. Nothing queued here may add functions
+	 * another step here needs to see.
+	 */
+	private val finishers = mutableListOf<() -> Unit>()
+
+	fun whenPackComplete(action: () -> Unit) {
+		finishers += action
+	}
+
 	/** Called once by [ra.RedstoneAdditions] after the last part. */
 	internal fun runDeferred() {
-		deferred.forEach { it() }
+		// Index loop, not forEach: a deferred action may queue another one.
+		var i = 0
+		while (i < deferred.size) deferred[i++]()
 		deferred.clear()
+		finishers.forEach { it() }
+		finishers.clear()
 	}
 
 	/** Registers a placeable block, its placement handler and its goggles readout. */
@@ -114,11 +149,12 @@ class Ra(val pack: DataPack) {
 		wrenchCycles.getOrPut(type) { mutableListOf() } += rows
 	}
 
-	fun readonly(type: String, vararg props: String) {
-		readonly.getOrPut(type) { linkedSetOf() } += props
+	/** Declares the properties of block type [type] (the marker's `data.type`). Once per type. */
+	fun properties(type: String, build: PropertiesBuilder.() -> Unit) {
+		require(type !in blockProperties) { "properties of '$type' declared twice" }
+		blockProperties[type] = PropertiesBuilder().apply(build).specs.toList()
 	}
 
-	fun dataHandlerProperties(vararg props: String) {
-		dataHandlerProperties += props
-	}
+	/** [properties] for [block], whose markers carry `data.type` = its id. */
+	fun properties(block: CustomBlock, build: PropertiesBuilder.() -> Unit) = properties(block.id, build)
 }

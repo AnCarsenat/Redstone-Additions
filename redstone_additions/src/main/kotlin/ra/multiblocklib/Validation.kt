@@ -1,5 +1,7 @@
 package ra.multiblocklib
 
+import ra.core.block.soundListenersSel
+import ra.core.block.particleViewersSel
 import io.github.ayfri.kore.arguments.types.literals.allEntities
 import io.github.ayfri.kore.arguments.types.literals.self
 import io.github.ayfri.kore.commands.execute.execute
@@ -15,10 +17,12 @@ import ra.core.Tag
 import ra.core.define
 import ra.core.raw
 import ra.core.ref
+import ra.multiblocklib.spec.Compiled
 
 /** Periodic validation of standing multiblocks, and disassembly of broken ones. */
 internal object Validation {
 	val validateSingle = ref(Ns.LIB_MULTIBLOCK, "validate_single")
+	val debugFail = ref(Ns.LIB_MULTIBLOCK, "debug_fail")
 
 	fun Ra.registerValidation() {
 		// Called periodically; disassembles any multiblock whose structure is broken.
@@ -40,7 +44,7 @@ internal object Validation {
 			// Type-specific structure check via registered hooks (sets the score to 1 if valid).
 			function(hookTag(MultiblockLib.Hooks.CHECK_STRUCTURE))
 
-			raw("""execute if entity @a[tag=${Tag.DEBUG},limit=1] if score @s ${Obj.MULTIBLOCK} matches 0 at @s run tellraw @a[tag=${Tag.DEBUG}] [{text:"[MB Debug] ",color:"gold"},{text:"FAIL ",color:"red"},{text:"type="},{nbt:"data.type",entity:"@s",color:"aqua"},{text:" facing="},{nbt:"data.facing",entity:"@s",color:"aqua"},{text:" pos="},{nbt:"Pos",entity:"@s",color:"yellow"}]""")
+			raw("execute if entity @a[tag=${Tag.DEBUG},limit=1] if score @s ${Obj.MULTIBLOCK} matches 0 run function ${debugFail.asId()}")
 			raw("""execute if entity @a[tag=${Tag.DEBUG},limit=1] if score @s ${Obj.MULTIBLOCK} matches 1 at @s run tellraw @a[tag=${Tag.DEBUG}] [{text:"[MB Debug] ",color:"gold"},{text:"OK ",color:"green"},{text:"type="},{nbt:"data.type",entity:"@s",color:"aqua"},{text:" facing="},{nbt:"data.facing",entity:"@s",color:"aqua"}]""")
 
 			execute {
@@ -49,13 +53,20 @@ internal object Validation {
 			}
 		}
 
+		// As a marker that failed its check, at it, with a debug player online: what failed, then
+		// (for a compiled type) which blocks.
+		pack.define(debugFail) {
+			raw("""tellraw @a[tag=${Tag.DEBUG}] [{text:"[MB Debug] ",color:"gold"},{text:"FAIL ",color:"red"},{text:"type="},{nbt:"data.type",entity:"@s",color:"aqua"},{text:" facing="},{nbt:"data.facing",entity:"@s",color:"aqua"},{text:" pos="},{nbt:"Pos",entity:"@s",color:"yellow"}]""")
+			function(Compiled.debug)
+		}
+
 		// As the multiblock marker.
 		pack.define(MultiblockLib.disassemble) {
 			// Type-specific cleanup via registered hooks.
 			function(hookTag(MultiblockLib.Hooks.ON_BREAK))
 
-			raw("execute at @s run playsound minecraft:block.anvil.land block @a[distance=..16] ~ ~ ~ 0.5 0.8")
-			raw("execute at @s run particle minecraft:smoke ~ ~0.5 ~ 0.3 0.3 0.3 0.02 15")
+			raw("execute at @s run playsound minecraft:block.anvil.land block ${soundListenersSel(16)} ~ ~ ~ 0.5 0.8")
+			raw("execute at @s run particle minecraft:smoke ~ ~0.5 ~ 0.3 0.3 0.3 0.02 15 normal ${particleViewersSel()}")
 			raw("""tellraw @a[distance=..16] [{text:"[RA] ",color:"gold"},{text:"Multiblock disassembled.",color:"yellow"}]""")
 
 			kill(self())

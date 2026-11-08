@@ -39,6 +39,9 @@ object Extender {
 
 	fun Ra.registerExtender() {
 		block(block)
+		properties(block) {
+			number("extend", min = 1, max = 1200)
+		}
 		pack.blockGive(block)
 		pack.blockRecipe(block, unlockedBy = Items.QUARTZ_BLOCK) {
 			pattern(" R ", " C ", "   ")

@@ -12,10 +12,8 @@ import io.github.ayfri.kore.generated.Blocks
 import ra.core.Obj
 import ra.core.Ra
 import ra.core.block.gogglesHeader
-import ra.core.block.markerSel
 import ra.core.block.particleViewersSel
 import ra.core.block.soundListenersSel
-import ra.core.block.stackReset
 import ra.core.block.stackedPropLine
 import ra.core.block.stackedTextLine
 import ra.core.define
@@ -30,7 +28,6 @@ object PoppyGenerator {
 		defaultCooldown = 80,
 		loreLines = listOf(
 			loreLine("Grows flowers in front of itself, forever", "gray"),
-			loreLine("Shift+RMB with the wrench: single / patch", "dark_gray"),
 		),
 	)
 	private val block = generator.block
@@ -53,18 +50,13 @@ object PoppyGenerator {
 	private val done = literal("#poppy.done")
 
 	fun Ra.registerPoppyGenerator() {
-		with(generator) {
-			registerGenerator {
-				// `mode` is gone with the patch. Removed from anything still carrying it so the
-				// Data Handler stops offering a setting that decides nothing.
-				raw("execute as ${block.markerSel()} run data remove entity @s data.properties.mode")
-			}
-		}
+		// `mode` went with the patch; the 5.1.7 migration removes it from old markers.
+		with(generator) { registerGenerator() }
 
 		// One flower in front, always. The 3x3 patch mode is gone: it was a second code path over
 		// the same ground for a block whose whole job is one flower at a time.
 		pack.define(generator.process) {
-			cooldownGate()
+			cooldownGate(generator.defaultCooldown)
 			execute {
 				positioned(vec3(0, 0, 1).local)
 				run { function(single) }
@@ -169,17 +161,11 @@ object PoppyGenerator {
 		raw("execute if block ~ ~-1 ~ $GROWABLE if block ~ ~-2 ~ $FLOWER_GROUND run scoreboard players set #poppy.ground ${Obj.TEMP} 1")
 	}
 
-	/**
-	 * Five lines is more than the usual three, so this one stacks its own ladder instead of
-	 * hand-picking heights -- the last line used to land at y 0.0, which is inside the block.
-	 */
+	/** The billboard lays the lines out itself, top first, growing upward from above the block. */
 	private fun Function.goggles() {
-		gogglesHeader(block, nameY = 1.25)
-
-		// Four lines at 0.16 apart, starting at 1.05: tight enough to read as one block of text, and
-		// the last one still lands at 0.57 -- above the block, not inside it. Offsets are measured
-		// from the marker at the block centre, so anything under about 0.55 is buried.
-		stackReset(105, 16)
+		gogglesHeader(block)
+		// Drawn only if the schema lets the goggles show it; the generators' fixed cooldown is
+		// `goggles = false` (Generator.kt), so this is a Data Handler value, not a billboard line.
 		stackedPropLine("cooldown", "Cooldown: ", "aqua", suffix = "t")
 
 		// Whether the spot it plants into has anything a flower can stand on. Without this a

@@ -1,14 +1,19 @@
 package ra.modules.interactive
 
+import ra.core.computeInto
+import ra.core.provider
+import ra.core.scoreOf
+import ra.core.storeInt
 import io.github.ayfri.kore.arguments.types.resources.FunctionArgument
+import io.github.ayfri.kore.features.predicates.providers.min
+import io.github.ayfri.kore.features.predicates.providers.plus
 import io.github.ayfri.kore.functions.Function
 import ra.core.Ns
 import ra.core.Obj
 import ra.core.Ra
+import ra.core.Storage
 import ra.core.define
 import ra.core.raw
-import io.github.ayfri.kore.arguments.types.literals.literal
-import io.github.ayfri.kore.commands.scoreboard.scoreboard
 import ra.core.callWith
 import ra.core.block.particleViewersSel
 import ra.core.block.readProperty
@@ -61,12 +66,10 @@ object BigTorchSweep {
 		// the block actually does. The write-back goes first: it tests the value as typed, and the
 		// clamp below is what would otherwise have already hidden it.
 		raw("execute if score #prop ${Obj.TEMP} matches 101.. run data modify entity @s data.properties.radius set value 100")
-		raw("execute if score #prop ${Obj.TEMP} matches 101.. run scoreboard players set #prop ${Obj.TEMP} 100")
-
-		raw("execute store result storage ra:temp big_torch.radius int 1 run scoreboard players get #prop ${Obj.TEMP}")
-		raw("scoreboard players operation #prop.outer ${Obj.TEMP} = #prop ${Obj.TEMP}")
-		scoreboard.players.add(literal("#prop.outer"), Obj.TEMP, 16)
-		raw("execute store result storage ra:temp big_torch.outer int 1 run scoreboard players get #prop.outer ${Obj.TEMP}")
+		// The radius, clamped, and the remembering band 16 blocks past it.
+		val radius = provider { min(scoreOf("#prop", Obj.TEMP), 100) }
+		computeInto(storeInt(Storage.TEMP, "big_torch.radius"), radius)
+		computeInto(storeInt(Storage.TEMP, "big_torch.outer"), radius + 16)
 
 		callWith(sweepAt, "storage ra:temp big_torch")
 	}

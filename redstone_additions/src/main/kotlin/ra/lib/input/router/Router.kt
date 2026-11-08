@@ -39,6 +39,8 @@ object Router {
 				ifCondition { score(self(), InputObj.MODE) equalTo mode }
 				run { function(fn) }
 			}
+			// The caller's label (InputRange) is for this prompt only.
+			raw("data remove storage ra:input label")
 		}
 
 		// Select the backend for the current mode. Auto strategy: numeric -> trigger, text -> writable_book.

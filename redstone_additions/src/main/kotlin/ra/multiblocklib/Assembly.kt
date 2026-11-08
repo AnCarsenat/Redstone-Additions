@@ -24,6 +24,7 @@ import ra.core.Tag
 import ra.core.define
 import ra.core.raw
 import ra.core.ref
+import ra.multiblocklib.spec.Compiled
 
 /** Assembly: `try_assemble`, `try_tier` and the marker it creates. */
 internal object Assembly {
@@ -47,8 +48,11 @@ internal object Assembly {
 		// functions ask the registry instead of naming one hardcoded type each.
 		pack.define(MultiblockLib.tryTier) {
 			scoreboard.players.set(tierDone, Obj.TEMP, 0)
-			mbCopy("tier_q", "registry")
 			raw("\$data modify storage ra:multiblock tier_scan.tier set value \"\$(tier)\"")
+			// Compiled specs first: a static list per tier, no macro walk.
+			function(Compiled.tryTier)
+			// Then the storage-registered types (tier_next returns at once if one already assembled).
+			mbCopy("tier_q", "registry_runtime")
 			function(tierNext)
 			mbRemove("tier_q", "tier_scan")
 			returnRun { scoreboard.players.get(tierDone, Obj.TEMP) }
@@ -139,14 +143,16 @@ internal object Assembly {
 	 * As the newly summoned marker (tagged ra.multiblock.new). Standard multiblock data:
 	 *   data.type        multiblock type id ("blast_forge")
 	 *   data.facing      "north" / "south" / "east" / "west"
-	 *   data.properties  {enabled:1b, speed:1}
+	 *   data.properties  {}
 	 *   data.inputs      {input_1:{x,y,z}, ...}  IO block offsets from the base
 	 *   data.outputs     {output_1:{x,y,z}, ...}
 	 *   data.controls    {redstone_in:{x,y,z}, ...}
 	 */
 	private fun Function.setupMarker() {
 		// One merge, so the compound and every key exist before the individual writes.
-		raw("""data merge entity @s {data:{type:"unknown",facing:"none",properties:{enabled:1b,speed:1},inputs:{},outputs:{},controls:{}}}""")
+		raw("""data merge entity @s {data:{type:"unknown",facing:"none",properties:{},inputs:{},outputs:{},controls:{}}}""")
+		// Born after the latest admin purge: the unloaded-area clean-up leaves it alone.
+		raw(ra.api.Settings.Purge.stampLine("@s"))
 
 		data(self()) { modify("data.type") { set(MB, "type") } }
 		data(self()) { modify("data.facing") { set(MB, "facing") } }

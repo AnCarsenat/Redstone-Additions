@@ -28,6 +28,7 @@ import ra.core.Storage
 import ra.core.Tag
 import ra.core.block.RecipeResult
 import ra.core.block.Unlock
+import ra.core.block.killVanillaDrop
 import ra.core.block.particleViewersSel
 import ra.core.block.shapedRecipe
 import ra.core.block.soundListenersSel
@@ -87,8 +88,13 @@ object Bases {
 			recipe(t)
 		}
 
-		// The tier is what the wrench assembles against; nothing may edit it.
-		readonly("multiblock_base", "tier", "tier_level")
+		// The tier is what the wrench assembles against; nothing may edit it. Keyed by each tier's
+		// own type, multiblock_base.<tier>: the old `readonly("multiblock_base", ...)` named a type
+		// no base carries, so the tier was editable after all.
+		for (t in BaseTier.all) properties(t.blockTag) {
+			text("tier", readonly = true)
+			number("tier_level", min = 1, max = 5, readonly = true)
+		}
 	}
 
 	/** `$(tier)` macro arguments: see [BaseTier.tierDataSnbt]. */
@@ -119,7 +125,7 @@ object Bases {
 
 	/** As the base marker, at its position. Macro: tier data. */
 	private fun Function.baseOnBreak() {
-		raw("\$kill @e[type=item,nbt={Item:{id:\"$(block_id)\"}},distance=..2,limit=1,sort=nearest]")
+		killVanillaDrop("$(block_id)")
 
 		// Disassemble any linked multiblock (aligned position + tight distance).
 		execute {

@@ -1,5 +1,8 @@
 package ra.modules.storage
 
+import ra.core.TextFormat
+import ra.core.text
+import ra.lib.safe.SafeText.guardProperty
 import io.github.ayfri.kore.arguments.types.literals.self
 import io.github.ayfri.kore.functions.Function
 import io.github.ayfri.kore.generated.Blocks
@@ -44,11 +47,17 @@ object Boxer {
 	val item = block.loreItem { lore(loreLine("Compacts input1 container into output1 boxes", "gray")) }
 	val registerBlock = block.fn("register_block")
 	private val process = block.fn("process")
+	private val guarded = block.fn("guarded_process")
 
 	private const val BOX = """storage ra:temp storage_box.target_box.components."minecraft:custom_data".ra.storage_box"""
 
 	fun Ra.registerBoxer() {
 		block(block)
+		properties(block) {
+			// Pasted into `execute positioned`: three relative coordinates, nothing else.
+			text("input1", TextFormat.COORDS)
+			text("output1", TextFormat.COORDS)
+		}
 		pack.blockRegisterMessage(block)
 		pack.specGive(block, item)
 		pack.shapedRecipe(block.ns, block.id, item.recipeResult(), Unlock(Items.DROPPER), count = null) {
@@ -62,14 +71,19 @@ object Boxer {
 		pack.define(block.handlePlacement) { handlePlacement(block, input = "^ ^ ^-1") }
 		pack.define(block.goggles) { gogglesHeader(block, nameY = 1.0) }
 		pack.define(process) { process() }
+		// The offsets are pasted into commands: refuse anything but three relative coordinates.
+		pack.define(guarded) {
+			guardProperty("input1", TextFormat.COORDS)
+			guardProperty("output1", TextFormat.COORDS)
+			raw("function ${process.asId()} with entity @s data.properties")
+		}
 
 		val onBreak = pack.blockOnBreak(block, drop = { dropItem(item) }, sound = STONE_BREAK_SOUND, cloud = true)
 
 		pack.define(block.tick) {
 			breakCheck(block, Blocks.DROPPER, onBreak)
-			ioDefaults(block, input = "^ ^ ^-1")
 			executeRun("as ${block.markerSel()} at @s", RaLib.Redstone.detectSwitch)
-			executeRun("as ${block.markerSel("tag=${Tag.POWERED}")} at @s", process, "with entity @s data.properties")
+			executeRun("as ${block.markerSel("tag=${Tag.POWERED}")} at @s", guarded)
 		}
 	}
 

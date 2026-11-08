@@ -33,6 +33,25 @@ object PackValidator {
 				.map { (i, line) -> "${fn.asId()}:${i + 1}: macro line with no \$(variable): ${line.trim().take(120)}" }
 		}
 
+	private val itemSummon = Regex("""\bsummon (minecraft:)?item\b(?!_)""")
+
+	/**
+	 * An item entity summoned without an `Item` (or with one filled in afterwards) holds an empty
+	 * stack, and the game discards it before adding it: "Tried to add entity minecraft:item but it
+	 * was marked as removed already". The follow-up `data modify ... Item set from` then finds no
+	 * entity -- or, worse, the nearest OTHER item carrying the same tag -- so the item is lost or
+	 * overwritten. A Magic Crate looping on exactly this flooded the log with ~1900 warnings a
+	 * tick and hit the command limit every tick. Always fatal: summon with a placeholder
+	 * (`{Item:{id:"minecraft:stone",count:1}}`) and overwrite it, as `ra_lib:inventory/drop_item`
+	 * does.
+	 */
+	fun itemSummonsWithoutItem(pack: DataPack): List<String> =
+		(pack.functions + pack.generatedFunctions).flatMap { fn ->
+			fn.lines.withIndex()
+				.filter { (_, line) -> !line.trimStart().startsWith("#") && itemSummon.containsMatchIn(line) && "Item:" !in line.substringAfter("summon") }
+				.map { (i, line) -> "${fn.asId()}:${i + 1}: item summoned without an Item: ${line.trim().take(120)}" }
+		}
+
 	/** Fails generation listing every unresolved call. */
 	fun validate(pack: DataPack) {
 		val problems = problems(pack)

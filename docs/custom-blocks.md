@@ -72,7 +72,7 @@ All in `ra/core/block/`.
 | `pack.blockTick(block, onBreak, test = BreakTest.Air) { body }` | `ns:blocks/<dir>/tick`: `breakCheck(block, test, onBreak)`, then `body` | `BreakTest.NotBlock(physical)`: broken when the block is anything but `physical` |
 | `breakCheck(block, test, onBreak, skipNew)`, `forEachMarker(block, fn)` | `execute as <markers> at @s if/unless block ~ ~ ~ … run function <onBreak>`; `execute as <markers> at @s run function <fn>` | `skipNew` adds `tag=!ra.new` |
 | `dropBlockItem(block, tagged = true)`, `dropItem(spec, tagged = false)` | `summon item ~ ~ ~ {Item:<item>[,Tags:["ra","ra.drop_temp"]]}` | |
-| `killVanillaDrop(itemId)` | kills the nearest item of that id within 2 blocks | |
+| `killVanillaDrop(itemId)` | kills the nearest fresh vanilla drop of that id within 2 blocks: count 1, no components, at most 5 ticks old; nothing if none qualifies | Leaves a stack a player dropped nearby, or spilled container contents, alone |
 
 `unlockedBy` names the advancement criterion too: `has_<item path>` (`has_daylight_detector`),
 which is what the beet files used.
@@ -89,6 +89,10 @@ object Clock {
 
 	fun Ra.registerClock() {
 		block(block)                                       // placement handler + goggles route
+		properties(block) {                                // its settings: types, bounds, flags
+			number("cooldown", min = 2, max = 1200)
+			number("delay", readonly = true, visible = false)   // pre-5.1 name, folded into cooldown
+		}
 		pack.blockGive(block)
 		pack.blockRecipe(block, unlockedBy = Items.DAYLIGHT_DETECTOR) {
 			pattern("RCR", "SSS")
@@ -196,7 +200,7 @@ Data Handlers. The helpers in `core/block/GogglesLines.kt` keep that contract:
 
 ```kotlin
 private fun Function.goggles() {
-	gogglesHeader(block, nameY = 0.7)   // 1. name → ra:temp block_name  2. return if name_only  3. name billboard
+	gogglesHeader(block)   // 1. name → ra:temp block_name  2. return if name_only  3. name line
 	propLine("cooldown", "Cooldown: ", "aqua", y = 0.45, suffix = "t")
 }
 ```
@@ -206,15 +210,19 @@ private fun Function.goggles() {
 | `propLine(path, label, color, y, suffix)` | `prop_line` | `data.properties.<path>` |
 | `dataLine(path, label, color, y, suffix)` | `data_line` | `data.status.<path>` |
 | `textLine(label, value, color, y, suffix)` | `text_line` | the literal `value` |
-| `stackReset(top, step)` | `stack_reset` | starts a ladder; hundredths of a block |
+| `stackReset(top, step)` | `stack_reset` | nothing any more (kept so old callers load) |
 | `stackedPropLine(…)` | `stacked_prop_line` | `data.properties` |
 | `stackedStatusLine(…)` | `stacked_status_line` | `data.status` |
 | `stackedDataLine(…)` | `stacked_data_line` | **`data.data`** (private working state) |
 | `stackedTextLine(…)` | `stacked_text_line` | a literal |
 
-Offsets are blocks above the marker, which sits at the block **centre**: a slab-height block
-wants `nameY` around `0.7`. A missing value renders "N/A" in red; asking the wrong helper
-(`stackedDataLine` for a status value) is the usual cause, and it is silent.
+Each helper appends one line to the block's billboard, in call order (name first, then top to
+bottom); `goggles/draw_block` summons it afterwards as **one** `text_display`, 0.3 above the
+block's top face, growing upward with the line count (0.1 block per line at the billboard's
+0.4 scale). The `y` / `nameY` arguments are accepted and ignored. A property line is drawn only
+when the property's `goggles` flag allows it ([Property schemas](tools-and-registries.md#property-schemas)).
+A missing value renders "N/A" in red; asking the wrong helper (`stackedDataLine` for a status
+value) is the usual cause, and it is silent.
 
 ## Checklist: adding a block
 
@@ -225,7 +233,8 @@ wants `nameY` around `0.7`. A missing value renders "N/A" in red; asking the wro
 5. `on_break` and `tick` (`blockOnBreak` / `blockTick` unless the block needs a variant).
 6. `goggles` with `gogglesHeader` + lines.
 7. Add it to the module's `load` / `tick` / `items/give_all` list and its `GiveBundle`.
-8. Wrench rows, read-only properties, Data Handler names: see
+8. `properties(block) { ... }`: every property, its type and flags (read-only, admin-only,
+   hidden) — see [Property schemas](tools-and-registries.md#property-schemas). Wrench rows: see
    [Tools and Registries](tools-and-registries.md).
 9. A settings `BlockRow` (and `PropRow` defaults) on the module's page: see [Settings](settings-internals.md).
 10. `./gradlew koreBuild`: the validator catches any call left dangling.

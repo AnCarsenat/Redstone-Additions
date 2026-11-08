@@ -1,10 +1,19 @@
 package ra.modules.wires.fluid
 
+import io.github.ayfri.kore.features.predicates.providers.constant
+import io.github.ayfri.kore.features.predicates.providers.floorDiv
+import io.github.ayfri.kore.features.predicates.providers.min
+import io.github.ayfri.kore.features.predicates.providers.mul
+import io.github.ayfri.kore.features.predicates.providers.sub
+import ra.core.computeInto
+import ra.core.computeScore
+import ra.core.provider
+import ra.core.scoreOf
+import ra.core.storeInt
 import io.github.ayfri.kore.arguments.types.literals.literal
 import io.github.ayfri.kore.commands.data
 import io.github.ayfri.kore.commands.function
 import io.github.ayfri.kore.commands.returnValue
-import io.github.ayfri.kore.commands.scoreboard.Operation
 import io.github.ayfri.kore.commands.scoreboard.scoreboard
 import io.github.ayfri.kore.commands.tag
 import io.github.ayfri.kore.utils.nbt
@@ -22,6 +31,9 @@ import ra.core.raw
 import ra.core.ref
 
 object DrainExperience : PackPart {
+	/** What one experience point is worth in the network, both ways. */
+	private const val ML_PER_POINT = 100
+
 	val drainExp = ref(Ns.WIRES, "fluid/drain_exp")
 	val drainExpClear = ref(Ns.WIRES, "fluid/drain_exp_clear")
 	val drainExpOffer = ref(Ns.WIRES, "fluid/drain_exp_offer")
@@ -39,7 +51,7 @@ object DrainExperience : PackPart {
 			// Context: as a vertical drain marker, at the drain position.
 			//
 			// One experience point is 100 mL, and that rate is used in both directions: what
-			// a player pours in is exactly what comes back out of a drain set to place. The
+			// a player pours in is exactly what comes back out of a powered drain. The
 			// conversion is deliberately a round number so a player can read a billboard in
 			// litres and know what they will get back.
 			//
@@ -60,24 +72,25 @@ object DrainExperience : PackPart {
 			raw("execute if score #net_amount ra.tr.tmp matches 1.. if score #dx.have ra.wires.tmp matches ..0 run data modify entity @s data.status.drain_state set value \"wrong_medium\"")
 			executeReturnRun("if score #net_amount ra.tr.tmp matches 1.. if score #dx.have ra.wires.tmp matches ..0", DrainExperience.drainExpClear)
 
-			// Ten points a cycle, or as much of that as the player has and the grid will hold.
-			scoreboard.players.set(literal("#dr.mul"), "ra.wires.tmp", 100)
-			scoreboard.players.set(literal("#dr.cap"), "ra.wires.tmp", 10)
-			raw("execute if score #dr.pts ra.wires.tmp > #dr.cap ra.wires.tmp run scoreboard players operation #dr.pts ra.wires.tmp = #dr.cap ra.wires.tmp")
-
-			scoreboard.players.operation(literal("#dr.free"), "ra.wires.tmp", Operation.SET, literal("#net_capacity"), "ra.tr.tmp")
-			scoreboard.players.operation(literal("#dr.free"), "ra.wires.tmp", Operation.REMOVE, literal("#net_amount"), "ra.tr.tmp")
-			scoreboard.players.operation(literal("#dr.free"), "ra.wires.tmp", Operation.DIVIDE, literal("#dr.mul"), "ra.wires.tmp")
-			raw("execute if score #dr.free ra.wires.tmp < #dr.pts ra.wires.tmp run scoreboard players operation #dr.pts ra.wires.tmp = #dr.free ra.wires.tmp")
+			// Ten points a cycle, or as much of that as the player has and the grid will hold:
+			// pts = min(pts, 10, (capacity - amount) / 100), at 100 mL a point.
+			computeScore(
+				"#dr.pts", "ra.wires.tmp",
+				provider {
+					min(
+						scoreOf("#dr.pts", "ra.wires.tmp"),
+						constant(10),
+						floorDiv(sub(scoreOf("#net_capacity", "ra.tr.tmp"), scoreOf("#net_amount", "ra.tr.tmp")), constant(ML_PER_POINT)),
+					)
+				},
+			)
 
 			raw("execute if score #dr.pts ra.wires.tmp matches ..0 run data modify entity @s data.status.drain_state set value \"network_full\"")
 			executeReturnRun("if score #dr.pts ra.wires.tmp matches ..0", DrainExperience.drainExpClear)
 
 			// Charge the grid for exactly the points about to be taken, so neither side can
 			// end up owing the other a fraction of a point.
-			scoreboard.players.operation(literal("#dr.ml"), "ra.wires.tmp", Operation.SET, literal("#dr.pts"), "ra.wires.tmp")
-			scoreboard.players.operation(literal("#dr.ml"), "ra.wires.tmp", Operation.MULTIPLY, literal("#dr.mul"), "ra.wires.tmp")
-			raw("execute store result storage ra:wires xp.amount int 1 run scoreboard players get #dr.ml ra.wires.tmp")
+			computeInto(storeInt(Storage.WIRES, "xp.amount"), provider { mul(scoreOf("#dr.pts", "ra.wires.tmp"), constant(ML_PER_POINT)) })
 			function(DrainExperience.drainExpOffer, Storage.WIRES, "xp")
 
 			raw("execute store result storage ra:wires xp.points int 1 run scoreboard players get #dr.pts ra.wires.tmp")
@@ -118,7 +131,7 @@ object DrainExperience : PackPart {
 
 		pack.define(DrainExperience.drainPlace) {
 			// Spend network contents placing the medium into the world.
-			// Context: as a drain marker in "place" mode, at the drain position.
+			// Context: as a redstone-powered drain marker, at the drain position.
 
 			function(RaLib.Transport.Net.read)
 
@@ -133,7 +146,7 @@ object DrainExperience : PackPart {
 
 		pack.define(DrainExperience.drainPlaceExp) {
 			// Give experience back to the world as orbs.
-			// Context: as a drain marker in "place" mode, at the drain position.
+			// Context: as a redstone-powered drain marker, at the drain position.
 			//
 			// The same 100 mL a point that drain_exp charges, so a network filled by standing
 			// on one drain empties at exactly the rate it filled — ten points a cycle. What
@@ -141,19 +154,12 @@ object DrainExperience : PackPart {
 
 			function(RaLib.Transport.Net.read)
 
-			scoreboard.players.set(literal("#dr.mul"), "ra.wires.tmp", 100)
-			scoreboard.players.set(literal("#dr.pts"), "ra.wires.tmp", 10)
-
-			// Whole points only, and never more than the network holds.
-			scoreboard.players.operation(literal("#dr.have"), "ra.wires.tmp", Operation.SET, literal("#net_amount"), "ra.tr.tmp")
-			scoreboard.players.operation(literal("#dr.have"), "ra.wires.tmp", Operation.DIVIDE, literal("#dr.mul"), "ra.wires.tmp")
-			raw("execute if score #dr.have ra.wires.tmp < #dr.pts ra.wires.tmp run scoreboard players operation #dr.pts ra.wires.tmp = #dr.have ra.wires.tmp")
+			// Ten points, in whole points only, and never more than the network holds:
+			// pts = min(10, amount / 100).
+			computeScore("#dr.pts", "ra.wires.tmp", provider { min(constant(10), floorDiv(scoreOf("#net_amount", "ra.tr.tmp"), constant(ML_PER_POINT))) })
 			raw("execute if score #dr.pts ra.wires.tmp matches ..0 run return run data modify entity @s data.status.drain_state set value \"not_enough\"")
 
-			scoreboard.players.operation(literal("#dr.ml"), "ra.wires.tmp", Operation.SET, literal("#dr.pts"), "ra.wires.tmp")
-			scoreboard.players.operation(literal("#dr.ml"), "ra.wires.tmp", Operation.MULTIPLY, literal("#dr.mul"), "ra.wires.tmp")
-
-			raw("execute store result storage ra:wires xp.amount int 1 run scoreboard players get #dr.ml ra.wires.tmp")
+			computeInto(storeInt(Storage.WIRES, "xp.amount"), provider { mul(scoreOf("#dr.pts", "ra.wires.tmp"), constant(ML_PER_POINT)) })
 			function(DrainExperience.drainExpPull, Storage.WIRES, "xp")
 
 			raw("execute store result storage ra:wires xp.points int 1 run scoreboard players get #dr.pts ra.wires.tmp")

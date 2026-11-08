@@ -75,6 +75,13 @@ mostly long `execute if score … run` chains). That is allowed by the rules abo
 can convert chains to typed builders file by file, with `compare_reference.py` proving each
 conversion changes nothing.
 
+**Arithmetic** of more than one step — a sum, a clamp, a storage read-modify-write — is one
+26.3 `/compute` built with `ra/core/Compute.kt` (`provider { }`, `scoreOf`, `storageOf`,
+`computeScore`, `computeInto`, `computeStorage`), not a chain of `scoreboard players operation`
+lines. Write constants as literals in the provider rather than as fake players set at load.
+Don't hand-write provider SNBT in `raw`, and don't use Kore's `compute { }` for it
+([Developer Guide](developer-guide.md#arithmetic-with-compute)).
+
 ## Data-driven files
 
 Use the typed builders (`recipesBuilder`, `advancement`, `predicate`, `itemModifier`,

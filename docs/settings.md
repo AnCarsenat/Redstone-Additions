@@ -35,7 +35,8 @@ These only change what **you** see and hear.
 
 Needs permission level 2 (operator). The first page is a row of buttons, one per module; each
 opens a page with buttons beside every value: step it up or down, or **edit** to type an exact
-number.
+number. Some pages have **subcategories**, listed at the bottom of the page (General has
+**Goggles**); a subcategory's **[Back]** returns to its page.
 
 Every setting is also a command, so you can tab-complete your way through them:
 
@@ -45,18 +46,32 @@ Every setting is also a command, so you can tab-complete your way through them:
 /function ra_settings:admin/wires/electric_furnace/disable
 ```
 
+### Typing a value
+
+**edit** asks for the value in one of two ways:
+
+- **A number** is typed with `/trigger ra.input.trigger set <n>` (the chat shows a ready-made
+  link). The prompt names the setting and its range — *Enter a number for Goggles range
+  (4–64)* — and a value outside it is refused with the same range. The prompt waits 30 seconds.
+- **Text** is written on page 1 of an **Input Form** book; close the book to submit. You may
+  hold the form in either hand. The prompt waits 5 minutes, and the wait starts again whenever
+  you hold the form, so it never runs out while you are writing. Dropping the form, or putting it
+  in a chest, bundle or lectern, cancels the prompt and the form disappears.
+
 ### What you can change
 
 | Page | Settings |
 | --- | --- |
-| General | show the load message; chat prefix (`RA`); Goggles range (16 blocks); Goggles refresh (20 ticks) |
+| General | show the load message; chat prefix (`RA`); subcategory **Goggles** |
+| General › Goggles | Goggles range (16 blocks); Goggles redraw (20 ticks); *Filter previews* (on): draw the item an Item Pipe filters for above its readout |
 | Logic Gates | default Clock interval (20), Delayer delay (20), Extender duration (20), Shortener pulse (2), Randomizer chance (50%) |
 | Interactive | default Magic Crate radius (8) and interval (20), Message Block range (16) |
-| Power & Fluids | default Generator EU/tick (60), Consumer interval (20), Industrial Light EU use (10), Liquid Drain interval (20) |
+| Power & Fluids | default Generator EU/tick (60), Consumer EU draw (40), Industrial Light EU use (10), Liquid Drain speed (5 L per second) |
 | Ender Links | default Power Vault EU/tick (80), Fluid Vault transfer (200) |
 | Infinite Generators | default interval of each generator (100) |
 | Jetpacks | Thruster Kit thrust (80%), speed cap (350), dead zone (25) |
 | Enchant Crafting | enchant crafting on/off |
+| Sensors | *Players may edit entity selectors and tags* (off): when on, players without server-settings access may change the selectors and tags of the Entity Detector, Tag Adder, Tag Remover and Message Block |
 | every module | which of its blocks may be placed |
 
 ### Defaults for new blocks
@@ -94,6 +109,34 @@ operator gives you the tag automatically.
     The tag survives reloads and is **not** removed when someone loses operator status. Use
     `/function ra_settings:admin/revoke` (or `/tag <player> remove ra.admin`).
 
+## Purging entities
+
+**[Purge entities]** on the first server-settings page (or `/function ra_settings:admin/purge/show`)
+removes Redstone Additions' **entities** and keeps the pack installed: settings, disabled blocks,
+player preferences and scoreboards stay. Placed blocks stay too, as ordinary vanilla blocks.
+
+| Option | Removes | Keeps |
+|---|---|---|
+| **Everything** | every RA marker (so every machine, network and multiblock), block skins, pipe and wire displays, goggles readouts, RA-tagged dropped items, abandoned input books; releases the chunks powered Chunk Loaders kept loaded; clears transport networks, the Teleport Anchor name list and pending Data Handler edits | settings, disabled blocks, player preferences, clipboards |
+| **Orphaned displays** | skins, pipe and wire displays and floating block items with no block under them | working blocks, goggles readouts |
+| **Goggles readouts** | the floating goggles text and icons (redrawn for anyone still wearing goggles) | everything else |
+| **Dropped RA items** | RA-tagged items on the ground (including a dropped Clock, UNI Gate or Message Block nobody picked up) and Data Handler or settings input books lying around | everything else |
+
+Clicking an option **removes nothing**. It prints, in red, what will go and how many of each are
+loaded right now, with **[CONFIRM]** and **[Cancel]**. **[CONFIRM]** works only for you, only for
+that option, and only for 30 seconds; after that, review again. You get a summary of what was
+removed, and every other player with server-settings access is told who purged what.
+
+!!! warning "Only loaded chunks"
+    Minecraft can only reach entities in loaded chunks, so a purge counts and removes what is
+    loaded. After **Everything**, the Purge page shows **Unloaded chunks: cleaning**: every RA
+    block from before the purge is removed (marker, skin and displays, and its Chunk Loader
+    forceload) the moment its chunk loads. Blocks placed after the purge are never touched.
+    **[Stop]** ends that (old blocks then come back as they load, with their networks gone);
+    **[Resume]** starts it again. Purging **Everything** again restarts it.
+
+There is no undo — copy the world first if you want a backup.
+
 ## Uninstalling
 
 ```
@@ -121,7 +164,7 @@ are usable, so your `/trigger` list stays short:
 | `ra.settings.admin` | which server-settings button you clicked; bare, opens the index | for `ra.admin` holders |
 | `ra.wrench` | Wrench menu | while holding the Wrench, plus 10 seconds |
 | `ra.dh.action`, `ra.edit_type` | Data Handler menu | while holding the Data Handler, plus 10 seconds |
-| `ra.input.trigger` | number prompts when no book is used | during a prompt |
+| `ra.input.trigger` | number prompts ([Typing a value](#typing-a-value)) | while a number prompt waits for you |
 | `ra.jp.mode`, `.sound`, `.power`, `.kits` | [Jetpacks](jetpacks.md) | while wearing a jetpack |
 
 The two uninstall confirmations use ordinary command links on purpose, so Minecraft's own

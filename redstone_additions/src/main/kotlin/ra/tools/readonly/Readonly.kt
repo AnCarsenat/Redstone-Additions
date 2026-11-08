@@ -6,35 +6,18 @@ import ra.core.define
 import ra.core.raw
 
 /**
- * `ra:tools/readonly/init_registry`: which properties a block owns and the player may not edit.
+ * `ra:tools/readonly/init_registry`, kept because ra:load calls it.
  *
- * WHAT READ-ONLY MEANS HERE
- * Some properties are the block's own working numbers rather than settings: a generator's
- * generation_rate, a valve's transfer rate, a breaker's cooldown. The block writes them, reads them,
- * and depends on them being sane. Letting a player type into them produces machines that are
- * quietly broken in ways no error message explains.
- *
- * Marking one read-only (`ra.readonly(type, ...)`) does two things at once:
- *   - the Data Handler still SHOWS it, with a struck-through [Modify] and a reason on hover,
- *     because hiding a value the goggles display anyway is just confusing
- *   - the wrench never offers it in the cycle menu
- *
- * ONE DECLARATION, NOT ONE PER MODULE
- * This used to be five separate `tools/hidden_fields.mcfunction` files, each a chain of
- * `if entity @s[tag=ra.custom_block.X]`, reached through a function tag. Now it is one map keyed by
- * the block type markers carry in data.type, the same key the wrench registry uses.
- *
- * Stored as compounds rather than lists because both readers ask "is THIS name read-only?", and
- * `if data storage ... ."$(name)"` answers that in one command where a list would need a walk.
+ * Read-only properties used to be a map of their own, `storage ra:dh readonly`, filled from
+ * `ra.readonly(type, ...)`. They are now a flag in each block type's property schema
+ * (`number("rate", readonly = true)`, see ra/core/Properties.kt), which
+ * `ra:tools/data_handler/init_registry` writes to `storage ra:dh types` with every other flag.
+ * A read-only property is still shown by the Data Handler, locked, and never cycled by the wrench.
  */
 object Readonly {
 	val initRegistry = Tools.Readonly.initRegistry
 
 	fun Ra.registerReadonly() {
-		// Keys sorted, as the hand-written map was.
-		val map = readonly.toSortedMap().entries.joinToString(",", "{", "}") { (type, props) ->
-			"\"$type\":" + props.joinToString(",", "{", "}") { "$it:1b" }
-		}
-		pack.define(initRegistry) { raw("data modify storage ra:dh readonly set value $map") }
+		pack.define(initRegistry) { raw("data remove storage ra:dh readonly") }
 	}
 }

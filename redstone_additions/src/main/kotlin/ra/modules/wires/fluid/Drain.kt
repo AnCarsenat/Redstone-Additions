@@ -1,5 +1,9 @@
 package ra.modules.wires.fluid
 
+import io.github.ayfri.kore.features.predicates.providers.sub
+import ra.core.computeScore
+import ra.core.provider
+import ra.core.scoreOf
 import io.github.ayfri.kore.arguments.types.literals.literal
 import io.github.ayfri.kore.arguments.types.literals.self
 import io.github.ayfri.kore.commands.data
@@ -14,6 +18,7 @@ import ra.core.Obj
 import ra.core.PackPart
 import ra.core.Ra
 import ra.core.Storage
+import ra.core.block.particleViewersSel
 import ra.core.block.soundListenersSel
 import ra.core.define
 import ra.core.executeReturnRun
@@ -27,12 +32,18 @@ object Drain : PackPart {
 	val drainAboveTry = ref(Ns.WIRES, "fluid/drain_above_try")
 	val drainTick = ref(Ns.WIRES, "fluid/drain_tick")
 
+	/** Default `speed`: litres per second, i.e. one 5 L source block a second (20 ticks). */
+	const val DEFAULT_SPEED = 5
+
+	/** Ticks between actions at speed 1; the interval is this divided by `speed`. */
+	const val TICKS_AT_SPEED_1 = 100
+
 	override fun Ra.register() {
 		pack.define(Drain.drainAbove) {
 			// Empty one filled container out of the block sitting on top of the drain.
 			// Context: as the drain marker, at the drain position.
 			//
-			// One container per cycle, so the drain's cooldown still governs throughput —
+			// one container per cycle, so the drain's speed still governs throughput —
 			// emptying a whole barrel of buckets in a single tick would make the setting
 			// meaningless.
 
@@ -73,8 +84,7 @@ object Drain : PackPart {
 
 			function(RaLib.Transport.Net.read)
 			raw("\$scoreboard players set #dr.need ra.wires.tmp \$(volume)")
-			scoreboard.players.operation(literal("#dr.free"), "ra.wires.tmp", Operation.SET, literal("#net_capacity"), "ra.tr.tmp")
-			scoreboard.players.operation(literal("#dr.free"), "ra.wires.tmp", Operation.REMOVE, literal("#net_amount"), "ra.tr.tmp")
+			computeScore("#dr.free", "ra.wires.tmp", provider { sub(scoreOf("#net_capacity", "ra.tr.tmp"), scoreOf("#net_amount", "ra.tr.tmp")) })
 			raw("execute if score #dr.free ra.wires.tmp < #dr.need ra.wires.tmp run return run data modify entity @s data.status.drain_state set value \"network_full\"")
 
 			raw("\$execute store result score #dr.got ra.wires.tmp run function ${RaLib.Transport.Net.offer.asId()} {amount:\$(volume),medium:\"\$(medium)\"}")
@@ -101,7 +111,7 @@ object Drain : PackPart {
 
 			scoreboard.players.set(literal("#dr.took"), "ra.wires.tmp", 1)
 			raw("data modify entity @s data.status.drain_state set value \"emptied_container\"")
-			raw("\$function ${Fluid.particles.asId()} {medium:\"\$(medium)\"}")
+			raw("\$function ${Fluid.drip.asId()} {medium:\"\$(medium)\"}")
 			raw("playsound minecraft:item.bucket_empty block ${soundListenersSel(8)} ~ ~ ~ 0.7 1.2")
 		}
 
@@ -109,48 +119,59 @@ object Drain : PackPart {
 			// Move fluid between the world and the network.
 			// Context: as a drain marker, at the drain position.
 			//
-			// The drain has three roles. Two are chosen with the wrench:
-			// "drain" — take a world source into the network, same as a pump but slower
-			// "place" — spend network contents putting the medium back into the world
+			// WHAT IT DOES, IN ORDER
+			// 1. Powered by redstone: pour out -- spend network contents putting the medium
+			//    back into the world (a source block, orbs, or a potion over nearby players).
+			// 2. Stood on end (facing up or down): be a loading point first -- empty a sneaking
+			//    player's held container, a container on top, or dropped containers into the
+			//    network, or take a sneaking player's experience. See ra_wires:fluid/drain_items.
+			// 3. Otherwise -- and also when a vertical drain had nothing to load -- take an
+			//    adjacent world source in, like a pump.
 			//
-			// The third is chosen by how you place the block: stood vertically it stops
-			// working on the world entirely and becomes the hand-loading point, where a
-			// player empties a held container into the network. See ra_wires:fluid/drain_items.
-			//
-			// Mode "place" is what makes a fluid network worth building: it can carry lava
-			// from a pool to wherever you want it, or refill cauldrons on the far side of a
-			// base, instead of the contents only ever being a number on a billboard.
+			// WHY THIS REPLACED THE `mode` PROPERTY (6.0.1)
+			// A drain picks its facing from where the player looks, and placing one on the
+			// ground beside a pool means looking down: it came out vertical. A vertical drain
+			// used to be ONLY a loading point and returned before the world scan, so it never
+			// took in a single block of the pool beside it, and the wrench's drain/place mode
+			// was never even read. Pouring out is now the redstone signal, which a player can
+			// see and change, and a vertical drain still drains the world when it has nothing
+			// to load.
 
-			raw("execute unless data entity @s data.properties.mode run data modify entity @s data.properties.mode set value \"drain\"")
-			// Migration: this knob was briefly called `interval`. One name across the pack.
-			raw("execute if data entity @s data.properties.interval unless data entity @s data.properties.cooldown run data modify entity @s data.properties.cooldown set from entity @s data.properties.interval")
-			data(self()) { remove("data.properties.interval") }
-			raw("execute unless data entity @s data.properties.cooldown run data modify entity @s data.properties.cooldown set value 20")
-
-			// Throughput is the cooldown between actions, cycled through three steps with the
-			// wrench. Compared as a score rather than baked into the selector, so the setting
-			// takes effect the moment it is changed.
+			// Throughput: one action every 100 / speed ticks, so speed is litres per second at
+			// 5 L a source block (5 = one block a second, the old default of 20 ticks).
+			// Compared as a score rather than baked into the selector, so a change applies at once.
 			scoreboard.players.add(self(), Obj.COOLDOWN, 1)
-			function(RaLib.Util.property, nbt { this["name"] = "cooldown"; this["default"] = 20; this["min"] = 1 })
-			scoreboard.players.operation(literal("#dr.cooldown"), "ra.wires.tmp", Operation.SET, literal("#prop"), "ra.temp")
-			raw("execute if score @s ${Obj.COOLDOWN} < #dr.cooldown ra.wires.tmp run return 0")
+			function(RaLib.Util.property, nbt { this["name"] = "speed"; this["default"] = DEFAULT_SPEED; this["min"] = 1 })
+			scoreboard.players.set(literal("#dr.ticks"), "ra.wires.tmp", TICKS_AT_SPEED_1)
+			scoreboard.players.operation(literal("#dr.ticks"), "ra.wires.tmp", Operation.DIVIDE, literal("#prop"), "ra.temp")
+			raw("execute if score @s ${Obj.COOLDOWN} < #dr.ticks ra.wires.tmp run return 0")
 			scoreboard.players.set(self(), Obj.COOLDOWN, 0)
 
-			// ra.facing 0 is down and 1 is up: a drain on its end is the hand-loading point,
-			// whatever mode it is set to.
-			executeReturnRun("if score @s ra.facing matches 0..1", DrainItems.drainItems)
+			// 1. Redstone pours out.
+			executeReturnRun("if function ${RaLib.Redstone.any.asId()}", DrainExperience.drainPlace)
 
-			executeRun("""if data entity @s data.properties{mode:"place"}""", DrainExperience.drainPlace)
-			raw("""execute if data entity @s data.properties{mode:"place"} run return 0""")
+			// 2. A vertical drain loads containers and experience first. Anything other than
+			// "nothing_to_empty" means it acted, or has something to say (network full, wrong
+			// medium) that a world-scan status must not overwrite.
+			raw("execute if score @s ra.facing matches 0..1 run data modify entity @s data.status.drain_state set value \"idle\"")
+			executeRun("if score @s ra.facing matches 0..1", DrainItems.drainItems)
+			raw("execute if score @s ra.facing matches 0..1 unless data entity @s data.status{drain_state:\"nothing_to_empty\"} run return 0")
 
+			// 3. Take a world source in. Liquids only: a drain beside a lit campfire must not pull
+			// its smoke into a liquid network.
+			raw("data modify storage ra:wires probe_state set value \"liquid\"")
 			function(Source.scan)
+			data(Storage.WIRES) { remove("probe_state") }
 
 			raw("execute unless data storage ra:wires found run data modify entity @s data.status.drain_state set value \"no_source\"")
-			raw("execute unless data storage ra:wires found run particle minecraft:smoke ~ ~0.8 ~ 0.25 0.25 0.25 0.01 4")
+			raw("execute unless data storage ra:wires found unless score @s ra.facing matches 0..1 run particle minecraft:smoke ~ ~0.8 ~ 0.25 0.25 0.25 0.01 4 normal ${particleViewersSel()}")
 			raw("execute unless data storage ra:wires found run return 0")
 
+			data(self()) { remove("data.status.pump_state") }
 			function(Pump.pumpExtract, Storage.WIRES, "found")
 			data(self()) { modify("data.status.drain_state", self(), "data.status.pump_state") }
+			executeRun("if data entity @s data.status{pump_state:\"pumping\"}", Fluid.drip, "with storage ra:wires found")
+			raw("execute if data entity @s data.status{pump_state:\"pumping\"} run playsound minecraft:item.bucket_fill block ${soundListenersSel(8)} ~ ~ ~ 0.5 1.2")
 			data(Storage.WIRES) { remove("found") }
 		}
 	}

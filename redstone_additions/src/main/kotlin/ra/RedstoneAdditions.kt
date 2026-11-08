@@ -15,6 +15,8 @@ import ra.core.PackValidator
 import ra.core.Ra
 import ra.example.ExamplePart
 import ra.hub.HubPart
+import ra.hub.uninstall.uninstallGaps
+import ra.settings.purge.Purge
 import ra.lib.RaLibPart
 import ra.migrations.MigrationsPart
 import ra.modules.chunkloader.ChunkLoaderModule
@@ -107,8 +109,21 @@ object RedstoneAdditions {
 		for (part in parts) with(part) { ra.register() }
 		ra.runDeferred()
 
+		// Whatever the pack creates, the uninstall removes. Not behind `strict`: a world left with
+		// objectives or storage after an uninstall is a bug however the pack was built.
+		uninstallGaps(this).let { gaps ->
+			check(gaps.isEmpty()) { "The uninstall leaves these behind:\n" + gaps.joinToString("\n") { "  - $it" } }
+		}
+
+		Purge.unstampedMarkers(this).let { bad ->
+			check(bad.isEmpty()) { "Persistent RA markers summoned without the purge stamp (the unloaded-area clean-up would kill them):\n" + bad.joinToString("\n") { "  - $it" } }
+		}
+
 		PackValidator.macroLinesWithoutVariables(this).let { bad ->
 			check(bad.isEmpty()) { "Macro lines Minecraft would reject (the whole function fails to load):\n" + bad.joinToString("\n") { "  - $it" } }
+		}
+		PackValidator.itemSummonsWithoutItem(this).let { bad ->
+			check(bad.isEmpty()) { "Item entities summoned empty (discarded at once, and whatever fills them in hits another item):\n" + bad.joinToString("\n") { "  - $it" } }
 		}
 		if (strict) PackValidator.validate(this) else PackValidator.report(this)
 	}

@@ -1,7 +1,13 @@
 package ra.modules.interactive
 
+import ra.core.computeInto
+import ra.core.provider
+import ra.core.scoreOf
+import ra.core.storeInt
 import io.github.ayfri.kore.arguments.types.literals.self
 import io.github.ayfri.kore.commands.function
+import io.github.ayfri.kore.features.predicates.providers.min
+import ra.core.Storage
 import io.github.ayfri.kore.commands.kill
 import io.github.ayfri.kore.functions.Function
 import io.github.ayfri.kore.generated.Blocks
@@ -14,7 +20,6 @@ import ra.core.Tag
 import ra.core.block.CustomBlock
 import ra.core.block.gogglesHeader
 import ra.core.block.placeBlock
-import ra.core.block.stackReset
 import ra.core.block.stackedDataLine
 import ra.core.block.stackedPropLine
 import ra.core.block.stackedStatusLine
@@ -50,15 +55,21 @@ object MagicCrate {
 	val block = CustomBlock(Ns.INTERACTIVE, "magic_crate", "Magic Crate", model = "minecraft:barrel")
 	val item = block.loreItem { lore(loreLine("Pulls dropped items in from up to 20 blocks", "gray")) }
 	val registerBlock = block.fn("register_block")
-	private val dropAll = block.fn("drop_all")
 	private val pull = block.fn("pull")
 	private val sweep = block.fn("sweep")
 	private val tickOne = block.fn("tick_one")
 
-	private const val MH_DROP = "ra.mh_drop"
 
 	fun Ra.registerMagicCrate() {
 		block(block)
+		properties(block) {
+			// The same ceiling tick_one clamps to: a schema that allowed 32 let players type a
+			// radius the crate silently ignored.
+			number("radius", min = 5, max = 20)
+			// A server admin's setting (a fast pulse is a server cost), and not what you look at a
+			// crate to learn: the Goggles show its state, radius and last pulse instead.
+			number("cooldown", min = 1, max = 1200, adminOnly = true, goggles = false)
+		}
 		pack.blockRegisterMessage(block)
 		pack.specGive(block, item)
 		pack.shapedRecipe(block.ns, block.id, item.recipeResult(), Unlock(Items.ENDER_PEARL), count = null) {
@@ -72,7 +83,6 @@ object MagicCrate {
 
 		pack.define(block.handlePlacement) { handlePlacement() }
 		pack.define(block.goggles) { goggles() }
-		pack.define(dropAll) { dropAll() }
 		pack.define(pull) { pull() }
 		pack.define(sweep) { sweep() }
 		pack.define(tickOne) { tickOne() }
@@ -83,7 +93,6 @@ object MagicCrate {
 		// both items.
 		val onBreak = pack.blockOnBreak(
 			block, drop = { dropItem(item) }, sound = STONE_BREAK_SOUND,
-			afterVanillaKill = { function(dropAll) },
 		)
 
 		pack.define(block.tick) {
@@ -108,26 +117,10 @@ object MagicCrate {
 
 	private fun Function.goggles() {
 		gogglesHeader(block, nameY = 1.0)
-		stackReset(80, 22)
 		stackedStatusLine("state", "", "aqua")
 		stackedPropLine("radius", "Radius: ", "aqua", " blocks")
 		stackedPropLine("cooldown", "Cooldown: ", "aqua", " ticks")
 		stackedDataLine("pulled", "Last pulse: ", "green", " items")
-	}
-
-	/**
-	 * Spill the crate's contents when it is broken. At the block, before the barrel is gone.
-	 *
-	 * Recursive rather than nine copies of the same three lines: the container is 27 slots, and
-	 * the written-out form other blocks use only ever covered the first nine of them.
-	 */
-	private fun Function.dropAll() {
-		raw("execute unless data block ~ ~ ~ Items[0] run return 0")
-		raw("""summon item ~ ~0.5 ~ {Tags:["${Tag.RA}","$MH_DROP"]}""")
-		raw("data modify entity @e[type=item,tag=$MH_DROP,limit=1] Item set from block ~ ~ ~ Items[0]")
-		raw("tag @e[type=item,tag=$MH_DROP] remove $MH_DROP")
-		raw("data remove block ~ ~ ~ Items[0]")
-		function(dropAll)
 	}
 
 	/**
@@ -151,7 +144,7 @@ object MagicCrate {
 		raw("execute store result storage ra:interactive mh.stack.Slot byte 1 run scoreboard players get #mh.slot ${Obj.TEMP}")
 		raw("data modify block ~ ~ ~ Items append from storage ra:interactive mh.stack")
 
-		raw("execute at @s run particle minecraft:portal ~ ~0.2 ~ 0.2 0.2 0.2 0.05 12")
+		raw("execute at @s run particle minecraft:portal ~ ~0.2 ~ 0.2 0.2 0.2 0.05 12 normal ${particleViewersSel()}")
 		raw("particle minecraft:enchant ~ ~1 ~ 0.3 0.3 0.3 0.4 8 normal ${particleViewersSel()}")
 		raw("playsound minecraft:entity.enderman.teleport block ${soundListenersSel(12)} ~ ~ ~ 0.2 1.8")
 
@@ -194,11 +187,9 @@ object MagicCrate {
 		// because a radius the player could raise without limit would turn one block into a
 		// server-wide entity selector.
 		readProperty("radius", default = 8, min = 5)
-		scoreboard.players.set(literal("#mh.max"), Obj.TEMP, 20)
-		raw("execute if score #prop ${Obj.TEMP} > #mh.max ${Obj.TEMP} run scoreboard players operation #prop ${Obj.TEMP} = #mh.max ${Obj.TEMP}")
+		computeInto(storeInt(Storage.INTERACTIVE, "mh.r"), provider { min(scoreOf("#prop", Obj.TEMP), 20) })
 
 		scoreboard.players.set(literal("#mh.pulled"), Obj.TEMP, 0)
-		raw("execute store result storage ra:interactive mh.r int 1 run scoreboard players get #prop ${Obj.TEMP}")
 		callWith(sweep, "storage ra:interactive mh")
 
 		raw("execute store result entity @s data.data.pulled int 1 run scoreboard players get #mh.pulled ${Obj.TEMP}")

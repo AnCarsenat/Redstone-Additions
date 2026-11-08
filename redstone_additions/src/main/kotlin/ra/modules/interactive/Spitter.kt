@@ -27,6 +27,7 @@ import ra.core.block.Unlock
 import ra.core.block.recipeResult
 import ra.core.block.shapedRecipe
 import ra.core.block.soundListenersSel
+import ra.core.block.particleViewersSel
 import io.github.ayfri.kore.features.recipes.types.pattern
 import io.github.ayfri.kore.features.recipes.types.key
 
@@ -41,6 +42,7 @@ object Spitter {
 
 	fun Ra.registerSpitter() {
 		block(block)
+		properties(block) {}
 		pack.blockRegisterMessage(block)
 		pack.specGive(block, item)
 		pack.shapedRecipe(block.ns, block.id, item.recipeResult(), Unlock(Items.DROPPER), count = null) {
@@ -61,7 +63,6 @@ object Spitter {
 
 		val onBreak = pack.blockOnBreak(
 			block, drop = { dropItem(item) }, sound = STONE_BREAK_SOUND, cloud = true,
-			afterVanillaKill = { dropFirstSlot() },
 		)
 
 		pack.define(block.tick) {
@@ -89,5 +90,8 @@ object Spitter {
 
 		raw("data remove block ~ ~ ~ Items[0]")
 		raw("playsound minecraft:block.dispenser.dispense block ${soundListenersSel()} ~ ~ ~ 0.5 1.2")
+		// A small puff at the face, where the stack comes out, so a working Spitter is visible
+		// from a distance -- for players with block particles on.
+		raw("particle minecraft:poof ^ ^ ^0.7 0.1 0.1 0.1 0.02 3 normal ${particleViewersSel()}")
 	}
 }

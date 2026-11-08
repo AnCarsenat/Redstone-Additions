@@ -10,6 +10,7 @@ import ra.api.RaLib
 import ra.core.Ns
 import ra.core.PackPart
 import ra.core.Ra
+import ra.core.block.killVanillaDrop
 import ra.core.define
 import ra.core.raw
 import ra.core.ref
@@ -42,7 +43,7 @@ object ElectricBreak : PackPart {
 			tag(self()) { remove("ra.wires.node") }
 			function(RaLib.Transport.Net.leave)
 			function(Common.updateModelLocalAndNeighbors)
-			raw("""kill @e[type=item,nbt={Item:{id:"minecraft:waxed_copper_grate"}},distance=..2,limit=1]""")
+			killVanillaDrop("minecraft:waxed_copper_grate")
 			raw("""summon item ~ ~ ~ {Item:{id:"minecraft:bat_spawn_egg",count:1,components:{"minecraft:item_model":"minecraft:waxed_copper_grate","minecraft:item_name":'Battery',"minecraft:lore":[{text:"Stores 10000 EU for its grid",color:"gray",italic:false}],"minecraft:custom_data":{ra:{battery:1b}},"minecraft:entity_data":{id:"minecraft:bat",Tags:["ra","ra.spawned","ra.place.battery"],Silent:1b,NoAI:1b,Invulnerable:1b}}}}""")
 			kill(self())
 		}
@@ -58,7 +59,7 @@ object ElectricBreak : PackPart {
 			tag(self()) { remove("ra.wires.bridge") }
 			tag(self()) { remove("ra.wires.node") }
 			function(Common.updateModelLocalAndNeighbors)
-			raw("""kill @e[type=item,nbt={Item:{id:"minecraft:waxed_copper_bulb"}},distance=..2,limit=1]""")
+			killVanillaDrop("minecraft:waxed_copper_bulb")
 			raw("""summon item ~ ~ ~ {Item:{id:"minecraft:bat_spawn_egg",count:1,components:{"minecraft:item_model":"minecraft:waxed_copper_bulb","minecraft:item_name":'EU Breaker',"minecraft:lore":[{text:"Powered: moves EU from the grid behind",color:"gray",italic:false},{text:"into the grid in front. Never merges them.",color:"gray",italic:false}],"minecraft:custom_data":{ra:{electric_breaker:1b}},"minecraft:entity_data":{id:"minecraft:bat",Tags:["ra","ra.spawned","ra.place.electric_breaker"],Silent:1b,NoAI:1b,Invulnerable:1b}}}}""")
 			kill(self())
 		}
@@ -77,7 +78,7 @@ object ElectricBreak : PackPart {
 			tag(self()) { remove("ra.wires.node") }
 			function(RaLib.Transport.Net.leave)
 			function(Common.updateModelLocalAndNeighbors)
-			raw("""kill @e[type=item,nbt={Item:{id:"minecraft:observer"}},distance=..2,limit=1]""")
+			killVanillaDrop("minecraft:observer")
 			raw("""summon item ~ ~ ~ {Item:{id:"minecraft:bat_spawn_egg",count:1,components:{"minecraft:item_model":"minecraft:observer","minecraft:item_name":'EU Consumer',"minecraft:custom_data":{ra:{electric_consumer:1b}},"minecraft:entity_data":{id:"minecraft:bat",Tags:["ra","ra.spawned","ra.place.electric_consumer"],Silent:1b,NoAI:1b,Invulnerable:1b}}}}""")
 			kill(self())
 		}
@@ -93,7 +94,7 @@ object ElectricBreak : PackPart {
 			// Both creative sources are beacons now, so the radius is tightened to the block
 			// itself -- at distance 2 this would happily eat the OTHER one's dropped beacon
 			// when the two are placed next to each other.
-			raw("""kill @e[type=item,nbt={Item:{id:"minecraft:beacon"}},distance=..1,limit=1]""")
+			killVanillaDrop("minecraft:beacon")
 			raw("""summon item ~ ~ ~ {Item:{id:"minecraft:bat_spawn_egg",count:1,components:{"minecraft:item_model":"minecraft:beacon","minecraft:item_name":'Creative EU Source',"minecraft:rarity":"epic","minecraft:lore":[{text:"Creative: makes something from nothing",color:"light_purple",italic:false}],"minecraft:custom_data":{ra:{creative_eu:1b}},"minecraft:entity_data":{id:"minecraft:bat",Tags:["ra","ra.spawned","ra.place.creative_eu"],Silent:1b,NoAI:1b,Invulnerable:1b}}}}""")
 			kill(self())
 		}
@@ -109,7 +110,7 @@ object ElectricBreak : PackPart {
 			// Both creative sources are beacons now, so the radius is tightened to the block
 			// itself -- at distance 2 this would happily eat the OTHER one's dropped beacon
 			// when the two are placed next to each other.
-			raw("""kill @e[type=item,nbt={Item:{id:"minecraft:beacon"}},distance=..1,limit=1]""")
+			killVanillaDrop("minecraft:beacon")
 			raw("""summon item ~ ~ ~ {Item:{id:"minecraft:bat_spawn_egg",count:1,components:{"minecraft:item_model":"minecraft:beacon","minecraft:item_name":'Creative Fluid Source',"minecraft:rarity":"epic","minecraft:lore":[{text:"Creative: makes something from nothing",color:"light_purple",italic:false}],"minecraft:custom_data":{ra:{creative_fluid:1b}},"minecraft:entity_data":{id:"minecraft:bat",Tags:["ra","ra.spawned","ra.place.creative_fluid"],Silent:1b,NoAI:1b,Invulnerable:1b}}}}""")
 			kill(self())
 		}
@@ -126,7 +127,7 @@ object ElectricBreak : PackPart {
 			function(RaLib.Transport.Net.leave)
 			function(Common.updateModelLocalAndNeighbors)
 			function(RaLib.Skin.clear, nbt { this["id"] = "electric_furnace" })
-			raw("""kill @e[type=item,nbt={Item:{id:"minecraft:barrel"}},distance=..2,limit=1]""")
+			killVanillaDrop("minecraft:barrel")
 			raw("""summon item ~ ~ ~ {Item:{id:"minecraft:bat_spawn_egg",count:1,components:{"minecraft:item_model":"minecraft:blast_furnace","minecraft:item_name":'Electric Furnace',"minecraft:lore":[{text:"Smelts with EU - no fuel",color:"gray",italic:false},{text:"Top row in, rows 2-3 out",color:"gray",italic:false}],"minecraft:custom_data":{ra:{electric_furnace:1b}},"minecraft:entity_data":{id:"minecraft:bat",Tags:["ra","ra.spawned","ra.place.electric_furnace"],Silent:1b,NoAI:1b,Invulnerable:1b}}}}""")
 			kill(self())
 		}
@@ -147,7 +148,7 @@ object ElectricBreak : PackPart {
 			function(Common.updateModelLocalAndNeighbors)
 			// The skin comes down before the marker dies -- nothing else knows it is there.
 			function(RaLib.Skin.clear, nbt { this["id"] = "electric_generator" })
-			raw("""kill @e[type=item,nbt={Item:{id:"minecraft:barrel"}},distance=..2,limit=1]""")
+			killVanillaDrop("minecraft:barrel")
 			raw("""summon item ~ ~ ~ {Item:{id:"minecraft:bat_spawn_egg",count:1,components:{"minecraft:item_model":"minecraft:blast_furnace","minecraft:item_name":'EU Generator',"minecraft:custom_data":{ra:{electric_generator:1b}},"minecraft:entity_data":{id:"minecraft:bat",Tags:["ra","ra.spawned","ra.place.electric_generator"],Silent:1b,NoAI:1b,Invulnerable:1b}}}}""")
 			kill(self())
 		}
@@ -167,7 +168,7 @@ object ElectricBreak : PackPart {
 			tag(self()) { remove("ra.wires.node") }
 			function(RaLib.Transport.Net.leave)
 			function(Common.updateModelLocalAndNeighbors)
-			raw("""kill @e[type=item,nbt={Item:{id:"minecraft:sea_lantern"}},distance=..2,limit=1]""")
+			killVanillaDrop("minecraft:sea_lantern")
 			raw("""summon item ~ ~ ~ {Item:{id:"minecraft:bat_spawn_egg",count:1,components:{"minecraft:item_model":"minecraft:sea_lantern","minecraft:item_name":'Industrial Light',"minecraft:lore":[{text:"Redstone + EU: a 10 block beam of light",color:"gray",italic:false}],"minecraft:custom_data":{ra:{industrial_light:1b}},"minecraft:entity_data":{id:"minecraft:bat",Tags:["ra","ra.spawned","ra.place.industrial_light"],Silent:1b,NoAI:1b,Invulnerable:1b}}}}""")
 			kill(self())
 		}
@@ -182,7 +183,7 @@ object ElectricBreak : PackPart {
 			// block already did this; the panel never did, because it was not a network
 			// node until now.
 			function(RaLib.Transport.Net.leave)
-			raw("""kill @e[type=item,nbt={Item:{id:"minecraft:daylight_detector"}},distance=..2,limit=1]""")
+			killVanillaDrop("minecraft:daylight_detector")
 			raw("""summon item ~ ~ ~ {Item:{id:"minecraft:bat_spawn_egg",count:1,components:{"minecraft:item_model":"minecraft:daylight_detector","minecraft:item_name":'Solar Panel',"minecraft:lore":[{text:"Generates EU from sunlight",color:"gray",italic:false}],"minecraft:custom_data":{ra:{solar_panel:1b}},"minecraft:entity_data":{id:"minecraft:bat",Tags:["ra","ra.spawned","ra.place.solar_panel"],Silent:1b,NoAI:1b,Invulnerable:1b}}}}""")
 			kill(self())
 		}
@@ -204,7 +205,7 @@ object ElectricBreak : PackPart {
 			// The switch is placed as waxed_cut_copper now, so that is what breaking it drops.
 			// The item model stays a redstone lamp so it is still tellable apart from a Valve
 			// in an inventory -- the pack already does this for wires, whose item is a candle.
-			raw("""kill @e[type=item,nbt={Item:{id:"minecraft:waxed_cut_copper"}},distance=..2,limit=1]""")
+			killVanillaDrop("minecraft:waxed_cut_copper")
 			raw("""summon item ~ ~ ~ {Item:{id:"minecraft:bat_spawn_egg",count:1,components:{"minecraft:item_model":"minecraft:redstone_lamp","minecraft:item_name":'EU Switch',"minecraft:custom_data":{ra:{electric_switch:1b}},"minecraft:entity_data":{id:"minecraft:bat",Tags:["ra","ra.spawned","ra.place.electric_switch"],Silent:1b,NoAI:1b,Invulnerable:1b}}}}""")
 			kill(self())
 		}
@@ -224,9 +225,9 @@ object ElectricBreak : PackPart {
 			tag(self()) { remove("ra.wires.node") }
 			function(RaLib.Transport.Net.leave)
 			function(Common.updateModelLocalAndNeighbors)
-			raw("""kill @e[type=item,nbt={Item:{id:"minecraft:conduit"}},distance=..2,limit=2]""")
-			raw("""kill @e[type=item,nbt={Item:{id:"minecraft:mud_brick_wall"}},distance=..2,limit=2]""")
-			raw("""kill @e[type=item,nbt={Item:{id:"minecraft:polished_blackstone_wall"}},distance=..2,limit=2]""")
+			killVanillaDrop("minecraft:conduit")
+			killVanillaDrop("minecraft:mud_brick_wall")
+			killVanillaDrop("minecraft:polished_blackstone_wall")
 
 			// One wire, so one drop. The tier branch that used to be here decided between
 			// two items that had become identical.

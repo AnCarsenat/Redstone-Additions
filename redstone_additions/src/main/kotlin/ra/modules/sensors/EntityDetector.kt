@@ -1,5 +1,9 @@
 package ra.modules.sensors
 
+import ra.core.TextFormat
+import ra.core.text
+import ra.lib.safe.SafeText.guardProperty
+import ra.modules.sensors.SensorsModule.SELECTOR_SETTING
 import io.github.ayfri.kore.arguments.types.literals.self
 import io.github.ayfri.kore.commands.function
 import io.github.ayfri.kore.commands.scoreboard.scoreboard
@@ -51,6 +55,10 @@ object EntityDetector {
 
 	fun Ra.registerEntityDetector() {
 		block(block)
+		properties(block) {
+			// Pasted into a command every tick: admins only unless the server allows it (see TagAdder).
+			text("entity_selector", TextFormat.SELECTOR, adminOnly = true, adminSetting = SELECTOR_SETTING)
+		}
 		pack.blockRegisterMessage(block)
 		pack.blockGive(block)
 		pack.shapedRecipe(block.ns, block.id, item.recipeResult(), Unlock(Items.SCULK_SENSOR), count = null) {
@@ -73,7 +81,13 @@ object EntityDetector {
 
 		// Detect entities in range. As the marker, at its position: the selector is stored for the macro.
 		pack.define(detect) {
+			// Removed first, or a detector missing its selector would run the previous detector's.
+			// With none it detects nothing, and its output is switched off like any empty search.
+			raw("data remove storage ra:temp entity_selector")
 			raw("data modify storage ra:temp entity_selector set from entity @s data.properties.entity_selector")
+			raw("execute unless data storage ra:temp entity_selector run return run fill ~-1 ~-1 ~-1 ~1 ~1 ~1 iron_block replace redstone_block")
+			// Pasted into the command: an unsafe selector detects nothing (ra_lib:safe/guard).
+			guardProperty("entity_selector", TextFormat.SELECTOR, onFail = "return run fill ~-1 ~-1 ~-1 ~1 ~1 ~1 iron_block replace redstone_block")
 			function(detectMacro, Storage.TEMP)
 		}
 

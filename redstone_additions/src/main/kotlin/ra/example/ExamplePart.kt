@@ -5,11 +5,13 @@ import io.github.ayfri.kore.arguments.types.resources.FunctionArgument
 import io.github.ayfri.kore.commands.function
 import io.github.ayfri.kore.commands.returnValue
 import io.github.ayfri.kore.commands.tag
+import ra.api.MultiblockSpec
 import ra.core.Ns
 import ra.core.PackPart
 import ra.core.Ra
 import ra.core.Storage
 import ra.core.define
+import ra.core.item.ItemSpec
 import ra.core.moduleLoaded
 import ra.core.raw
 import ra.core.ref
@@ -18,6 +20,7 @@ import ra.modules.multiblock.blastforge.BlastForge
 import ra.modules.multiblock.blocks.BaseTier
 import ra.modules.multiblock.blocks.Bases
 import ra.modules.multiblock.upgradeplatform.UpgradePlatform
+import ra.multiblocklib.spec.Compiled
 
 /**
  * Example addon (`ra_example`): the worked example behind docs/extension-examples.md.
@@ -35,6 +38,16 @@ object ExamplePart : PackPart {
 	private class ExampleBase(val dir: String, val tier: BaseTier, val model: String, val name: String, val lore: String) {
 		val customData get() = "example_$dir"
 		val placeTag get() = "ra.place.example.$dir"
+
+		/** The item, once: given by `give`, and refunded when its placement is refused. */
+		val item get() = ItemSpec.fromSnbt(
+			"minecraft:bat_spawn_egg",
+			"item_model" to "\"$model\"",
+			"item_name" to "\"$name\"",
+			"lore" to """[{text:"$lore",color:"gray",italic:false}]""",
+			"custom_data" to "{ra:{$customData:1b}}",
+			"entity_data" to """{id:"minecraft:bat",Tags:["ra","ra.spawned","$placeTag"],Silent:1b,NoAI:1b,Invulnerable:1b}""",
+		)
 	}
 
 	private val bases = listOf(
@@ -51,8 +64,9 @@ object ExamplePart : PackPart {
 
 		for (b in bases) {
 			pack.define(ref(ns, "blocks/${b.dir}/give")) {
-				raw("""give @s bat_spawn_egg[item_model="${b.model}",item_name="${b.name}",lore=[{text:"${b.lore}",color:"gray",italic:false}],custom_data={ra:{${b.customData}:1b}},entity_data={id:"minecraft:bat",Tags:["ra","ra.spawned","${b.placeTag}"],Silent:1b,NoAI:1b,Invulnerable:1b}]""")
+				raw("give @s ${b.item.giveArg()}")
 			}
+			extraPlaceables += b.item.stackNbt()
 			// As the bat: borrows the tier's place tag for the duration of the base's own handler.
 			pack.define(ref(ns, "blocks/${b.dir}/handle_placement")) {
 				raw("execute unless entity @s[tag=${b.placeTag}] run return 0")
@@ -69,22 +83,24 @@ object ExamplePart : PackPart {
 		}
 
 		// The example multiblocks' hooks, each delegating to the real ra_multiblock function.
-		hooks("blast_forge", BlastForge.checkStructure, BlastForge.onBreak, BlastForge.setupType, BlastForge.tickDispatch, BlastForge.validate)
-		hooks("upgrade_platform", UpgradePlatform.checkStructure, UpgradePlatform.onBreak, UpgradePlatform.setupType, UpgradePlatform.tickDispatch, UpgradePlatform.validate)
+		// Both are compiled specs now, so the hook bodies are the library's generated functions,
+		// each guarded the way a hook tag entry must be (it runs for every type).
+		hooks("blast_forge", BlastForge.SPEC, BlastForge.tickDispatch)
+		hooks("upgrade_platform", UpgradePlatform.SPEC, UpgradePlatform.tickDispatch)
 	}
 
-	private fun Ra.hooks(
-		dir: String,
-		checkStructure: FunctionArgument,
-		onBreak: FunctionArgument,
-		setupType: FunctionArgument,
-		tickDispatch: FunctionArgument,
-		validate: FunctionArgument,
-	) {
-		pack.define(ref(ns, "$dir/check_structure")) { function(checkStructure) }
-		pack.define(ref(ns, "$dir/on_break")) { function(onBreak) }
-		pack.define(ref(ns, "$dir/setup_type")) { function(setupType) }
+	private fun Ra.hooks(dir: String, spec: MultiblockSpec, tickDispatch: FunctionArgument) {
+		pack.define(ref(ns, "$dir/check_structure")) {
+			raw("execute if entity @s[tag=${spec.tag}] run function ${Compiled.checkOf(spec).asId()}")
+		}
+		// Neither structure needs cleanup: nothing to do on break.
+		pack.define(ref(ns, "$dir/on_break")) { raw("return 0") }
+		pack.define(ref(ns, "$dir/setup_type")) {
+			raw("""execute if data entity @s data{type:"${spec.id}"} run tag @s add ${spec.tag}""")
+		}
 		pack.define(ref(ns, "$dir/tick_dispatch")) { function(tickDispatch) }
-		pack.define(ref(ns, "$dir/validate")) { function(validate) }
+		pack.define(ref(ns, "$dir/validate")) {
+			raw("""execute if data storage ra:multiblock {type:"${spec.id}"} run function ${Compiled.validateOf(spec).asId()}""")
+		}
 	}
 }

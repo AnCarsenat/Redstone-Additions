@@ -1,10 +1,11 @@
 package ra.modules.wires.blocks.creative_eu
 
-import io.github.ayfri.kore.arguments.types.literals.literal
+import io.github.ayfri.kore.features.predicates.providers.sub
+import ra.core.computeScore
+import ra.core.provider
+import ra.core.scoreOf
 import io.github.ayfri.kore.commands.data
 import io.github.ayfri.kore.commands.function
-import io.github.ayfri.kore.commands.scoreboard.Operation
-import io.github.ayfri.kore.commands.scoreboard.scoreboard
 import ra.api.Goggles
 import ra.api.RaLib
 import ra.core.Ns
@@ -59,8 +60,7 @@ object CreativeEu : PackPart {
 			// here.
 
 			function(RaLib.Transport.Net.read)
-			scoreboard.players.operation(literal("#cr.fill"), "ra.wires.tmp", Operation.SET, literal("#net_capacity"), "ra.tr.tmp")
-			scoreboard.players.operation(literal("#cr.fill"), "ra.wires.tmp", Operation.REMOVE, literal("#net_amount"), "ra.tr.tmp")
+			computeScore("#cr.fill", "ra.wires.tmp", provider { sub(scoreOf("#net_capacity", "ra.tr.tmp"), scoreOf("#net_amount", "ra.tr.tmp")) })
 
 			raw("execute if score #cr.fill ra.wires.tmp matches ..0 run return run data modify entity @s data.status.state set value \"Grid full\"")
 

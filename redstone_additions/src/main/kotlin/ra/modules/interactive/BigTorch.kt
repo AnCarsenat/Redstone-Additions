@@ -19,7 +19,6 @@ import ra.core.block.CustomBlock
 import ra.core.block.gogglesHeader
 import ra.core.block.killVanillaDrop
 import ra.core.block.placeBlock
-import ra.core.block.stackReset
 import ra.core.block.stackedDataLine
 import ra.core.block.stackedPropLine
 import ra.core.define
@@ -58,6 +57,9 @@ object BigTorch {
 
 	fun Ra.registerBigTorch() {
 		block(block)
+		properties(block) {
+			number("radius", min = 1, max = 100)
+		}
 		pack.blockRegisterMessage(block)
 		pack.specGive(block, item)
 		// Crafted from the Enchanted Coal Block (a barrier, see EnchantedCoal) and a stick. The beet
@@ -141,7 +143,6 @@ object BigTorch {
 
 	private fun Function.goggles() {
 		gogglesHeader(block, nameY = 1.0)
-		stackReset(80, 22)
 		stackedPropLine("radius", "Radius: ", "aqua", " blocks")
 		stackedDataLine("removed", "Denied: ", "green", " mobs")
 	}

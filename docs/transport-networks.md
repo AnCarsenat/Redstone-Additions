@@ -69,12 +69,17 @@ Different families never mix, so an electric wire and a pipe can run side by sid
 | Block | Does |
 | --- | --- |
 | **Liquid Pump** | Pulls a fluid source block next to it (any side) into the network — only when the whole 5000 mL fits. Cauldrons give 1667 + 1667 + 1666 mL |
-| **Liquid Drain**, mode `drain` | Same, on a slower cycle |
-| **Liquid Drain**, mode `place` | Spends 5000 mL to put a source block back into the world on a free side (says `not_enough` below 5000 mL) |
-| **Liquid Drain**, placed vertically | A **loading point**: takes filled buckets/bottles from you (sneak while holding one), from a container on top of it, or from items dropped on it, and gives the empties back. With nothing to load, it takes a sneaking player's **experience** instead |
-| **Gas Pump** | Like the Liquid Pump, for gases |
+| **Liquid Drain** | Same as the pump, taking in a source block next to it. Water and lava fall onto the drain as it does |
+| **Liquid Drain**, powered by redstone | Pours out instead: spends 5000 mL to put a source block back into the world on a free side (says `not_enough` below 5000 mL) |
+| **Liquid Drain**, facing up or down | Also a **loading point**: takes filled buckets/bottles from you (sneak while holding one), from a container on top of it, or from items dropped on it, and gives the empties back; with none of those, a sneaking player's **experience**. With nothing to load, it takes in a source block next to it like any drain |
+| **Gas Pump** | Like the Liquid Pump, for gases. No world block holds a gas, so today a Gas Pump has nothing to pull: fill gas networks from a Boiler |
 
-Change a Drain's mode or rate with the [Wrench](tools.md) (2.5 / **5** / 10 L per second).
+A drain points where you look when you place it, so looking down to place one makes it face up.
+That is fine: an upright drain still drains the pool beside it.
+
+A drain's **speed** is in litres per second: 5 (the default) is one source block a second, 10 is
+two, 1 is one every five seconds. Only operators change it, with the [Data Handler](tools.md);
+the default for new drains is in the [Server Settings](settings.md).
 
 **Infinite sources:** a source block with **nine or more** matching sources within two blocks is
 left in place when pumped, so a large lake never runs dry. Smaller pools do empty.
@@ -85,7 +90,7 @@ left in place when pumped, so a large lake never runs dry. Smaller pools do empt
 |---|---|
 | Water, Lava, Powder Snow, Milk | liquid |
 | Steam, Smoke, Oxygen | gas |
-| Experience | 1 point = 100 mL; a Drain set to `place` gives it back as orbs |
+| Experience | 1 point = 100 mL; a powered Drain gives it back as orbs |
 | Potion | keeps its effects (see below) |
 
 ### Several fluids in one pipe
@@ -108,13 +113,13 @@ per tick. They work whichever way round you place them.
 | Liquid Filter | two fluid networks | only its `filter_medium` (default `water`) — set it with the [Data Handler](tools.md) to `lava`, `steam`, `potion`… |
 | EU Breaker | two electric grids | EU — lets two bases with their own batteries share power |
 
-To cut a pipe completely, remove a pipe block. To cut a wire, use an **EU Switch**: switched off
-(toggle `enabled` with the Data Handler) it splits the grid in two.
+To cut a pipe completely, remove a pipe block. To cut a wire, use an **EU Switch**: without a redstone
+signal it splits the grid in two; powered, it joins it again.
 
 ### Potions
 
 Pour a potion into a Drain and the network remembers which potion it is (the **first** potion in
-wins; a different potion added later becomes the same one). A Drain set to output pours it over
+wins; a different potion added later becomes the same one). A Drain powered by redstone pours it over
 everyone within 4 blocks. A full bottle (1000 mL) gives the potion's full duration; less gives a
 proportional share — 250 mL of a 3-minute Strength potion is 45 seconds. The level is unchanged.
 
@@ -219,9 +224,15 @@ you extend it.
   `nodes` (block count), `amounts` (per fluid), `media` (fluids in arrival order), `medium` (the
   primary), and `potion`.
   See the [Developer Guide](developer-guide.md#transport) for the full model.
-- **Properties** (`data.properties`): Drain `mode`, `cooldown`; Filter `filter_medium`, `rate`
-  (2000); Creative Fluid Source `medium`, `rate`; EU Consumer and Industrial Light `eu_use`; Electric Furnace
-  `output`, `mode`; switches `enabled`. Status for the Goggles is in `data.status`.
+- **Properties** (`data.properties`): Drain `speed` (admin only; one action every `100 / speed`
+  ticks); Filter `filter_medium`, `rate` (2000); Creative Fluid Source `medium`, `rate`; EU
+  Consumer and Industrial Light `eu_use`; Electric Furnace `output`, `mode`. Status for the
+  Goggles is in `data.status`. Drains from before 6.0.1 have their `cooldown` turned into `speed`
+  (`100 / cooldown`) and `mode` removed the first time they tick (`ra_wires:fluid/drain_migrate`,
+  tag `ra.wires.drain_v2`).
+- **Media `drip`.** A medium may name a `drip` particle (`falling_water`, `falling_lava`) that a
+  drain shows on itself while taking that medium in (`ra_wires:fluid/drip`); without one it shows
+  the medium's `particle`.
 - **Fixed rates** such as a generator's `generation_rate` are read-only: the Data Handler shows them
   locked.
 - **Heat sources** are the block tag `#ra_wires:heat_sources`.

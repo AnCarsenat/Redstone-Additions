@@ -63,7 +63,7 @@ Every setting is also a command, so you can tab-complete your way through them:
 | General | show the load message; chat prefix (`RA`); Goggles range (16 blocks); Goggles refresh (20 ticks) |
 | Logic Gates | default Clock interval (20), Delayer delay (20), Extender duration (20), Shortener pulse (2), Randomizer chance (50%) |
 | Interactive | default Magic Crate radius (8) and interval (20), Message Block range (16) |
-| Power & Fluids | default Generator EU/tick (60), Consumer interval (20), Industrial Light EU use (10), Liquid Drain interval (20) |
+| Power & Fluids | default Generator EU/tick (60), Consumer interval (20), Industrial Light EU use (10), Liquid Drain speed (5 L per second) |
 | Ender Links | default Power Vault EU/tick (80), Fluid Vault transfer (200) |
 | Infinite Generators | default interval of each generator (100) |
 | Jetpacks | Thruster Kit thrust (80%), speed cap (350), dead zone (25) |

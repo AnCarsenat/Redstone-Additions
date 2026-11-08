@@ -12,6 +12,15 @@ predicates built when the pack is generated. Worlds on v6.0.0 carry on without a
 
 ### Changed
 
+- **The Liquid Drain pours out on redstone, and its speed is a server setting.** The drain's
+  `mode` property is gone: an unpowered drain takes in, a drain powered by redstone pours its
+  network's contents back out (a source block on a free side, experience orbs, or a potion over
+  nearby players), so you can switch it from a lever. The Wrench no longer cycles the drain.
+  Its `cooldown` is replaced by `speed`, in litres per second (1 – 100, default 5: one bucket's
+  worth a second, the old default rate), which only operators can change — with the Data
+  Handler, or for new drains in the Server Settings. Existing drains keep their rate (a drain
+  set to 10 ticks becomes speed 10, one set to 40 ticks speed 2); one that was set to `place`
+  now needs a redstone signal to pour.
 - **The Thruster Kit costs a quarter of what it did.** Its push is worked out with
   `/compute` instead of a chain of scoreboard operations, and only while you sprint:
   52 → 14 commands per tick for each airborne player using it. Jetpack hover holding and other
@@ -78,6 +87,18 @@ predicates built when the pack is generated. Worlds on v6.0.0 carry on without a
   cooldown and the Magic Crate's pulse cooldown.
 
 ### Fixed
+
+- **The Liquid Drain drains.** A drain points where you look when you place it, so one put
+  down beside a pool usually ended up facing up — and an upright drain only ever took buckets,
+  bottles and experience, never the water or lava next to it, whatever its mode said. An
+  upright drain still loads containers and experience first, and with nothing to load it now
+  takes in the source block beside it like any other drain. Water and lava fall onto the drain
+  as it takes them in (other fluids show their own particle), for players with block particles
+  on, with the sound of a bucket filling; its "no source" smoke also respects that setting.
+
+- **Pumps say when a source is the wrong kind.** A Gas Pump next to water, or a Liquid Pump
+  next to a gas, skipped it without a word and kept showing its last status; the Goggles now
+  read `not_a_gas` or `not_a_liquid`.
 
 - **The EU Consumer's draw is a setting again.** Its Wrench row was called "Rate" and showed a
   `cooldown` value the Consumer never uses, while its [ CYCLE ] button changed the draw, which

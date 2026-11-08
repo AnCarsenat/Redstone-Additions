@@ -68,6 +68,11 @@ predicates built when the pack is generated. Worlds on v6.0.0 carry on without a
 
 ### Fixed
 
+- **The EU Consumer's draw is a setting again.** Its Wrench row was called "Rate" and showed a
+  `cooldown` value the Consumer never uses, while its [ CYCLE ] button changed the draw, which
+  the Data Handler showed locked as a fixed value. The row is now "Draw" and shows the 20 / 40 /
+  80 EU per tick it cycles, and the Data Handler lets you set the draw directly.
+
 - **Tanks and batteries out of view keep what they hold.** Placing or breaking any pipe or wire
   recounted every network in the world from the blocks that were loaded at the time. A network
   out of view lost its contents for good, and came back showing 0 / 0, with its pumps and
@@ -182,11 +187,14 @@ predicates built when the pack is generated. Worlds on v6.0.0 carry on without a
   disabled on the server), the item was used up anyway, and only the disabled case said
   anything. You now get the item back in survival and adventure, with a message saying why.
   An item fired from a dispenser is dropped in front of it.
+  Older pipes and wires still sitting in chests (L2 pipes and wires, gas pipes) are covered too:
+  they give back the Copper Pipe or Wire they now place.
 
 - **Breaking a custom block no longer deletes nearby items.** Removing the plain vanilla item a
   broken custom block drops took the nearest item of the same kind, whatever it was: a stack of
   64 quartz you had dropped beside a Shortener, or the contents a container had just spilled.
-  Only the block's own fresh drop is removed now.
+  Only the block's own fresh drop is removed now, for every custom block: pipes, wires, tanks,
+  pumps, the electric blocks and Multiblock Bases included.
 
 - **The pack no longer stops after a very heavy tick.** If one tick ran past the game's command
   limit, the pack's main loop never scheduled the next one and every machine stopped until

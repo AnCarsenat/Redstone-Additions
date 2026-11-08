@@ -164,9 +164,13 @@ private const val VANILLA_DROP = "ra.vanilla_drop"
  * item no more than 5 ticks old. Item age is not a selector argument, hence the score; `0..` and
  * not `..5`, because an item that never despawns carries a negative age. When no item qualifies,
  * nothing is killed.
+ *
+ * [itemId] may be a macro argument (`$(block_id)`), in which case the one line that uses it is
+ * emitted as a macro line; the calling function must then be run with that argument.
  */
 fun Function.killVanillaDrop(itemId: String) {
-	raw("tag @e[type=item,distance=..2,nbt={Item:{id:\"$itemId\",count:1}},nbt=!{Item:{components:{}}}] add $VANILLA_DROP")
+	val macro = if ("\$(" in itemId) "\$" else ""
+	raw("${macro}tag @e[type=item,distance=..2,nbt={Item:{id:\"$itemId\",count:1}},nbt=!{Item:{components:{}}}] add $VANILLA_DROP")
 	raw("execute as @e[type=item,tag=$VANILLA_DROP,distance=..2] store result score @s ${Obj.TEMP} run data get entity @s Age")
 	raw("kill @e[type=item,tag=$VANILLA_DROP,distance=..2,scores={${Obj.TEMP}=0..5},limit=1,sort=nearest]")
 	raw("scoreboard players reset @e[type=item,tag=$VANILLA_DROP,distance=..2] ${Obj.TEMP}")

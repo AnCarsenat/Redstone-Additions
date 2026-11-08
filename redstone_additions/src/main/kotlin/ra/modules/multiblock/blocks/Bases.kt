@@ -28,6 +28,7 @@ import ra.core.Storage
 import ra.core.Tag
 import ra.core.block.RecipeResult
 import ra.core.block.Unlock
+import ra.core.block.killVanillaDrop
 import ra.core.block.particleViewersSel
 import ra.core.block.shapedRecipe
 import ra.core.block.soundListenersSel
@@ -124,7 +125,7 @@ object Bases {
 
 	/** As the base marker, at its position. Macro: tier data. */
 	private fun Function.baseOnBreak() {
-		raw("\$kill @e[type=item,nbt={Item:{id:\"$(block_id)\"}},distance=..2,limit=1,sort=nearest]")
+		killVanillaDrop("$(block_id)")
 
 		// Disassemble any linked multiblock (aligned position + tight distance).
 		execute {

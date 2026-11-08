@@ -91,6 +91,19 @@ class Ra(val pack: DataPack) {
 	val bundles = mutableListOf<GiveBundle>()
 
 	/**
+	 * Placeable items (item stacks whose `entity_data` carries a `ra.place.<id>` tag) that are in
+	 * no bundle and no [block], so the refund of a refused placement can still give them back.
+	 */
+	val extraPlaceables = mutableListOf<NbtCompound>()
+
+	/**
+	 * Retired place tag -> the place tag of the item refunded in its stead. A retired item still
+	 * sitting in a chest places its successor's block, so a refused placement gives back the
+	 * successor: what breaking the block it would have placed gives back anyway.
+	 */
+	val retiredPlaceTags = linkedMapOf<String, String>()
+
+	/**
 	 * Work deferred until every part has registered, run in the order added. For a part whose
 	 * entry must come AFTER entries other parts append to the same shared file -- e.g.
 	 * `ra_lib_multiblock:generic/validate` closes `#ra_lib_multiblock:validate`, after every
@@ -102,10 +115,26 @@ class Ra(val pack: DataPack) {
 		deferred += action
 	}
 
+	/**
+	 * Work that reads the FINISHED pack, run once every [afterAllParts] action has run (including
+	 * those queued by other deferred actions). Only for steps that must see every function, such
+	 * as the uninstall reading back what the pack creates. Nothing queued here may add functions
+	 * another step here needs to see.
+	 */
+	private val finishers = mutableListOf<() -> Unit>()
+
+	fun whenPackComplete(action: () -> Unit) {
+		finishers += action
+	}
+
 	/** Called once by [ra.RedstoneAdditions] after the last part. */
 	internal fun runDeferred() {
-		deferred.forEach { it() }
+		// Index loop, not forEach: a deferred action may queue another one.
+		var i = 0
+		while (i < deferred.size) deferred[i++]()
 		deferred.clear()
+		finishers.forEach { it() }
+		finishers.clear()
 	}
 
 	/** Registers a placeable block, its placement handler and its goggles readout. */

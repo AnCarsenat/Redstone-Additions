@@ -11,6 +11,7 @@ import ra.core.PackPart
 import ra.core.Ra
 import ra.core.Storage
 import ra.core.define
+import ra.core.item.ItemSpec
 import ra.core.moduleLoaded
 import ra.core.raw
 import ra.core.ref
@@ -37,6 +38,16 @@ object ExamplePart : PackPart {
 	private class ExampleBase(val dir: String, val tier: BaseTier, val model: String, val name: String, val lore: String) {
 		val customData get() = "example_$dir"
 		val placeTag get() = "ra.place.example.$dir"
+
+		/** The item, once: given by `give`, and refunded when its placement is refused. */
+		val item get() = ItemSpec.fromSnbt(
+			"minecraft:bat_spawn_egg",
+			"item_model" to "\"$model\"",
+			"item_name" to "\"$name\"",
+			"lore" to """[{text:"$lore",color:"gray",italic:false}]""",
+			"custom_data" to "{ra:{$customData:1b}}",
+			"entity_data" to """{id:"minecraft:bat",Tags:["ra","ra.spawned","$placeTag"],Silent:1b,NoAI:1b,Invulnerable:1b}""",
+		)
 	}
 
 	private val bases = listOf(
@@ -53,8 +64,9 @@ object ExamplePart : PackPart {
 
 		for (b in bases) {
 			pack.define(ref(ns, "blocks/${b.dir}/give")) {
-				raw("""give @s bat_spawn_egg[item_model="${b.model}",item_name="${b.name}",lore=[{text:"${b.lore}",color:"gray",italic:false}],custom_data={ra:{${b.customData}:1b}},entity_data={id:"minecraft:bat",Tags:["ra","ra.spawned","${b.placeTag}"],Silent:1b,NoAI:1b,Invulnerable:1b}]""")
+				raw("give @s ${b.item.giveArg()}")
 			}
+			extraPlaceables += b.item.stackNbt()
 			// As the bat: borrows the tier's place tag for the duration of the base's own handler.
 			pack.define(ref(ns, "blocks/${b.dir}/handle_placement")) {
 				raw("execute unless entity @s[tag=${b.placeTag}] run return 0")

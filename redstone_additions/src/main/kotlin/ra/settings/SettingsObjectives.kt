@@ -41,7 +41,7 @@ internal object SettingsObjectives {
 	const val ADMIN_TAG = "ra.admin"
 
 	/** What `ra_settings:uninstall` removes besides the user-setting objectives, in its order. */
-	val REMOVED_ON_UNINSTALL = listOf(OPEN, ACT, ADMIN, PAGE, PEND, ra.core.Obj.SET_TMP, DBG_WAS)
+	val REMOVED_ON_UNINSTALL = listOf(OPEN, ACT, ADMIN, PAGE, PEND, ra.core.Obj.SET_TMP, DBG_WAS, REQ)
 
 	// ra_lib:input's objectives, read here to follow a typed-value session.
 	const val INPUT_STATE = "ra.input.state"

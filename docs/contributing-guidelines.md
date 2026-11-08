@@ -247,7 +247,18 @@ seeding and the operator function tree from it ([Settings Internals](settings-in
   does not expect.
 - **Check the request id before consuming.** The library is shared; `consume`
   tears the session down as it reads, so consuming another tool's answer hands it
-  an empty result.
+  an empty result. Copy `ra.input.req` into a score of your own right after opening
+  (`ra.settings.req`, `ra.dh.req`, `ra.remote.req`), and before polling,
+  `execute unless score @s <tool>.req = @s ra.input.req` clears your pending flag
+  and returns: your request was cancelled when the other one opened, so it is never
+  coming back.
+- **Keep what the question was per player.** The answer arrives ticks later, after
+  other players may have asked their own. Store it keyed by your request id
+  (`ra:settings edits.r<id>`, `ra:dh pend.r<id>`), never in one shared slot, and
+  remove it on every path that stops the wait: applied, cancelled, expired,
+  superseded, or replaced by a new question.
+- **Re-check permissions when the answer arrives.** Whatever allowed the question
+  (operator access, a field not being read-only) can have changed by then.
 
 ---
 

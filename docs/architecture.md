@@ -186,8 +186,8 @@ function(RaLib.Util.property, nbt { this["name"] = "delay"; this["default"] = 20
 
 Hooked into `#minecraft:load` by Hub (`ra/hub/Load.kt`). In order:
 
-1. Scoreboards for the tools (`ra.edit_type`, `ra.dh.action`, `ra.dh.pending`, `ra.hold.wrench`,
-   `ra.hold.dh`, `ra.clip.id`).
+1. Scoreboards for the tools (`ra.edit_type`, `ra.dh.action`, `ra.dh.pending`, `ra.dh.mid`,
+   `ra.dh.sel`, `ra.dh.req`, `ra.hold.wrench`, `ra.hold.dh`, `ra.clip.id`).
 2. `data merge storage ra:temp {…}`: the shared scratch roots.
 3. `ra:tools/goggles/billboard/init_offsets`.
 4. `ra_lib:init`.

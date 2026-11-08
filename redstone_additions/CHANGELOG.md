@@ -83,6 +83,35 @@ predicates built when the pack is generated. Worlds on v6.0.0 carry on without a
   trigger stayed in your `/trigger` suggestions for good. It is now offered only while a number
   prompt is waiting for you, and removed from everyone online on the next load.
 
+- **Typed settings edits are kept per player.** The value you were typing for a setting was
+  remembered in one place for the whole server: two people editing at once overwrote each
+  other, and a player's typed number could end up in a server setting an operator had just
+  asked to change. Each player's edit is now kept on its own, and is cleared once it is
+  applied, cancelled or expires. A server setting is only changed if the player typing it still
+  has server-settings access when the value arrives; running a setting's `edit` function now
+  grants that access, as opening the server settings already did.
+
+- **Tools no longer take each other's typed answers.** The Data Handler, the Redstone Remote
+  and the settings menu all ask for input through the same book and number form. The Data
+  Handler and the Remote took whichever answer came in, so starting one while another was
+  waiting could hand your channel name to a block property, or the other way round. Each now
+  only accepts the answer to its own question, and stops waiting when another tool's question
+  replaced it.
+
+- **The Data Handler works for several players at once.** Selecting a block used to deselect
+  every other player's, and the property being edited was shared too: player A's value could
+  be written onto the block player B had just selected, under B's property, even one B's block
+  does not allow changing. Each player now has their own selected block and their own pending
+  edit. The value is written to the block it was asked about, it is refused if you selected a
+  different block since, and the read-only check runs again just before the write.
+
+- **[Edit list] checks what you typed.** Anything that parsed was stored as is, so typing
+  `{a:1}` into a Teleport Anchor's targets replaced its table with something the anchor could
+  not read. The text must now be a list, every entry must be text when the property holds text,
+  and a Teleport Anchor's targets take at most 15 entries, padded with empty rows as
+  `ra_ender:tools/anchor/set_table` does. Anything else is refused with a message and leaves the
+  block unchanged.
+
 ### For contributors
 
 - `ra/core/Compute.kt` builds and emits `/compute` providers; the [Developer Guide](https://ancarsenat.github.io/Redstone-Additions/developer-guide/#arithmetic-with-compute)

@@ -190,18 +190,15 @@ Hooked into `#minecraft:load` by Hub (`ra/hub/Load.kt`). In order:
 2. `data merge storage ra:temp {…}`: the shared scratch roots.
 3. `ra:tools/goggles/billboard/init_offsets`.
 4. `ra_lib:init`.
-5. `ra_lib:redstone/clear` as every custom-block marker (one-off sweep of pre-5.1.16 tags).
-6. Re-centre every loaded custom-block marker on its block. Once, here, not every tick: nothing
-   moves a marker, and placement summons it at the centre.
-7. Every module's `load`, in `modules` order.
-8. `ra_lib_multiblock:init`.
-9. Wrench menu objectives (`ra.wrench`, `ra.wr.x/y/z`).
-10. `ra_settings:init`: after the modules, which register their settings pages.
-11. `ra:tools/wrench/init_registry`, `ra:tools/readonly/init_registry`,
-    `ra:tools/data_handler/init_registry`: configuration, rewritten on every load.
-12. `ra_migrations:run`.
-13. `schedule function ra:tick 1t replace`.
-14. The disabled-blocks notice, then (if the `welcome` setting is on) the welcome messages.
+5. Every module's `load`, in `modules` order.
+6. `ra_lib_multiblock:init`.
+7. Wrench menu objectives (`ra.wrench`, `ra.wr.x/y/z`).
+8. `ra_settings:init`: after the modules, which register their settings pages.
+9. `ra:tools/wrench/init_registry`, `ra:tools/readonly/init_registry`,
+   `ra:tools/data_handler/init_registry`: configuration, rewritten on every load.
+10. `ra_migrations:run`: the world steps this world has not had yet (see [Migrations](#migrations)).
+11. `schedule function ra:tick 1t replace`.
+12. The disabled-blocks notice, then (if the `welcome` setting is on) the welcome messages.
 
 ### `ra:tick`
 
@@ -211,21 +208,68 @@ Rescheduled every tick by itself, not run from `#minecraft:tick` (`ra/hub/Tick.k
    `maxCommandChainLength` has already scheduled the next one; at the end, the cut took the
    reschedule with it and the pack stopped until `/reload`.
 2. Tool "active" tag cleanup (`cdh`, `dh`, `wrench`, `clip`, `meter`, `remote`).
-3. `ra_settings:tick`: per-player defaults, menu clicks. Early, because module ticks filter
+3. `ra_migrations:entities`: custom blocks saved by an older version, migrated before anything
+   below reads them (see [Migrations](#migrations)).
+4. `ra_settings:tick`: per-player defaults, menu clicks. Early, because module ticks filter
    sounds and particles on those scores.
-4. `ra_lib:transport/tick`: debounced network rebuild.
-5. `ra_lib:input/tick`: input sessions.
-6. `ra:tools/data_handler/tick`.
-7. `ra_settings:input_tick`: **after** `input/tick`, so a form finished this tick is seen this tick.
-8. `ra:placement/detect_bats`: the placement router.
-9. Every module's `tick`, in `modules` order.
-10. `ra:tools/goggles/tick`.
-11. Tool menu triggers: hold timers, `enable` / `reset` of `ra.wrench`, `ra.dh.action`,
+5. `ra_lib:transport/tick`: debounced network rebuild.
+6. `ra_lib:input/tick`: input sessions.
+7. `ra:tools/data_handler/tick`.
+8. `ra_settings:input_tick`: **after** `input/tick`, so a form finished this tick is seen this tick.
+9. `ra:placement/detect_bats`: the placement router.
+10. Every module's `tick`, in `modules` order.
+11. `ra:tools/goggles/tick`.
+12. Tool menu triggers: hold timers, `enable` / `reset` of `ra.wrench`, `ra.dh.action`,
     `ra.edit_type`, then `ra:tools/wrench/menu_action` for players who clicked.
 
 The order is load-bearing; [How It Works](how-it-works.md#2-tick-orchestration) explains the
 constraints. When you add a step, put it where the beet `ra:tick` would have, and write down why
 in a comment.
+
+## Migrations
+
+Every one-time fix for data an older version left behind lives in `ra/migrations`
+(`ra_migrations`), and only there: block ticks, placement and menus never check whether a marker
+is from an old version. Two versions are recorded, both as `major*10000 + minor*100 + patch`
+(6.0.1 is `60001`, `DataVersion` in `ra/migrations/Migration.kt`):
+
+| Recorded | Where | Written by | Read by |
+| --- | --- | --- | --- |
+| The world's version | `storage ra:migrations version` | `ra_migrations:run`, after its steps | `ra_migrations:run` |
+| Each custom block marker's | score `ra.ver`, plus tag `ra.ver.<version>` | placement (`DataVersion.stampNew`), and `ra_migrations:entity` after its steps | `ra_migrations:entities` / `ra_migrations:entity` |
+
+A step is declared once, for the two versions it bridges, and has a world part, entity parts, or
+both:
+
+```kotlin
+internal val m6_0_0 = migration("6.0.0", "6.0.1") {
+    world { raw("data remove storage ra:multiblock bf_dir") }   // once per world
+    entity("liquid_drain") { /* as each drain marker */ }        // once per drain
+    entity("teleport_anchor", TeleportAnchor.repairTargets)       // a function, as each anchor
+    marker(Tag.CUSTOM_BLOCK) { /* as every custom block */ }
+}
+```
+
+`MigrationsPart` lists the steps oldest first and generates:
+
+- `ra_migrations:run` (from `ra:load`): each world part whose target is above the stored version,
+  in order, then the current version. A world with no stored version (older than 6.0.1, when it
+  started being recorded) runs every world part once.
+- `ra_migrations:entities` (from `ra:tick`, before the module ticks):
+  `execute as @e[type=marker,tag=ra.custom_block,tag=!ra.ver.<current>] run function ra_migrations:entity`.
+  The version tag is what makes this one selector: `tag=!` matches a marker never stamped and one
+  stamped by an older version alike, which a `scores=` filter cannot (it never matches an entity
+  with no score). When nothing is outdated, the whole pass is that one selector finding nothing.
+- `ra_migrations:entity`, as one outdated marker: `ra_migrations:<step>/entity` for every step
+  whose target is above the marker's `ra.ver` (missing counts as 0), which dispatches on the
+  block-type tag to `ra_migrations:<step>/<type>`; then the old version tag is removed and the
+  marker stamped. A marker in a chunk that was unloaded at load is migrated the first tick it is
+  loaded, before its block's tick sees it.
+
+Every part must be idempotent: an unversioned world or marker runs all of them, including fixes
+its old block ticks may already have applied. The step names (`5.1.7-to-5.1.8`) are identifiers,
+not the build version ([Release and Versioning](release.md)). `ra.ver` and `ra:migrations` are
+removed by the uninstall like every other objective and storage.
 
 ## Shared identifiers
 

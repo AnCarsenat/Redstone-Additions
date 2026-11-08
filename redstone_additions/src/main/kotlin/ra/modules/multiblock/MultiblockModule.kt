@@ -48,9 +48,7 @@ object MultiblockModule : GameplayModule {
 			// Heat, for the Blast Forge.
 			scoreboard.objectives.add(Obj.HEAT)
 
-			// Up to 6.0.0 the Blast Forge's per-facing coordinates were written here as bf_dir; its
-			// spec and tick carry them now. Nothing reads the old copy.
-			raw("data remove storage ra:multiblock bf_dir")
+			// The pre-6.0.1 bf_dir table is removed by the 6.0.1 migration, not here.
 
 			// Tier data, the macro arguments of the base's give / placement / break.
 			for (t in BaseTier.all) raw("data modify storage ra:multiblock ${t.path} set value ${t.tierDataSnbt()}")

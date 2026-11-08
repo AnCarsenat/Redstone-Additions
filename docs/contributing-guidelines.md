@@ -23,8 +23,9 @@
 5. [Settings, triggers and input](#settings-triggers-and-input)
 6. [New block checklist](#new-block-checklist)
 7. [Multiblock checklist](#multiblock-checklist)
-8. [Before opening a pull request](#before-opening-a-pull-request)
-9. [Block template](#block-template)
+8. [Migrations](#migrations)
+9. [Before opening a pull request](#before-opening-a-pull-request)
+10. [Block template](#block-template)
 
 ---
 
@@ -320,6 +321,30 @@ block list cannot express; none of the pack's structures needs them.
 
 ---
 
+## Migrations
+
+Block code must not migrate. A block's tick, placement or menu never checks whether its marker
+comes from an older version, renames an old property, re-seeds a property placement already sets,
+or gates anything on a one-off "already fixed" tag (`*_v2`, `*_checked`, `*_migrated`). That code
+runs every tick for every block for ever, to fix something once.
+
+Put it in `ra/migrations` instead, as a part of the step for the version that changes the data:
+
+```kotlin
+// ra/migrations/Step6_0_1To6_0_2.kt -- then add m6_0_1 to MigrationsPart's list, oldest first
+internal val m6_0_1 = migration("6.0.1", "6.0.2") {
+    world { raw("data remove storage ra:foo old_key") }                    // once per world
+    entity("liquid_pump") { raw("data remove entity @s data.properties.old") } // once per pump
+}
+```
+
+An entity part runs as the marker (not positioned there: use `execute at @s` when it matters),
+once per marker, the first tick that marker is loaded with an older version. A world part runs
+once per world, at load. Both must be safe to run twice. See [Architecture](architecture.md#migrations).
+
+A default a block legitimately needs at read time (a property a player can clear, a value read
+with a fallback) is not a migration and stays where it is read.
+
 ## Before opening a pull request
 
 - [ ] `./gradlew koreBuild` passes in **strict** mode.
@@ -330,6 +355,7 @@ block list cannot express; none of the pack's structures needs them.
       you changed; goggles and wrench on it.
 - [ ] No file over ~300 lines; Kotlin package mirrors the generated path ([Conventions](conventions.md)).
 - [ ] Docs and changelog updated.
+- [ ] No migration code in a block: one-time fixes are steps in `ra/migrations`.
 
 Releases follow [Release and Versioning](release.md).
 

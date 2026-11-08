@@ -26,6 +26,7 @@ import ra.core.define
 import ra.core.raw
 import ra.core.item.loreItem
 import ra.core.blockRegisterMessage
+import ra.migrations.DataVersion.stampNew
 
 /**
  * The three Infinite Cauldrons: a cauldron that refills itself every tick, with water, lava or
@@ -96,6 +97,7 @@ object Cauldrons {
 			// The cauldron, full, with a bare marker (no direction).
 			raw("setblock ~ ~ ~ ${c.full}")
 			raw("""summon marker ~ ~ ~ {Tags:["${Tag.RA}","${Tag.CUSTOM_BLOCK}","${block.tag}"]}""")
+			stampNew("@e[type=marker,tag=${block.tag},distance=..0.1,sort=nearest,limit=1]")
 			raw("playsound minecraft:block.stone.place block ${soundListenersSel()} ~ ~ ~ 1 1")
 			returnValue(1)
 		}

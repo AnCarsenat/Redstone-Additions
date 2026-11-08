@@ -1,20 +1,14 @@
 package ra.hub
 
-import io.github.ayfri.kore.arguments.maths.Axes
-import io.github.ayfri.kore.arguments.maths.vec3
 import io.github.ayfri.kore.arguments.scores.ScoreboardCriteria
-import io.github.ayfri.kore.arguments.types.literals.allEntities
 import io.github.ayfri.kore.arguments.types.literals.literal
-import io.github.ayfri.kore.arguments.types.literals.self
 import io.github.ayfri.kore.commands.data
 import io.github.ayfri.kore.commands.execute.execute
 import io.github.ayfri.kore.commands.function
 import io.github.ayfri.kore.commands.returnValue
 import io.github.ayfri.kore.commands.schedule
 import io.github.ayfri.kore.commands.scoreboard.scoreboard
-import io.github.ayfri.kore.commands.tp
 import io.github.ayfri.kore.functions.Function
-import io.github.ayfri.kore.generated.EntityTypes
 import io.github.ayfri.kore.utils.nbt
 import io.github.ayfri.kore.utils.set
 import ra.RedstoneAdditions
@@ -29,7 +23,6 @@ import ra.core.Obj
 import ra.core.RA_CHAT_PREFIX
 import ra.core.Ra
 import ra.core.Storage
-import ra.core.Tag
 import ra.core.define
 import ra.core.hook
 import ra.core.raMessage
@@ -81,25 +74,6 @@ internal fun Ra.registerLoad() {
 
 		function(RaLib.init)
 
-		// One-off sweep for worlds built before the redstone library stopped producing per-source
-		// tags. See ra_lib:redstone/clear. Harmless on a fresh world, and on an upgraded one it
-		// costs a handful of commands per loaded custom block, once.
-		execute {
-			asTarget(allEntities { type = EntityTypes.MARKER; tag = Tag.CUSTOM_BLOCK })
-			run { function(RaLib.Redstone.clear) }
-		}
-
-		// Centre every loaded custom block marker on its block, once. ra:tick used to do this
-		// every tick, for every marker, though nothing moves them; this keeps the one thing it
-		// was good for, straightening out markers an older version left off-centre.
-		execute {
-			asTarget(allEntities { type = EntityTypes.MARKER; tag = Tag.CUSTOM_BLOCK })
-			at(self())
-			align(Axes.XYZ)
-			positioned(vec3(0.5, 0.5, 0.5).relative)
-			run { tp(self(), vec3()) }
-		}
-
 		for (module in RedstoneAdditions.modules) function(module.load)
 
 		function(MultiblockLib.init)
@@ -118,7 +92,8 @@ internal fun Ra.registerLoad() {
 		function(Tools.Readonly.initRegistry)
 		function(Tools.DataHandler.initRegistry)
 
-		// Bring a world saved by an older version up to date. See ra_migrations:run.
+		// Bring a world saved by an older version up to date: the world steps it has not had yet.
+		// Its blocks are brought up to date one by one from ra:tick. See ra.migrations.MigrationsPart.
 		function(ModulesApi.Migrations.run)
 
 		// Next tick rather than now, to avoid a load-time command burst. `replace` is what a bare

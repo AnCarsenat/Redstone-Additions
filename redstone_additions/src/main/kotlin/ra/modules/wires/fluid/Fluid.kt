@@ -5,7 +5,6 @@ import io.github.ayfri.kore.commands.data
 import io.github.ayfri.kore.commands.function
 import io.github.ayfri.kore.commands.scoreboard.scoreboard
 import io.github.ayfri.kore.commands.tag
-import ra.api.RaLib
 import ra.core.Ns
 import ra.core.PackPart
 import ra.core.Ra
@@ -152,21 +151,8 @@ object Fluid : PackPart {
 			executeRun("as @e[type=marker,tag=ra.custom_block.gas_valve] at @s unless block ~ ~ ~ smooth_basalt", LiquidBreak.gasValve)
 			executeRun("as @e[type=marker,tag=ra.custom_block.boiler] at @s unless block ~ ~ ~ furnace", LiquidBreak.boiler)
 
-			// Valves are bridges now: they belong to no network and pump between the two they
-			// sit between. Two things have to be true of a valve built by an older version.
-			//
-			// It must stop being a member -- a valve that stayed in a network would merge the
-			// very runs it is supposed to keep apart, and the bridge would then find the same
-			// network on both sides and refuse to move anything.
-			executeRun("as @e[type=marker,tag=ra.custom_block.liquid_valve,tag=ra.tr.node]", RaLib.Transport.Net.leave)
-			executeRun("as @e[type=marker,tag=ra.custom_block.gas_valve,tag=ra.tr.node]", RaLib.Transport.Net.leave)
-			executeRun("as @e[type=marker,tag=ra.custom_block.liquid_filter,tag=ra.tr.node]", RaLib.Transport.Net.leave)
-
-			// And it must be tagged as a bridge so ra_wires:tick drives it at all. Idempotent,
-			// so this costs one tag write on a set that is almost always empty.
-			raw("tag @e[type=marker,tag=ra.custom_block.liquid_valve,tag=!ra.wires.bridge] add ra.wires.bridge")
-			raw("tag @e[type=marker,tag=ra.custom_block.gas_valve,tag=!ra.wires.bridge] add ra.wires.bridge")
-			raw("tag @e[type=marker,tag=ra.custom_block.liquid_filter,tag=!ra.wires.bridge] add ra.wires.bridge")
+			// A valve built before valves were bridges leaves its network and is tagged a bridge
+			// by the 5.1.7 migration (ra.migrations), not here.
 
 			// --- World <-> network ---
 			executeRun("as @e[type=marker,tag=ra.custom_block.liquid_pump] at @s", Pump.pumpTick)

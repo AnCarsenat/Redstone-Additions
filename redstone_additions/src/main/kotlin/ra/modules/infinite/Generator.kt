@@ -84,7 +84,7 @@ class Generator(
 			// The generator's fixed interval: worth a row in the Data Handler, not a line on the
 			// Goggles billboard, where it never changes and told players nothing at a glance.
 			number("cooldown", min = 1, max = 1200, readonly = true, goggles = false)
-			// Removed by the Poppy Generator's tick: a leftover of an old version.
+			// Removed by the 5.1.7 migration: a leftover of an old version.
 			if (block.id == "poppy_generator") text("mode", readonly = true, visible = false)
 		}
 		pack.blockRegisterMessage(block)

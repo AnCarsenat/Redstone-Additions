@@ -1,6 +1,5 @@
 package ra.migrations
 
-import io.github.ayfri.kore.DataPack
 import io.github.ayfri.kore.arguments.types.literals.allEntities
 import io.github.ayfri.kore.arguments.types.literals.self
 import io.github.ayfri.kore.commands.data
@@ -8,13 +7,8 @@ import io.github.ayfri.kore.commands.execute.execute
 import io.github.ayfri.kore.commands.kill
 import io.github.ayfri.kore.commands.tag
 import io.github.ayfri.kore.generated.EntityTypes
-import ra.core.Ns
 import ra.core.Tag
-import ra.core.define
-import ra.core.ref
-
-/** `ra_migrations:<from>-to-<to>`. */
-internal fun step(from: String, to: String) = ref(Ns.MIGRATIONS, "$from-to-$to")
+import ra.core.raw
 
 /** `@e[type=marker,tag=ra.custom_block.<type>]`. */
 internal fun blockMarkers(type: String) = allEntities { this.type = EntityTypes.MARKER; tag = Tag.customBlock(type) }
@@ -27,13 +21,13 @@ internal fun blockMarkers(type: String) = allEntities { this.type = EntityTypes.
  * billboards that predate the tag and would be left behind by exactly the command meant to clean
  * them up. Idempotent: adding a tag an entity already has does nothing.
  */
-internal fun DataPack.migrate5_1_7() = define(step("5.1.7", "5.1.8")) {
+internal val m5_1_7 = migration("5.1.7", "5.1.8") { world {
 	val owned = listOf(
 		Tag.CUSTOM_BLOCK, Tag.MULTIBLOCK, Tag.DISPLAY, "ra.skin", Tag.BILLBOARD, Tag.SPAWNED,
 		"ra.node", "ra.wires.node", "ra.wires.fluid_node", "ra.wires.electric_node",
 	)
 	for (t in owned) tag(allEntities { tag = t }) { add(Tag.RA) }
-}
+}}
 
 /**
  * Every block type that existed in 5.1.8. A historical list, not the current registry: it is the
@@ -63,12 +57,12 @@ private val TYPES_5_1_8 = listOf(
  * One line per block type is the whole trick: the tag is the type, it just cannot be read back as
  * a string. Idempotent -- it overwrites with the same value.
  */
-internal fun DataPack.migrate5_1_8() = define(step("5.1.8", "5.1.9")) {
+internal val m5_1_8 = migration("5.1.8", "5.1.9") { world {
 	for (type in TYPES_5_1_8) execute {
 		asTarget(blockMarkers(type))
 		run { data(self()) { modify("data.type") { set(type) } } }
 	}
-}
+}}
 
 /** RA Wires blocks (and the other powered blocks) that carried the dead `enabled` property. */
 private val HAD_ENABLED = listOf(
@@ -93,12 +87,12 @@ private val HAD_ENABLED = listOf(
  *
  * Idempotent: removing an absent path does nothing.
  */
-internal fun DataPack.migrate5_1_9() = define(step("5.1.9", "5.1.10")) {
+internal val m5_1_9 = migration("5.1.9", "5.1.10") { world {
 	for (type in HAD_ENABLED) execute {
 		asTarget(blockMarkers(type))
 		run { data(self()) { remove("data.properties.enabled") } }
 	}
-}
+}}
 
 /**
  * Clear every existing skin so it is redrawn with the wider anti-z-fighting margin.
@@ -112,8 +106,14 @@ internal fun DataPack.migrate5_1_9() = define(step("5.1.9", "5.1.10")) {
  * is missing and redraws it if so, which is verified to cover all four of them -- Breeder, EU
  * Generator, Electric Furnace and Unboxer -- so the gap lasts one tick.
  *
- * Safe to run more than once, which it will be: it costs one redraw per skinned block per load.
+ * Runs once per world (see [MigrationsPart]); safe to run again regardless -- it costs one
+ * redraw per skinned block.
  */
-internal fun DataPack.migrate5_1_11() = define(step("5.1.11", "5.1.12")) {
-	kill(allEntities { type = EntityTypes.BLOCK_DISPLAY; tag = "ra.skin" })
+internal val m5_1_11 = migration("5.1.11", "5.1.12") {
+	world { kill(allEntities { type = EntityTypes.BLOCK_DISPLAY; tag = "ra.skin" }) }
+	// The same for a block that was in an unloaded chunk at load: its own skin only, the one
+	// centred on it, killed the first time the block is loaded again.
+	marker(Tag.CUSTOM_BLOCK) {
+		raw("execute at @s align xyz positioned ~0.5 ~0.5 ~0.5 run kill @e[type=block_display,tag=ra.skin,distance=..0.4]")
+	}
 }

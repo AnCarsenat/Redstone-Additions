@@ -85,7 +85,7 @@ class Generator(
 			// players with ra.admin), not a player's, and not a line on the Goggles billboard, where
 			// it told players nothing at a glance. cooldownGate reads it from the marker every cycle.
 			number("cooldown", min = 1, max = 1200, adminOnly = true, goggles = false)
-			// Removed by the Poppy Generator's tick: a leftover of an old version.
+			// Removed by the 5.1.7 migration: a leftover of an old version.
 			if (block.id == "poppy_generator") text("mode", readonly = true, visible = false)
 		}
 		pack.blockRegisterMessage(block)

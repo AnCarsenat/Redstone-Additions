@@ -53,8 +53,12 @@ A one-off build at another version needs no edit:
    (header, and move the "Coming In The Next Release" notes under a "What Is New In vX.Y.Z"
    heading). These are documentation, not build inputs. Regenerate `readme.bbcode` from the
    readme ([Markdown to BBCode](markdown-to-bbcode.md)).
-4. If the change needs a world migration, add a step to `ra.migrations` named for the step it
-   bridges, append it to `MigrationsPart`'s list, and make it safe to run twice.
+4. If the change needs a migration, add a step to `ra.migrations` with
+   `migration("<previous>", "<new>") { world { ... }; entity("<type>") { ... } }`, append it to
+   `MigrationsPart`'s list, and make it safe to run twice. The new version is what worlds and
+   markers are stamped with: a world part runs in worlds stored below it, an entity part on
+   markers stamped below it. A step may not target a version above `version` (the build fails),
+   so a step for the release in progress targets that release.
 5. `./gradlew koreBuild` (strict) and check the description:
 
    ```bash

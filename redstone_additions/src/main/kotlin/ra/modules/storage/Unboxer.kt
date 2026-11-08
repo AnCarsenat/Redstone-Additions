@@ -113,8 +113,6 @@ object Unboxer {
 		pack.define(block.tick) {
 			breakCheck(block, Blocks.BARREL, onBreak)
 
-			// Matches handle_placement: the Unboxer reads the crates in its own inventory.
-			ioDefaults(block, input = "~ ~ ~")
 
 			// Rebuild a skin that went missing (chunk reload, /kill, a rotation). Only the Unboxers
 			// actually lacking one do any work.

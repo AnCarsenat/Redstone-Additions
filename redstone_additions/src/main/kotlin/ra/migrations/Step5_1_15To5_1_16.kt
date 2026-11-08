@@ -1,6 +1,5 @@
 package ra.migrations
 
-import io.github.ayfri.kore.DataPack
 import io.github.ayfri.kore.arguments.types.literals.allEntities
 import io.github.ayfri.kore.arguments.types.literals.self
 import io.github.ayfri.kore.commands.data
@@ -11,7 +10,6 @@ import io.github.ayfri.kore.commands.setBlock
 import io.github.ayfri.kore.arguments.maths.vec3
 import io.github.ayfri.kore.generated.Blocks
 import io.github.ayfri.kore.generated.EntityTypes
-import ra.core.define
 
 /**
  * Carry item pipe filters off their item frames and onto the pipe itself.
@@ -29,7 +27,7 @@ import ra.core.define
  * deleting a player's item frames -- with the item inside -- to tidy up after ourselves is not a
  * migration's business.
  */
-internal fun DataPack.migrate5_1_15() = define(step("5.1.15", "5.1.16")) {
+internal val m5_1_15 = migration("5.1.15", "5.1.16") { world {
 	val pipes = blockMarkers("item_pipe")
 
 	execute {
@@ -71,4 +69,4 @@ internal fun DataPack.migrate5_1_15() = define(step("5.1.15", "5.1.16")) {
 	// Transport networks gained a per-medium breakdown. Nothing is done here: the networks cannot
 	// be enumerated by id from a function, so each one migrates the first time it is read -- see
 	// ra_lib:transport/net/read_run. This comment is where somebody will look for it.
-}
+}}

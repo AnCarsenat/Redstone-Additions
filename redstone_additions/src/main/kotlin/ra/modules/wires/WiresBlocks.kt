@@ -184,7 +184,7 @@ object WiresBlocks : PackPart {
 		// An admin knob, kept off the Goggles; the role (take in / pour out) is redstone.
 		properties("liquid_drain") {
 			number("speed", min = 1, max = 100, adminOnly = true, goggles = false)
-			// Pre-6.0.1 names, only ever read by ra_wires:fluid/drain_migrate, which removes them.
+			// Pre-6.0.1 names, removed by the 6.0.1 migration (ra_migrations:6.0.0-to-6.0.1/liquid_drain).
 			number("cooldown", readonly = true, visible = false)
 			number("interval", readonly = true, visible = false)
 			text("mode", readonly = true, visible = false)

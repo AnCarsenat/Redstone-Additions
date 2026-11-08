@@ -12,7 +12,6 @@ import io.github.ayfri.kore.generated.Blocks
 import ra.core.Obj
 import ra.core.Ra
 import ra.core.block.gogglesHeader
-import ra.core.block.markerSel
 import ra.core.block.particleViewersSel
 import ra.core.block.soundListenersSel
 import ra.core.block.stackedPropLine
@@ -52,13 +51,8 @@ object PoppyGenerator {
 	private val done = literal("#poppy.done")
 
 	fun Ra.registerPoppyGenerator() {
-		with(generator) {
-			registerGenerator {
-				// `mode` is gone with the patch. Removed from anything still carrying it so the
-				// Data Handler stops offering a setting that decides nothing.
-				raw("execute as ${block.markerSel()} run data remove entity @s data.properties.mode")
-			}
-		}
+		// `mode` went with the patch; the 5.1.7 migration removes it from old markers.
+		with(generator) { registerGenerator() }
 
 		// One flower in front, always. The 3x3 patch mode is gone: it was a second code path over
 		// the same ground for a block whose whole job is one flower at a time.

@@ -31,14 +31,12 @@ object Drain : PackPart {
 	val drainAboveNext = ref(Ns.WIRES, "fluid/drain_above_next")
 	val drainAboveTry = ref(Ns.WIRES, "fluid/drain_above_try")
 	val drainTick = ref(Ns.WIRES, "fluid/drain_tick")
-	val migrate = ref(Ns.WIRES, "fluid/drain_migrate")
-	val migrateSpeed = ref(Ns.WIRES, "fluid/drain_migrate_speed")
 
 	/** Default `speed`: litres per second, i.e. one 5 L source block a second (20 ticks). */
 	const val DEFAULT_SPEED = 5
 
 	/** Ticks between actions at speed 1; the interval is this divided by `speed`. */
-	private const val TICKS_AT_SPEED_1 = 100
+	const val TICKS_AT_SPEED_1 = 100
 
 	override fun Ra.register() {
 		pack.define(Drain.drainAbove) {
@@ -139,9 +137,6 @@ object Drain : PackPart {
 			// see and change, and a vertical drain still drains the world when it has nothing
 			// to load.
 
-			// Older drains: cooldown/interval -> speed, mode removed. Once per marker.
-			executeRun("unless entity @s[tag=ra.wires.drain_v2]", Drain.migrate)
-
 			// Throughput: one action every 100 / speed ticks, so speed is litres per second at
 			// 5 L a source block (5 = one block a second, the old default of 20 ticks).
 			// Compared as a score rather than baked into the selector, so a change applies at once.
@@ -175,35 +170,6 @@ object Drain : PackPart {
 			executeRun("if data entity @s data.status{pump_state:\"pumping\"}", Fluid.drip, "with storage ra:wires found")
 			raw("execute if data entity @s data.status{pump_state:\"pumping\"} run playsound minecraft:item.bucket_fill block ${soundListenersSel(8)} ~ ~ ~ 0.5 1.2")
 			data(Storage.WIRES) { remove("found") }
-		}
-
-		pack.define(Drain.migrate) {
-			// Bring a drain from before 6.0.1 to the speed property.
-			// Context: as a drain marker. Runs once per marker (tag ra.wires.drain_v2), from the
-			// tick rather than ra_migrations so drains in chunks unloaded at load time are
-			// caught the first time they tick.
-			//
-			// speed = 100 / cooldown, clamped to 1..100: 20 ticks -> 5, 10 -> 10, 40 -> 2.
-			// `interval` is the even older name of cooldown. A speed already present wins.
-
-			raw("execute if data entity @s data.properties.interval unless data entity @s data.properties.cooldown run data modify entity @s data.properties.cooldown set from entity @s data.properties.interval")
-			raw("execute if data entity @s data.properties.cooldown unless data entity @s data.properties.speed run function ${Drain.migrateSpeed.asId()}")
-			data(self()) { remove("data.properties.interval") }
-			data(self()) { remove("data.properties.cooldown") }
-			data(self()) { remove("data.properties.mode") }
-			raw("execute unless data entity @s data.properties.speed run data modify entity @s data.properties.speed set value $DEFAULT_SPEED")
-			raw("tag @s add ra.wires.drain_v2")
-		}
-
-		pack.define(Drain.migrateSpeed) {
-			// Internal: speed from cooldown. Context: as a drain marker that has a cooldown.
-
-			raw("execute store result score #dr.cd ra.wires.tmp run data get entity @s data.properties.cooldown")
-			raw("execute if score #dr.cd ra.wires.tmp matches ..0 run scoreboard players set #dr.cd ra.wires.tmp 1")
-			scoreboard.players.set(literal("#dr.sp"), "ra.wires.tmp", TICKS_AT_SPEED_1)
-			scoreboard.players.operation(literal("#dr.sp"), "ra.wires.tmp", Operation.DIVIDE, literal("#dr.cd"), "ra.wires.tmp")
-			raw("execute if score #dr.sp ra.wires.tmp matches ..0 run scoreboard players set #dr.sp ra.wires.tmp 1")
-			raw("execute store result entity @s data.properties.speed int 1 run scoreboard players get #dr.sp ra.wires.tmp")
 		}
 	}
 }

@@ -146,6 +146,10 @@ object ModulesApi {
 	}
 
 	object Migrations {
+		/** From ra:load: the world steps the world has not had yet. */
 		val run = ref(Ns.MIGRATIONS, "run")
+
+		/** From ra:tick: the entity steps, as every custom block marker not stamped with this version. */
+		val entities = ref(Ns.MIGRATIONS, "entities")
 	}
 }

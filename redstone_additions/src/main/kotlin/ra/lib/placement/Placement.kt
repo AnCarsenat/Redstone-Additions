@@ -18,6 +18,7 @@ import ra.lib.fake
 import ra.lib.lib
 import ra.lib.orientation.Orientation
 import ra.core.macroCall
+import ra.migrations.DataVersion.stampNew
 
 /** `ra_lib:placement/...`: put the vanilla block down and summon the custom block's marker. */
 object Placement {
@@ -101,6 +102,8 @@ object Placement {
 		// Summon the marker with an initialized data structure.
 		raw("\$summon marker ~ ~ ~ {Tags:[\"ra\",\"ra.custom_block\",\"ra.custom_block.\$(block_tag)\",\"ra.new\"],data:{_init:1b,type:\"\$(block_tag)\",properties:{},data:{}}}")
 		raw("data modify entity @e[type=marker,tag=ra.new,distance=..0.1,sort=nearest,limit=1] Rotation set from storage ra:temp Rotation")
+		// Born in this version's shape: the migration pass (ra_migrations:entities) never visits it.
+		stampNew("@e[type=marker,tag=ra.new,distance=..0.1,sort=nearest,limit=1]")
 
 		// Seed the marker's facing from the scratch score rather than from the placer, so the
 		// marker always ends up with a facing score even when no player was found.

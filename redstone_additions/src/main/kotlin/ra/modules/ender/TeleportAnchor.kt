@@ -40,7 +40,6 @@ import ra.core.blockRegisterMessage
 import ra.core.executeRun
 import ra.core.block.placementGuard
 import ra.core.block.setOnNew
-import ra.core.block.defaultProperty
 import ra.core.block.finishPlacement
 import ra.core.block.blockTick
 import ra.core.block.BreakTest
@@ -87,7 +86,11 @@ object TeleportAnchor {
 	private val dropId = block.fn("drop_id")
 	private val dropCount = block.fn("drop_count")
 	private val dropWalk = block.fn("drop_walk")
-	private val repair = block.fn("repair_targets")
+	/**
+	 * As an anchor: make `targets` a table of exactly fifteen entries. Run once per anchor by the
+	 * 6.0.1 migration (ra_migrations:6.0.0-to-6.0.1/teleport_anchor). Safe to run twice.
+	 */
+	val repairTargets = block.fn("repair_targets")
 	private val repairPad = block.fn("repair_pad")
 
 	/** The known anchor ids, in the order they were first seen: `storage ra:ender anchor_ids`. */
@@ -96,8 +99,6 @@ object TeleportAnchor {
 	/** At most this many ids are remembered. */
 	private const val REGISTRY_MAX = 200
 
-	/** On an anchor whose targets were checked for the 6.0.1 shape (fifteen entries). */
-	private const val REPAIRED = "ra.ender.anchor_checked"
 	private val sendPlayer = block.fn("send_player")
 
 	private const val T = Obj.TEMP
@@ -210,12 +211,8 @@ object TeleportAnchor {
 			raw("data remove storage ra:ender reg")
 		}
 		pack.blockTick(block, onBreak, BreakTest.NotBlock(Blocks.CRYING_OBSIDIAN)) {
-			// Defaults for anchors placed before a property existed.
-			defaultProperty(block, "anchor_id", "\"A\"")
-			defaultProperty(block, "targets", EMPTY_TABLE)
-			// Once per anchor, wherever and whenever it is next loaded: fifteen entries, as the
-			// list editor and the strength lookup expect.
-			executeRun("as ${block.markerSel("tag=!$REPAIRED")}", repair)
+			// An anchor from an older version (no anchor_id, a malformed targets table) is brought up
+			// to date by the 6.0.1 migration before it ever gets here.
 			// Its id on the known list (cheap when unchanged: one comparison).
 			executeRun("as ${block.markerSel()}", registerCheck)
 
@@ -295,8 +292,7 @@ object TeleportAnchor {
 
 		// As an anchor, once: a target table of exactly fifteen entries. 6.0.0's Data Handler pasted
 		// whatever parsed, so a table may be a compound, or a list of another length.
-		pack.define(repair) {
-			raw("tag @s add $REPAIRED")
+		pack.define(repairTargets) {
 			raw("data remove storage ra:ender fix")
 			raw("data modify storage ra:ender fix set from entity @s data.properties.targets")
 			raw("execute store success score #ender.lst $T run data modify storage ra:ender fix insert 0 value 0b")

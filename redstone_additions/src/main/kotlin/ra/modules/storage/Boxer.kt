@@ -82,7 +82,6 @@ object Boxer {
 
 		pack.define(block.tick) {
 			breakCheck(block, Blocks.DROPPER, onBreak)
-			ioDefaults(block, input = "^ ^ ^-1")
 			executeRun("as ${block.markerSel()} at @s", RaLib.Redstone.detectSwitch)
 			executeRun("as ${block.markerSel("tag=${Tag.POWERED}")} at @s", guarded)
 		}

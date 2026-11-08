@@ -14,6 +14,7 @@ import io.github.ayfri.kore.commands.tag
 import io.github.ayfri.kore.functions.Function
 import ra.RedstoneAdditions
 import ra.api.Goggles
+import ra.api.ModulesApi
 import ra.api.RaLib
 import ra.api.Settings
 import ra.api.Tools
@@ -40,6 +41,11 @@ internal fun Ra.registerTick() {
 
 		toolTagCleanup()
 
+		// Custom blocks saved by an older version, migrated before anything below reads them --
+		// including blocks in a chunk that has just loaded. One selector when there are none.
+		// See ra.migrations.MigrationsPart.
+		function(ModulesApi.Migrations.entities)
+
 		// Settings: seed per-player defaults and collect menu clicks. Early, because the module
 		// ticks below emit sounds and particles that are filtered on those scores.
 		function(Settings.tick)
@@ -62,8 +68,8 @@ internal fun Ra.registerTick() {
 		// Markers are NOT re-centred here any more. This used to teleport every custom block
 		// marker in the world onto its block centre, every tick; a marker has no physics and
 		// nothing in the pack moves one, and placement summons it at the centre already
-		// (#ra:placement_handlers runs at `align xyz positioned ~0.5 ~0.5 ~0.5`). ra:load does
-		// it once instead, for markers an older version may have left off-centre.
+		// (#ra:placement_handlers runs at `align xyz positioned ~0.5 ~0.5 ~0.5`). A marker an
+		// older version left off-centre is straightened once by the 6.0.1 migration.
 
 		for (module in RedstoneAdditions.modules) module.tick?.let { function(it) }
 

@@ -16,6 +16,8 @@ import ra.core.executeRun
 import ra.core.raw
 import ra.tools.datahandler.DataHandlerActions
 import ra.tools.datahandler.props.DataHandlerList.registerDataHandlerList
+import ra.tools.datahandler.props.DataHandlerEntries.registerDataHandlerEntries
+import ra.core.executeReturnRun
 import ra.tools.datahandler.props.DataHandlerTypes.registerDataHandlerTypes
 import ra.tools.datahandler.props.DataHandlerTypes.typeOfProbe
 import ra.tools.datahandler.props.PropRows.registerPropRows
@@ -150,6 +152,10 @@ object DataHandlerProps {
 			raw("execute store result score #dh.ro $T run data get storage ra:dh spec.readonly")
 			raw("execute store result score #dh.ao $T run data get storage ra:dh spec.admin_only")
 			raw("execute if score #dh.ro $T matches 1 run scoreboard players set #dh.lock $T 1")
+			// Admin-only unless a server setting lets every player edit it (adminOnly(setting = ...)).
+			raw("scoreboard players set #dh.wv $T 0")
+			raw("execute if score #dh.ao $T matches 1 if data storage ra:dh spec.admin_setting store result score #dh.wv $T run function ${DataHandlerEntries.waived.asId()} with storage ra:dh spec")
+			raw("execute if score #dh.wv $T matches 1 run scoreboard players set #dh.ao $T 0")
 			raw("execute if score #dh.ao $T matches 1 if score #dh.adm $T matches 0 run scoreboard players set #dh.lock $T 2")
 			raw("execute if score #dh.hid $T matches 1 if score #dh.adm $T matches 0 run scoreboard players set #dh.lock $T 3")
 			raw("execute if score #dh.decl $T matches 1 run return 1")
@@ -229,8 +235,9 @@ object DataHandlerProps {
 		}
 
 		// {name}: ask for the new value, then open the matching input form.
+		// The prompt itself ("Enter a number for <name> (min–max)") is ra_lib:input's, named by the label.
 		pack.define(askNumber) {
-			raw("""${'$'}tellraw @s [$PREFIX,{text:"Enter a new number for ",color:"gray"},{text:"$(name)",color:"yellow"},{text:" (",color:"gray"},{score:{name:"#dh.min",objective:"$T"},color:"white"},{text:" to ",color:"gray"},{score:{name:"#dh.max",objective:"$T"},color:"white"},{text:").",color:"gray"}]""")
+			raw("\$data modify storage ra:input label set value \"\$(name)\"")
 			function(DataHandlerActions.requestNumber)
 		}
 		// A number nothing declares: typed in the book, so it may be negative, large or a decimal,
@@ -260,6 +267,7 @@ object DataHandlerProps {
 
 		registerRender()
 		registerDataHandlerList()
+		registerDataHandlerEntries()
 		registerDataHandlerTypes()
 		registerPropRows()
 	}
@@ -299,6 +307,8 @@ object DataHandlerProps {
 			raw("execute if score #dh.lock $T matches $code run data modify storage ra:dh q.reason set value \"$reason\"")
 		raw("execute if score #dh.lock $T matches 1..2 run return run function ${PropRows.rowLocked.asId()} with storage ra:dh q")
 
+		// A declared list gets the per-entry editor (DataHandlerEntries); a guessed one the whole-list row.
+		executeReturnRun("if score #dh.type $T matches 3 if score #dh.decl $T matches 1", DataHandlerEntries.render, "with storage ra:dh q")
 		val rows = listOf(1 to PropRows.rowNumber, 2 to PropRows.rowBool, 3 to PropRows.rowList, 0 to PropRows.rowString, 4 to PropRows.rowItem, 5 to PropRows.rowCompound)
 		for ((type, row) in rows)
 			executeRun("if score #dh.type $T matches $type", row, "with storage ra:dh q")

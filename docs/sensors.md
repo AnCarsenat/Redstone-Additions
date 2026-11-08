@@ -19,6 +19,24 @@ All three are configured with a **target selector** (`entity_selector`), the sam
 commands: `@e[type=zombie,distance=..8]`, `@a[tag=red_team]`, … Edit it with the
 [Data Handler](tools.md).
 
+!!! note "Admins only, unless the server allows it"
+    A selector can reach any entity in the world and a Tag Adder can hand any tag to anyone, so
+    selectors and tags are changed by players with server-settings access. An operator can let
+    everyone edit them with **Players may edit entity selectors and tags** on the Sensors page of
+    the [server settings](settings.md).
+
+What they accept:
+
+- **Selector:** `@a`, `@e`, `@n`, `@p`, `@r` or `@s`, optionally followed by one `[...]`. Spaces
+  only inside the brackets, quotes only as `"..."` (for `name="Bob Smith"`), no backslash, and
+  nothing after the closing `]`.
+- **Tag:** letters, digits and `_ . + -`, no spaces, and never starting with `ra.` (the pack's own
+  tags, which include server-settings access).
+
+A value that does not fit is refused when you type it, and a block holding one (from an older
+world, or written with a command) does nothing until it is corrected: the Entity Detector stays
+off, the Tag Adder and Tag Remover do not fire.
+
 | Block | When | Does | Default settings |
 | --- | --- | --- | --- |
 | Entity Detector | every tick | Output is on while at least one entity matches the selector | `@e[type=minecraft:pig,distance=..5]` |
@@ -46,7 +64,10 @@ The Entity Detector never counts Redstone Additions' own machines.
 ## Advanced
 
 - Properties on the marker: `data.properties.entity_selector`, `data.properties.tag`.
-- The selector is pasted into a macro command (`ra_sensors:blocks/entity_detector/detect_macro`),
-  so it must be a valid selector string.
+- The selector and the tag are pasted into macro commands
+  (`ra_sensors:blocks/entity_detector/detect_macro`, `…/tag_adder/add_tag_macro`, …). Before each
+  use, `ra_lib:safe/guard` checks them (formats `SELECTOR` and `TAG`, see
+  [Tools and Registries](tools-and-registries.md#text-formats)); the value last found safe is
+  cached in `data.data.safe.<name>`, so an unchanged value costs one comparison.
 - Tag Adder / Remover fire on a rising edge: `ra.powered` without `ra.was_powered`, from
   `ra_lib:redstone/detect`.

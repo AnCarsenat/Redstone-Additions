@@ -18,6 +18,12 @@ object SensorsModule : GameplayModule {
 	override val ns = Ns.SENSORS
 	override val title = "Sensors"
 
+	/**
+	 * The GLOBAL setting (Sensors page) that lets players without server-settings access edit
+	 * entity selectors and tags. Off by default: see TextFormat for what a selector can reach.
+	 */
+	const val SELECTOR_SETTING = "player_selectors"
+
 	override fun Ra.register() {
 		// Registration order is the placement-handler order of the beet #ra:placement_handlers.
 		registerEntityDetector()

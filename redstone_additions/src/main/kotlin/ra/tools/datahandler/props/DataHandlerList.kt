@@ -9,6 +9,7 @@ import ra.core.callWith
 import ra.core.define
 import ra.core.executeRun
 import ra.core.raw
+import ra.api.RaLib
 import ra.tools.datahandler.DataHandlerSelection.TARGET
 import ra.tools.tool
 
@@ -73,6 +74,7 @@ object DataHandlerList {
 			raw("execute if data storage ra:dh spec.of_code if score #dh.of $T matches ${ra.core.PropType.TEXT.code} run scoreboard players set #dh.str $T 1")
 			executeRun("if score #dh.bad $T matches 0 if score #dh.str $T matches 0 unless data storage ra:dh spec.type", currentIsText, "with storage ra:dh q")
 			raw("data modify storage ra:dh list_walk set from storage ra:dh list_in")
+			with(DataHandlerEntries) { loadFormat() }
 			executeRun("if score #dh.bad $T matches 0 if score #dh.str $T matches 1", checkText)
 			raw("data remove storage ra:dh list_walk")
 
@@ -84,6 +86,7 @@ object DataHandlerList {
 			raw("""execute if score #dh.bad $T matches 1 run tellraw @s [$PREFIX,{text:"That is not a list. Write it like ",color:"red"},$EXAMPLE]""")
 			raw("""execute if score #dh.bad $T matches 3 run tellraw @s [$PREFIX,{text:"Every entry must be text in quotes, like ",color:"red"},$EXAMPLE]""")
 			raw("""execute if score #dh.bad $T matches 4 run tellraw @s [$PREFIX,{text:"At most ",color:"red"},{score:{name:"#dh.lmax",objective:"$T"},color:"yellow"},{text:" entries; ",color:"red"},{score:{name:"#dh.len",objective:"$T"},color:"yellow"},{text:" were given.",color:"red"}]""")
+			callWith(DataHandlerEntries.formatHintFor5, "storage ra:dh q")
 			raw("execute unless score #dh.bad $T matches 0 run data remove storage ra:dh list_in")
 			raw("execute unless score #dh.bad $T matches 0 run return 0")
 
@@ -100,6 +103,10 @@ object DataHandlerList {
 			raw("execute unless data storage ra:dh list_walk[0] run return 0")
 			isText("list_walk[0]", "#dh.ok")
 			raw("execute if score #dh.ok $T matches 0 run return run scoreboard players set #dh.bad $T 3")
+			// And in the declared format, as a single text property would be.
+			raw("data modify storage ra:safe s set from storage ra:dh list_walk[0]")
+			raw("execute store result score #dh.ok $T run function ${RaLib.Safe.check.asId()}")
+			raw("execute if score #dh.ok $T matches 0 run return run scoreboard players set #dh.bad $T 5")
 			raw("data remove storage ra:dh list_walk[0]")
 			function(checkText)
 		}
@@ -121,7 +128,7 @@ object DataHandlerList {
 	 * so `[1,2]` would pass as text. The entry is therefore copied back over that copy as well,
 	 * which changes nothing only when it was a string already.
 	 */
-	private fun Function.isText(path: String, into: String, macro: Boolean = false) {
+	internal fun Function.isText(path: String, into: String, macro: Boolean = false) {
 		val m = if (macro) "\$" else ""
 		raw("data remove storage ra:dh probe")
 		raw("scoreboard players set #dh.chg $T 0")

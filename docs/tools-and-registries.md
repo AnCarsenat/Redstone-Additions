@@ -123,7 +123,9 @@ declares for you). `ra/core/Properties.kt` holds the builder.
 | `bool(name)` | byte `0b`/`1b` | **[Toggle]** |
 | `text(name)` | string | the book; stored as typed, never parsed |
 | `item(name)` | string (item id) | the book, or **[Set from hand]** |
-| `list(name, of = PropType.TEXT, max = 15, pad = true)` | list | **[Edit list]**, parsed and checked |
+| `text(name, TextFormat.SELECTOR)` | string in a [format](#text-formats) | the book, checked against the format |
+| `list(name, of = PropType.TEXT, max = 15, pad = true)` | list | one row per entry ([Edit], [Remove]/[Clear], [Append]) and **[Edit whole list]** |
+| `textList(name, max, pad, format, choices = "ra:ender" to "anchor_ids", entryLabel = "Strength ")` | list of text | the same, with **[Choose]** from `storage <choices>` and entries labelled *Strength 1…* |
 | `dynamic(name)` | read from the block instance | — (see below) |
 
 Each also takes these flags:
@@ -132,6 +134,7 @@ Each also takes these flags:
 | --- | --- | --- | --- |
 | `readonly = true` | shown, locked, reason on hover; writes refused | never cycled | not pasted (the target keeps its own) |
 | `adminOnly = true` | locked for players without `ra.admin` (server-settings access), editable for admins; re-checked when the value is written | not offered to non-admins | not pasted by non-admins |
+| `adminOnly = true, adminSetting = "<key>"` | as `adminOnly`, unless the GLOBAL bool setting `<key>` is on (then everyone may edit it) | as `adminOnly` | as the Data Handler |
 | `visible = false` | not shown at all to non-admins (nor in the Properties summary); admins see it marked *(hidden from players)* and can edit it | not offered to non-admins | not pasted by non-admins |
 
 One more flag concerns only the Goggles:
@@ -175,6 +178,36 @@ data modify storage ra:dh known set value ["anchor_id","chance","channel",...]
 Each type is written on its own line, so an add-on's types in the same storage survive the load
 (see [Extension Examples](extension-examples.md)). The old `storage ra:dh readonly`, `registry`,
 `numeric` and `item_names` are removed on load.
+
+### Text formats
+
+Several blocks paste a text property straight into a command through a macro (a sensor's
+`entity_selector` into `execute as $(entity_selector) …`, a Boxer's `input1` into
+`execute positioned $(input1) …`, a vault's `channel` into `{channel:"$(channel)"}`). A macro
+substitutes text, so a value with a space or a quote could add arguments: `@s if function
+<anything> run say` would run any function with the server's permission. Every text property
+therefore has a format (`fmt` in the schema, `ra/core/PropFormats.kt`), checked by
+`ra_lib:safe/check` when the Data Handler writes it and by `ra_lib:safe/guard` before each use:
+
+| Format | Accepts | Used by |
+| --- | --- | --- |
+| `FREE` (0) | anything | Message Block text (never pasted) |
+| `ID` (1, default for text, items, list entries) | letters, digits, `_ . + - : / #`; no space | most text properties |
+| `NAME` (2) | `ID` plus spaces | channels, anchor names and targets |
+| `TAG` (3) | letters, digits, `_ . + -`; not starting with `ra.` | sensor `tag` |
+| `SELECTOR` (4) | `@a/@e/@n/@p/@r/@s` and one optional `[...]`: spaces only inside the brackets, `"..."` strings, no `\`, nothing after `]` | `entity_selector` |
+| `COORDS` (5) | three `~`/`^` coordinates, at most one whole digit each | Boxer, Unboxer `input1`/`output1` |
+
+The checker walks the string one character at a time. `"`, `\` and line breaks are matched
+with plain NBT tests first; every other character is looked up as a quoted key in a class table
+(`storage ra:safe cls`), the one macro line, safe because those three were removed before it.
+`guard {p, f}` (as the block's marker) caches the last value found safe in `data.data.safe.<p>`
+and the last refused one in `data.data.unsafe.<p>`, so an unchanged value costs a comparison.
+In Kotlin, `guardProperty("entity_selector", TextFormat.SELECTOR)` before the macro call.
+
+The checks apply to admins too: a value that needs more than its format can carry more than one
+argument, which no block ever needs. Admin-only status decides *who* may choose what a block
+targets; the format decides that what they write is only ever that one argument.
 
 ### Dynamic properties (discouraged)
 
@@ -225,10 +258,15 @@ Anything else is refused with a red message and the block is left unchanged.
 
 ### Menu buttons
 
-A row's button runs `/trigger ra.dh.action set <stamp × 1000 + code>`: code `100 + i` edits row
+A row's button runs `/trigger ra.dh.action set <stamp × 10000 + code>`: code `100 + i` edits row
 `i` of `order."<type>"`, `400 + i` is that row's **[Set from hand]**, `700 + i` edits the
-undeclared property `known[i]`. The stamp numbers the menu; each player's latest is in
-`ra.dh.menu`, and loading resets it for everyone. A click carrying any other stamp — an old menu
+undeclared property `known[i]`. A declared list's entries (rows 0–29, entries 0–98) use
+`1000 + 300 i + j` (**[Edit]** entry `j`), `+ 99` (**[Append]**), `+ 100 + j` (**[Remove]** /
+**[Clear]**) and `+ 200 + j` (**[Choose]**). A picker is a menu of its own (`ra.dh.mkind` 1)
+whose choices are kept, as drawn, in `storage ra:dh pick.s<stamp>`; its buttons are
+`100 + k`. An entry edit is filed under the player's input request with its index
+(`pend.r<id>.j`, `-1` for an append). The stamp numbers the menu (1 – 200,000); each player's
+latest is in `ra.dh.menu`, and loading resets it for everyone. A click carrying any other stamp — an old menu
 scrolled back to, or one drawn before a `/reload` that may have reordered a schema — redraws the
 menu instead, so schemas can be reordered freely.
 

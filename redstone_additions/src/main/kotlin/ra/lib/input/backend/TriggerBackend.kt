@@ -15,6 +15,7 @@ import ra.lib.input.IN
 import ra.lib.input.InputObj
 import ra.lib.input.inputMessage
 import ra.lib.input.storeReq
+import ra.lib.input.InputRange.tellRange
 import ra.lib.lib
 
 /** `ra_lib:input/backend/trigger/...`: numbers, submitted with `/trigger ra.input.trigger set <n>`. */
@@ -32,8 +33,18 @@ object TriggerBackend {
 
 			raw("tellraw @s \"\"")
 			inputMessage("Numeric input requested.", "aqua")
-			raw("""tellraw @s [{text:"Range: ",color:"gray"},{score:{name:"@s",objective:"${InputObj.MIN}"},color:"yellow"},{text:"..",color:"dark_gray"},{score:{name:"@s",objective:"${InputObj.MAX}"},color:"yellow"}]""")
-			raw("""tellraw @s [{text:"Use ",color:"gray"},{text:"/trigger ${InputObj.TRIGGER} set ",color:"yellow",hover_event:{action:"show_text",value:"Enter a number in the shown range"},click_event:{action:"suggest_command",command:"/trigger ${InputObj.TRIGGER} set "}}]""")
+			// "Enter a number for <label> (1–1200)", the label from the caller (InputRange).
+			val mm = arrayOf("@s", InputObj.MIN, "@s", InputObj.MAX)
+			tellRange(
+				"@s", """{text:"Enter a number for ",color:"gray"},{nbt:"label",storage:"ra:input",color:"yellow"}""", "",
+				mm[0], mm[1], mm[2], mm[3], condition = "if data storage ra:input label", color = "yellow",
+			)
+			tellRange("@s", """{text:"Enter a number",color:"gray"}""", "", mm[0], mm[1], mm[2], mm[3], condition = "unless data storage ra:input label", color = "yellow")
+			tellRange(
+				"@s",
+				"""{text:"Use ",color:"gray"},{text:"/trigger ${InputObj.TRIGGER} set <n>",color:"yellow",hover_event:{action:"show_text",value:"Enter a number in the shown range"},click_event:{action:"suggest_command",command:"/trigger ${InputObj.TRIGGER} set "}}""",
+				"", mm[0], mm[1], mm[2], mm[3], color = "yellow",
+			)
 		}
 
 		// Macro storage shape: {req, value}.
@@ -51,13 +62,15 @@ object TriggerBackend {
 			scoreboard.players.set(self(), InputObj.LAST, InputObj.SENTINEL)
 			scoreboard.players.enable(self(), InputObj.TRIGGER)
 
-			for ((bound, op, message) in listOf(
-				Triple(InputObj.MIN, ">=", "Value is below minimum."),
-				Triple(InputObj.MAX, "<=", "Value is above maximum."),
-			)) {
-				raw("""execute unless score @s ${InputObj.VALUE} $op @s $bound run tellraw @s [{text:"[RA Input] ",color:"gold"},{text:"$message",color:"red"}]""")
-				raw("execute unless score @s ${InputObj.VALUE} $op @s $bound run return 0")
-			}
+			// Refused with the range, so the player knows what to type instead.
+			raw("scoreboard players set #in.oor ${ra.core.Obj.TEMP} 0")
+			raw("execute unless score @s ${InputObj.VALUE} >= @s ${InputObj.MIN} run scoreboard players set #in.oor ${ra.core.Obj.TEMP} 1")
+			raw("execute unless score @s ${InputObj.VALUE} <= @s ${InputObj.MAX} run scoreboard players set #in.oor ${ra.core.Obj.TEMP} 1")
+			tellRange(
+				"@s", """{text:"[RA Input] ",color:"gold"},{text:"Out of range: enter a number",color:"red"}""", """{text:".",color:"red"}""",
+				"@s", InputObj.MIN, "@s", InputObj.MAX, condition = "if score #in.oor ${ra.core.Obj.TEMP} matches 1", color = "yellow",
+			)
+			raw("execute if score #in.oor ${ra.core.Obj.TEMP} matches 1 run return 0")
 
 			scoreboard.players.operation(self(), InputObj.RESULT, Operation.SET, self(), InputObj.VALUE)
 			scoreboard.players.set(self(), InputObj.STATE, 2)

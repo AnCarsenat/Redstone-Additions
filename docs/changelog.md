@@ -10,6 +10,23 @@ A performance release. The pack does the same things with far fewer commands per
 moving its arithmetic onto 26.3's `/compute` and by checking multiblock structures with
 predicates built when the pack is generated. Worlds on v6.0.0 carry on without a migration.
 
+### Added
+
+- **Lists are edited one entry at a time.** In the Data Handler a list shows each entry on its
+  own line with **[Edit]** (type a new value for that entry) and **[Remove]**, and the list
+  itself has **[Append]** (greyed out once the list is at its maximum length) next to
+  **[Edit whole list]**. On a list whose positions mean something, such as a Teleport Anchor's
+  fifteen strengths, **[Remove]** is **[Clear]**: the slot is emptied and the others stay where
+  they are. Every entry is checked against the list's type before it is written.
+- **Pick a Teleport Anchor's destination by name.** Every anchor remembers its name in a shared
+  list, and the Data Handler shows one line per redstone strength — *Strength 3: Home* — with
+  **[Choose]**, which lists the anchors already named in the world: click one and that strength
+  leads there. No list typing needed. `/function ra_ender:tools/anchor/list` prints the names,
+  and `…/anchor/show` now prints one line per strength that leads somewhere.
+- **Players may edit entity selectors and tags** (server setting, Sensors page, off by
+  default): lets players without server-settings access change the selectors and tags of the
+  Entity Detector, Tag Adder, Tag Remover and Message Block.
+
 ### Changed
 
 - **The Liquid Drain pours out on redstone, and its speed is a server setting.** The drain's
@@ -85,6 +102,26 @@ predicates built when the pack is generated. Worlds on v6.0.0 carry on without a
   shown on its block's Goggles label either, and a few fixed or uninteresting values are left
   off the label while staying in the Data Handler: the Mineral, Nether and Poppy Generators'
   cooldown and the Magic Crate's pulse cooldown.
+
+- **Entity selectors and tags are for admins.** The `entity_selector` and `tag` of the Entity
+  Detector, Tag Adder, Tag Remover and Message Block can only be changed by players with
+  server-settings access, unless the new *Players may edit entity selectors and tags* setting is
+  on. A selector reaches any entity in the world (`@a`, `@e`), and a Tag Adder can hand any tag to
+  anyone.
+- **Text settings say what they accept.** A text setting only takes the characters it can use:
+  a name or channel letters, digits, spaces and `_ . + - : / #`; a tag no spaces and never a
+  name starting with `ra.`; a selector one `@a`/`@e`/`@n`/`@p`/`@r`/`@s` with an optional
+  `[...]`; a Boxer or Unboxer input/output three relative coordinates within 9 blocks
+  (`^ ^ ^-1`). Anything else is refused with a message saying what is allowed. The Message
+  Block's text still takes anything.
+- **Number prompts show their range.** Every number you are asked for — Data Handler settings,
+  your own and the server's settings — reads *Enter a number for delay (1–1200)*, or *(≥ 1)* /
+  *(≤ 64)* when only one bound exists, and a value out of range is refused with the same range.
+- **The Teleport Anchor's help** starts with the Data Handler, and lists the operator commands
+  after.
+- **The EU Consumer's settings row sets its draw.** The server settings row for the EU Consumer
+  was a "Consumer interval" (`cooldown`) the block never reads; it is now *Consumer EU draw*
+  (`eu_use`, default 40), so **Apply to placed** writes a setting the block uses.
 
 ### Fixed
 
@@ -265,6 +302,21 @@ predicates built when the pack is generated. Worlds on v6.0.0 carry on without a
 - **The Data Handler names the block you selected.** It read the name from a field markers do
   not carry, so after a refresh it kept whatever name the last player to select anything had
   left behind, and a block with no settings showed the previous block's.
+
+- **Block settings could run any command.** Several blocks pasted a setting straight into a
+  command: a Tag Adder whose selector was `@a[limit=1] if function <any function> run say` ran
+  that function for whoever placed it, with the server's permission; a Boxer input of
+  `~ ~ ~ if function …` did the same; a vault channel or a Teleport Anchor target containing
+  `"}` broke out of its quotes. Any player with a Data Handler could set them. Each such setting
+  is now checked against what it may contain before the block uses it, every time, whoever
+  wrote it — and a Tag Adder can no longer hand out the pack's own `ra.` tags (`ra.admin` gave
+  server-settings access). A value that fails the check makes the block do nothing until it is
+  corrected.
+- **Teleport Anchors no longer put the target name in a command.** The destination is found by
+  comparing names directly, so any name works the same way.
+- **Damaged anchor tables are repaired.** A target table that was not a list of fifteen (after
+  an old Data Handler edit wrote something else) is padded, trimmed or emptied the first time
+  the anchor runs.
 
 ### For contributors
 

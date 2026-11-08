@@ -216,6 +216,10 @@ object Clipboard {
 		pack.define(stripOne) {
 			raw("\$execute store result score #clip.ro ${Obj.TEMP} run data get storage ra:dh schema.\$(name).readonly")
 			raw("\$execute store result score #clip.ao ${Obj.TEMP} run data get storage ra:dh schema.\$(name).admin_only")
+			// Admin-only unless its server setting lets every player edit it (the Data Handler's rule).
+			raw("scoreboard players set #clip.wv ${Obj.TEMP} 0")
+			raw("\$execute if score #clip.ao ${Obj.TEMP} matches 1 if data storage ra:dh schema.\$(name).admin_setting store result score #clip.wv ${Obj.TEMP} run function ${ra.tools.datahandler.props.DataHandlerEntries.waived.asId()} with storage ra:dh schema.\$(name)")
+			raw("execute if score #clip.wv ${Obj.TEMP} matches 1 run scoreboard players set #clip.ao ${Obj.TEMP} 0")
 			raw("scoreboard players set #clip.vis ${Obj.TEMP} 1")
 			raw("\$execute if data storage ra:dh schema.\$(name).visible store result score #clip.vis ${Obj.TEMP} run data get storage ra:dh schema.\$(name).visible")
 			raw("\$execute if score #clip.ro ${Obj.TEMP} matches 1 run return run data remove storage ra:temp clip.props.\$(name)")

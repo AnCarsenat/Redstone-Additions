@@ -47,7 +47,7 @@ internal object ActFns {
 		pack.define(ask) {
 			data(S) { modify("edit") { set(buildNbtCompound { put("kind", "user") }) } }
 			for (field in listOf("obj", "key", "type")) sCopy("edit.$field", "cur.$field")
-			for (field in listOf("min", "max")) execute {
+			for (field in listOf("min", "max", "label")) execute {
 				ifCondition { data(S, "cur.$field") }
 				run { sCopy("edit.$field", "cur.$field") }
 			}

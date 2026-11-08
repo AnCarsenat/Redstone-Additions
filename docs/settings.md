@@ -50,7 +50,8 @@ Every setting is also a command, so you can tab-complete your way through them:
 **edit** asks for the value in one of two ways:
 
 - **A number** is typed with `/trigger ra.input.trigger set <n>` (the chat shows a ready-made
-  link). The prompt waits 30 seconds.
+  link). The prompt names the setting and its range — *Enter a number for Goggles range
+  (4–64)* — and a value outside it is refused with the same range. The prompt waits 30 seconds.
 - **Text** is written on page 1 of an **Input Form** book; close the book to submit. You may
   hold the form in either hand. The prompt waits 5 minutes, and the wait starts again whenever
   you hold the form, so it never runs out while you are writing. Dropping the form, or putting it
@@ -63,11 +64,12 @@ Every setting is also a command, so you can tab-complete your way through them:
 | General | show the load message; chat prefix (`RA`); Goggles range (16 blocks); Goggles refresh (20 ticks) |
 | Logic Gates | default Clock interval (20), Delayer delay (20), Extender duration (20), Shortener pulse (2), Randomizer chance (50%) |
 | Interactive | default Magic Crate radius (8) and interval (20), Message Block range (16) |
-| Power & Fluids | default Generator EU/tick (60), Consumer interval (20), Industrial Light EU use (10), Liquid Drain speed (5 L per second) |
+| Power & Fluids | default Generator EU/tick (60), Consumer EU draw (40), Industrial Light EU use (10), Liquid Drain speed (5 L per second) |
 | Ender Links | default Power Vault EU/tick (80), Fluid Vault transfer (200) |
 | Infinite Generators | default interval of each generator (100) |
 | Jetpacks | Thruster Kit thrust (80%), speed cap (350), dead zone (25) |
 | Enchant Crafting | enchant crafting on/off |
+| Sensors | *Players may edit entity selectors and tags* (off): when on, players without server-settings access may change the selectors and tags of the Entity Detector, Tag Adder, Tag Remover and Message Block |
 | every module | which of its blocks may be placed |
 
 ### Defaults for new blocks

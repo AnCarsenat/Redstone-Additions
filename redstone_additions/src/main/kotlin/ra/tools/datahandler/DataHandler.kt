@@ -136,8 +136,10 @@ object DataHandler {
 		pack.define(showMenu) {
 			val mid = DataHandlerSelection.MID
 			raw("scoreboard players add #dh.stamp $mid 1")
-			raw("execute unless score #dh.stamp $mid matches 1..2000000 run scoreboard players set #dh.stamp $mid 1")
+			raw("execute unless score #dh.stamp $mid matches 1..${DataHandlerRegistry.STAMP_MAX} run scoreboard players set #dh.stamp $mid 1")
 			raw("scoreboard players operation @s ${DataHandlerRegistry.MENU} = #dh.stamp $mid")
+			raw("scoreboard players set @s ${DataHandlerRegistry.KIND} 0")
+			function(ra.tools.datahandler.props.DataHandlerEntries.dropPick)
 			raw("tellraw @s \"\"")
 			raw("""tellraw @s [{text:"══════ ",color:"dark_gray"},{text:"Data Handler",color:"aqua",bold:true},{text:" ══════",color:"dark_gray"}]""")
 			raw("""tellraw @s [{text:"Block: ",color:"gray"},{nbt:"block_type",storage:"ra:dh",color:"gold"}]""")
@@ -171,8 +173,8 @@ object DataHandler {
 			raw("""execute unless data storage ra:dh properties run return run tellraw @s [{text:"  (no properties)",color:"dark_gray",italic:true}]""")
 			// rest: what no row has claimed yet. Each row removes its own name.
 			raw("data modify storage ra:dh rest set from storage ra:dh properties")
-			// Row actions: this menu's stamp * 1000 + 100 + index (see DataHandlerActions).
-			raw("scoreboard players set #dh.k1000 ${Obj.TEMP} 1000")
+			// Row actions: this menu's stamp * MUL + 100 + index (see DataHandlerActions).
+			raw("scoreboard players set #dh.k1000 ${Obj.TEMP} ${DataHandlerRegistry.MUL}")
 			raw("scoreboard players operation #dh.base ${Obj.TEMP} = @s ${DataHandlerRegistry.MENU}")
 			raw("scoreboard players operation #dh.base ${Obj.TEMP} *= #dh.k1000 ${Obj.TEMP}")
 			// A working copy is consumed from the front, since a list cannot be indexed by a score

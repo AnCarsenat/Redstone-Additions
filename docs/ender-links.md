@@ -55,15 +55,28 @@ A full partner simply receives nothing; nothing is ever destroyed.
 
 ## Teleport Anchor
 
-A pad that sends you to another anchor. Each anchor has an **id** and a table of up to fifteen
-**targets**, one per redstone signal strength.
+A pad that sends you to another anchor. Each anchor has a **name** (`anchor_id`) and a
+**destination** for each redstone signal strength, 1 to 15 (`targets`).
 
 ### Setting one up
 
-1. Place two anchors and give each an id, e.g. `A` and `B`.
-2. On anchor `A`, set the target for signal strength 1 to `B`.
-3. Stand on or next to `A` (within 2 blocks) and power it with strength 1 (a lever on dust one
-   block away, for example). You arrive on top of `B`.
+1. Place two anchors. Shift + right-click each with the [Data Handler](tools.md) and use
+   **[Modify]** on `anchor_id` to name them, e.g. `Home` and `Mine`. Names may contain letters,
+   digits, spaces and `_ . + - : / #`.
+2. On `Home`, the Data Handler lists the fifteen strengths:
+
+    ```
+    targets: list (15/15)  [Edit whole list]
+      Strength 1: (empty)  [Choose] [Edit]
+      Strength 2: (empty)  [Choose] [Edit]
+      …
+    ```
+
+    Click **[Choose]** on *Strength 1*: a list of every anchor named so far appears; click
+    `Mine`. **[Edit]** types a name instead (for an anchor you have not placed yet), **[Clear]**
+    empties a strength.
+3. Stand on or next to `Home` (within 2 blocks) and power it with strength 1 (a lever on dust one
+   block away, for example). You arrive on top of `Mine`.
 
 Different signal strengths can send you to different anchors: strength 3 picks target 3, and so
 on up to 15 (a redstone block counts as 15). If several anchors share the target id, you go to
@@ -78,11 +91,13 @@ These act on the nearest anchor within 6 blocks:
 | `/function ra_ender:tools/anchor/set_id {id:"A"}` | Set this anchor's id |
 | `/function ra_ender:tools/anchor/set_table {table:["A","B","C"]}` | Set targets for strengths 1, 2, 3…; the rest are cleared |
 | `/function ra_ender:tools/anchor/set_target {level:3,id:"B"}` | Set the target for one strength |
-| `/function ra_ender:tools/anchor/show` | Show the id and the table |
+| `/function ra_ender:tools/anchor/show` | Show the name and each strength that leads somewhere |
+| `/function ra_ender:tools/anchor/list` | Show every anchor name known in the world |
 | `/function ra_ender:tools/anchor/help` | Show this help in game |
 
-The [Data Handler](tools.md) edits the same two values: `anchor_id` as text, and `targets` as a
-list written like `["A","B","C"]`.
+The [Data Handler](tools.md) edits the same two values, without operator rights: `anchor_id`
+as text, and `targets` one strength at a time (or the whole list at once with **[Edit whole
+list]**, written like `["A","B","C"]`).
 
 Wear the [Goggles](tools.md) to see an anchor's id, the current signal and where it points.
 
@@ -108,6 +123,25 @@ Wear the [Goggles](tools.md) to see an anchor's id, the current signal and where
 | Teleport Anchor | `anchor_id` | string, what other anchors aim at. Default `"A"` |
 | Teleport Anchor | `targets` | fifteen ids: `targets[0]` is signal 1, `targets[14]` is signal 15; `""` is unused |
 
+### Known anchor names
+
+Every anchor files its name in `storage ra:ender anchor_ids` (in the order they were first
+seen, at most 200) when it is placed or renamed, and remembers what it filed in
+`data.data.registered_id`. A name leaves the list when the last loaded anchor carrying it is
+broken or renamed. The list outlives the anchor's chunk, so an anchor kept loaded elsewhere (by a
+Chunk Loader) can still be picked. The Data Handler's **[Choose]** reads this list (the schema's
+`choices`).
+
+The destination is found by comparing names, not through a macro: every other anchor's
+`anchor_id` is copied to storage and overwritten with the wanted name, and an overwrite that
+changes nothing is a match; the nearest match wins. Before 6.0.1 the name was pasted into an
+`nbt=` selector, and a target containing `"}` could add commands to it.
+
+An anchor whose `targets` is not a list of fifteen (an old Data Handler edit could store
+anything) is repaired the first time it runs: `ra_ender:blocks/teleport_anchor/repair_targets`,
+as the anchor marker, pads a short list with `""`, trims a long one and replaces anything else
+with fifteen empty entries; the anchor is then tagged `ra.ender.anchor_checked`.
+
 ### How `link` decides
 
 - **Items:** each vault remembers how many stacks it held last cycle (`data.data.last_used`).
@@ -130,6 +164,10 @@ Wear the [Goggles](tools.md) to see an anchor's id, the current signal and where
 | `ra.ender.self` | Held for one cycle so a vault or anchor never links to itself |
 | `ra.ender.pull_target` | The vault a refill is being fetched for, for one command |
 | `ra.ender.tp_dest` | The anchor a teleport is aimed at, for one command |
+| `ra.ender.tp_cand` | An anchor whose name matches, while the nearest is picked |
+| `ra.ender.anchor_checked` | An anchor whose target table was checked (`repair_targets`) |
 
-Channels and anchor ids are matched in macro commands: the sender writes its channel into storage
-and the generated command carries it into the selector.
+Vault channels are matched in macro commands: the sender writes its channel into storage and the
+generated command carries it into the selector. A channel may only hold letters, digits, spaces
+and `_ . + - : / #` (format `NAME`), checked by `ra_lib:safe/guard` before each use; a vault whose
+channel fails the check links nothing. Anchor names are compared without a macro (above).

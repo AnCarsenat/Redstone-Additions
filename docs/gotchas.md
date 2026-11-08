@@ -180,3 +180,18 @@ divide in floats when a scaled product can grow large.
 
 Also: scoreboard `/=` and `%=` round towards negative infinity. Their `/compute` equivalents are
 `floor_div` and `floor_mod` (Kore `floorDiv`, `floorMod`), not `div` and `mod`.
+
+## A property pasted into a macro is part of the command
+
+`$execute as $(entity_selector) run tag @s add $(tag)` does not receive a selector: it receives
+text, and the game parses the whole line after substituting it. A player who can set
+`entity_selector` to `@a[limit=1] if function <any> run say` makes the block run any function,
+with the server's permission; `"}` in a value pasted inside quotes ends the string. Until 6.0.1
+the sensors, the Message Block, the Boxer/Unboxer, the vaults and the Teleport Anchor all did
+this with values any Data Handler could write.
+
+Declare such a property with its [text format](tools-and-registries.md#text-formats)
+(`text("entity_selector", TextFormat.SELECTOR)`) and call `guardProperty(name, format)`
+(`ra/lib/safe/SafeText.kt`) on the marker before the macro call. Better still, do not paste it
+at all: compare two strings with `data modify storage s a set from storage s b` (success 0 means
+equal), as the Teleport Anchor and the Wireless Receiver do.

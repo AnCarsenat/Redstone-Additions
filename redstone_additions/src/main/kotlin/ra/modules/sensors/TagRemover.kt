@@ -1,5 +1,9 @@
 package ra.modules.sensors
 
+import ra.core.TextFormat
+import ra.core.text
+import ra.lib.safe.SafeText.guardProperty
+import ra.modules.sensors.SensorsModule.SELECTOR_SETTING
 import io.github.ayfri.kore.features.recipes.types.key
 import io.github.ayfri.kore.features.recipes.types.pattern
 import io.github.ayfri.kore.generated.Items
@@ -46,8 +50,10 @@ object TagRemover {
 	fun Ra.registerTagRemover() {
 		block(block)
 		properties(block) {
-			text("entity_selector")
-			text("tag")
+			// Pasted into commands, and able to reach any entity: admins only, unless the server
+			// lets players edit them (Sensors settings). Checked again before every use.
+			text("entity_selector", TextFormat.SELECTOR, adminOnly = true, adminSetting = SELECTOR_SETTING)
+			text("tag", TextFormat.TAG, adminOnly = true, adminSetting = SELECTOR_SETTING)
 		}
 		pack.blockRegisterMessage(block)
 		pack.blockGive(block)
@@ -91,8 +97,11 @@ object TagRemover {
 			raw("data modify storage ra:temp tag set from entity @s data.properties.tag")
 			raw("data modify storage ra:temp entity_selector set from entity @s data.properties.entity_selector")
 			raw("execute unless data storage ra:temp entity_selector run return 0")
+			// Both are pasted into the command: refuse anything that could be more than one argument.
+			guardProperty("entity_selector", TextFormat.SELECTOR)
 			raw("execute unless data storage ra:temp tag run return run function ${clearAllTagsMacro.asId()} with storage ra:temp")
 			raw("execute if data storage ra:temp {tag:\"\"} run return run function ${clearAllTagsMacro.asId()} with storage ra:temp")
+			guardProperty("tag", TextFormat.TAG)
 			function(removeTagMacro, Storage.TEMP)
 		}
 

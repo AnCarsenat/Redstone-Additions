@@ -36,6 +36,16 @@ object DataHandlerRegistry {
 	/** On a player: the stamp of the last Data Handler menu they were shown. */
 	const val MENU = "ra.dh.menu"
 
+	/** A button's action is `stamp * MUL + code`; stamps run 1..[STAMP_MAX], so it stays an int. */
+	const val MUL = 10000
+	const val STAMP_MAX = 200000
+
+	/** On a player: what their latest menu was, 0 the block's settings, 1 a picker. */
+	const val KIND = "ra.dh.mkind"
+
+	/** On a player: the stamp of their open picker, whose choices are in storage ra:dh pick.s<stamp>. */
+	const val PSTAMP = "ra.dh.pstamp"
+
 	fun Ra.registerDataHandlerRegistry() {
 		val schemas = blockProperties.toSortedMap()
 		val known = schemas.values.flatten().filter { !it.dynamic }.map { it.name }.distinct().sorted()
@@ -53,6 +63,11 @@ object DataHandlerRegistry {
 			for (old in listOf("registry", "numeric", "item_names", "readonly")) raw("data remove storage ra:dh $old")
 			// Menus drawn before this load may name rows of a schema that changed: void them all.
 			raw("scoreboard objectives add $MENU dummy")
+			raw("scoreboard objectives add $KIND dummy")
+			raw("scoreboard objectives add $PSTAMP dummy")
+			// Pickers drawn before this load are void too.
+			raw("data remove storage ra:dh pick")
+			raw("scoreboard players reset * $PSTAMP")
 			raw("scoreboard players reset * $MENU")
 		}
 

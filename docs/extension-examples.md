@@ -262,7 +262,6 @@ execute if block ~ ~ ~ minecraft:blast_furnace run scoreboard players set #mb_re
 # Context: as marker
 # Initialize typed data used by tick/process.
 data modify entity @s data.type set value "my_structure"
-data modify entity @s data.properties set value {enabled:1b}
 ```
 
 ### tick.mcfunction
@@ -270,7 +269,9 @@ data modify entity @s data.properties set value {enabled:1b}
 ```mcfunction
 # /ra_multiblock:my_structure/tick
 # Context: as marker
-execute if data entity @s data.properties{enabled:1b} run particle minecraft:happy_villager ~ ~1 ~ 0.25 0.25 0.25 0.01 2
+# A redstone block under the marker pauses it (the shipped machines use their redstone control).
+execute if block ~ ~-1 ~ minecraft:redstone_block run return 0
+particle minecraft:happy_villager ~ ~1 ~ 0.25 0.25 0.25 0.01 2
 ```
 
 ### Hook Registration

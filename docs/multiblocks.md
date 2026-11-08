@@ -25,6 +25,10 @@ Operators: `/function ra_multiblock:blocks/give_all`.
 Breaking any block of an assembled machine takes it apart. The structure is also re-checked
 regularly, so a machine whose blocks were changed stops by itself.
 
+There is no on/off switch on an assembled machine: right-clicking it with the Wrench only tells you
+it is already assembled. To pause one, use its redstone control (the redstone block described for
+each machine below).
+
 | Machine | Base | Does |
 | --- | --- | --- |
 | [Blast Forge](#blast-forge) | Copper | Smelts and recycles using fuel and heat |
@@ -115,7 +119,9 @@ A redstone block directly under the Netherite Base locks the platform.
   the machines are in `ra_multiblock`. Adding a structure: [Multiblock Library](multiblock-library.md).
 - An assembled machine is a marker tagged `ra.multiblock` and `ra.multiblock.<id>`, with
   `data.type`, `data.facing`, `data.properties`, `data.inputs`, `data.outputs` and
-  `data.controls`; machine state goes in `data.data` and `data.status`.
+  `data.controls`; machine state goes in `data.data` and `data.status`. `data.properties` holds
+  `speed:1` (reserved, nothing reads it yet). Machines assembled before v6.0.1 may also carry an
+  `enabled` key there; nothing reads it.
 - Blast Forge heat is the `ra.heat` score on its marker; `ra.mb_timer` paces machines.
 - The structure registry and each type's rotated block and IO lists live in
   `storage ra:multiblock types.<id>`; the checks themselves are predicates,

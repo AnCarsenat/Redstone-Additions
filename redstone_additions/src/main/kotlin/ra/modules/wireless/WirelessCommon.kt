@@ -5,15 +5,24 @@ import ra.core.Obj
 import ra.core.raw
 import ra.core.block.soundListenersSel
 
-/** What the emitter and receiver share: their two defaults and the wrench's enabled toggle. */
+/**
+ * What the emitter and receiver share: the channel default. The emitter alone also has an
+ * `enabled` property, its default and the wrench's toggle for it. The receiver had one too until
+ * v6.0.1; its channel is its only control now (see Receiver).
+ */
 
-/** Channel (default "default") and enabled state (can be toggled with the wrench). As the marker. */
-internal fun Function.defaultsChannelEnabled() {
+/** Channel (default "default"). As the marker. */
+internal fun Function.defaultChannel() {
 	raw("execute unless data entity @s data.properties.channel run data modify entity @s data.properties.channel set value \"default\"")
+}
+
+/** Channel and the emitter's enabled state (toggled with the wrench). As the emitter's marker. */
+internal fun Function.defaultsChannelEnabled() {
+	defaultChannel()
 	raw("execute unless data entity @s data.properties.enabled run data modify entity @s data.properties.enabled set value 1b")
 }
 
-/** Flip `data.properties.enabled` and report it to players within 8 blocks. As the marker. */
+/** Flip `data.properties.enabled` and report it to players within 8 blocks. As the emitter's marker. */
 internal fun Function.toggleEnabled(label: String, color: String) {
 	// Store current state in temp.
 	raw("execute store result score @s ${Obj.TEMP} run data get entity @s data.properties.enabled")

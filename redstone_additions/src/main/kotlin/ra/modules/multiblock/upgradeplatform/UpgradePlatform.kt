@@ -87,9 +87,7 @@ object UpgradePlatform {
 
 	/** As the marker, at the base: picks up an item dropped on the platform and upgrades it. */
 	private fun Function.tick() {
-		raw("execute unless data entity @s data.properties{enabled:1b} run return 0")
-
-		// Ambient particles, whenever enabled.
+		// Ambient particles, always.
 		raw("particle minecraft:enchant ~ ~1.5 ~ 1 0.5 1 1 3 normal ${particleViewersSel()}")
 
 		// A redstone block under the centre locks the platform.

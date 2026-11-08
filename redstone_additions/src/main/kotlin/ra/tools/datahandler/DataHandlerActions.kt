@@ -26,6 +26,7 @@ import ra.tools.datahandler.DataHandlerSelection.pendingLoad
 import ra.tools.datahandler.DataHandlerSelection.pendingSave
 import ra.tools.datahandler.DataHandlerSelection.select
 import ra.tools.datahandler.props.DataHandlerList
+import ra.tools.datahandler.props.DataHandlerEntries
 import ra.tools.datahandler.props.DataHandlerProps
 import ra.tools.datahandler.DataHandlerRegistry
 import ra.tools.datahandler.props.DataHandlerTypes
@@ -38,6 +39,10 @@ import ra.tools.tool
  *   stamp * 1000 + 100 + i    edit row i of the block's schema (storage ra:dh block_order)
  *   stamp * 1000 + 400 + i    [Set from hand] of row i
  *   stamp * 1000 + 700 + i    edit an undeclared property, by its index in storage ra:dh known
+ *   stamp * 1000 + 1000..     a list entry's buttons (DataHandlerEntries)
+ *   picker stamp * 1000 + 100 + k   choice k of a picker (DataHandlerEntries)
+ *
+ * (1000 stands for DataHandlerRegistry.MUL, which is 10000: room for the list entries.)
  *
  * The stamp is the number of the menu the row was drawn in (see DataHandlerRegistry): a click from
  * any other menu than the player's latest -- an old one scrolled back to, one drawn before a
@@ -51,7 +56,7 @@ object DataHandlerActions {
 	val genericApply = tool("data_handler/generic_apply")
 	val requestNumber = tool("data_handler/request_number")
 	val requestText = tool("data_handler/request_text")
-	private val propertyGone = tool("data_handler/property_gone")
+	val propertyGone = tool("data_handler/property_gone")
 
 	private const val NO_TARGET = "execute unless entity $TARGET"
 	private const val PREFIX = """{text:"[Data Handler] ",color:"gold"}"""
@@ -78,7 +83,7 @@ object DataHandlerActions {
 			executeRun("as $TARGET", updateStorage)
 
 			// action = stamp * 1000 + code.
-			raw("scoreboard players set #dh.k1000 ${Obj.TEMP} 1000")
+			raw("scoreboard players set #dh.k1000 ${Obj.TEMP} ${DataHandlerRegistry.MUL}")
 			raw("scoreboard players operation #dh.code ${Obj.TEMP} = @s ra.dh.action")
 			raw("scoreboard players operation #dh.code ${Obj.TEMP} %= #dh.k1000 ${Obj.TEMP}")
 			raw("scoreboard players operation #dh.stamp ${Obj.TEMP} = @s ra.dh.action")
@@ -88,9 +93,14 @@ object DataHandlerActions {
 			raw("""execute if score #dh.code ${Obj.TEMP} matches 100.. if score #dh.fresh ${Obj.TEMP} matches 0 run tellraw @s [$PREFIX,{text:"That menu is out of date; here is the current one.",color:"gray"}]""")
 			executeRun("if score #dh.code ${Obj.TEMP} matches 100.. if score #dh.fresh ${Obj.TEMP} matches 0", refresh)
 
-			executeRun("if score #dh.fresh ${Obj.TEMP} matches 1 if score #dh.code ${Obj.TEMP} matches 400..699", DataHandlerProps.handAction)
-			executeRun("if score #dh.fresh ${Obj.TEMP} matches 1 if score #dh.code ${Obj.TEMP} matches 100..399", genericAction)
-			executeRun("if score #dh.fresh ${Obj.TEMP} matches 1 if score #dh.code ${Obj.TEMP} matches 700..999", genericAction)
+			// A picker (ra.dh.mkind 1) has buttons of its own; the block's menu has the rest.
+			val kind = DataHandlerRegistry.KIND
+			executeRun("if score #dh.fresh ${Obj.TEMP} matches 1 if score @s $kind matches 1 if score #dh.code ${Obj.TEMP} matches 100..", DataHandlerEntries.pickAction)
+			val main = "if score #dh.fresh ${Obj.TEMP} matches 1 unless score @s $kind matches 1"
+			executeRun("$main if score #dh.code ${Obj.TEMP} matches 400..699", DataHandlerProps.handAction)
+			executeRun("$main if score #dh.code ${Obj.TEMP} matches 100..399", genericAction)
+			executeRun("$main if score #dh.code ${Obj.TEMP} matches 700..999", genericAction)
+			executeRun("$main if score #dh.code ${Obj.TEMP} matches 1000..", DataHandlerEntries.entryAction)
 
 			executeRun("if score @s ra.dh.action matches 90", showInternalData)
 			executeRun("if score @s ra.dh.action matches 91", refresh)
@@ -217,11 +227,19 @@ object DataHandlerActions {
 			// and a refusal leaves the block as it was.
 			raw("execute unless data storage ra:input consume.text run return 0")
 			raw("data modify storage ra:dh q.text set from storage ra:input consume.text")
+			// An answer for one entry of a list (DataHandlerEntries).
+			executeReturnRun("if data storage ra:dh cur{kind:\"entry\"}", DataHandlerEntries.applyEntry)
+			executeReturnRun("if data storage ra:dh cur{kind:\"append\"}", DataHandlerEntries.applyEntry)
 			executeReturnRun("if score #dh.type ${Obj.TEMP} matches 1", DataHandlerTypes.writeTypedNumber, "with storage ra:dh q")
 			executeReturnRun("if score #dh.type ${Obj.TEMP} matches 2", DataHandlerTypes.writeTypedBool, "with storage ra:dh q")
 			executeReturnRun("if score #dh.type ${Obj.TEMP} matches 3", DataHandlerList.apply)
 			raw("""execute if score #dh.type ${Obj.TEMP} matches 5 run tellraw @s [$PREFIX,{text:"A compound cannot be edited here. Use the Creative Data Handler.",color:"red"}]""")
 			raw("execute if score #dh.type ${Obj.TEMP} matches 5 run return 0")
+			// Text is written as typed, so it must be in the property's format (TextFormat): it may be
+			// pasted into a command later.
+			raw("data modify storage ra:safe s set from storage ra:dh q.text")
+			raw("execute store result score #dh.fok ${Obj.TEMP} run function ${DataHandlerEntries.checkFormat.asId()}")
+			raw("execute if score #dh.fok ${Obj.TEMP} matches 0 run return 0")
 			callWith(DataHandlerProps.writeText, "storage ra:dh q")
 			raw("return 1")
 		}

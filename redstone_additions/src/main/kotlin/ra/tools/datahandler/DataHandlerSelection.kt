@@ -94,12 +94,15 @@ object DataHandlerSelection {
 			withReq(pendingSaveAt)
 			data(Storage.DH) { remove("pending_name") }
 			data(Storage.DH) { remove("pending_kind") }
+			data(Storage.DH) { remove("pending_j") }
 		}
 		// {r}
 		pack.define(pendingSaveAt) {
 			raw("\$data modify storage ra:dh pend.r\$(r) set value {}")
 			raw("\$data modify storage ra:dh pend.r\$(r).name set from storage ra:dh pending_name")
 			raw("\$data modify storage ra:dh pend.r\$(r).kind set from storage ra:dh pending_kind")
+			// A list entry's index (DataHandlerEntries); -1 for an append.
+			raw("\$execute if data storage ra:dh pending_j run data modify storage ra:dh pend.r\$(r).j set from storage ra:dh pending_j")
 			raw("\$execute store result storage ra:dh pend.r\$(r).mid int 1 run scoreboard players get @s $SEL")
 		}
 

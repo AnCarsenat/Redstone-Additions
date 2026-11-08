@@ -7,6 +7,7 @@ import ra.core.Ra
 import ra.core.callWith
 import ra.core.define
 import ra.core.raw
+import ra.lib.input.InputRange.tellRange
 import ra.tools.tool
 
 /**
@@ -57,8 +58,8 @@ object DataHandlerTypes {
 	private const val TARGET = DataHandlerProps.TARGET
 
 	/** Accepted spellings of a flag, as typed. */
-	private val TRUE = listOf("true", "on", "1").flatMap { it.spellings() }
-	private val FALSE = listOf("false", "off", "0").flatMap { it.spellings() }
+	internal val TRUE = listOf("true", "on", "1").flatMap { it.spellings() }
+	internal val FALSE = listOf("false", "off", "0").flatMap { it.spellings() }
 	private fun String.spellings() = listOf(this, replaceFirstChar { it.uppercase() }, uppercase()).distinct()
 
 	/**
@@ -111,7 +112,10 @@ object DataHandlerTypes {
 		}
 
 		pack.define(outOfRange) {
-			raw("""tellraw @s [$PREFIX,{text:"Out of range: ",color:"red"},{text:"pick a number from ",color:"red"},{score:{name:"#dh.min",objective:"$T"},color:"white"},{text:" to ",color:"red"},{score:{name:"#dh.max",objective:"$T"},color:"white"},{text:". Nothing was changed.",color:"red"}]""")
+			tellRange(
+				"@s", """$PREFIX,{text:"Out of range: pick a number",color:"red"}""", """{text:". Nothing was changed.",color:"red"}""",
+				"#dh.min", T, "#dh.max", T,
+			)
 			raw("return 0")
 		}
 

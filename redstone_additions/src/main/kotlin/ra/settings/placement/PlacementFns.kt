@@ -60,11 +60,11 @@ internal object PlacementFns {
 
 		// Tell the placer their block is switched off. As the placement bat, at the placement position.
 		//
-		// THE ITEM IS NOT RETURNED, THOUGH IT SHOULD BE. A spawn egg is consumed by vanilla before
-		// the bat it spawns ever reaches this pack, and nothing here puts one back. A disabled
-		// block is an admin's policy rather than a mistake by the player holding it, so it costing
-		// them the item is wrong -- but doing it properly needs the item rebuilt from its block id,
-		// and the bat carries only the ra.place.<id> tag, not the components.
+		// Messages only. The item comes back from the placement router right after this
+		// (ra:placement/refund, in hub/placement/Refund.kt), which rebuilds it from the bat's
+		// ra.place.<id> tag: a spawn egg is used up by vanilla before the pack ever sees the bat,
+		// and a disabled block is an admin's policy, not something that should cost the player
+		// holding it the item.
 		pack.define(Settings.Placement.refuse) {
 			raw("""tellraw @a[tag=${Tag.PLACER},limit=1] [{text:"[Settings] ",color:"gold"},{text:"That block is disabled on this world.",color:"red"}]""")
 			raw("playsound minecraft:block.note_block.bass block @a[tag=${Tag.PLACER},limit=1] ~ ~ ~ 0.6 0.7")

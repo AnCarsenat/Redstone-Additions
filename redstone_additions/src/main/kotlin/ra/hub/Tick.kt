@@ -1,12 +1,9 @@
 package ra.hub
 
-import io.github.ayfri.kore.arguments.maths.Axes
-import io.github.ayfri.kore.arguments.maths.vec3
 import io.github.ayfri.kore.arguments.numbers.ticks
 import io.github.ayfri.kore.arguments.selector.scores
 import io.github.ayfri.kore.arguments.scores.greaterThanOrEqualTo
 import io.github.ayfri.kore.arguments.scores.lessThanOrEqualTo
-import io.github.ayfri.kore.arguments.types.literals.allEntities
 import io.github.ayfri.kore.arguments.types.literals.allPlayers
 import io.github.ayfri.kore.arguments.types.literals.self
 import io.github.ayfri.kore.commands.execute.execute
@@ -14,16 +11,13 @@ import io.github.ayfri.kore.commands.function
 import io.github.ayfri.kore.commands.schedule
 import io.github.ayfri.kore.commands.scoreboard.scoreboard
 import io.github.ayfri.kore.commands.tag
-import io.github.ayfri.kore.commands.tp
 import io.github.ayfri.kore.functions.Function
-import io.github.ayfri.kore.generated.EntityTypes
 import ra.RedstoneAdditions
 import ra.api.Goggles
 import ra.api.RaLib
 import ra.api.Settings
 import ra.api.Tools
 import ra.core.Ra
-import ra.core.Tag
 import ra.core.define
 import ra.core.raw
 import ra.hub.placement.detectBats
@@ -65,14 +59,11 @@ internal fun Ra.registerTick() {
 
 		function(detectBats)
 
-		// Keep every custom block marker centred on the world grid.
-		execute {
-			asTarget(allEntities { type = EntityTypes.MARKER; tag = Tag.CUSTOM_BLOCK })
-			at(self())
-			align(Axes.XYZ)
-			positioned(vec3(0.5, 0.5, 0.5).relative)
-			run { tp(self(), vec3()) }
-		}
+		// Markers are NOT re-centred here any more. This used to teleport every custom block
+		// marker in the world onto its block centre, every tick; a marker has no physics and
+		// nothing in the pack moves one, and placement summons it at the centre already
+		// (#ra:placement_handlers runs at `align xyz positioned ~0.5 ~0.5 ~0.5`). ra:load does
+		// it once instead, for markers an older version may have left off-centre.
 
 		for (module in RedstoneAdditions.modules) module.tick?.let { function(it) }
 

@@ -190,7 +190,9 @@ object WiresBlocks : PackPart {
 			text("mode", readonly = true, visible = false)
 		}
 		properties("electric_generator") { number("generation_rate", min = 1, max = 10000, readonly = true) }
-		properties("solar_panel") { number("generation_rate", min = 1, max = 10000, readonly = true) }
+		// No properties: a Solar Panel's output comes from the daylight detector's power level
+		// (blocks/solar_panel/tick), never from a generation_rate.
+		properties("solar_panel") {}
 		// eu_use is the consumer's setting, not a fixed rate: the wrench cycles it 20 / 40 / 80.
 		properties("electric_consumer") { number("eu_use", min = 1, max = 10000) }
 		properties("industrial_light") { number("eu_use", min = 0, max = 1000, readonly = true) }

@@ -5,7 +5,6 @@ import io.github.ayfri.kore.arguments.types.literals.self
 import io.github.ayfri.kore.commands.data
 import io.github.ayfri.kore.commands.function
 import io.github.ayfri.kore.commands.returnValue
-import io.github.ayfri.kore.commands.scoreboard.Operation
 import io.github.ayfri.kore.commands.scoreboard.scoreboard
 import io.github.ayfri.kore.utils.nbt
 import ra.api.Goggles
@@ -23,6 +22,8 @@ import ra.core.executeRun
 import ra.core.raw
 import ra.core.ref
 import ra.modules.wires.fluid.Fluid
+import ra.modules.wires.common.Cip
+import ra.modules.wires.common.storeCompute
 
 object CreativeFluid : PackPart {
 	val cycleMedium = ref(Ns.WIRES, "blocks/creative_fluid/cycle_medium")
@@ -130,8 +131,7 @@ object CreativeFluid : PackPart {
 			raw("execute if score #cr.known ra.wires.tmp matches ..0 run return run data modify entity @s data.status.state set value \"Unknown medium\"")
 
 			function(RaLib.Transport.Net.read)
-			scoreboard.players.operation(literal("#cr.fill"), "ra.wires.tmp", Operation.SET, literal("#net_capacity"), "ra.tr.tmp")
-			scoreboard.players.operation(literal("#cr.fill"), "ra.wires.tmp", Operation.REMOVE, literal("#net_amount"), "ra.tr.tmp")
+			storeCompute("#cr.fill", "ra.wires.tmp", Cip.sub(Cip.score("#net_capacity", "ra.tr.tmp"), Cip.score("#net_amount", "ra.tr.tmp")))
 
 			raw("execute if score #cr.fill ra.wires.tmp matches ..0 run return run data modify entity @s data.status.state set value \"Network full\"")
 

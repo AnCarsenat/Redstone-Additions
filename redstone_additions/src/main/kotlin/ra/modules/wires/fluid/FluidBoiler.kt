@@ -18,6 +18,8 @@ import ra.core.define
 import ra.core.executeRun
 import ra.core.raw
 import ra.core.ref
+import ra.modules.wires.common.Cip
+import ra.modules.wires.common.storeCompute
 
 object FluidBoiler : PackPart {
 	val boilerCleanup = ref(Ns.WIRES, "fluid/boiler_cleanup")
@@ -48,8 +50,7 @@ object FluidBoiler : PackPart {
 			// more -- steam has its own entry alongside whatever is already in there, and the
 			// only thing that can turn the boiler away is having no room for 1000 mL.
 
-			scoreboard.players.operation(literal("#boil_free"), "ra.wires.tmp", Operation.SET, literal("#net_capacity"), "ra.tr.tmp")
-			scoreboard.players.operation(literal("#boil_free"), "ra.wires.tmp", Operation.REMOVE, literal("#net_amount"), "ra.tr.tmp")
+			storeCompute("#boil_free", "ra.wires.tmp", Cip.sub(Cip.score("#net_capacity", "ra.tr.tmp"), Cip.score("#net_amount", "ra.tr.tmp")))
 			raw("execute unless score #boil_free ra.wires.tmp matches 1000.. run return 0")
 
 			scoreboard.players.set(literal("#boil_dst"), "ra.wires.tmp", 1)

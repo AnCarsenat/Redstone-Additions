@@ -1,10 +1,7 @@
 package ra.modules.wires.fluid
 
-import io.github.ayfri.kore.arguments.types.literals.literal
 import io.github.ayfri.kore.commands.data
 import io.github.ayfri.kore.commands.function
-import io.github.ayfri.kore.commands.scoreboard.Operation
-import io.github.ayfri.kore.commands.scoreboard.scoreboard
 import ra.api.RaLib
 import ra.core.Ns
 import ra.core.PackPart
@@ -16,6 +13,8 @@ import ra.core.define
 import ra.core.executeRun
 import ra.core.raw
 import ra.core.ref
+import ra.modules.wires.common.Cip
+import ra.modules.wires.common.storeComputeStorage
 
 object DrainPotion : PackPart {
 	val drainPotion = ref(Ns.WIRES, "fluid/drain_potion")
@@ -167,23 +166,17 @@ object DrainPotion : PackPart {
 			raw("execute store result score #pt.dur ra.wires.tmp run data get storage ra:wires one.dur")
 			raw("execute if score #pt.dur ra.wires.tmp matches ..0 run return 0")
 
-			scoreboard.players.operation(literal("#pt.dur"), "ra.wires.tmp", Operation.MULTIPLY, literal("#pt.vol"), "ra.wires.tmp")
-			scoreboard.players.set(literal("#pt.bottle"), "ra.wires.tmp", 1000)
-			scoreboard.players.operation(literal("#pt.dur"), "ra.wires.tmp", Operation.DIVIDE, literal("#pt.bottle"), "ra.wires.tmp")
-
 			// A draw too small to earn a whole tick still earns one: the player paid volume
 			// for it, and an effect of zero ticks is a command error rather than a no-op.
-			raw("execute if score #pt.dur ra.wires.tmp matches ..0 run scoreboard players set #pt.dur ra.wires.tmp 1")
-
+			//
 			// /effect give takes seconds, not ticks, and rounds down -- so an effect worth
 			// less than a second would vanish. Ticks are what the table and the scaling work
 			// in, so the conversion is done here and floored to one second.
-			scoreboard.players.set(literal("#pt.tps"), "ra.wires.tmp", 20)
-			scoreboard.players.operation(literal("#pt.secs"), "ra.wires.tmp", Operation.SET, literal("#pt.dur"), "ra.wires.tmp")
-			scoreboard.players.operation(literal("#pt.secs"), "ra.wires.tmp", Operation.DIVIDE, literal("#pt.tps"), "ra.wires.tmp")
-			raw("execute if score #pt.secs ra.wires.tmp matches ..0 run scoreboard players set #pt.secs ra.wires.tmp 1")
-
-			raw("execute store result storage ra:wires one.secs int 1 run scoreboard players get #pt.secs ra.wires.tmp")
+			//
+			// secs = max(1, max(1, dur * drawn / 1000) / 20), both divisions floored as the
+			// scoreboard `/=` they replaced.
+			val ticks = Cip.max(1, Cip.floorDiv(Cip.mul(Cip.score("#pt.dur", "ra.wires.tmp"), Cip.score("#pt.vol", "ra.wires.tmp")), 1000))
+			storeComputeStorage("ra:wires", "one.secs", Cip.max(1, Cip.floorDiv(ticks, 20)))
 			function(DrainPotion.drainPotionGive, Storage.WIRES, "one")
 		}
 	}

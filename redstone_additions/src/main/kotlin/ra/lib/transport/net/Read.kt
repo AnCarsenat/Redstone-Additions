@@ -59,8 +59,9 @@ object Read {
 		// and gained its `amounts` map without moving anything. And in millilitres the numbers are a
 		// thousand times what they were, so the headroom matters.
 		//
-		// Arithmetic still goes through scoreboards, because commands have no other way to add two
-		// numbers; storage is where the values live between operations, not where they are computed.
+		// Arithmetic reads the values where they live: a `data modify ... set compute` adds a score
+		// to a storage path in one command (ra/core/Compute.kt), so nothing has to be copied into a
+		// scoreboard and back just to change it.
 		//
 		// WHAT A NETWORK HOLDS
 		//   amount    the total across every medium. This is what capacity is checked against, so a

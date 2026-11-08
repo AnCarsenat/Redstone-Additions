@@ -90,10 +90,7 @@ internal object Flood {
 				ifCondition { score(nextNet, Obj.TR_TMP) lessThanOrEqualTo 0 }
 				run { function(nextId) }
 			}
-			execute {
-				ifCondition { score(nextNet, Obj.TR_TMP) greaterThan score(netSeq, Obj.TR_TMP) }
-				run { scoreboard.players.operation(netSeq, Obj.TR_TMP, Operation.SET, nextNet, Obj.TR_TMP) }
-			}
+			scoreboard.players.operation(netSeq, Obj.TR_TMP, Operation.MAX, nextNet, Obj.TR_TMP)
 
 			scoreboard.players.operation(self(), Obj.TR_NET, Operation.SET, nextNet, Obj.TR_TMP)
 			tag(self()) { add(TrTag.ROOT) }

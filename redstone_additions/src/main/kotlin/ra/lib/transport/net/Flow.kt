@@ -8,10 +8,19 @@ import io.github.ayfri.kore.commands.returnRun
 import io.github.ayfri.kore.commands.returnValue
 import io.github.ayfri.kore.commands.scoreboard.Operation
 import io.github.ayfri.kore.commands.scoreboard.scoreboard
+import io.github.ayfri.kore.features.predicates.providers.add
+import io.github.ayfri.kore.features.predicates.providers.min
+import io.github.ayfri.kore.features.predicates.providers.sub
 import io.github.ayfri.kore.functions.Function
 import ra.api.RaLib
 import ra.core.Obj
 import ra.core.Ra
+import ra.core.computeScore
+import ra.core.computeStorage
+import ra.core.provider
+import ra.core.scoreOf
+import ra.core.storageOf
+import ra.core.storeInt
 import ra.core.define
 import ra.core.raw
 import ra.lib.lib
@@ -25,6 +34,9 @@ object Flow {
 
 	private val moved = tr("#net_moved")
 	private val want = tr("#net_want")
+
+	/** `#net_want ra.tr.tmp` as a compute provider. */
+	private val wantP = scoreOf("#net_want", Obj.TR_TMP)
 
 	fun Ra.registerFlow() {
 		pack.define(RaLib.Transport.Net.offer) { offer() }
@@ -90,23 +102,17 @@ object Flow {
 	 * volume that several media share, and the player budgets it as one number.
 	 */
 	private fun Function.offer() {
-		val free = tr("#net_free")
 		startMove()
 
 		function(RaLib.Transport.Net.read)
 
+		// want = min(amount, capacity - amount held), in one evaluation. A full (or overfull)
+		// network makes the free space 0 or less, so want comes out 0 or less and the guard below
+		// refuses the offer -- the same outcome the separate `free <= 0` test used to give.
 		raw("\$scoreboard players set #net_want ${Obj.TR_TMP} \$(amount)")
-		scoreboard.players.operation(free, Obj.TR_TMP, Operation.SET, tr("#net_capacity"), Obj.TR_TMP)
-		scoreboard.players.operation(free, Obj.TR_TMP, Operation.REMOVE, tr("#net_amount"), Obj.TR_TMP)
-
-		execute {
-			ifCondition { score(free, Obj.TR_TMP) lessThanOrEqualTo 0 }
-			run { returnValue(0) }
-		}
-		execute {
-			ifCondition { score(free, Obj.TR_TMP) lessThan score(want, Obj.TR_TMP) }
-			run { scoreboard.players.operation(want, Obj.TR_TMP, Operation.SET, free, Obj.TR_TMP) }
-		}
+		computeScore("#net_want", Obj.TR_TMP, provider {
+			min(wantP, sub(scoreOf("#net_capacity", Obj.TR_TMP), scoreOf("#net_amount", Obj.TR_TMP)))
+		})
 		returnIfNothingWanted()
 
 		commit(offerWrite)
@@ -121,23 +127,23 @@ object Flow {
 	 * `offer_write {id, medium}`, internal: commit an accepted offer, to the total and to the
 	 * medium's own entry.
 	 *
-	 * `data get` on a path that is not there fails, and a failed command stores 0 -- which is
-	 * exactly the right starting value for a medium arriving on this network for the first time.
+	 * A storage provider reads a path that is not there as 0 -- the same 0 a failed `data get`
+	 * used to store -- which is exactly the right starting value for a medium arriving on this
+	 * network for the first time.
 	 */
 	private fun Function.offerWrite() {
-		raw("\$execute store result score #net_new ${Obj.TR_TMP} run data get storage ra:transport nets.n\$(id).amount")
-		scoreboard.players.operation(tr("#net_new"), Obj.TR_TMP, Operation.ADD, want, Obj.TR_TMP)
-		raw("\$execute store result storage ra:transport nets.n\$(id).amount int 1 run scoreboard players get #net_new ${Obj.TR_TMP}")
+		computeStorage(TR, "nets.n\$(id).amount", provider { add(storageOf(TR, "nets.n\$(id).amount"), wantP) })
 
-		raw("\$execute store result score #net_med ${Obj.TR_TMP} run data get storage ra:transport nets.n\$(id).amounts.\$(medium)")
+		val medPath = "nets.n\$(id).amounts.\$(medium)"
+		computeScore("#net_med", Obj.TR_TMP, provider { add(storageOf(TR, medPath), wantP) }, storeInt(TR, medPath))
 
 		// First arrival of this medium: give it a place in the enumeration order. The list is
 		// compounds rather than bare strings so that a medium can be removed by value when it runs
 		// out -- `data remove list[{m:"water"}]` only works on compound elements.
-		raw("\$execute if score #net_med ${Obj.TR_TMP} matches ..0 run data modify storage ra:transport nets.n\$(id).media append value {m:\"\$(medium)\"}")
-
-		scoreboard.players.operation(tr("#net_med"), Obj.TR_TMP, Operation.ADD, want, Obj.TR_TMP)
-		raw("\$execute store result storage ra:transport nets.n\$(id).amounts.\$(medium) int 1 run scoreboard players get #net_med ${Obj.TR_TMP}")
+		//
+		// Tested on the sum just written rather than on a separate read beforehand: the new
+		// figure is no more than #net_want exactly when the old one was 0 or less, absent included.
+		raw("\$execute if score #net_med ${Obj.TR_TMP} <= #net_want ${Obj.TR_TMP} run data modify storage ra:transport nets.n\$(id).media append value {m:\"\$(medium)\"}")
 
 		raw("\$data modify storage ra:transport nets.n\$(id).medium set from storage ra:transport nets.n\$(id).media[0].m")
 	}
@@ -153,18 +159,14 @@ object Flow {
 	 * that and is there for callers with nothing better to go on.
 	 */
 	private fun Function.take() {
-		val have = tr("#net_have")
 		startMove()
 
 		function(RaLib.Transport.Net.read)
 
+		// want = min(amount, what the network holds of this medium). A medium it does not hold
+		// reads as 0, so want comes out 0 and the guard below refuses the take.
 		raw("\$scoreboard players set #net_want ${Obj.TR_TMP} \$(amount)")
-		raw("\$execute store result score #net_have ${Obj.TR_TMP} run data get storage ra:transport cur.amounts.\$(medium)")
-
-		execute {
-			ifCondition { score(have, Obj.TR_TMP) lessThan score(want, Obj.TR_TMP) }
-			run { scoreboard.players.operation(want, Obj.TR_TMP, Operation.SET, have, Obj.TR_TMP) }
-		}
+		computeScore("#net_want", Obj.TR_TMP, provider { min(wantP, storageOf(TR, "cur.amounts.\$(medium)")) })
 		returnIfNothingWanted()
 
 		commit(takeWrite)
@@ -180,14 +182,13 @@ object Flow {
 	 * lets a different medium be pumped in afterwards without the player breaking anything.
 	 */
 	private fun Function.takeWrite() {
-		raw("\$execute store result score #net_new ${Obj.TR_TMP} run data get storage ra:transport nets.n\$(id).amount")
-		scoreboard.players.operation(tr("#net_new"), Obj.TR_TMP, Operation.REMOVE, want, Obj.TR_TMP)
-		raw("\$execute store result storage ra:transport nets.n\$(id).amount int 1 run scoreboard players get #net_new ${Obj.TR_TMP}")
+		val amountPath = "nets.n\$(id).amount"
+		computeScore("#net_new", Obj.TR_TMP, provider { sub(storageOf(TR, amountPath), wantP) }, storeInt(TR, amountPath))
 
-		raw("\$execute store result score #net_med ${Obj.TR_TMP} run data get storage ra:transport nets.n\$(id).amounts.\$(medium)")
-		scoreboard.players.operation(tr("#net_med"), Obj.TR_TMP, Operation.REMOVE, want, Obj.TR_TMP)
-
-		raw("\$execute if score #net_med ${Obj.TR_TMP} matches 1.. store result storage ra:transport nets.n\$(id).amounts.\$(medium) int 1 run scoreboard players get #net_med ${Obj.TR_TMP}")
+		// Written unconditionally and then removed when it has run out, rather than written only
+		// when something is left: the end state is the same and it saves re-reading the score.
+		val medPath = "nets.n\$(id).amounts.\$(medium)"
+		computeScore("#net_med", Obj.TR_TMP, provider { sub(storageOf(TR, medPath), wantP) }, storeInt(TR, medPath))
 		raw("\$execute if score #net_med ${Obj.TR_TMP} matches ..0 run data remove storage ra:transport nets.n\$(id).amounts.\$(medium)")
 		raw("\$execute if score #net_med ${Obj.TR_TMP} matches ..0 run data remove storage ra:transport nets.n\$(id).media[{m:\"\$(medium)\"}]")
 

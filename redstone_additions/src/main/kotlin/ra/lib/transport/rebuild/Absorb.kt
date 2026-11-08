@@ -8,8 +8,15 @@ import io.github.ayfri.kore.commands.returnRun
 import io.github.ayfri.kore.commands.returnValue
 import io.github.ayfri.kore.commands.scoreboard.Operation
 import io.github.ayfri.kore.commands.scoreboard.scoreboard
+import io.github.ayfri.kore.features.predicates.providers.add
 import ra.core.Obj
 import ra.core.Ra
+import ra.core.computeScore
+import ra.core.computeStorage
+import ra.core.provider
+import ra.core.scoreOf
+import ra.core.storageOf
+import ra.core.storeInt
 import ra.core.define
 import ra.core.raw
 import ra.lib.lib
@@ -38,13 +45,10 @@ internal object Absorb {
 
 		// `accumulate {id}`, internal: the dynamic-name half of accumulate_node.
 		pack.define(accumulate) {
-			raw("\$execute store result score #net_cap_acc ${Obj.TR_TMP} run data get storage ra:transport nets.n\$(id).capacity")
-			scoreboard.players.operation(tr("#net_cap_acc"), Obj.TR_TMP, Operation.ADD, tr("#node_cap"), Obj.TR_TMP)
-			raw("\$execute store result storage ra:transport nets.n\$(id).capacity int 1 run scoreboard players get #net_cap_acc ${Obj.TR_TMP}")
-
-			raw("\$execute store result score #net_amt_acc ${Obj.TR_TMP} run data get storage ra:transport nets.n\$(id).amount")
-			scoreboard.players.operation(tr("#net_amt_acc"), Obj.TR_TMP, Operation.ADD, tr("#node_carry"), Obj.TR_TMP)
-			raw("\$execute store result storage ra:transport nets.n\$(id).amount int 1 run scoreboard players get #net_amt_acc ${Obj.TR_TMP}")
+			for ((key, node) in listOf("capacity" to "#node_cap", "amount" to "#node_carry")) {
+				val path = "nets.n\$(id).$key"
+				computeStorage(TR, path, provider { add(storageOf(TR, path), scoreOf(node, Obj.TR_TMP)) })
+			}
 		}
 
 		// Internal: fold one node's carried contents into the network it landed in, medium by
@@ -110,21 +114,20 @@ internal object Absorb {
 		// `absorb_one {id, m}`, internal: add one carried medium to the network's breakdown.
 		// #abs.a ra.tr.tmp holds how much of it there is.
 		//
-		// The same shape as net/offer_write, and for the same reason: `data get` on a key that is
-		// not there fails, a failed command stores 0, and 0 is exactly the right starting value for
-		// a medium arriving on this network for the first time. A new medium is appended to the
-		// list, so the order still records what got here first.
+		// The same shape as net/offer_write, and for the same reason: a storage provider reads a
+		// key that is not there as 0, and 0 is exactly the right starting value for a medium
+		// arriving on this network for the first time. A new medium is appended to the list, so the
+		// order still records what got here first -- and it is new exactly when the sum just
+		// written is no more than what was added.
 		pack.define(absorbOne) {
 			execute {
 				ifCondition { score(tr("#abs.a"), Obj.TR_TMP) lessThanOrEqualTo 0 }
 				run { returnValue(0) }
 			}
 
-			raw("\$execute store result score #abs.cur ${Obj.TR_TMP} run data get storage ra:transport nets.n\$(id).amounts.\$(m)")
-			raw("\$execute if score #abs.cur ${Obj.TR_TMP} matches ..0 run data modify storage ra:transport nets.n\$(id).media append value {m:\"\$(m)\"}")
-
-			scoreboard.players.operation(tr("#abs.cur"), Obj.TR_TMP, Operation.ADD, tr("#abs.a"), Obj.TR_TMP)
-			raw("\$execute store result storage ra:transport nets.n\$(id).amounts.\$(m) int 1 run scoreboard players get #abs.cur ${Obj.TR_TMP}")
+			val path = "nets.n\$(id).amounts.\$(m)"
+			computeScore("#abs.cur", Obj.TR_TMP, provider { add(storageOf(TR, path), scoreOf("#abs.a", Obj.TR_TMP)) }, storeInt(TR, path))
+			raw("\$execute if score #abs.cur ${Obj.TR_TMP} <= #abs.a ${Obj.TR_TMP} run data modify storage ra:transport nets.n\$(id).media append value {m:\"\$(m)\"}")
 
 			raw("\$data modify storage ra:transport nets.n\$(id).medium set from storage ra:transport nets.n\$(id).media[0].m")
 		}

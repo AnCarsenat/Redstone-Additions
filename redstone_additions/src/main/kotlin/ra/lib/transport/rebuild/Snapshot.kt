@@ -33,10 +33,7 @@ internal object Snapshot {
 			// time: a fresh id must never collide with one that is about to be inherited, and after
 			// this pass the counter is above every id in use.
 			scoreboard.players.operation(self(), Obj.TR_OLD, Operation.SET, self(), Obj.TR_NET)
-			execute {
-				ifCondition { score(self(), Obj.TR_NET) greaterThan score(tr("#net_seq"), Obj.TR_TMP) }
-				run { scoreboard.players.operation(tr("#net_seq"), Obj.TR_TMP, Operation.SET, self(), Obj.TR_NET) }
-			}
+			scoreboard.players.operation(tr("#net_seq"), Obj.TR_TMP, Operation.MAX, self(), Obj.TR_NET)
 
 			raw("execute store result storage ra:transport arg.id int 1 run scoreboard players get @s ${Obj.TR_NET}")
 			function(snapshotRead, TR, "arg")

@@ -18,13 +18,13 @@ flowchart TD
     B --> D[Module loads]
     B --> E[ra_lib_multiblock:init]
     B --> F[ra:tick]
+    F --> M[schedule ra:tick 1t]
     F --> G[Tool tag cleanup]
     F --> H[ra_lib:input/tick]
     F --> I[ra:tools/data_handler/tick]
     F --> J[ra:placement/detect_bats]
     F --> K[Module ticks]
     F --> L[Goggles scan]
-    F --> M[schedule ra:tick 1t]
 ```
 
 ## 1) Load Pipeline
@@ -44,13 +44,14 @@ Responsibilities:
 
 `ra:tick` is scheduled every tick and acts as the orchestrator:
 
-1. Clears stale click/active tool tags.
-2. Runs modular input sessions (`ra_lib:input/tick`).
-3. Runs Data Handler action/pending processing (`ra:tools/data_handler/tick`).
-4. Runs placement detection (`ra:placement/detect_bats`).
-5. Dispatches module ticks in fixed order.
-6. Runs goggles scan (`ra:tools/goggles/tick`).
-7. Re-schedules itself (`schedule function ra:tick 1t`).
+1. Re-schedules itself (`schedule function ra:tick 1t`), first, so a tick cut short by
+   `maxCommandChainLength` still schedules the next one.
+2. Clears stale click/active tool tags.
+3. Runs modular input sessions (`ra_lib:input/tick`).
+4. Runs Data Handler action/pending processing (`ra:tools/data_handler/tick`).
+5. Runs placement detection (`ra:placement/detect_bats`).
+6. Dispatches module ticks in fixed order.
+7. Runs goggles scan (`ra:tools/goggles/tick`).
 
 This architecture keeps all state transitions deterministic and centralized.
 
@@ -81,6 +82,19 @@ sequenceDiagram
     L->>L: Place physical block
     L->>M: Summon marker with tags + initialized data
 ```
+
+### Checks and refusals
+
+`ra:placement/process_bat` tags the placer and runs `ra:placement/try_place`, then always
+removes the `ra.placer` tag and kills the bat. `try_place` refuses when a custom block is
+already there, the spot is not `#minecraft:replaceable`, a player is in it, or the block type is
+disabled. A spawn egg puts its bat *inside* a clicked block with no collision (flowers, rails,
+torches, dust); before refusing for that, `ra:placement/face/retry` walks the placer's line of
+sight to the face they clicked and moves the bat in front of it, once.
+
+The egg is already used up when the bat appears, so every refusal runs `ra:placement/refund`:
+it maps the bat's `ra.place.<id>` tag to the item stack (generated from the give bundles and
+registered blocks) and drops it at the placer's feet with no pickup delay, except in creative.
 
 ### Handler Routing
 

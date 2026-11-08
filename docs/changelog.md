@@ -2,6 +2,59 @@
 
 This page mirrors key datapack milestones from the main project changelog.
 
+## v6.0.1 (2026-11-08) — Leaner ticks
+
+**Supported version:** 26.3 (data pack format 121).
+
+A performance release. The pack does the same things with far fewer commands per tick, by
+moving its arithmetic onto 26.3's `/compute` and by checking multiblock structures with
+predicates built when the pack is generated. Worlds on v6.0.0 carry on without a migration.
+
+### Changed
+
+- **The Thruster Kit costs a quarter of what it did.** Its push is worked out with
+  `/compute` instead of a chain of scoreboard operations, and only while you sprint:
+  52 → 14 commands per tick for each airborne player using it. Jetpack hover holding and other
+  per-player steps shed a few commands each.
+- **Pipes, wires and Ender vaults do their sums in one command.** Adding to or taking from a
+  network, clamping it to capacity after a rebuild, and the bridge move between two networks
+  are each a single `/compute` now. A bridge transfer is 27 → 17 commands; a network offer or
+  take writes in 4 – 6 instead of 8 – 10; Experience and Potion drains, the Power and Fluid
+  Vault level displays and Teleport Anchors each run 3 – 8 fewer commands. The Big Torch sweep, the
+  Magic Crate, Goggles stacking and the settings menu get the same treatment.
+- **Multiblocks are checked by predicate.** A structure's blocks are known when the pack is
+  built, so each facing of the Blast Forge, the Rock Metallic Drill and the Upgrade Platform is
+  now one generated predicate instead of a walk over rotated coordinate tables. A wrench
+  assembly is about 37 commands where it was about 130, a periodic structure check 3 – 12
+  where it was 36 – 49, and loading the pack no longer rebuilds every structure (about 1,200
+  commands each, now 2).
+- **The Blast Forge runs without macros.** Its smelting, fuel and smoke steps are generated
+  once per facing, so a working forge no longer re-instantiates functions every tick.
+- **One debug report for every multiblock.** With the `ra.debug` tag,
+  `ra_lib_multiblock:spec/<id>/debug` lists each missing or wrong block and a `found/total`
+  count; a structure that falls apart while a debug player is online reports itself. It
+  replaces the Blast Forge's own debug function.
+- **Old saved data is tidied.** The Blast Forge's `bf_dir` coordinate tables are removed from
+  saved worlds on load, and drill markers drop their outdated `registry_driven` flag on their
+  first check.
+
+### Fixed
+
+- **Bridges on large networks.** A Valve, Filter, Breaker, Boiler or Ender Power Vault judges
+  which neighbouring network is fuller by its fill ratio. On a network holding more than about
+  214,748 mL that ratio wrapped round to a nonsense value, so a big tank farm could look empty
+  and be filled from, or drained into, the wrong side. The ratio is now computed in floating
+  point and is right at any size.
+
+### For contributors
+
+- `ra/core/Compute.kt` builds and emits `/compute` providers; the [Developer Guide](developer-guide.md#arithmetic-with-compute)
+  covers when and how to use it. The constant fake players the old chains needed (`#jp.cap`,
+  `#br.two`, `#dr.mul` and others) are gone.
+- Multiblocks are declared in Kotlin with `multiblockSpec { }` and `Ra.multiblock(spec)`; see
+  the [Multiblock Library](multiblock-library.md).
+  Add-ons registering through `ra_lib_multiblock:register` keep working unchanged.
+
 ## v6.0.0 (2026-11-07) — Kore rewrite
 
 **Supported version:** 26.3 (data pack format 121).

@@ -31,6 +31,7 @@ grep -rn '"wrench/init_registry"\|"tools/wrench/init_registry"' src/main/kotlin
 | `core/Exec.kt` | `executeRun`, `executeReturnRun`, `executeStoreRun`, `callWith`, `returnRun`, `macroCall`: calls behind a vanilla-text chain, the function still a value |
 | `core/Messages.kt` | `RA_CHAT_PREFIX`, `raMessage`, `moduleLoaded`, `registeredLine`, `blockRegisterMessage` |
 | `core/Scores.kt` | `ensureScore` (start a score only when it has none) |
+| `core/Compute.kt` | 26.3 `/compute`: `provider`, `floatProvider`, `scoreOf`, `thisScoreOf`, `storageOf`, `snbt`, `computeScore`, `computeInto`, `computeStorage`, `computeScoreScaled`, `storeScore`, `storeInt`, `storeDouble`, `COMPUTE_DEFAULT` / `COMPUTE_SELF` ([Developer Guide](developer-guide.md#arithmetic-with-compute)) |
 | `core/item/` | `ItemSpec` (+ `fromSnbt`), `itemSpec { }`, the `Snbt` value classes (`SStr`, `SBool`, `SByte`, `SRaw`...), `loreLine`, `raData`, `flag`, `parseSnbt`; `CustomBlock.loreItem`, `entityDataSnbt` |
 | `core/block/CustomBlock.kt` | `CustomBlock`: one placeable block described once |
 | `core/block/BlockFunctions.kt` | `blockGive` |

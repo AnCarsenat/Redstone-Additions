@@ -217,7 +217,7 @@ anything that was already there. Arithmetic reads them where they are: 26.3's
 `data modify ... set compute` and `/compute` evaluate a context int provider
 (`add`, `sub`, `min` over `storage` and `score` leaves) in one command, so a
 read-modify-write is one line instead of read, scoreboard operation, write. The
-helpers are in `ra/core/Compute.kt`.
+helpers are in `ra/core/Compute.kt` ([Arithmetic with `/compute`](#arithmetic-with-compute)).
 
 **Writing.** `net/offer` and `net/take` read the network, work out how much
 actually moves, then hand the id and the medium to `net/offer_write` /
@@ -456,6 +456,66 @@ Keep IDs consistent across:
 - marker typed tag
 - recipe result custom_data
 - on-break drop item data
+
+### Arithmetic with `/compute`
+
+26.3's `/compute` and `data modify … set compute` evaluate a **context int provider** — a tree
+of `add`, `sub`, `min`, `max`, `mul`, `floor_div`, `abs`… over `score` and `storage` leaves — in
+one command. The pack uses them for every multi-step sum, clamp or storage read-modify-write
+that used to be a copy, a chain of `scoreboard players operation` lines and a write back, often
+with constant fake players (`#jp.cap`, `#br.two`) set up just to hold an operand. Those fake
+players are gone; a constant is a literal in the provider.
+
+**Reach for it** when a result needs two or more operations, or reads storage, does arithmetic
+and writes storage. A single copy or a single `+=` stays a scoreboard operation, and anything
+that reads entity NBT still goes through `data get` (providers read only scores and storage).
+
+All of it goes through `ra/core/Compute.kt`. Providers are Kore's typed ones; the file adds the
+leaves and the commands that consume them:
+
+| Helper | Writes |
+| --- | --- |
+| `provider { … }` | a provider built with Kore's functions in scope: `provider { min(a, sub(b, c)) }` (Kore's `+`, `-`, `*`, unary `-` also work) |
+| `scoreOf(holder, obj, fallback)` | `{type:"minecraft:score",target:{type:"minecraft:fixed",name:"#x"},score:"…"}` |
+| `thisScoreOf(obj)` | the score of the entity the compute runs for (use with `source = COMPUTE_SELF`, `compute entity @s`) |
+| `storageOf(storage, path)` | `{type:"minecraft:storage",storage:"ra:x",path:"…"}`; `path` may hold `$(id)` |
+| `computeScore(holder, obj, value, vararg alsoStore)` | `execute store result score … [<more stores>] run compute default integer <value>`; pass `storeInt(storage, path)` in `alsoStore` to land the same result in storage too |
+| `computeInto(store, value)` | the same with only the store you give it (`storeInt`, `storeDouble`) |
+| `computeStorage(storage, path, value)` | `data modify storage … <path> set compute default integer <value>` |
+| `floatProvider { … }`, `computeScoreScaled(holder, obj, value, scale)` | `compute default float <value> <scale>` into a score: the float result times `scale`, as an integer |
+
+`computeScore`, `computeInto` and `computeScoreScaled` take `chain` (execute subcommands placed
+before the stores, such as `if score #cap x matches 1..`) and `source` (`COMPUTE_DEFAULT` or
+`COMPUTE_SELF`).
+
+```kotlin
+// Bridge: how much moves, written to a score in one line
+computeScore("#br.dst_free", "ra.wires.tmp",
+    provider { sub(scoreOf("#net_capacity", "ra.tr.tmp"), scoreOf("#net_amount", "ra.tr.tmp")) })
+
+// Transport: add to a per-medium total in storage and keep a copy in a score (macro path)
+computeScore("#net_med", Obj.TR_TMP,
+    provider { add(storageOf(TR, medPath), wantP) }, storeInt(TR, medPath))
+```
+
+Rules that matter:
+
+- **Rendered inline.** Providers are turned into SNBT text in the command, not through Kore's
+  `compute { }`, which may move a provider into a registry file. A provider whose storage path
+  holds `$(id)` must stay in the macro line that substitutes it. The `$` prefix is added
+  automatically to any line containing `$(`.
+- **Scoreboard `/=` is `floor_div`**, and `%=` is `floor_mod`: both round towards negative
+  infinity. `div` and `mod` truncate and give different answers for negative values.
+- **A missing value reads as 0.** An unset score, an absent storage path or a non-number reads
+  as its `fallback`, 0 unless you pass one (`scoreOf("#x", obj, 1)`). That replaces the old
+  "set it to 0 if it has no score yet" guards, and it is what makes "first arrival of a medium"
+  work in transport.
+- **Arithmetic failures cancel, they do not wrap.** Division by zero, or any intermediate result
+  outside 32 bits, cancels the evaluation: under `execute store result` the store gets 0, and a
+  `data modify … set compute` writes nothing. Guard a divisor that can be 0 first. A product
+  that can leave 32 bits — a ratio scaled up before dividing, like a fill level in
+  ten-thousandths — goes through `computeScoreScaled` so the division happens in floats (the
+  bridge fill ratio, see the v6.0.1 fix).
 
 ### Minecraft versions
 
@@ -796,6 +856,8 @@ strict mode fails the build on a call to an undefined function. What is left:
 - A property the Data Handlers should list but `DataHandlerRegistry` does not name.
 - Multiblock setup data missing required fields in storage before assembly.
 - Assuming numeric wireless channels; runtime channels are string values.
+- A `/compute` that silently stores 0: a divisor of 0 or a product beyond 32 bits cancels the
+  evaluation instead of wrapping — see [Arithmetic with `/compute`](#arithmetic-with-compute).
 - A module-level collection named like a registry list (`blocks`) inside `Ra.register()`
   resolving to the registry — see [Kore Gotchas](gotchas.md).
 

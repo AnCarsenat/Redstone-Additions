@@ -130,3 +130,24 @@ module's blocks a second time. It compiled because both are lists of `CustomBloc
 
 The registry list is now `Ra.allBlocks`. Still: give module-level collections specific names
 (`gateBlocks`), or declare them as locals inside `register()`, where they shadow correctly.
+
+## Kore's `compute { }` can hoist a provider out of a macro line
+
+Kore's own `compute { }` command may move an inline context int provider into a registry file
+and reference it by id. A provider whose storage path holds `$(id)` then loses its macro
+substitution. Build `/compute` lines with `ra/core/Compute.kt` (`computeScore`, `computeInto`,
+`computeStorage`), which render the provider as SNBT in the command itself and add the `$`
+prefix when the line contains `$(`. See
+[Arithmetic with `/compute`](developer-guide.md#arithmetic-with-compute).
+
+## `/compute` cancels where a scoreboard operation wraps
+
+A scoreboard `*=` that leaves 32 bits wraps round; the same product in `/compute` cancels the
+whole evaluation, and so does a division by zero. Under `execute store result` the target gets
+**0**, and `data modify … set compute` writes nothing — no error in the log either way. The
+bridge fill ratio (`amount * 10000 / capacity`) read 0 on any network above ~214,748 mL for
+this reason until it moved to a float provider (`computeScoreScaled`). Guard divisors, and
+divide in floats when a scaled product can grow large.
+
+Also: scoreboard `/=` and `%=` round towards negative infinity. Their `/compute` equivalents are
+`floor_div` and `floor_mod` (Kore `floorDiv`, `floorMod`), not `div` and `mod`.

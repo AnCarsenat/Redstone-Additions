@@ -223,6 +223,13 @@ you extend it.
   block and bucket; pumpable blocks are listed as `source_blocks`. Preset potions get their effects
   from `ra_wires:media/potions`; a potion with `custom_effects` is read from the item.
 - **Bridges** (Valves, Filters, Breakers, the Boiler, the Ender Power Vault) belong to neither
-  network they touch, which is why a valve always splits a run in two.
+  network they touch, which is why a valve always splits a run in two. A bridge picks
+  its fullest neighbouring network as the source and its emptiest as the destination, by fill
+  ratio (`amount / capacity`, in ten-thousandths, divided in floating point so it holds at any
+  network size). It then moves the smallest of its rate, what the source holds, the room left
+  in the destination, and half the gap between them, so two networks level out instead of
+  swapping contents back and forth.
+- **Arithmetic.** Every network sum, clamp and bridge move is one 26.3 `/compute` over the
+  network's storage; see [Arithmetic with `/compute`](developer-guide.md#arithmetic-with-compute).
 - **Visuals.** Each node draws its own half of each connection; fluid pipes are a 0.56 copper or
   iron core, electric wires a thinner 0.26 concrete core.

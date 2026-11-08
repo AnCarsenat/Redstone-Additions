@@ -122,8 +122,12 @@ up coal again.
   Climbing uses levitation instead. Gravity returns as soon as the chestplate comes off, the
   mode changes, or the fuel runs out.
 - **Sinking** hands gravity back with slow falling on top, so the descent is capped and safe.
-- **Thruster** measures how far you actually moved, smooths it over a few ticks and adds a
-  capped push in that direction. It does nothing while you hover still.
+- **Thruster** measures how far you actually moved, smooths it over about four ticks
+  (`smoothed = floor((smoothed × 3 + delta) / 4)`) and, while you sprint, adds a capped push in
+  that direction (`clamp(floor(smoothed × k / 100), −cap, cap)` per axis, cap 0.35 blocks a
+  tick). Each of those is a single 26.3 `/compute`, so the whole step is about 14 commands per
+  tick for an airborne player. It does nothing while you hover still: a push under the dead zone
+  is skipped.
 - **Engine sound** is `minecraft:item.elytra.flying` at volume 0.35, pitch 0.6, replayed once a
   second while the jetpack holds you up, stopped (for everyone within 20 blocks) when it doesn't.
 - **Sneaking speed**: a worn jetpack adds `0.7` to `minecraft:sneaking_speed` (modifier

@@ -42,9 +42,13 @@ Operators: `/function ra_interactive:items/give_all`.
 ## Block Breaker and Block Placer
 
 - Face them at the spot to work on and power them (a lever keeps them running, a clock works too).
-- Each acts at most once a second (20 ticks).
+- Each acts at most once per `cooldown` ticks: 20 (once a second) by default, 1–1200. The
+  cooldown is a server admin's setting: players with server-settings access change it with the
+  [Data Handler](tools.md); for everyone else it is locked.
 - The Block Breaker cannot break unbreakable blocks such as bedrock.
-- The Block Placer places the first block in its inventory, and only into air.
+- The Block Placer places the first stack in its inventory, and only into air (cave air
+  counts too). If that stack is not a block (a diamond, say), it waits and uses none of it: take
+  it out to let the placer carry on.
 
 ## Item Pipe
 

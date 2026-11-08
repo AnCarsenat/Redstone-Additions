@@ -339,6 +339,16 @@ predicates built when the pack is generated. Worlds on v6.0.0 carry on without a
   for everyone else it stays locked. A Poppy Generator that had lost its cooldown value fell back
   to 100 ticks instead of its own 80.
 
+- **Block Breaker and Block Placer speed is an admin setting.** Both showed a locked `cooldown`
+  that did nothing: they always acted once a second. The `cooldown` (in ticks, 20 by default) is
+  now what they wait between two actions, and players with server-settings access can change it
+  per block with the Data Handler.
+
+- **The Block Placer no longer eats items it cannot place.** With an item that is not a block
+  first in its inventory, it placed nothing but still used one up every second. It now uses an
+  item only when it placed a block, and only then plays its sound. It also places into cave air,
+  which it used to treat as occupied.
+
 ### For contributors
 
 - A property can set `goggles = true` to show on the Goggles label even when `visible = false`

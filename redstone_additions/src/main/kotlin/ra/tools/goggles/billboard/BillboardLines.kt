@@ -1,21 +1,13 @@
 package ra.tools.goggles.billboard
 
-import ra.core.computeInto
-import ra.core.computeScore
-import ra.core.provider
-import ra.core.scoreOf
-import ra.core.storeDouble
 import io.github.ayfri.kore.arguments.types.resources.FunctionArgument
-import io.github.ayfri.kore.commands.data
 import io.github.ayfri.kore.commands.function
-import io.github.ayfri.kore.features.predicates.providers.minus
-import ra.api.Goggles
 import ra.api.Goggles.Billboard
 import ra.core.Obj
 import ra.core.Ra
-import ra.core.Storage
 import ra.core.callWith
 import ra.core.define
+import ra.core.executeRun
 import ra.core.raw
 
 /**
@@ -36,72 +28,115 @@ import ra.core.raw
  * A missing value renders "N/A" in red rather than being skipped, so a block that has not been
  * configured yet says so instead of silently showing nothing.
  *
- * Hand-picking a y per line, which is what prop_line / text_line / data_line take, means every
- * block invents its own ladder and a block with one line too many ends up drawing inside itself. A
- * block that stacks says where its lines start and how far apart they sit, once (stack_reset).
+ * ONE BILLBOARD, BUILT AS A LIST
+ * Every writer appends one text component to `storage ra:temp gg.text`; the dispatcher
+ * (goggles/draw_block) started the list with [Billboard.begin] and summons it as ONE text_display
+ * afterwards ([Billboard.flushHere]). Lines therefore land in call order, top to bottom, and the
+ * hand-picked `y` the plain writers take, the stacked writers' ladder and stack_reset are all
+ * accepted and ignored: the display lays its own lines out. That is what used to go wrong -- every
+ * block invented its own ladder, a block with one line too many drew inside itself, and one with
+ * a single line still floated as high as one with five.
+ *
+ * PROPERTY LINES ARE GATED BY THE SCHEMA
+ * A prop_line draws only when its property's resolved `goggles` flag (see ra.core.Properties) says
+ * so: by default whatever the Data Handler shows players, `goggles = true` to show a value hidden
+ * there, `goggles = false` to keep a visible one off the billboard. Status and data lines are the
+ * block's own readout and are not gated.
  */
 internal fun Ra.registerBillboardLines() {
+	val temp = Obj.TEMP
+
+	// As the marker. Clears the billboard being built; draw_block / draw_multiblock call it before
+	// routing, so nothing from the previous block can leak into this one.
+	pack.define(Billboard.begin) {
+		raw("data modify storage ra:temp gg set value {text:[{text:\"\"}]}")
+		raw("scoreboard players set #gg.lines $temp 0")
+	}
+
+	// storage ra:temp gg.line -> the next line. A "\n" component goes between lines, not before the
+	// first, so the display has no empty line to pad it. The list's first element is an empty
+	// component: as the parent of the others it gives them no style to inherit.
+	pack.define(Billboard.append) {
+		raw("execute if score #gg.lines $temp matches 1.. run data modify storage ra:temp gg.text append value {text:\"\\n\"}")
+		raw("data modify storage ra:temp gg.text append from storage ra:temp gg.line")
+		raw("scoreboard players add #gg.lines $temp 1")
+	}
+
+	// As the marker: its type's schema compound, once per billboard (the first prop_line asks), so
+	// each line after that tests its flag with one storage match. `type:"-"` keeps the macro
+	// argument present on a marker with no data.type; `types."-"` does not exist, so nothing is gated.
+	pack.define(Billboard.loadSchema) {
+		raw("data modify storage ra:temp gg.loaded set value 1b")
+		raw("data modify storage ra:temp gg.q set value {type:\"-\"}")
+		raw("data modify storage ra:temp gg.q.type set from entity @s data.type")
+		callWith(Billboard.loadSchemaAt, "storage ra:temp gg.q")
+	}
+	// {type}
+	pack.define(Billboard.loadSchemaAt) {
+		raw("\$data modify storage ra:temp gg.schema set from storage ra:dh types.\"\$(type)\"")
+	}
+
 	// {path,label,color,suffix,y}
-	valueLine(Billboard.propLine, "properties", stacked = false)
-	valueLine(Billboard.dataLine, "status", stacked = false)
-	// {path,label,color,suffix}: no hand-picked height, the line lands wherever the stack is up to.
-	valueLine(Billboard.stackedPropLine, "properties", stacked = true)
-	valueLine(Billboard.stackedStatusLine, "status", stacked = true)
-	valueLine(Billboard.stackedDataLine, "data", stacked = true)
+	valueLine(Billboard.propLine, "properties")
+	valueLine(Billboard.dataLine, "status")
+	// {path,label,color,suffix}
+	valueLine(Billboard.stackedPropLine, "properties")
+	valueLine(Billboard.stackedStatusLine, "status")
+	valueLine(Billboard.stackedDataLine, "data")
 
-	// {label,value,color,suffix,y}: a literal value.
-	pack.define(Billboard.textLine) {
-		data(Storage.TEMP) { remove("status_literal") }
-		raw("""${'$'}data modify storage ra:temp status_literal set value {y:$(y),label:"$(label)",value:"$(value)",value_color:"$(color)",suffix:"$(suffix)"}""")
-		callWith(Billboard.showLiteralLine, "storage ra:temp status_literal")
-	}
-	pack.define(Billboard.stackedTextLine) {
-		data(Storage.TEMP) { remove("status_literal") }
-		raw("""${'$'}data modify storage ra:temp status_literal set value {label:"$(label)",value:"$(value)",value_color:"$(color)",suffix:"$(suffix)"}""")
-		function(Billboard.stackNext)
-		callWith(Billboard.showLiteralLine, "storage ra:temp status_literal")
-	}
+	// {label,value,color,suffix[,y]}: a literal value.
+	for (fn in listOf(Billboard.textLine, Billboard.stackedTextLine))
+		pack.define(fn) {
+			raw("""${'$'}data modify storage ra:temp gg.line set value {text:"$(label)",color:"gray",extra:[{text:"$(value)",color:"$(color)"},{text:"$(suffix)",color:"gray"}]}""")
+			function(Billboard.append)
+		}
 
-	// {top,step}: start a stack of status lines at a height this block chooses. Before any stacked_*.
-	// top and step are in hundredths of a block, so {top:80,step:20} puts the first line 0.8 above
-	// the block and each following one 0.2 lower. Integers because macro arguments are pasted as
-	// text and scoreboards do the arithmetic.
+	// {top,step}: the old ladder. Kept so existing callers (and add-ons) still load; the billboard
+	// lays its lines out itself now, so nothing reads these.
 	pack.define(Billboard.stackReset) {
-		raw("\$scoreboard players set #gg.stack_y ${Obj.TEMP} \$(top)")
-		raw("\$scoreboard players set #gg.stack_step ${Obj.TEMP} \$(step)")
+		raw("\$scoreboard players set #gg.stack_y $temp \$(top)")
+		raw("\$scoreboard players set #gg.stack_step $temp \$(step)")
 	}
 
-	// Write the next stacked height into the line being built, then step down.
-	pack.define(Billboard.stackNext) {
-		// A block that forgot stack_reset still gets a sane ladder rather than a broken line.
-		// The score providers' fallbacks are that ladder: an absent top reads 80, an absent step 20.
-		val y = scoreOf("#gg.stack_y", Obj.TEMP, 80)
-		computeInto(storeDouble(Storage.TEMP, "status_literal.y", 0.01), y)
-		computeScore("#gg.stack_y", Obj.TEMP, provider { y - scoreOf("#gg.stack_step", Obj.TEMP, 20) })
-	}
-
-	// {id:"minecraft:iron_ingot",y:0.9}: draw one item, floating, as part of the readout.
+	// {id:"minecraft:iron_ingot"[,y]}: draw one item, floating above the text, as part of the readout.
 	//
 	// The text lines say what a value IS; this says what it LOOKS like, which is the only useful
 	// way to show an item filter -- "minecraft:polished_blackstone_slab" read as text tells you far
 	// less than the block does.
 	//
-	// Tagged ra.billboard like every other goggles display, so it is torn down and redrawn by the
-	// same sweep. That matters: a filter shown from a permanent display has to be kept in step with
-	// the property by its own upkeep, and an earlier version of this drew one that was never
-	// cleaned up. Anchored the same way render_literal_line is, so it lines up with the text.
+	// Only remembered here: flush_here summons it once the line count, and so the height of the
+	// text under it, is known. `y` is ignored like every other line's.
 	pack.define(Billboard.itemLine) {
-		raw("""${'$'}execute align xyz positioned ~0.5 ~1.3 ~0.5 run summon item_display ~ ~$(y) ~ {item:{id:"$(id)",count:1},item_display:"fixed",billboard:"vertical",brightness:{sky:15,block:15},Tags:["ra","ra.billboard","ra.display"],transformation:{left_rotation:[0f,0f,0f,1f],right_rotation:[0f,0f,0f,1f],translation:[0f,0f,0f],scale:[0.4f,0.4f,0.4f]}}""")
+		raw("\$data modify storage ra:temp gg.item set value {id:\"\$(id)\"}")
 	}
 }
 
-/** A line showing `data.<source>.$(path)` from the marker, at `$(y)` or at the next stacked height. */
-private fun Ra.valueLine(fn: FunctionArgument, source: String, stacked: Boolean) = pack.define(fn) {
-	val y = if (stacked) "" else "y:$(y),"
-	data(Storage.TEMP) { remove("status_literal") }
-	raw("""${'$'}data modify storage ra:temp status_literal set value {${y}label:"$(label)",value:"N/A",value_color:"red",suffix:"$(suffix)"}""")
-	raw("\$execute if data entity @s data.$source.\$(path) run data modify storage ra:temp status_literal.value set from entity @s data.$source.\$(path)")
-	raw("\$execute if data entity @s data.$source.\$(path) run data modify storage ra:temp status_literal.value_color set value \"\$(color)\"")
-	if (stacked) function(Billboard.stackNext)
-	callWith(Billboard.showLiteralLine, "storage ra:temp status_literal")
+/**
+ * A line showing `data.<source>.$(path)` from the marker.
+ *
+ * The value is copied with `set string`, which writes a number's digits and a string as is, and
+ * fails for a missing value or a list/compound -- the line then keeps its red "N/A". A string with
+ * quotes in it no longer breaks the line, as it did when the value went through a macro argument.
+ */
+private fun Ra.valueLine(fn: FunctionArgument, source: String) = pack.define(fn) {
+	val temp = Obj.TEMP
+	if (source == "properties") {
+		executeRun("unless data storage ra:temp gg{loaded:1b}", Billboard.loadSchema)
+		// Every test is "present and not 1b" rather than a match on 0b: the same thing for the
+		// bytes the registry writes, and it does not depend on how a reader stores a false.
+		val s = "storage ra:temp gg.schema.\$(path)"
+		val i = "entity @s data.property_types.\$(path)"
+		// The schema's resolved flag: decides every declared, non-dynamic property in one line.
+		raw("\$execute if data $s.goggles unless data $s{goggles:1b} run return 0")
+		// A type written without `goggles` (an add-on's own, or an older pack): follow `visible`.
+		raw("\$execute unless data $s.goggles if data $s.visible unless data $s{visible:1b} unless data $s{dynamic:1b} run return 0")
+		// Dynamic or undeclared: the instance's own declaration, if it has one. Only read when the
+		// schema had no verdict, so a declared property never pays for these entity reads.
+		raw("\$execute unless data $s.goggles if data $i.goggles unless data $i{goggles:1b} run return 0")
+		raw("\$execute unless data $s.goggles unless data $i.goggles if data $i.visible unless data $i{visible:1b} run return 0")
+	}
+	raw("""${'$'}data modify storage ra:temp gg.line set value {text:"$(label)",color:"gray",extra:[{text:"N/A",color:"red"},{text:"$(suffix)",color:"gray"}]}""")
+	raw("\$execute store success score #gg.ok $temp run data modify storage ra:temp gg.line.extra[0].text set string entity @s data.$source.\$(path)")
+	raw("\$execute if score #gg.ok $temp matches 1 run data modify storage ra:temp gg.line.extra[0].color set value \"\$(color)\"")
+	function(Billboard.append)
 }

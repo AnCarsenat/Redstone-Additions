@@ -1,6 +1,7 @@
 package ra.tools.goggles
 
 import io.github.ayfri.kore.arguments.types.literals.literal
+import io.github.ayfri.kore.commands.function
 import io.github.ayfri.kore.commands.scoreboard.scoreboard
 import ra.api.Goggles
 import ra.api.Settings
@@ -13,6 +14,7 @@ import ra.core.define
 import ra.core.executeRun
 import ra.core.raw
 import ra.tools.ToolItems
+import ra.tools.goggles.billboard.BLOCK_BASE
 import ra.tools.goggles.billboard.registerBillboardLines
 import ra.tools.goggles.billboard.registerBillboardRender
 import ra.tools.goggles.status.registerGogglesStatus
@@ -89,13 +91,20 @@ object GogglesTool {
 		// Pure routing, built from the registry: what each block shows, and what it is called, is
 		// defined by that block in its own goggles function. ra:tools/block_name reuses this same
 		// dispatch to resolve just the name. As the block's marker, at the block position.
+		// The block function only appends lines (see billboard/BillboardLines); the one display that
+		// shows them is summoned here, at the shared base 0.3 above the block's top face.
 		pack.define(Goggles.drawBlock) {
+			function(Goggles.Billboard.begin)
 			for (route in goggles) executeRun("if entity @s[tag=${route.tag}]", route.fn)
+			executeRun(BLOCK_BASE, Goggles.Billboard.flushHere)
 		}
 
 		// One multiblock's billboard, as its marker. goggles/tick selects the markers in range once
 		// and calls this per marker, so a multiblock type costs one line here and no extra sweep.
+		// A multiblock's own function summons its billboard (flush_here) at a height that suits its
+		// structure, since a 2-tall forge and a 1-tall platform share no base.
 		pack.define(Goggles.drawMultiblock) {
+			function(Goggles.Billboard.begin)
 			for (route in multiblockGoggles) executeRun("if entity @s[tag=${route.tag}]", route.fn)
 		}
 

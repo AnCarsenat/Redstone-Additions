@@ -20,7 +20,6 @@ import ra.core.Tag
 import ra.core.block.CustomBlock
 import ra.core.block.gogglesHeader
 import ra.core.block.placeBlock
-import ra.core.block.stackReset
 import ra.core.block.stackedDataLine
 import ra.core.block.stackedPropLine
 import ra.core.block.stackedStatusLine
@@ -67,7 +66,9 @@ object MagicCrate {
 		block(block)
 		properties(block) {
 			number("radius", min = 5, max = 32)
-			number("cooldown", min = 1, max = 1200)
+			// Configurable, but a pulse interval is not what you look at a crate to learn: the
+			// Goggles show its state, radius and last pulse instead.
+			number("cooldown", min = 1, max = 1200, goggles = false)
 		}
 		pack.blockRegisterMessage(block)
 		pack.specGive(block, item)
@@ -118,7 +119,6 @@ object MagicCrate {
 
 	private fun Function.goggles() {
 		gogglesHeader(block, nameY = 1.0)
-		stackReset(80, 22)
 		stackedStatusLine("state", "", "aqua")
 		stackedPropLine("radius", "Radius: ", "aqua", " blocks")
 		stackedPropLine("cooldown", "Cooldown: ", "aqua", " ticks")

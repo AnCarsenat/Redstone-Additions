@@ -81,11 +81,11 @@ class Ra(val pack: DataPack) {
 	/** Wrench plain-RMB toggles: marker tag -> toggle function, run as the marker. */
 	val wrenchToggles = mutableListOf<TagRoute>()
 
-	/** Properties neither tool may edit, keyed by `data.type`. */
-	val readonly = linkedMapOf<String, MutableSet<String>>()
-
-	/** Property names the Data Handlers list, in menu order. */
-	val dataHandlerProperties = linkedSetOf<String>()
+	/**
+	 * Each block type's property schema (see [PropertiesBuilder]), keyed by the marker's
+	 * `data.type`, in declaration order -- which is menu order.
+	 */
+	val blockProperties = linkedMapOf<String, List<PropSpec>>()
 
 	/** Bundles for `ra:give_all_items`, in hand-out order. */
 	val bundles = mutableListOf<GiveBundle>()
@@ -120,11 +120,12 @@ class Ra(val pack: DataPack) {
 		wrenchCycles.getOrPut(type) { mutableListOf() } += rows
 	}
 
-	fun readonly(type: String, vararg props: String) {
-		readonly.getOrPut(type) { linkedSetOf() } += props
+	/** Declares the properties of block type [type] (the marker's `data.type`). Once per type. */
+	fun properties(type: String, build: PropertiesBuilder.() -> Unit) {
+		require(type !in blockProperties) { "properties of '$type' declared twice" }
+		blockProperties[type] = PropertiesBuilder().apply(build).specs.toList()
 	}
 
-	fun dataHandlerProperties(vararg props: String) {
-		dataHandlerProperties += props
-	}
+	/** [properties] for [block], whose markers carry `data.type` = its id. */
+	fun properties(block: CustomBlock, build: PropertiesBuilder.() -> Unit) = properties(block.id, build)
 }

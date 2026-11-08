@@ -49,6 +49,7 @@ object ItemMover {
 
 	fun Ra.registerItemMover() {
 		block(block)
+		properties(block) {}
 		pack.blockRegisterMessage(block)
 		pack.specGive(block, item)
 		pack.shapedRecipe(block.ns, block.id, item.recipeResult(), Unlock(Items.DISPENSER), count = null) {

@@ -140,6 +140,26 @@ module's blocks a second time. It compiled because both are lists of `CustomBloc
 The registry list is now `Ra.allBlocks`. Still: give module-level collections specific names
 (`gateBlocks`), or declare them as locals inside `register()`, where they shadow correctly.
 
+## `set string` accepts a number
+
+`data modify storage s p set string storage s v` succeeds when `v` is a number too: it writes the
+number's digits as a string. It fails only for a list or a compound. Used as "is `v` a string?",
+it called every number a string — which is how the Data Handler gave numeric properties a text
+editor until 6.0.1. To tell types apart, use a test only that type passes:
+
+- number: two `/compute`s of a storage provider with different fallbacks,
+  `compute default integer {type:"minecraft:storage",storage:"s",path:"v",fallback:0}` and the
+  same with `fallback:1`. The provider returns its fallback when the value is absent or not a
+  number (a string, even `"5"`), so the results agree exactly when `v` is a number. Two
+  fallbacks, not one "impossible" sentinel: every int is a possible value.
+- list: `data modify storage s v insert 0 value 0b` succeeds only on a list (copy it first).
+  `if data storage s v[]` is no test: an empty list has no element to match.
+- compound: `execute if data storage s v{}`.
+- byte flag: `execute if data storage s {v:1b}` — an NBT match is typed, so the int `1` fails it.
+
+If you need "is it a string?" without those, `set string` and then `set from` over the copy: the
+second changes nothing only when the value was a string already (`DataHandlerList.isText`).
+
 ## Kore's `compute { }` can hoist a provider out of a macro line
 
 Kore's own `compute { }` command may move an inline context int provider into a registry file

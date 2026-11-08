@@ -6,125 +6,201 @@ import io.github.ayfri.kore.commands.data
 import io.github.ayfri.kore.commands.function
 import io.github.ayfri.kore.commands.scoreboard.scoreboard
 import io.github.ayfri.kore.commands.tag
-import net.benwoodworth.knbt.NbtByte
 import ra.core.Obj
 import ra.core.Ra
 import ra.core.Storage
+import ra.core.Tag
 import ra.core.callWith
 import ra.core.define
 import ra.core.executeRun
-import ra.core.macroCall
 import ra.core.raw
-import ra.tools.datahandler.DataHandler
 import ra.tools.datahandler.DataHandlerActions
 import ra.tools.datahandler.props.DataHandlerList.registerDataHandlerList
+import ra.tools.datahandler.props.DataHandlerTypes.registerDataHandlerTypes
+import ra.tools.datahandler.props.DataHandlerTypes.typeOfProbe
 import ra.tools.datahandler.props.PropRows.registerPropRows
 import ra.tools.tool
 
-/** The Data Handler's per-property machinery: walking the registry, typing a value, editing it. */
+/**
+ * The Data Handler's per-property machinery: walking the selected block's schema, typing a value,
+ * editing it.
+ *
+ * The block's schema is copied into storage ra:dh by update_storage when its data is read:
+ *   schema       types."<type>" -- name -> {type, min, max, readonly, admin_only, visible, ...}
+ *   block_order  order."<type>" -- the names, in menu order
+ *   inst_types   the marker's own data.property_types, for properties declared dynamic
+ */
 object DataHandlerProps {
 	val next = tool("data_handler/props/next")
+	val nextGuess = tool("data_handler/props/next_guess")
 	val render = tool("data_handler/props/render")
+	val renderGuess = tool("data_handler/props/render_guess")
 	val redact = tool("data_handler/props/redact")
+	val redactNext = tool("data_handler/props/redact_next")
+	val redactOne = tool("data_handler/props/redact_one")
 	val probe = tool("data_handler/props/probe")
 	val pickName = tool("data_handler/props/pick_name")
-	val deny = tool("data_handler/props/deny")
+	val refuse = tool("data_handler/props/refuse")
 	val handAction = tool("data_handler/props/hand_action")
 	val setFromHand = tool("data_handler/props/set_from_hand")
 	val toggle = tool("data_handler/props/toggle")
 	val askNumber = tool("data_handler/props/ask_number")
 	val askText = tool("data_handler/props/ask_text")
+	val askTypedNumber = tool("data_handler/props/ask_typed_number")
 	val writeNumber = tool("data_handler/props/write_number")
 	val writeText = tool("data_handler/props/write_text")
+
+	/** #dh.type -> the word a guessed row and the debug line use. */
+	private val GUESS = listOf(0 to "text", 1 to "number", 2 to "bool", 3 to "list", 5 to "compound")
+
+	/** #dh.lock -> why the row is locked, for its hover and for the refusal. */
+	internal val LOCK_REASON = mapOf(
+		1 to "This block sets this itself — it cannot be changed here.",
+		2 to "Only server admins (server-settings access) can change this.",
+	)
 
 	internal const val TARGET = ra.tools.datahandler.DataHandlerSelection.TARGET
 	internal const val PREFIX = """{text:"[Data Handler] ",color:"gold"}"""
 
+	private const val T = Obj.TEMP
+
 	fun Ra.registerDataHandlerProps() {
-		// Render one registry entry, then the rest. As the player.
+		// Render the block's declared properties in order, then the rest. As the player.
+		// #dh.act holds the action number of the current row: menu stamp * 1000 + 100 + index.
 		pack.define(next) {
 			raw("execute unless data storage ra:dh iter[0] run return 0")
-			raw("data modify storage ra:dh q set value {}")
-			raw("data modify storage ra:dh q.name set from storage ra:dh iter[0]")
-			raw("execute store result storage ra:dh q.action int 1 run scoreboard players get #dh.act ${Obj.TEMP}")
+			newRow("iter[0]")
+			raw("scoreboard players operation #dh.hand $T = #dh.act $T")
+			scoreboard.players.add(literal("#dh.hand"), T, 300)
+			raw("execute store result storage ra:dh q.hand_action int 1 run scoreboard players get #dh.hand $T")
 			callWith(render, "storage ra:dh q")
 			raw("data remove storage ra:dh iter[0]")
-			scoreboard.players.add(literal("#dh.act"), Obj.TEMP, 1)
+			scoreboard.players.add(literal("#dh.act"), T, 1)
 			function(next)
 		}
 
-		// Build storage ra:dh display_props: everything the block carries.
-		// Nothing is removed. Locked fields are still listed in the Properties summary and still get
-		// a row -- see row_locked. This is kept as the one place that decides what the summary shows,
-		// so a future rule has somewhere to live.
-		pack.define(redact) { raw("data modify storage ra:dh display_props set from storage ra:dh properties") }
+		// The same over `known` (every name some block declares), for the ones this block carries
+		// WITHOUT declaring them -- whatever is still in storage ra:dh rest. Action 700 + index.
+		pack.define(nextGuess) {
+			raw("execute unless data storage ra:dh iter[0] run return 0")
+			newRow("iter[0]")
+			raw("data modify storage ra:dh q.hand_action set value 0")
+			callWith(renderGuess, "storage ra:dh q")
+			raw("data remove storage ra:dh iter[0]")
+			scoreboard.players.add(literal("#dh.act"), T, 1)
+			function(nextGuess)
+		}
+		pack.define(renderGuess) {
+			raw("\$execute unless data storage ra:dh rest.\$(name) run return 0")
+			callWith(render, "storage ra:dh q")
+		}
 
-		// {name}: what type is this property? Result in #dh.type ra.temp.
-		//   0 string   1 number   2 bool   3 list   4 item id
+		// Build storage ra:dh display_props, the summary line: everything the block carries, less
+		// what this player may not see (visible:0b, for a player without ra.admin).
+		pack.define(redact) {
+			raw("data modify storage ra:dh display_props set from storage ra:dh properties")
+			raw("execute if entity @s[tag=${ADMIN}] run return 0")
+			raw("data modify storage ra:dh iter set from storage ra:dh block_order")
+			function(redactNext)
+		}
+		pack.define(redactNext) {
+			raw("execute unless data storage ra:dh iter[0] run return 0")
+			raw("data modify storage ra:dh rq set value {}")
+			raw("data modify storage ra:dh rq.name set from storage ra:dh iter[0]")
+			callWith(redactOne, "storage ra:dh rq")
+			raw("data remove storage ra:dh iter[0]")
+			function(redactNext)
+		}
+		pack.define(redactOne) {
+			raw("scoreboard players set #dh.vis $T 1")
+			raw("\$execute if data storage ra:dh schema.\$(name).visible store result score #dh.vis $T run data get storage ra:dh schema.\$(name).visible")
+			raw("\$execute if score #dh.vis $T matches 0 run data remove storage ra:dh display_props.\$(name)")
+		}
+
+		// {name}: what is this property, and what may this player do with it?
+		//   #dh.type  0 text  1 number  2 bool  3 list  4 item id  5 compound (guessed only)
+		//   #dh.decl  1 declared (the block type's schema, or the instance for a dynamic one),
+		//             0 guessed from the value
+		//   #dh.lock  0 editable  1 read-only  2 admin only, and this player is not an admin
+		//             3 hidden from this player
+		//   #dh.hid   1 when declared invisible (an admin still sees it, marked)
+		//   #dh.min / #dh.max  a declared number's bounds; the whole int range otherwise
+		// and storage ra:dh spec, the declaration itself (absent when guessed).
 		//
-		// There is no "type of" operator, so each answer is a test only that type passes.
-		//
-		// The obvious test -- does `data get` work on it -- is worthless: `data get` succeeds on a
-		// string too, returning its *length*. Reading it as success-means-number classified every
-		// string as a number, so the editor asked for a number and wrote one, which is how channels
-		// ended up as ints that no string comparison could match.
+		// A declaration always wins over the value: it is the one source an earlier bad write
+		// cannot have corrupted -- a delay that became the string "5" is still a number.
 		pack.define(probe) {
-			scoreboard.players.set(literal("#dh.type"), Obj.TEMP, 1)
-			// `data modify ... set string` is the real test: it only accepts a string source and
-			// fails on anything else.
-			raw("\$execute store success score #dh.probe ${Obj.TEMP} run data modify storage ra:dh probe set string storage ra:dh properties.\$(name)")
-			raw("execute if score #dh.probe ${Obj.TEMP} matches 1 run scoreboard players set #dh.type ${Obj.TEMP} 0")
-			// A list answers to [0]; a string does not, so this cannot catch one by mistake.
-			raw("\$execute if data storage ra:dh properties.\$(name)[0] run scoreboard players set #dh.type ${Obj.TEMP} 3")
-			// Bytes last: not a string, no [0], so whatever it is has fallen through to number.
-			raw("\$execute if data storage ra:dh properties{\$(name):0b} run scoreboard players set #dh.type ${Obj.TEMP} 2")
-			raw("\$execute if data storage ra:dh properties{\$(name):1b} run scoreboard players set #dh.type ${Obj.TEMP} 2")
-			// A name the registry calls numeric is numeric, whatever is currently sitting in it. This
-			// is the only source here that cannot have been corrupted by an earlier bad write; see
-			// init_registry for why the list lives there and what is kept off it on purpose.
-			raw("\$execute if data storage ra:dh {numeric:[\"\$(name)\"]} run scoreboard players set #dh.type ${Obj.TEMP} 1")
-			// An item id last, so it wins over the string it would otherwise probe as. Same reasoning
-			// as `numeric`: the registry knows what the field means, the value sitting in it does not.
-			raw("\$execute if data storage ra:dh {item_names:[\"\$(name)\"]} run scoreboard players set #dh.type ${Obj.TEMP} 4")
+			for (s in listOf("#dh.type", "#dh.lock", "#dh.hid")) raw("scoreboard players set $s $T 0")
+			raw("scoreboard players set #dh.min $T -2147483648")
+			raw("scoreboard players set #dh.max $T 2147483647")
+			raw("execute store success score #dh.adm $T if entity @s[tag=$ADMIN]")
+			data(Storage.DH) { remove("spec") }
+			raw("\$data modify storage ra:dh spec set from storage ra:dh schema.\$(name)")
+			// Dynamic: the instance carries its own declaration. Missing there, it counts as none.
+			raw("\$execute if data storage ra:dh spec.dynamic run data modify storage ra:dh spec set from storage ra:dh inst_types.\$(name)")
+			raw("execute store success score #dh.decl $T if data storage ra:dh spec.type")
+			// One `data get` per field, into scores: the declaration stores its type as a number
+			// (code, PropType.code) and its flags as bytes for exactly this.
+			raw("execute if data storage ra:dh spec.code store result score #dh.type $T run data get storage ra:dh spec.code")
+			raw("execute if data storage ra:dh spec.min store result score #dh.min $T run data get storage ra:dh spec.min")
+			raw("execute if data storage ra:dh spec.max store result score #dh.max $T run data get storage ra:dh spec.max")
+			raw("scoreboard players set #dh.vis $T 1")
+			raw("execute if data storage ra:dh spec.visible store result score #dh.vis $T run data get storage ra:dh spec.visible")
+			raw("execute if score #dh.vis $T matches 0 run scoreboard players set #dh.hid $T 1")
+			raw("execute store result score #dh.ro $T run data get storage ra:dh spec.readonly")
+			raw("execute store result score #dh.ao $T run data get storage ra:dh spec.admin_only")
+			raw("execute if score #dh.ro $T matches 1 run scoreboard players set #dh.lock $T 1")
+			raw("execute if score #dh.ao $T matches 1 if score #dh.adm $T matches 0 run scoreboard players set #dh.lock $T 2")
+			raw("execute if score #dh.hid $T matches 1 if score #dh.adm $T matches 0 run scoreboard players set #dh.lock $T 3")
+			raw("execute if score #dh.decl $T matches 1 run return 1")
+
+			// No declaration: guess from the value, with tests only that type passes (see
+			// DataHandlerTypes). `data modify ... set string` is not one: it accepts a number too.
+			raw("data remove storage ra:dh probe")
+			raw("\$data modify storage ra:dh probe set from storage ra:dh properties.\$(name)")
+			typeOfProbe("#dh.type")
 			data(Storage.DH) { remove("probe") }
 		}
 
-		// {i}: resolve a row index to the property name it stands for.
+		// {list, i}: resolve a button's index to the property name it stands for.
 		pack.define(pickName) {
 			data(Storage.DH) { remove("pending_name") }
-			raw("\$data modify storage ra:dh pending_name set from storage ra:dh registry[\$(i)]")
+			raw("\$data modify storage ra:dh pending_name set from storage ra:dh \$(list)[\$(i)]")
 		}
 
-		// {name}: refuse an edit to a field the block keeps to itself. Sets storage ra:dh denied
-		// when it refuses, which the caller checks.
-		pack.define(deny) {
-			raw("\$execute unless data storage ra:dh hidden.\$(name) run return 0")
-			data(Storage.DH) { modify("denied", NbtByte(1)) }
-			raw("""${'$'}tellraw @s [$PREFIX,{text:"$(name)",color:"yellow"},{text:" is set by the block and cannot be changed here.",color:"gray"}]""")
+		// {name}, after probe: refuse an edit #dh.lock forbids, and say why. Sets storage ra:dh
+		// denied when it refuses, which the caller checks. A dead button stops the click, but a row's
+		// action is a /trigger and a player can still type one: this is the refusal that holds.
+		pack.define(refuse) {
+			raw("execute if score #dh.lock $T matches 0 run return 0")
+			data(Storage.DH) { modify("denied", net.benwoodworth.knbt.NbtByte(1)) }
+			for ((code, reason) in LOCK_REASON)
+				raw("""${'$'}execute if score #dh.lock $T matches $code run tellraw @s [$PREFIX,{text:"$(name)",color:"yellow"},{text:": $reason",color:"gray"}]""")
+			raw("""execute if score #dh.lock $T matches 3 run tellraw @s [$PREFIX,{text:"This block has no such setting.",color:"gray"}]""")
 			raw("playsound minecraft:block.note_block.bass block @s[scores={${Obj.USER_SOUND}=1..}] ~ ~ ~ 0.7 0.7")
 		}
 
-		// A [Set from hand] button: as the player, with ra.dh.action at 200 + index.
+		// A [Set from hand] button: as the player, with #dh.code at 400 + index.
 		//
-		// The mirror of generic_action for the second action space. Same index lookup, same refusal
-		// for a field the block keeps to itself, and then a straight write rather than an input form
-		// -- there is nothing to ask for, the answer is in the player's hand.
+		// The mirror of generic_action for the second action space. Same index lookup, same
+		// refusal, and then a straight write rather than an input form -- the answer is in the
+		// player's hand.
 		pack.define(handAction) {
-			raw("scoreboard players operation #dh.idx ${Obj.TEMP} = @s ra.dh.action")
-			scoreboard.players.remove(literal("#dh.idx"), Obj.TEMP, 200)
-			raw("data modify storage ra:dh q set value {}")
-			raw("execute store result storage ra:dh q.i int 1 run scoreboard players get #dh.idx ${Obj.TEMP}")
+			raw("data modify storage ra:dh q set value {list:\"block_order\"}")
+			scoreboard.players.remove(literal("#dh.code"), T, 400)
+			raw("execute store result storage ra:dh q.i int 1 run scoreboard players get #dh.code $T")
 			callWith(pickName, "storage ra:dh q")
 			raw("execute unless data storage ra:dh pending_name run return 0")
 			raw("data modify storage ra:dh q.name set from storage ra:dh pending_name")
-			function(DataHandler.collectHidden)
-			callWith(deny, "storage ra:dh q")
+			callWith(probe, "storage ra:dh q")
+			callWith(refuse, "storage ra:dh q")
 			raw("execute if data storage ra:dh denied run return run data remove storage ra:dh denied")
+			raw("execute unless score #dh.type $T matches 4 run return 0")
 			callWith(setFromHand, "storage ra:dh q")
-			function(DataHandler.refresh)
+			function(ra.tools.datahandler.DataHandler.refresh)
 		}
 
-		// {name}: copy the held item's id into an item_name property. As the player.
+		// {name}: copy the held item's id into an item property. As the player.
 		//
 		// SelectedItem is absent when the hand is empty, so the guard is a real one and not
 		// politeness -- writing an absent source would leave the old value standing while the player
@@ -154,50 +230,77 @@ object DataHandlerProps {
 
 		// {name}: ask for the new value, then open the matching input form.
 		pack.define(askNumber) {
-			raw("""${'$'}tellraw @s [$PREFIX,{text:"Enter a new number for ",color:"gray"},{text:"$(name)",color:"yellow"},{text:".",color:"gray"}]""")
+			raw("""${'$'}tellraw @s [$PREFIX,{text:"Enter a new number for ",color:"gray"},{text:"$(name)",color:"yellow"},{text:" (",color:"gray"},{score:{name:"#dh.min",objective:"$T"},color:"white"},{text:" to ",color:"gray"},{score:{name:"#dh.max",objective:"$T"},color:"white"},{text:").",color:"gray"}]""")
 			function(DataHandlerActions.requestNumber)
+		}
+		// A number nothing declares: typed in the book, so it may be negative, large or a decimal,
+		// and parsed and checked on the way back (DataHandlerTypes.writeTypedNumber).
+		pack.define(askTypedNumber) {
+			raw("""${'$'}tellraw @s [$PREFIX,{text:"Write a number for ",color:"gray"},{text:"$(name)",color:"yellow"},{text:" in the input book.",color:"gray"}]""")
+			function(DataHandlerActions.requestText)
 		}
 		pack.define(askText) {
 			raw("""${'$'}tellraw @s [$PREFIX,{text:"Write the new value for ",color:"gray"},{text:"$(name)",color:"yellow"},{text:" in the input book.",color:"gray"}]""")
 			function(DataHandlerActions.requestText)
 		}
 
-		// {name}: the number and text writes. A list goes through DataHandlerList, which checks it first.
-		pack.define(writeNumber) { raw("\$data modify entity $TARGET data.properties.\$(name) set from storage ra:input consume.number") }
+		// {name}: the number-form and text writes. The number form's answer is checked against the
+		// bounds again (probe, just before): a /reload may have narrowed them since it was asked.
+		// Text is copied, never parsed, so a number typed for a text property stays text. A list
+		// goes through DataHandlerList, a number or flag typed in the book through DataHandlerTypes;
+		// both check the value first.
+		pack.define(writeNumber) {
+			raw("execute store result score #dh.v $T run data get storage ra:input consume.number")
+			raw("""execute unless score #dh.v $T >= #dh.min $T run return run function ${DataHandlerTypes.outOfRange.asId()}""")
+			raw("""execute unless score #dh.v $T <= #dh.max $T run return run function ${DataHandlerTypes.outOfRange.asId()}""")
+			raw("\$data modify entity $TARGET data.properties.\$(name) set from storage ra:input consume.number")
+			raw("return 1")
+		}
 		pack.define(writeText) { raw("\$data modify entity $TARGET data.properties.\$(name) set from storage ra:input consume.text") }
 
 		registerRender()
 		registerDataHandlerList()
+		registerDataHandlerTypes()
 		registerPropRows()
 	}
 
-	// {name,action}: one property row, if the selected block has that property. As the player.
+	/** On a player: server-settings access. */
+	internal const val ADMIN = "ra.admin"
+
+	/** storage ra:dh q for one row: the name at [from], its action, and every field a row reads. */
+	private fun io.github.ayfri.kore.functions.Function.newRow(from: String) {
+		raw("data modify storage ra:dh q set value {warn:\"\",guess:\"\",note:\"\",reason:\"\"}")
+		raw("data modify storage ra:dh q.name set from storage ra:dh $from")
+		raw("execute store result storage ra:dh q.action int 1 run scoreboard players get #dh.act $T")
+	}
+
+	// {name,action,hand_action,warn,guess,note,reason}: one property row, if the selected block
+	// has that property. As the player.
 	private fun Ra.registerRender() = pack.define(render) {
+		raw("\$data remove storage ra:dh rest.\$(name)")
 		raw("\$execute unless data storage ra:dh properties.\$(name) run return 0")
-
-		// Fields the block declared as its own, in ra:tools/readonly/init_registry. Shown with a
-		// dead button rather than withheld: a censored row makes a block look like it has fewer
-		// settings than it does, and leaves the player wondering why a value the Goggles happily
-		// display is missing here.
-		//
-		// No gamemode test. Creative players use the Creative Data Handler, which shows and edits
-		// everything -- so this tool does not need a second mode.
-		raw("\$execute if data storage ra:dh hidden.\$(name) run scoreboard players add #dh.shown ${Obj.TEMP} 1")
-		raw("\$execute if data storage ra:dh hidden.\$(name) run return run ${macroCall(PropRows.rowLocked, "with storage ra:dh q")}")
-
-		scoreboard.players.add(literal("#dh.shown"), Obj.TEMP, 1)
 		callWith(probe, "storage ra:dh q")
 
-		for ((type, row) in listOf(1 to PropRows.rowNumber, 2 to PropRows.rowBool, 3 to PropRows.rowList, 0 to PropRows.rowString))
-			executeRun("if score #dh.type ${Obj.TEMP} matches $type", row, "with storage ra:dh q")
+		// Hidden from this player: no row at all.
+		raw("execute if score #dh.lock $T matches 3 run return 0")
+		raw("execute if score #dh.hid $T matches 1 run data modify storage ra:dh q.note set value \" (hidden from players)\"")
 
-		// The item row carries two buttons, and a macro is substituted from one compound, so the
-		// second action id is worked out here rather than in the row. 200 + index is the same
-		// registry index in a second action space -- see hand_action. On a scratch holder, not on
-		// #dh.act: that one is the row iterator and the rest of the list is still counting on it.
-		raw("scoreboard players operation #dh.hand ${Obj.TEMP} = #dh.act ${Obj.TEMP}")
-		scoreboard.players.add(literal("#dh.hand"), Obj.TEMP, 100)
-		raw("execute if score #dh.type ${Obj.TEMP} matches 4 store result storage ra:dh q.hand_action int 1 run scoreboard players get #dh.hand ${Obj.TEMP}")
-		executeRun("if score #dh.type ${Obj.TEMP} matches 4", PropRows.rowItem, "with storage ra:dh q")
+		// No declared type: the row shows its guess behind a yellow warning sign, and debug players
+		// are told which property on which block it was.
+		raw("execute if score #dh.decl $T matches 0 run data modify storage ra:dh q.warn set value \"⚠ \"")
+		for ((code, label) in GUESS)
+			raw("execute if score #dh.decl $T matches 0 if score #dh.type $T matches $code run data modify storage ra:dh q.guess set value \"$label\"")
+		raw("""execute if score #dh.decl $T matches 0 run tellraw @s[tag=${Tag.DEBUG}] [{text:"[RA debug] ",color:"dark_gray"},{text:"Data Handler: ",color:"gray"},{nbt:"q.name",storage:"ra:dh",color:"yellow"},{text:" on ",color:"gray"},{nbt:"block_type",storage:"ra:dh",color:"gold"},{text:" has no declared type; guessed ",color:"gray"},{nbt:"q.guess",storage:"ra:dh",color:"aqua"},{text:".",color:"gray"}]""")
+
+		// Locked: read-only for everyone, or admin-only for this player. Shown with a dead button
+		// rather than withheld -- a censored row makes a block look like it has fewer settings than
+		// it does. The Creative Data Handler edits anything.
+		for ((code, reason) in LOCK_REASON)
+			raw("execute if score #dh.lock $T matches $code run data modify storage ra:dh q.reason set value \"$reason\"")
+		raw("execute if score #dh.lock $T matches 1..2 run return run function ${PropRows.rowLocked.asId()} with storage ra:dh q")
+
+		val rows = listOf(1 to PropRows.rowNumber, 2 to PropRows.rowBool, 3 to PropRows.rowList, 0 to PropRows.rowString, 4 to PropRows.rowItem, 5 to PropRows.rowCompound)
+		for ((type, row) in rows)
+			executeRun("if score #dh.type $T matches $type", row, "with storage ra:dh q")
 	}
 }

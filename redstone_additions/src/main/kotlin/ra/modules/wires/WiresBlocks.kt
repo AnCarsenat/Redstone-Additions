@@ -166,15 +166,38 @@ object WiresBlocks : PackPart {
 			WrenchCycle("Mode", "mode", LiquidDrain.cycleMode),
 			WrenchCycle("Rate", "cooldown", LiquidDrain.cycleRate))
 
-		// The block's own working numbers: shown, never edited (see ra:tools/readonly).
-		readonly("electric_breaker", "rate")
-		readonly("electric_consumer", "eu_use")
-		readonly("electric_generator", "generation_rate")
-		readonly("gas_valve", "rate")
-		readonly("industrial_light", "eu_use")
-		readonly("liquid_filter", "rate")
-		readonly("liquid_valve", "rate")
-		readonly("solar_panel", "generation_rate")
+		// Property schemas, by marker type (what data.type holds -- liquid_pipe, not
+		// liquid_pipe_copper). `readonly` ones are the block's own working numbers: shown by the Data
+		// Handler, never edited there or cycled by the wrench.
+		for (t in listOf("liquid_pipe", "liquid_tank", "gas_tank", "liquid_pump", "gas_pump", "electric_wire", "electric_switch", "battery", "creative_eu", "boiler"))
+			properties(t) {}
+		for (t in listOf("liquid_valve", "gas_valve", "electric_breaker"))
+			properties(t) { number("rate", min = 1, max = 1000000, readonly = true) }
+		properties("liquid_filter") {
+			number("rate", min = 1, max = 1000000, readonly = true)
+			text("filter_medium")
+		}
+		properties("liquid_drain") {
+			text("mode")
+			number("cooldown", min = 1, max = 1200)
+			// The old name of cooldown, folded into it every tick.
+			number("interval", readonly = true, visible = false)
+		}
+		properties("electric_generator") { number("generation_rate", min = 1, max = 10000, readonly = true) }
+		properties("solar_panel") { number("generation_rate", min = 1, max = 10000, readonly = true) }
+		properties("electric_consumer") {
+			number("eu_use", min = 1, readonly = true)
+			number("cooldown", min = 1, max = 1200)
+		}
+		properties("industrial_light") { number("eu_use", min = 0, max = 1000, readonly = true) }
+		properties("creative_fluid") {
+			text("medium")
+			number("rate", min = 0, max = 1000000)
+		}
+		properties("electric_furnace") {
+			text("mode")
+			text("output")
+		}
 
 		// Removes one item from a stack in place (`item modify ... ra_wires:take_one`).
 		pack.itemModifier("take_one") {

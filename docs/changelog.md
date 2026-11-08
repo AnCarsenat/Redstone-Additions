@@ -41,6 +41,31 @@ predicates built when the pack is generated. Worlds on v6.0.0 carry on without a
   moved back onto its block centre on every tick, though nothing ever moves them. They are
   placed at the centre, and straightened out once when the pack loads.
 
+- **Every block declares its settings.** Each kind of block now lists its settings, the type
+  of each (number with its range, on/off, text, list, item) and whether it is read-only,
+  admin-only or hidden, in one place next to the block. The Data Handler, the Wrench and the
+  Clipboard all follow that list: the Data Handler shows a block's settings in the block's own
+  order and always offers the editor its type calls for, whatever value happens to be stored.
+- **Admin-only and hidden settings.** A setting can be kept for players with server-settings
+  access: other players see it locked, with the reason when they hover it, and a value they
+  typed is refused again at the moment it would be written. A hidden setting does not appear
+  for them at all; admins see it marked *(hidden from players)*. The Wrench and the Clipboard
+  skip what you may not change.
+- **Undeclared values are guessed, and flagged.** A value no block declares (added by an
+  add-on or with the Creative Data Handler) gets a row when its type can be told from the
+  value, marked with a yellow ⚠ that names the guess; players with the `ra.debug` tag get a
+  line naming the block and the setting. Anything else is listed under *Undeclared*.
+- **Typed values are converted and checked.** A number typed in the book must read as a
+  number, an on/off setting accepts `true`/`false`, `on`/`off` or `1`/`0`, and a number prompt
+  shows and enforces the setting's range. Text is kept exactly as typed, even when it looks like
+  a number. A refused value leaves the block unchanged and says why.
+- **Old menus no longer edit.** A Data Handler button in a menu other than the latest one you
+  were shown, or one drawn before a `/reload`, redraws the menu instead of changing a setting.
+- **The Creative Data Handler lists what the block actually has.** It showed a fixed list of 18
+  names, several of which no block uses, and none of the Wires, Ender, storage or multiblock
+  settings. It now shows the block's declared settings, each with its type, then any
+  undeclared ones, flagged.
+
 ### Fixed
 
 - **Tanks and batteries out of view keep what they hold.** Placing or breaking any pipe or wire
@@ -173,8 +198,42 @@ predicates built when the pack is generated. Worlds on v6.0.0 carry on without a
   actually empty any of the pack's saved data. The lists of what to remove are now read from the
   pack itself, so nothing the pack creates is left behind.
 
+- **Number settings get the number editor.** The Data Handler decided a setting was text
+  whenever the game would let it store the value as text, which it does for numbers too, so
+  every number setting it did not know by name was edited as text and saved back as text. Types
+  are now declared per block, and a value without a declaration is typed by tests only that
+  type passes.
+
+- **The Creative Data Handler works for several operators at once.** One shared marker tag
+  decided which block it edited, so a second operator's Shift+RMB moved it, and the first
+  operator's [Modify], [-] and [Refresh] then changed the other block. Its menu was also shown
+  to the player nearest the block rather than the one who clicked. Each operator now has their
+  own selected block (the same one the Data Handler uses), and the `/data` commands its buttons
+  suggest name that block by number, so they still reach it when typed later.
+
+- **Teleport Anchor targets show in the Data Handler.** The [Edit list] row's hover text broke
+  the chat message, so no list setting was ever shown and the anchor's table could not be
+  edited from the menu.
+
+- **Multiblock base tiers are locked.** The read-only rule for a base's `tier` and `tier_level`
+  was registered under a block type no base carries, so the Data Handler let players change a
+  base's tier.
+
+- **The UNI Gate's wrench menu shows its gate type.** The row read a property the gate does not
+  have and showed an empty value.
+
+- **The Data Handler names the block you selected.** It read the name from a field markers do
+  not carry, so after a refresh it kept whatever name the last player to select anything had
+  left behind, and a block with no settings showed the previous block's.
+
 ### For contributors
 
+- Block properties are declared per block type with `properties(block) { number(...); bool(...);
+  text(...); list(...); item(...) }` (`ra/core/Properties.kt`), replacing `ra.readonly(...)`,
+  `ra.dataHandlerProperties(...)` and the Data Handler's global name lists. They are generated
+  into `storage ra:dh types."<type>"` and `order."<type>"`; the build warns about property names
+  a block uses without declaring and about every `dynamic(...)` declaration. See
+  [Property schemas](tools-and-registries.md#property-schemas).
 - `ra/core/Compute.kt` builds and emits `/compute` providers; the [Developer Guide](developer-guide.md#arithmetic-with-compute)
   covers when and how to use it. The constant fake players the old chains needed (`#jp.cap`,
   `#br.two`, `#dr.mul` and others) are gone.

@@ -80,7 +80,11 @@ class Generator(
 	/** Registers everything but `process` and `goggles`, which are the generator's own. [extraTick] runs after the cooldown default. */
 	fun Ra.registerGenerator(extraTick: Function.() -> Unit = {}) {
 		block(block)
-		readonly(block.id, "cooldown")
+		properties(block) {
+			number("cooldown", min = 1, max = 1200, readonly = true)
+			// Removed by the Poppy Generator's tick: a leftover of an old version.
+			if (block.id == "poppy_generator") text("mode", readonly = true, visible = false)
+		}
 		pack.blockRegisterMessage(block)
 		pack.define(block.give) { raw("give @s ${item.giveArg()}") }
 

@@ -1,86 +1,106 @@
 package ra.tools.creativedatahandler.props
 
 import io.github.ayfri.kore.arguments.types.resources.FunctionArgument
+import io.github.ayfri.kore.commands.function
+import ra.core.Obj
 import ra.core.Ra
+import ra.core.callWith
 import ra.core.define
 import ra.core.raw
+import ra.tools.datahandler.DataHandlerSelection
+import ra.tools.datahandler.props.DataHandlerTypes.typeOfProbe
 import ra.tools.tool
 
 /**
- * `ra:tools/creative_data_handler/props/show_<name>`: one chat row per known property, with a
- * [Modify] button that suggests the `/data modify` command and a [-] button that removes it.
+ * The Creative Data Handler's property rows, one per property the block carries: the block type's
+ * declared ones in schema order (storage ra:dh block_order, loaded by
+ * ra:tools/data_handler/load_schema), then any it carries without a declaration that some other
+ * block declares (storage ra:dh known), flagged. Each row has [Modify] -- suggesting the `/data`
+ * command, with an opening quote for text -- and [-] to remove it. Hovering the type shows the
+ * whole declaration, flags included. Everything is editable here: this is the operator's tool.
  *
- * The Creative Data Handler predates the registry-driven Data Handler and still has one row
- * function per property; they differ only in the data below, so they are generated from it.
+ * It used to be one generated function per property name from a hand-kept list of 18 names --
+ * properties no block has, and none of the ones most blocks do.
  */
-internal class CdhProp(
-	val name: String,
-	/** Shown type and its colour (`int`/blue, `str`/green...). */
-	val type: String,
-	val typeColor: String,
-	val valueColor: String,
-	/** A string value: the suggested command opens a quote. */
-	val quoted: Boolean = false,
-	/** Hover on [Modify] (or on the value, for [clickValue] rows). */
-	val hover: String? = null,
-	/** Shown right after the value, inside the brackets (`%`). */
-	val unit: String? = null,
-	/** Read straight off the marker rather than from the `ra:cdh` snapshot. */
-	val fromEntity: Boolean = false,
-	/** The value itself is the edit button; no [Modify]. */
-	val clickValue: Boolean = false,
-) {
-	val show: FunctionArgument = tool("creative_data_handler/props/show_$name")
-}
-
 internal object CdhProps {
-	private const val TARGET = "@e[type=marker,tag=ra.cdh_target,limit=1]"
+	private val next = tool("creative_data_handler/props/next")
+	private val nextGuess = tool("creative_data_handler/props/next_guess")
+	private val render = tool("creative_data_handler/props/render")
+	private val renderGuess = tool("creative_data_handler/props/render_guess")
+	private val rowQuoted = tool("creative_data_handler/props/row_quoted")
+	private val rowPlain = tool("creative_data_handler/props/row_plain")
 
-	val all = listOf(
-		CdhProp("chance", "int", "blue", "gold", unit = "%"),
-		CdhProp("channel", "string", "green", "gold", quoted = true),
-		CdhProp("cooldown", "int", "blue", "gold", fromEntity = true),
-		CdhProp("delay", "int", "blue", "gold"),
-		CdhProp("distance", "int", "blue", "gold"),
-		CdhProp("enabled", "bool", "light_purple", "light_purple"),
-		CdhProp("entity_selector", "str", "green", "green", quoted = true),
-		CdhProp("extend", "int", "blue", "gold"),
-		CdhProp("gate", "str", "green", "green", quoted = true, clickValue = true, hover = "Click to edit (AND, OR, NOT, XOR, NAND, NOR, XNOR)"),
-		CdhProp("gate_type", "str", "green", "green", quoted = true, clickValue = true, hover = "Click to edit value"),
-		CdhProp("inverted", "bool", "light_purple", "light_purple", hover = "Click to edit (true/false)"),
-		CdhProp("message_block", "str", "green", "green", quoted = true),
-		CdhProp("mode", "str", "green", "green", quoted = true),
-		CdhProp("power", "int", "blue", "gold"),
-		CdhProp("pulse", "int", "blue", "gold", hover = "Click to edit value"),
-		CdhProp("range", "int", "blue", "gold", hover = "Click to edit value"),
-		CdhProp("tag", "str", "green", "green", quoted = true, hover = "Click to edit value"),
-		CdhProp("target", "str", "green", "green", quoted = true, hover = "Click to edit value"),
-	).associateBy { it.name }
+	/** `{mid}`, as the player: every row. */
+	val list = tool("creative_data_handler/props/list")
+
+	private const val T = Obj.TEMP
+
+	/** The player's block by number, `{mid}`: a suggested command still finds it when typed later. */
+	private val BY_MID = DataHandlerSelection.byMid("\$(mid)")
 
 	fun Ra.registerCdhProps(removeProperty: FunctionArgument) {
-		for (p in all.values) pack.define(p.show) { raw("tellraw @s ${row(p, removeProperty)}") }
+		pack.define(list) {
+			raw("data modify storage ra:cdh rest set from storage ra:cdh properties")
+			raw("data modify storage ra:cdh row set value {warn:\"\"}")
+			raw("\$data modify storage ra:cdh row.mid set value \$(mid)")
+			raw("data modify storage ra:cdh iter set from storage ra:dh block_order")
+			function(next)
+			raw("data modify storage ra:cdh row.warn set value \"⚠ undeclared \"")
+			raw("data modify storage ra:cdh iter set from storage ra:dh known")
+			function(nextGuess)
+			raw("data remove storage ra:cdh iter")
+			raw("data remove storage ra:cdh rest")
+		}
+		for ((walker, fn) in listOf(next to render, nextGuess to renderGuess))
+			pack.define(walker) {
+				raw("execute unless data storage ra:cdh iter[0] run return 0")
+				raw("data modify storage ra:cdh row.name set from storage ra:cdh iter[0]")
+				callWith(fn, "storage ra:cdh row")
+				raw("data remove storage ra:cdh iter[0]")
+				function(walker)
+			}
+		pack.define(renderGuess) {
+			raw("\$execute unless data storage ra:cdh rest.\$(name) run return 0")
+			callWith(render, "storage ra:cdh row")
+		}
+
+		// {mid,name,warn}: the row, quoted when the property is text -- by declaration, or, with
+		// none, by its value.
+		pack.define(render) {
+			raw("\$data remove storage ra:cdh rest.\$(name)")
+			raw("\$execute unless data storage ra:cdh properties.\$(name) run return 0")
+			raw("scoreboard players set #cdh.type $T -1")
+			raw("\$execute if data storage ra:dh schema.\$(name).code store result score #cdh.type $T run data get storage ra:dh schema.\$(name).code")
+			for (code in listOf(ra.core.PropType.TEXT.code, ra.core.PropType.ITEM.code))
+				raw("execute if score #cdh.type $T matches $code run return run function ${rowQuoted.asId()} with storage ra:cdh row")
+			raw("execute unless score #cdh.type $T matches -1 run return run function ${rowPlain.asId()} with storage ra:cdh row")
+			raw("data remove storage ra:dh probe")
+			raw("\$data modify storage ra:dh probe set from storage ra:cdh properties.\$(name)")
+			typeOfProbe("#cdh.type")
+			raw("data remove storage ra:dh probe")
+			raw("execute if score #cdh.type $T matches 0 run return run function ${rowQuoted.asId()} with storage ra:cdh row")
+			callWith(rowPlain, "storage ra:cdh row")
+		}
+
+		for ((fn, quoted) in listOf(rowQuoted to true, rowPlain to false))
+			pack.define(fn) { raw("\$tellraw @s ${row(quoted, removeProperty)}") }
 	}
 
-	private fun row(p: CdhProp, removeProperty: FunctionArgument): String {
-		val suggest = """click_event:{action:"suggest_command",command:"/data modify entity $TARGET data.properties.${p.name} set value ${if (p.quoted) "\\\"" else ""}"}"""
-		val hover = p.hover?.let { """,hover_event:{action:"show_text",value:"$it"}""" } ?: ""
-		val source = if (p.fromEntity) """nbt:"data.properties.${p.name}",entity:"$TARGET"""" else """nbt:"properties.${p.name}",storage:"ra:cdh""""
-		val value = if (p.clickValue) """{$source,color:"${p.valueColor}",$suggest$hover}""" else """{$source,color:"${p.valueColor}"}"""
-		val parts = buildList {
-			add("""{text:"  ${p.name}: ",color:"white"}""")
-			add("""{text:"[",color:"dark_gray"}""")
-			add(value)
-			p.unit?.let { add("""{text:"$it",color:"${p.valueColor}"}""") }
-			add("""{text:"]",color:"dark_gray"}""")
-			add("""{text:" "}""")
-			add("""{text:"${p.type}",color:"${p.typeColor}"}""")
-			add("""{text:" "}""")
-			if (!p.clickValue) {
-				add("""{text:"[Modify]",color:"yellow",$suggest$hover}""")
-				add("""{text:" "}""")
-			}
-			add("""{text:"[-]",color:"red",click_event:{action:"run_command",command:"/function ${removeProperty.asId()} {name:\"${p.name}\"}"},hover_event:{action:"show_text",value:"Remove property"}}""")
-		}
-		return parts.joinToString(",", "[", "]")
+	private fun row(quoted: Boolean, removeProperty: FunctionArgument): String {
+		val open = if (quoted) "\\\"" else ""
+		val suggest = """click_event:{action:"suggest_command",command:"/data modify entity $BY_MID data.properties.$(name) set value $open"}"""
+		return listOf(
+			"""{text:"  $(name): ",color:"white"}""",
+			"""{text:"[",color:"dark_gray"}""",
+			"""{nbt:"properties.$(name)",storage:"ra:cdh",color:"green"}""",
+			"""{text:"]",color:"dark_gray"}""",
+			"""{text:" "}""",
+			"""{text:"$(warn)",color:"yellow",hover_event:{action:"show_text",value:"No declaration on this block type; the type is guessed."}}""",
+			"""{nbt:"schema.$(name).type",storage:"ra:dh",color:"aqua",hover_event:{action:"show_text",value:[{text:"Declaration: ",color:"gray"},{nbt:"schema.$(name)",storage:"ra:dh",color:"white"}]}}""",
+			"""{text:" "}""",
+			"""{text:"[Modify]",color:"yellow",$suggest,hover_event:{action:"show_text",value:"Edit with /data"}}""",
+			"""{text:" "}""",
+			"""{text:"[-]",color:"red",click_event:{action:"run_command",command:"/function ${removeProperty.asId()} {name:\"$(name)\"}"},hover_event:{action:"show_text",value:"Remove property"}}""",
+		).joinToString(",", "[", "]")
 	}
 }

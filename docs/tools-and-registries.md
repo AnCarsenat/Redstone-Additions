@@ -57,7 +57,9 @@ wrenchCycle("liquid_drain",
 data modify storage ra:wrench cyclables set value {"creative_fluid":[{label:"Medium",prop:"medium",fn:"ra_wires:blocks/creative_fluid/cycle_medium"}],...}
 ```
 
-After dropping read-only properties, the wrench decides from the count: none, it says the block
+After dropping what the player may not change (by the block's
+[property schema](#property-schemas): read-only rows always, admin-only and hidden rows unless the
+player holds `ra.admin`), the wrench decides from the count: none, it says the block
 does not cycle; one, it cycles at once; two or more, it opens a menu whose buttons send
 `/trigger ra.wrench set <row + 1>`.
 
@@ -80,48 +82,142 @@ wrenchToggles += TagRoute(Emitter.block.tag, Emitter.toggle)
 the multiblock-base assembly, then "This block cannot be toggled." for anything else. Only blocks
 with one on/off state worth reaching for register one (the Wireless Emitter and Receiver).
 
-## Read-only properties
+## Property schemas
+
+Every block type declares its properties next to its definition, in declaration order — which
+is the Data Handler's menu order:
 
 ```kotlin
-readonly("electric_generator", "generation_rate")
-readonly("multiblock_base", "tier", "tier_level")
+// ra/modules/ender/TeleportAnchor.kt
+block(block)
+properties(block) {
+	text("anchor_id")
+	list("targets", of = PropType.TEXT, max = 15, pad = true)
+}
+
+// ra/modules/wires/WiresBlocks.kt -- keyed by the marker type, which is not the item id here
+properties("liquid_drain") {
+	text("mode")
+	number("cooldown", min = 1, max = 1200)
+}
+properties("electric_generator") { number("generation_rate", min = 1, max = 10000, readonly = true) }
 ```
 
-Properties the block owns and a player must not type into: a generator's rate, a valve's
-transfer rate. `ra:tools/readonly/init_registry` writes them to `storage ra:dh readonly` as
-compounds (`{"electric_generator":{generation_rate:1b}}`), sorted by type, because both readers
-ask "is *this* name read-only?", one command against a compound.
+`properties(block)` keys the schema by `block.id`; `properties("type")` by any `data.type`
+(Wires markers, `multiblock_base.<tier>`, multiblock structures, which `Ra.multiblock(spec)`
+declares for you). `ra/core/Properties.kt` holds the builder.
 
-- The Data Handler still **shows** the row, with a struck-through `[Modify]` and a reason on hover.
-- The wrench drops it from the cycle menu. A block left with nothing reports that it does not
-  cycle, rather than cycling the one thing you locked.
+| Declaration | Type | Editor in the Data Handler |
+| --- | --- | --- |
+| `number(name, min = 0, max = 9999)` | int | number prompt, bounded |
+| `bool(name)` | byte `0b`/`1b` | **[Toggle]** |
+| `text(name)` | string | the book; stored as typed, never parsed |
+| `item(name)` | string (item id) | the book, or **[Set from hand]** |
+| `list(name, of = PropType.TEXT, max = 15, pad = true)` | list | **[Edit list]**, parsed and checked |
+| `dynamic(name)` | read from the block instance | — (see below) |
 
-## Data Handler property list
+Each also takes these flags:
 
-`ra:tools/data_handler/init_registry` (`tools/datahandler/DataHandlerRegistry.kt`) writes three
-lists into `storage ra:dh`:
+| Flag | Data Handler | Wrench | Clipboard paste |
+| --- | --- | --- | --- |
+| `readonly = true` | shown, locked, reason on hover; writes refused | never cycled | not pasted (the target keeps its own) |
+| `adminOnly = true` | locked for players without `ra.admin` (server-settings access), editable for admins; re-checked when the value is written | not offered to non-admins | not pasted by non-admins |
+| `visible = false` | not shown at all to non-admins (nor in the Properties summary); admins see it marked *(hidden from players)* and can edit it | not offered to non-admins | not pasted by non-admins |
 
-| List | Contents |
+The Creative Data Handler shows and edits everything regardless; it is an operator tool.
+
+### What is generated
+
+`ra:tools/data_handler/init_registry` (`tools/datahandler/DataHandlerRegistry.kt`) runs on every
+load, unguarded — configuration, not world state:
+
+```mcfunction
+data modify storage ra:dh types."liquid_drain" set value {mode:{type:"text",code:0,readonly:0b,admin_only:0b,visible:1b,i:0},cooldown:{type:"number",code:1,min:1,max:1200,readonly:0b,admin_only:0b,visible:1b,i:1}}
+data modify storage ra:dh order."liquid_drain" set value ["mode","cooldown"]
+data modify storage ra:dh known set value ["anchor_id","chance","channel",...]
+```
+
+- `types."<type>".<name>`: the declaration. `code` is the type as a number and the flags are
+  bytes, so a reader takes each with one `data get` into a score; "what is `<name>` on this
+  block?" is one compound lookup, and nothing walks a list per tick.
+- `order."<type>"`: the names in menu order.
+- `known`: every name any type declares, which the Data Handler uses to give a row to a property
+  a block carries without declaring.
+
+Each type is written on its own line, so an add-on's types in the same storage survive the load
+(see [Extension Examples](extension-examples.md)). The old `storage ra:dh readonly`, `registry`,
+`numeric` and `item_names` are removed on load.
+
+### Dynamic properties (discouraged)
+
+`dynamic(name)` declares that each block instance carries its own declaration, in
+`data.property_types.<name>` on its marker, in the same shape as above
+(`{type:"number",code:1,min:0,max:10}`). The Data Handler and the wrench read it from the block.
+Every dynamic declaration prints a build warning: the type then lives in world data, where no
+build checks it.
+
+### Undeclared properties
+
+A property a block carries without a declaration (added with the Creative Data Handler, or by an
+add-on that declares nothing) is never trusted to have a type. When some other type declares the
+same name, the Data Handler gives it a row with a yellow **⚠** whose hover names the guessed type,
+and players with the `ra.debug` tag get a line naming the block and the property. Anything else
+is listed under *Undeclared*, with no editor. The guess comes from the value, by tests that only
+one type passes (no macro needed, value first copied to `storage ra:dh probe`):
+
+| Type | Test |
 | --- | --- |
-| `registry` | Every property name the Handler can show, in menu order |
-| `numeric` | Names that hold numbers: the editor forces a number, and never writes a string |
-| `item_names` | Names whose value is an item id (`filter_item`) |
+| list | `data modify storage ra:dh probe insert 0 value 0b` succeeds — only a list (empty or not) takes an insert |
+| compound | `execute if data storage ra:dh probe{}` (no editor; use the Creative Data Handler) |
+| number | `execute store result score #dh.n0 ra.temp run compute default integer {type:"minecraft:storage",storage:"ra:dh",path:"probe",fallback:0}` and the same with `fallback:1`: the storage provider returns its fallback when the value is absent or not a number, so the two agree exactly when it is one |
+| bool | a number that is the byte `0b` or `1b`: `execute if data storage ra:dh {probe:1b}` (an NBT match is typed, so the int `1` does not pass) |
+| text | anything else |
 
-The list is kept **centrally** in `DataHandlerRegistry.PROPERTIES`, in the order the original pack used. A
-module can add names with `ra.dataHandlerProperties("name")`; they go on the end.
+A declared type always wins over the value: a `number` whose value became the string `"5"` is
+still edited as a number. `data modify … set string` is **not** a string test — it accepts a
+number and writes its digits (see [Kore Gotchas](gotchas.md#set-string-accepts-a-number)).
 
-!!! danger "Append only"
-    A row's button carries `100 + its index`, and those ids are baked into chat messages
-    players already have on screen. Inserting a name in the middle renumbers every row after
-    it, so a menu drawn before a `/reload` edits the wrong property when clicked.
+### Typed text
 
-`channel`, `anchor_id`, `tag` and `entity_selector` must stay out of `numeric`: they are
+Whatever the player types reaches a command only through `ra:tools/data_handler/props/parse`,
+whose single line is `$data modify storage ra:dh parsed set value $(text)`: malformed text fails
+that one call and leaves `parsed` absent. The parsed value is then type-tested like any other,
+and the write uses the property's type at the moment of writing (declared, or guessed from the
+value then):
+
+| Type | Accepted | Written |
+| --- | --- | --- |
+| text, item | anything | `set from storage ra:input consume.text` — never parsed, so `5` typed for a text property stays the text `5` |
+| number (declared) | the number prompt, within `min`..`max` (checked again on write) | the int |
+| number (guessed) | typed text that parses to a number (`5`, `-3`, `2.5`) | as parsed |
+| bool | `true`, `false`, `on`, `off`, `1`, `0` (also `True`, `TRUE`, …) — compared, not parsed | `1b` / `0b` |
+| list | a list; text entries when declared `of = TEXT` (or, undeclared, when it holds text now); at most `max`, padded with `""` when `pad` | the list |
+
+Anything else is refused with a red message and the block is left unchanged.
+
+### Menu buttons
+
+A row's button runs `/trigger ra.dh.action set <stamp × 1000 + code>`: code `100 + i` edits row
+`i` of `order."<type>"`, `400 + i` is that row's **[Set from hand]**, `700 + i` edits the
+undeclared property `known[i]`. The stamp numbers the menu; each player's latest is in
+`ra.dh.menu`, and loading resets it for everyone. A click carrying any other stamp — an old menu
+scrolled back to, or one drawn before a `/reload` that may have reordered a schema — redraws the
+menu instead, so schemas can be reordered freely.
+
+### Where each piece of a property lives
+
+| What | Where |
+| --- | --- |
+| Its value | the block's marker, `data.properties.<name>` |
+| Its type, bounds, flags | the block type's `properties { }` in Kotlin, generated into `storage ra:dh types."<type>".<name>` on load |
+| Menu order | the same declaration order, in `storage ra:dh order."<type>"` |
+| A dynamic property's type and flags | the marker, `data.property_types.<name>` |
+| A server-wide default | the settings `PropRow`, merged in at placement from `storage ra:settings global.props."<type>"` |
+| Who is an admin | the `ra.admin` player tag (server-settings access) |
+
+`channel`, `anchor_id`, `tag` and `entity_selector` are declared `text` on purpose: they are
 identifiers blocks compare as text, and turning a channel into a number is the 5.1.6 bug that
 stopped a vault matching its partner.
-
-All three registries are **configuration, not world state**. `ra:load` rewrites them on every
-load, unguarded. Guarding one on its own presence (`unless data storage ra:dh numeric`) is what
-once left upgraded worlds without the filter rows for good.
 
 ## Tool items
 

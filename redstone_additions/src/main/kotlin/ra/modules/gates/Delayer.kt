@@ -40,6 +40,9 @@ object Delayer {
 
 	fun Ra.registerDelayer() {
 		block(block)
+		properties(block) {
+			number("delay", min = 1, max = 1200)
+		}
 		pack.blockGive(block)
 		pack.blockRecipe(block, unlockedBy = Items.QUARTZ_BLOCK) {
 			pattern("   ", " CR", "   ")

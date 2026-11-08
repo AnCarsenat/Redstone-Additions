@@ -158,5 +158,11 @@ fun Ra.multiblock(spec: MultiblockSpec): MultiblockSpec {
 	check(!multiblockSpecsCompiled) { "multiblock '${spec.id}' registered after ra_lib_multiblock compiled its specs; register it from register(), not afterAllParts" }
 	require(multiblockSpecs.none { it.id == spec.id }) { "multiblock '${spec.id}' registered twice" }
 	multiblockSpecs += spec
+	// What ra_lib_multiblock's assembly writes on every structure marker (`properties:{enabled:1b,
+	// speed:1}`). `speed` is reserved: nothing reads it yet.
+	properties(spec.id) {
+		bool("enabled")
+		number("speed", min = 1, readonly = true)
+	}
 	return spec
 }

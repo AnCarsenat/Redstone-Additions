@@ -69,7 +69,11 @@ object FluidVault {
 	fun Ra.registerFluidVault() {
 		block(block)
 		wrenchCycle(block.id, WrenchCycle("Mode", "mode", cycleMode))
-		readonly(block.id, "transfer_rate")
+		properties(block) {
+			text("channel")
+			text("mode")
+			number("transfer_rate", min = 1, max = 10000, readonly = true)
+		}
 		pack.blockRegisterMessage(block)
 		pack.enderGive(block, item, """{text:" — pipe into it like a tank",color:"gray"}""")
 		pack.enderRecipe(block, item, RecipeCategory.MISC) {

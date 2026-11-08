@@ -41,7 +41,9 @@ object BlockPlacer {
 
 	fun Ra.registerBlockPlacer() {
 		block(block)
-		readonly(block.id, "cooldown")
+		properties(block) {
+			number("cooldown", min = 1, readonly = true)
+		}
 		pack.blockRegisterMessage(block)
 		pack.specGive(block, item)
 		pack.shapedRecipe(block.ns, block.id, item.recipeResult(), Unlock(Items.DISPENSER), count = null) {

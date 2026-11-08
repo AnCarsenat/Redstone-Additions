@@ -65,6 +65,10 @@ object MagicCrate {
 
 	fun Ra.registerMagicCrate() {
 		block(block)
+		properties(block) {
+			number("radius", min = 5, max = 32)
+			number("cooldown", min = 1, max = 1200)
+		}
 		pack.blockRegisterMessage(block)
 		pack.specGive(block, item)
 		pack.shapedRecipe(block.ns, block.id, item.recipeResult(), Unlock(Items.ENDER_PEARL), count = null) {

@@ -283,10 +283,15 @@ from the registry.
       [Developer Guide](developer-guide.md#block-skins).
 - [ ] In the module object: call `register<Block>()`, add the block's `tick` to the module
       `tick`, its `give` to `items/give_all`, its item to the module's `GiveBundle`.
-- [ ] Tools, if needed ([Tools and Registries](tools-and-registries.md)):
-      `ra.wrenchCycle(...)`, `ra.wrenchToggles += TagRoute(...)`, `ra.readonly(...)`. A new Data
-      Handler property name goes in `PROPERTIES` in `tools/datahandler/DataHandlerRegistry.kt`
-      (menu order), or `ra.dataHandlerProperties(...)`, which appends after that list.
+- [ ] `properties(block) { ... }` right after `block(block)`: every `data.properties` entry the
+      block reads or writes, with its type (`number(min, max)`, `bool`, `text`, `item`,
+      `list(of, max, pad)`) and flags (`readonly`, `adminOnly`, `visible`). Declaration order is
+      the Data Handler's menu order. Declare `properties(block) {}` for a block with none. The
+      build warns about any property name a block's functions use without declaring it, and
+      about every `dynamic(...)` declaration. See
+      [Property schemas](tools-and-registries.md#property-schemas).
+- [ ] Wrench rows, if needed ([Tools and Registries](tools-and-registries.md)):
+      `ra.wrenchCycle(...)`, `ra.wrenchToggles += TagRoute(...)`.
 - [ ] Settings defaults, if any: a row on the module's page in `ra/settings/pages/`
       ([Settings Internals](settings-internals.md)).
 - [ ] An advancement in `ra/advancements/` if the block belongs in the tab.

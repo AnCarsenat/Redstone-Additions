@@ -89,6 +89,10 @@ object Clock {
 
 	fun Ra.registerClock() {
 		block(block)                                       // placement handler + goggles route
+		properties(block) {                                // its settings: types, bounds, flags
+			number("cooldown", min = 2, max = 1200)
+			number("delay", readonly = true, visible = false)   // pre-5.1 name, folded into cooldown
+		}
 		pack.blockGive(block)
 		pack.blockRecipe(block, unlockedBy = Items.DAYLIGHT_DETECTOR) {
 			pattern("RCR", "SSS")
@@ -225,7 +229,8 @@ wants `nameY` around `0.7`. A missing value renders "N/A" in red; asking the wro
 5. `on_break` and `tick` (`blockOnBreak` / `blockTick` unless the block needs a variant).
 6. `goggles` with `gogglesHeader` + lines.
 7. Add it to the module's `load` / `tick` / `items/give_all` list and its `GiveBundle`.
-8. Wrench rows, read-only properties, Data Handler names: see
+8. `properties(block) { ... }`: every property, its type and flags (read-only, admin-only,
+   hidden) — see [Property schemas](tools-and-registries.md#property-schemas). Wrench rows: see
    [Tools and Registries](tools-and-registries.md).
 9. A settings `BlockRow` (and `PropRow` defaults) on the module's page: see [Settings](settings-internals.md).
 10. `./gradlew koreBuild`: the validator catches any call left dangling.

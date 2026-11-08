@@ -109,8 +109,7 @@ edit each other's files.** A part registers; the part that owns the shared outpu
 | `multiblockGoggles` | `TagRoute(multiblockTag, readout)` | `multiblockGoggles += …` | `ra:tools/goggles/draw_multiblock`, by Tools |
 | `wrenchCycles` | `type → [WrenchCycle(label, prop, fn)]` | `ra.wrenchCycle(type, rows…)` | `storage ra:wrench cyclables` in `ra:tools/wrench/init_registry`, by Tools |
 | `wrenchToggles` | `TagRoute(markerTag, toggle)` | `wrenchToggles += …` | the plain-RMB dispatch in `ra:tools/wrench/found_block`, by Tools |
-| `readonly` | `type → {props}` | `ra.readonly(type, props…)` | `storage ra:dh readonly` in `ra:tools/readonly/init_registry`, by Tools |
-| `dataHandlerProperties` | property names | `ra.dataHandlerProperties(…)` (append only) | `storage ra:dh registry` in `ra:tools/data_handler/init_registry`, by Tools |
+| `blockProperties` | `type → [PropSpec]` (name, type, bounds, flags), in menu order | `ra.properties(block) { … }` / `ra.properties("type") { … }` | `storage ra:dh types` / `order` / `known` in `ra:tools/data_handler/init_registry`, by Tools |
 | `bundles` | `GiveBundle(id, title, lore, ns, items)` | `bundles += GiveBundle(…)` | `ra:items/bundles/give_<id>_bundle` and `give_all`, by Hub |
 
 Order is preserved everywhere, because several of these become functions whose order is

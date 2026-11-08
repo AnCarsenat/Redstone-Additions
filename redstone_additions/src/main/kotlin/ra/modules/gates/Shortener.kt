@@ -39,6 +39,9 @@ object Shortener {
 
 	fun Ra.registerShortener() {
 		block(block)
+		properties(block) {
+			number("pulse", min = 1, max = 200)
+		}
 		pack.blockGive(block)
 		pack.blockRecipe(block, unlockedBy = Items.QUARTZ_BLOCK) {
 			pattern("   ", " C ", " R ")

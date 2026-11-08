@@ -72,8 +72,24 @@ Shift + right-click a block to open its settings in chat.
 | **[Cancel Input]** | Abandon an edit you started |
 | **[Refresh]** | Redraw the menu with current values |
 
+Each kind of block declares its settings and what type each one is, so the Handler always offers
+the right editor: a number prompt (with the allowed range) for numbers, **[Toggle]** for on/off
+settings, the book for text, **[Edit list]** for lists. What you type is checked before it is
+written: a number field refuses `abc` or a value outside its range, an on/off field accepts
+`true`/`false`, `on`/`off` or `1`/`0`, and a text field keeps exactly what you wrote, even if it
+looks like a number. A refused value leaves the block unchanged and says why.
+
 Some values are the block's own working numbers (a generator's output rate, a valve's rate) and
-cannot be changed: they show a crossed-out red `[Modify]`, with the reason when you hover it.
+cannot be changed: they show a crossed-out red `[Modify]`, with the reason when you hover it. A
+server can also keep a setting for admins (players with server-settings access): other players
+see it locked, and settings marked hidden do not appear for them at all.
+
+A value no block declares (one added by an add-on or with the Creative Data Handler) still gets
+a row when the Handler can tell its type from its value, marked with a yellow **⚠**; hover it to
+see what was guessed. Anything it cannot place is listed under **Undeclared**.
+
+A menu's buttons only work in the latest menu you were shown. Clicking one in an older menu (or
+one from before a `/reload`) redraws the menu instead of changing anything.
 
 If your inventory is full, the input book cannot be given — free a slot and try again.
 
@@ -98,10 +114,14 @@ connected. See [Transport Networks](transport-networks.md).
 
 - **Creative Data Handler** (`/function ra:tools/creative_data_handler/give`): edits anything,
   including locked values, adds and removes properties and shows a block's internal data. Meant
-  for building the pack, not for play.
-- The Wrench offers the rows each block registers (`ra:tools/wrench/init_registry`); locked values
-  are listed in `ra:tools/readonly/init_registry` and are hidden from the Wrench and locked in the
-  Data Handler. See [Tools and Registries](tools-and-registries.md).
+  for building the pack, not for play. Each operator has their own selected block, and the
+  `/data` commands its buttons suggest name that block by number, so they still reach it when
+  you finish typing later.
+- Each block type's settings, their types and their flags (read-only, admin-only, hidden) are
+  its **property schema**, written to `storage ra:dh types` at load. The Data Handler, the
+  Wrench and the Clipboard all follow it. See
+  [Tools and Registries](tools-and-registries.md#property-schemas) for the full rules, including
+  how the Data Handler guesses the type of an undeclared value.
 - The Clipboard copies only `data.properties`, never a block's internal state (`data.data`).
 - The Data Handler's menu buttons work through `/trigger ra.dh.action` and `/trigger ra.edit_type`,
   the Wrench menu through `/trigger ra.wrench`; these triggers are only enabled while you hold the

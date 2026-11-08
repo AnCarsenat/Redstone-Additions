@@ -49,6 +49,10 @@ object Boxer {
 
 	fun Ra.registerBoxer() {
 		block(block)
+		properties(block) {
+			text("input1")
+			text("output1")
+		}
 		pack.blockRegisterMessage(block)
 		pack.specGive(block, item)
 		pack.shapedRecipe(block.ns, block.id, item.recipeResult(), Unlock(Items.DROPPER), count = null) {

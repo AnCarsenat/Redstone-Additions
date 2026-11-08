@@ -66,6 +66,10 @@ object ItemVault {
 
 	fun Ra.registerItemVault() {
 		block(block)
+		properties(block) {
+			text("channel")
+			text("mode")
+		}
 		wrenchCycle(block.id, WrenchCycle("Mode", "mode", cycleMode))
 		pack.blockRegisterMessage(block)
 		pack.enderGive(block, item, """{text:" — set the channel with the Data Handler",color:"gray"}""")

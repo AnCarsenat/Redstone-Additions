@@ -41,6 +41,7 @@ object Spitter {
 
 	fun Ra.registerSpitter() {
 		block(block)
+		properties(block) {}
 		pack.blockRegisterMessage(block)
 		pack.specGive(block, item)
 		pack.shapedRecipe(block.ns, block.id, item.recipeResult(), Unlock(Items.DROPPER), count = null) {

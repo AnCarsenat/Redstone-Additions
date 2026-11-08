@@ -58,6 +58,9 @@ object BigTorch {
 
 	fun Ra.registerBigTorch() {
 		block(block)
+		properties(block) {
+			number("radius", min = 1, max = 100)
+		}
 		pack.blockRegisterMessage(block)
 		pack.specGive(block, item)
 		// Crafted from the Enchanted Coal Block (a barrier, see EnchantedCoal) and a stick. The beet

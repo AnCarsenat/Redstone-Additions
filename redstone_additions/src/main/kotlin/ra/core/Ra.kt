@@ -84,8 +84,11 @@ class Ra(val pack: DataPack) {
 	/** Properties neither tool may edit, keyed by `data.type`. */
 	val readonly = linkedMapOf<String, MutableSet<String>>()
 
-	/** Property names the Data Handlers list, in menu order. */
-	val dataHandlerProperties = linkedSetOf<String>()
+	/**
+	 * Properties the Data Handlers list, in menu order, each with its declared type. The tools
+	 * declare theirs centrally (`DataHandlerRegistry`); anything added here goes on the end.
+	 */
+	val dataHandlerProperties = linkedMapOf<String, ra.tools.datahandler.PropDecl>()
 
 	/** Bundles for `ra:give_all_items`, in hand-out order. */
 	val bundles = mutableListOf<GiveBundle>()
@@ -124,7 +127,8 @@ class Ra(val pack: DataPack) {
 		readonly.getOrPut(type) { linkedSetOf() } += props
 	}
 
-	fun dataHandlerProperties(vararg props: String) {
-		dataHandlerProperties += props
+	/** Adds Data Handler rows. A property cannot be added without its type. */
+	fun dataHandlerProperties(vararg props: ra.tools.datahandler.PropDecl) {
+		for (p in props) dataHandlerProperties.putIfAbsent(p.name, p)
 	}
 }

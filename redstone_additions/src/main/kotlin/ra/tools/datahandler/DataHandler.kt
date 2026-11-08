@@ -19,6 +19,7 @@ import ra.core.raw
 import ra.tools.REACH_4
 import ra.tools.ToolItems
 import ra.tools.datahandler.DataHandlerActions.registerDataHandlerActions
+import ra.tools.datahandler.DataHandlerSelection.claim
 import ra.tools.datahandler.DataHandlerSelection.registerDataHandlerSelection
 import ra.tools.datahandler.props.DataHandlerProps
 import ra.tools.datahandler.props.DataHandlerProps.registerDataHandlerProps
@@ -78,12 +79,8 @@ object DataHandler {
 		// A custom block was found. As its marker, at the marker.
 		pack.define(foundBlock) {
 			data(Storage.TEMP) { modify("dh_found", NbtByte(1)) }
-			tag(self()) { add(DataHandlerSelection.TARGET_TAG) }
 			// A number of its own the first time anybody selects it, so a player can point at it.
-			val mid = DataHandlerSelection.MID
-			raw("execute unless score @s $mid matches 1.. run scoreboard players add #next $mid 1")
-			raw("execute unless score @s $mid matches 1.. run scoreboard players operation @s $mid = #next $mid")
-			raw("scoreboard players operation #dh.found ${Obj.TEMP} = @s $mid")
+			claim()
 			raw("data modify storage ra:dh target set from entity @s UUID")
 			// Resolve the block's display name. Each block declares its own name in its goggles
 			// function; this used to be a hand-written tag-to-name table duplicated between the two
@@ -104,9 +101,15 @@ object DataHandler {
 			executeRun("as $TARGET", updateStorage)
 			function(showMenu)
 		}
-		// As the target marker.
+		// As the target marker. The name is resolved again rather than read from data.block_type,
+		// which markers do not carry: that read failed, so the menu kept whichever block name the
+		// last player to select anything had left in the shared storage.
 		pack.define(updateStorage) {
-			raw("data modify storage ra:dh block_type set from entity @s data.block_type")
+			function(Goggles.blockName)
+			raw("data modify storage ra:dh block_type set from storage ra:temp block_name")
+			// Cleared first: a block with no properties must not show the previous block's.
+			raw("data remove storage ra:dh properties")
+			raw("data remove storage ra:dh internal_data")
 			raw("data modify storage ra:dh properties set from entity @s data.properties")
 			raw("data modify storage ra:dh internal_data set from entity @s data.data")
 		}

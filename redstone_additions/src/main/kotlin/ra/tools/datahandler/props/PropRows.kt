@@ -16,10 +16,15 @@ internal object PropRows {
 	val rowString = tool("data_handler/props/row_string")
 	val rowItem = tool("data_handler/props/row_item")
 	val rowLocked = tool("data_handler/props/row_locked")
+	val rowCompound = tool("data_handler/props/row_compound")
 
-	/** `  name: [value] ` -- the part every row shares; [valueColor] is gray on a locked row. */
+	/**
+	 * `  name: [value] ` -- the part every row shares; [valueColor] is gray on a locked row. A row
+	 * whose type was guessed rather than declared starts with a yellow `⚠ ` ($(warn), "" otherwise)
+	 * that names the guess ($(guess)) on hover.
+	 */
 	private fun head(valueColor: String = "green") =
-		"""{text:"  $(name): ",color:"white"},{text:"[",color:"dark_gray"},{nbt:"properties.$(name)",storage:"ra:dh",color:"$valueColor"},{text:"]",color:"dark_gray"},{text:" "}"""
+		"""{text:"  "},{text:"$(warn)",color:"yellow",hover_event:{action:"show_text",value:[{text:"Undeclared type",color:"yellow"},{text:" — guessed $(guess) from the value.\nDeclare it in DataHandlerRegistry.",color:"gray"}]}},{text:"$(name): ",color:"white"},{text:"[",color:"dark_gray"},{nbt:"properties.$(name)",storage:"ra:dh",color:"$valueColor"},{text:"]",color:"dark_gray"},{text:" "}"""
 
 	private fun button(label: String, hover: String, color: String = "yellow", action: String = "action") =
 		"""{text:"$label",color:"$color",click_event:{action:"run_command",command:"/trigger ra.dh.action set $($action)"},hover_event:{action:"show_text",value:"$hover"}}"""
@@ -47,6 +52,14 @@ internal object PropRows {
 			rowItem, head(), """{text:"item",color:"aqua"}""", """{text:" "}""",
 			button("[Modify]", "Type an item id in the input book"), """{text:" "}""",
 			button("[Set from hand]", "Copy the id of the item you are holding", color = "aqua", action = "hand_action"),
+		)
+
+		// A compound: shown, with no editor. There is no safe way to type one in (see DataHandlerList
+		// for what a typed list needs checking for), so it is left to the Creative Data Handler.
+		// The macro line needs a variable, and $(name) is in head().
+		row(
+			rowCompound, head(), """{text:"compound",color:"aqua"}""", """{text:" "}""",
+			"""{text:"[Modify]",color:"dark_gray",strikethrough:true,hover_event:{action:"show_text",value:"A compound cannot be edited here. Use the Creative Data Handler."}}""",
 		)
 
 		// A field the block does not let a survival player change.

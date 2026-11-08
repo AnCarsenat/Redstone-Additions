@@ -4,6 +4,9 @@ import io.github.ayfri.kore.arguments.types.resources.FunctionArgument
 import ra.core.Ra
 import ra.core.define
 import ra.core.raw
+import ra.tools.datahandler.DataHandlerRegistry
+import ra.tools.datahandler.DataHandlerSelection
+import ra.tools.datahandler.PropType
 import ra.tools.tool
 
 /**
@@ -15,12 +18,7 @@ import ra.tools.tool
  */
 internal class CdhProp(
 	val name: String,
-	/** Shown type and its colour (`int`/blue, `str`/green...). */
-	val type: String,
-	val typeColor: String,
 	val valueColor: String,
-	/** A string value: the suggested command opens a quote. */
-	val quoted: Boolean = false,
 	/** Hover on [Modify] (or on the value, for [clickValue] rows). */
 	val hover: String? = null,
 	/** Shown right after the value, inside the brackets (`%`). */
@@ -31,38 +29,62 @@ internal class CdhProp(
 	val clickValue: Boolean = false,
 ) {
 	val show: FunctionArgument = tool("creative_data_handler/props/show_$name")
+
+	/** The type shown, from the property's declaration -- one list for both Data Handlers. */
+	val decl = requireNotNull(DataHandlerRegistry.declOf(name)) { "Creative Data Handler row $name has no declared type" }
+
+	/** Shown type and its colour. */
+	val type get() = when (decl.type) {
+		PropType.NUMBER -> "int"
+		PropType.TEXT -> "string"
+		else -> decl.type.id
+	}
+	val typeColor get() = when (decl.type) {
+		PropType.NUMBER -> "blue"
+		PropType.BOOL -> "light_purple"
+		PropType.LIST -> "aqua"
+		else -> "green"
+	}
+
+	/** A text value: the suggested command opens a quote. */
+	val quoted get() = decl.type == PropType.TEXT || decl.type == PropType.ITEM
 }
 
 internal object CdhProps {
-	private const val TARGET = "@e[type=marker,tag=ra.cdh_target,limit=1]"
+	/** The player's selected block, for the rows that read the marker itself. */
+	private const val TARGET = DataHandlerSelection.TARGET
+
+	/** The same block by number, `{mid}`: a suggested command still finds it when typed later. */
+	private val BY_MID = DataHandlerSelection.byMid("\$(mid)")
 
 	val all = listOf(
-		CdhProp("chance", "int", "blue", "gold", unit = "%"),
-		CdhProp("channel", "string", "green", "gold", quoted = true),
-		CdhProp("cooldown", "int", "blue", "gold", fromEntity = true),
-		CdhProp("delay", "int", "blue", "gold"),
-		CdhProp("distance", "int", "blue", "gold"),
-		CdhProp("enabled", "bool", "light_purple", "light_purple"),
-		CdhProp("entity_selector", "str", "green", "green", quoted = true),
-		CdhProp("extend", "int", "blue", "gold"),
-		CdhProp("gate", "str", "green", "green", quoted = true, clickValue = true, hover = "Click to edit (AND, OR, NOT, XOR, NAND, NOR, XNOR)"),
-		CdhProp("gate_type", "str", "green", "green", quoted = true, clickValue = true, hover = "Click to edit value"),
-		CdhProp("inverted", "bool", "light_purple", "light_purple", hover = "Click to edit (true/false)"),
-		CdhProp("message_block", "str", "green", "green", quoted = true),
-		CdhProp("mode", "str", "green", "green", quoted = true),
-		CdhProp("power", "int", "blue", "gold"),
-		CdhProp("pulse", "int", "blue", "gold", hover = "Click to edit value"),
-		CdhProp("range", "int", "blue", "gold", hover = "Click to edit value"),
-		CdhProp("tag", "str", "green", "green", quoted = true, hover = "Click to edit value"),
-		CdhProp("target", "str", "green", "green", quoted = true, hover = "Click to edit value"),
+		CdhProp("chance", "gold", unit = "%"),
+		CdhProp("channel", "gold"),
+		CdhProp("cooldown", "gold", fromEntity = true),
+		CdhProp("delay", "gold"),
+		CdhProp("distance", "gold"),
+		CdhProp("enabled", "light_purple"),
+		CdhProp("entity_selector", "green"),
+		CdhProp("extend", "gold"),
+		CdhProp("gate", "green", clickValue = true, hover = "Click to edit (AND, OR, NOT, XOR, NAND, NOR, XNOR)"),
+		CdhProp("gate_type", "green", clickValue = true, hover = "Click to edit value"),
+		CdhProp("inverted", "light_purple", hover = "Click to edit (true/false)"),
+		CdhProp("message_block", "green"),
+		CdhProp("mode", "green"),
+		CdhProp("power", "gold"),
+		CdhProp("pulse", "gold", hover = "Click to edit value"),
+		CdhProp("range", "gold", hover = "Click to edit value"),
+		CdhProp("tag", "green", hover = "Click to edit value"),
+		CdhProp("target", "green", hover = "Click to edit value"),
 	).associateBy { it.name }
 
+	/** `{mid}`: one row. */
 	fun Ra.registerCdhProps(removeProperty: FunctionArgument) {
-		for (p in all.values) pack.define(p.show) { raw("tellraw @s ${row(p, removeProperty)}") }
+		for (p in all.values) pack.define(p.show) { raw("\$tellraw @s ${row(p, removeProperty)}") }
 	}
 
 	private fun row(p: CdhProp, removeProperty: FunctionArgument): String {
-		val suggest = """click_event:{action:"suggest_command",command:"/data modify entity $TARGET data.properties.${p.name} set value ${if (p.quoted) "\\\"" else ""}"}"""
+		val suggest = """click_event:{action:"suggest_command",command:"/data modify entity $BY_MID data.properties.${p.name} set value ${if (p.quoted) "\\\"" else ""}"}"""
 		val hover = p.hover?.let { """,hover_event:{action:"show_text",value:"$it"}""" } ?: ""
 		val source = if (p.fromEntity) """nbt:"data.properties.${p.name}",entity:"$TARGET"""" else """nbt:"properties.${p.name}",storage:"ra:cdh""""
 		val value = if (p.clickValue) """{$source,color:"${p.valueColor}",$suggest$hover}""" else """{$source,color:"${p.valueColor}"}"""

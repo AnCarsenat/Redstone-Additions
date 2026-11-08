@@ -31,6 +31,10 @@ import ra.tools.tool
  *     click -- cannot leave its block selected;
  *   - a pending edit is `pend.r<id>` = {name, kind, mid}, keyed by the input request the Handler
  *     opened for it (ra.dh.req), and carries the block it was asked about.
+ *
+ * The Creative Data Handler uses the same selection: one "selected block" per player, whichever
+ * of the two tools picked it. Its chat buttons that suggest a `/data` command name the block by
+ * its number ([byMid]), so a command typed later still lands on that block and no other.
  */
 object DataHandlerSelection {
 	/** On a marker: its Data Handler number. `#next ra.dh.mid` is the allocator. */
@@ -52,6 +56,20 @@ object DataHandlerSelection {
 	const val TARGET = "@e[type=marker,tag=$SELECTED_TAG,limit=1]"
 
 	val select = tool("data_handler/select")
+
+	/** A selector for the marker numbered [mid] (a literal or a macro `$(mid)`). */
+	fun byMid(mid: String) = "@e[type=marker,tag=$TARGET_TAG,scores={$MID=$mid},limit=1]"
+
+	/**
+	 * As a block's marker that a player just found: tag it, give it a number if it has none, and
+	 * leave that number in `#dh.found ra.temp` for the player's [SEL].
+	 */
+	fun Function.claim() {
+		raw("tag @s add $TARGET_TAG")
+		raw("execute unless score @s $MID matches 1.. run scoreboard players add #next $MID 1")
+		raw("execute unless score @s $MID matches 1.. run scoreboard players operation @s $MID = #next $MID")
+		raw("scoreboard players operation #dh.found ${Obj.TEMP} = @s $MID")
+	}
 
 	val pendingSave = tool("data_handler/pending/save")
 	private val pendingSaveAt = tool("data_handler/pending/save_at")

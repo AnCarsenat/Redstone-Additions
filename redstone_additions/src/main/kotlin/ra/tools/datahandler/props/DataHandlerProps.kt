@@ -10,6 +10,8 @@ import net.benwoodworth.knbt.NbtByte
 import ra.core.Obj
 import ra.core.Ra
 import ra.core.Storage
+import ra.core.Tag
+import ra.tools.datahandler.PropType
 import ra.core.callWith
 import ra.core.define
 import ra.core.executeRun
@@ -18,6 +20,8 @@ import ra.core.raw
 import ra.tools.datahandler.DataHandler
 import ra.tools.datahandler.DataHandlerActions
 import ra.tools.datahandler.props.DataHandlerList.registerDataHandlerList
+import ra.tools.datahandler.props.DataHandlerTypes.registerDataHandlerTypes
+import ra.tools.datahandler.props.DataHandlerTypes.typeOfProbe
 import ra.tools.datahandler.props.PropRows.registerPropRows
 import ra.tools.tool
 
@@ -34,8 +38,12 @@ object DataHandlerProps {
 	val toggle = tool("data_handler/props/toggle")
 	val askNumber = tool("data_handler/props/ask_number")
 	val askText = tool("data_handler/props/ask_text")
+	val askTypedNumber = tool("data_handler/props/ask_typed_number")
 	val writeNumber = tool("data_handler/props/write_number")
 	val writeText = tool("data_handler/props/write_text")
+
+	/** #dh.type -> the word a guessed row and the debug line use. */
+	private val GUESS = listOf(0 to "text", 1 to "number", 2 to "bool", 3 to "list", 5 to "compound")
 
 	internal const val TARGET = ra.tools.datahandler.DataHandlerSelection.TARGET
 	internal const val PREFIX = """{text:"[Data Handler] ",color:"gold"}"""
@@ -44,7 +52,8 @@ object DataHandlerProps {
 		// Render one registry entry, then the rest. As the player.
 		pack.define(next) {
 			raw("execute unless data storage ra:dh iter[0] run return 0")
-			raw("data modify storage ra:dh q set value {}")
+			// warn / guess are filled in by render for a guessed type; every row reads them.
+			raw("data modify storage ra:dh q set value {warn:\"\",guess:\"\"}")
 			raw("data modify storage ra:dh q.name set from storage ra:dh iter[0]")
 			raw("execute store result storage ra:dh q.action int 1 run scoreboard players get #dh.act ${Obj.TEMP}")
 			callWith(render, "storage ra:dh q")
@@ -59,33 +68,30 @@ object DataHandlerProps {
 		// so a future rule has somewhere to live.
 		pack.define(redact) { raw("data modify storage ra:dh display_props set from storage ra:dh properties") }
 
-		// {name}: what type is this property? Result in #dh.type ra.temp.
-		//   0 string   1 number   2 bool   3 list   4 item id
-		//
-		// There is no "type of" operator, so each answer is a test only that type passes.
-		//
-		// The obvious test -- does `data get` work on it -- is worthless: `data get` succeeds on a
-		// string too, returning its *length*. Reading it as success-means-number classified every
-		// string as a number, so the editor asked for a number and wrote one, which is how channels
-		// ended up as ints that no string comparison could match.
+		// {name}: what type is this property? Result in #dh.type ra.temp:
+		//   0 text   1 number   2 bool   3 list   4 item id   5 compound (guessed only)
+		// #dh.decl is 1 when the type is declared (storage ra:dh types, from init_registry) and 0
+		// when it was guessed from the value. A declaration always wins: it is the one source that
+		// an earlier bad write cannot have corrupted -- a delay that somehow became the string "5"
+		// is still a number. For a declared number, #dh.min / #dh.max are its bounds (0..9999 when
+		// it declares none).
 		pack.define(probe) {
-			scoreboard.players.set(literal("#dh.type"), Obj.TEMP, 1)
-			// `data modify ... set string` is the real test: it only accepts a string source and
-			// fails on anything else.
-			raw("\$execute store success score #dh.probe ${Obj.TEMP} run data modify storage ra:dh probe set string storage ra:dh properties.\$(name)")
-			raw("execute if score #dh.probe ${Obj.TEMP} matches 1 run scoreboard players set #dh.type ${Obj.TEMP} 0")
-			// A list answers to [0]; a string does not, so this cannot catch one by mistake.
-			raw("\$execute if data storage ra:dh properties.\$(name)[0] run scoreboard players set #dh.type ${Obj.TEMP} 3")
-			// Bytes last: not a string, no [0], so whatever it is has fallen through to number.
-			raw("\$execute if data storage ra:dh properties{\$(name):0b} run scoreboard players set #dh.type ${Obj.TEMP} 2")
-			raw("\$execute if data storage ra:dh properties{\$(name):1b} run scoreboard players set #dh.type ${Obj.TEMP} 2")
-			// A name the registry calls numeric is numeric, whatever is currently sitting in it. This
-			// is the only source here that cannot have been corrupted by an earlier bad write; see
-			// init_registry for why the list lives there and what is kept off it on purpose.
-			raw("\$execute if data storage ra:dh {numeric:[\"\$(name)\"]} run scoreboard players set #dh.type ${Obj.TEMP} 1")
-			// An item id last, so it wins over the string it would otherwise probe as. Same reasoning
-			// as `numeric`: the registry knows what the field means, the value sitting in it does not.
-			raw("\$execute if data storage ra:dh {item_names:[\"\$(name)\"]} run scoreboard players set #dh.type ${Obj.TEMP} 4")
+			val t = Obj.TEMP
+			raw("scoreboard players set #dh.type $t 0")
+			raw("scoreboard players set #dh.min $t 0")
+			raw("scoreboard players set #dh.max $t 9999")
+			raw("\$execute store success score #dh.decl $t if data storage ra:dh types.\"\$(name)\".type")
+			for (type in PropType.entries)
+				raw("\$execute if data storage ra:dh types.\"\$(name)\"{type:\"${type.id}\"} run scoreboard players set #dh.type $t ${type.code}")
+			raw("\$execute if data storage ra:dh types.\"\$(name)\".min store result score #dh.min $t run data get storage ra:dh types.\"\$(name)\".min")
+			raw("\$execute if data storage ra:dh types.\"\$(name)\".max store result score #dh.max $t run data get storage ra:dh types.\"\$(name)\".max")
+			raw("execute if score #dh.decl $t matches 1 run return 1")
+
+			// No declaration: guess from the value, as DataHandlerTypes describes. Its tests are
+			// typed -- `data modify ... set string` is not one, since it accepts a number too.
+			raw("data remove storage ra:dh probe")
+			raw("\$data modify storage ra:dh probe set from storage ra:dh properties.\$(name)")
+			typeOfProbe("#dh.type")
 			data(Storage.DH) { remove("probe") }
 		}
 
@@ -157,17 +163,26 @@ object DataHandlerProps {
 			raw("""${'$'}tellraw @s [$PREFIX,{text:"Enter a new number for ",color:"gray"},{text:"$(name)",color:"yellow"},{text:".",color:"gray"}]""")
 			function(DataHandlerActions.requestNumber)
 		}
+		// A number the registry does not declare: typed in the book, so it may be negative, large or
+		// a decimal, and parsed and checked on the way back (DataHandlerTypes.writeTypedNumber).
+		pack.define(askTypedNumber) {
+			raw("""${'$'}tellraw @s [$PREFIX,{text:"Write a number for ",color:"gray"},{text:"$(name)",color:"yellow"},{text:" in the input book.",color:"gray"}]""")
+			function(DataHandlerActions.requestText)
+		}
 		pack.define(askText) {
 			raw("""${'$'}tellraw @s [$PREFIX,{text:"Write the new value for ",color:"gray"},{text:"$(name)",color:"yellow"},{text:" in the input book.",color:"gray"}]""")
 			function(DataHandlerActions.requestText)
 		}
 
-		// {name}: the number and text writes. A list goes through DataHandlerList, which checks it first.
+		// {name}: the number-form and text writes. Text is copied, never parsed, so a number typed
+		// for a text property stays text. A list goes through DataHandlerList, a number or flag typed
+		// in the book through DataHandlerTypes; both check the value first.
 		pack.define(writeNumber) { raw("\$data modify entity $TARGET data.properties.\$(name) set from storage ra:input consume.number") }
 		pack.define(writeText) { raw("\$data modify entity $TARGET data.properties.\$(name) set from storage ra:input consume.text") }
 
 		registerRender()
 		registerDataHandlerList()
+		registerDataHandlerTypes()
 		registerPropRows()
 	}
 
@@ -188,7 +203,15 @@ object DataHandlerProps {
 		scoreboard.players.add(literal("#dh.shown"), Obj.TEMP, 1)
 		callWith(probe, "storage ra:dh q")
 
-		for ((type, row) in listOf(1 to PropRows.rowNumber, 2 to PropRows.rowBool, 3 to PropRows.rowList, 0 to PropRows.rowString))
+		// No declared type: the row shows its guess behind a yellow warning sign, and debug players
+		// are told which property on which block it was. A type is declared in DataHandlerRegistry.
+		raw("execute if score #dh.decl ${Obj.TEMP} matches 0 run data modify storage ra:dh q.warn set value \"⚠ \"")
+		for ((code, label) in GUESS)
+			raw("execute if score #dh.decl ${Obj.TEMP} matches 0 if score #dh.type ${Obj.TEMP} matches $code run data modify storage ra:dh q.guess set value \"$label\"")
+		raw("""execute if score #dh.decl ${Obj.TEMP} matches 0 run tellraw @s[tag=${Tag.DEBUG}] [{text:"[RA debug] ",color:"dark_gray"},{text:"Data Handler: ",color:"gray"},{nbt:"q.name",storage:"ra:dh",color:"yellow"},{text:" on ",color:"gray"},{nbt:"block_type",storage:"ra:dh",color:"gold"},{text:" has no declared type; guessed ",color:"gray"},{nbt:"q.guess",storage:"ra:dh",color:"aqua"},{text:".",color:"gray"}]""")
+
+		val rows = listOf(1 to PropRows.rowNumber, 2 to PropRows.rowBool, 3 to PropRows.rowList, 0 to PropRows.rowString, 5 to PropRows.rowCompound)
+		for ((type, row) in rows)
 			executeRun("if score #dh.type ${Obj.TEMP} matches $type", row, "with storage ra:dh q")
 
 		// The item row carries two buttons, and a macro is substituted from one compound, so the

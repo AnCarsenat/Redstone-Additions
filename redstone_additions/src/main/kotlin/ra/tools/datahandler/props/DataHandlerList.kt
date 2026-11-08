@@ -20,16 +20,13 @@ import ra.tools.tool
  * a list. It used to be pasted straight onto the block, so anything that parsed was stored: a
  * compound, a number, a list of the wrong kind. `{a:1}` typed into a Teleport Anchor's `targets`
  * replaced its table, and the anchor's `targets[$(i)]` lookup broke on it. Now the text is parsed
- * into storage ra:dh list_in, and only a list that passes every check below is copied over:
+ * (by DataHandlerTypes.parse, the one place typed text meets SNBT) into storage ra:dh list_in, and only a list that passes every check below is copied over:
  *   - it must be a list;
  *   - when the property holds a list of text now, every entry must be text;
  *   - a Teleport Anchor's `targets` is fifteen text rows: at most fifteen typed, the rest padded
  *     with "" (no target), as ra_ender:tools/anchor/set_table does.
  */
 object DataHandlerList {
-	/** `{name, text}`: parse the text into storage ra:dh list_in. Only this line, so a parse failure loses nothing else. */
-	private val parse = tool("data_handler/props/write_list")
-
 	/** As the player, with storage ra:dh q = {name, text}. Returns 1 when written, 0 when refused. */
 	val apply = tool("data_handler/props/list/apply")
 
@@ -50,13 +47,15 @@ object DataHandlerList {
 	private const val EXAMPLE = """{text:"[\"A\",\"B\"]",color:"yellow"}"""
 
 	fun Ra.registerDataHandlerList() {
-		pack.define(parse) { raw("\$data modify storage ra:dh list_in set value \$(text)") }
-
 		pack.define(apply) {
 			// 0 fine, 1 not a list (or unreadable), 3 an entry that is not text, 4 too long.
 			raw("scoreboard players set #dh.bad $T 0")
 			raw("data remove storage ra:dh list_in")
-			callWith(parse, "storage ra:dh q")
+			// The shared parse (DataHandlerTypes.parse): one line, so a bad text fails only that call.
+			raw("data remove storage ra:dh parsed")
+			callWith(DataHandlerTypes.parse, "storage ra:dh q")
+			raw("data modify storage ra:dh list_in set from storage ra:dh parsed")
+			raw("data remove storage ra:dh parsed")
 			raw("execute unless data storage ra:dh list_in run scoreboard players set #dh.bad $T 1")
 
 			// `insert` only works on a list, empty or not, of any element type; the probe entry is

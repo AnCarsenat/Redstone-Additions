@@ -61,6 +61,9 @@ internal class SettingsGenerator(private val pack: DataPack, private val pages: 
 	/** (page id, title) of every page with operator rows, in order. Its index is `ra.settings.apage`. */
 	val adminIndex = mutableListOf<Pair<String, String>>()
 
+	/** Ids of the pages that are a subcategory of another, kept off the index. */
+	val subcategories = pages.filter { it.parent != null }.map { it.id }.toSet()
+
 	/** Pages as the /trigger menu sees them: user rows only. */
 	val menuPages = mutableListOf<Page>()
 
@@ -68,6 +71,12 @@ internal class SettingsGenerator(private val pack: DataPack, private val pages: 
 	val userSeed = mutableListOf<ScopedRow>()
 
 	fun generate() {
+		for (page in pages) page.parent?.let { parent ->
+			val p = requireNotNull(pages.find { it.id == parent }) { "page ${page.id}: parent page $parent does not exist" }
+			require(p.parent == null) { "page ${page.id}: subcategories are one level deep, and $parent is itself one" }
+			require(hasAdminRows(p)) { "page ${page.id}: parent page $parent has no server rows, so it has no page to list it on" }
+			require(hasAdminRows(page)) { "subcategory ${page.id} has no server rows" }
+		}
 		for (page in pages) generatePage(page)
 		Registries(pack, this).write()
 	}
@@ -141,6 +150,8 @@ internal class SettingsGenerator(private val pack: DataPack, private val pages: 
 		}
 	}
 
+	private fun hasAdminRows(page: Page) = page.rows.any { !(it is ScopedRow && it.scope == Scope.USER) }
+
 	/** `execute unless data storage ra:settings <path> run data modify storage ra:settings <path> set value <v>`. */
 	private fun seed(path: String, value: DataModifyOperation.() -> List<Argument>) {
 		defaults += {
@@ -160,16 +171,28 @@ internal class SettingsGenerator(private val pack: DataPack, private val pages: 
 		val valueLines = values.flatMap { AdminShow.lines(it, page.id, actions) }
 		val needsRule = blocks.isNotEmpty() && values.any { it !is NoteRow && it !is SepRow }
 		val blockLines = blocks.flatMap { AdminShow.lines(it, page.id, actions) }
-		val back = Text.btn("Back", AdminTree.show, "gray", "Back to all server settings", actions.act(AdminTree.show, nav = true))
+		// Subcategories are listed on their parent's page, after its own rows.
+		val children = pages.filter { it.parent == page.id }.map { child ->
+			val show = AdminTree.pageShow(child.id)
+			Text.btn(child.title, show, "yellow", "Open ${child.title}", actions.act(show, nav = true))
+		}
+		val parent = page.parent?.let { id -> pages.first { it.id == id } }
+		val back = if (parent == null) Text.btn("Back", AdminTree.show, "gray", "Back to all server settings", actions.act(AdminTree.show, nav = true))
+		else Text.btn("Back", AdminTree.pageShow(parent.id), "gray", "Back to ${parent.title}", actions.act(AdminTree.pageShow(parent.id), nav = true))
+		val title = if (parent == null) page.title else "${parent.title} › ${page.title}"
 
 		pack.define(AdminTree.pageShow(page.id)) {
 			// Records which page this is, so an action can redraw it afterwards. Per player,
 			// because two operators can be on different pages at once.
 			scoreboard.players.set(self(), SettingsObjectives.APAGE, index)
-			raw("tellraw @s ${Text.bar(page.title)}")
+			raw("tellraw @s ${Text.bar(title)}")
 			valueLines.forEach { it() }
 			if (needsRule) raw("""tellraw @s [{text:"  ———— blocks ————",color:"dark_gray"}]""")
 			blockLines.forEach { it() }
+			if (children.isNotEmpty()) {
+				raw("""tellraw @s [{text:"  ———— subcategories ————",color:"dark_gray"}]""")
+				raw("tellraw @s [{text:\"  \"},${children.joinToString(Text.SPACE)}]")
+			}
 			raw("""tellraw @s [{text:""}]""")
 			raw(Text.buttonLine(back))
 		}

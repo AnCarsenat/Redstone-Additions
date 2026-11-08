@@ -84,11 +84,14 @@ object ItemPipeTransfer {
 		raw("data modify storage ra:temp check_id set from storage ra:temp pipe_item.id")
 		raw("execute store success score @s ${Obj.TEMP} run data modify storage ra:temp check_id set from storage ra:temp filter_item")
 
-		// Different item: not ours to divert.
-		raw("execute if score @s ${Obj.TEMP} matches 1 run return 0")
+		// Not ours to divert: a different item, or with `invert` on, the filtered item itself.
+		// (Matched from the root: same as `data.properties{invert:1b}` in game, and the form the
+		// minecode emulator can check.)
+		raw("execute unless data entity @s {data:{properties:{invert:1b}}} if score @s ${Obj.TEMP} matches 1 run return 0")
+		raw("execute if data entity @s {data:{properties:{invert:1b}}} if score @s ${Obj.TEMP} matches 0 run return 0")
 
-		// Match. Try the four sides around the pipe's axis; `sx` is the way back to the pipe from
-		// that side. ALL RELATIVE: the marker of an upright pipe is pitched +-90, so `^ ^1 ^` is a
+		// Diverted (a match, or a non-match when inverted). Try the four sides around the pipe's
+		// axis; `sx` is the way back to the pipe from that side. ALL RELATIVE: the marker of an upright pipe is pitched +-90, so `^ ^1 ^` is a
 		// horizontal side there. The old mix of absolute `~ ~+-1 ~` and relative `^+-1 ^ ^` tested the
 		// pipe's own axis twice on an upright pipe and never two of its sides. The back (`^ ^ ^-1`) is
 		// not a side: it is the feeder, and diverting into it sent filtered stacks back where they

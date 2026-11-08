@@ -13,6 +13,13 @@ object Goggles {
 	val give = ref(Ns.RA, "tools/goggles/give")
 	val scanRange = ref(Ns.RA, "tools/goggles/scan_range")
 
+	/**
+	 * Fake player on `ra.temp`: 1 when blocks may draw the item they filter for above their
+	 * readout (the `goggles_filter_preview` server setting). Set by goggles/tick just before the
+	 * draws of each redraw; read only inside a block's goggles function.
+	 */
+	const val FILTER_PREVIEW = "#goggles_fprev"
+
 	/** Built from `Ra.goggles`: runs the readout of whichever block this marker is. */
 	val drawBlock = ref(Ns.RA, "tools/goggles/draw_block")
 

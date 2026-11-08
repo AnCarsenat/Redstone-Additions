@@ -81,6 +81,12 @@ internal val m6_0_0 = migration("6.0.0", "6.0.1") {
 		raw("execute unless data entity @s data.properties.cooldown run data modify entity @s data.properties.cooldown set value 20")
 	}
 
+	// Item Pipe: `invert` is new in 6.0.1 and placement seeds it 0b. The Data Handler only draws a
+	// row for a property the block carries, so an older pipe gets it too (off: unchanged behaviour).
+	entity("item_pipe") {
+		raw("execute unless data entity @s data.properties.invert run data modify entity @s data.properties.invert set value 0b")
+	}
+
 	// Custom blocks were re-centred every tick up to 6.0.0 though nothing moves them; placement
 	// puts the marker at the centre. One an older version left off-centre is straightened once.
 	// Was a sweep over the loaded markers in ra:load.

@@ -9,7 +9,18 @@ import ra.core.Ns
  * generator in `ra.settings.gen` turns it into the menu registry, the defaults and the operator
  * function tree, so there is no list anywhere that has to be kept in step with it.
  */
-data class Page(val id: String, val title: String, val namespace: Ns, val rows: List<Row>)
+data class Page(
+	val id: String,
+	val title: String,
+	val namespace: Ns,
+	val rows: List<Row>,
+	/**
+	 * The id of the page this one is a SUBCATEGORY of, or null for a top-level page. A subcategory
+	 * is not on the server settings index: its parent's page lists it under "Subcategories", and
+	 * its Back returns to the parent. The parent must be a page with server rows of its own.
+	 */
+	val parent: String? = null,
+)
 
 /**
  * Scope decides how a setting is REACHED, not just who may change it.

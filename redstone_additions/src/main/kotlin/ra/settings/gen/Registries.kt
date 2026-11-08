@@ -112,7 +112,7 @@ internal class Registries(private val pack: DataPack, private val gen: SettingsG
 	 * ra_settings:admin_grant.
 	 */
 	private fun writeAdminIndex() {
-		val pageButtons = gen.adminIndex.map { (id, title) ->
+		val pageButtons = gen.adminIndex.filter { (id, _) -> id !in gen.subcategories }.map { (id, title) ->
 			val show = AdminTree.pageShow(id)
 			Text.btn(title, show, "yellow", "Open $title", gen.actions.act(show, nav = true))
 		}

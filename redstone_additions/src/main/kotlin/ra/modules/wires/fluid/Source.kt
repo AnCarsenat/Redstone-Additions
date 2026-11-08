@@ -97,6 +97,10 @@ object Source : PackPart {
 			// Internal: record the entry if the block here matches it.
 
 			raw("\$execute unless block ~ ~ ~ \$(match) run return 0")
+			// A scan asked for one state (storage ra:wires probe_state) skips the others, so a Gas
+			// Pump beside water and a campfire takes the smoke, and a Liquid Pump or Drain in the
+			// same spot takes the water instead of stopping at the campfire.
+			raw("\$execute if data storage ra:wires probe_state unless data storage ra:wires {probe_state:\"\$(state)\"} run return 0")
 
 			data(Storage.WIRES) { modify("found", Storage.WIRES, "probe.cur") }
 			data(Storage.WIRES) { modify("found.dx", Storage.WIRES, "probe.dx") }
@@ -107,7 +111,9 @@ object Source : PackPart {
 		pack.define(Source.scan) {
 			// Find a drainable world source in one of the six adjacent blocks.
 			// Context: at the node position.
-			// Output: storage ra:wires found = {match,medium,volume,drained,dx,dy,dz}
+			// Input (optional): storage ra:wires probe_state, "liquid" or "gas" -- only sources of
+			// that state count.
+			// Output: storage ra:wires found = {match,medium,state,volume,drained,[keep],dx,dy,dz}
 			// cleared when nothing is adjacent.
 			//
 			// The old pump only ever looked at ^ ^ ^1 — local coordinates, on a marker placed

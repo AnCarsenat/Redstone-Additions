@@ -74,6 +74,13 @@ internal val m6_0_0 = migration("6.0.0", "6.0.1") {
 		raw("tag @s remove ra.ender.anchor_checked")
 	}
 
+	// Block Breaker and Block Placer: `cooldown` became a real (admin-only) setting in 6.0.1, read
+	// with a default of 20; placement seeds it. One placed earlier gets the same 20, so the Data
+	// Handler shows the value it runs at. A value an older version left there is kept and used.
+	for (type in listOf("block_breaker", "block_placer")) entity(type) {
+		raw("execute unless data entity @s data.properties.cooldown run data modify entity @s data.properties.cooldown set value 20")
+	}
+
 	// Custom blocks were re-centred every tick up to 6.0.0 though nothing moves them; placement
 	// puts the marker at the centre. One an older version left off-centre is straightened once.
 	// Was a sweep over the loaded markers in ra:load.

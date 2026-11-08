@@ -157,8 +157,11 @@ object Drain : PackPart {
 			executeRun("if score @s ra.facing matches 0..1", DrainItems.drainItems)
 			raw("execute if score @s ra.facing matches 0..1 unless data entity @s data.status{drain_state:\"nothing_to_empty\"} run return 0")
 
-			// 3. Take a world source in.
+			// 3. Take a world source in. Liquids only: a drain beside a lit campfire must not pull
+			// its smoke into a liquid network.
+			raw("data modify storage ra:wires probe_state set value \"liquid\"")
 			function(Source.scan)
+			data(Storage.WIRES) { remove("probe_state") }
 
 			raw("execute unless data storage ra:wires found run data modify entity @s data.status.drain_state set value \"no_source\"")
 			raw("execute unless data storage ra:wires found unless score @s ra.facing matches 0..1 run particle minecraft:smoke ~ ~0.8 ~ 0.25 0.25 0.25 0.01 4 normal ${particleViewersSel()}")

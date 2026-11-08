@@ -338,6 +338,56 @@ predicates built when the pack is generated. Worlds on v6.0.0 carry on without a
   an old Data Handler edit wrote something else) is padded, trimmed or emptied the first time
   the anchor runs.
 
+- **Item Movers, Boxers and Unboxers no longer duplicate items from a double chest.** When both
+  halves of a double chest held items, the machine took the first stack of the half it faces but
+  then removed the items from the other half: the stack it moved was copied, and the other
+  half's first stack disappeared. It now removes items from the half it actually took them from.
+
+- **Item Pipe filters use all four sides.** On a pipe pointing up or down, filtered items were
+  only ever sent into containers at two of its sides, and could be pushed back into the container
+  feeding the pipe. A filtering pipe now tries the four containers around it, whichever way it
+  points, and never the one behind it.
+
+- **The Gas Pump has something to pump.** No world block counted as a gas, so a Gas Pump could
+  never pull anything. It now draws Smoke from a lit campfire or soul campfire next to it,
+  500 mL a second, and leaves the campfire burning. Pumps and drains also look only for sources
+  they can take: a Liquid Pump or Liquid Drain beside both a campfire and water takes the water,
+  and a drain never pulls smoke into a liquid network.
+
+- **Generator speed is an admin setting.** A generator's `cooldown` was shown locked to everyone.
+  Players with server-settings access can now change it per generator with the Data Handler;
+  for everyone else it stays locked. A Poppy Generator that had lost its cooldown value fell back
+  to 100 ticks instead of its own 80.
+
+- **Block Breaker and Block Placer speed is an admin setting.** Both showed a locked `cooldown`
+  that did nothing: they always acted once a second. The `cooldown` (in ticks, 20 by default) is
+  now what they wait between two actions, and players with server-settings access can change it
+  per block with the Data Handler.
+
+- **The Block Placer no longer eats items it cannot place.** With an item that is not a block
+  first in its inventory, it placed nothing but still used one up every second. It now uses an
+  item only when it placed a block, and only then plays its sound. It also places into cave air,
+  which it used to treat as occupied.
+
+- **The Magic Crate's radius stops at 20.** The Data Handler accepted up to 32, but the crate
+  never reached past 20; it now refuses values above what the crate uses. Its pull interval
+  (`cooldown`) is now a server admin's setting.
+
+- **The Breeder feeds from its own inventory.** It looked for food in the container behind it
+  (except for horses and llamas), and only ran when its own inventory had something in it, so a
+  Breeder stocked with food bred nothing. It now takes the food from its own inventory for every
+  animal, and looks for the animals in front of it.
+
+- **Machine sounds and particles follow your settings everywhere.** With *Machine sounds* or
+  *Machine particles* turned off you still got some of them: the break sound and puff of almost
+  every block, the Block Breaker's dust, the Magic Crate's portal swirl, the Mineral and Nether
+  Generators, the Randomizer, the Blast Forge's smoke and flames, the Upgrade Platform, a
+  multiblock falling apart, the Message Block's chime, Ender Links, the Ender Power Vault and the
+  Teleport Anchor's portal cloud. They now all respect both settings.
+
+- **The Spitter shows when it throws.** A small puff now comes out of its face with each stack,
+  for players with *Machine particles* on.
+
 ### For contributors
 
 - Migrations are versioned. `storage ra:migrations version` holds the world's version and the

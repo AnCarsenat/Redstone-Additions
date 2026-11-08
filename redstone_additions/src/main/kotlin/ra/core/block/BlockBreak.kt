@@ -178,13 +178,15 @@ fun Function.killVanillaDrop(itemId: String) {
 }
 
 /**
- * `playsound <sound> block <who> ~ ~ ~ 1 1`: everyone within 16 blocks, or only those who asked
- * for block sounds ([listenersOnly], user setting `ra.u.snd`).
+ * `playsound <sound> block <who> ~ ~ ~ 1 1` for the players within 16 blocks who asked for block
+ * sounds (user setting `ra.u.snd`). [listenersOnly] is kept for callers and no longer changes
+ * anything: every block's break sound used to reach everyone in range except the few that passed
+ * it, whatever the player had chosen.
  */
-fun Function.breakSound(sound: String = STONE_BREAK_SOUND, listenersOnly: Boolean = false) {
-	val who = if (listenersOnly) soundListenersSel(16) else "@a[distance=..16]"
-	raw("playsound $sound block $who ~ ~ ~ 1 1")
+@Suppress("UNUSED_PARAMETER")
+fun Function.breakSound(sound: String = STONE_BREAK_SOUND, listenersOnly: Boolean = true) {
+	raw("playsound $sound block ${soundListenersSel(16)} ~ ~ ~ 1 1")
 }
 
-/** The puff of cloud a broken block leaves. */
-fun Function.breakCloud() = raw("particle minecraft:cloud ~ ~ ~ 0.2 0.2 0.2 0.02 5")
+/** The puff of cloud a broken block leaves, for players with block particles on (`ra.u.par`). */
+fun Function.breakCloud() = raw("particle minecraft:cloud ~ ~ ~ 0.2 0.2 0.2 0.02 5 normal ${particleViewersSel()}")

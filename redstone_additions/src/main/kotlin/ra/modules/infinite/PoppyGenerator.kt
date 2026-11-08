@@ -57,7 +57,7 @@ object PoppyGenerator {
 		// One flower in front, always. The 3x3 patch mode is gone: it was a second code path over
 		// the same ground for a block whose whole job is one flower at a time.
 		pack.define(generator.process) {
-			cooldownGate()
+			cooldownGate(generator.defaultCooldown)
 			execute {
 				positioned(vec3(0, 0, 1).local)
 				run { function(single) }

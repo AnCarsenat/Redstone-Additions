@@ -16,6 +16,7 @@ import ra.core.PackPart
 import ra.core.Ra
 import ra.core.Storage
 import ra.core.define
+import ra.core.executeRun
 import ra.core.raw
 import ra.core.ref
 
@@ -55,6 +56,8 @@ object Pump : PackPart {
 
 			// Small pools drain away; a real body of fluid does not.
 			raw("\$execute positioned ~\$(dx) ~\$(dy) ~\$(dz) run function ${Source.isInfinite.asId()} {match:\"\$(match)\"}")
+			// A source marked keep (a lit campfire's smoke) is never used up.
+			raw("execute if data storage ra:wires found{keep:1b} run scoreboard players set #src_infinite ra.wires.tmp 1")
 			raw("\$execute if score #src_infinite ra.wires.tmp matches 0 positioned ~\$(dx) ~\$(dy) ~\$(dz) run setblock ~ ~ ~ \$(drained)")
 
 			raw("\$execute positioned ~\$(dx) ~\$(dy) ~\$(dz) run function ${Fluid.particles.asId()} {medium:\"\$(medium)\"}")
@@ -73,7 +76,13 @@ object Pump : PackPart {
 			raw("execute unless score @s ${Obj.COOLDOWN} matches 20.. run return 0")
 			scoreboard.players.set(self(), Obj.COOLDOWN, 0)
 
+			// Sources the pump can lift first. Only when there is none, every source, so a pump with
+			// only the wrong kind beside it says so (not_a_gas / not_a_liquid) instead of no_source.
+			raw("execute if entity @s[tag=ra.custom_block.liquid_pump] run data modify storage ra:wires probe_state set value \"liquid\"")
+			raw("execute if entity @s[tag=ra.custom_block.gas_pump] run data modify storage ra:wires probe_state set value \"gas\"")
 			function(Source.scan)
+			data(Storage.WIRES) { remove("probe_state") }
+			executeRun("unless data storage ra:wires found", Source.scan)
 
 			raw("execute unless data storage ra:wires found run data modify entity @s data.status.pump_state set value \"no_source\"")
 			raw("execute unless data storage ra:wires found run return 0")

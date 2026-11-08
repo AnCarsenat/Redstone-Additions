@@ -198,7 +198,7 @@ object TeleportAnchor {
 			scoreboard.players.set(self(), EnderIds.GRACE, 30)
 
 			raw("playsound minecraft:entity.enderman.teleport player @s[scores={${Obj.USER_SOUND}=1..}] ~ ~ ~ 0.8 1")
-			raw("execute at @s run particle minecraft:portal ~ ~1 ~ 0.4 0.8 0.4 0.3 40")
+			raw("execute at @s run particle minecraft:portal ~ ~1 ~ 0.4 0.8 0.4 0.3 40 normal ${particleViewersSel()}")
 		}
 
 		pack.define(block.goggles) { goggles() }

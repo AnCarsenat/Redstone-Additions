@@ -42,9 +42,13 @@ Operators: `/function ra_interactive:items/give_all`.
 ## Block Breaker and Block Placer
 
 - Face them at the spot to work on and power them (a lever keeps them running, a clock works too).
-- Each acts at most once a second (20 ticks).
+- Each acts at most once per `cooldown` ticks: 20 (once a second) by default, 1–1200. The
+  cooldown is a server admin's setting: players with server-settings access change it with the
+  [Data Handler](tools.md); for everyone else it is locked.
 - The Block Breaker cannot break unbreakable blocks such as bedrock.
-- The Block Placer places the first block in its inventory, and only into air.
+- The Block Placer places the first stack in its inventory, and only into air (cave air
+  counts too). If that stack is not a block (a diamond, say), it waits and uses none of it: take
+  it out to let the placer carry on.
 
 ## Item Pipe
 
@@ -52,8 +56,9 @@ Pipes move items forward from one container (or pipe) to the next, a whole stack
 there is room, every 4 ticks. When the next container is full, items wait in the pipe — nothing
 is dropped.
 
-**Sorting:** a pipe can have a **filter**. Items matching it are pushed into a container at the
-side of the pipe instead of continuing forward; everything else carries on.
+**Sorting:** a pipe can have a **filter**. Items matching it are pushed into a container at one
+of the pipe's four sides instead of continuing forward (never back into the container feeding
+it); everything else carries on.
 
 1. Shift + right-click the pipe with the [Data Handler](tools.md).
 2. On the `filter_item` row, hold the item to sort and press **[Set from hand]** (or type an item
@@ -74,8 +79,10 @@ redstone needed.
 
 ## Breeder
 
-1. Put the right food in the Breeder (it has a chest-like inventory and never throws its items).
-2. Keep two adult animals of the same kind in the block in front of it.
+1. Put the right food in the Breeder itself (it has a chest-like inventory and never throws its
+   items). It feeds only from its own inventory, not from a container next to it.
+2. Keep two adult animals of the same kind in front of it (within two blocks of the block it
+   faces).
 3. Power it. It uses one food per pair it feeds.
 
 | Animal | Food |
@@ -112,7 +119,7 @@ A barrel that pulls dropped items into itself.
 | Setting | Default | Range | Meaning |
 | --- | --- | --- | --- |
 | `radius` | 8 | 5–20 | How far it reaches, in blocks |
-| `cooldown` | 20 | 1+ | Ticks between pulls |
+| `cooldown` | 20 | 1–1200 | Ticks between pulls; a server admin's setting, locked for other players |
 
 It takes up to eight items (whole stacks, enchantments and names kept) per pull, and stops when it
 has no empty slot left — the Goggles then show `Full`. Breaking it drops everything inside.

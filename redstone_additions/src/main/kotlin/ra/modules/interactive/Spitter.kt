@@ -27,6 +27,7 @@ import ra.core.block.Unlock
 import ra.core.block.recipeResult
 import ra.core.block.shapedRecipe
 import ra.core.block.soundListenersSel
+import ra.core.block.particleViewersSel
 import io.github.ayfri.kore.features.recipes.types.pattern
 import io.github.ayfri.kore.features.recipes.types.key
 
@@ -90,5 +91,8 @@ object Spitter {
 
 		raw("data remove block ~ ~ ~ Items[0]")
 		raw("playsound minecraft:block.dispenser.dispense block ${soundListenersSel()} ~ ~ ~ 0.5 1.2")
+		// A small puff at the face, where the stack comes out, so a working Spitter is visible
+		// from a distance -- for players with block particles on.
+		raw("particle minecraft:poof ^ ^ ^0.7 0.1 0.1 0.1 0.02 3 normal ${particleViewersSel()}")
 	}
 }

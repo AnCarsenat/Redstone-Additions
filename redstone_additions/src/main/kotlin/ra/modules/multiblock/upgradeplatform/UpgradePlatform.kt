@@ -1,5 +1,6 @@
 package ra.modules.multiblock.upgradeplatform
 
+import ra.core.block.soundListenersSel
 import io.github.ayfri.kore.arguments.maths.vec3
 import io.github.ayfri.kore.arguments.selector.Sort
 import io.github.ayfri.kore.arguments.types.literals.allEntities
@@ -134,8 +135,8 @@ object UpgradePlatform {
 		raw("execute if score #up_count $t matches 1.. store result entity @s Item.count int 1 run scoreboard players get #up_count $t")
 
 		// Failed: break feedback, and stop.
-		raw("execute if entity @s[tag=$FAILED] at @s run particle minecraft:smoke ~ ~0.5 ~ 0.15 0.15 0.15 0.01 10")
-		raw("execute if entity @s[tag=$FAILED] at @s run playsound minecraft:block.grindstone.use block @a[distance=..16] ~ ~ ~ 0.7 0.7")
+		raw("execute if entity @s[tag=$FAILED] at @s run particle minecraft:smoke ~ ~0.5 ~ 0.15 0.15 0.15 0.01 10 normal ${particleViewersSel()}")
+		raw("execute if entity @s[tag=$FAILED] at @s run playsound minecraft:block.grindstone.use block ${soundListenersSel(16)} ~ ~ ~ 0.7 0.7")
 		tag(self()) { remove(FAILED) }
 		raw("execute if score #up_roll $t > #up_chance $t run return 0")
 
@@ -144,9 +145,9 @@ object UpgradePlatform {
 		raw("execute as @e[type=item,tag=ra.upgraded,distance=..1.0,limit=1,sort=nearest] run data modify entity @s Item set from storage ra:temp upgrade.result")
 		raw("execute as @e[type=item,tag=ra.upgraded,distance=..1.0,limit=1,sort=nearest] run tag @s remove ra.upgraded")
 
-		raw("execute at @s run particle minecraft:totem_of_undying ~ ~0.5 ~ 0.2 0.3 0.2 0.1 15")
-		raw("execute at @s run particle minecraft:electric_spark ~ ~0.5 ~ 0.3 0.3 0.3 0.05 8")
-		raw("execute at @s run playsound minecraft:block.amethyst_block.chime block @a[distance=..16] ~ ~ ~ 1 1.2")
-		raw("execute at @s run playsound minecraft:block.enchantment_table.use block @a[distance=..16] ~ ~ ~ 0.5 1.5")
+		raw("execute at @s run particle minecraft:totem_of_undying ~ ~0.5 ~ 0.2 0.3 0.2 0.1 15 normal ${particleViewersSel()}")
+		raw("execute at @s run particle minecraft:electric_spark ~ ~0.5 ~ 0.3 0.3 0.3 0.05 8 normal ${particleViewersSel()}")
+		raw("execute at @s run playsound minecraft:block.amethyst_block.chime block ${soundListenersSel(16)} ~ ~ ~ 1 1.2")
+		raw("execute at @s run playsound minecraft:block.enchantment_table.use block ${soundListenersSel(16)} ~ ~ ~ 0.5 1.5")
 	}
 }

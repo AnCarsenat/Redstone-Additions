@@ -72,7 +72,7 @@ All in `ra/core/block/`.
 | `pack.blockTick(block, onBreak, test = BreakTest.Air) { body }` | `ns:blocks/<dir>/tick`: `breakCheck(block, test, onBreak)`, then `body` | `BreakTest.NotBlock(physical)`: broken when the block is anything but `physical` |
 | `breakCheck(block, test, onBreak, skipNew)`, `forEachMarker(block, fn)` | `execute as <markers> at @s if/unless block ~ ~ ~ … run function <onBreak>`; `execute as <markers> at @s run function <fn>` | `skipNew` adds `tag=!ra.new` |
 | `dropBlockItem(block, tagged = true)`, `dropItem(spec, tagged = false)` | `summon item ~ ~ ~ {Item:<item>[,Tags:["ra","ra.drop_temp"]]}` | |
-| `killVanillaDrop(itemId)` | kills the nearest item of that id within 2 blocks | |
+| `killVanillaDrop(itemId)` | kills the nearest fresh vanilla drop of that id within 2 blocks: count 1, no components, at most 5 ticks old; nothing if none qualifies | Leaves a stack a player dropped nearby, or spilled container contents, alone |
 
 `unlockedBy` names the advancement criterion too: `has_<item path>` (`has_daylight_detector`),
 which is what the beet files used.

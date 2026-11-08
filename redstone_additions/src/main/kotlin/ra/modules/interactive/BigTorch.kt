@@ -19,7 +19,6 @@ import ra.core.block.CustomBlock
 import ra.core.block.gogglesHeader
 import ra.core.block.killVanillaDrop
 import ra.core.block.placeBlock
-import ra.core.block.stackReset
 import ra.core.block.stackedDataLine
 import ra.core.block.stackedPropLine
 import ra.core.define
@@ -144,7 +143,6 @@ object BigTorch {
 
 	private fun Function.goggles() {
 		gogglesHeader(block, nameY = 1.0)
-		stackReset(80, 22)
 		stackedPropLine("radius", "Radius: ", "aqua", " blocks")
 		stackedDataLine("removed", "Denied: ", "green", " mobs")
 	}

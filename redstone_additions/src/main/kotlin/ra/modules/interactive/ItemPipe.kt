@@ -17,7 +17,6 @@ import ra.core.block.CustomBlock
 import ra.core.block.gogglesHeader
 import ra.core.block.killVanillaDrop
 import ra.core.block.placeBlock
-import ra.core.block.stackReset
 import ra.core.define
 import ra.core.raw
 import ra.core.item.loreItem
@@ -125,7 +124,6 @@ object ItemPipe {
 
 	private fun Function.goggles() {
 		gogglesHeader(block, nameY = 1.0)
-		stackReset(80, 22)
 		val none = "{label:\"Filter: \",value:\"None\",color:\"gray\",suffix:\"\",y:0.55}"
 		executeRun("unless data entity @s data.properties.filter_item", Goggles.Billboard.textLine, none)
 		executeRun("if data entity @s data.properties{filter_item:\"\"}", Goggles.Billboard.textLine, none)
@@ -134,12 +132,11 @@ object ItemPipe {
 			Goggles.Billboard.stackedPropLine, "{path:\"filter_item\",label:\"Filter: \",color:\"aqua\",suffix:\"\"}",
 		)
 
-		// And the item itself, above the text. The id names it; this shows it, which is the
+		// And the item itself, drawn above the text by the billboard. The id names it; this shows it, which is the
 		// difference between reading "minecraft:polished_blackstone_slab" and recognising a sorting
 		// wall at a glance.
 		raw("data remove storage ra:temp pipefilter")
 		raw("execute unless data entity @s data.properties{filter_item:\"\"} run data modify storage ra:temp pipefilter.id set from entity @s data.properties.filter_item")
-		raw("data modify storage ra:temp pipefilter.y set value 0.55")
 		executeRun("if data storage ra:temp pipefilter.id", Goggles.Billboard.itemLine, "with storage ra:temp pipefilter")
 	}
 

@@ -22,12 +22,19 @@ Handlers get a block's display name from the same function that draws it. That i
 `goggles` function must publish the name first and return early on `name_only`; `gogglesHeader`
 does both ([Custom Blocks](custom-blocks.md#goggles-readout)).
 
+A billboard is one `text_display` (plus an `item_display` for an item line), built as a list
+of text components in `storage ra:temp gg.text` with `{text:"\n"}` between lines. A text
+display lays its lines out upward from its position, so the billboard keeps its base and grows
+with its content: a line is 10 px (9 of glyph + 1 of spacing) × 0.025 block × the 0.4 scale =
+0.1 block.
+
 Billboard writers callable from a readout:
 
 | Reference | Path | For |
 | --- | --- | --- |
 | `Goggles.Billboard.*` (`ra/api/ToolsApi.kt`) | `ra:tools/goggles/billboard/{handle_billboard, prop_line, data_line, text_line, item_line, show_io_line, stack_reset, stacked_*_line, init_offsets}` | block readouts; wrapped by `core/block/GogglesLines.kt` |
-| `Goggles.Billboard.*` (same object) | `handle_multiblock`, `show_input`, `show_output`, `show_control`, `show_literal_line`, `render_*`, `stack_next` | multiblock readouts and the tools' own rendering |
+| `Goggles.Billboard.*` (same object) | `handle_multiblock`, `show_input`, `show_output`, `show_control`, `show_literal_line`, `render_*` | multiblock readouts and the tools' own rendering |
+| `Goggles.Billboard.{begin, append, flushHere}` | `begin`, `append`, `flush_here` (+ `spawn_text`, `spawn_item`, `load_schema`) | the billboard buffer: `draw_block` / `draw_multiblock` call `begin`; every writer puts its line in `storage ra:temp gg.line` and calls `append`; `draw_block` calls `flush_here` 0.3 above the block, a multiblock's own function calls it at its structure's height |
 | `Goggles.Status.readStatusMultiblock` | `ra:tools/goggles/status/read_status_multiblock` | multiblock status |
 
 ## Wrench
@@ -124,6 +131,19 @@ Each also takes these flags:
 | `adminOnly = true` | locked for players without `ra.admin` (server-settings access), editable for admins; re-checked when the value is written | not offered to non-admins | not pasted by non-admins |
 | `visible = false` | not shown at all to non-admins (nor in the Properties summary); admins see it marked *(hidden from players)* and can edit it | not offered to non-admins | not pasted by non-admins |
 
+One more flag concerns only the Goggles:
+
+| Flag | Goggles label |
+| --- | --- |
+| unset (default) | follows `visible`: a property hidden from the Data Handler is hidden from the label too |
+| `goggles = true` | shown even when `visible = false` — for a value players should see but not edit or browse |
+| `goggles = false` | never shown, though visible in the Data Handler — for fixed or uninteresting values such as a generator's `cooldown` |
+
+The flag gates a property line the block's goggles function draws (`propLine` /
+`stackedPropLine`); it does not add one. Status and data lines (`dataLine`, `stacked*Line`
+reading `data.status` / `data.data`) are the block's own readout and are not gated. The label
+is the same for every wearer, admins included, since one display serves everyone in range.
+
 The Creative Data Handler shows and edits everything regardless; it is an operator tool.
 
 ### What is generated
@@ -132,7 +152,7 @@ The Creative Data Handler shows and edits everything regardless; it is an operat
 load, unguarded — configuration, not world state:
 
 ```mcfunction
-data modify storage ra:dh types."liquid_drain" set value {mode:{type:"text",code:0,readonly:0b,admin_only:0b,visible:1b,i:0},cooldown:{type:"number",code:1,min:1,max:1200,readonly:0b,admin_only:0b,visible:1b,i:1}}
+data modify storage ra:dh types."liquid_drain" set value {mode:{type:"text",code:0,readonly:0b,admin_only:0b,visible:1b,goggles:1b,i:0},cooldown:{type:"number",code:1,min:1,max:1200,readonly:0b,admin_only:0b,visible:1b,goggles:1b,i:1}}
 data modify storage ra:dh order."liquid_drain" set value ["mode","cooldown"]
 data modify storage ra:dh known set value ["anchor_id","chance","channel",...]
 ```
@@ -140,6 +160,11 @@ data modify storage ra:dh known set value ["anchor_id","chance","channel",...]
 - `types."<type>".<name>`: the declaration. `code` is the type as a number and the flags are
   bytes, so a reader takes each with one `data get` into a score; "what is `<name>` on this
   block?" is one compound lookup, and nothing walks a list per tick.
+- `goggles` is the resolved Goggles flag (`goggles ?: visible`), so the Goggles decide a line
+  with one match on `types."<type>".<name>` — the billboard copies the block's type compound
+  once per redraw, and each property line then tests it in storage. It is not written for a
+  `dynamic` property: the Goggles then read `goggles` (or failing that `visible`) from the
+  instance's `data.property_types.<name>`, and show the line when neither says otherwise.
 - `order."<type>"`: the names in menu order.
 - `known`: every name any type declares, which the Data Handler uses to give a row to a property
   a block carries without declaring.

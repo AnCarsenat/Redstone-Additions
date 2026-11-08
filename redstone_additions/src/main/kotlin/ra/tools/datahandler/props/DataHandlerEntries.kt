@@ -75,7 +75,8 @@ object DataHandlerEntries {
 	private val remove = tool("data_handler/props/list/remove")
 	private val elemType = tool("data_handler/props/list/elem_type")
 	private val commit = tool("data_handler/props/list/commit")
-	private val writeAt = tool("data_handler/props/list/write_at")
+	private val typeOf = tool("data_handler/props/list/type_of")
+	private val writeAt =tool("data_handler/props/list/write_at")
 	private val writeAppend = tool("data_handler/props/list/write_append")
 	private val pickShow = tool("data_handler/props/list/pick_show")
 	private val pickLoad = tool("data_handler/props/list/pick_load")
@@ -169,7 +170,7 @@ object DataHandlerEntries {
 			raw("data modify storage ra:dh eq.whole set from storage ra:dh q.action")
 			raw("execute if data storage ra:dh spec.entry_label run data modify storage ra:dh eq.label set from storage ra:dh spec.entry_label")
 			raw("scoreboard players set #dh.lpad $T 0")
-			raw("execute if data storage ra:dh spec{pad:1b} run scoreboard players set #dh.lpad $T 1")
+			raw("execute if data storage ra:dh spec.pad run scoreboard players set #dh.lpad $T 1")
 			raw("execute if score #dh.lpad $T matches 1 run data modify storage ra:dh eq.rm set value \"[Clear]\"")
 			raw("execute if score #dh.lpad $T matches 1 run data modify storage ra:dh eq.rmh set value \"Empty this slot; the others keep their place\"")
 			raw("scoreboard players set #dh.chs $T 0")
@@ -191,9 +192,9 @@ object DataHandlerEntries {
 			raw("data modify storage ra:dh eq.count set value \"\"")
 			callWith(count, "storage ra:dh eq")
 
-			executeReturnRun("if score #dh.lpad $T matches 1", headPadded, "with storage ra:dh eq")
-			raw("execute if score #dh.llen $T < #dh.lmax $T run function ${headAppend.asId()} with storage ra:dh eq")
-			raw("execute unless score #dh.llen $T < #dh.lmax $T run function ${headFull.asId()} with storage ra:dh eq")
+			executeRun("if score #dh.lpad $T matches 1", headPadded, "with storage ra:dh eq")
+			raw("execute if score #dh.lpad $T matches 0 if score #dh.llen $T < #dh.lmax $T run function ${headAppend.asId()} with storage ra:dh eq")
+			raw("execute if score #dh.lpad $T matches 0 unless score #dh.llen $T < #dh.lmax $T run function ${headFull.asId()} with storage ra:dh eq")
 
 			raw("\$data modify storage ra:dh lw set from storage ra:dh properties.\$(name)")
 			raw("scoreboard players set #dh.j $T 0")
@@ -272,7 +273,7 @@ object DataHandlerEntries {
 			raw("""execute unless score #dh.type $T matches 3 run return run tellraw @s [$PREFIX,{nbt:"q.name",storage:"ra:dh",color:"yellow"},{text:" is not a list any more.",color:"red"}]""")
 			callWith(readLen, "storage ra:dh q")
 			raw("scoreboard players set #dh.lpad $T 0")
-			raw("execute if data storage ra:dh spec{pad:1b} run scoreboard players set #dh.lpad $T 1")
+			raw("execute if data storage ra:dh spec.pad run scoreboard players set #dh.lpad $T 1")
 
 			// Which button: j and what to do with it.
 			raw("scoreboard players operation #dh.j $T = #dh.r $T")
@@ -359,12 +360,16 @@ object DataHandlerEntries {
 		// {name, j, op}: write storage ra:dh elem into the entry, after checking it. Returns 1.
 		pack.define(commit) {
 			fail("unless data storage ra:dh elem", """[$PREFIX,{text:"That is not a ",color:"red"},{nbt:"q.name",storage:"ra:dh",color:"yellow"},{text:" entry. Nothing was changed.",color:"red"}]""")
-			// Of the right type? An item id is text.
-			raw("data modify storage ra:dh probe set from storage ra:dh elem")
-			typeOfProbe("#dh.ft")
-			raw("data remove storage ra:dh probe")
+			// Of the right type? An item id is text. Text is told apart with the string test
+			// (DataHandlerList.isText), anything else by its type test.
 			raw("scoreboard players operation #dh.et2 $T = #dh.et $T")
 			raw("execute if score #dh.et2 $T matches ${PropType.ITEM.code} run scoreboard players set #dh.et2 $T 0")
+			raw("scoreboard players set #dh.ft $T -1")
+			with(DataHandlerList) { isText("elem", "#dh.isx") }
+			raw("execute if score #dh.et2 $T matches 0 if score #dh.isx $T matches 1 run scoreboard players set #dh.ft $T 0")
+			raw("data modify storage ra:dh probe set from storage ra:dh elem")
+			raw("execute unless score #dh.et2 $T matches 0 run function ${typeOf.asId()}")
+			raw("data remove storage ra:dh probe")
 			fail("unless score #dh.ft $T = #dh.et2 $T", """[$PREFIX,{text:"That is not a ",color:"red"},{nbt:"q.name",storage:"ra:dh",color:"yellow"},{text:" entry (wrong type). Nothing was changed.",color:"red"}]""")
 			// Text: in the declared format.
 			raw("data modify storage ra:safe s set from storage ra:dh elem")
@@ -379,6 +384,8 @@ object DataHandlerEntries {
 			callWith(writeAt, "storage ra:dh q")
 			raw("return 1")
 		}
+		// storage ra:dh probe's type into #dh.ft (DataHandlerTypes.typeOfProbe).
+		pack.define(typeOf) { typeOfProbe("#dh.ft") }
 		pack.define(writeAt) {
 			raw("\$data modify entity $TARGET data.properties.\$(name)[\$(j)] set from storage ra:dh elem")
 			raw("data remove storage ra:dh elem")

@@ -128,7 +128,7 @@ object DataHandlerList {
 	 * so `[1,2]` would pass as text. The entry is therefore copied back over that copy as well,
 	 * which changes nothing only when it was a string already.
 	 */
-	private fun Function.isText(path: String, into: String, macro: Boolean = false) {
+	internal fun Function.isText(path: String, into: String, macro: Boolean = false) {
 		val m = if (macro) "\$" else ""
 		raw("data remove storage ra:dh probe")
 		raw("scoreboard players set #dh.chg $T 0")

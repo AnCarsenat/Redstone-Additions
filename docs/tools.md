@@ -56,6 +56,15 @@ Wear them or hold them. Every Redstone Additions block within 16 blocks shows a 
 name and live status, refreshed once a second. A value the block has not worked out yet shows
 `N/A` in red.
 
+The label sits just above the block and grows upward with what it has to say: a block with one
+line gets a small label close to its top, one with five a taller one from the same spot. An
+Item Pipe's filter item floats just above its label.
+
+A label shows what the block is doing and the settings worth knowing at a glance. Settings the
+Data Handler hides from players are not shown, and a few fixed or uninteresting values (a
+generator's cooldown, the Magic Crate's pulse cooldown) are left off the label; the Data Handler
+still lists them.
+
 The Goggles only read; use the Wrench or the Data Handler to change things. Server operators can
 change the range and refresh rate in [Settings](settings.md).
 
@@ -126,4 +135,7 @@ connected. See [Transport Networks](transport-networks.md).
 - The Data Handler's menu buttons work through `/trigger ra.dh.action` and `/trigger ra.edit_type`,
   the Wrench menu through `/trigger ra.wrench`; these triggers are only enabled while you hold the
   tool (and for a short while after).
-- Goggles labels are `text_display` entities tagged `ra.billboard`.
+- Goggles labels are `text_display` entities tagged `ra.billboard` (an item filter is an
+  `item_display` with the same tag), one per block: the lines are joined into one text, drawn
+  from 0.3 above the block's top face upward. Which settings a label shows follows each
+  setting's `goggles` flag, see [Property schemas](tools-and-registries.md#property-schemas).

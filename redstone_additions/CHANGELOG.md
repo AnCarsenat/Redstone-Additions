@@ -63,6 +63,17 @@ predicates built when the pack is generated. Worlds on v6.0.0 carry on without a
   names, several of which no block uses, and none of the Wires, Ender, storage or multiblock
   settings. It now shows the block's declared settings, each with its type, then any
   undeclared ones, flagged.
+- **Goggles labels sit just above the block and fit their content.** A label is now one
+  display that starts a little above the block's top face and grows upward with the number of
+  lines, instead of a stack of separate lines placed at fixed heights well above it: a block
+  with one line no longer floats as high as one with five, and no line can end up inside its
+  block. The name and lines share one size, and an Item Pipe's filter item floats just above
+  its label. Each label is one entity instead of one per line, so a redraw summons fewer and
+  costs fewer commands.
+- **The Goggles hide what the Data Handler hides.** A setting hidden from players is no longer
+  shown on its block's Goggles label either, and a few fixed or uninteresting values are left
+  off the label while staying in the Data Handler: the Mineral, Nether and Poppy Generators'
+  cooldown and the Magic Crate's pulse cooldown.
 
 ### Fixed
 
@@ -226,6 +237,12 @@ predicates built when the pack is generated. Worlds on v6.0.0 carry on without a
 
 ### For contributors
 
+- A property can set `goggles = true` to show on the Goggles label even when `visible = false`
+  hides it from the Data Handler, or `goggles = false` to keep a visible one off the label;
+  unset, it follows `visible`. Generated as a resolved `goggles` byte in
+  `storage ra:dh types."<type>".<name>` (not for `dynamic` properties, which read
+  `data.property_types.<name>`). Goggles line writers now append to one `text_display` per
+  billboard, in call order: their `y` arguments and `stack_reset` are accepted and ignored.
 - Block properties are declared per block type with `properties(block) { number(...); bool(...);
   text(...); list(...); item(...) }` (`ra/core/Properties.kt`), replacing `ra.readonly(...)`,
   `ra.dataHandlerProperties(...)` and the Data Handler's global name lists. They are generated

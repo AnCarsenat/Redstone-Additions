@@ -14,6 +14,8 @@ import ra.core.block.placeBlock
 import ra.core.block.propLine
 import ra.core.define
 import ra.core.raw
+import ra.core.Storage
+import io.github.ayfri.kore.commands.function
 import ra.core.item.loreItem
 import ra.core.block.shapedRecipe
 import ra.core.block.recipeResult
@@ -38,6 +40,7 @@ object TagAdder {
 	val item = block.loreItem {}
 
 	private val addTagMacro = block.fn("add_tag_macro")
+	private val fire = block.fn("fire")
 
 	fun Ra.registerTagAdder() {
 		block(block)
@@ -77,6 +80,22 @@ object TagAdder {
 			raw("execute if score @s ${Obj.TEMP} matches 1 at @s run return run fill ~-1 ~-1 ~-1 ~1 ~1 ~1 redstone_block replace iron_block")
 		}
 
+		// One rising edge. As the marker, at its position.
+		//
+		// Per marker, not per command line: with `execute as <every rising marker>` on each copy,
+		// the last marker's values were in storage by the time any of them ran the macro. The paths
+		// are removed before the copy so a marker missing a property cannot run with the previous
+		// marker's value; it does nothing instead.
+		pack.define(fire) {
+			raw("data remove storage ra:temp tag")
+			raw("data remove storage ra:temp entity_selector")
+			raw("data modify storage ra:temp tag set from entity @s data.properties.tag")
+			raw("data modify storage ra:temp entity_selector set from entity @s data.properties.entity_selector")
+			raw("execute unless data storage ra:temp tag run return 0")
+			raw("execute unless data storage ra:temp entity_selector run return 0")
+			function(addTagMacro, Storage.TEMP)
+		}
+
 		pack.define(block.goggles) {
 			gogglesHeader(block, nameY = 1.0)
 			propLine("tag", "Tag: ", "aqua", y = 0.8)
@@ -88,9 +107,7 @@ object TagAdder {
 
 			// Trigger on rising edge (just powered).
 			val rising = risingEdge(block)
-			raw("execute as $rising at @s run data modify storage ra:temp tag set from entity @s data.properties.tag")
-			raw("execute as $rising at @s run data modify storage ra:temp entity_selector set from entity @s data.properties.entity_selector")
-			executeRun("as $rising at @s", addTagMacro, "with storage ra:temp")
+			executeRun("as $rising at @s", fire)
 
 			trackPower(block)
 		}

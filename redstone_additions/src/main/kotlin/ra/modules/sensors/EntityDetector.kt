@@ -73,7 +73,11 @@ object EntityDetector {
 
 		// Detect entities in range. As the marker, at its position: the selector is stored for the macro.
 		pack.define(detect) {
+			// Removed first, or a detector missing its selector would run the previous detector's.
+			// With none it detects nothing, and its output is switched off like any empty search.
+			raw("data remove storage ra:temp entity_selector")
 			raw("data modify storage ra:temp entity_selector set from entity @s data.properties.entity_selector")
+			raw("execute unless data storage ra:temp entity_selector run return run fill ~-1 ~-1 ~-1 ~1 ~1 ~1 iron_block replace redstone_block")
 			function(detectMacro, Storage.TEMP)
 		}
 

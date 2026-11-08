@@ -1,8 +1,14 @@
 package ra.tools.goggles.billboard
 
+import io.github.ayfri.kore.arguments.enums.DataType
+import io.github.ayfri.kore.arguments.types.literals.literal
 import io.github.ayfri.kore.arguments.types.resources.FunctionArgument
+import io.github.ayfri.kore.commands.compute
 import io.github.ayfri.kore.commands.data
+import io.github.ayfri.kore.commands.execute.execute
 import io.github.ayfri.kore.commands.function
+import io.github.ayfri.kore.features.predicates.providers.minus
+import io.github.ayfri.kore.features.predicates.providers.score
 import ra.api.Goggles
 import ra.api.Goggles.Billboard
 import ra.core.Obj
@@ -68,10 +74,15 @@ internal fun Ra.registerBillboardLines() {
 	// Write the next stacked height into the line being built, then step down.
 	pack.define(Billboard.stackNext) {
 		// A block that forgot stack_reset still gets a sane ladder rather than a broken line.
-		raw("execute unless score #gg.stack_y ${Obj.TEMP} = #gg.stack_y ${Obj.TEMP} run scoreboard players set #gg.stack_y ${Obj.TEMP} 80")
-		raw("execute unless score #gg.stack_step ${Obj.TEMP} = #gg.stack_step ${Obj.TEMP} run scoreboard players set #gg.stack_step ${Obj.TEMP} 20")
-		raw("execute store result storage ra:temp status_literal.y double 0.01 run scoreboard players get #gg.stack_y ${Obj.TEMP}")
-		raw("scoreboard players operation #gg.stack_y ${Obj.TEMP} -= #gg.stack_step ${Obj.TEMP}")
+		// The score providers' fallbacks are that ladder: an absent top reads 80, an absent step 20.
+		execute {
+			storeResult { storage(Storage.TEMP, "status_literal.y", DataType.DOUBLE, 0.01) }
+			run { compute { score(Obj.TEMP, "#gg.stack_y", 80) } }
+		}
+		execute {
+			storeResult { score(literal("#gg.stack_y"), Obj.TEMP) }
+			run { compute { score(Obj.TEMP, "#gg.stack_y", 80) - score(Obj.TEMP, "#gg.stack_step", 20) } }
+		}
 	}
 
 	// {id:"minecraft:iron_ingot",y:0.9}: draw one item, floating, as part of the readout.

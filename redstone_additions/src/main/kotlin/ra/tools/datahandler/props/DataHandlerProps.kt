@@ -45,6 +45,12 @@ object DataHandlerProps {
 	val refuse = tool("data_handler/props/refuse")
 	val handAction = tool("data_handler/props/hand_action")
 	val setFromHand = tool("data_handler/props/set_from_hand")
+	val clearAction = tool("data_handler/props/clear_action")
+	val clearItem = tool("data_handler/props/clear_item")
+
+	/** Row index offsets of the item row's two extra buttons: [Set from hand] and [Clear]. */
+	const val HAND_BASE = 400
+	const val CLEAR_BASE = 550
 	val toggle = tool("data_handler/props/toggle")
 	val askNumber = tool("data_handler/props/ask_number")
 	val askText = tool("data_handler/props/ask_text")
@@ -75,6 +81,8 @@ object DataHandlerProps {
 			raw("scoreboard players operation #dh.hand $T = #dh.act $T")
 			scoreboard.players.add(literal("#dh.hand"), T, 300)
 			raw("execute store result storage ra:dh q.hand_action int 1 run scoreboard players get #dh.hand $T")
+			scoreboard.players.add(literal("#dh.hand"), T, CLEAR_BASE - HAND_BASE)
+			raw("execute store result storage ra:dh q.clear_action int 1 run scoreboard players get #dh.hand $T")
 			callWith(render, "storage ra:dh q")
 			raw("data remove storage ra:dh iter[0]")
 			scoreboard.players.add(literal("#dh.act"), T, 1)
@@ -87,6 +95,7 @@ object DataHandlerProps {
 			raw("execute unless data storage ra:dh iter[0] run return 0")
 			newRow("iter[0]")
 			raw("data modify storage ra:dh q.hand_action set value 0")
+			raw("data modify storage ra:dh q.clear_action set value 0")
 			callWith(renderGuess, "storage ra:dh q")
 			raw("data remove storage ra:dh iter[0]")
 			scoreboard.players.add(literal("#dh.act"), T, 1)
@@ -193,7 +202,7 @@ object DataHandlerProps {
 		// player's hand.
 		pack.define(handAction) {
 			raw("data modify storage ra:dh q set value {list:\"block_order\"}")
-			scoreboard.players.remove(literal("#dh.code"), T, 400)
+			scoreboard.players.remove(literal("#dh.code"), T, HAND_BASE)
 			raw("execute store result storage ra:dh q.i int 1 run scoreboard players get #dh.code $T")
 			callWith(pickName, "storage ra:dh q")
 			raw("execute unless data storage ra:dh pending_name run return 0")
@@ -204,6 +213,33 @@ object DataHandlerProps {
 			raw("execute unless score #dh.type $T matches 4 run return 0")
 			callWith(setFromHand, "storage ra:dh q")
 			function(ra.tools.datahandler.DataHandler.refresh)
+		}
+
+		// An item row's [Clear], with #dh.code at 550 + index: the same lookup and refusal as
+		// [Set from hand], then the item property is written back to "" -- the "no item" value
+		// (an Item Pipe with an empty filter_item filters nothing). Before this there was no way
+		// back: [Set from hand] needs something in the hand, and the typed form refuses "".
+		pack.define(clearAction) {
+			raw("data modify storage ra:dh q set value {list:\"block_order\"}")
+			scoreboard.players.remove(literal("#dh.code"), T, CLEAR_BASE)
+			raw("execute store result storage ra:dh q.i int 1 run scoreboard players get #dh.code $T")
+			callWith(pickName, "storage ra:dh q")
+			raw("execute unless data storage ra:dh pending_name run return 0")
+			raw("data modify storage ra:dh q.name set from storage ra:dh pending_name")
+			callWith(probe, "storage ra:dh q")
+			callWith(refuse, "storage ra:dh q")
+			raw("execute if data storage ra:dh denied run return run data remove storage ra:dh denied")
+			raw("execute unless score #dh.type $T matches 4 run return 0")
+			callWith(clearItem, "storage ra:dh q")
+			function(ra.tools.datahandler.DataHandler.refresh)
+		}
+
+		// {name}: empty an item property. As the player.
+		pack.define(clearItem) {
+			raw("\$data modify storage ra:dh properties.\$(name) set value \"\"")
+			raw("\$data modify entity $TARGET data.properties.\$(name) set value \"\"")
+			raw("""${'$'}tellraw @s [$PREFIX,{text:"$(name)",color:"yellow"},{text:" cleared.",color:"gray"}]""")
+			raw("playsound minecraft:block.note_block.pling block @s[scores={${Obj.USER_SOUND}=1..}] ~ ~ ~ 0.7 1.0")
 		}
 
 		// {name}: copy the held item's id into an item property. As the player.

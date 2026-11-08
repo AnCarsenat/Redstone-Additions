@@ -114,6 +114,9 @@ private fun Function.init() {
 	// objective logs a complaint every one of them.
 	scoreboard.objectives.add(DBG_WAS)
 
+	// The entity purge's epoch and clean-up state (ra.settings.purge).
+	function(Settings.Purge.init)
+
 	// Rebuilds the menu registry and seeds any setting that has no value yet. Values already
 	// chosen are never overwritten -- see the generated ra_settings:defaults.
 	function(datapack.functionTag("register", Ns.SETTINGS.id))

@@ -41,6 +41,11 @@ internal fun Ra.registerTick() {
 
 		toolTagCleanup()
 
+		// After an admin purge: remove Redstone Additions markers from before the purge as their
+		// chunks load, before the migration pass or any block tick sees them. One score test while
+		// no clean-up is running. See ra.settings.purge.
+		function(Settings.Purge.tick)
+
 		// Custom blocks saved by an older version, migrated before anything below reads them --
 		// including blocks in a chunk that has just loaded. One selector when there are none.
 		// See ra.migrations.MigrationsPart.

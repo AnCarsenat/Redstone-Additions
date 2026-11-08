@@ -1,21 +1,20 @@
 package ra.modules.jetpacks.flight
 
-import io.github.ayfri.kore.arguments.enums.DataType
-import io.github.ayfri.kore.arguments.types.literals.self
-import io.github.ayfri.kore.commands.compute
-import io.github.ayfri.kore.commands.execute.execute
+import ra.core.COMPUTE_SELF
+import ra.core.computeScore
+import ra.core.provider
+import ra.core.scoreOf
+import ra.core.storeDouble
+import ra.core.thisScoreOf
 import io.github.ayfri.kore.commands.function
-import io.github.ayfri.kore.features.predicates.providers.NumberProviderScope
 import io.github.ayfri.kore.features.predicates.providers.abs
 import io.github.ayfri.kore.features.predicates.providers.floorDiv
 import io.github.ayfri.kore.features.predicates.providers.max
 import io.github.ayfri.kore.features.predicates.providers.min
 import io.github.ayfri.kore.features.predicates.providers.minus
 import io.github.ayfri.kore.features.predicates.providers.plus
-import io.github.ayfri.kore.features.predicates.providers.score
 import io.github.ayfri.kore.features.predicates.providers.times
 import io.github.ayfri.kore.features.predicates.providers.unaryMinus
-import io.github.ayfri.kore.features.predicates.types.EntityTarget
 import io.github.ayfri.kore.functions.Function
 import ra.core.Ns
 import ra.core.Obj
@@ -25,7 +24,6 @@ import ra.core.define
 import ra.core.raw
 import ra.core.ref
 import ra.modules.jetpacks.Jp
-import ra.modules.jetpacks.Jp.tmp
 
 /**
  * Thruster kit: actually make the player go faster horizontally. As the player, at the player.
@@ -70,11 +68,8 @@ object Thrust {
 		}
 	}
 
-	/** A score of the player (`@s`, the compute's context entity). */
-	private fun NumberProviderScope.mine(objective: String) = score(objective, EntityTarget.THIS)
-
 	/** A score of a fake player on `ra.temp`. */
-	private fun NumberProviderScope.temp(holder: String) = score(t, holder)
+	private fun temp(holder: String) = scoreOf(holder, t)
 
 	private fun Function.thrust() {
 		raw("execute store result score #jp.px $t run data get entity @s Pos[0] 1000")
@@ -100,14 +95,11 @@ object Thrust {
 		// smoothed speed are ABSENT scores, and the score providers' fallbacks stand in for them:
 		// the last sample falls back to this tick's (a delta of zero), the smoothed speed to 0.
 		for ((pos, last, v) in listOf(Triple("#jp.px", Jp.X, Jp.VX), Triple("#jp.pz", Jp.Z, Jp.VZ))) {
-			execute {
-				storeResult { score(self(), v) }
-				run {
-					compute(self()) {
-						(mine(v) * 3 + (temp(pos) - score(last, EntityTarget.THIS, temp(pos)))).floorDiv(4)
-					}
-				}
-			}
+			computeScore(
+				"@s", v,
+				provider { (thisScoreOf(v) * 3 + (temp(pos) - thisScoreOf(last, fallback = temp(pos)))).floorDiv(4) },
+				source = COMPUTE_SELF,
+			)
 		}
 		raw("scoreboard players operation @s ${Jp.X} = #jp.px $t")
 		raw("scoreboard players operation @s ${Jp.Z} = #jp.pz $t")
@@ -143,24 +135,18 @@ object Thrust {
 		// Each axis is stored twice from one /compute: as the macro argument, in blocks, and as a
 		// score for the dead zone below.
 		for ((v, m, arg) in listOf(Triple(Jp.VX, "#jp.mx", "push.dx"), Triple(Jp.VZ, "#jp.mz", "push.dz"))) {
-			execute {
-				storeResult { score(tmp(m), t) }
-				storeResult { storage(Storage.JETPACKS, arg, DataType.DOUBLE, 0.001) }
-				run {
-					compute(self()) {
-						max(min((mine(v) * temp("#jp.cfg.k")).floorDiv(100), temp("#jp.cfg.cap")), -temp("#jp.cfg.cap"))
-					}
-				}
-			}
+			computeScore(
+				m, t,
+				provider { max(min((thisScoreOf(v) * temp("#jp.cfg.k")).floorDiv(100), temp("#jp.cfg.cap")), -temp("#jp.cfg.cap")) },
+				storeDouble(Storage.JETPACKS, arg, 0.001),
+				source = COMPUTE_SELF,
+			)
 		}
 
 		// Sprinting on the spot still measures a delta of nearly nothing. Below a couple of
 		// centimetres a tick the push is not felt, but it IS still a teleport, so under the
 		// threshold do nothing at all.
-		execute {
-			storeResult { score(tmp("#jp.moving"), t) }
-			run { compute { max(abs(temp("#jp.mx")), abs(temp("#jp.mz"))) } }
-		}
+		computeScore("#jp.moving", t, provider { max(abs(temp("#jp.mx")), abs(temp("#jp.mz"))) })
 		raw("execute unless score #jp.moving $t > #jp.cfg.dead $t run return 0")
 
 		function(thrustPush, Storage.JETPACKS, "push")

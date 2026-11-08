@@ -1,5 +1,14 @@
 package ra.modules.ender
 
+import io.github.ayfri.kore.features.predicates.providers.constant
+import io.github.ayfri.kore.features.predicates.providers.min
+import io.github.ayfri.kore.features.predicates.providers.sub
+import ra.core.COMPUTE_SELF
+import ra.core.computeInto
+import ra.core.computeScore
+import ra.core.provider
+import ra.core.storeInt
+import ra.core.thisScoreOf
 import io.github.ayfri.kore.arguments.types.literals.self
 import io.github.ayfri.kore.commands.function
 import io.github.ayfri.kore.commands.scoreboard.scoreboard
@@ -66,7 +75,7 @@ object TeleportAnchor {
 	 * The zero-based targets row the signal names, for `/compute entity @s`: min(power, 15) - 1.
 	 * ra_lib reports 16 for a redstone block; the table only has fifteen rows, so that is 15.
 	 */
-	private val ANCHOR_SLOT = EnderCip.sub(EnderCip.min(EnderCip.thisScore(Obj.POWER), 15), 1)
+	private val ANCHOR_SLOT = provider { sub(min(thisScoreOf(Obj.POWER), 15), constant(1)) }
 
 	fun Ra.registerTeleportAnchor() {
 		block(block)
@@ -168,7 +177,7 @@ object TeleportAnchor {
 		function(RaLib.Redstone.detect)
 		raw("execute if score @s ${Obj.POWER} matches ..0 run return 0")
 		// targets is zero-based, the signal is one-based: anchor.i = min(power, 15) - 1.
-		storeCompute("store result storage ra:ender anchor.i int 1", ANCHOR_SLOT, source = "entity @s")
+		computeInto(storeInt(Storage.ENDER, "anchor.i"), ANCHOR_SLOT, source = COMPUTE_SELF)
 
 		function(readTarget, Storage.ENDER, "anchor")
 		raw("execute unless data storage ra:ender anchor.want run return 0")
@@ -205,7 +214,7 @@ object TeleportAnchor {
 		raw("execute if score @s ${Obj.POWER} matches 1.. run data modify storage ra:temp ender_line.color set value \"yellow\"")
 		stackedTextLineFromStorage()
 
-		storeCompute("store result score #ender.slot $T", ANCHOR_SLOT, source = "entity @s")
+		computeScore("#ender.slot", T, ANCHOR_SLOT, source = COMPUTE_SELF)
 		raw("data remove storage ra:ender anchor.want")
 		raw("execute if score #ender.slot $T matches 0..14 store result storage ra:ender anchor.i int 1 run scoreboard players get #ender.slot $T")
 		executeRun("if score #ender.slot $T matches 0..14", readTarget, "with storage ra:ender anchor")

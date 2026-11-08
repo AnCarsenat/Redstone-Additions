@@ -1,14 +1,14 @@
 package ra.tools.goggles.billboard
 
-import io.github.ayfri.kore.arguments.enums.DataType
-import io.github.ayfri.kore.arguments.types.literals.literal
+import ra.core.computeInto
+import ra.core.computeScore
+import ra.core.provider
+import ra.core.scoreOf
+import ra.core.storeDouble
 import io.github.ayfri.kore.arguments.types.resources.FunctionArgument
-import io.github.ayfri.kore.commands.compute
 import io.github.ayfri.kore.commands.data
-import io.github.ayfri.kore.commands.execute.execute
 import io.github.ayfri.kore.commands.function
 import io.github.ayfri.kore.features.predicates.providers.minus
-import io.github.ayfri.kore.features.predicates.providers.score
 import ra.api.Goggles
 import ra.api.Goggles.Billboard
 import ra.core.Obj
@@ -75,14 +75,9 @@ internal fun Ra.registerBillboardLines() {
 	pack.define(Billboard.stackNext) {
 		// A block that forgot stack_reset still gets a sane ladder rather than a broken line.
 		// The score providers' fallbacks are that ladder: an absent top reads 80, an absent step 20.
-		execute {
-			storeResult { storage(Storage.TEMP, "status_literal.y", DataType.DOUBLE, 0.01) }
-			run { compute { score(Obj.TEMP, "#gg.stack_y", 80) } }
-		}
-		execute {
-			storeResult { score(literal("#gg.stack_y"), Obj.TEMP) }
-			run { compute { score(Obj.TEMP, "#gg.stack_y", 80) - score(Obj.TEMP, "#gg.stack_step", 20) } }
-		}
+		val y = scoreOf("#gg.stack_y", Obj.TEMP, 80)
+		computeInto(storeDouble(Storage.TEMP, "status_literal.y", 0.01), y)
+		computeScore("#gg.stack_y", Obj.TEMP, provider { y - scoreOf("#gg.stack_step", Obj.TEMP, 20) })
 	}
 
 	// {id:"minecraft:iron_ingot",y:0.9}: draw one item, floating, as part of the readout.

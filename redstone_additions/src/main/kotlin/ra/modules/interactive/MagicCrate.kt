@@ -1,12 +1,12 @@
 package ra.modules.interactive
 
-import io.github.ayfri.kore.arguments.enums.DataType
+import ra.core.computeInto
+import ra.core.provider
+import ra.core.scoreOf
+import ra.core.storeInt
 import io.github.ayfri.kore.arguments.types.literals.self
-import io.github.ayfri.kore.commands.compute
-import io.github.ayfri.kore.commands.execute.execute
 import io.github.ayfri.kore.commands.function
 import io.github.ayfri.kore.features.predicates.providers.min
-import io.github.ayfri.kore.features.predicates.providers.score
 import ra.core.Storage
 import io.github.ayfri.kore.commands.kill
 import io.github.ayfri.kore.functions.Function
@@ -200,10 +200,7 @@ object MagicCrate {
 		// because a radius the player could raise without limit would turn one block into a
 		// server-wide entity selector.
 		readProperty("radius", default = 8, min = 5)
-		execute {
-			storeResult { storage(Storage.INTERACTIVE, "mh.r", DataType.INT, 1.0) }
-			run { compute { min(score(Obj.TEMP, "#prop"), 20) } }
-		}
+		computeInto(storeInt(Storage.INTERACTIVE, "mh.r"), provider { min(scoreOf("#prop", Obj.TEMP), 20) })
 
 		scoreboard.players.set(literal("#mh.pulled"), Obj.TEMP, 0)
 		callWith(sweep, "storage ra:interactive mh")

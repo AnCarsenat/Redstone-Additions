@@ -1,5 +1,15 @@
 package ra.modules.wires.fluid
 
+import io.github.ayfri.kore.features.predicates.providers.constant
+import io.github.ayfri.kore.features.predicates.providers.floorDiv
+import io.github.ayfri.kore.features.predicates.providers.min
+import io.github.ayfri.kore.features.predicates.providers.mul
+import io.github.ayfri.kore.features.predicates.providers.sub
+import ra.core.computeInto
+import ra.core.computeScore
+import ra.core.provider
+import ra.core.scoreOf
+import ra.core.storeInt
 import io.github.ayfri.kore.arguments.types.literals.literal
 import io.github.ayfri.kore.commands.data
 import io.github.ayfri.kore.commands.function
@@ -19,9 +29,6 @@ import ra.core.executeReturnRun
 import ra.core.executeRun
 import ra.core.raw
 import ra.core.ref
-import ra.modules.wires.common.Cip
-import ra.modules.wires.common.storeCompute
-import ra.modules.wires.common.storeComputeStorage
 
 object DrainExperience : PackPart {
 	/** What one experience point is worth in the network, both ways. */
@@ -67,13 +74,15 @@ object DrainExperience : PackPart {
 
 			// Ten points a cycle, or as much of that as the player has and the grid will hold:
 			// pts = min(pts, 10, (capacity - amount) / 100), at 100 mL a point.
-			storeCompute(
+			computeScore(
 				"#dr.pts", "ra.wires.tmp",
-				Cip.min(
-					Cip.score("#dr.pts", "ra.wires.tmp"),
-					10,
-					Cip.floorDiv(Cip.sub(Cip.score("#net_capacity", "ra.tr.tmp"), Cip.score("#net_amount", "ra.tr.tmp")), ML_PER_POINT),
-				),
+				provider {
+					min(
+						scoreOf("#dr.pts", "ra.wires.tmp"),
+						constant(10),
+						floorDiv(sub(scoreOf("#net_capacity", "ra.tr.tmp"), scoreOf("#net_amount", "ra.tr.tmp")), constant(ML_PER_POINT)),
+					)
+				},
 			)
 
 			raw("execute if score #dr.pts ra.wires.tmp matches ..0 run data modify entity @s data.status.drain_state set value \"network_full\"")
@@ -81,7 +90,7 @@ object DrainExperience : PackPart {
 
 			// Charge the grid for exactly the points about to be taken, so neither side can
 			// end up owing the other a fraction of a point.
-			storeComputeStorage("ra:wires", "xp.amount", Cip.mul(Cip.score("#dr.pts", "ra.wires.tmp"), ML_PER_POINT))
+			computeInto(storeInt(Storage.WIRES, "xp.amount"), provider { mul(scoreOf("#dr.pts", "ra.wires.tmp"), constant(ML_PER_POINT)) })
 			function(DrainExperience.drainExpOffer, Storage.WIRES, "xp")
 
 			raw("execute store result storage ra:wires xp.points int 1 run scoreboard players get #dr.pts ra.wires.tmp")
@@ -147,10 +156,10 @@ object DrainExperience : PackPart {
 
 			// Ten points, in whole points only, and never more than the network holds:
 			// pts = min(10, amount / 100).
-			storeCompute("#dr.pts", "ra.wires.tmp", Cip.min(10, Cip.floorDiv(Cip.score("#net_amount", "ra.tr.tmp"), ML_PER_POINT)))
+			computeScore("#dr.pts", "ra.wires.tmp", provider { min(constant(10), floorDiv(scoreOf("#net_amount", "ra.tr.tmp"), constant(ML_PER_POINT))) })
 			raw("execute if score #dr.pts ra.wires.tmp matches ..0 run return run data modify entity @s data.status.drain_state set value \"not_enough\"")
 
-			storeComputeStorage("ra:wires", "xp.amount", Cip.mul(Cip.score("#dr.pts", "ra.wires.tmp"), ML_PER_POINT))
+			computeInto(storeInt(Storage.WIRES, "xp.amount"), provider { mul(scoreOf("#dr.pts", "ra.wires.tmp"), constant(ML_PER_POINT)) })
 			function(DrainExperience.drainExpPull, Storage.WIRES, "xp")
 
 			raw("execute store result storage ra:wires xp.points int 1 run scoreboard players get #dr.pts ra.wires.tmp")

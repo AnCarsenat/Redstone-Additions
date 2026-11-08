@@ -1,5 +1,9 @@
 package ra.modules.wires.blocks.creative_eu
 
+import io.github.ayfri.kore.features.predicates.providers.sub
+import ra.core.computeScore
+import ra.core.provider
+import ra.core.scoreOf
 import io.github.ayfri.kore.commands.data
 import io.github.ayfri.kore.commands.function
 import ra.api.Goggles
@@ -16,8 +20,6 @@ import ra.core.executeRun
 import ra.core.raw
 import ra.core.ref
 import ra.modules.wires.electric.EuApi
-import ra.modules.wires.common.Cip
-import ra.modules.wires.common.storeCompute
 
 object CreativeEu : PackPart {
 	val give = ref(Ns.WIRES, "blocks/creative_eu/give")
@@ -58,7 +60,7 @@ object CreativeEu : PackPart {
 			// here.
 
 			function(RaLib.Transport.Net.read)
-			storeCompute("#cr.fill", "ra.wires.tmp", Cip.sub(Cip.score("#net_capacity", "ra.tr.tmp"), Cip.score("#net_amount", "ra.tr.tmp")))
+			computeScore("#cr.fill", "ra.wires.tmp", provider { sub(scoreOf("#net_capacity", "ra.tr.tmp"), scoreOf("#net_amount", "ra.tr.tmp")) })
 
 			raw("execute if score #cr.fill ra.wires.tmp matches ..0 run return run data modify entity @s data.status.state set value \"Grid full\"")
 

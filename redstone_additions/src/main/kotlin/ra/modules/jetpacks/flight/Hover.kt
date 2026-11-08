@@ -1,14 +1,16 @@
 package ra.modules.jetpacks.flight
 
+import ra.core.COMPUTE_SELF
+import ra.core.computeScore
+import ra.core.provider
+import ra.core.scoreOf
+import ra.core.thisScoreOf
 import io.github.ayfri.kore.arguments.maths.vec3
 import io.github.ayfri.kore.arguments.types.literals.self
-import io.github.ayfri.kore.commands.compute
 import io.github.ayfri.kore.commands.execute.execute
 import io.github.ayfri.kore.commands.function
 import io.github.ayfri.kore.commands.scoreboard.scoreboard
 import io.github.ayfri.kore.features.predicates.providers.minus
-import io.github.ayfri.kore.features.predicates.providers.score
-import io.github.ayfri.kore.features.predicates.types.EntityTarget
 import io.github.ayfri.kore.functions.Function
 import io.github.ayfri.kore.generated.Tags
 import ra.core.block.particleViewersSel
@@ -74,10 +76,7 @@ object Hover {
 		raw("execute store result score #jp.y $t run data get entity @s Pos[1] 1000")
 		// No previous sample on the first airborne tick: the score is ABSENT, and the provider's
 		// fallback reads this tick's height instead, so the first speed measured is zero.
-		execute {
-			storeResult { score(tmp("#jp.dy"), t) }
-			run { compute(self()) { score(t, "#jp.y") - score(Jp.Y, EntityTarget.THIS, score(t, "#jp.y")) } }
-		}
+		computeScore("#jp.dy", t, provider { scoreOf("#jp.y", t) - thisScoreOf(Jp.Y, fallback = scoreOf("#jp.y", t)) }, source = COMPUTE_SELF)
 		raw("scoreboard players operation @s ${Jp.Y} = #jp.y $t")
 
 		raw("execute store result score @s ${Obj.PITCH} run data get entity @s Rotation[1] 1")

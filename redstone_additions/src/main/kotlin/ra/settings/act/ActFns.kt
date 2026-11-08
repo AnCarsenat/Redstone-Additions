@@ -1,5 +1,7 @@
 package ra.settings.act
 
+import ra.core.scoreOf
+import ra.core.snbt
 import io.github.ayfri.kore.arguments.numbers.ranges.rangeOrIntStart
 import io.github.ayfri.kore.arguments.numbers.ranges.rangeOrInt
 import io.github.ayfri.kore.arguments.types.literals.self
@@ -140,7 +142,7 @@ internal object ActFns {
 		raw("\$$c{type:\"int\"} if score #dir ${Obj.SET_TMP} matches 1 run scoreboard players add #n ${Obj.SET_TMP} \$(step)")
 		raw("\$$c{type:\"int\"} if score #dir ${Obj.SET_TMP} matches ..-1 run scoreboard players remove #n ${Obj.SET_TMP} \$(step)")
 		// The bounds are macro text, so the provider is too: min(max(n, min), max).
-		val n = "{type:\"minecraft:score\",score:\"${Obj.SET_TMP}\",target:{type:\"minecraft:fixed\",name:\"#n\"}}"
+		val n = scoreOf("#n", Obj.SET_TMP).snbt()
 		val clamp = "{type:\"minecraft:min\",inputs:[{type:\"minecraft:max\",inputs:[$n,\$(min)]},\$(max)]}"
 		raw("\$$c{type:\"int\"} store result score @s \$(obj) run compute default integer $clamp")
 

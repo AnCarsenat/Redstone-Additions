@@ -1,5 +1,9 @@
 package ra.modules.wires.fluid
 
+import io.github.ayfri.kore.features.predicates.providers.sub
+import ra.core.computeScore
+import ra.core.provider
+import ra.core.scoreOf
 import io.github.ayfri.kore.arguments.types.literals.literal
 import io.github.ayfri.kore.arguments.types.literals.self
 import io.github.ayfri.kore.commands.data
@@ -20,8 +24,6 @@ import ra.core.executeReturnRun
 import ra.core.executeRun
 import ra.core.raw
 import ra.core.ref
-import ra.modules.wires.common.Cip
-import ra.modules.wires.common.storeCompute
 
 object Drain : PackPart {
 	val drainAbove = ref(Ns.WIRES, "fluid/drain_above")
@@ -75,7 +77,7 @@ object Drain : PackPart {
 
 			function(RaLib.Transport.Net.read)
 			raw("\$scoreboard players set #dr.need ra.wires.tmp \$(volume)")
-			storeCompute("#dr.free", "ra.wires.tmp", Cip.sub(Cip.score("#net_capacity", "ra.tr.tmp"), Cip.score("#net_amount", "ra.tr.tmp")))
+			computeScore("#dr.free", "ra.wires.tmp", provider { sub(scoreOf("#net_capacity", "ra.tr.tmp"), scoreOf("#net_amount", "ra.tr.tmp")) })
 			raw("execute if score #dr.free ra.wires.tmp < #dr.need ra.wires.tmp run return run data modify entity @s data.status.drain_state set value \"network_full\"")
 
 			raw("\$execute store result score #dr.got ra.wires.tmp run function ${RaLib.Transport.Net.offer.asId()} {amount:\$(volume),medium:\"\$(medium)\"}")

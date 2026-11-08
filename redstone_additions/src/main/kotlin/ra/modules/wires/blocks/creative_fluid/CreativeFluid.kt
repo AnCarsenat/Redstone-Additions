@@ -1,5 +1,9 @@
 package ra.modules.wires.blocks.creative_fluid
 
+import io.github.ayfri.kore.features.predicates.providers.sub
+import ra.core.computeScore
+import ra.core.provider
+import ra.core.scoreOf
 import io.github.ayfri.kore.arguments.types.literals.literal
 import io.github.ayfri.kore.arguments.types.literals.self
 import io.github.ayfri.kore.commands.data
@@ -22,8 +26,6 @@ import ra.core.executeRun
 import ra.core.raw
 import ra.core.ref
 import ra.modules.wires.fluid.Fluid
-import ra.modules.wires.common.Cip
-import ra.modules.wires.common.storeCompute
 
 object CreativeFluid : PackPart {
 	val cycleMedium = ref(Ns.WIRES, "blocks/creative_fluid/cycle_medium")
@@ -131,7 +133,7 @@ object CreativeFluid : PackPart {
 			raw("execute if score #cr.known ra.wires.tmp matches ..0 run return run data modify entity @s data.status.state set value \"Unknown medium\"")
 
 			function(RaLib.Transport.Net.read)
-			storeCompute("#cr.fill", "ra.wires.tmp", Cip.sub(Cip.score("#net_capacity", "ra.tr.tmp"), Cip.score("#net_amount", "ra.tr.tmp")))
+			computeScore("#cr.fill", "ra.wires.tmp", provider { sub(scoreOf("#net_capacity", "ra.tr.tmp"), scoreOf("#net_amount", "ra.tr.tmp")) })
 
 			raw("execute if score #cr.fill ra.wires.tmp matches ..0 run return run data modify entity @s data.status.state set value \"Network full\"")
 

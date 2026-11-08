@@ -1,5 +1,13 @@
 package ra.modules.wires.fluid
 
+import io.github.ayfri.kore.features.predicates.providers.constant
+import io.github.ayfri.kore.features.predicates.providers.floorDiv
+import io.github.ayfri.kore.features.predicates.providers.max
+import io.github.ayfri.kore.features.predicates.providers.mul
+import ra.core.computeInto
+import ra.core.provider
+import ra.core.scoreOf
+import ra.core.storeInt
 import io.github.ayfri.kore.commands.data
 import io.github.ayfri.kore.commands.function
 import ra.api.RaLib
@@ -13,8 +21,6 @@ import ra.core.define
 import ra.core.executeRun
 import ra.core.raw
 import ra.core.ref
-import ra.modules.wires.common.Cip
-import ra.modules.wires.common.storeComputeStorage
 
 object DrainPotion : PackPart {
 	val drainPotion = ref(Ns.WIRES, "fluid/drain_potion")
@@ -175,8 +181,8 @@ object DrainPotion : PackPart {
 			//
 			// secs = max(1, max(1, dur * drawn / 1000) / 20), both divisions floored as the
 			// scoreboard `/=` they replaced.
-			val ticks = Cip.max(1, Cip.floorDiv(Cip.mul(Cip.score("#pt.dur", "ra.wires.tmp"), Cip.score("#pt.vol", "ra.wires.tmp")), 1000))
-			storeComputeStorage("ra:wires", "one.secs", Cip.max(1, Cip.floorDiv(ticks, 20)))
+			val ticks = provider { max(constant(1), floorDiv(mul(scoreOf("#pt.dur", "ra.wires.tmp"), scoreOf("#pt.vol", "ra.wires.tmp")), constant(1000))) }
+			computeInto(storeInt(Storage.WIRES, "one.secs"), provider { max(constant(1), floorDiv(ticks, constant(20))) })
 			function(DrainPotion.drainPotionGive, Storage.WIRES, "one")
 		}
 	}

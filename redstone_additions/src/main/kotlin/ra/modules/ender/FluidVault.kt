@@ -1,5 +1,11 @@
 package ra.modules.ender
 
+import io.github.ayfri.kore.features.predicates.providers.constant
+import io.github.ayfri.kore.features.predicates.providers.floorDiv
+import io.github.ayfri.kore.features.predicates.providers.sub
+import ra.core.computeScore
+import ra.core.provider
+import ra.core.scoreOf
 import io.github.ayfri.kore.arguments.types.literals.self
 import io.github.ayfri.kore.commands.function
 import io.github.ayfri.kore.commands.scoreboard.scoreboard
@@ -171,13 +177,13 @@ object FluidVault {
 
 		raw("execute if score #ender.theirs $T matches ..-1 run return run scoreboard players set #ender.want $T 0")
 
-		storeCompute("store result score #ender.gap $T", EnderCip.sub(EnderCip.score("#ender.mine", T), EnderCip.score("#ender.theirs", T)))
+		computeScore("#ender.gap", T, provider { sub(scoreOf("#ender.mine", T), scoreOf("#ender.theirs", T)) })
 
 		// Dead zone: below this the pair is level enough, and pushing would just be noise.
 		raw("execute if score #ender.gap $T matches ..20 run return run scoreboard players set #ender.want $T 0")
 
 		// Half the gap, floored as scoreboard `/=` did. process() clamps it to the rate.
-		storeCompute("store result score #ender.want $T", EnderCip.floorDiv(EnderCip.score("#ender.gap", T), 2))
+		computeScore("#ender.want", T, provider { floorDiv(scoreOf("#ender.gap", T), constant(2)) })
 	}
 
 	private fun Function.goggles() {

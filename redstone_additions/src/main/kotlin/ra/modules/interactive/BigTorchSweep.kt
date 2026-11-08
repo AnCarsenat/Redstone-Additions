@@ -1,12 +1,12 @@
 package ra.modules.interactive
 
-import io.github.ayfri.kore.arguments.enums.DataType
+import ra.core.computeInto
+import ra.core.provider
+import ra.core.scoreOf
+import ra.core.storeInt
 import io.github.ayfri.kore.arguments.types.resources.FunctionArgument
-import io.github.ayfri.kore.commands.compute
-import io.github.ayfri.kore.commands.execute.execute
 import io.github.ayfri.kore.features.predicates.providers.min
 import io.github.ayfri.kore.features.predicates.providers.plus
-import io.github.ayfri.kore.features.predicates.providers.score
 import io.github.ayfri.kore.functions.Function
 import ra.core.Ns
 import ra.core.Obj
@@ -67,14 +67,9 @@ object BigTorchSweep {
 		// clamp below is what would otherwise have already hidden it.
 		raw("execute if score #prop ${Obj.TEMP} matches 101.. run data modify entity @s data.properties.radius set value 100")
 		// The radius, clamped, and the remembering band 16 blocks past it.
-		execute {
-			storeResult { storage(Storage.TEMP, "big_torch.radius", DataType.INT, 1.0) }
-			run { compute { min(score(Obj.TEMP, "#prop"), 100) } }
-		}
-		execute {
-			storeResult { storage(Storage.TEMP, "big_torch.outer", DataType.INT, 1.0) }
-			run { compute { min(score(Obj.TEMP, "#prop"), 100) + 16 } }
-		}
+		val radius = provider { min(scoreOf("#prop", Obj.TEMP), 100) }
+		computeInto(storeInt(Storage.TEMP, "big_torch.radius"), radius)
+		computeInto(storeInt(Storage.TEMP, "big_torch.outer"), radius + 16)
 
 		callWith(sweepAt, "storage ra:temp big_torch")
 	}

@@ -1,5 +1,13 @@
 package ra.modules.wires.bridge
 
+import io.github.ayfri.kore.features.predicates.providers.constant
+import io.github.ayfri.kore.features.predicates.providers.floorDiv
+import io.github.ayfri.kore.features.predicates.providers.min
+import io.github.ayfri.kore.features.predicates.providers.mul
+import io.github.ayfri.kore.features.predicates.providers.sub
+import ra.core.computeScore
+import ra.core.provider
+import ra.core.scoreOf
 import io.github.ayfri.kore.arguments.types.literals.literal
 import io.github.ayfri.kore.arguments.types.literals.self
 import io.github.ayfri.kore.commands.data
@@ -19,9 +27,7 @@ import ra.core.executeReturnRun
 import ra.core.executeRun
 import ra.core.raw
 import ra.core.ref
-import ra.modules.wires.common.Cip
 import ra.modules.wires.common.line
-import ra.modules.wires.common.storeCompute
 
 object Bridge : PackPart {
 	val balanced = ref(Ns.WIRES, "bridge/balanced")
@@ -64,9 +70,9 @@ object Bridge : PackPart {
 			// capacity guard stays: a zero divisor is an error for /compute, and a network with
 			// no capacity reads as empty.
 			scoreboard.players.set(literal("#br.fill"), "ra.wires.tmp", 0)
-			storeCompute(
+			computeScore(
 				"#br.fill", "ra.wires.tmp",
-				Cip.floorDiv(Cip.mul(Cip.score("#net_amount", "ra.tr.tmp"), 10000), Cip.score("#net_capacity", "ra.tr.tmp")),
+				provider { floorDiv(mul(scoreOf("#net_amount", "ra.tr.tmp"), constant(10000)), scoreOf("#net_capacity", "ra.tr.tmp")) },
 				chain = "if score #net_capacity ra.tr.tmp matches 1..",
 			)
 
@@ -108,7 +114,7 @@ object Bridge : PackPart {
 
 			function(RaLib.Transport.Net.read)
 
-			storeCompute("#br.dst_free", "ra.wires.tmp", Cip.sub(Cip.score("#net_capacity", "ra.tr.tmp"), Cip.score("#net_amount", "ra.tr.tmp")))
+			computeScore("#br.dst_free", "ra.wires.tmp", provider { sub(scoreOf("#net_capacity", "ra.tr.tmp"), scoreOf("#net_amount", "ra.tr.tmp")) })
 			raw("execute if score #br.dst_free ra.wires.tmp matches ..0 run return 0")
 
 			// Compared per medium, so the half-the-gap convergence in bridge/transfer levels
@@ -270,15 +276,17 @@ object Bridge : PackPart {
 			//
 			// Stored into bridge.amount in the same command. A blocked transfer leaves it there
 			// unused: nothing reads it on that path, and the next transfer clears `bridge` first.
-			storeCompute(
+			computeScore(
 				"#br.move", "ra.wires.tmp",
+				provider {
+					min(
+						scoreOf("#prop", "ra.temp"),
+						scoreOf("#br.src_amount", "ra.wires.tmp"),
+						scoreOf("#br.dst_free", "ra.wires.tmp"),
+						floorDiv(sub(scoreOf("#br.src_amount", "ra.wires.tmp"), scoreOf("#br.dst_amount", "ra.wires.tmp")), constant(2)),
+					)
+				},
 				chain = "store result storage ra:wires bridge.amount int 1",
-				provider = Cip.min(
-					Cip.score("#prop", "ra.temp"),
-					Cip.score("#br.src_amount", "ra.wires.tmp"),
-					Cip.score("#br.dst_free", "ra.wires.tmp"),
-					Cip.floorDiv(Cip.sub(Cip.score("#br.src_amount", "ra.wires.tmp"), Cip.score("#br.dst_amount", "ra.wires.tmp")), 2),
-				),
 			)
 
 			raw("execute if score #br.move ra.wires.tmp matches ..0 run return run data modify entity @s data.status.bridge_state set value \"blocked\"")

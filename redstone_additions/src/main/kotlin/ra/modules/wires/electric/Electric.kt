@@ -1,5 +1,9 @@
 package ra.modules.wires.electric
 
+import io.github.ayfri.kore.features.predicates.providers.sub
+import ra.core.computeScore
+import ra.core.provider
+import ra.core.scoreOf
 import io.github.ayfri.kore.arguments.types.literals.literal
 import io.github.ayfri.kore.arguments.types.literals.self
 import io.github.ayfri.kore.commands.data
@@ -26,8 +30,6 @@ import ra.modules.wires.blocks.industrial_light.IndustrialLight
 import ra.modules.wires.blocks.solar_panel.SolarPanel
 import ra.modules.wires.common.Common
 import ra.modules.wires.common.line
-import ra.modules.wires.common.Cip
-import ra.modules.wires.common.storeCompute
 
 object Electric : PackPart {
 	val adopt = ref(Ns.WIRES, "electric/adopt")
@@ -220,9 +222,9 @@ object Electric : PackPart {
 			// Trend against this node's own last reading.
 			raw("execute unless data entity @s data.data.last_eu run data modify entity @s data.data.last_eu set value 0")
 			raw("execute store result score #eu.prev ra.wires.tmp run data get entity @s data.data.last_eu 1")
-			storeCompute(
+			computeScore(
 				"#eu.delta", "ra.wires.tmp",
-				Cip.sub(Cip.score("#net_amount", "ra.tr.tmp"), Cip.score("#eu.prev", "ra.wires.tmp")),
+				provider { sub(scoreOf("#net_amount", "ra.tr.tmp"), scoreOf("#eu.prev", "ra.wires.tmp")) },
 				chain = "store result entity @s data.status.trend int 1",
 			)
 			raw("execute store result entity @s data.data.last_eu int 1 run scoreboard players get #net_amount ra.tr.tmp")

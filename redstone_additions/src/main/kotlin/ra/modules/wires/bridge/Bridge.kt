@@ -19,7 +19,9 @@ import ra.core.executeReturnRun
 import ra.core.executeRun
 import ra.core.raw
 import ra.core.ref
+import ra.modules.wires.common.Cip
 import ra.modules.wires.common.line
+import ra.modules.wires.common.storeCompute
 
 object Bridge : PackPart {
 	val balanced = ref(Ns.WIRES, "bridge/balanced")
@@ -58,11 +60,15 @@ object Bridge : PackPart {
 			function(RaLib.Transport.Net.read)
 			scoreboard.players.add(literal("#br.found"), "ra.wires.tmp", 1)
 
+			// fill = amount * 10000 / capacity, floored like the scoreboard `/=` it replaced. The
+			// capacity guard stays: a zero divisor is an error for /compute, and a network with
+			// no capacity reads as empty.
 			scoreboard.players.set(literal("#br.fill"), "ra.wires.tmp", 0)
-			scoreboard.players.set(literal("#br.scale"), "ra.wires.tmp", 10000)
-			raw("execute if score #net_capacity ra.tr.tmp matches 1.. run scoreboard players operation #br.fill ra.wires.tmp = #net_amount ra.tr.tmp")
-			raw("execute if score #net_capacity ra.tr.tmp matches 1.. run scoreboard players operation #br.fill ra.wires.tmp *= #br.scale ra.wires.tmp")
-			raw("execute if score #net_capacity ra.tr.tmp matches 1.. run scoreboard players operation #br.fill ra.wires.tmp /= #net_capacity ra.tr.tmp")
+			storeCompute(
+				"#br.fill", "ra.wires.tmp",
+				Cip.floorDiv(Cip.mul(Cip.score("#net_amount", "ra.tr.tmp"), 10000), Cip.score("#net_capacity", "ra.tr.tmp")),
+				chain = "if score #net_capacity ra.tr.tmp matches 1..",
+			)
 
 			raw("\$execute if score #br.fill ra.wires.tmp > #br.hi ra.wires.tmp run data modify storage ra:wires bridge.src set value {dx:\$(dx),dy:\$(dy),dz:\$(dz)}")
 			raw("execute if score #br.fill ra.wires.tmp > #br.hi ra.wires.tmp run scoreboard players operation #br.hi_net ra.wires.tmp = @s ra.tr.net")
@@ -102,8 +108,7 @@ object Bridge : PackPart {
 
 			function(RaLib.Transport.Net.read)
 
-			scoreboard.players.operation(literal("#br.dst_free"), "ra.wires.tmp", Operation.SET, literal("#net_capacity"), "ra.tr.tmp")
-			scoreboard.players.operation(literal("#br.dst_free"), "ra.wires.tmp", Operation.REMOVE, literal("#net_amount"), "ra.tr.tmp")
+			storeCompute("#br.dst_free", "ra.wires.tmp", Cip.sub(Cip.score("#net_capacity", "ra.tr.tmp"), Cip.score("#net_amount", "ra.tr.tmp")))
 			raw("execute if score #br.dst_free ra.wires.tmp matches ..0 run return 0")
 
 			// Compared per medium, so the half-the-gap convergence in bridge/transfer levels
@@ -233,11 +238,11 @@ object Bridge : PackPart {
 
 			scoreboard.players.set(literal("#br.src"), "ra.wires.tmp", 0)
 			scoreboard.players.set(literal("#br.dst"), "ra.wires.tmp", 0)
-			scoreboard.players.set(literal("#br.move"), "ra.wires.tmp", 0)
 			data(Storage.WIRES) { remove("bridge") }
 
+			// The rate stays in #prop (ra.temp): nothing between here and the clamp below calls
+			// ra_lib:util/property again.
 			function(RaLib.Util.property, nbt { this["name"] = "rate"; this["default"] = 1000; this["min"] = 1 })
-			scoreboard.players.operation(literal("#br.rate"), "ra.wires.tmp", Operation.SET, literal("#prop"), "ra.temp")
 
 			// A Liquid Filter carries filter_medium and moves only that. Resolved here rather
 			// than in read_src because read_src runs `as` the neighbouring node, and the
@@ -250,10 +255,8 @@ object Bridge : PackPart {
 
 			raw("execute if score #br.dst ra.wires.tmp matches 0 run return run data modify entity @s data.status.bridge_state set value \"blocked\"")
 
-			scoreboard.players.operation(literal("#br.move"), "ra.wires.tmp", Operation.SET, literal("#br.rate"), "ra.wires.tmp")
-			raw("execute if score #br.src_amount ra.wires.tmp < #br.move ra.wires.tmp run scoreboard players operation #br.move ra.wires.tmp = #br.src_amount ra.wires.tmp")
-			raw("execute if score #br.dst_free ra.wires.tmp < #br.move ra.wires.tmp run scoreboard players operation #br.move ra.wires.tmp = #br.dst_free ra.wires.tmp")
-
+			// move = min(rate, src_amount, dst_free, (src_amount - dst_amount) / 2)
+			//
 			// Never move more than HALF the difference between the two sides.
 			//
 			// Moving the whole difference does not level them, it swaps them: 3000 and 2000
@@ -262,16 +265,23 @@ object Bridge : PackPart {
 			// actually doing — ping-ponging the same litre for ever.
 			//
 			// Half converges instead, and once the two are within one unit the halved gap
-			// rounds to zero and nothing moves at all.
-			scoreboard.players.operation(literal("#br.gap"), "ra.wires.tmp", Operation.SET, literal("#br.src_amount"), "ra.wires.tmp")
-			scoreboard.players.operation(literal("#br.gap"), "ra.wires.tmp", Operation.REMOVE, literal("#br.dst_amount"), "ra.wires.tmp")
-			scoreboard.players.set(literal("#br.two"), "ra.wires.tmp", 2)
-			scoreboard.players.operation(literal("#br.gap"), "ra.wires.tmp", Operation.DIVIDE, literal("#br.two"), "ra.wires.tmp")
-			raw("execute if score #br.gap ra.wires.tmp < #br.move ra.wires.tmp run scoreboard players operation #br.move ra.wires.tmp = #br.gap ra.wires.tmp")
+			// rounds to zero and nothing moves at all. The halving floors, as scoreboard `/=` did:
+			// a negative gap stays negative and the `..0` check below blocks it.
+			//
+			// Stored into bridge.amount in the same command. A blocked transfer leaves it there
+			// unused: nothing reads it on that path, and the next transfer clears `bridge` first.
+			storeCompute(
+				"#br.move", "ra.wires.tmp",
+				chain = "store result storage ra:wires bridge.amount int 1",
+				provider = Cip.min(
+					Cip.score("#prop", "ra.temp"),
+					Cip.score("#br.src_amount", "ra.wires.tmp"),
+					Cip.score("#br.dst_free", "ra.wires.tmp"),
+					Cip.floorDiv(Cip.sub(Cip.score("#br.src_amount", "ra.wires.tmp"), Cip.score("#br.dst_amount", "ra.wires.tmp")), 2),
+				),
+			)
 
 			raw("execute if score #br.move ra.wires.tmp matches ..0 run return run data modify entity @s data.status.bridge_state set value \"blocked\"")
-
-			raw("execute store result storage ra:wires bridge.amount int 1 run scoreboard players get #br.move ra.wires.tmp")
 
 			raw("\$execute positioned ~\$(sx) ~\$(sy) ~\$(sz) as @e[type=marker,tag=ra.tr.node,distance=..0.75,limit=1] run function ${Bridge.take.asId()} with storage ra:wires bridge")
 			raw("\$execute positioned ~\$(dx) ~\$(dy) ~\$(dz) as @e[type=marker,tag=ra.tr.node,distance=..0.75,limit=1] run function ${Bridge.give.asId()} with storage ra:wires bridge")

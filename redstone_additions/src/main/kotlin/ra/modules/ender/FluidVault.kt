@@ -171,15 +171,13 @@ object FluidVault {
 
 		raw("execute if score #ender.theirs $T matches ..-1 run return run scoreboard players set #ender.want $T 0")
 
-		raw("scoreboard players operation #ender.gap $T = #ender.mine $T")
-		raw("scoreboard players operation #ender.gap $T -= #ender.theirs $T")
+		storeCompute("store result score #ender.gap $T", EnderCip.sub(EnderCip.score("#ender.mine", T), EnderCip.score("#ender.theirs", T)))
 
 		// Dead zone: below this the pair is level enough, and pushing would just be noise.
 		raw("execute if score #ender.gap $T matches ..20 run return run scoreboard players set #ender.want $T 0")
 
-		raw("scoreboard players set #ender.two $T 2")
-		raw("scoreboard players operation #ender.want $T = #ender.gap $T")
-		raw("scoreboard players operation #ender.want $T /= #ender.two $T")
+		// Half the gap, floored as scoreboard `/=` did. process() clamps it to the rate.
+		storeCompute("store result score #ender.want $T", EnderCip.floorDiv(EnderCip.score("#ender.gap", T), 2))
 	}
 
 	private fun Function.goggles() {

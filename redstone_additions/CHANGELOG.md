@@ -143,6 +143,11 @@ predicates built when the pack is generated. Worlds on v6.0.0 carry on without a
 
 ### Fixed
 
+- **Server settings defaults match the blocks.** The Poppy Generator's interval row said 100 where
+  the block uses 80, and the Magic Crate radius row allowed up to 32 where the crate stops at 20.
+  The Block Breaker and Block Placer intervals now have server-default rows too. The Poppy
+  Generator's tooltip no longer mentions the retired patch mode.
+
 - **The Liquid Drain drains.** A drain points where you look when you place it, so one put
   down beside a pool usually ended up facing up — and an upright drain only ever took buckets,
   bottles and experience, never the water or lava next to it, whatever its mode said. An

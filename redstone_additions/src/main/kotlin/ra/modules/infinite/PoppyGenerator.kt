@@ -28,7 +28,6 @@ object PoppyGenerator {
 		defaultCooldown = 80,
 		loreLines = listOf(
 			loreLine("Grows flowers in front of itself, forever", "gray"),
-			loreLine("Shift+RMB with the wrench: single / patch", "dark_gray"),
 		),
 	)
 	private val block = generator.block

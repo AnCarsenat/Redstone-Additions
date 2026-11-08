@@ -220,7 +220,7 @@ you extend it.
   primary), and `potion`.
   See the [Developer Guide](developer-guide.md#transport) for the full model.
 - **Properties** (`data.properties`): Drain `mode`, `cooldown`; Filter `filter_medium`, `rate`
-  (2000); Creative Fluid Source `medium`, `rate`; Industrial Light `eu_use`; Electric Furnace
+  (2000); Creative Fluid Source `medium`, `rate`; EU Consumer and Industrial Light `eu_use`; Electric Furnace
   `output`, `mode`; switches `enabled`. Status for the Goggles is in `data.status`.
 - **Fixed rates** such as a generator's `generation_rate` are read-only: the Data Handler shows them
   locked.

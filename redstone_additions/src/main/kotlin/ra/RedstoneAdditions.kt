@@ -15,6 +15,7 @@ import ra.core.PackValidator
 import ra.core.Ra
 import ra.example.ExamplePart
 import ra.hub.HubPart
+import ra.hub.uninstall.uninstallGaps
 import ra.lib.RaLibPart
 import ra.migrations.MigrationsPart
 import ra.modules.chunkloader.ChunkLoaderModule
@@ -106,6 +107,12 @@ object RedstoneAdditions {
 		val ra = Ra(this)
 		for (part in parts) with(part) { ra.register() }
 		ra.runDeferred()
+
+		// Whatever the pack creates, the uninstall removes. Not behind `strict`: a world left with
+		// objectives or storage after an uninstall is a bug however the pack was built.
+		uninstallGaps(this).let { gaps ->
+			check(gaps.isEmpty()) { "The uninstall leaves these behind:\n" + gaps.joinToString("\n") { "  - $it" } }
+		}
 
 		PackValidator.macroLinesWithoutVariables(this).let { bad ->
 			check(bad.isEmpty()) { "Macro lines Minecraft would reject (the whole function fails to load):\n" + bad.joinToString("\n") { "  - $it" } }

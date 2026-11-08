@@ -19,6 +19,7 @@ import ra.core.GiveBundle
 import ra.core.Ns
 import ra.core.PackPart
 import ra.core.Ra
+import ra.core.Tag
 import ra.core.TagRoute
 import ra.core.WrenchCycle
 import ra.core.block.CustomBlock
@@ -157,8 +158,14 @@ object WiresBlocks : PackPart {
 
 		bundles += GiveBundle("wires", "Wires Bundle", "Fluid and electric network blocks", Ns.WIRES, items.map { it.stackNbt() })
 
+		// The retired pipe and wire tiers (see SPECS) place a Copper Pipe or a Wire; a refused
+		// placement gives that back.
+		for (old in listOf("liquid_pipe_netherite", "gas_pipe_copper", "gas_pipe_netherite"))
+			retiredPlaceTags[Tag.place(old)] = Tag.place("liquid_pipe_copper")
+		retiredPlaceTags[Tag.place("electric_wire_netherite")] = Tag.place("electric_wire_copper")
+
 		wrenchCycle("creative_fluid", WrenchCycle("Medium", "medium", CreativeFluid.cycleMedium))
-		wrenchCycle("electric_consumer", WrenchCycle("Rate", "cooldown", ElectricConsumer.cycleRate))
+		wrenchCycle("electric_consumer", WrenchCycle("Draw", "eu_use", ElectricConsumer.cycleRate))
 		wrenchCycle("electric_furnace",
 			WrenchCycle("Output", "output", ElectricFurnaceSettings.cycleOutput),
 			WrenchCycle("Power", "mode", ElectricFurnaceSettings.cycleMode))
@@ -185,10 +192,8 @@ object WiresBlocks : PackPart {
 		}
 		properties("electric_generator") { number("generation_rate", min = 1, max = 10000, readonly = true) }
 		properties("solar_panel") { number("generation_rate", min = 1, max = 10000, readonly = true) }
-		properties("electric_consumer") {
-			number("eu_use", min = 1, readonly = true)
-			number("cooldown", min = 1, max = 1200)
-		}
+		// eu_use is the consumer's setting, not a fixed rate: the wrench cycles it 20 / 40 / 80.
+		properties("electric_consumer") { number("eu_use", min = 1, max = 10000) }
 		properties("industrial_light") { number("eu_use", min = 0, max = 1000, readonly = true) }
 		properties("creative_fluid") {
 			text("medium")

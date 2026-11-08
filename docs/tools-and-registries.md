@@ -38,7 +38,7 @@ A block declares the properties the wrench may cycle, keyed by its marker's `dat
 
 ```kotlin
 // ra/modules/wires/WiresBlocks.kt
-wrenchCycle("electric_consumer", WrenchCycle("Rate", "cooldown", ElectricConsumer.cycleRate))
+wrenchCycle("electric_consumer", WrenchCycle("Draw", "eu_use", ElectricConsumer.cycleRate))
 wrenchCycle("liquid_drain",
 	WrenchCycle("Mode", "mode", LiquidDrain.cycleMode),
 	WrenchCycle("Rate", "cooldown", LiquidDrain.cycleRate))
@@ -47,7 +47,7 @@ wrenchCycle("liquid_drain",
 | Field | Meaning |
 | --- | --- |
 | `label` | Row name in the menu |
-| `prop` | `data.properties.<prop>`, shown as the current value |
+| `prop` | `data.properties.<prop>`, shown as the current value. Must be the property `fn` changes, declared and not `readonly` in the block's schema: the build fails otherwise |
 | `fn` | The cycler. Runs **as the marker, at the block**; messages `@a[distance=..10]` |
 
 `ra:tools/wrench/init_registry` (`tools/wrench/WrenchRegistry.kt`) writes every row into

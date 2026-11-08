@@ -49,6 +49,24 @@ object WrenchRegistry {
 	}
 
 	fun Ra.registerWrenchRegistry() {
+		// A row names the property its function cycles, and the menu hides rows whose property the
+		// schema marks readonly. A row naming another property than the one it cycles slips a
+		// readonly value past that filter (the EU Consumer's "Rate" row named cooldown and cycled
+		// eu_use), so every row must name a declared, writable property of its block.
+		afterAllParts {
+			val bad = wrenchCycles.flatMap { (type, rows) ->
+				rows.mapNotNull { row ->
+					val spec = blockProperties[type]?.firstOrNull { it.name == row.prop }
+					when {
+						spec == null -> "$type: wrench row \"${row.label}\" cycles ${row.prop}, which its property schema does not declare"
+						spec.readonly -> "$type: wrench row \"${row.label}\" cycles ${row.prop}, which its property schema declares readonly"
+						else -> null
+					}
+				}
+			}
+			check(bad.isEmpty()) { "Wrench rows the menu would get wrong:\n" + bad.joinToString("\n") { "  - $it" } }
+		}
+
 		// Configuration, rewritten on every load. Keys sorted, as the hand-written map was.
 		val map = wrenchCycles.toSortedMap().entries.joinToString(",", "{", "}") { (type, rows) ->
 			"\"$type\":" + rows.joinToString(",", "[", "]") { """{label:"${it.label}",prop:"${it.prop}",fn:"${it.fn.asId()}"}""" }

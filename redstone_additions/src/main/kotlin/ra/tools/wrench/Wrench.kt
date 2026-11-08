@@ -102,7 +102,7 @@ object Wrench {
 
 		for (route in ra.wrenchToggles) executeRun("if entity @s[tag=${route.tag}]", route.fn)
 
-		// Multiblock bases - try to assemble or toggle existing multiblock.
+		// Multiblock bases - try to assemble (an assembled one only says so).
 		for (tag in BASE_TAGS) executeRun("if entity @s[tag=$tag] at @s", WrenchMultiblock.handleMultiblockBase)
 
 		// No action for other blocks.

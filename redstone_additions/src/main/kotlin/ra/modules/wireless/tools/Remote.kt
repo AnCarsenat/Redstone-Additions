@@ -172,9 +172,9 @@ object Remote {
 			// Try to overwrite it with the remote's channel: success 0 (nothing changed) means a match.
 			raw("execute store success score @s ${Obj.TEMP} run data modify storage ra:temp check_channel set from storage ra:temp remote_channel")
 
-			// Channel matches and the receiver is enabled: pulse it.
-			raw("execute if score @s ${Obj.TEMP} matches 0 if data entity @s data.properties{enabled:1b} run tag @s add ${Receiver.PULSING}")
-			raw("execute if score @s ${Obj.TEMP} matches 0 if data entity @s data.properties{enabled:1b} run scoreboard players set @s ${Receiver.PULSE_TIMER} 4")
+			// Channel matches: pulse it.
+			raw("execute if score @s ${Obj.TEMP} matches 0 run tag @s add ${Receiver.PULSING}")
+			raw("execute if score @s ${Obj.TEMP} matches 0 run scoreboard players set @s ${Receiver.PULSE_TIMER} 4")
 		}
 
 		registerChannelInput()

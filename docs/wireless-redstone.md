@@ -27,8 +27,11 @@ for the Remote alone.
 
 ### Switching a block off
 
-Right-click an Emitter or Receiver with the [Wrench](tools.md) to disable or enable it. A disabled
-Emitter does not transmit; a disabled Receiver keeps its output off.
+Right-click an Emitter with the [Wrench](tools.md) to disable or enable it. A disabled Emitter does
+not transmit.
+
+A Receiver has no off switch: it follows its channel. To keep one off, give it a channel nothing
+transmits on, or remove the iron blocks around it.
 
 ### The Redstone Remote
 
@@ -44,7 +47,7 @@ permissions, so it works in survival.
 
 | Problem | Check |
 | --- | --- |
-| Receiver never turns on | The channel names are identical, the Emitter is powered, neither block is disabled, and there are iron blocks next to the Receiver |
+| Receiver never turns on | The channel names are identical, the Emitter is powered and not disabled, and there are iron blocks next to the Receiver |
 | Receiver stays on | Another Emitter on the same channel is still powered |
 | Remote does nothing | Its channel matches the Receiver's exactly |
 
@@ -52,8 +55,9 @@ permissions, so it works in survival.
 
 ## Advanced
 
-- Properties on the markers: `data.properties.channel` (string, default `"default"`),
-  `data.properties.enabled` (`1b` / `0b`, toggled by the wrench).
+- Properties on the markers: `data.properties.channel` (string, default `"default"`) on both;
+  `data.properties.enabled` (`1b` / `0b`, toggled by the wrench) on the Emitter only. Receivers
+  placed before v6.0.1 may still carry an `enabled` key; nothing reads it.
 - The Remote's channel is stored on the item: `custom_data.ra.channel`.
 - An Emitter reads its power with `ra_lib:redstone/detect`; while powered and enabled it carries
   the tag `ra.transmitting`. A Receiver scans transmitters for an exact channel match and tags

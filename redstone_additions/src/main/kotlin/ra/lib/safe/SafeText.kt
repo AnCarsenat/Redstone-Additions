@@ -1,6 +1,7 @@
 package ra.lib.safe
 
 import io.github.ayfri.kore.commands.function
+import io.github.ayfri.kore.functions.Function
 import ra.api.RaLib
 import ra.core.Obj
 import ra.core.Ra
@@ -61,7 +62,16 @@ object SafeText {
 		"'()*$%&;<>?`|".forEach { put(it.toString(), 30) }
 	}
 
-	private fun bad() = "scoreboard players set #sf.bad $T 1"
+	/**
+	 * As a block's marker: stop here ([onFail], `return 0` by default) unless `data.properties.<prop>`
+	 * is safe in [format]. Put it before every macro call that pastes the property.
+	 */
+	fun Function.guardProperty(prop: String, format: TextFormat, onFail: String = "return 0") {
+		raw("execute store result score #sf.g $T run function ${guard.asId()} {p:\"$prop\",f:${format.code}}")
+		raw("execute unless score #sf.g $T matches 1 run $onFail")
+	}
+
+	private fun bad() ="scoreboard players set #sf.bad $T 1"
 
 	fun Ra.registerSafeText() {
 		// Configuration, rewritten on every load.

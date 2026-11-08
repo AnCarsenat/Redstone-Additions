@@ -1,5 +1,7 @@
 package ra.modules.wireless
 
+import ra.core.TextFormat
+import ra.core.text
 import io.github.ayfri.kore.arguments.types.literals.self
 import io.github.ayfri.kore.commands.tag
 import io.github.ayfri.kore.features.recipes.types.key
@@ -59,7 +61,8 @@ object Receiver {
 	fun Ra.registerReceiver() {
 		block(block)
 		properties(block) {
-			text("channel")
+			// Compared as a value, never pasted into a command.
+			text("channel", TextFormat.NAME)
 			bool("enabled")
 		}
 		wrenchToggles += TagRoute(block.tag, toggle)

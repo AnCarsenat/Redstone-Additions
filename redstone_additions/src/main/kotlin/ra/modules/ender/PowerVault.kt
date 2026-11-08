@@ -1,5 +1,8 @@
 package ra.modules.ender
 
+import ra.core.TextFormat
+import ra.core.text
+import ra.lib.safe.SafeText.guardProperty
 import io.github.ayfri.kore.features.predicates.providers.constant
 import io.github.ayfri.kore.features.predicates.providers.floorDiv
 import io.github.ayfri.kore.features.predicates.providers.min
@@ -77,7 +80,8 @@ object PowerVault {
 		block(block)
 		wrenchCycle(block.id, WrenchCycle("Mode", "mode", cycleMode))
 		properties(block) {
-			text("channel")
+			// Pasted inside quotes into the link commands: no quote, no backslash.
+			text("channel", TextFormat.NAME)
 			text("mode")
 			number("transfer_rate", min = 1, max = 10000, readonly = true)
 		}
@@ -168,6 +172,8 @@ object PowerVault {
 		// beforehand would have been refunded from whatever #ender.sent the previous vault left.
 		raw("data modify storage ra:ender power set value {}")
 		raw("data modify storage ra:ender power.channel set from entity @s data.properties.channel")
+		// Pasted into the link macro: an unsafe channel links nothing.
+		guardProperty("channel", TextFormat.NAME, onFail = "data remove storage ra:ender power.channel")
 		executeReturnRun("unless data storage ra:ender power.channel", Link.done)
 
 		// What this grid can spare.
@@ -209,6 +215,8 @@ object PowerVault {
 		raw("scoreboard players set #ender.theirs $T -1")
 		raw("data modify storage ra:ender probe set value {}")
 		raw("data modify storage ra:ender probe.channel set from entity @s data.properties.channel")
+		// Pasted into the link macro: an unsafe channel links nothing.
+		guardProperty("channel", TextFormat.NAME, onFail = "data remove storage ra:ender probe.channel")
 		function(Link.probePower, Storage.ENDER, "probe")
 
 		raw("execute if score #ender.theirs $T matches ..-1 run return run scoreboard players set #ender.carry $T 0")

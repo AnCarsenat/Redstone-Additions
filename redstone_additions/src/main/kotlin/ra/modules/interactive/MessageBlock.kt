@@ -1,5 +1,9 @@
 package ra.modules.interactive
 
+import ra.core.TextFormat
+import ra.core.text
+import ra.lib.safe.SafeText.guardProperty
+import ra.modules.sensors.SensorsModule.SELECTOR_SETTING
 import io.github.ayfri.kore.arguments.types.literals.allEntities
 import io.github.ayfri.kore.commands.tag
 import io.github.ayfri.kore.functions.Function
@@ -55,8 +59,10 @@ object MessageBlock {
 	fun Ra.registerMessageBlock() {
 		block(block)
 		properties(block) {
-			text("message_block")
-			text("entity_selector")
+			// Shown, never pasted into a command: any text.
+			text("message_block", TextFormat.FREE)
+			// Pasted into a command: admins only unless the server allows it (Sensors settings).
+			text("entity_selector", TextFormat.SELECTOR, adminOnly = true, adminSetting = SELECTOR_SETTING)
 			number("range", min = 1, max = 128)
 		}
 		pack.blockRegisterMessage(block)
@@ -113,6 +119,9 @@ object MessageBlock {
 
 		// Preferred targeting model: an explicit entity selector string.
 		raw("execute if data entity @s data.properties.entity_selector run data modify storage ra:temp entity_selector set from entity @s data.properties.entity_selector")
+		// Pasted into the command: an unsafe selector sends nothing (ra_lib:safe/guard).
+		raw("execute if data entity @s data.properties.entity_selector store result score #sf.g ${Obj.TEMP} run function ${ra.api.RaLib.Safe.guard.asId()} {p:\"entity_selector\",f:${TextFormat.SELECTOR.code}}")
+		raw("execute if data entity @s data.properties.entity_selector unless score #sf.g ${Obj.TEMP} matches 1 run return 0")
 		executeRun("if data entity @s data.properties.entity_selector", sendMacro, "with storage ra:temp")
 		raw("execute if data entity @s data.properties.entity_selector run return 1")
 

@@ -143,14 +143,14 @@ internal object Assembly {
 	 * As the newly summoned marker (tagged ra.multiblock.new). Standard multiblock data:
 	 *   data.type        multiblock type id ("blast_forge")
 	 *   data.facing      "north" / "south" / "east" / "west"
-	 *   data.properties  {speed:1}
+	 *   data.properties  {}
 	 *   data.inputs      {input_1:{x,y,z}, ...}  IO block offsets from the base
 	 *   data.outputs     {output_1:{x,y,z}, ...}
 	 *   data.controls    {redstone_in:{x,y,z}, ...}
 	 */
 	private fun Function.setupMarker() {
 		// One merge, so the compound and every key exist before the individual writes.
-		raw("""data merge entity @s {data:{type:"unknown",facing:"none",properties:{speed:1},inputs:{},outputs:{},controls:{}}}""")
+		raw("""data merge entity @s {data:{type:"unknown",facing:"none",properties:{},inputs:{},outputs:{},controls:{}}}""")
 
 		data(self()) { modify("data.type") { set(MB, "type") } }
 		data(self()) { modify("data.facing") { set(MB, "facing") } }

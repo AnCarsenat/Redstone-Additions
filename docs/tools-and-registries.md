@@ -82,12 +82,13 @@ The UNI gate's row is registered by the tools (`registerToolsWrenchCycles`) beca
 ### Plain RMB: toggles
 
 ```kotlin
-wrenchToggles += TagRoute(Emitter.block.tag, Emitter.toggle)
+wrenchToggles += TagRoute(MyBlock.block.tag, MyBlock.toggle)
 ```
 
 `ra:tools/wrench/found_block` runs each registered toggle as the marker whose tag matches, then
-the multiblock-base assembly, then "This block cannot be toggled." for anything else. Only blocks
-with one on/off state worth reaching for register one (the Wireless Emitter and Receiver).
+the multiblock-base assembly, then "This block cannot be toggled." for anything else. No shipped
+block registers one: the Wireless Emitter and Receiver were the last, until v6.0.1 removed their
+hidden `enabled` switch. The registry stays for extensions.
 
 ## Property schemas
 

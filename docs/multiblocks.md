@@ -119,9 +119,9 @@ A redstone block directly under the Netherite Base locks the platform.
   the machines are in `ra_multiblock`. Adding a structure: [Multiblock Library](multiblock-library.md).
 - An assembled machine is a marker tagged `ra.multiblock` and `ra.multiblock.<id>`, with
   `data.type`, `data.facing`, `data.properties`, `data.inputs`, `data.outputs` and
-  `data.controls`; machine state goes in `data.data` and `data.status`. `data.properties` holds
-  `speed:1` (reserved, nothing reads it yet). Machines assembled before v6.0.1 may also carry an
-  `enabled` key there; nothing reads it.
+  `data.controls`; machine state goes in `data.data` and `data.status`. `data.properties` starts
+  empty. Machines assembled before v6.0.1 may still carry `enabled` and `speed` keys there; nothing
+  reads them.
 - Blast Forge heat is the `ra.heat` score on its marker; `ra.mb_timer` paces machines.
 - The structure registry and each type's rotated block and IO lists live in
   `storage ra:multiblock types.<id>`; the checks themselves are predicates,

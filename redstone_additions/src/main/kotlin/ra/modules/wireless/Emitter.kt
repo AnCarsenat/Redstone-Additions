@@ -10,7 +10,6 @@ import io.github.ayfri.kore.generated.Items
 import ra.api.RaLib
 import ra.core.Ns
 import ra.core.Ra
-import ra.core.TagRoute
 import ra.core.block.CustomBlock
 import ra.core.block.blockGive
 import ra.core.block.gogglesHeader
@@ -37,26 +36,29 @@ import ra.core.block.forEachMarker
 /**
  * Wireless Emitter: transmits its redstone input to every receiver on the same `channel` string.
  * It only tags itself `ra.transmitting`; receivers look for transmitting emitters on their channel.
- * The wrench (plain RMB) toggles `enabled`.
+ *
+ * No on/off switch: its redstone input and its channel are the controls. Until v6.0.1 it also had an
+ * `enabled` property the wrench toggled, invisible on the block, which left an emitter silently
+ * dead. Markers placed before then may still carry `enabled`; nothing reads it, and the schema
+ * declares it hidden and read-only so the Data Handler does not list it as undeclared.
  */
 object Emitter {
 	val block = CustomBlock(Ns.WIRELESS, "emitter", "Wireless Emitter", model = "minecraft:end_stone_bricks")
 	val item = block.loreItem {}
 
-	/** On an enabled, powered emitter. Receivers match against it. */
+	/** On a powered emitter. Receivers match against it. */
 	const val TRANSMITTING = "ra.transmitting"
 
 	private val process = block.fn("process")
-	val toggle = block.fn("toggle")
 
 	fun Ra.registerEmitter() {
 		block(block)
 		properties(block) {
 			// Compared as a value, never pasted into a command.
 			text("channel", TextFormat.NAME)
-			bool("enabled")
+			// Retired in v6.0.1, still on markers placed before it. Nothing reads it.
+			bool("enabled", readonly = true, visible = false)
 		}
-		wrenchToggles += TagRoute(block.tag, toggle)
 		pack.blockRegisterMessage(block)
 		pack.blockGive(block)
 		pack.shapedRecipe(block.ns, block.id, item.recipeResult(), Unlock(Items.END_STONE_BRICKS)) {
@@ -71,30 +73,23 @@ object Emitter {
 			placementGuard(block, checkExisting = false)
 			// End stone bricks with a marker.
 			placeBlock(block)
-			// Default channel (a string) and enabled state.
+			// Default channel (a string).
 			setOnNew(block, "data.properties.channel", "\"default\"")
-			setOnNew(block, "data.properties.enabled", "1b")
 			// Remove ra.new and the placement tag.
 			finishPlacement(block)
 		}
 
 		// As the marker, at its position.
 		pack.define(process) {
-			defaultsChannelEnabled()
+			defaultChannel()
 
 			// Detect redstone state from all supported sources.
 			function(RaLib.Redstone.detectSwitch)
-
-			// Only transmit if enabled.
-			raw("execute unless data entity @s data.properties{enabled:1b} run return 0")
 
 			// If powered, tag as transmitting.
 			raw("execute if entity @s[tag=${Tag.POWERED}] run tag @s add $TRANSMITTING")
 			raw("execute unless entity @s[tag=${Tag.POWERED}] run tag @s remove $TRANSMITTING")
 		}
-
-		// Toggle enabled (called by the wrench, as the marker).
-		pack.define(toggle) { toggleEnabled("Emitter", "yellow") }
 
 		pack.define(block.goggles) {
 			gogglesHeader(block, nameY = 1.0)

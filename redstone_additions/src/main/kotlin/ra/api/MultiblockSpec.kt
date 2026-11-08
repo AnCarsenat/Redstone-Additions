@@ -158,13 +158,13 @@ fun Ra.multiblock(spec: MultiblockSpec): MultiblockSpec {
 	check(!multiblockSpecsCompiled) { "multiblock '${spec.id}' registered after ra_lib_multiblock compiled its specs; register it from register(), not afterAllParts" }
 	require(multiblockSpecs.none { it.id == spec.id }) { "multiblock '${spec.id}' registered twice" }
 	multiblockSpecs += spec
-	// What ra_lib_multiblock's assembly writes on every structure marker (`properties:{speed:1}`).
-	// `speed` is reserved: nothing reads it yet. `enabled` was a hidden on/off switch the wrench
-	// toggled until v6.0.1; a structure's redstone control is its only off switch now. Markers
-	// assembled before then may still carry it: nothing reads it, and declaring it hidden and
-	// read-only keeps the Data Handler from listing it as undeclared.
+	// ra_lib_multiblock's assembly writes an empty `properties:{}` on every structure marker. Until
+	// v6.0.1 it wrote `{enabled:1b,speed:1}`: `enabled` was a hidden on/off switch the wrench
+	// toggled (a structure's redstone control is its only off switch now) and `speed` was reserved
+	// and never read. Markers assembled before then may still carry either: nothing reads them, and
+	// declaring them hidden and read-only keeps the Data Handler from listing them as undeclared.
 	properties(spec.id) {
-		number("speed", min = 1, readonly = true)
+		number("speed", min = 1, readonly = true, visible = false)
 		bool("enabled", readonly = true, visible = false)
 	}
 	return spec

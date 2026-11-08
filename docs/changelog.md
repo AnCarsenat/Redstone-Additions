@@ -43,6 +43,16 @@ predicates built when the pack is generated. Worlds on v6.0.0 carry on without a
 
 ### Fixed
 
+- **Tanks and batteries out of view keep what they hold.** Placing or breaking any pipe or wire
+  recounted every network in the world from the blocks that were loaded at the time. A network
+  out of view lost its contents for good, and came back showing 0 / 0, with its pumps and
+  generators unable to add anything; one only partly in view was recounted from the loaded part
+  and cut down to that part's capacity. Placing a block now only recounts the networks it
+  touches, and a network that reaches into unloaded chunks is never recounted or trimmed: a new
+  pipe simply joins it, and a break that splits it takes effect once the whole network is loaded
+  again. Networks already emptied this way work again as soon as one of their blocks is placed,
+  broken or read by a machine or the Goggles.
+
 - **Machines stack their output again.** The Blast Forge, the Rock Metallic Drill and
   Storage Box deliveries put each delivery into a new slot. A chest holding three single
   cobblestone that received one more ended up with four stacks of one instead of a stack of

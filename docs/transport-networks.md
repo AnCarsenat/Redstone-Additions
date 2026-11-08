@@ -210,8 +210,14 @@ you extend it.
   by flood fill when a node is placed or broken (debounced to one rebuild every 5 ticks). Pipes,
   tanks, valves and wires do no work per tick; only blocks that move something between the world
   and a network are ticked.
+- **Out of view.** A rebuild only touches the networks a change concerns; every other network,
+  loaded or not, keeps its contents and its number. A network that reaches into unloaded chunks
+  is never recounted or trimmed: a new pipe simply joins it, and a break that splits it takes
+  effect once the whole network is loaded again (until then both halves share one pool).
+  See [Scoped rebuilds](developer-guide.md#scoped-rebuilds).
 - **Storage.** Each network is `storage ra:transport nets.n<id>`: `amount` (total), `capacity`,
-  `amounts` (per fluid), `media` (fluids in arrival order), `medium` (the primary), and `potion`.
+  `nodes` (block count), `amounts` (per fluid), `media` (fluids in arrival order), `medium` (the
+  primary), and `potion`.
   See the [Developer Guide](developer-guide.md#transport) for the full model.
 - **Properties** (`data.properties`): Drain `mode`, `cooldown`; Filter `filter_medium`, `rate`
   (2000); Creative Fluid Source `medium`, `rate`; Industrial Light `eu_use`; Electric Furnace

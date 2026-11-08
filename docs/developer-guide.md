@@ -178,7 +178,8 @@ Key functions:
 The engine groups adjacent nodes of the same class into networks by flood fill.
 Contents belong to the network, not to individual nodes, so a pipe run costs
 nothing per tick and transfer is order-independent. Rebuilds happen only on
-placement or break, debounced to at most one every 5 ticks.
+placement or break, debounced to at most one every 5 ticks, and only touch the
+networks the change concerns (see [Scoped rebuilds](#scoped-rebuilds)).
 
 Classes (`fluid`, `item`, `electric`) never merge, so an item pipe and a fluid
 pipe can share a block line without interacting.
@@ -199,7 +200,8 @@ Every bug this system has had was that invariant breaking somewhere.
 | Field | Example | What it is |
 | --- | --- | --- |
 | `amount` | `10000` | The total across every medium. Capacity is checked against **this**, so a run clogs on the sum and not on any one medium. |
-| `capacity` | `20000` | Summed from `ra.tr.cap` on every node at rebuild. |
+| `capacity` | `20000` | Summed from `ra.tr.cap` on every node at rebuild; a leave takes its node's share off at once. |
+| `nodes` | `14` | How many nodes it has, so a leave can tell "last node gone" (record deleted) from "the rest is out of view". Absent on records written before v6.0.1, which are then never counted or deleted by count. |
 | `amounts` | `{water:5000,lava:5000}` | The per-medium breakdown. |
 | `media` | `[{m:"water"},{m:"lava"}]` | The same keys as a list, in arrival order. |
 | `medium` | `"water"` | A copy of `media[0].m`, because every display and every bridge already reads it. |
@@ -243,20 +245,71 @@ the medium name.
   standing.
 
 **The rebuild is where it gets hard.** Contents belong to the network, and a
-rebuild discards every network, so the contents have to survive outside one:
+rebuild takes networks apart, so the contents have to survive outside one:
 
-1. `rebuild/snapshot` — each network's root marker parks the **whole breakdown**
-   as `data.data.carry`, a list of `{m,a}`, and `ra.tr.carry` is summed from
-   those entries rather than read off `amount`. Summing it is what keeps the
-   total and the breakdown from disagreeing on the way back.
-2. `nets` is wiped. Ids are reissued, old roots first, so a component containing
-   an old root inherits its number and a retired number is never reissued.
-3. `rebuild/accumulate_node` — capacity and carried total per new network.
-4. `rebuild/absorb` — folds each carrier's `{m,a}` list back in, medium by
+1. `rebuild/scope` — decides which networks are taken apart (below). Everything
+   else is left exactly as it is.
+2. `rebuild/snapshot` — each of those networks' root marker parks the **whole
+   breakdown** as `data.data.carry`, a list of `{m,a}`, and `ra.tr.carry` is
+   summed from those entries rather than read off `amount`. Summing it is what
+   keeps the total and the breakdown from disagreeing on the way back. The
+   record is then deleted. Only the first root of an id snapshots, so a network
+   that somehow has two roots is never carried twice.
+3. `rebuild/adopt` — every unassigned node (new, or from a network taken apart)
+   touching a **kept** network joins it, and a flood carries that number on
+   through the unassigned nodes behind it.
+4. `rebuild/assign_next` — what is left gets fresh networks, old roots first, so
+   a component containing an old root inherits its number. A fresh id comes from
+   `#net_seq`, which only goes up, and skips any id that still has a record.
+5. `rebuild/accumulate_node` — capacity, carried total and node count of every
+   node placed in this rebuild, added to its network: a fresh record, or a kept
+   one it was adopted into.
+6. `rebuild/absorb` — folds each carrier's `{m,a}` list back in, medium by
    medium, so two runs joined by a new pipe arrive as two breakdowns that add up.
-5. `rebuild/clamp` — a network that lost a tank can be over capacity. The excess
+7. `rebuild/clamp` — a network that lost a tank can be over capacity. The excess
    comes off the **newest** medium first, walked from `media[-1]`, which is the
-   same rule the primary follows from the other end.
+   same rule the primary follows from the other end. Only networks built fresh
+   in this rebuild are clamped: they were wholly in view.
+
+#### Scoped rebuilds
+
+`@e` only sees **loaded** entities. Until v6.0.1 a rebuild reset `nets` to `{}`
+and recounted every network from the markers it could see, so a network whose
+root was in an unloaded chunk lost its record with nobody to carry it, and one
+half in view was recounted from that half and clamped to its capacity. Laying
+one pipe anywhere emptied every tank out of view.
+
+A rebuild now works on a **scope**:
+
+- **Named networks.** `net/leave` appends its network's id to `dirtyq` (and takes
+  the node's capacity and count off the record at once). `net/read` does the same
+  for a node whose network has no record, which is how networks emptied by the
+  old bug repair themselves the first time something reads them. `pending` holds
+  networks held back last time.
+- **On load**, `full:1b` puts every loaded network in scope once, because markers
+  may have been added or removed while the pack was off.
+- **Held back.** A network in scope with a loaded node standing next to a chunk
+  that is not loaded — or in one — may continue out of view. `rebuild/edge`
+  tests the node's own position and its four horizontal sides with `execute if
+  loaded`, which is only true once a chunk's **entities** are loaded too, so a
+  marker `@e` cannot see yet always counts as out of view. A held network keeps
+  its record, its root and its number; its id is pushed under `#net_seq` so it is
+  never reissued. If it was named on purpose it goes back on `pending`, which
+  `transport/tick` retries every 100 ticks; until then a split made while it was
+  half in view is not applied, and its parts share one pool. A network with no
+  record is never held: there is nothing to protect, and rebuilding it repairs it.
+- **Not in scope** at all: every other network. A new pipe next to one joins it
+  through adoption, without the network being recounted, so a rebuild costs the
+  size of what changed, not the number of pipes in the world.
+- **Two kept networks meeting** (a pipe laid between them) are found by
+  `rebuild/meet` during the adoption flood. Both go on `pending` and the rebuild
+  goes round once more straight away; whichever is wholly in view is taken apart
+  and adopted by the other.
+- **A root leaving with no loaded survivor** marks the record `rootless`; the
+  next rebuild that sees one of its nodes makes it the root.
+
+No migration is needed: the new record fields are optional, and a record without
+`nodes` is simply never counted down.
 
 Two rules in there are load-bearing and were both learned the hard way:
 

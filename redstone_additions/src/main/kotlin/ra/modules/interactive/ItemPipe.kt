@@ -58,6 +58,9 @@ object ItemPipe {
 
 	fun Ra.registerItemPipe() {
 		block(block)
+		properties(block) {
+			item("filter_item")
+		}
 		pack.blockRegisterMessage(block)
 		pack.specGive(block, item)
 		pack.shapedRecipe(block.ns, block.id, item.recipeResult(), Unlock(Items.HOPPER), count = 8) {

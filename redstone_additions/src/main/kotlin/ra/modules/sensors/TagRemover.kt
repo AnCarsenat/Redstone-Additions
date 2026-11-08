@@ -42,6 +42,10 @@ object TagRemover {
 
 	fun Ra.registerTagRemover() {
 		block(block)
+		properties(block) {
+			text("entity_selector")
+			text("tag")
+		}
 		pack.blockRegisterMessage(block)
 		pack.blockGive(block)
 		pack.shapedRecipe(block.ns, block.id, item.recipeResult(), Unlock(Items.NAME_TAG), count = null) {

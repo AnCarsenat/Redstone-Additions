@@ -56,6 +56,9 @@ object Clipboard {
 	val checkKind = tool("clipboard/check_kind")
 	val apply = tool("clipboard/apply")
 	val refuse = tool("clipboard/refuse")
+	private val strip = tool("clipboard/strip")
+	private val stripNext = tool("clipboard/strip_next")
+	private val stripOne = tool("clipboard/strip_one")
 
 	private const val HOLDER = "@a[tag=ra.clip_active,limit=1]"
 	private const val PREFIX = """{text:"[Clipboard] ",color:"gold"}"""
@@ -165,6 +168,7 @@ object Clipboard {
 			blockNameOnly()
 			callWith(checkKind, "storage ra:temp clip")
 			executeReturnRun("unless data storage ra:temp clip_ok", refuse)
+			function(strip)
 			callWith(apply, "storage ra:temp clip")
 			raw("""tellraw $HOLDER [$PREFIX,{text:"Matched this ",color:"gray"},{nbt:"block_name",storage:"ra:temp",color:"yellow"},{text:" to the origin.",color:"gray"}]""")
 			raw("playsound minecraft:block.amethyst_block.chime block @a[tag=ra.clip_active,limit=1,scores={${Obj.USER_SOUND}=1..}] ~ ~ ~ 0.7 1.4")
@@ -188,6 +192,36 @@ object Clipboard {
 		pack.define(apply) {
 			raw("data merge entity @s {data:{properties:{}}}")
 			raw("data modify entity @s data.properties merge from storage ra:temp clip.props")
+		}
+
+		// Take out of the copied settings what the holder may not set on this block, by its type's
+		// schema: read-only values (the target keeps its own working numbers), and admin-only or
+		// hidden ones unless the holder has server-settings access. As the target marker.
+		pack.define(strip) {
+			function(ra.tools.datahandler.DataHandler.loadSchema)
+			raw("execute store success score #clip.adm ${Obj.TEMP} if entity @a[tag=ra.clip_active,tag=ra.admin,limit=1]")
+			raw("data modify storage ra:temp clip_iter set from storage ra:dh block_order")
+			function(stripNext)
+			raw("data remove storage ra:temp clip_iter")
+		}
+		pack.define(stripNext) {
+			raw("execute unless data storage ra:temp clip_iter[0] run return 0")
+			raw("data modify storage ra:temp clip_q set value {}")
+			raw("data modify storage ra:temp clip_q.name set from storage ra:temp clip_iter[0]")
+			callWith(stripOne, "storage ra:temp clip_q")
+			raw("data remove storage ra:temp clip_iter[0]")
+			function(stripNext)
+		}
+		// {name}
+		pack.define(stripOne) {
+			raw("\$execute store result score #clip.ro ${Obj.TEMP} run data get storage ra:dh schema.\$(name).readonly")
+			raw("\$execute store result score #clip.ao ${Obj.TEMP} run data get storage ra:dh schema.\$(name).admin_only")
+			raw("scoreboard players set #clip.vis ${Obj.TEMP} 1")
+			raw("\$execute if data storage ra:dh schema.\$(name).visible store result score #clip.vis ${Obj.TEMP} run data get storage ra:dh schema.\$(name).visible")
+			raw("\$execute if score #clip.ro ${Obj.TEMP} matches 1 run return run data remove storage ra:temp clip.props.\$(name)")
+			raw("execute if score #clip.adm ${Obj.TEMP} matches 1 run return 0")
+			raw("\$execute if score #clip.ao ${Obj.TEMP} matches 1 run return run data remove storage ra:temp clip.props.\$(name)")
+			raw("\$execute if score #clip.vis ${Obj.TEMP} matches 0 run data remove storage ra:temp clip.props.\$(name)")
 		}
 
 		// Say why the paste did not happen, naming both kinds.

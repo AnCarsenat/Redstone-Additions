@@ -27,18 +27,21 @@ import ra.tools.datahandler.DataHandlerSelection.pendingSave
 import ra.tools.datahandler.DataHandlerSelection.select
 import ra.tools.datahandler.props.DataHandlerList
 import ra.tools.datahandler.props.DataHandlerProps
+import ra.tools.datahandler.DataHandlerRegistry
 import ra.tools.datahandler.props.DataHandlerTypes
 import ra.tools.tool
 
 /**
  * What the Data Handler's chat buttons do: `/trigger ra.dh.action set <n>`, handled here.
  *
- *   90..93      menu actions (internal data, refresh, menu, cancel input)
- *   100 + i     the button of registry row i (edit)
- *   200 + i     the [Set from hand] button of registry row i
+ *   90..93                    menu actions (internal data, refresh, menu, cancel input)
+ *   stamp * 1000 + 100 + i    edit row i of the block's schema (storage ra:dh block_order)
+ *   stamp * 1000 + 400 + i    [Set from hand] of row i
+ *   stamp * 1000 + 700 + i    edit an undeclared property, by its index in storage ra:dh known
  *
- * Property rows carry their registry index rather than a per-property constant, so one handler
- * serves every property instead of a branch per name.
+ * The stamp is the number of the menu the row was drawn in (see DataHandlerRegistry): a click from
+ * any other menu than the player's latest -- an old one scrolled back to, one drawn before a
+ * /reload -- is refused and the menu redrawn, so an index always means what was on screen.
  */
 object DataHandlerActions {
 	val tick = Tools.DataHandler.tick
@@ -74,8 +77,20 @@ object DataHandlerActions {
 			// player to refresh would otherwise decide what every other player's buttons read.
 			executeRun("as $TARGET", updateStorage)
 
-			executeRun("if score @s ra.dh.action matches 200..", DataHandlerProps.handAction)
-			executeRun("if score @s ra.dh.action matches 100..199", genericAction)
+			// action = stamp * 1000 + code.
+			raw("scoreboard players set #dh.k1000 ${Obj.TEMP} 1000")
+			raw("scoreboard players operation #dh.code ${Obj.TEMP} = @s ra.dh.action")
+			raw("scoreboard players operation #dh.code ${Obj.TEMP} %= #dh.k1000 ${Obj.TEMP}")
+			raw("scoreboard players operation #dh.stamp ${Obj.TEMP} = @s ra.dh.action")
+			raw("scoreboard players operation #dh.stamp ${Obj.TEMP} /= #dh.k1000 ${Obj.TEMP}")
+			raw("scoreboard players set #dh.fresh ${Obj.TEMP} 0")
+			raw("execute if score #dh.stamp ${Obj.TEMP} = @s ${DataHandlerRegistry.MENU} run scoreboard players set #dh.fresh ${Obj.TEMP} 1")
+			raw("""execute if score #dh.code ${Obj.TEMP} matches 100.. if score #dh.fresh ${Obj.TEMP} matches 0 run tellraw @s [$PREFIX,{text:"That menu is out of date; here is the current one.",color:"gray"}]""")
+			executeRun("if score #dh.code ${Obj.TEMP} matches 100.. if score #dh.fresh ${Obj.TEMP} matches 0", refresh)
+
+			executeRun("if score #dh.fresh ${Obj.TEMP} matches 1 if score #dh.code ${Obj.TEMP} matches 400..699", DataHandlerProps.handAction)
+			executeRun("if score #dh.fresh ${Obj.TEMP} matches 1 if score #dh.code ${Obj.TEMP} matches 100..399", genericAction)
+			executeRun("if score #dh.fresh ${Obj.TEMP} matches 1 if score #dh.code ${Obj.TEMP} matches 700..999", genericAction)
 
 			executeRun("if score @s ra.dh.action matches 90", showInternalData)
 			executeRun("if score @s ra.dh.action matches 91", refresh)
@@ -126,21 +141,23 @@ object DataHandlerActions {
 
 		// A property row's button, as the player, with ra.dh.action at 100 + row index.
 		pack.define(genericAction) {
-			raw("scoreboard players operation #dh.idx ${Obj.TEMP} = @s ra.dh.action")
-			scoreboard.players.remove(literal("#dh.idx"), Obj.TEMP, 100)
-			raw("data modify storage ra:dh q set value {}")
-			raw("execute store result storage ra:dh q.i int 1 run scoreboard players get #dh.idx ${Obj.TEMP}")
+			raw("data modify storage ra:dh q set value {list:\"block_order\"}")
+			raw("execute if score #dh.code ${Obj.TEMP} matches 700.. run data modify storage ra:dh q.list set value \"known\"")
+			raw("execute if score #dh.code ${Obj.TEMP} matches 700.. run scoreboard players remove #dh.code ${Obj.TEMP} 600")
+			scoreboard.players.remove(literal("#dh.code"), Obj.TEMP, 100)
+			raw("execute store result storage ra:dh q.i int 1 run scoreboard players get #dh.code ${Obj.TEMP}")
 			callWith(DataHandlerProps.pickName, "storage ra:dh q")
 			raw("execute unless data storage ra:dh pending_name run return 0")
 			raw("data modify storage ra:dh q.name set from storage ra:dh pending_name")
+			callWith(propertyGone, "storage ra:dh q")
+			raw("execute if score #dh.gone ${Obj.TEMP} matches 1 run return 0")
 
-			// A dead button stops the click, but the row's action is a /trigger and a player can
-			// still type one. This is the refusal that actually holds.
-			function(DataHandler.collectHidden)
-			callWith(DataHandlerProps.deny, "storage ra:dh q")
-			raw("execute if data storage ra:dh denied run return run data remove storage ra:dh denied")
-
+			// Its type and what this player may do with it; a dead button stops the click, but the
+			// row's action is a /trigger and a player can still type one. This is the refusal that
+			// actually holds.
 			callWith(DataHandlerProps.probe, "storage ra:dh q")
+			callWith(DataHandlerProps.refuse, "storage ra:dh q")
+			raw("execute if data storage ra:dh denied run return run data remove storage ra:dh denied")
 
 			// A flag needs no input: flip it and show the result.
 			executeRun("if score #dh.type ${Obj.TEMP} matches 2", DataHandlerProps.toggle, "with storage ra:dh q")
@@ -182,25 +199,24 @@ object DataHandlerActions {
 			raw("data modify storage ra:dh q set value {}")
 			raw("data modify storage ra:dh q.name set from storage ra:dh cur.name")
 
-			// The read-only check again, against the block the value is about to land on.
-			function(DataHandler.collectHidden)
-			callWith(DataHandlerProps.deny, "storage ra:dh q")
+			// The checks again, against the block the value is about to land on and the schema as
+			// loaded now: read-only, admin-only (does this player still hold ra.admin?), hidden.
+			callWith(propertyGone, "storage ra:dh q")
+			raw("execute if score #dh.gone ${Obj.TEMP} matches 1 run return 0")
+			callWith(DataHandlerProps.probe, "storage ra:dh q")
+			callWith(DataHandlerProps.refuse, "storage ra:dh q")
 			raw("execute store success score #dh.den ${Obj.TEMP} run data remove storage ra:dh denied")
 			raw("execute if score #dh.den ${Obj.TEMP} matches 1 run return 0")
 
-			// The number form's answer is an int already inside the declared bounds.
-			executeRun("if data storage ra:dh cur{kind:\"number\"}", DataHandlerProps.writeNumber, "with storage ra:dh q")
-			raw("execute if data storage ra:dh cur{kind:\"number\"} run return 1")
+			// The number form's answer, checked against the bounds probe just read.
+			executeReturnRun("if data storage ra:dh cur{kind:\"number\"}", DataHandlerProps.writeNumber, "with storage ra:dh q")
 
 			// A typed answer becomes the property's type as it is NOW -- declared, or guessed from the
 			// value the block holds at this moment. Text is copied as text, never parsed, so a number
 			// typed for a text property stays text; a number, flag or list is parsed and checked,
 			// and a refusal leaves the block as it was.
-			callWith(propertyGone, "storage ra:dh q")
-			raw("execute if score #dh.gone ${Obj.TEMP} matches 1 run return 0")
 			raw("execute unless data storage ra:input consume.text run return 0")
 			raw("data modify storage ra:dh q.text set from storage ra:input consume.text")
-			callWith(DataHandlerProps.probe, "storage ra:dh q")
 			executeReturnRun("if score #dh.type ${Obj.TEMP} matches 1", DataHandlerTypes.writeTypedNumber, "with storage ra:dh q")
 			executeReturnRun("if score #dh.type ${Obj.TEMP} matches 2", DataHandlerTypes.writeTypedBool, "with storage ra:dh q")
 			executeReturnRun("if score #dh.type ${Obj.TEMP} matches 3", DataHandlerList.apply)

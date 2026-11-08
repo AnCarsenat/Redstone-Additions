@@ -51,6 +51,9 @@ object EntityDetector {
 
 	fun Ra.registerEntityDetector() {
 		block(block)
+		properties(block) {
+			text("entity_selector")
+		}
 		pack.blockRegisterMessage(block)
 		pack.blockGive(block)
 		pack.shapedRecipe(block.ns, block.id, item.recipeResult(), Unlock(Items.SCULK_SENSOR), count = null) {

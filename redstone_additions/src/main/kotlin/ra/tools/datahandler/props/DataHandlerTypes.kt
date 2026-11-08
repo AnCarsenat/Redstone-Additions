@@ -46,6 +46,9 @@ object DataHandlerTypes {
 	/** `{name}` and storage ra:dh q.text: write the text as a number. Returns 1 when written. */
 	val writeTypedNumber = tool("data_handler/props/write_typed_number")
 
+	/** Tell the player the value is outside #dh.min..#dh.max. Returns 0 (nothing written). */
+	val outOfRange = tool("data_handler/props/out_of_range")
+
 	/** `{name}` and storage ra:dh q.text: write the text as a flag. Returns 1 when written. */
 	val writeTypedBool = tool("data_handler/props/write_typed_bool")
 
@@ -95,21 +98,21 @@ object DataHandlerTypes {
 			raw("""${'$'}execute if score #dh.ok $T matches 0 run tellraw @s [$PREFIX,{text:"$(name)",color:"yellow"},{text:" takes a number, and ",color:"red"},{nbt:"q.text",storage:"ra:dh",color:"white"},{text:" is not one. Nothing was changed.",color:"red"}]""")
 			raw("execute if score #dh.ok $T matches 0 run data remove storage ra:dh parsed")
 			raw("execute if score #dh.ok $T matches 0 run return 0")
-			// Bounds, when the property declares them (storage ra:dh types). A decimal is judged by
-			// its whole part, as the blocks read it.
+			// Bounds: #dh.min / #dh.max from probe, the declared range, or the whole int range when
+			// nothing declares one. A decimal is judged by its whole part, as the blocks read it.
 			raw("execute store result score #dh.v $T run data get storage ra:dh parsed")
-			raw("scoreboard players set #dh.out $T 0")
-			raw("\$execute if data storage ra:dh types.\"\$(name)\".min store result score #dh.lim $T run data get storage ra:dh types.\"\$(name)\".min")
-			raw("\$execute if data storage ra:dh types.\"\$(name)\".min if score #dh.v $T < #dh.lim $T run scoreboard players set #dh.out $T 1")
-			raw("\$execute if data storage ra:dh types.\"\$(name)\".max store result score #dh.lim $T run data get storage ra:dh types.\"\$(name)\".max")
-			raw("\$execute if data storage ra:dh types.\"\$(name)\".max if score #dh.v $T > #dh.lim $T run scoreboard players set #dh.out $T 1")
-			raw("""${'$'}execute if score #dh.out $T matches 1 run tellraw @s [$PREFIX,{nbt:"q.text",storage:"ra:dh",color:"white"},{text:" is out of range for ",color:"red"},{text:"$(name)",color:"yellow"},{text:" (",color:"red"},{nbt:"types.\"$(name)\".min",storage:"ra:dh",color:"white"},{text:" to ",color:"red"},{nbt:"types.\"$(name)\".max",storage:"ra:dh",color:"white"},{text:"). Nothing was changed.",color:"red"}]""")
-			raw("execute if score #dh.out $T matches 1 run data remove storage ra:dh parsed")
-			raw("execute if score #dh.out $T matches 1 run return 0")
+			raw("execute unless score #dh.v $T >= #dh.min $T run data remove storage ra:dh parsed")
+			raw("execute unless score #dh.v $T <= #dh.max $T run data remove storage ra:dh parsed")
+			raw("execute unless data storage ra:dh parsed run return run function ${outOfRange.asId()}")
 
 			raw("\$data modify entity $TARGET data.properties.\$(name) set from storage ra:dh parsed")
 			raw("data remove storage ra:dh parsed")
 			returnValue(1)
+		}
+
+		pack.define(outOfRange) {
+			raw("""tellraw @s [$PREFIX,{text:"Out of range: ",color:"red"},{text:"pick a number from ",color:"red"},{score:{name:"#dh.min",objective:"$T"},color:"white"},{text:" to ",color:"red"},{score:{name:"#dh.max",objective:"$T"},color:"white"},{text:". Nothing was changed.",color:"red"}]""")
+			raw("return 0")
 		}
 
 		// {name}: q.text compared, never parsed, against the accepted spellings.

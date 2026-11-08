@@ -58,6 +58,10 @@ object Receiver {
 
 	fun Ra.registerReceiver() {
 		block(block)
+		properties(block) {
+			text("channel")
+			bool("enabled")
+		}
 		wrenchToggles += TagRoute(block.tag, toggle)
 		pack.blockRegisterMessage(block)
 		pack.blockGive(block)

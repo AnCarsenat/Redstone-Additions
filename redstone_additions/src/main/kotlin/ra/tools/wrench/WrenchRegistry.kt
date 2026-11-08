@@ -45,7 +45,7 @@ object WrenchRegistry {
 
 	/** The tools own this row: its cycler lives in ra:tools, not in ra_gates. */
 	fun Ra.registerToolsWrenchCycles() {
-		wrenchCycle("uni_gate", WrenchCycle("Gate type", "gate", cycleUniGate))
+		wrenchCycle("uni_gate", WrenchCycle("Gate type", "gate_type", cycleUniGate))
 	}
 
 	fun Ra.registerWrenchRegistry() {

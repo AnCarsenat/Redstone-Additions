@@ -38,6 +38,9 @@ object Randomizer {
 
 	fun Ra.registerRandomizer() {
 		block(block)
+		properties(block) {
+			number("chance", min = 0, max = 100)
+		}
 		pack.blockGive(block)
 		pack.blockRecipe(block, unlockedBy = Items.BOOKSHELF) {
 			pattern(" R ", "RBR", " R ")

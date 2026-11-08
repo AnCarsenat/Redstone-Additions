@@ -87,8 +87,13 @@ object Bases {
 			recipe(t)
 		}
 
-		// The tier is what the wrench assembles against; nothing may edit it.
-		readonly("multiblock_base", "tier", "tier_level")
+		// The tier is what the wrench assembles against; nothing may edit it. Keyed by each tier's
+		// own type, multiblock_base.<tier>: the old `readonly("multiblock_base", ...)` named a type
+		// no base carries, so the tier was editable after all.
+		for (t in BaseTier.all) properties(t.blockTag) {
+			text("tier", readonly = true)
+			number("tier_level", min = 1, max = 5, readonly = true)
+		}
 	}
 
 	/** `$(tier)` macro arguments: see [BaseTier.tierDataSnbt]. */

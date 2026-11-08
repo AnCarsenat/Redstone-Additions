@@ -81,14 +81,11 @@ class Ra(val pack: DataPack) {
 	/** Wrench plain-RMB toggles: marker tag -> toggle function, run as the marker. */
 	val wrenchToggles = mutableListOf<TagRoute>()
 
-	/** Properties neither tool may edit, keyed by `data.type`. */
-	val readonly = linkedMapOf<String, MutableSet<String>>()
-
 	/**
-	 * Properties the Data Handlers list, in menu order, each with its declared type. The tools
-	 * declare theirs centrally (`DataHandlerRegistry`); anything added here goes on the end.
+	 * Each block type's property schema (see [PropertiesBuilder]), keyed by the marker's
+	 * `data.type`, in declaration order -- which is menu order.
 	 */
-	val dataHandlerProperties = linkedMapOf<String, ra.tools.datahandler.PropDecl>()
+	val blockProperties = linkedMapOf<String, List<PropSpec>>()
 
 	/** Bundles for `ra:give_all_items`, in hand-out order. */
 	val bundles = mutableListOf<GiveBundle>()
@@ -123,12 +120,12 @@ class Ra(val pack: DataPack) {
 		wrenchCycles.getOrPut(type) { mutableListOf() } += rows
 	}
 
-	fun readonly(type: String, vararg props: String) {
-		readonly.getOrPut(type) { linkedSetOf() } += props
+	/** Declares the properties of block type [type] (the marker's `data.type`). Once per type. */
+	fun properties(type: String, build: PropertiesBuilder.() -> Unit) {
+		require(type !in blockProperties) { "properties of '$type' declared twice" }
+		blockProperties[type] = PropertiesBuilder().apply(build).specs.toList()
 	}
 
-	/** Adds Data Handler rows. A property cannot be added without its type. */
-	fun dataHandlerProperties(vararg props: ra.tools.datahandler.PropDecl) {
-		for (p in props) dataHandlerProperties.putIfAbsent(p.name, p)
-	}
+	/** [properties] for [block], whose markers carry `data.type` = its id. */
+	fun properties(block: CustomBlock, build: PropertiesBuilder.() -> Unit) = properties(block.id, build)
 }

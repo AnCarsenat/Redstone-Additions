@@ -9,7 +9,6 @@ import ra.core.callWith
 import ra.core.define
 import ra.core.executeRun
 import ra.core.raw
-import ra.modules.ender.TeleportAnchor
 import ra.tools.datahandler.DataHandlerSelection.TARGET
 import ra.tools.tool
 
@@ -22,9 +21,12 @@ import ra.tools.tool
  * replaced its table, and the anchor's `targets[$(i)]` lookup broke on it. Now the text is parsed
  * (by DataHandlerTypes.parse, the one place typed text meets SNBT) into storage ra:dh list_in, and only a list that passes every check below is copied over:
  *   - it must be a list;
- *   - when the property holds a list of text now, every entry must be text;
- *   - a Teleport Anchor's `targets` is fifteen text rows: at most fifteen typed, the rest padded
- *     with "" (no target), as ra_ender:tools/anchor/set_table does.
+ *   - every entry must be text when the property is declared `list(of = TEXT)`, or, with no
+ *     declaration, when it holds a list of text now;
+ *   - at most `max` entries when one is declared, padded with "" up to it when declared `pad`
+ *     (a Teleport Anchor's `targets`: fifteen rows, "" for no target, as
+ *     ra_ender:tools/anchor/set_table does).
+ * The declaration is storage ra:dh spec, left there by props/probe just before.
  */
 object DataHandlerList {
 	/** As the player, with storage ra:dh q = {name, text}. Returns 1 when written, 0 when refused. */
@@ -36,7 +38,7 @@ object DataHandlerList {
 	/** Every entry of list_walk is text, or #dh.bad = 3. */
 	private val checkText = tool("data_handler/props/list/check_text")
 
-	/** Append "" to list_in until it has fifteen entries. */
+	/** Append "" to list_in until it has #dh.lmax entries. */
 	private val pad = tool("data_handler/props/list/pad")
 
 	/** `{name}`: copy list_in onto the block. */
@@ -64,27 +66,28 @@ object DataHandlerList {
 			raw("execute if score #dh.bad $T matches 0 if score #dh.ok $T matches 0 run scoreboard players set #dh.bad $T 1")
 			raw("execute if score #dh.bad $T matches 0 run data remove storage ra:dh list_in[0]")
 
-			// Which entries are allowed: text when the property holds text now, and always for an
-			// anchor's table.
+			// Which entries are allowed: text when declared so, or -- undeclared -- when the property
+			// holds text now.
 			raw("scoreboard players set #dh.str $T 0")
-			raw("scoreboard players set #dh.anchor $T 0")
-			raw("execute if data storage ra:dh q{name:\"targets\"} if entity ${TARGET.dropLast(1)},tag=${TeleportAnchor.block.tag}] run scoreboard players set #dh.anchor $T 1")
-			raw("execute if score #dh.anchor $T matches 1 run scoreboard players set #dh.str $T 1")
-			executeRun("if score #dh.bad $T matches 0 if score #dh.str $T matches 0", currentIsText, "with storage ra:dh q")
+			raw("execute if data storage ra:dh spec.of_code store result score #dh.of $T run data get storage ra:dh spec.of_code")
+			raw("execute if data storage ra:dh spec.of_code if score #dh.of $T matches ${ra.core.PropType.TEXT.code} run scoreboard players set #dh.str $T 1")
+			executeRun("if score #dh.bad $T matches 0 if score #dh.str $T matches 0 unless data storage ra:dh spec.type", currentIsText, "with storage ra:dh q")
 			raw("data modify storage ra:dh list_walk set from storage ra:dh list_in")
 			executeRun("if score #dh.bad $T matches 0 if score #dh.str $T matches 1", checkText)
 			raw("data remove storage ra:dh list_walk")
 
 			raw("execute store result score #dh.len $T run data get storage ra:dh list_in")
-			raw("execute if score #dh.bad $T matches 0 if score #dh.anchor $T matches 1 if score #dh.len $T matches 16.. run scoreboard players set #dh.bad $T 4")
+			raw("scoreboard players set #dh.lmax $T 2147483647")
+			raw("execute if data storage ra:dh spec.max_length store result score #dh.lmax $T run data get storage ra:dh spec.max_length")
+			raw("execute if score #dh.bad $T matches 0 if score #dh.len $T > #dh.lmax $T run scoreboard players set #dh.bad $T 4")
 
 			raw("""execute if score #dh.bad $T matches 1 run tellraw @s [$PREFIX,{text:"That is not a list. Write it like ",color:"red"},$EXAMPLE]""")
 			raw("""execute if score #dh.bad $T matches 3 run tellraw @s [$PREFIX,{text:"Every entry must be text in quotes, like ",color:"red"},$EXAMPLE]""")
-			raw("""execute if score #dh.bad $T matches 4 run tellraw @s [$PREFIX,{text:"A Teleport Anchor has 15 targets at most; ",color:"red"},{score:{name:"#dh.len",objective:"$T"},color:"yellow"},{text:" were given.",color:"red"}]""")
+			raw("""execute if score #dh.bad $T matches 4 run tellraw @s [$PREFIX,{text:"At most ",color:"red"},{score:{name:"#dh.lmax",objective:"$T"},color:"yellow"},{text:" entries; ",color:"red"},{score:{name:"#dh.len",objective:"$T"},color:"yellow"},{text:" were given.",color:"red"}]""")
 			raw("execute unless score #dh.bad $T matches 0 run data remove storage ra:dh list_in")
 			raw("execute unless score #dh.bad $T matches 0 run return 0")
 
-			executeRun("if score #dh.anchor $T matches 1", pad)
+			executeRun("if data storage ra:dh spec.pad if data storage ra:dh spec.max_length", pad)
 			callWith(store, "storage ra:dh q")
 			raw("data remove storage ra:dh list_in")
 			returnValue(1)
@@ -103,7 +106,7 @@ object DataHandlerList {
 
 		pack.define(pad) {
 			raw("execute store result score #dh.len $T run data get storage ra:dh list_in")
-			raw("execute if score #dh.len $T matches 15.. run return 0")
+			raw("execute if score #dh.len $T >= #dh.lmax $T run return 0")
 			raw("data modify storage ra:dh list_in append value \"\"")
 			function(pad)
 		}

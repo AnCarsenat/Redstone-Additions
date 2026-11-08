@@ -21,10 +21,11 @@ internal object PropRows {
 	/**
 	 * `  name: [value] ` -- the part every row shares; [valueColor] is gray on a locked row. A row
 	 * whose type was guessed rather than declared starts with a yellow `⚠ ` ($(warn), "" otherwise)
-	 * that names the guess ($(guess)) on hover.
+	 * that names the guess ($(guess)) on hover. $(note) is " (hidden from players)" on a row only an
+	 * admin sees, "" otherwise.
 	 */
 	private fun head(valueColor: String = "green") =
-		"""{text:"  "},{text:"$(warn)",color:"yellow",hover_event:{action:"show_text",value:[{text:"Undeclared type",color:"yellow"},{text:" — guessed $(guess) from the value.\nDeclare it in DataHandlerRegistry.",color:"gray"}]}},{text:"$(name): ",color:"white"},{text:"[",color:"dark_gray"},{nbt:"properties.$(name)",storage:"ra:dh",color:"$valueColor"},{text:"]",color:"dark_gray"},{text:" "}"""
+		"""{text:"  "},{text:"$(warn)",color:"yellow",hover_event:{action:"show_text",value:[{text:"Undeclared type",color:"yellow"},{text:" — guessed $(guess) from the value.\nDeclare it in the block's properties { }.",color:"gray"}]}},{text:"$(name)",color:"white"},{text:"$(note)",color:"dark_gray",italic:true},{text:": ",color:"white"},{text:"[",color:"dark_gray"},{nbt:"properties.$(name)",storage:"ra:dh",color:"$valueColor"},{text:"]",color:"dark_gray"},{text:" "}"""
 
 	private fun button(label: String, hover: String, color: String = "yellow", action: String = "action") =
 		"""{text:"$label",color:"$color",click_event:{action:"run_command",command:"/trigger ra.dh.action set $($action)"},hover_event:{action:"show_text",value:"$hover"}}"""
@@ -35,7 +36,9 @@ internal object PropRows {
 	fun Ra.registerPropRows() {
 		row(rowNumber, head(), """{text:"number",color:"aqua"}""", """{text:" "}""", button("[Modify]", "Type a new number"))
 		row(rowBool, head(), """{text:"bool",color:"aqua"}""", """{text:" "}""", button("[Toggle]", "Flip this flag"))
-		row(rowList, head(), """{text:"list",color:"aqua"}""", """{text:" "}""", button("[Edit list]", "Write the whole list, e.g. [\"A\",\"B\"]"))
+		row(rowList, head(), """{text:"list",color:"aqua"}""", """{text:" "}""", button("[Edit list]", "Write the whole list, e.g. [\\\"A\\\",\\\"B\\\"]"))
+		// (The quotes are escaped for the SNBT string they sit in. Unescaped, they ended the hover
+		// text early, the game refused the whole tellraw, and no list row was ever shown.)
 		row(rowString, head(), """{text:"string",color:"aqua"}""", """{text:" "}""", button("[Modify]", "Write new text in the input book"))
 
 		// The item_name row -- a property whose value is an item id.
@@ -46,7 +49,7 @@ internal object PropRows {
 		// configured by holding up the thing you want filtered, not by remembering how to spell
 		// minecraft:polished_blackstone_slab.
 		//
-		// Its action is 200 + the registry index (in $(hand_action)), a second action space over the
+		// Its action is 400 + the row index (in $(hand_action)), a second action space over the
 		// same list, so no per-property handler is needed for it either.
 		row(
 			rowItem, head(), """{text:"item",color:"aqua"}""", """{text:" "}""",
@@ -62,7 +65,8 @@ internal object PropRows {
 			"""{text:"[Modify]",color:"dark_gray",strikethrough:true,hover_event:{action:"show_text",value:"A compound cannot be edited here. Use the Creative Data Handler."}}""",
 		)
 
-		// A field the block does not let a survival player change.
+		// A field this player may not change: read-only, or admin-only and they are not an admin.
+		// $(reason) says which, on hover.
 		//
 		// Shown, not censored. Hiding a field made a block look like it had fewer settings than it
 		// has, and left the player guessing why a number they could see in the Goggles was missing
@@ -70,7 +74,7 @@ internal object PropRows {
 		// through, and says why on hover.
 		row(
 			rowLocked, head("gray"), """{text:"locked",color:"dark_gray"}""", """{text:" "}""",
-			"""{text:"[Modify]",color:"red",strikethrough:true,hover_event:{action:"show_text",value:"This block sets this itself — it cannot be changed here. Use the Creative Data Handler."}}""",
+			"""{text:"[Modify]",color:"red",strikethrough:true,hover_event:{action:"show_text",value:"$(reason)"}}""",
 		)
 	}
 }

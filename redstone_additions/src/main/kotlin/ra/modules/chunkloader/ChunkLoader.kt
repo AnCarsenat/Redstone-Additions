@@ -53,6 +53,7 @@ object ChunkLoader {
 
 	fun Ra.registerChunkLoader() {
 		block(block)
+		properties(block) {}
 		pack.blockRegisterMessage(block)
 
 		pack.define(block.give) { raw("give @s ${item.giveArg()}") }

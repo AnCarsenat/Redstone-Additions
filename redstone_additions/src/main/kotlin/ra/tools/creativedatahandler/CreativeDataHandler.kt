@@ -20,6 +20,7 @@ import ra.tools.REACH_4
 import ra.tools.ToolItems
 import ra.tools.creativedatahandler.props.CdhProps
 import ra.tools.creativedatahandler.props.CdhProps.registerCdhProps
+import ra.tools.datahandler.DataHandler
 import ra.tools.datahandler.DataHandlerSelection
 import ra.tools.datahandler.DataHandlerSelection.claim
 import ra.tools.raycast
@@ -57,11 +58,6 @@ object CreativeDataHandler {
 	private val BY_MID = DataHandlerSelection.byMid("\$(mid)")
 	private const val NO_TARGET = """execute unless entity $TARGET run return run tellraw @s [$PREFIX,{text:"No selected block. Shift+RMB one first.",color:"red"}]"""
 
-	/** list_properties order; `gate` has a row function but was never listed. */
-	private val LISTED = listOf(
-		"range", "message_block", "tag", "entity_selector", "inverted", "delay", "cooldown", "power", "mode",
-		"target", "enabled", "gate_type", "channel", "distance", "extend", "pulse", "chance",
-	)
 
 	fun Ra.registerCreativeDataHandler() {
 		pack.define(give) {
@@ -110,6 +106,8 @@ object CreativeDataHandler {
 			raw("data remove storage ra:cdh internal_data")
 			raw("data modify storage ra:cdh properties set from entity @s data.properties")
 			raw("data modify storage ra:cdh internal_data set from entity @s data.data")
+			// Its type's schema into storage ra:dh, as the Data Handler reads it.
+			function(DataHandler.loadSchema)
 		}
 
 		// {mid}: the player's block number, for the suggested commands. Called by refresh.
@@ -139,16 +137,10 @@ object CreativeDataHandler {
 			raw("""tellraw @s [{text:"[Back to Menu]",color:"gray",click_event:{action:"run_command",command:"/function ${refresh.asId()}"},hover_event:{action:"show_text",value:"Return to main menu"}}]""")
 		}
 
-		// {mid}: every known property the block has, each with its row. As the player.
+		// {mid}: every property the block has, each with its row (CdhProps). As the player.
 		pack.define(listProperties) {
-			for (name in LISTED) {
-				val prop = CdhProps.all.getValue(name)
-				// The cooldown row reads the marker itself, so its presence is tested there too.
-				val source = if (prop.fromEntity) "entity $TARGET data.properties.$name" else "storage ra:cdh properties.$name"
-				// mid is passed on: every row names the block by it.
-				raw("\$execute if data $source run function ${prop.show.asId()} {mid:\$(mid)}")
-			}
-			raw("""execute unless data storage ra:cdh properties run tellraw @s [{text:"  (no properties)",color:"dark_gray",italic:true}]""")
+			raw("""execute unless data storage ra:cdh properties run return run tellraw @s [{text:"  (no properties)",color:"dark_gray",italic:true}]""")
+			callWith(CdhProps.list, "storage ra:cdh m")
 		}
 
 		registerManualEdits()

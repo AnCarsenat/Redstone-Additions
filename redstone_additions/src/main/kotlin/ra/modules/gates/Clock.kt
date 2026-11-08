@@ -55,6 +55,11 @@ object Clock {
 
 	fun Ra.registerClock() {
 		block(block)
+		properties(block) {
+			number("cooldown", min = 2, max = 1200)
+			// The pre-5.1 name of cooldown, folded into it every tick.
+			number("delay", readonly = true, visible = false)
+		}
 		pack.blockGive(block)
 		pack.blockRecipe(block, unlockedBy = Items.DAYLIGHT_DETECTOR) {
 			pattern("RCR", "SSS")

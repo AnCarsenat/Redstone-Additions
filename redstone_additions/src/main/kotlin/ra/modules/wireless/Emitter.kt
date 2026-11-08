@@ -49,6 +49,10 @@ object Emitter {
 
 	fun Ra.registerEmitter() {
 		block(block)
+		properties(block) {
+			text("channel")
+			bool("enabled")
+		}
 		wrenchToggles += TagRoute(block.tag, toggle)
 		pack.blockRegisterMessage(block)
 		pack.blockGive(block)

@@ -25,8 +25,10 @@ import ra.tools.tool
  * Shift+RMB: the cycle menu.
  *
  * Nothing block-specific lives here. A block declares what it can cycle (`ra.wrenchCycle`, built
- * into `storage ra:wrench cyclables` by [WrenchRegistry]), read-only properties are dropped using
- * the same declaration the Data Handler reads, and what is left decides the presentation:
+ * into `storage ra:wrench cyclables` by [WrenchRegistry]), properties the player may not change are
+ * dropped using the block type's property schema the Data Handler reads (`storage ra:dh types`):
+ * read-only ones always, admin-only and hidden ones unless the player holds `ra.admin`. What is
+ * left decides the presentation:
  *
  *   0 entries   say it does not cycle
  *   1 entry     do it, no menu -- a menu with one button is a worse button
@@ -99,8 +101,9 @@ object WrenchMenu {
 			data(Storage.WRENCH) { remove("list") }
 			raw("\$data modify storage ra:wrench list set from storage ra:wrench cyclables.\"\$(type)\"")
 		}
+		// {type}: the block type's schema (name -> declaration).
 		pack.define(loadReadonly) {
-			raw("\$data modify storage ra:wrench ro set from storage ra:dh readonly.\"\$(type)\"")
+			raw("\$data modify storage ra:wrench ro set from storage ra:dh types.\"\$(type)\"")
 		}
 
 		// Rebuilds the list rather than removing in place: deleting from a list while walking it
@@ -120,9 +123,20 @@ object WrenchMenu {
 			raw("data remove storage ra:wrench list[0]")
 			function(filterNext)
 		}
-		// {prop}: keep this entry unless its property is read-only for this block.
+		// {prop}: keep this entry unless the wrench's user may not change its property. As the
+		// marker, so a dynamic declaration is read off the block itself.
 		pack.define(filterTest) {
-			raw("\$execute if data storage ra:wrench ro.\$(prop) run return 0")
+			raw("data remove storage ra:wrench fs")
+			raw("\$data modify storage ra:wrench fs set from storage ra:wrench ro.\$(prop)")
+			raw("\$execute if data storage ra:wrench fs.dynamic run data modify storage ra:wrench fs set from entity @s data.property_types.\$(prop)")
+			raw("execute store result score #wr.ro ${Obj.TEMP} run data get storage ra:wrench fs.readonly")
+			raw("execute if score #wr.ro ${Obj.TEMP} matches 1 run return 0")
+			raw("execute if entity @a[tag=ra.wrench_user,tag=ra.admin,limit=1] run return run data modify storage ra:wrench keep append from storage ra:wrench fq")
+			raw("execute store result score #wr.ao ${Obj.TEMP} run data get storage ra:wrench fs.admin_only")
+			raw("execute if score #wr.ao ${Obj.TEMP} matches 1 run return 0")
+			raw("scoreboard players set #wr.vis ${Obj.TEMP} 1")
+			raw("execute if data storage ra:wrench fs.visible store result score #wr.vis ${Obj.TEMP} run data get storage ra:wrench fs.visible")
+			raw("execute if score #wr.vis ${Obj.TEMP} matches 0 run return 0")
 			raw("data modify storage ra:wrench keep append from storage ra:wrench fq")
 		}
 

@@ -54,6 +54,11 @@ object MessageBlock {
 
 	fun Ra.registerMessageBlock() {
 		block(block)
+		properties(block) {
+			text("message_block")
+			text("entity_selector")
+			number("range", min = 1, max = 128)
+		}
 		pack.blockRegisterMessage(block)
 		pack.specGive(block, item)
 		pack.shapedRecipe(block.ns, block.id, item.recipeResult(), Unlock(Items.NOTE_BLOCK), count = null) {

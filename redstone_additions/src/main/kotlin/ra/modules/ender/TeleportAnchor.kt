@@ -79,6 +79,10 @@ object TeleportAnchor {
 
 	fun Ra.registerTeleportAnchor() {
 		block(block)
+		properties(block) {
+			text("anchor_id")
+			list("targets", of = ra.core.PropType.TEXT, max = 15, pad = true)
+		}
 		pack.blockRegisterMessage(block)
 		pack.enderGive(
 			block, item,

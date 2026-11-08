@@ -57,6 +57,9 @@ object UniGate {
 
 	fun Ra.registerUniGate() {
 		block(block)
+		properties(block) {
+			text("gate_type")
+		}
 		pack.blockGive(block)
 		recipe()
 		pack.blockRegisterMessage(block)

@@ -83,6 +83,7 @@ object Cauldrons {
 	private fun Ra.registerCauldron(c: Cauldron) {
 		val block = c.block
 		block(block)
+		properties(block) {}
 		pack.blockRegisterMessage(block)
 		pack.specGive(block, c.item)
 		pack.shapedRecipe(block.ns, block.id, c.item.recipeResult(), c.unlock, RecipeCategory.MISC, count = null) {

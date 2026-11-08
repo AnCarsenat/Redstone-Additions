@@ -8,12 +8,14 @@ import io.github.ayfri.kore.arguments.types.literals.self
 import io.github.ayfri.kore.commands.data
 import io.github.ayfri.kore.commands.execute.execute
 import io.github.ayfri.kore.commands.function
-import io.github.ayfri.kore.commands.returnValue
 import io.github.ayfri.kore.commands.scoreboard.scoreboard
 import io.github.ayfri.kore.commands.tag
 import io.github.ayfri.kore.functions.Function
 import io.github.ayfri.kore.generated.EntityTypes
 import ra.api.MultiblockLib
+import ra.api.multiblock
+import ra.api.multiblockSpec
+import ra.api.pos
 import ra.core.Ns
 import ra.core.Obj
 import ra.core.Ra
@@ -29,62 +31,41 @@ import ra.modules.multiblock.forEachMarker
 /**
  * Upgrade Platform (`ra_multiblock:upgrade_platform/...`): a 3x1x3 smooth stone platform around a
  * netherite base. Items dropped on it are upgraded one tier, with a chance of being destroyed.
- * Rotationally symmetric, so it needs no direction data.
+ *
+ * A compiled multiblock ([SPEC]). Rotationally symmetric: one predicate, and markers keep
+ * `data.facing:"none"`, as they always had.
  */
 object UpgradePlatform {
 	private fun fn(path: String) = ref(Ns.MULTIBLOCK, "upgrade_platform/$path")
 
-	const val TAG = "ra.multiblock.upgrade_platform"
+	const val ID = "upgrade_platform"
+
+	/**
+	 * Top view: S S S / S N S / S S S -- S = smooth stone, N = netherite base. The base itself is
+	 * not part of the pattern; the base's own break detection covers it.
+	 */
+	val SPEC = multiblockSpec(ID, "Upgrade Platform", "netherite") {
+		hint = "Upgrade Platform: 3x3 smooth stone platform with netherite base in center"
+		rotates = false
+		symmetricFacing = "none"
+		box(-1..1, 0..0, -1..1, "minecraft:smooth_stone") { it == pos(0, 0, 0) }
+	}
+
+	/** `ra.multiblock.upgrade_platform`, given by the library's generated setup_type. */
+	val TAG = SPEC.tag
 
 	/** On a dropped item whose upgrade roll failed, for the rest of try_upgrade. */
 	private const val FAILED = "ra.upgrade_failed"
 
-	val checkBlocks = fn("check_blocks")
-	val checkStructure = fn("check_structure")
-	val validate = fn("validate")
-	val setupType = fn("setup_type")
-	val onBreak = fn("on_break")
 	val tickDispatch = fn("tick_dispatch")
 	val tick = fn("tick")
 	val tryUpgrade = fn("try_upgrade")
 	val goggles = fn("goggles")
 
 	fun Ra.registerUpgradePlatform() {
-		// Structure (top view): S S S / S N S / S S S -- S = smooth stone, N = netherite base.
-		// At the base. Returns 1 if valid, 0 otherwise. No side effects.
-		pack.define(checkBlocks) {
-			for ((x, z) in listOf(-1 to -1, 0 to -1, 1 to -1, -1 to 0, 1 to 0, -1 to 1, 0 to 1, 1 to 1))
-				raw("execute unless block ~$x ~ ~$z minecraft:smooth_stone run return 0")
-			returnValue(1)
-		}
+		multiblock(SPEC)
 
-		// Periodic integrity check. As the marker. Sets @s ra.multiblock to 1 (intact) or 0.
-		pack.define(checkStructure) {
-			raw("execute unless entity @s[tag=$TAG] run return 0")
-			execute {
-				storeResult { score(self(), Obj.MULTIBLOCK) }
-				run { function(checkBlocks) }
-			}
-		}
-
-		// Assembly validation. Sets #mb_result ra.multiblock to 1 if valid.
-		pack.define(validate) {
-			raw("""execute unless data storage ra:multiblock {type:"upgrade_platform"} run return 0""")
-			execute {
-				storeResult { score(literal("#mb_result"), Obj.MULTIBLOCK) }
-				run { function(checkBlocks) }
-			}
-			// Symmetric: no facing to store.
-			raw("""execute if score #mb_result ${Obj.MULTIBLOCK} matches 1 run data modify storage ra:multiblock facing set value "none"""")
-		}
-
-		pack.define(setupType) {
-			raw("""execute if data entity @s data{type:"upgrade_platform"} run tag @s add $TAG""")
-		}
-		pack.define(onBreak) {
-			raw("execute unless entity @s[tag=$TAG] run return 0")
-			// No cleanup needed: the platform has no containers.
-		}
+		// No on_break: the platform has no containers.
 		pack.define(tickDispatch) { forEachMarker(TAG, tick) }
 		pack.define(tick) { tick() }
 		pack.define(tryUpgrade) { tryUpgrade() }
@@ -96,11 +77,7 @@ object UpgradePlatform {
 
 		with(UpgradeRecipes) { registerRecipes() }
 
-		pack.hook(Ns.LIB_MULTIBLOCK, MultiblockLib.Hooks.VALIDATE, validate)
-		pack.hook(Ns.LIB_MULTIBLOCK, MultiblockLib.Hooks.SETUP_TYPE, setupType)
 		pack.hook(Ns.LIB_MULTIBLOCK, MultiblockLib.Hooks.TICK, tickDispatch)
-		pack.hook(Ns.LIB_MULTIBLOCK, MultiblockLib.Hooks.CHECK_STRUCTURE, checkStructure)
-		pack.hook(Ns.LIB_MULTIBLOCK, MultiblockLib.Hooks.ON_BREAK, onBreak)
 		multiblockGoggles += TagRoute(TAG, UpgradePlatform.goggles)
 	}
 

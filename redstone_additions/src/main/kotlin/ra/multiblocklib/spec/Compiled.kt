@@ -14,6 +14,7 @@ import ra.api.MultiblockSpec
 import ra.core.Ns
 import ra.core.Obj
 import ra.core.Ra
+import ra.core.Tag
 import ra.core.define
 import ra.core.hook
 import ra.core.raw
@@ -42,8 +43,25 @@ object Compiled {
 	val checkStructure = ref(Ns.LIB_MULTIBLOCK, "spec/check_structure")
 	val setupType = ref(Ns.LIB_MULTIBLOCK, "spec/setup_type")
 	val tryTier = ref(Ns.LIB_MULTIBLOCK, "spec/try_tier")
+	/** As any compiled type's marker, at its base: that type's per-block report ([debugOf]). */
+	val debug = ref(Ns.LIB_MULTIBLOCK, "spec/debug")
 
 	private fun typeFn(spec: MultiblockSpec, path: String) = ref(Ns.LIB_MULTIBLOCK, "spec/${spec.id}/$path")
+
+	/** `spec/<id>/validate`: at the base, with `storage ra:multiblock type` set to [spec]'s id. */
+	fun validateOf(spec: MultiblockSpec) = typeFn(spec, "validate")
+
+	/** `spec/<id>/check`: as one of [spec]'s markers, at the base; sets `@s ra.multiblock`. */
+	fun checkOf(spec: MultiblockSpec) = typeFn(spec, "check")
+
+	/**
+	 * `spec/<id>/debug`: as one of [spec]'s markers, at the base. Tells `@a[tag=ra.debug]` which
+	 * blocks of the marker's facing are wrong, then how many are right.
+	 */
+	fun debugOf(spec: MultiblockSpec) = typeFn(spec, "debug")
+
+	/** `spec/<id>/debug/<facing>`: the same report at a bare base, no marker needed. */
+	fun debugOf(spec: MultiblockSpec, facing: String) = typeFn(spec, "debug/$facing")
 	private fun tierFn(tier: String) = ref(Ns.LIB_MULTIBLOCK, "spec/tier/$tier")
 
 	private const val TIER_DONE = "#mb_tier_done"
@@ -51,7 +69,7 @@ object Compiled {
 	/**
 	 * Queued with afterAllParts from the library's register(), so it runs once every module has
 	 * registered its specs, and before generic's own afterAllParts: the compiled hooks therefore
-	 * sit after the hand-written structures' and ahead of `generic/` in each tag.
+	 * sit after any structure's own hook and ahead of `generic/` in each tag.
 	 */
 	fun Ra.registerCompiled() {
 		afterAllParts {
@@ -106,6 +124,13 @@ object Compiled {
 				raw("return 0")
 			}
 
+			// As a marker, at its base: the per-block report of whichever compiled type it is.
+			pack.define(debug) {
+				for (spec in specs)
+					raw("execute if entity @s[tag=${spec.tag}] run return run function ${debugOf(spec).asId()}")
+				raw("return 0")
+			}
+
 			pack.hook(Ns.LIB_MULTIBLOCK, MultiblockLib.Hooks.CHECK_STRUCTURE, checkStructure)
 			pack.hook(Ns.LIB_MULTIBLOCK, MultiblockLib.Hooks.SETUP_TYPE, setupType)
 			pack.hook(Ns.LIB_MULTIBLOCK, MultiblockLib.Hooks.VALIDATE, validate)
@@ -135,6 +160,40 @@ object Compiled {
 
 		// As the marker, at the base. validate_single zeroed @s ra.multiblock; one predicate sets it.
 		pack.define(typeFn(spec, "check")) { check(spec) }
+
+		// The per-block report, generated from the same rotated block list as the predicates.
+		for (facing in spec.facings) pack.define(debugOf(spec, facing)) { debugBlocks(spec, facing) }
+		pack.define(debugOf(spec)) {
+			if (!spec.rotates) {
+				raw("return run function ${debugOf(spec, spec.symmetricFacing).asId()}")
+				return@define
+			}
+			for (facing in spec.facings)
+				raw("execute if data entity @s data{facing:${StorageView.str(facing)}} run return run function ${debugOf(spec, facing).asId()}")
+			raw("""tellraw @a[tag=${Tag.DEBUG}] [$DEBUG_PREFIX,{text:${StorageView.str("${spec.name}: ")}},{text:"no facing on the marker",color:"red"},{text:" data="},{nbt:"data",entity:"@s",color:"yellow"}]""")
+			raw("return 0")
+		}
+	}
+
+	private const val DEBUG_PREFIX = """{text:"[MB Debug] ",color:"gold"}"""
+	private const val DEBUG_OK = "#mb_debug_ok"
+
+	/**
+	 * At the base: one FAIL line per block of [spec] turned to [facing] that is missing, with its
+	 * offset and what belongs there, then `<ok>/<total> blocks OK`. Returns the OK count.
+	 */
+	private fun Function.debugBlocks(spec: MultiblockSpec, facing: String) {
+		val to = "@a[tag=${Tag.DEBUG}]"
+		val blocks = spec.blocksFacing(facing)
+		raw("""tellraw $to [$DEBUG_PREFIX,{text:${StorageView.str("${spec.name} ($facing):")},color:"aqua"}]""")
+		raw("scoreboard players set $DEBUG_OK ${Obj.TEMP} 0")
+		for (b in blocks) {
+			val at = "~${b.pos.x} ~${b.pos.y} ~${b.pos.z}"
+			raw("execute if block $at ${b.match} run scoreboard players add $DEBUG_OK ${Obj.TEMP} 1")
+			raw("""execute unless block $at ${b.match} run tellraw $to [{text:"  FAIL ",color:"red"},{text:${StorageView.str(at)},color:"yellow"},{text:" needs ",color:"gray"},{text:${StorageView.str(b.match)}}]""")
+		}
+		raw("""tellraw $to [$DEBUG_PREFIX,{score:{name:"$DEBUG_OK",objective:"${Obj.TEMP}"},color:"green"},{text:"/${blocks.size} blocks OK",color:"gray"}]""")
+		raw("return run scoreboard players get $DEBUG_OK ${Obj.TEMP}")
 	}
 
 	private fun Function.check(spec: MultiblockSpec) {

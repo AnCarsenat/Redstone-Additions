@@ -35,8 +35,10 @@ with `pack.hook`.
 ## Adding a structure: a Kotlin spec
 
 Structures written in Kotlin describe themselves with a `MultiblockSpec` (`ra/api/MultiblockSpec.kt`)
-and are **compiled when the pack is generated**. The Rock Metallic Drill
-(`modules/multiblock/drills/RockMetallicDrill.kt`) is the worked example.
+and are **compiled when the pack is generated**. Every structure the pack ships is one: the Rock
+Metallic Drill (`modules/multiblock/drills/RockMetallicDrill.kt`) is the small worked example, the
+Blast Forge (`modules/multiblock/blastforge/BlastForge.kt`) a 26-block one, and the Upgrade
+Platform (`modules/multiblock/upgradeplatform/UpgradePlatform.kt`) a non-rotating one.
 
 **1. The spec**, written once for a structure facing **north**, offsets relative to the base:
 
@@ -96,13 +98,38 @@ For every spec, from `multiblocklib/spec/Compiled.kt`:
 | `ra_lib_multiblock:structure/<id>/<facing>` predicate (`structure/<id>` when `rotates = false`) | `all_of` of one `location_check` per block (`offsetX`/`offsetY`/`offsetZ` + block predicate). The offsets are rotated in Kotlin, so the whole pattern is one `execute if predicate` |
 | `spec/<id>/validate`, `spec/<id>/accept/<facing>` | tries the facings' predicates; the winner sets `#mb_result` and writes `facing`, `inputs`, `outputs`, `controls` to storage as SNBT literals |
 | `spec/<id>/check` | the periodic integrity check: the predicate of the marker's `data.facing`, stored into `@s ra.multiblock` |
-| `spec/validate`, `spec/check_structure`, `spec/setup_type` | static dispatchers (one line per type, no macro, no registry walk), hooked after the hand-written structures and ahead of `generic/*` |
+| `spec/<id>/debug/<facing>`, `spec/<id>/debug` | the per-block report ([below](#debugging-a-structure)) |
+| `spec/validate`, `spec/check_structure`, `spec/setup_type`, `spec/debug` | static dispatchers (one line per type, no macro, no registry walk), hooked after any structure's own hook and ahead of `generic/*` |
 | `spec/try_tier`, `spec/tier/<tier>` | the compiled types of each tier, tried by `try_tier` before the storage registry |
 | `spec/load` | called from `init` before `#ra_lib_multiblock:load`: writes `types.<id>` as one literal and appends the id to `registry` |
 
-The predicates also make a per-block debug or a custom check easy to build: `spec.facings`,
-`spec.blocksFacing(facing)`, `spec.portsFacing(spec.inputs, facing)` and `spec.predicate(facing)`
-give the rotated data and the predicate id in Kotlin.
+`spec.facings`, `spec.blocksFacing(facing)`, `spec.portsFacing(spec.inputs, facing)` and
+`spec.predicate(facing)` give the rotated data and the predicate id in Kotlin, for a custom check
+or for positions a tick needs. The Blast Forge's tick uses `MultiblockSpec.Pos.rotated(facing)` to
+write its furnace, barrel and control coordinates into one generated function per facing, so it
+never macro-substitutes a position while running.
+
+### Debugging a structure
+
+`ra_lib_multiblock:spec/<id>/debug/<facing>` checks each block of the spec turned to that facing,
+at the current position, and tells `@a[tag=ra.debug]` which ones are wrong and what belongs there,
+then `<ok>/<total> blocks OK`. It needs no marker, so it also explains a structure the wrench
+refuses to assemble:
+
+```mcfunction
+tag @s add ra.debug
+execute positioned <base x y z> run function ra_lib_multiblock:spec/blast_forge/debug/north
+```
+
+As an assembled marker, `spec/<id>/debug` picks the marker's `data.facing`, and `spec/debug` picks
+the type from the marker's tag:
+
+```mcfunction
+execute as @e[type=marker,tag=ra.multiblock,limit=1,sort=nearest] at @s run function ra_lib_multiblock:spec/debug
+```
+
+`validate_single` runs `spec/debug` itself for a marker that fails its periodic check while a
+player with `ra.debug` is online, just before the structure is taken apart.
 
 ### The storage view stays
 
@@ -147,24 +174,15 @@ multiblock library registers before the modules, it queues those three hooks wit
 `ra.afterAllParts { … }` ([Architecture](architecture.md#after-all-parts-afterallparts)). The
 compiled-spec dispatchers are queued the same way, just before them.
 
-## The older structures
+## Structure-specific hooks
 
-The Blast Forge and the Upgrade Platform predate the registry. They keep hand-written
-per-facing data and their own hooks in every tag:
-
-```kotlin
-// modules/multiblock/blastforge/BlastForge.kt
-pack.hook(Ns.LIB_MULTIBLOCK, MultiblockLib.Hooks.VALIDATE, validate)
-pack.hook(Ns.LIB_MULTIBLOCK, MultiblockLib.Hooks.SETUP_TYPE, setupType)
-pack.hook(Ns.LIB_MULTIBLOCK, MultiblockLib.Hooks.TICK, tickDispatch)
-pack.hook(Ns.LIB_MULTIBLOCK, MultiblockLib.Hooks.CHECK_STRUCTURE, checkStructure)
-pack.hook(Ns.LIB_MULTIBLOCK, MultiblockLib.Hooks.ON_BREAK, onBreak)
-multiblockGoggles += TagRoute(TAG, BlastForge.goggles)
-```
-
-They work; leave them alone unless you are deliberately migrating one to a spec. Their hooks
-come first inside each tag, in the order `MultiblockModule.register` calls them in, followed by
-the library's `spec/*` dispatchers and then `generic/*`.
+A shape a block list cannot express can still hook its own `validate`, `setup_type` and
+`check_structure` into the tags with `pack.hook`; such hooks run before the library's `spec/*`
+dispatchers and `generic/*`. None of the pack's structures needs one any more: the Blast Forge
+and the Upgrade Platform, which used to carry hand-written per-facing tables and validators,
+are compiled specs. Their markers kept the same data (`facing`, `inputs`, `outputs`,
+`controls`; `facing:"none"` for the platform), so structures assembled before the change keep
+running and validating.
 
 ## Bases
 
@@ -205,8 +223,8 @@ storage-registered one.
 
 All of these take the marker as `@s`, positioned at the base, and resolve names
 against the marker's own `data.inputs` / `data.outputs` / `data.controls`. They
-work for any multiblock that went through `setup_marker`, including the
-hand-written ones — a tick function never needs to branch on facing.
+work for any multiblock that went through `setup_marker`, compiled or
+storage-registered — a tick function never needs to branch on facing.
 
 | Function | Purpose |
 |---|---|

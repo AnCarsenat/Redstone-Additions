@@ -5,6 +5,7 @@ import io.github.ayfri.kore.arguments.types.resources.FunctionArgument
 import io.github.ayfri.kore.commands.function
 import io.github.ayfri.kore.commands.returnValue
 import io.github.ayfri.kore.commands.tag
+import ra.api.MultiblockSpec
 import ra.core.Ns
 import ra.core.PackPart
 import ra.core.Ra
@@ -18,6 +19,7 @@ import ra.modules.multiblock.blastforge.BlastForge
 import ra.modules.multiblock.blocks.BaseTier
 import ra.modules.multiblock.blocks.Bases
 import ra.modules.multiblock.upgradeplatform.UpgradePlatform
+import ra.multiblocklib.spec.Compiled
 
 /**
  * Example addon (`ra_example`): the worked example behind docs/extension-examples.md.
@@ -69,22 +71,24 @@ object ExamplePart : PackPart {
 		}
 
 		// The example multiblocks' hooks, each delegating to the real ra_multiblock function.
-		hooks("blast_forge", BlastForge.checkStructure, BlastForge.onBreak, BlastForge.setupType, BlastForge.tickDispatch, BlastForge.validate)
-		hooks("upgrade_platform", UpgradePlatform.checkStructure, UpgradePlatform.onBreak, UpgradePlatform.setupType, UpgradePlatform.tickDispatch, UpgradePlatform.validate)
+		// Both are compiled specs now, so the hook bodies are the library's generated functions,
+		// each guarded the way a hook tag entry must be (it runs for every type).
+		hooks("blast_forge", BlastForge.SPEC, BlastForge.tickDispatch)
+		hooks("upgrade_platform", UpgradePlatform.SPEC, UpgradePlatform.tickDispatch)
 	}
 
-	private fun Ra.hooks(
-		dir: String,
-		checkStructure: FunctionArgument,
-		onBreak: FunctionArgument,
-		setupType: FunctionArgument,
-		tickDispatch: FunctionArgument,
-		validate: FunctionArgument,
-	) {
-		pack.define(ref(ns, "$dir/check_structure")) { function(checkStructure) }
-		pack.define(ref(ns, "$dir/on_break")) { function(onBreak) }
-		pack.define(ref(ns, "$dir/setup_type")) { function(setupType) }
+	private fun Ra.hooks(dir: String, spec: MultiblockSpec, tickDispatch: FunctionArgument) {
+		pack.define(ref(ns, "$dir/check_structure")) {
+			raw("execute if entity @s[tag=${spec.tag}] run function ${Compiled.checkOf(spec).asId()}")
+		}
+		// Neither structure needs cleanup: nothing to do on break.
+		pack.define(ref(ns, "$dir/on_break")) { raw("return 0") }
+		pack.define(ref(ns, "$dir/setup_type")) {
+			raw("""execute if data entity @s data{type:"${spec.id}"} run tag @s add ${spec.tag}""")
+		}
 		pack.define(ref(ns, "$dir/tick_dispatch")) { function(tickDispatch) }
-		pack.define(ref(ns, "$dir/validate")) { function(validate) }
+		pack.define(ref(ns, "$dir/validate")) {
+			raw("""execute if data storage ra:multiblock {type:"${spec.id}"} run function ${Compiled.validateOf(spec).asId()}""")
+		}
 	}
 }

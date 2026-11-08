@@ -15,10 +15,12 @@ import ra.core.Tag
 import ra.core.define
 import ra.core.raw
 import ra.core.ref
+import ra.multiblocklib.spec.Compiled
 
 /** Periodic validation of standing multiblocks, and disassembly of broken ones. */
 internal object Validation {
 	val validateSingle = ref(Ns.LIB_MULTIBLOCK, "validate_single")
+	val debugFail = ref(Ns.LIB_MULTIBLOCK, "debug_fail")
 
 	fun Ra.registerValidation() {
 		// Called periodically; disassembles any multiblock whose structure is broken.
@@ -40,13 +42,20 @@ internal object Validation {
 			// Type-specific structure check via registered hooks (sets the score to 1 if valid).
 			function(hookTag(MultiblockLib.Hooks.CHECK_STRUCTURE))
 
-			raw("""execute if entity @a[tag=${Tag.DEBUG},limit=1] if score @s ${Obj.MULTIBLOCK} matches 0 at @s run tellraw @a[tag=${Tag.DEBUG}] [{text:"[MB Debug] ",color:"gold"},{text:"FAIL ",color:"red"},{text:"type="},{nbt:"data.type",entity:"@s",color:"aqua"},{text:" facing="},{nbt:"data.facing",entity:"@s",color:"aqua"},{text:" pos="},{nbt:"Pos",entity:"@s",color:"yellow"}]""")
+			raw("execute if entity @a[tag=${Tag.DEBUG},limit=1] if score @s ${Obj.MULTIBLOCK} matches 0 run function ${debugFail.asId()}")
 			raw("""execute if entity @a[tag=${Tag.DEBUG},limit=1] if score @s ${Obj.MULTIBLOCK} matches 1 at @s run tellraw @a[tag=${Tag.DEBUG}] [{text:"[MB Debug] ",color:"gold"},{text:"OK ",color:"green"},{text:"type="},{nbt:"data.type",entity:"@s",color:"aqua"},{text:" facing="},{nbt:"data.facing",entity:"@s",color:"aqua"}]""")
 
 			execute {
 				ifCondition { score(self(), Obj.MULTIBLOCK) equalTo 0 }
 				run { function(MultiblockLib.disassemble) }
 			}
+		}
+
+		// As a marker that failed its check, at it, with a debug player online: what failed, then
+		// (for a compiled type) which blocks.
+		pack.define(debugFail) {
+			raw("""tellraw @a[tag=${Tag.DEBUG}] [{text:"[MB Debug] ",color:"gold"},{text:"FAIL ",color:"red"},{text:"type="},{nbt:"data.type",entity:"@s",color:"aqua"},{text:" facing="},{nbt:"data.facing",entity:"@s",color:"aqua"},{text:" pos="},{nbt:"Pos",entity:"@s",color:"yellow"}]""")
+			function(Compiled.debug)
 		}
 
 		// As the multiblock marker.

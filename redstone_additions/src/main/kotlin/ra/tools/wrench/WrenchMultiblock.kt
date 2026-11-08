@@ -21,13 +21,13 @@ object WrenchMultiblock {
 	val tryMultiblock = tool("wrench/try_multiblock")
 
 	/**
-	 * One base block per tier. [named] is a structure with its own hand-written validator, tried by
-	 * name before the registry; [hints] are the structure descriptions shown when nothing matches.
+	 * One base block per tier. Every structure is assembled through `try_tier`, which tries the
+	 * tier's compiled specs and then its storage-registered types; [hints] are the structure
+	 * descriptions shown when nothing matches.
 	 */
 	private class Tier(
 		val name: String,
 		val block: String,
-		val named: String? = null,
 		val hints: List<String> = emptyList(),
 	) {
 		val tryAssemble = tool("wrench/try_assemble_$name")
@@ -35,7 +35,7 @@ object WrenchMultiblock {
 
 	private val tiers = listOf(
 		Tier(
-			"copper", "waxed_copper_block", named = "blast_forge", hints = listOf(
+			"copper", "waxed_copper_block", hints = listOf(
 				"Blast Forge: 3x3x3 nether bricks + blast furnace + 2 barrels (input) + 1 barrel (output)",
 				"Rock Metallic Drill: barrel beside the base, iron bars under the barrel, smooth stone under the base",
 			)
@@ -44,7 +44,7 @@ object WrenchMultiblock {
 		Tier("gold", "gold_block"),
 		Tier("diamond", "diamond_block"),
 		Tier(
-			"netherite", "netherite_block", named = "upgrade_platform",
+			"netherite", "netherite_block",
 			hints = listOf("Upgrade Platform: 3x3 smooth stone platform with netherite base in center"),
 		),
 	)
@@ -92,23 +92,16 @@ object WrenchMultiblock {
 
 		// At the multiblock base position.
 		for (t in tiers) pack.define(t.tryAssemble) {
-			if (t.named != null) {
-				// A structure with its own hand-written validator is tried by name first...
-				raw("data modify storage ra:multiblock type set value \"${t.named}\"")
-				executeRun("store result score #mb_assembled ${Obj.TEMP}", MultiblockLib.tryAssemble)
-				// ...then anything registered for this tier. Adding a structure means registering it
-				// in ra_multiblock:register_types -- this file does not change.
-				executeRun(
-					"if score #mb_assembled ${Obj.TEMP} matches 0 store result score #mb_assembled ${Obj.TEMP}",
-					MultiblockLib.tryTier, "{tier:\"${t.name}\"}",
-				)
+			// Anything registered for this tier. Adding a structure means registering its spec
+			// (Ra.multiblock) -- this file does not change.
+			executeRun("store result score #mb_assembled ${Obj.TEMP}", MultiblockLib.tryTier, "{tier:\"${t.name}\"}")
+			if (t.hints.isNotEmpty()) {
 				raw("""execute if score #mb_assembled ${Obj.TEMP} matches 0 run tellraw @a[distance=..8] [{text:"[Wrench] ",color:"gold"},{text:"No ${t.name}-tier multiblock matches the structure here.",color:"red"}]""")
 				for (hint in t.hints)
 					raw("""execute if score #mb_assembled ${Obj.TEMP} matches 0 run tellraw @a[distance=..8] [{text:"",color:"gray"},{text:"$hint",color:"gray"}]""")
 				raw("execute if score #mb_assembled ${Obj.TEMP} matches 0 run playsound minecraft:block.note_block.bass block @a[distance=..8] ~ ~ ~ 0.5 0.5")
 			} else {
-				// No hand-written multiblock exists for this tier; ask the registry.
-				executeRun("store result score #mb_assembled ${Obj.TEMP}", MultiblockLib.tryTier, "{tier:\"${t.name}\"}")
+				// No structure of this tier ships with the pack: a quieter message.
 				raw("""execute if score #mb_assembled ${Obj.TEMP} matches 0 run tellraw @a[distance=..8] [{text:"[Wrench] ",color:"gold"},{text:"No ${t.name}-tier multiblock matches the structure here.",color:"gray"}]""")
 				raw("execute if score #mb_assembled ${Obj.TEMP} matches 0 run playsound minecraft:block.note_block.bass block @a[distance=..8] ~ ~ ~ 0.5 0.8")
 			}

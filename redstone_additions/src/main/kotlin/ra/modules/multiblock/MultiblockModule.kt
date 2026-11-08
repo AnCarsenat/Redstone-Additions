@@ -15,7 +15,6 @@ import ra.core.define
 import ra.core.hook
 import ra.core.raw
 import ra.modules.multiblock.blastforge.BlastForge.registerBlastForge
-import ra.modules.multiblock.blastforge.BlastForgeData.writeDirections
 import ra.modules.multiblock.blocks.BaseTier
 import ra.modules.multiblock.blocks.Bases
 import ra.modules.multiblock.blocks.Bases.registerBases
@@ -35,14 +34,12 @@ object MultiblockModule : GameplayModule {
 	override fun Ra.register() {
 		registerBases()
 		ShowIoLabel.register(pack)
-		// Hook order inside each #ra_lib_multiblock tag: Blast Forge, Upgrade Platform, Drill.
+		// All three are compiled specs. Registration order is the order the library tries them in
+		// (spec/validate, spec/tier/copper) and the tick hook order: Blast Forge, Upgrade
+		// Platform, Drill.
 		registerBlastForge()
 		registerUpgradePlatform()
 		registerRockMetallicDrill()
-
-		// The Rock Metallic Drill is a compiled spec (registered in registerRockMetallicDrill).
-		// Blast Forge and Upgrade Platform still use their own validators registered directly in
-		// the #ra_lib_multiblock tags.
 
 		pack.define(load) {
 			raw("""tellraw @a[tag=ra.debug] [{text:"[RA] ",color:"gold"},{text:"Multiblock module loaded",color:"gray"}]""")
@@ -51,12 +48,12 @@ object MultiblockModule : GameplayModule {
 			// Heat, for the Blast Forge.
 			scoreboard.objectives.add(Obj.HEAT)
 
-			writeDirections()
+			// Up to 6.0.0 the Blast Forge's per-facing coordinates were written here as bf_dir; its
+			// spec and tick carry them now. Nothing reads the old copy.
+			raw("data remove storage ra:multiblock bf_dir")
 
 			// Tier data, the macro arguments of the base's give / placement / break.
 			for (t in BaseTier.all) raw("data modify storage ra:multiblock ${t.path} set value ${t.tierDataSnbt()}")
-
-			// The Upgrade Platform is rotationally symmetric: no direction data.
 		}
 
 		pack.define(tick!!) {

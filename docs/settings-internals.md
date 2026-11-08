@@ -95,6 +95,18 @@ Everything else in `ra/settings/` is the hand-written runtime: the menu (`Menu.k
 panel (`Admin.kt`), the disabled-blocks list (`Disabled.kt`), placement (`placement/`) and the
 read API (`Read.kt`).
 
+### Typed values
+
+An `edit` action or a typed user row writes what is being edited into `storage ra:settings edit`
+and calls `ra_settings:edit_start`. That slot is only a working copy: once the input request is
+open, the payload moves to `edits.r<id>`, keyed by the player's `ra.settings.req`, and `edit` is
+emptied. `ra_settings:apply_pending` copies the player's own slot back into `edit` for the one
+call that applies it. Every path that stops the wait (applied, session gone or expired, another
+tool's request replacing it, a new edit started) removes `edits.r<id>` through
+`ra_settings:edit/drop` or `edit/forget`. `global` and `prop` edits are applied only to a player
+who still holds `ra.admin` when the value arrives; the generated `edit` actions grant it first,
+as `admin/show` does.
+
 ## Reading a setting
 
 Through `ra.api.Settings`:

@@ -136,7 +136,7 @@ pack.hook(Ns.LIB_MULTIBLOCK, MultiblockLib.Hooks.TICK, tickDispatch)
 | --- | --- | --- |
 | `#minecraft:load` | — | Hub (`ra:load`) |
 | `#ra:placement_handlers` | Hub | built from `placementHandlers` |
-| `#ra_lib_multiblock:load` / `tick` / `validate` / `setup_type` / `check_structure` / `on_break` | Multiblock library (empty tags declared up front) | `ra_multiblock` structures; the library's own `generic/*` last |
+| `#ra_lib_multiblock:load` / `tick` / `validate` / `setup_type` / `check_structure` / `on_break` | Multiblock library (empty tags declared up front) | `ra_multiblock` structures; then the library's compiled-spec dispatchers (`spec/*`), and its own `generic/*` last |
 | `#ra_enchanting:recipes` | Enchanting | `ra_infinite`, `ra_jetpacks`, `ra_interactive` (each its own `enchant_recipes`) |
 
 ### After all parts: `afterAllParts`

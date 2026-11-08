@@ -145,6 +145,16 @@ predicates built when the pack is generated. Worlds on v6.0.0 carry on without a
 
 ### Fixed
 
+- **No more lag spikes from broken Magic Crates.** When the barrel under a Magic Crate was
+  replaced by another container, the crate tried to "spill its contents" by summoning empty item
+  entities in a loop that never finished: thousands of "Tried to add entity minecraft:item but it
+  was marked as removed already" warnings per tick, the command limit hit every tick, and the
+  server falling minutes behind. The Block Placer, Item Pipe and Spitter had the same spill on a
+  smaller scale, and could overwrite the block's own dropped item with the container's first
+  stack. A broken barrel or dispenser already drops its own contents, so the spill is gone: these
+  blocks now only give back their own item. The pack also refuses to build if an item entity is
+  ever summoned empty again.
+
 - **Server settings defaults match the blocks.** The Poppy Generator's interval row said 100 where
   the block uses 80, and the Magic Crate radius row allowed up to 32 where the crate stops at 20.
   The Block Breaker and Block Placer intervals now have server-default rows too. The Poppy

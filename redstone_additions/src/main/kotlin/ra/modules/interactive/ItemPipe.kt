@@ -78,7 +78,6 @@ object ItemPipe {
 		// effects, and blockOnBreak runs its cleanup first.
 		val onBreak = pack.define(block.fn("on_break")) {
 			killVanillaDrop(block.physical)
-			dropFirstSlot()
 			dropItem(item)
 			breakSound()
 			breakCloud()

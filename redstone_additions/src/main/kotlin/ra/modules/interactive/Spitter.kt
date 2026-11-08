@@ -63,7 +63,6 @@ object Spitter {
 
 		val onBreak = pack.blockOnBreak(
 			block, drop = { dropItem(item) }, sound = STONE_BREAK_SOUND, cloud = true,
-			afterVanillaKill = { dropFirstSlot() },
 		)
 
 		pack.define(block.tick) {

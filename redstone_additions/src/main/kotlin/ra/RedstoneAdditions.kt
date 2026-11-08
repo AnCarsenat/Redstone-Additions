@@ -117,6 +117,9 @@ object RedstoneAdditions {
 		PackValidator.macroLinesWithoutVariables(this).let { bad ->
 			check(bad.isEmpty()) { "Macro lines Minecraft would reject (the whole function fails to load):\n" + bad.joinToString("\n") { "  - $it" } }
 		}
+		PackValidator.itemSummonsWithoutItem(this).let { bad ->
+			check(bad.isEmpty()) { "Item entities summoned empty (discarded at once, and whatever fills them in hits another item):\n" + bad.joinToString("\n") { "  - $it" } }
+		}
 		if (strict) PackValidator.validate(this) else PackValidator.report(this)
 	}
 }

@@ -25,17 +25,6 @@ import ra.core.raw
 /** `ns:blocks/<dir>/give`: the block's full item, lore included. */
 fun DataPack.specGive(block: CustomBlock, item: ItemSpec) = define(block.give) { raw("give @s ${item.giveArg()}") }
 
-/**
- * Spills the container's FIRST stack (Items[0]) half a block up. Only the first: this is the
- * written-out form the beet blocks used, and the Magic Crate's recursive `drop_all` is the one
- * that empties a whole container.
- */
-fun Function.dropFirstSlot() {
-	raw("execute if data block ~ ~ ~ Items[0] run summon item ~ ~0.5 ~ {Tags:[\"${Tag.RA}\",\"${Tag.DROP_TEMP}\"]}")
-	raw("execute if entity @e[type=item,tag=${Tag.DROP_TEMP},limit=1] run data modify entity @e[type=item,tag=${Tag.DROP_TEMP},limit=1] Item set from block ~ ~ ~ Items[0]")
-	raw("execute as @e[type=item,tag=${Tag.DROP_TEMP}] run tag @s remove ${Tag.DROP_TEMP}")
-}
-
 /** The hopper-rate gate: a missing score starts at 0 (see [ensureScore]), then the block acts every 4th tick. */
 fun Function.hopperCooldown() {
 	ensureScore("@s", Obj.COOLDOWN)

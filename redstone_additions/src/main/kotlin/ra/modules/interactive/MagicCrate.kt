@@ -55,12 +55,10 @@ object MagicCrate {
 	val block = CustomBlock(Ns.INTERACTIVE, "magic_crate", "Magic Crate", model = "minecraft:barrel")
 	val item = block.loreItem { lore(loreLine("Pulls dropped items in from up to 20 blocks", "gray")) }
 	val registerBlock = block.fn("register_block")
-	private val dropAll = block.fn("drop_all")
 	private val pull = block.fn("pull")
 	private val sweep = block.fn("sweep")
 	private val tickOne = block.fn("tick_one")
 
-	private const val MH_DROP = "ra.mh_drop"
 
 	fun Ra.registerMagicCrate() {
 		block(block)
@@ -85,7 +83,6 @@ object MagicCrate {
 
 		pack.define(block.handlePlacement) { handlePlacement() }
 		pack.define(block.goggles) { goggles() }
-		pack.define(dropAll) { dropAll() }
 		pack.define(pull) { pull() }
 		pack.define(sweep) { sweep() }
 		pack.define(tickOne) { tickOne() }
@@ -96,7 +93,6 @@ object MagicCrate {
 		// both items.
 		val onBreak = pack.blockOnBreak(
 			block, drop = { dropItem(item) }, sound = STONE_BREAK_SOUND,
-			afterVanillaKill = { function(dropAll) },
 		)
 
 		pack.define(block.tick) {
@@ -125,21 +121,6 @@ object MagicCrate {
 		stackedPropLine("radius", "Radius: ", "aqua", " blocks")
 		stackedPropLine("cooldown", "Cooldown: ", "aqua", " ticks")
 		stackedDataLine("pulled", "Last pulse: ", "green", " items")
-	}
-
-	/**
-	 * Spill the crate's contents when it is broken. At the block, before the barrel is gone.
-	 *
-	 * Recursive rather than nine copies of the same three lines: the container is 27 slots, and
-	 * the written-out form other blocks use only ever covered the first nine of them.
-	 */
-	private fun Function.dropAll() {
-		raw("execute unless data block ~ ~ ~ Items[0] run return 0")
-		raw("""summon item ~ ~0.5 ~ {Tags:["${Tag.RA}","$MH_DROP"]}""")
-		raw("data modify entity @e[type=item,tag=$MH_DROP,limit=1] Item set from block ~ ~ ~ Items[0]")
-		raw("tag @e[type=item,tag=$MH_DROP] remove $MH_DROP")
-		raw("data remove block ~ ~ ~ Items[0]")
-		function(dropAll)
 	}
 
 	/**

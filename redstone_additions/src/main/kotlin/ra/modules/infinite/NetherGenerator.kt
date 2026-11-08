@@ -35,7 +35,7 @@ object NetherGenerator {
 
 	/** As the generator's marker, at the generator, rotated with it. */
 	private fun Function.process() {
-		cooldownGate()
+		cooldownGate(generator.defaultCooldown)
 		raw("execute unless block ^ ^ ^1 $GROWABLE run return 0")
 
 		rollTable(table)

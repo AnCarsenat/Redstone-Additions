@@ -40,7 +40,7 @@ object MineralGenerator {
 
 	/** As the generator's marker, at the generator, rotated with it. */
 	private fun Function.process() {
-		cooldownGate()
+		cooldownGate(generator.defaultCooldown)
 
 		// Somebody has to take the last one away first.
 		raw("execute unless block ^ ^ ^1 $GROWABLE run return 0")

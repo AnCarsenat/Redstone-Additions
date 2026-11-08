@@ -334,6 +334,11 @@ predicates built when the pack is generated. Worlds on v6.0.0 carry on without a
   they can take: a Liquid Pump or Liquid Drain beside both a campfire and water takes the water,
   and a drain never pulls smoke into a liquid network.
 
+- **Generator speed is an admin setting.** A generator's `cooldown` was shown locked to everyone.
+  Players with server-settings access can now change it per generator with the Data Handler;
+  for everyone else it stays locked. A Poppy Generator that had lost its cooldown value fell back
+  to 100 ticks instead of its own 80.
+
 ### For contributors
 
 - A property can set `goggles = true` to show on the Goggles label even when `visible = false`

@@ -81,9 +81,10 @@ class Generator(
 	fun Ra.registerGenerator(extraTick: Function.() -> Unit = {}) {
 		block(block)
 		properties(block) {
-			// The generator's fixed interval: worth a row in the Data Handler, not a line on the
-			// Goggles billboard, where it never changes and told players nothing at a glance.
-			number("cooldown", min = 1, max = 1200, readonly = true, goggles = false)
+			// The generator's interval, in ticks: a server admin's setting (the Data Handler, for
+			// players with ra.admin), not a player's, and not a line on the Goggles billboard, where
+			// it told players nothing at a glance. cooldownGate reads it from the marker every cycle.
+			number("cooldown", min = 1, max = 1200, adminOnly = true, goggles = false)
 			// Removed by the Poppy Generator's tick: a leftover of an old version.
 			if (block.id == "poppy_generator") text("mode", readonly = true, visible = false)
 		}
@@ -149,9 +150,12 @@ class Generator(
 /**
  * Wait out the configured period. A missing cooldown used to read as zero here, and zero means
  * "long enough" to the comparison below -- the generator then ran every tick.
+ *
+ * [default] is the generator's own [Generator.defaultCooldown]. It used to be a shared 100, so a
+ * Poppy Generator missing its property ran every 100 ticks instead of its 80.
  */
-fun Function.cooldownGate() {
-	readProperty("cooldown", default = 100, min = 1)
+fun Function.cooldownGate(default: Int) {
+	readProperty("cooldown", default = default, min = 1)
 	raw("execute unless score @s ${Obj.COOLDOWN} >= #prop ${Obj.TEMP} run return 0")
 	scoreboard.players.set(self(), Obj.COOLDOWN, 0)
 }

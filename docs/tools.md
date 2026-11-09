@@ -84,7 +84,7 @@ Shift + right-click a block to open its settings in chat.
 | **[Toggle]** | Switch an on/off setting |
 | **[Edit]** / **[Remove]** | On each entry of a list: type a new value for it, or delete it |
 | **[Clear]** | On a list whose positions matter (a Teleport Anchor's strengths): empty that entry, the others stay put |
-| **[Append]** | Add an entry at the end of a list (greyed out when the list is full) |
+| **[Add]** | Add an entry at the end of a list, also an empty one: you write it in the book, and it is checked like the others. Greyed out once the list is full ("Maximum N entries" on hover) |
 | **[Choose]** | Pick an entry from a list of known values (a Teleport Anchor's destinations: every anchor named so far) |
 | **[Edit whole list]** | Write the whole list at once, like `["A","B","C"]` |
 | **[Set from hand]** | For item settings (an Item Pipe filter): use the item you are holding |
@@ -107,6 +107,18 @@ A list looks like this (a Teleport Anchor):
     Strength 1: Mine  [Choose] [Edit] [Clear]
     Strength 2: (empty)  [Choose] [Edit]
 ```
+
+and like this for a list that grows (a Tag Adder's tags, at most 16), with its count in the header:
+
+```
+  tags: list (2/16) [Add] [Edit whole list]
+    Tag 1: custom_tag  [Edit] [Remove]
+    Tag 2: red_team  [Edit] [Remove]
+```
+
+Every setting the block has is listed, even one it does not carry yet because it was placed
+before that setting existed. Such a row shows the setting's starting value marked *(default)*,
+or *(not set)* when it has none, and your first change writes it to the block.
 
 Text settings only accept the characters they can use, since some are used inside commands:
 names and channels take letters, digits, spaces and `_ . + - : / #`; most other text the same

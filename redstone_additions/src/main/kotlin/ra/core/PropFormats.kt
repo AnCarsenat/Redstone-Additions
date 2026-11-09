@@ -46,8 +46,8 @@ private fun PropertiesBuilder.put(spec: PropSpec) {
  */
 fun PropertiesBuilder.text(
 	name: String, format: TextFormat, adminOnly: Boolean = false, adminSetting: String? = null,
-	readonly: Boolean = false, visible: Boolean = true,
-) = put(PropSpec(name, PropType.TEXT, readonly = readonly, adminOnly = adminOnly, visible = visible, format = format, adminSetting = adminSetting))
+	readonly: Boolean = false, visible: Boolean = true, default: String? = null,
+) = put(PropSpec(name, PropType.TEXT, readonly = readonly, adminOnly = adminOnly, visible = visible, format = format, adminSetting = adminSetting, default = default?.let(::snbtString)))
 
 /**
  * A list of text, each entry checked against [format]. [choices] is a `storage` / `path` pair the
@@ -57,9 +57,11 @@ fun PropertiesBuilder.textList(
 	name: String, max: Int? = null, pad: Boolean = false, format: TextFormat = TextFormat.ID,
 	choices: Pair<String, String>? = null, entryLabel: String? = null,
 	readonly: Boolean = false, adminOnly: Boolean = false, adminSetting: String? = null, visible: Boolean = true,
+	default: List<String>? = null,
 ) = put(
 	PropSpec(
 		name, PropType.LIST, of = PropType.TEXT, maxLength = max, pad = pad, readonly = readonly, adminOnly = adminOnly,
 		visible = visible, format = format, adminSetting = adminSetting, choices = choices, entryLabel = entryLabel,
+		default = default?.joinToString(",", "[", "]", transform = ::snbtString),
 	),
 )

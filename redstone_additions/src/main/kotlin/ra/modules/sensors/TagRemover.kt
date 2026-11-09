@@ -3,6 +3,7 @@ package ra.modules.sensors
 import ra.core.TextFormat
 import ra.core.text
 import ra.lib.safe.SafeText.guardProperty
+import ra.modules.sensors.SensorTags.DEFAULT_SNBT
 import ra.modules.sensors.SensorsModule.SELECTOR_SETTING
 import io.github.ayfri.kore.features.recipes.types.key
 import io.github.ayfri.kore.features.recipes.types.pattern
@@ -17,7 +18,6 @@ import ra.core.block.placeBlock
 import ra.core.block.propLine
 import ra.core.define
 import ra.core.raw
-import ra.core.Storage
 import io.github.ayfri.kore.commands.function
 import ra.core.item.loreItem
 import ra.core.block.shapedRecipe
@@ -44,15 +44,15 @@ import ra.core.block.soundListenersSel
  * `tags` is an empty list. The pack's own entities are never touched.
  *
  * Properties: entity_selector (default `@e[distance=..3]`), tags (default `["custom_tag"]`, see
- * [SensorTags]). A block from before v6.0.2 has no `tags` and runs on its single `tag` instead,
- * as it did then (empty or missing: clear them all); `tag` is hidden from the Data Handler for
- * players and ignored as soon as `tags` is written.
+ * [SensorTags]; a block from before v6.0.2 had a single `tag`, which the 6.0.1-to-6.0.2 migration
+ * made into the list -- an empty or missing one, "clear them all", into `[]`).
  */
 object TagRemover {
+	const val DEFAULT_SELECTOR = "@e[distance=..3]"
+
 	val block = CustomBlock(Ns.SENSORS, "tag_remover", "Tag Remover", model = "minecraft:red_glazed_terracotta")
 	val item = block.loreItem {}
 
-	private val removeTagMacro = block.fn("remove_tag_macro")
 	private val clearAllTagsMacro = block.fn("clear_all_tags_macro")
 	private val clearTags = block.fn("clear_tags")
 	private val clearTagsStep = block.fn("clear_tags_step")
@@ -63,7 +63,6 @@ object TagRemover {
 	/** Never touched: the pack's own entities. `ra` is on all of them; markers also carry `ra.custom_block`. */
 	private val NOT_RA = "tag=!${Tag.RA},tag=!${Tag.CUSTOM_BLOCK}"
 	private val fire = block.fn("fire")
-	private val fireSingle = block.fn("fire_single")
 	private val fireList = block.fn("fire_list")
 	private val removeListedMacro = block.fn("remove_listed_macro")
 
@@ -72,10 +71,8 @@ object TagRemover {
 		properties(block) {
 			// Pasted into commands, and able to reach any entity: admins only, unless the server
 			// lets players edit them (Sensors settings). Checked again before every use.
-			text("entity_selector", TextFormat.SELECTOR, adminOnly = true, adminSetting = SELECTOR_SETTING)
+			text("entity_selector", TextFormat.SELECTOR, adminOnly = true, adminSetting = SELECTOR_SETTING, default = DEFAULT_SELECTOR)
 			tagsList()
-			// Pre-6.0.2 blocks only, read while they have no `tags`. Admins still see and edit it.
-			text("tag", TextFormat.TAG, adminOnly = true, adminSetting = SELECTOR_SETTING, visible = false)
 		}
 		pack.blockRegisterMessage(block)
 		pack.blockGive(block)
@@ -90,15 +87,8 @@ object TagRemover {
 			placementGuard(block, checkExisting = false)
 			// Red glazed terracotta with a marker (dir_type 0 = non-directional).
 			placeBlock(block)
-			setOnNew(block, "data.properties", """{entity_selector:"@e[distance=..3]",tags:["custom_tag"]}""")
+			setOnNew(block, "data.properties", """{entity_selector:"$DEFAULT_SELECTOR",tags:$DEFAULT_SNBT}""")
 			finishPlacement(block, removePlaceTag = false)
-		}
-
-		// Macro {tag, entity_selector}. As the marker, at its position.
-		pack.define(removeTagMacro) {
-			// Anchor position to the marker for distance calculations in the selector.
-			raw("\$execute at @s as \$(entity_selector) if entity @s[$NOT_RA] run tag @s remove \$(tag)")
-			raw("playsound minecraft:block.note_block.bit block ${soundListenersSel()} ~ ~ ~ 0.5 0.8")
 		}
 
 		// Macro {entity_selector}: clear every tag the pack does not own. As the marker, at its
@@ -140,18 +130,16 @@ object TagRemover {
 		// are removed before the copy so a marker missing its selector cannot run with the previous
 		// marker's; it does nothing instead.
 		pack.define(fire) {
-			raw("data remove storage ra:temp tag")
 			raw("data remove storage ra:temp entity_selector")
 			raw("data modify storage ra:temp entity_selector set from entity @s data.properties.entity_selector")
 			raw("execute unless data storage ra:temp entity_selector run return 0")
 			// Pasted into the command: refuse anything that could be more than one argument.
 			guardProperty("entity_selector", TextFormat.SELECTOR)
-			raw("execute unless data entity @s data.properties.tags run function ${fireSingle.asId()}")
-			raw("execute if data entity @s data.properties.tags run function ${fireList.asId()}")
+			function(fireList)
 		}
 
-		// `tags`: each listed tag, every tag (an empty list), or nothing (not a list, or no entry
-		// passed the check -- a list of only refused entries never means "clear them all").
+		// `tags`: each listed tag, every tag (an empty list), or nothing (missing, not a list, or no
+		// entry passed the check -- a list of only refused entries never means "clear them all").
 		pack.define(fireList) {
 			function(SensorTags.load)
 			raw("execute if score #st.list $T matches 0 run return run data remove storage ra:temp sensor_tags")
@@ -167,23 +155,10 @@ object TagRemover {
 			raw("playsound minecraft:block.note_block.bit block ${soundListenersSel()} ~ ~ ~ 0.5 0.8")
 		}
 
-		// The single `tag` of a block from before v6.0.2, as it worked then. A missing or empty tag
-		// means "clear them all".
-		pack.define(fireSingle) {
-			raw("data remove entity @s data.status.skipped")
-			raw("data modify storage ra:temp tag set from entity @s data.properties.tag")
-			raw("execute unless data storage ra:temp tag run return run function ${clearAllTagsMacro.asId()} with storage ra:temp")
-			raw("execute if data storage ra:temp {tag:\"\"} run return run function ${clearAllTagsMacro.asId()} with storage ra:temp")
-			guardProperty("tag", TextFormat.TAG)
-			function(removeTagMacro, Storage.TEMP)
-		}
-
 		pack.define(block.goggles) {
 			gogglesHeader(block, nameY = 1.0)
 			propLine("entity_selector", "Targets: ", "yellow", y = 0.8)
-			raw("""execute if data entity @s data.properties.tags run function ${SensorTags.gogglesLine.asId()} {empty:"all (except ra.*)"}""")
-			// A pre-6.0.2 block: its single tag, or "all" when it has none.
-			raw("""execute unless data entity @s data.properties.tags run function ${SensorTags.legacyLine.asId()} {empty:"all (except ra.*)"}""")
+			raw("""function ${SensorTags.gogglesLine.asId()} {empty:"all (except ra.*)"}""")
 			raw("execute if data entity @s data.status.skipped run function ${Goggles.Billboard.dataLine.asId()} {path:\"skipped\",label:\"Refused tags: \",color:\"red\",suffix:\"\",y:0.6}")
 		}
 

@@ -14,6 +14,9 @@ import ra.core.raw
  *   storage ra:dh order."<type>"         the names in declaration (menu) order
  *   storage ra:dh known                  every name declared on any type, for guessing rows of
  *                                        properties a block carries without declaring them
+ *   storage ra:dh defaults."<type>"      name -> the value shown for a declared property the block
+ *                                        does not carry yet (PropSpec.default), so a block
+ *                                        placed before the property existed still gets its row
  *
  * Every lookup is one compound key -- "what is <name> on this block?" -- so nothing walks a list
  * per tick; the menu walks its own block's list when it is drawn.
@@ -57,6 +60,9 @@ object DataHandlerRegistry {
 			for ((type, specs) in schemas) {
 				raw("data modify storage ra:dh types.\"$type\" set value " + specs.withIndex().joinToString(",", "{", "}") { (i, p) -> "${p.name}:${p.snbt(i)}" })
 				raw("data modify storage ra:dh order.\"$type\" set value ${specs.map { it.name }.snbt()}")
+				val defaults = specs.mapNotNull { p -> p.default?.takeUnless { p.dynamic }?.let { "${p.name}:$it" } }
+				raw(if (defaults.isEmpty()) "data remove storage ra:dh defaults.\"$type\""
+					else "data modify storage ra:dh defaults.\"$type\" set value " + defaults.joinToString(",", "{", "}"))
 			}
 			raw("data modify storage ra:dh known set value ${known.snbt()}")
 			// Lists of v6.0.1 and earlier, read by nothing now.
@@ -90,7 +96,7 @@ object DataHandlerRegistry {
 	 *   - each `dynamic` declaration, which is allowed but discouraged;
 	 *   - each property name a generated function reads or writes on a block without declaring it.
 	 *     In a function under `blocks/<dir>/`, the name must be in that block's schema; anywhere
-	 *     else, in some schema.
+	 *     else, in some schema. Migration steps (`ra_migrations:`) are not scanned.
 	 */
 	private fun Ra.checkSchemas(schemas: Map<String, List<PropSpec>>) {
 		for ((type, specs) in schemas) for (p in specs.filter { it.dynamic })
@@ -103,6 +109,8 @@ object DataHandlerRegistry {
 		for (fn in pack.functions + pack.generatedFunctions) {
 			val id = fn.asId()
 			val (ns, p) = id.split(':', limit = 2)
+			// Migrations read and drop retired properties (a Tag Adder's old `tag`) by design.
+			if (ns == "ra_migrations") continue
 			val dir = if (p.startsWith("blocks/")) p.removePrefix("blocks/").substringBefore('/') else null
 			val type = dir?.let { dirToType["$ns:$it"] ?: dirToType[it] }
 			val allowed = type?.let { t -> schemas[t]?.map { it.name }?.toSet() } ?: anywhere

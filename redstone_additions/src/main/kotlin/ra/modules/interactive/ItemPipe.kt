@@ -58,10 +58,10 @@ object ItemPipe {
 	fun Ra.registerItemPipe() {
 		block(block)
 		properties(block) {
-			item("filter_item")
+			item("filter_item", default = "")
 			// Off: a stack matching the filter goes to a side. On: a stack that does NOT match goes
 			// to a side, and matching ones carry on forward. No effect without a filter.
-			bool("invert")
+			bool("invert", default = false)
 		}
 		pack.blockRegisterMessage(block)
 		pack.specGive(block, item)

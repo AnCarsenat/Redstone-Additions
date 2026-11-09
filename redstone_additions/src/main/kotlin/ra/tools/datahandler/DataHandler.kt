@@ -40,6 +40,7 @@ object DataHandler {
 	val showInternalData = tool("data_handler/show_internal_data")
 	val listProperties = tool("data_handler/list_properties")
 	val loadSchema = tool("data_handler/load_schema")
+	private val fillDefaults = tool("data_handler/fill_defaults")
 	private val loadSchemaAt = tool("data_handler/load_schema_at")
 	val addProperty = tool("data_handler/add_property")
 	val removeProperty = tool("data_handler/remove_property")
@@ -113,6 +114,23 @@ object DataHandler {
 			raw("data modify storage ra:dh properties set from entity @s data.properties")
 			raw("data modify storage ra:dh internal_data set from entity @s data.data")
 			function(loadSchema)
+			// stored: what the block really carries. properties: that, over the schema's defaults,
+			// so a declared property the block does not have yet (placed before it existed) still
+			// gets its row, showing the default; its first edit writes it (DataHandlerProps.materialize).
+			raw("data remove storage ra:dh stored")
+			raw("data modify storage ra:dh stored set from storage ra:dh properties")
+			executeRun("if data storage ra:dh bt.type", fillDefaults, "with storage ra:dh bt")
+		}
+		// {type}
+		pack.define(fillDefaults) {
+			raw("data remove storage ra:dh df")
+			raw("\$data modify storage ra:dh df set from storage ra:dh defaults.\"\$(type)\"")
+			raw("execute unless data storage ra:dh df run return 0")
+			// Something other than a compound (written with a command): left as it is.
+			raw("execute if data storage ra:dh stored unless data storage ra:dh stored{} run return run data remove storage ra:dh df")
+			raw("data modify storage ra:dh df merge from storage ra:dh stored")
+			raw("data modify storage ra:dh properties set from storage ra:dh df")
+			raw("data remove storage ra:dh df")
 		}
 
 		// As a block's marker: its type's property schema into storage ra:dh -- schema (name ->
@@ -169,7 +187,7 @@ object DataHandler {
 		// some other block declares gets a row with a guessed type and a warning; anything left
 		// after that is listed, with no editor.
 		pack.define(listProperties) {
-			raw("""execute unless data storage ra:dh properties run return run tellraw @s [{text:"  (no properties)",color:"dark_gray",italic:true}]""")
+			raw("""execute unless data storage ra:dh properties unless data storage ra:dh block_order[0] run return run tellraw @s [{text:"  (no properties)",color:"dark_gray",italic:true}]""")
 			// rest: what no row has claimed yet. Each row removes its own name.
 			raw("data modify storage ra:dh rest set from storage ra:dh properties")
 			// Row actions: this menu's stamp * MUL + 100 + index (see DataHandlerActions).

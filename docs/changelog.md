@@ -6,6 +6,14 @@ This page mirrors key datapack milestones from the main project changelog.
 
 ### Fixed
 
+- **The Data Handler shows every setting a block has, even one it was placed without.** A block
+  placed before a setting existed (an Item Pipe from before *invert*, a Tag Adder from before its
+  tag list) did not carry it, and the Data Handler only listed what the block carried, so the
+  setting could not be found or changed. Every setting of the block is now listed: one with a
+  known starting value shows it, marked *(default)* (an Item Pipe's *invert* off, a Tag Adder's
+  tags `["custom_tag"]`), and any other is marked *(not set)*. The first change writes it to the
+  block, starting from that default: [Add] on a default list keeps its entry and adds yours.
+
 - **The Redstone Remote's channel prompt no longer cancels itself.** Shift+RMB with the remote
   hands out the Input Form, and the prompt was being called off the moment it opened, with
   "Input cancelled." in chat and the book taken straight back. The game leaves a short-lived
@@ -57,7 +65,7 @@ This page mirrors key datapack milestones from the main project changelog.
 ### Added
 
 - **Tag Adder and Tag Remover take a list of tags.** The new `tags` property holds up to 16
-  tags, edited one entry at a time in the Data Handler ([Edit], [Remove], [Append]). A Tag Remover
+  tags, edited one entry at a time in the Data Handler ([Edit], [Remove], [Add]). A Tag Remover
   removes every listed tag from the entities its selector matches and leaves their other tags
   alone; with an empty list it clears all of their tags except the `ra.` ones, as an empty `tag`
   did. A Tag Adder adds every listed tag. Like the selector, the list can only be changed by
@@ -96,11 +104,17 @@ This page mirrors key datapack milestones from the main project changelog.
 
 ### Changed
 
-- **Tag Adders and Tag Removers placed from now on start with `tags: ["custom_tag"]`** instead of
-  `tag: "custom_tag"`. Blocks you already placed keep their single `tag` and work exactly as
-  before, including a Tag Remover with an empty `tag` clearing every tag. Give one a `tags` list
-  and the list is used from then on; the old `tag` is then ignored, and is only shown to admins
-  in the Data Handler.
+- **Tag Adders and Tag Removers placed from now on start with `tags: ["custom_tag"]`**, a list
+  of one tag, instead of `tag: "custom_tag"`. Blocks you already placed are converted when the
+  world loads: their tag becomes the list's one entry (`tag: "red_team"` becomes
+  `tags: ["red_team"]`), a Tag Remover without a tag, which cleared every tag, gets the empty
+  list and keeps doing exactly that, and a Tag Adder without one gets `["custom_tag"]`. The old
+  `tag` setting is gone.
+- **The Data Handler's list button is [Add]** (it was [Append]). It adds an entry at the end,
+  also to an empty list, and asks for it in the input book, checked like any other entry. Once
+  the list holds as many entries as it may (16 for a Tag Adder's or Tag Remover's tags), it is
+  greyed out, and hovering it says "Maximum 16 entries". The list's header shows how full it is,
+  like `tags: list (1/16)`.
 
 - **Liquid Drain `speed` is now `rate`, in mL per second** (5000 by default, one block a second;
   100 to 100000), and it sets how fast a drain takes in and pours out alike. Existing drains and

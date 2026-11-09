@@ -210,7 +210,7 @@ with a reach.
 
 - Items and mobs are brought up to the Fan's speed along its direction and keep any speed they
   already had beyond it; sideways and falling are not touched.
-- Players are moved a little every other tick and never into a wall: a step that would put your
+- Players are moved a small step every tick and never into a wall: a step that would put your
   feet or head inside a solid block is not taken. An upward Fan lifts you with Levitation, which
   ends a moment after you leave its column. Spectators and creative players who are flying are
   not pushed.
@@ -251,14 +251,19 @@ then change the row. The [Goggles](tools.md) show the current values.
   pickup delay (display items). It ticks after the Item Pipe and the Item Mover, so what they push
   in is gone within the same tick. Both tests cost next to nothing when it is empty.
 - **Fan.** A real dropper, so `dropper[triggered=true]` says whether it is powered; an unpowered
-  Fan costs one block-state test every other tick. A powered one reads its two properties and runs
-  two box selectors (`dx`/`dy`/`dz` over the `range` blocks in front) every other tick. Mobs and
-  items have their `Motion` along the axis raised to 0.05 × `strength` blocks per tick. Players
-  cannot have `Motion` written and 26.3 has no command that gives a player velocity, so a player is
-  moved by a relative `tp` of 0.1 × `strength` blocks every other tick (a relative teleport keeps
-  their own velocity), after checking the blocks their front edge would enter at feet and head
-  height against `#ra_lib:ray_passable`. Up, Levitation (amplifier `strength` − 1) refreshed every
-  other tick; players tagged `ra.fan.lifted` whose `ra.fan.lift` game time has passed lose it.
+  Fan costs one block-state test every other tick. That test tags the powered Fans' markers
+  (`ra.fan.powered`) and counts them (`#fan.on`); while the count is above 0, each powered Fan
+  reads its two properties and runs two box selectors (`dx`/`dy`/`dz` over the `range` blocks in
+  front) every tick. With none powered, the per-tick cost is one score test. Mobs and items have
+  their `Motion` along the axis raised to 0.05 × `strength` blocks per tick. Players cannot have
+  `Motion` written and 26.3 has no command that gives a player velocity (the `apply_impulse` and
+  `explode` enchantment effects only run from an enchanted item the player carries; a wind charge
+  is one burst that also flips levers and doors), so a player is moved by a relative `tp` of
+  0.05 × `strength` blocks every tick (a relative teleport keeps their own velocity), after
+  checking the blocks their front edge would enter at feet and head height against
+  `#ra_lib:ray_passable`. Up, Levitation (amplifier `strength` − 1) refreshed every tick; players
+  tagged `ra.fan.lifted` whose `ra.fan.lift` game time has passed lose it. The wind puff stays
+  every other tick.
 - **Item Pipe.** The filter is `data.properties.filter_item` (an item id, empty = none);
   `data.properties.invert` (`1b`) sends non-matching stacks to the side instead. Pipes
   built when filters were item frames are converted on load; the frames are left in place.

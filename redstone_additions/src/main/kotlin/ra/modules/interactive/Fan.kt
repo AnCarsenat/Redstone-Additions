@@ -38,20 +38,24 @@ import ra.core.raw
  * the Fan asks nothing of ra_lib:redstone (see ra_lib:redstone/detect, "CHEAPER STILL"); a dropper
  * also has the full six-way facing a Fan needs, placed like the Spitter's. Its inventory is unused.
  *
- * COST. Every other tick, one test per Fan of its own block state; an unpowered Fan stops there.
- * A powered one reads its two properties and runs two box selectors over the `range` blocks in
- * front of it (see [FanPush]). The only per-tick work is the break check every block has, and one
- * `@a` tag filter for players still being lifted by an upward Fan.
+ * COST. Every other tick, one test per Fan of its own block state, which tags the powered ones
+ * ([POWERED]) and counts them; an unpowered Fan stops there. While the count is above 0, each tick
+ * every powered Fan reads its two properties and runs two box selectors over the `range` blocks in
+ * front of it (see [FanPush]): every tick, so that players move in small steps. With no Fan
+ * powered, the per-tick work is one score test, the break check every block has, and one `@a` tag
+ * filter for players still being lifted by an upward Fan.
  */
 object Fan {
 	val block = CustomBlock(Ns.INTERACTIVE, "fan", "Fan", model = "minecraft:dropper", dirType = 2)
 	val item = block.loreItem { lore(loreLine("Pushes what is in front of it while powered", "gray")) }
 	val registerBlock = block.fn("register_block")
+	private val powerCheck = block.fn("power_check")
+	private val powerOn = block.fn("power_on")
 
 	/** A player's longest reach. */
 	const val MAX_RANGE = 16
 
-	/** An admin's (ra.core.Admin): two box selectors of this length every other tick per Fan. */
+	/** An admin's (ra.core.Admin): two box selectors of this length every tick per powered Fan. */
 	const val ADMIN_MAX_RANGE = 64
 	const val DEFAULT_RANGE = 8
 
@@ -63,8 +67,14 @@ object Fan {
 	/** Entities a Fan leaves where they are: pack and map-maker scaffolding, and what hangs on a wall. */
 	const val UNMOVED = "fan_unmoved"
 
-	/** The fake player that halves the Fans' pace: they run on the ticks it is 0. */
-	private const val PHASE = "#fan.phase"
+	/** The fake player that halves the power check's pace (and the wind puff's): on the ticks it is 0. */
+	const val PHASE = "#fan.phase"
+
+	/** On a Fan's marker while its dropper is powered, set by the power check. */
+	const val POWERED = "ra.fan.powered"
+
+	/** How many Fans the last power check found powered. */
+	private const val ON = "#fan.on"
 
 	fun Ra.registerFan() {
 		block(block)
@@ -104,6 +114,15 @@ object Fan {
 			stackedPropLine("strength", "Strength: ", "yellow")
 		}
 		FanPush.register(this)
+		pack.define(powerCheck) {
+			raw("scoreboard players set $ON ${FanPush.T} 0")
+			raw("tag @e[type=minecraft:marker,tag=$POWERED] remove $POWERED")
+			executeRun("as ${block.markerSel()} at @s if block ~ ~ ~ minecraft:dropper[triggered=true]", powerOn)
+		}
+		pack.define(powerOn) {
+			raw("tag @s add $POWERED")
+			raw("scoreboard players add $ON ${FanPush.T} 1")
+		}
 
 		val onBreak = pack.blockOnBreak(block, drop = { dropItem(item) }, sound = STONE_BREAK_SOUND, cloud = true)
 
@@ -112,8 +131,10 @@ object Fan {
 			// Every other tick: 1, 0, 1, 0...
 			raw("scoreboard players add $PHASE ${FanPush.T} 1")
 			raw("execute if score $PHASE ${FanPush.T} matches 2.. run scoreboard players set $PHASE ${FanPush.T} 0")
-			// Only a powered Fan goes further than its own block state.
-			executeRun("if score $PHASE ${FanPush.T} matches 0 as ${block.markerSel()} at @s if block ~ ~ ~ minecraft:dropper[triggered=true]", FanPush.run)
+			// Every other tick: which Fans are powered. Only those go further than their own block state.
+			executeRun("if score $PHASE ${FanPush.T} matches 0", powerCheck)
+			// Every tick while one is: the push, in small steps.
+			executeRun("if score $ON ${FanPush.T} matches 1.. as @e[type=minecraft:marker,tag=$POWERED] at @s", FanPush.run)
 			// Players lifted by an upward Fan they have since left come down.
 			executeRun("if entity @a[tag=${FanPush.LIFTED},limit=1]", FanPush.liftEnd)
 		}

@@ -110,6 +110,11 @@ This page mirrors key datapack milestones from the main project changelog.
   lifts them with Levitation, and spectators and flying creative players are left alone. A wind
   puff follows each player's particle setting. Crafted from four cobblestone, three feathers, a
   dropper and redstone. An unpowered Fan only checks its own block every other tick.
+- **Jetpack fuel gauge.** While an Iron jetpack is in the air, the action bar shows the fuel left
+  in the burning piece as a coloured bar and a percentage, and the coal you carry
+  (`Fuel ▮▮▮▮▮▮▯▯▯▯ 63% · 12 coal`). Green while there is coal to come, then yellow, red under a
+  quarter of the last piece. It waits for the jetpack's other action bar messages instead of
+  overwriting them. Turn it off for yourself with *Jetpack fuel gauge* in Your Preferences.
 - **Anchor Terminal** (Ender Links). A block to choose where to go: stand on it and sneak, and a
   menu opens in chat with its *favourites* (up to 8 anchor names, set with the Data Handler) as
   **[Go]** buttons, and **[Type a destination]**, which asks for any anchor name in the Input Form
@@ -163,6 +168,9 @@ This page mirrors key datapack milestones from the main project changelog.
   the characters no longer allowed (`Main base` becomes `Mainbase`); where several anchors shared
   a name (every anchor was `A` until now), the first one loaded keeps it and the others become
   `A_2`, `A_3`, …, each announced in chat, and targets that named it lead to the one that kept it.
+- **Smoother Thruster.** The Thruster Kit's push now builds up over about half a second when you
+  start sprinting in the air and fades the same way when you stop, instead of arriving and
+  vanishing in one tick.
 
 ### Removed
 

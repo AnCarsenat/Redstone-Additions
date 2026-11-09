@@ -131,6 +131,7 @@ object KitMenu {
 
 		raw("\$execute if score #jp.was ${Obj.TEMP} matches 1 run title @s actionbar [{text:\"\$(label) switched on\",color:\"green\"}]")
 		raw("\$execute if score #jp.was ${Obj.TEMP} matches 0 run title @s actionbar [{text:\"\$(label) switched off\",color:\"gray\"}]")
+		raw(Jp.HOLD_GAUGE)
 		raw("playsound minecraft:block.lever.click player $SELF_IF_SOUND ~ ~ ~ 0.7 1.4")
 	}
 
@@ -161,6 +162,7 @@ object KitMenu {
 		}
 
 		raw("\$title @s actionbar [{text:\"\$(label) kit removed\",color:\"yellow\"}]")
+		raw(Jp.HOLD_GAUGE)
 		raw("particle minecraft:enchant ~ ~1 ~ 0.4 0.6 0.4 0.4 25 normal ${particleViewersSel()}")
 		raw("playsound minecraft:block.grindstone.use player $SELF_IF_SOUND ~ ~ ~ 0.7 1.2")
 	}

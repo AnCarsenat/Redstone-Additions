@@ -5,6 +5,7 @@ import ra.core.Ns
 import ra.core.PackPart
 import ra.core.Ra
 import ra.modules.wires.blocks.Placement
+import ra.modules.wires.blocks.air_charger.AirCharger
 import ra.modules.wires.blocks.battery.Battery
 import ra.modules.wires.blocks.boiler.Boiler
 import ra.modules.wires.blocks.creative_eu.CreativeEu
@@ -41,6 +42,8 @@ import ra.modules.wires.electric.ElectricBreak
 import ra.modules.wires.electric.EuApi
 import ra.modules.wires.electric.Fuel
 import ra.modules.wires.electric.Generator
+import ra.modules.wires.diving.AirTank
+import ra.modules.wires.diving.DivingItems
 import ra.modules.wires.fluid.Drain
 import ra.modules.wires.fluid.DrainExperience
 import ra.modules.wires.fluid.DrainPour
@@ -64,7 +67,7 @@ import ra.modules.wires.readout.Readout
  * Layout mirrors the generated paths: `blocks/<block>/` per block, `fluid/`, `electric/`,
  * `liquid/` (break handling), `bridge/`, `media/`, `common/` (display models), `debug/`,
  * `readout/` (the slow clock of the gauge and meter), `machine/` (the clock of the Tesla Coil and
- * Spout).
+ * Spout), `diving/` (the Air Tank and Heavy Boots).
  * Items, recipes and the give bundle are one data table in [WiresBlocks].
  */
 object WiresModule : GameplayModule {
@@ -82,7 +85,8 @@ object WiresModule : GameplayModule {
 		ElectricSwitch, ElectricWire, GasPump, GasTank, GasValve, IndustrialLight, LiquidDrain,
 		LiquidFilter, LiquidPipe, LiquidPump, LiquidTank, LiquidValve, SolarPanel,
 		Readout, NetworkGauge, UsageMeter,
-		MachineClock, TeslaCoil, Spout, WaterWheel,
+		MachineClock, TeslaCoil, Spout, WaterWheel, AirCharger,
+		DivingItems, AirTank,
 	)
 
 	override fun Ra.register() {

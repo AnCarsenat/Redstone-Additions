@@ -1,6 +1,6 @@
 # Recipe Atlas
 
-Every recipe in the pack, in one place: 99 of them.
+Every recipe in the pack, in one place: 103 of them.
 
 !!! tip "Finding one"
     Use the search box with the item's name — every recipe below is indexed by
@@ -14,6 +14,8 @@ what the pack actually contains rather than what someone remembered to add.
 
 | Item | Module | Station |
 | ---- | ------ | ------- |
+| [Air Charger](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
+| [Air Tank](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
 | [Analog Emitter](#wireless-redstone) | [Wireless Redstone](wireless-redstone.md) | Crafting table |
 | [Analog Receiver](#wireless-redstone) | [Wireless Redstone](wireless-redstone.md) | Crafting table |
 | [Anchor Tablet](#ender-links) | [Ender Links](ender-links.md) | Crafting table |
@@ -62,6 +64,7 @@ what the pack actually contains rather than what someone remembered to add.
 | [Goggles](#tools) | [Tools](tools.md) | Crafting table |
 | [Goggles Lens](#tools) | [Tools](tools.md) | Crafting table |
 | [Gold Multiblock Base](#multiblocks) | [Multiblocks](multiblocks.md) | Crafting table |
+| [Heavy Boots](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
 | [Held Item Detector](#sensors) | [Sensors](sensors.md) | Crafting table |
 | [Industrial Light](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
 | [Infinite Iron Jetpack Kit](#not-crafted-won-on-an-enchanting-table) | [Jetpacks](jetpacks.md) | Enchanting table |
@@ -73,6 +76,7 @@ what the pack actually contains rather than what someone remembered to add.
 | [Item Hologram](#displays) | [Displays](displays.md) | Crafting table |
 | [Item Mover](#interactive-machines) | [Interactive Machines](interactive-machines.md) | Crafting table |
 | [Item Pipe](#interactive-machines) | [Interactive Machines](interactive-machines.md) | Crafting table |
+| [Keypad](#security) | [Security](security.md) | Crafting table |
 | [Lift Kit](#jetpacks) | [Jetpacks](jetpacks.md) | Crafting table |
 | [Light Sensor](#sensors) | [Sensors](sensors.md) | Crafting table |
 | [Liquid Filter](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
@@ -243,6 +247,14 @@ Module page: [Multiblocks](multiblocks.md) — give everything: `/function ra_mu
 | **Iron Multiblock Base** | ![Iron Multiblock Base recipe](images/recipes/ra_multiblock/iron_base.png){ width="220" } | Crafting table | `ra_multiblock:iron_base` |
 | **Netherite Multiblock Base** | ![Netherite Multiblock Base recipe](images/recipes/ra_multiblock/netherite_base.png){ width="220" } | Crafting table | `ra_multiblock:netherite_base` |
 
+## Security
+
+Module page: [Security](security.md) — give everything: `/function ra_security:items/give_all`
+
+| Item | Recipe | Station | Namespace id |
+| ---- | ------ | ------- | ------------ |
+| **Keypad** | ![Keypad recipe](images/recipes/ra_security/keypad.png){ width="220" } | Crafting table | `ra_security:keypad` |
+
 ## Sensors
 
 Module page: [Sensors](sensors.md) — give everything: `/function ra_sensors:items/give_all`
@@ -285,6 +297,8 @@ Module page: [Transport Networks](transport-networks.md) — give everything: `/
 
 | Item | Recipe | Station | Namespace id |
 | ---- | ------ | ------- | ------------ |
+| **Air Charger** | ![Air Charger recipe](images/recipes/ra_wires/air_charger.png){ width="220" } | Crafting table | `ra_wires:air_charger` |
+| **Air Tank** | ![Air Tank recipe](images/recipes/ra_wires/air_tank.png){ width="220" } | Crafting table | `ra_wires:air_tank` |
 | **Battery** | ![Battery recipe](images/recipes/ra_wires/battery.png){ width="220" } | Crafting table | `ra_wires:battery` |
 | **Boiler** | ![Boiler recipe](images/recipes/ra_wires/boiler.png){ width="220" } | Crafting table | `ra_wires:boiler` |
 | **Copper Pipe** | ![Copper Pipe recipe](images/recipes/ra_wires/liquid_pipe_copper.png){ width="220" } | Crafting table | `ra_wires:liquid_pipe_copper` |
@@ -297,6 +311,7 @@ Module page: [Transport Networks](transport-networks.md) — give everything: `/
 | **Gas Pump** | ![Gas Pump recipe](images/recipes/ra_wires/gas_pump.png){ width="220" } | Crafting table | `ra_wires:gas_pump` |
 | **Gas Tank** | ![Gas Tank recipe](images/recipes/ra_wires/gas_tank.png){ width="220" } | Crafting table | `ra_wires:gas_tank` |
 | **Gas Valve** | ![Gas Valve recipe](images/recipes/ra_wires/gas_valve.png){ width="220" } | Crafting table | `ra_wires:gas_valve` |
+| **Heavy Boots** | ![Heavy Boots recipe](images/recipes/ra_wires/heavy_boots.png){ width="220" } | Crafting table | `ra_wires:heavy_boots` |
 | **Industrial Light** | ![Industrial Light recipe](images/recipes/ra_wires/industrial_light.png){ width="220" } | Crafting table | `ra_wires:industrial_light` |
 | **Liquid Filter** | ![Liquid Filter recipe](images/recipes/ra_wires/liquid_filter.png){ width="220" } | Crafting table | `ra_wires:liquid_filter` |
 | **Liquid Pump** | ![Liquid Pump recipe](images/recipes/ra_wires/liquid_pump.png){ width="220" } | Crafting table | `ra_wires:liquid_pump` |

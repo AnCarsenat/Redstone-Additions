@@ -35,7 +35,8 @@ import ra.modules.jetpacks.Jp
  * relevant: worn, switched on, in the air, not dry, not the infinite tier, and the player's "Jetpack
  * fuel gauge" setting on. Nothing is sent otherwise. Every other jetpack actionbar message sets
  * [Jp.GAUGE] to 40 ([Jp.HOLD_GAUGE]) and the gauge waits it out, so a mode switch or "kit fitted"
- * is not overwritten by the next refresh. No other part of the pack uses the actionbar.
+ * is not overwritten by the next refresh. The only other actionbar is the Air Tank's
+ * (ra.modules.wires.diving.AirTank), drawn under water, where this one never is.
  */
 object Gauge {
 	val gauge = ref(Ns.JETPACKS, "flight/gauge")

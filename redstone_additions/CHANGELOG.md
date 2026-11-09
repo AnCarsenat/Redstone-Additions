@@ -22,6 +22,14 @@
   Goggles show the mode and the output. Output as the Entity Detector's: iron blocks around it turn
   into redstone blocks. Read once a second on the same clock as the Light Sensor. Crafted from
   three glass, two redstone, a lightning rod and three copper ingots.
+- **Held Item Detector** (Sensors). Turns on while a player within its *radius* (1 to 16, default
+  5) carries its *item* in the main hand, the offhand, either hand or anywhere in the inventory
+  (*slot*; Shift+right-click with the Wrench steps through them). The item is an id or an item tag
+  (`minecraft:diamond`, `#minecraft:logs`), set with the Data Handler, [Set from hand] included; an
+  id the game does not know detects nothing. Spectators are never counted. Output as the Entity
+  Detector's: iron blocks around it turn into redstone blocks. Read once a second on the world
+  sensors' clock. The Goggles show the item, the slot, the radius and the output. Crafted from five
+  copper ingots, an item frame, an observer and two redstone.
 
 ### Changed
 

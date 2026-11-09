@@ -35,6 +35,7 @@ one page, A to Z and by module.
 | ra_sensors:tag_remover               | Tag Remover               | ![Tag Remover recipe](images/recipes/ra_sensors/tag_remover.png){ width="220" } |
 | ra_sensors:light_sensor              | Light Sensor              | ![Light Sensor recipe](images/recipes/ra_sensors/light_sensor.png){ width="220" } |
 | ra_sensors:weather_sensor            | Weather Sensor            | ![Weather Sensor recipe](images/recipes/ra_sensors/weather_sensor.png){ width="220" } |
+| ra_sensors:held_item_detector        | Held Item Detector        | ![Held Item Detector recipe](images/recipes/ra_sensors/held_item_detector.png){ width="220" } |
 | ra_wireless:emitter                  | Wireless Emitter          | ![Wireless Emitter recipe](images/recipes/ra_wireless/emitter.png){ width="220" } |
 | ra_wireless:receiver                 | Wireless Receiver         | ![Wireless Receiver recipe](images/recipes/ra_wireless/receiver.png){ width="220" } |
 | ra_wires:liquid_pipe                 | Copper Pipe               | ![Copper Pipe recipe](images/recipes/ra_wires/liquid_pipe_copper.png){ width="220" } |

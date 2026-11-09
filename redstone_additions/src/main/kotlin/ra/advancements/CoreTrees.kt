@@ -54,6 +54,7 @@ internal val sensorsTree = listOf(
 	egg("ra_sensors", "tag_remover", "Tag Remover", Items.RED_GLAZED_TERRACOTTA, ONE, "Obtain the Tag Remover item."),
 	egg("ra_sensors", "light_sensor", "Light Sensor", Items.DAYLIGHT_DETECTOR, TRUE),
 	egg("ra_sensors", "weather_sensor", "Weather Sensor", Items.LIGHTNING_ROD, TRUE),
+	egg("ra_sensors", "held_item_detector", "Held Item Detector", Items.ITEM_FRAME, TRUE),
 )
 
 internal val wirelessTree = listOf(

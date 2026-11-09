@@ -1,7 +1,8 @@
 # Sensors
 
 Blocks that react to entities and to the world: one detects entities, two add or remove scoreboard
-tags on them, one reads the light level and one the weather and time of day. Handy for adventure
+tags on them, one reads the light level, one the weather and time of day, and one looks for an item
+players carry. Handy for adventure
 maps, mob farms, trigger zones and automatic lighting.
 
 ## Getting them
@@ -13,6 +14,7 @@ maps, mob farms, trigger zones and automatic lighting.
 | Tag Remover | red glazed terracotta | ![Tag Remover recipe](images/recipes/ra_sensors/tag_remover.png){ width="220" } |
 | Light Sensor | target block | ![Light Sensor recipe](images/recipes/ra_sensors/light_sensor.png){ width="220" } |
 | Weather Sensor | waxed weathered copper | ![Weather Sensor recipe](images/recipes/ra_sensors/weather_sensor.png){ width="220" } |
+| Held Item Detector | waxed exposed chiseled copper | ![Held Item Detector recipe](images/recipes/ra_sensors/held_item_detector.png){ width="220" } |
 
 Operators: `/function ra_sensors:items/give_all`.
 
@@ -126,6 +128,35 @@ Nether and the End.
 **Output:** like the Entity Detector, put **iron blocks** next to it (anywhere in the 3×3×3 cube);
 they turn into **redstone blocks** while it is on.
 
+## Player sensors
+
+These look for players near them, up to their **radius** (1 to 16 blocks, default 5; a server
+admin can set up to 64). Spectators are never counted. Like the world sensors they are read once
+a second, on the same clock.
+
+**Output:** like the Entity Detector, put **iron blocks** next to them (anywhere in the 3×3×3
+cube); they turn into **redstone blocks** while they detect someone.
+
+### Held Item Detector
+
+Turns on while a player in range carries its **item** in the slots its **slot** mode names:
+
+| `slot` | Looks in |
+| --- | --- |
+| `mainhand` (default) | the main hand |
+| `offhand` | the offhand |
+| `either` | either hand |
+| `inventory` | anywhere: hotbar, inventory, offhand and armour |
+
+The item is an id such as `minecraft:diamond` (or just `diamond`), or an item tag such as
+`#minecraft:logs` for any log. Set it with the [Data Handler](tools.md): type it, or hold the item
+and use **[Set from hand]**. A new detector looks for a diamond. Shift+right-click it with the
+**Wrench** to step through the slot modes. Any count, name or enchantment matches.
+
+An id or tag the game does not know (a typo, an item from a pack that is no longer installed)
+detects nothing until it is corrected. The Goggles show the item, the slot, the radius and the
+output.
+
 ## Ideas
 
 - A pressure plate into a Tag Adder marks players who entered a zone; a Tag Remover at the exit
@@ -134,6 +165,8 @@ they turn into **redstone blocks** while it is on.
 - A Light Sensor facing out of a window, into an inverter, switches lamps on as it gets dark; a
   comparator behind it can compare the level against a fixed strength instead.
 - A Weather Sensor on `rain` closes a roof with pistons; one on `night` lights a village.
+- A Held Item Detector on `#minecraft:pickaxes` opens the mine door for anyone carrying a pickaxe;
+  one on `mainhand` with a torch lights a cave while you hold it up.
 
 ---
 
@@ -172,3 +205,14 @@ they turn into **redstone blocks** while it is on.
   off then on, so a steady output does not pulse every second. The wrench row `Mode` runs
   `ra_sensors:blocks/weather_sensor/cycle_mode` (rain, thunder, day, night; anything else goes to
   rain), which updates the output at once.
+- Held Item Detector: `data.properties.item`, `slot` and `radius`, read by
+  `ra_sensors:blocks/held_item_detector/update` on the sensor clock. The item is pasted into
+  `execute if items entity @a[distance=..<radius>,gamemode=!spectator] <slots> <item>`
+  (`…/detect`, a macro), with the slots `weapon.mainhand`, `weapon.offhand`, `weapon.*`, or
+  `container.*` + `weapon.offhand` + `armor.*` for `inventory`. Before that it passes
+  `ra_lib:safe/guard` (format `ID`: one word, no spaces, quotes or brackets, so it can only be the
+  item argument) and a probe (`…/probe`, the same test in a macro against the marker): an unknown
+  id or tag fails the macro and the probe returns 0. The last value probed is kept in
+  `data.data.valid_item` or `data.data.invalid_item`, so a value is probed once per change, not
+  every read. The radius is read clamped to 1..64 (`readCappedProperty`). The result is
+  `data.status.output` ("on" / "off"). The wrench row `Slot` runs `…/cycle_slot`.

@@ -100,7 +100,7 @@ internal fun DataPack.registerUninstallConfirm() {
 		}
 
 		schedules { clear(tick) }
-		// The sensors' slow clock, scheduled only while a Light or Weather Sensor is loaded.
+		// The sensors' slow clock, scheduled only while a Light or Weather Sensor or a Held Item Detector is loaded.
 		schedules { clear(SensorPoll.run) }
 
 		PLAYER_TAGS.forEach { t -> tag(allPlayers()) { remove(t) } }

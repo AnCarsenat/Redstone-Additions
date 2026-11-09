@@ -55,10 +55,19 @@ object BigTorch {
 	/** Mobs the torch denies. */
 	const val SPAWN_BLOCKED = "spawn_blocked"
 
+	/** A player's largest radius. */
+	const val MAX_RADIUS = 100
+
+	/**
+	 * An admin's (see ra.core.Admin): the technical ceiling. The sweep's selector is a sphere, so
+	 * this is about 17 times the volume of a 100-block torch, every ten ticks.
+	 */
+	const val ADMIN_MAX_RADIUS = 256
+
 	fun Ra.registerBigTorch() {
 		block(block)
 		properties(block) {
-			number("radius", min = 1, max = 100)
+			number("radius", min = 1, max = MAX_RADIUS, adminMax = ADMIN_MAX_RADIUS)
 		}
 		pack.blockRegisterMessage(block)
 		pack.specGive(block, item)
@@ -113,7 +122,7 @@ object BigTorch {
 			forEachMarker(block, skin)
 
 			// THE SWEEP RUNS EVERY 10 TICKS, NOT EVERY TICK. Its selector reaches as far as the
-			// radius does, which is up to 100 blocks, and there is no reason for it to be prompt: a
+			// radius does, which is up to 100 blocks (256 set by an admin), and there is no reason for it to be prompt: a
 			// mob that lives half a second before being denied is indistinguishable from one that
 			// never spawned. Paying a 100-block entity selector per torch per tick to shorten that
 			// would be the most expensive thing in the pack.

@@ -126,7 +126,7 @@ A barrel that pulls dropped items into itself.
 
 | Setting | Default | Range | Meaning |
 | --- | --- | --- | --- |
-| `radius` | 8 | 5–20 | How far it reaches, in blocks |
+| `radius` | 8 | 5–20 (admins: up to 64) | How far it reaches, in blocks |
 | `cooldown` | 20 | 1–1200 | Ticks between pulls; a server admin's setting, locked for other players |
 
 It takes up to eight items (whole stacks, enchantments and names kept) per pull, and stops when it
@@ -140,7 +140,7 @@ of the world, so it leaves no loot or experience. Mobs that **walk in** from out
 
 | Setting | Default | Range |
 | --- | --- | --- |
-| `radius` | 16 | 1–100 |
+| `radius` | 16 | 1–100 (admins: up to 256) |
 
 ## Message Block
 
@@ -157,6 +157,9 @@ Handler or `/data`; the Clipboard does not paste one for players without server-
 The selector is admin-only unless *Players may edit entity selectors and tags* is on (Sensors
 settings page).
 
+A block without a selector sends to the players within its `range` (1–128 blocks; admins: up to
+1024).
+
 ## Changing settings
 
 Every setting above is edited with the [Data Handler](tools.md): Shift + right-click the block,
@@ -172,10 +175,11 @@ then change the row. The [Goggles](tools.md) show the current values.
   enlarged torch display; the Magic Crate is a plain barrel.
 - **Big Torch.** Sweeps every 10 ticks. It remembers every hostile mob in a band reaching 16
   blocks past the radius; a mob inside the radius that it never saw there is removed. Mobs are
-  teleported far below the world instead of killed. Values above 100 are written back as 100. The
+  teleported far below the world instead of killed. Values above 256 (the admin ceiling) are written back as 256. The
   mob list is the entity type tag `#ra_interactive:spawn_blocked`.
-- **Magic Crate.** Skips items with a permanent pickup delay. The radius limit is enforced, since
-  an unlimited radius would be a world-wide entity scan.
+- **Magic Crate.** Skips items with a permanent pickup delay. The radius is capped at 64 (the
+  admin ceiling) when used, since an unlimited radius would be a world-wide entity scan; the
+  players' 20 is checked when the radius is written, so an admin's larger radius stays.
 - **Item Pipe.** The filter is `data.properties.filter_item` (an item id, empty = none);
   `data.properties.invert` (`1b`) sends non-matching stacks to the side instead. Pipes
   built when filters were item frames are converted on load; the frames are left in place.

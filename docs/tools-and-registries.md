@@ -121,6 +121,7 @@ declares for you). `ra/core/Properties.kt` holds the builder.
 | Declaration | Type | Editor in the Data Handler |
 | --- | --- | --- |
 | `number(name, min = 0, max = 9999)` | int | number prompt, bounded |
+| `number(name, min = 1, max = 100, adminMax = 256)` | int, a range or radius | number prompt, bounded by `max` for players and by `adminMax` for admins (see [Admin limits](#admin-limits)) |
 | `bool(name)` | byte `0b`/`1b` | **[Toggle]** |
 | `text(name)` | string | the book; stored as typed, never parsed |
 | `item(name)` | string (item id) | the book, or **[Set from hand]** |
@@ -134,7 +135,8 @@ Each also takes these flags:
 | Flag | Data Handler | Wrench | Clipboard paste |
 | --- | --- | --- | --- |
 | `readonly = true` | shown, locked, reason on hover; writes refused | never cycled | not pasted (the target keeps its own) |
-| `adminOnly = true` | locked for players without `ra.admin` (server-settings access), editable for admins; re-checked when the value is written | not offered to non-admins | not pasted by non-admins |
+| `adminOnly = true` | locked for players without `ra.admin` (server-settings access), editable for admins; re-checked when the value is written. Marked *(admin)* in gold for everyone | not offered to non-admins; marked *(admin)* for admins | not pasted by non-admins |
+| `adminMax = N` (numbers) | admins may type up to `N`, players up to `max`; a value above `max` is marked *(admin)* | — | pasted only within the holder's bound |
 | `adminOnly = true, adminSetting = "<key>"` | as `adminOnly`, unless the GLOBAL bool setting `<key>` is on (then everyone may edit it) | as `adminOnly` | as the Data Handler |
 | `visible = false` | not shown at all to non-admins (nor in the Properties summary); admins see it marked *(hidden from players)* and can edit it | not offered to non-admins | not pasted by non-admins |
 | `default = …` (`20`, `false`, `"@e"`, `listOf("custom_tag")` for `textList`, SNBT for `list`) | on a block that lacks the property, the row shows this value marked *(default)*; the first edit writes it to the block (an entry edit or **[Toggle]** starts from it). Without a default such a row says *(not set)* and the first edit writes what is typed. Generated as `storage ra:dh defaults."<type>"` | — | — |
@@ -290,7 +292,39 @@ menu instead, so schemas can be reordered freely.
 | Menu order | the same declaration order, in `storage ra:dh order."<type>"` |
 | A dynamic property's type and flags | the marker, `data.property_types.<name>` |
 | A server-wide default | the settings `PropRow`, merged in at placement from `storage ra:settings global.props."<type>"` |
-| Who is an admin | the `ra.admin` player tag (server-settings access) |
+| Who is an admin | the `ra.admin` player tag (server-settings access), `Admin.TAG` in `ra/core/Admin.kt` |
+
+### Admin limits
+
+`ra/core/Admin.kt` is the one place admins are defined (`Admin.TAG`, the `ra.admin` tag) and
+the one place their limits are. A range or radius declares two ceilings:
+
+```kotlin
+number("radius", min = 1, max = BigTorch.MAX_RADIUS, adminMax = BigTorch.ADMIN_MAX_RADIUS)
+```
+
+`max` is what a player may set; `adminMax` (generated as `admin_max`) is what an admin may set.
+`adminMax` is a technical cap, not a balance one: past it the block would cost the server too much.
+
+| Where | Helper | What it does |
+| --- | --- | --- |
+| Edit time (Data Handler, Clipboard) | `raiseMaxForAdmin(spec, maxScore, obj, adminCond)` | the bound becomes `admin_max` for an admin |
+| Display (Data Handler) | `overPlayerMax(spec, value, into, obj)` | 1 when the value is above `max`, so the row is marked *(admin)* |
+| Use time (the block) | `readCappedProperty(name, default, min, adminMax, writeBack)` | reads the property clamped to `min..adminMax` only |
+
+The player maximum is checked **when the value is written**, never when the block uses it. A block
+an admin set to a large range keeps it, whoever powers or stands near it later, and there is no
+"set by an admin" state on the block: a value above `max` can only have been written by an admin
+(or the Creative Data Handler), which is also how the menus know to mark it.
+
+| Block | Player max | Admin max | Why the admin cap |
+| --- | --- | --- | --- |
+| Big Torch `radius` | 100 | 256 | a sphere selector every 10 ticks per torch |
+| Magic Crate `radius` | 20 | 64 | an item selector every pull |
+| Message Block `range` | 128 | 1024 | a sane ceiling (one player selector per pulse) |
+
+The server settings' placement defaults for these (`PropRow`) step up to the admin cap, since
+only admins reach those pages.
 
 `channel`, `anchor_id`, `tag` and `entity_selector` are declared `text` on purpose: they are
 identifiers blocks compare as text, and turning a channel into a number is the 5.1.6 bug that

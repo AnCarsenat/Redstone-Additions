@@ -2,7 +2,7 @@
 
 <img src="images/icon.png" alt="Redstone Additions" width="128">
 
-**Version:** v6.0.1  
+**Version:** v6.0.2  
 **Minecraft:** 26.3  
 **Author:** [AnCarsenat](https://github.com/AnCarsenat)
 

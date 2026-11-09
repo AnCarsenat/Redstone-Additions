@@ -58,10 +58,10 @@ object ItemPipe {
 	fun Ra.registerItemPipe() {
 		block(block)
 		properties(block) {
-			item("filter_item")
+			item("filter_item", default = "")
 			// Off: a stack matching the filter goes to a side. On: a stack that does NOT match goes
 			// to a side, and matching ones carry on forward. No effect without a filter.
-			bool("invert")
+			bool("invert", default = false)
 		}
 		pack.blockRegisterMessage(block)
 		pack.specGive(block, item)
@@ -138,9 +138,12 @@ object ItemPipe {
 		raw("""execute if data entity @s data.properties{invert:1b} unless data entity @s data.properties{filter_item:""} run function ${Goggles.Billboard.textLine.asId()} {label:"Mode: ",value:"Inverted (non-matching to the side)",color:"gold",suffix:"",y:0.4}""")
 
 		// And the item itself, drawn above the text by the billboard, unless the server turned
-		// filter previews off (Server Settings > General > Goggles; read once per redraw). The id names it; this shows it, which is the
-		// difference between reading "minecraft:polished_blackstone_slab" and recognising a sorting
-		// wall at a glance.
+		// filter previews off (Server Settings > General > Goggles; read once per redraw) or no
+		// goggles wearer in range wants them (Your Preferences > Show filter previews; the marker
+		// tag set by goggles/scan_range). The id names it; this shows it, which is the difference
+		// between reading "minecraft:polished_blackstone_slab" and recognising a sorting wall at a
+		// glance.
+		raw("execute unless entity @s[tag=${Goggles.FILTER_PREVIEW_TAG}] run return 0")
 		raw("data remove storage ra:temp pipefilter")
 		raw("execute unless data entity @s data.properties{filter_item:\"\"} run data modify storage ra:temp pipefilter.id set from entity @s data.properties.filter_item")
 		executeRun("if score ${Goggles.FILTER_PREVIEW} ${Obj.TEMP} matches 1 if data storage ra:temp pipefilter.id", Goggles.Billboard.itemLine, "with storage ra:temp pipefilter")

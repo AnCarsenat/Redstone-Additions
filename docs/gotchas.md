@@ -123,6 +123,20 @@ advancement reward function. It skips any path containing a macro
 there is caught in game only. Keep macro-built paths to the cases that need them, and list their
 possible values in a comment.
 
+## Load messages are gated
+
+Anything printed to chat while `#minecraft:load` runs must honour the server setting *Show the
+load message* (`global.welcome`). Print it with `loadMessage(json)` (or `moduleLoaded(text,
+color)` for a module's "loaded!" line), which prefixes
+`execute unless data storage ra:settings global{welcome:0b} run`. The gate reads storage rather
+than `ra_settings:get`, because module loads run before `ra_settings:init` creates its objectives.
+A warning that must show whatever the setting (the disabled-blocks notice) goes through
+`loadNotice(line)` instead. Lines for `@a[tag=ra.debug]` and `@s` are allowed as they are.
+
+The build follows every call from `#minecraft:load` (through function tags, not `schedule`) and
+fails on any other `tellraw`. v6.0.1 gated only the hub's greeting, so with the setting off a
+reload still printed eleven module lines.
+
 ## Don't load two builds at once
 
 An old beet release (v5.1.17 and earlier) and the Kore build write the same namespaces. With

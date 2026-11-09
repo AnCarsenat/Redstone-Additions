@@ -48,6 +48,9 @@ object DataHandlerProps {
 	val clearAction = tool("data_handler/props/clear_action")
 	val clearItem = tool("data_handler/props/clear_item")
 
+	/** {name}: write the shown default into the block when it does not carry the property yet. */
+	val materialize = tool("data_handler/props/materialize")
+
 	/** Row index offsets of the item row's two extra buttons: [Set from hand] and [Clear]. */
 	const val HAND_BASE = 400
 	const val CLEAR_BASE = 550
@@ -106,10 +109,12 @@ object DataHandlerProps {
 			callWith(render, "storage ra:dh q")
 		}
 
-		// Build storage ra:dh display_props, the summary line: everything the block carries, less
-		// what this player may not see (visible:0b, for a player without ra.admin).
+		// Build storage ra:dh display_props, the summary line: everything the block carries (stored,
+		// not the defaults shown for what it lacks), less what this player may not see (visible:0b,
+		// for a player without ra.admin).
 		pack.define(redact) {
-			raw("data modify storage ra:dh display_props set from storage ra:dh properties")
+			raw("data remove storage ra:dh display_props")
+			raw("data modify storage ra:dh display_props set from storage ra:dh stored")
 			raw("execute if entity @s[tag=${ADMIN}] run return 0")
 			raw("data modify storage ra:dh iter set from storage ra:dh block_order")
 			function(redactNext)
@@ -257,12 +262,21 @@ object DataHandlerProps {
 			raw("playsound minecraft:block.note_block.pling block @s[scores={${Obj.USER_SOUND}=1..}] ~ ~ ~ 0.7 1.4")
 		}
 
+		// {name}: a declared property the block lacks is shown with its default (DataHandler.updateStorage);
+		// an edit that changes part of the value -- one list entry, a flag -- starts from that default,
+		// so it is written to the block first. A whole-value write needs none of this: it creates the key.
+		pack.define(materialize) {
+			raw("\$execute if data entity $TARGET data.properties.\$(name) run return 0")
+			raw("\$execute if data storage ra:dh properties.\$(name) run data modify entity $TARGET data.properties.\$(name) set from storage ra:dh properties.\$(name)")
+		}
+
 		// {name}: flip a byte property on the selected block.
 		//
 		// The old value is latched into a tag before the first write. Testing the property again on
 		// the next line would read what that write just stored, so the pair undid itself and
 		// [Toggle] appeared to do nothing.
 		pack.define(toggle) {
+			callWith(materialize, "storage ra:dh q")
 			tag(self()) { remove("ra.dh.was_set") }
 			raw("\$execute if data entity $TARGET {data:{properties:{\$(name):1b}}} run tag @s add ra.dh.was_set")
 			raw("\$execute if entity @s[tag=ra.dh.was_set] run data modify entity $TARGET data.properties.\$(name) set value 0b")
@@ -322,12 +336,21 @@ object DataHandlerProps {
 	// has that property. As the player.
 	private fun Ra.registerRender() = pack.define(render) {
 		raw("\$data remove storage ra:dh rest.\$(name)")
-		raw("\$execute unless data storage ra:dh properties.\$(name) run return 0")
+		// Missing from the block: a declared (typed) property still gets its row, with its default
+		// or "(not set)"; anything else has nothing to show.
+		raw("\$execute unless data storage ra:dh properties.\$(name) unless data storage ra:dh schema.\$(name).type run return 0")
 		callWith(probe, "storage ra:dh q")
 
 		// Hidden from this player: no row at all.
 		raw("execute if score #dh.lock $T matches 3 run return 0")
 		raw("execute if score #dh.hid $T matches 1 run data modify storage ra:dh q.note set value \" (hidden from players)\"")
+		// Not on the block yet: the value shown is the schema's default, written on the first edit --
+		// or there is none, and the first edit writes what is typed.
+		for ((state, cond) in listOf("default" to "if", "not set" to "unless")) {
+			val c = "\$execute unless data storage ra:dh stored.\$(name) $cond data storage ra:dh properties.\$(name)"
+			raw("$c run data modify storage ra:dh q.note set value \" ($state)\"")
+			raw("$c if score #dh.hid $T matches 1 run data modify storage ra:dh q.note set value \" ($state, hidden from players)\"")
+		}
 
 		// No declared type: the row shows its guess behind a yellow warning sign, and debug players
 		// are told which property on which block it was.
@@ -341,6 +364,8 @@ object DataHandlerProps {
 		// it does. The Creative Data Handler edits anything.
 		for ((code, reason) in LOCK_REASON)
 			raw("execute if score #dh.lock $T matches $code run data modify storage ra:dh q.reason set value \"$reason\"")
+		// A declared list keeps its locked row, with a [List] to look at its entries.
+		executeReturnRun("if score #dh.lock $T matches 1..2 if score #dh.type $T matches 3 if score #dh.decl $T matches 1", DataHandlerEntries.renderLocked, "with storage ra:dh q")
 		raw("execute if score #dh.lock $T matches 1..2 run return run function ${PropRows.rowLocked.asId()} with storage ra:dh q")
 
 		// A declared list gets the per-entry editor (DataHandlerEntries); a guessed one the whole-list row.

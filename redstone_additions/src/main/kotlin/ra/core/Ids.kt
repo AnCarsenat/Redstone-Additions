@@ -58,6 +58,12 @@ object Obj {
 	/** Player wants block particles. */
 	const val USER_PARTICLES = "ra.u.par"
 	const val USER_DEBUG = "ra.u.dbg"
+	/**
+	 * Player wants the goggles to draw filter previews (the Item Pipe's floating filter item).
+	 * Billboards are shared entities, so this decides whether THIS wearer asks for them: a pipe's
+	 * preview is drawn when any goggles wearer in range has it on. See ra.tools.goggles.GogglesTool.
+	 */
+	const val USER_FILTER_PREVIEW = "ra.u.fprev"
 }
 
 /** Entity tags shared across modules. Per-block tags are built by [ra.core.block.CustomBlock]. */

@@ -61,7 +61,7 @@ import ra.migrations.DataVersion.OBJ
  */
 object MigrationsPart : PackPart {
 	/** Every step, oldest first. */
-	private val steps get() = listOf(m5_1_6, m5_1_7, m5_1_8, m5_1_9, m5_1_11, m5_1_15, m6_0_0)
+	private val steps get() = listOf(m5_1_6, m5_1_7, m5_1_8, m5_1_9, m5_1_11, m5_1_15, m6_0_0, m6_0_1)
 
 	private val entity = ref(Ns.MIGRATIONS, "entity")
 	private val untag = ref(Ns.MIGRATIONS, "entity_untag")

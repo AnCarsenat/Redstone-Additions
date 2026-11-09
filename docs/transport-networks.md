@@ -69,17 +69,48 @@ Different families never mix, so an electric wire and a pipe can run side by sid
 | Block | Does |
 | --- | --- |
 | **Liquid Pump** | Pulls a fluid source block next to it (any side) into the network — only when the whole 5000 mL fits. Cauldrons give 1667 + 1667 + 1666 mL |
-| **Liquid Drain** | Same as the pump, taking in a source block next to it. Water and lava fall onto the drain as it does |
-| **Liquid Drain**, powered by redstone | Pours out instead: spends 5000 mL to put a source block back into the world on a free side (says `not_enough` below 5000 mL) |
+| **Liquid Drain** | Same as the pump, taking in a source block next to it — or, failing that, one block down and out, so a drain standing on the bank of a pool drains the pool. Water and lava fall onto the drain as it does |
+| **Liquid Drain**, powered by redstone | Pours out instead, from its **front** (see [Pouring out](#pouring-out)). Needs nothing in the world: air in front of it is enough |
 | **Liquid Drain**, facing up or down | Also a **loading point**: takes filled buckets/bottles from you (sneak while holding one), from a container on top of it, or from items dropped on it, and gives the empties back; with none of those, a sneaking player's **experience**. With nothing to load, it takes in a source block next to it like any drain |
 | **Gas Pump** | Like the Liquid Pump, for gases: draws **Smoke** from a lit campfire or soul campfire next to it, 500 mL a second. The campfire keeps burning and is never used up. Steam comes from a Boiler |
 
 A drain points where you look when you place it, so looking down to place one makes it face up.
 That is fine: an upright drain still drains the pool beside it.
 
-A drain's **speed** is in litres per second: 5 (the default) is one source block a second, 10 is
-two, 1 is one every five seconds. Only operators change it, with the [Data Handler](tools.md);
-the default for new drains is in the [Server Settings](settings.md).
+The Goggles say what a drain is doing: `pumping`; `no_source` (nothing it can take beside it, or
+one block down and out); `waiting_for_source` (only flowing water or lava there, as when a small
+pool is refilling the gap); `network_full` (wait for the network to have room for a whole
+5000 mL block, or add a tank); `no_network` (the drain is not part of a network).
+
+#### Pouring out
+
+A drain powered by redstone pours its network's fluid (the primary one) out of its **front**: the
+side it faces, like a dispenser. It never pours out of another side, so you always know where it
+will go. A drain stood on the floor faces up, and pours on top of itself.
+
+| Fluid | What comes out of the front |
+| --- | --- |
+| Water, Lava, Powder Snow | One source block, 5000 mL — the same amount a drain takes in for one, so nothing is gained or lost going round. Goes into air, into grass, flowers, a snow layer or anything else a bucket would wash away (it drops as a bucket would make it drop), or into flowing water or lava of the same kind, which becomes a source |
+| Experience | Experience orbs, 1 point per 100 mL, up to 50 points at a time |
+| Potions | Poured over everyone within 4 blocks, in the potion's own colour ([Potions](#potions)) |
+| Milk, Steam, Smoke, Oxygen | Poured away as white drops, a cloud, smoke or blue mist. It really leaves the network |
+
+The Goggles show `pouring` while it works, and otherwise why it is not:
+
+| Status | Meaning |
+| --- | --- |
+| `blocked` | The block in front is solid, is already a source block, or is a different liquid |
+| `not_enough` | The network holds less than 5000 mL of that fluid, so not a whole block |
+| `network_empty` | Nothing to pour |
+| `evaporates` | Water in the Nether (or anywhere water boils away): as with a bucket, the 5000 mL is used up and boils off in a puff of steam, and no block is placed |
+| `cannot_place_medium` | A fluid with no way out at all |
+
+A drain makes no sound while it pumps or pours.
+
+A drain's **rate** is in millilitres per second, for taking in and pouring out alike: 5000 (the
+default) is one source block a second, 10000 is two, 1000 is one every five seconds, from 100 up
+to 100000 (one every tick). Only operators change it, with the [Data Handler](tools.md); the
+default for new drains is in the [Server Settings](settings.md).
 
 **Infinite sources:** a source block with **nine or more** matching sources within two blocks is
 left in place when pumped, so a large lake never runs dry. Smaller pools do empty.
@@ -120,7 +151,8 @@ signal it splits the grid in two; powered, it joins it again.
 
 Pour a potion into a Drain and the network remembers which potion it is (the **first** potion in
 wins; a different potion added later becomes the same one). A Drain powered by redstone pours it over
-everyone within 4 blocks. A full bottle (1000 mL) gives the potion's full duration; less gives a
+everyone within 4 blocks of its front, up to 5000 mL at a time, as a cloud in the potion's colour.
+A full bottle (1000 mL) gives the potion's full duration; more gives longer, less gives a
 proportional share — 250 mL of a 3-minute Strength potion is 45 seconds. The level is unchanged.
 
 ## Electricity
@@ -220,19 +252,28 @@ you extend it.
   is never recounted or trimmed: a new pipe simply joins it, and a break that splits it takes
   effect once the whole network is loaded again (until then both halves share one pool).
   See [Scoped rebuilds](developer-guide.md#scoped-rebuilds).
+- **After a load.** Every loaded network is rebuilt once, a few hundred blocks at a time every
+  5 ticks, so a large world settles over a second or two instead of overrunning the command
+  limit in one tick. Networks keep working with their contents while they wait their turn.
 - **Storage.** Each network is `storage ra:transport nets.n<id>`: `amount` (total), `capacity`,
   `nodes` (block count), `amounts` (per fluid), `media` (fluids in arrival order), `medium` (the
   primary), and `potion`.
   See the [Developer Guide](developer-guide.md#transport) for the full model.
-- **Properties** (`data.properties`): Drain `speed` (admin only; one action every `100 / speed`
-  ticks); Filter `filter_medium`, `rate` (2000); Creative Fluid Source `medium`, `rate`; EU
+- **Properties** (`data.properties`): Drain `rate` (mL per second, admin only; one 5000 mL action
+  every `100000 / rate` ticks); Filter `filter_medium`, `rate` (2000); Creative Fluid Source `medium`, `rate`; EU
   Consumer and Industrial Light `eu_use`; Electric Furnace `output`, `mode`. Status for the
   Goggles is in `data.status`. Drains from before 6.0.1 have their `cooldown` turned into `speed`
   (`100 / cooldown`) and `mode` removed once, the first time they are loaded, by the 6.0.1
-  migration (`ra_migrations:6.0.0-to-6.0.1/liquid_drain`).
+  migration (`ra_migrations:6.0.0-to-6.0.1/liquid_drain`); the 6.0.2 migration
+  (`ra_migrations:6.0.1-to-6.0.2/liquid_drain`, and the server default once per world) turns
+  `speed` into `rate` (`speed * 1000`).
 - **Media `drip`.** A medium may name a `drip` particle (`falling_water`, `falling_lava`) that a
   drain shows on itself while taking that medium in (`ra_wires:fluid/drip`); without one it shows
   the medium's `particle`.
+- **Pouring out** (`ra_wires:fluid/drain_pour`): by the medium's registry fields: `block` is
+  placed in front, `orb` comes out as experience orbs, `effect` (potions) is applied, and `pour`
+  is the particle (with its options) a medium with none of those is poured away as. A potion's
+  colour is its `custom_color`, else its first effect's from `ra:wires effect_colors`.
 - **Fixed rates** such as a generator's `generation_rate` are read-only: the Data Handler shows them
   locked.
 - **Heat sources** are the block tag `#ra_wires:heat_sources`.

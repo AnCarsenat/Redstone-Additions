@@ -62,6 +62,12 @@ object Transport {
 			// Slow on purpose: until then nothing is lost, its parts just share one pool.
 			raw("execute if data storage ra:transport pending[0] run function ${pendingTick.asId()}")
 
+			// `running` outlives a rebuild only when the command limit cut it short. Go again: the
+			// next rebuild clears the leftover tags and takes in the nodes left on network 0. The
+			// cut may also have stopped inside rebuild/again, past the line that lowers its guard.
+			raw("execute if data storage ra:transport {running:1b} run scoreboard players set #rb_again ${Obj.TR_TMP} 0")
+			raw("execute if data storage ra:transport {running:1b} run data modify storage ra:transport dirty set value 1b")
+
 			execute {
 				unlessCondition { data(TR, "{dirty:1b}") }
 				run { returnValue(0) }
@@ -175,7 +181,8 @@ object Transport {
 		// was off, and a rebuild is cheap next to being wrong. `full` puts every loaded network in
 		// scope for that one rebuild instead of only the ones named in `dirtyq`; a network reaching
 		// out of the loaded area is still held back (rebuild/scope), and one wholly out of it is
-		// not seen at all, so its record survives the load untouched.
+		// not seen at all, so its record survives the load untouched. The loaded networks are taken
+		// a batch at a time (rebuild/full_batch), so a big world does not run into the command limit.
 		data(TR) { modify("dirty") { set(NbtByte(1)) } }
 		data(TR) { modify("full") { set(NbtByte(1)) } }
 	}

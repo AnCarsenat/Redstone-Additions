@@ -19,15 +19,26 @@ import ra.core.executeRun
 import ra.core.block.soundListenersSel
 import ra.core.block.particleViewersSel
 import ra.core.executeStoreRun
+import io.github.ayfri.kore.arguments.types.resources.FunctionArgument
+import io.github.ayfri.kore.functions.Function
 
 /**
- * `ra_ender:link/...`: the transfer half of every vault. The channel is a string, so finding the
- * partner needs a macro: no selector predicate can compare one entity's property with another's.
+ * `ra_ender:link/...`: the transfer half of every vault.
+ *
+ * The partner is found by [pick] without a macro on the channel: receivers are visited nearest
+ * first, each one's channel is copied to storage and overwritten with the wanted one, and an
+ * overwrite that changes nothing is a match (the Teleport Anchor's method). The first match is the
+ * nearest vault on the channel. Before 6.0.2 the nearest receiver was taken first and its channel
+ * checked afterwards, so a vault on another channel standing closer hid the real partner and
+ * nothing moved.
  */
 object Link {
 	private fun fn(path: String) = ref(Ns.ENDER, "link/$path")
 
 	val done = fn("done")
+	val pick = fn("pick")
+	val pickMatch = fn("pick_match")
+	val picked = fn("picked")
 	val moveStack = fn("move_stack")
 	val offerFluid = fn("offer_fluid")
 	val probeFluid = fn("probe_fluid")
@@ -45,9 +56,21 @@ object Link {
 
 	private const val T = Obj.TEMP
 
-	/** The nearest other vault wearing [recv] whose channel is `$(channel)`, as an execute chain. */
-	private fun partner(recv: String, exclude: String = EnderIds.SELF) =
-		"as @e[type=marker,tag=$recv,tag=!$exclude,limit=1,sort=nearest] if data entity @s data.properties{channel:\"\$(channel)\"}"
+	/** Worn by the matching receiver between [pickMatch] and [picked]. */
+	private const val PICK = "ra.ender.pick"
+
+	/**
+	 * Run [run] as and at the nearest other vault wearing [recv] whose channel equals the one in
+	 * `storage ra:ender <src>.channel`. [recv] and [exclude] are tag names and may be macro
+	 * references (`$(recv)`), in which case the calling line becomes a macro line; the channel never
+	 * reaches a command.
+	 */
+	private fun Function.partner(src: String, recv: String, run: FunctionArgument, exclude: String = EnderIds.SELF) {
+		raw("data remove storage ra:ender pick.want")
+		raw("data modify storage ra:ender pick.want set from storage ra:ender $src.channel")
+		val line = "function ${pick.asId()} {recv:\"$recv\",exclude:\"$exclude\",run:\"${run.asId()}\"}"
+		raw(if (recv.contains("\$(")) "\$$line" else line)
+	}
 
 	fun Ra.registerLink() {
 		// Drop the self tag at the end of a vault's cycle, and on every early return out of one.
@@ -55,6 +78,46 @@ object Link {
 		pack.define(done) {
 			tag(self()) { remove(EnderIds.SELF) }
 			returnValue(0)
+		}
+
+		// Macro {recv, exclude, run}: run `run` as and at the nearest vault wearing `recv` (and not
+		// `exclude`) whose channel is storage ra:ender pick.want. As the asking vault, at it.
+		//
+		// Candidates are visited nearest first and only the first channel match is tagged; every
+		// receiver after it costs one command (pick_match returns at once), so the usual case -- the
+		// partner is the nearest receiver -- costs one comparison. No pick.want
+		// (the sender's channel failed ra_lib:safe/guard, or is missing) links nothing.
+		pack.define(pick) {
+			raw("execute unless data storage ra:ender pick.want run return 0")
+			// A chain cut mid-pick can leave the tag behind; it must never be read as this pick's.
+			raw("tag @e[type=marker,tag=$PICK] remove $PICK")
+			raw("scoreboard players set #ender.picked $T 0")
+			raw("\$execute as @e[type=marker,tag=\$(recv),tag=!\$(exclude),sort=nearest] run function ${pickMatch.asId()}")
+			raw("\$execute as @e[type=marker,tag=$PICK,limit=1] at @s run function ${picked.asId()} {run:\"\$(run)\"}")
+		}
+
+		// As a candidate vault: tag it when its channel is the wanted one. `set from` over a copy of
+		// the channel succeeds only when it changes something, so 0 means equal. A vault with no
+		// channel gets the copy created, which is a change.
+		//
+		// The "already found one" test is the first line here, not an `if score` in pick's execute
+		// chain: execute applies each step to every candidate before the next step runs, so a
+		// chain test would see #ender.picked still 0 for all of them.
+		pack.define(pickMatch) {
+			raw("execute if score #ender.picked $T matches 1 run return 0")
+			raw("data remove storage ra:ender pick.cmp")
+			raw("data modify storage ra:ender pick.cmp set from entity @s data.properties.channel")
+			raw("execute store success score #ender.pdiff $T run data modify storage ra:ender pick.cmp set from storage ra:ender pick.want")
+			raw("execute if score #ender.pdiff $T matches 1 run return 0")
+			tag(self()) { add(PICK) }
+			raw("scoreboard players set #ender.picked $T 1")
+		}
+
+		// Macro {run}, as and at the picked vault. The tag comes off before `run`: a pull runs the
+		// giver's push from here, and that push picks a partner of its own.
+		pack.define(picked) {
+			tag(self()) { remove(PICK) }
+			raw("\$function \$(run)")
 		}
 
 		registerItems()
@@ -69,7 +132,7 @@ object Link {
 			raw("\$function ${RaLib.Inventory.moveSlot.asId()} {src:\"\$(x) \$(y) \$(z)\",src_slot:\$(src_slot),dst_slot:\$(dst_slot)}")
 		}
 
-		// Macro {channel, recv}: hand the pending stack to the nearest vault on this channel wearing
+		// Macro {recv}, channel in storage ra:ender link: hand the pending stack to the nearest vault on this channel wearing
 		// `recv`. As the sending vault marker, at its barrel.
 		//
 		// The excluded tag is ra.ender.sending, held by whoever is pushing, not ra.ender.self, which
@@ -77,7 +140,7 @@ object Link {
 		// whose cycle it is *is* the receiver -- and excluding self meant a pull could never deliver
 		// anything.
 		pack.define(sendItems) {
-			raw("\$execute ${partner("\$(recv)", EnderIds.SENDING)} at @s run function ${receiveItems.asId()}")
+			partner("link", "\$(recv)", receiveItems, EnderIds.SENDING)
 		}
 
 		// As the receiving vault marker, at its barrel. The pending move is in storage ra:ender move.
@@ -104,10 +167,10 @@ object Link {
 			raw("particle minecraft:portal ~ ~1 ~ 0.2 0.2 0.2 0.05 6 normal ${particleViewersSel()}")
 		}
 
-		// Macro {channel, recv}: find a vault on this channel willing to give, and run its push.
+		// Channel in storage ra:ender link: find a vault on this channel willing to give, and run its push.
 		// As the vault that wants a refill.
 		pack.define(requestItems) {
-			raw("\$execute ${partner(EnderIds.SEND_ITEM)} at @s run function ${ItemVault.pushToPuller.asId()}")
+			partner("link", EnderIds.SEND_ITEM, ItemVault.pushToPuller)
 		}
 	}
 
@@ -118,10 +181,10 @@ object Link {
 			raw("\$function ${RaLib.Transport.Net.offer.asId()} {amount:\$(amount),medium:\"\$(medium)\"}")
 		}
 
-		// Macro {channel}: read the partner network's contents into #ender.theirs, or leave it at
+		// Channel in storage ra:ender probe: read the partner network's contents into #ender.theirs, or leave it at
 		// -1. As the asking vault marker.
 		pack.define(probeFluid) {
-			raw("\$execute ${partner(EnderIds.RECV_FLUID)} run function ${probeFluidRead.asId()}")
+			partner("probe", EnderIds.RECV_FLUID, probeFluidRead)
 		}
 
 		// The partner reports its own network's amount. As the partner vault marker.
@@ -130,7 +193,7 @@ object Link {
 			raw("scoreboard players operation #ender.theirs $T = #net_amount ${Obj.TR_TMP}")
 		}
 
-		// Macro {channel, medium, rate}, as the sending vault marker.
+		// Macro {medium, rate}, channel in storage ra:ender fluid, as the sending vault marker.
 		pack.define(sendFluid) {
 			// Take our slice out of the local network first.
 			raw("\$function ${RaLib.Transport.Net.take.asId()} {amount:\$(rate),medium:\"\$(medium)\"}")
@@ -139,14 +202,14 @@ object Link {
 
 			// Offer it to the partner. A partner that takes less than everything leaves the
 			// remainder in #ender.carry.
-			raw("\$execute ${partner(EnderIds.RECV_FLUID)} at @s run function ${receiveFluid.asId()} with storage ra:ender fluid")
+			partner("fluid", EnderIds.RECV_FLUID, receiveFluid)
 
 			// Whatever came back goes straight into the network it came from, so nothing is lost
 			// when the far side is full or holds another medium.
 			executeRun("if score #ender.carry $T matches 1..", returnFluid, "with storage ra:ender fluid")
 		}
 
-		// Macro {medium}, as the receiving vault marker, at its block.
+		// As the receiving vault marker, at its block. The medium is in storage ra:ender fluid.
 		pack.define(receiveFluid) {
 			raw("execute store result storage ra:ender offer.amount int 1 run scoreboard players get #ender.carry $T")
 			raw("data modify storage ra:ender offer.medium set from storage ra:ender fluid.medium")
@@ -167,13 +230,13 @@ object Link {
 	}
 
 	private fun Ra.registerPower() {
-		// Macro {channel}: read how much the partner's GRID is holding into #ender.theirs, or leave
+		// Channel in storage ra:ender probe: read how much the partner's GRID is holding into #ender.theirs, or leave
 		// it at -1 when there is no partner on this channel. As the asking vault marker.
 		//
 		// Grid totals, not vault buffers: in two-way mode the vault is levelling the two bases
 		// against each other, not two boxes that happen to sit between them.
 		pack.define(probePower) {
-			raw("\$execute ${partner(EnderIds.RECV_POWER)} run function ${probePowerRead.asId()}")
+			partner("probe", EnderIds.RECV_POWER, probePowerRead)
 		}
 
 		// Read this vault's grid total into #ender.theirs. As the partner vault marker.
@@ -185,10 +248,10 @@ object Link {
 			raw("scoreboard players operation #ender.theirs $T = #net_amount ${Obj.TR_TMP}")
 		}
 
-		// Macro {channel}, as the sending vault marker. Reads #ender.carry, writes #ender.sent.
+		// Channel in storage ra:ender power, as the sending vault marker. Reads #ender.carry, writes #ender.sent.
 		pack.define(sendPower) {
 			raw("scoreboard players set #ender.sent $T 0")
-			raw("\$execute ${partner(EnderIds.RECV_POWER)} at @s run function ${receivePower.asId()}")
+			partner("power", EnderIds.RECV_POWER, receivePower)
 		}
 
 		// As the receiving vault marker, at its block. Offers #ender.carry to the receiving vault's

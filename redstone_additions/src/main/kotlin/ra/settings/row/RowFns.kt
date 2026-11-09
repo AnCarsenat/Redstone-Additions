@@ -34,6 +34,8 @@ internal object RowFns {
 	private const val D = "$"
 
 	private fun label() = """{text:"  $D(label): ",color:"white"}"""
+	/** [label] with the row's `hint` on hover. Bool rows only: only they carry a hint. */
+	private fun hintedLabel() = """{text:"  $D(label): ",color:"white",hover_event:{action:"show_text",value:"$D(hint)"}}"""
 	private fun bracket(value: String) = """{text:"[",color:"dark_gray"},$value,{text:"]",color:"dark_gray"}"""
 	private const val YOU = """{text:" "},{text:"[you]",color:"aqua"}"""
 	private fun button(text: String, color: String, bold: Boolean, hover: String, code: String) =
@@ -54,8 +56,8 @@ internal object RowFns {
 		pack.define(bool) {
 			val toggle = { hover: String -> button("Toggle", "yellow", true, hover, "i") }
 			raw("""${D}execute if data storage ra:settings cur{scope:"global"} run tellraw @s [${label()},${bracket("""{nbt:"global.$D(key)",storage:"ra:settings",color:"green"}""")},{text:"  "},${toggle("Flip this for everyone")}]""")
-			raw("""${D}execute if data storage ra:settings cur{scope:"user"} if score @s $D(obj) matches 1.. run tellraw @s [${label()},${bracket("""{text:"on",color:"green"}""")},$YOU,{text:"  "},${toggle("Flip this for yourself only")}]""")
-			raw("""${D}execute if data storage ra:settings cur{scope:"user"} unless score @s $D(obj) matches 1.. run tellraw @s [${label()},${bracket("""{text:"off",color:"red"}""")},$YOU,{text:"  "},${toggle("Flip this for yourself only")}]""")
+			raw("""${D}execute if data storage ra:settings cur{scope:"user"} if score @s $D(obj) matches 1.. run tellraw @s [${hintedLabel()},${bracket("""{text:"on",color:"green"}""")},$YOU,{text:"  "},${toggle("Flip this for yourself only")}]""")
+			raw("""${D}execute if data storage ra:settings cur{scope:"user"} unless score @s $D(obj) matches 1.. run tellraw @s [${hintedLabel()},${bracket("""{text:"off",color:"red"}""")},$YOU,{text:"  "},${toggle("Flip this for yourself only")}]""")
 		}
 
 		// A number row, changed with buttons rather than typed. Modify goes through ra_lib:input,

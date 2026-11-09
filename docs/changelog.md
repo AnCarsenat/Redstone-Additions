@@ -2,6 +2,133 @@
 
 This page mirrors key datapack milestones from the main project changelog.
 
+## v6.0.2 (2026-11-09) — Drains, lists and fixes
+
+### Fixed
+
+- **The Data Handler shows every setting a block has, even one it was placed without.** A block
+  placed before a setting existed (an Item Pipe from before *invert*, a Tag Adder from before its
+  tag list) did not carry it, and the Data Handler only listed what the block carried, so the
+  setting could not be found or changed. Every setting of the block is now listed: one with a
+  known starting value shows it, marked *(default)* (an Item Pipe's *invert* off, a Tag Adder's
+  tags `["custom_tag"]`), and any other is marked *(not set)*. The first change writes it to the
+  block, starting from that default: [Add] on a default list keeps its entry and adds yours.
+
+- **The Redstone Remote's channel prompt no longer cancels itself.** Shift+RMB with the remote
+  hands out the Input Form, and the prompt was being called off the moment it opened, with
+  "Input cancelled." in chat and the book taken straight back. The game leaves a short-lived
+  copy of any item it gives a player floating at their feet for the pickup animation, and that
+  copy was being mistaken for the form being thrown away. It is now told apart from a real
+  drop, so the form stays in hand until you write on it, drop it or put it away. The same fix
+  covers any other text prompt opened by using an item.
+
+- **A Liquid Drain beside a pool drains it.** A drain put down next to a pool stands on the
+  bank, one block above the water, and only looked at the six blocks touching it — so it still
+  said `no_source` and took nothing in, upright or not. It now also looks one block down and out
+  from each side, which is where the pool is.
+- **The drain says why it is idle.** Besides `no_source`, the Goggles now show
+  `waiting_for_source` when only flowing water or lava is beside the drain (a small pool
+  refilling the gap it just took from), and `no_network` when the drain is not part of a network,
+  instead of `network_too_small`. `network_full` still means the network has no room for a whole
+  5000 mL block.
+- **The tools see past redstone again.** Since v6.0.1 the Data Handler, Clipboard, Wrench and
+  Multimeter stopped at the first block in the way that was not air, water or grass, so aiming at
+  a custom block over redstone dust, a repeater, a comparator, a torch, a lever, a rail, a carpet,
+  a sign, a ladder, a flower and the like said "No custom block found". These small blocks are now
+  looked past, as is any block you are standing in (an open door), and only a block that fills
+  its space stops the look.
+- **The Tag Remover's "clear all" leaves the pack's own tags alone.** With an empty `tag`, it
+  used to wipe every tag off every matching entity except custom-block markers, including the
+  pack's own skins, displays and multiblock markers (which then stopped working) and the `ra.`
+  tags on players. It now skips the pack's entities entirely, and on everything else removes
+  every tag except the `ra.` ones.
+- **The Wrench's [CYCLE] button changes the right block.** With one custom block on top of
+  another, clicking [CYCLE] in the menu of the upper one could change the setting of the block
+  below it instead.
+
+- **Ender vaults find their partner past a vault on another channel.** A vault paired with the
+  nearest receiving vault first and only then checked its channel, so when the closest one was
+  on a different channel nothing moved at all, even with a matching vault further away. Item,
+  Fluid and Power Vaults now pick the nearest vault that is on their channel.
+- **Valves, the Liquid Filter and the EU Breaker ignore networks of another kind.** A bridge
+  counted any neighbouring network as a side to level. An Item Pipe next to a Liquid Valve was
+  picked as the empty side and left the valve stuck on `blocked`, and an EU Breaker beside a
+  fluid pipe tried to push EU into it. Valves and the filter now only work between fluid
+  networks (liquid or gas), and the breaker only between electric grids.
+- **Big worlds finish settling their networks after a load.** Every loaded network is rebuilt
+  once when the world loads or `/reload` runs, and in a world with well over a thousand loaded
+  pipes, tanks and wires that single rebuild ran past the game's command limit and stopped half
+  way, leaving some blocks out of any network until something else changed. The load now
+  rebuilds a few hundred blocks every 5 ticks until all are done, and networks keep working with
+  their contents while they wait. A rebuild that does get cut short is picked up by the next one.
+
+### Added
+
+- **Tag Adder and Tag Remover take a list of tags.** The new `tags` property holds up to 16
+  tags, edited one entry at a time in the Data Handler ([Edit], [Remove], [Add]). A Tag Remover
+  removes every listed tag from the entities its selector matches and leaves their other tags
+  alone; with an empty list it clears all of their tags except the `ra.` ones, as an empty `tag`
+  did. A Tag Adder adds every listed tag. Like the selector, the list can only be changed by
+  admins unless *Players may edit entity selectors and tags* is on. Every tag is checked again
+  each time the block fires: one that is not allowed (an `ra.` tag, a space) is skipped while the
+  others still apply, and the Goggles show **Refused tags: N** until it is fixed. A list with only
+  refused tags does nothing; it is never taken as "clear them all".
+- **The Tag Adder's and Tag Remover's Goggles show their selector and tags** (**Targets**, and
+  the first three tags then "+N more").
+
+- **A powered Liquid Drain pours into thin air.** Nothing has to be there already: it pours out
+  of its front, the side it faces, like a dispenser, into air or anything a bucket would
+  wash away (grass, flowers, a snow layer). Water, lava and powder snow come out as one source
+  block for every 5000 mL, the same amount a drain takes in for one. Experience comes out as orbs,
+  potions as a cloud in the potion's own colour, and milk, steam, smoke and oxygen are poured away
+  as white drops, a cloud, smoke or blue mist. In the Nether water evaporates, as from a bucket:
+  each block's worth hisses away and the Goggles say `evaporates`. The Goggles say `pouring`, or why not: `blocked`,
+  `not_enough` (less than a whole block of that fluid), `network_empty`.
+
+- **Show filter previews** (your own settings, `/trigger ra.settings.open`, on by default):
+  whether the Goggles draw the item an Item Pipe filters for above its label. A Goggles label is
+  one entity that everyone nearby sees, so it cannot be hidden from one player: a pipe draws its
+  filter item while any Goggles wearer within range of it has the setting on. Turn yours off and
+  you stop asking for previews, though you still see one drawn for another wearer beside you.
+  Hover the setting's name in the menu for this explanation. The server-wide *Filter previews*
+  switch (General › Goggles) still turns them off for everyone.
+
+
+- **"Show the load message" now silences the whole load message.** With it off, a `/reload` no
+  longer prints each module's "loaded!" line (Interactive blocks, Storage blocks, Sensors, Logic
+  Gates, Wireless Redstone, Wires, Chunk Loader, Enchant crafting, Infinite generators, Jetpacks,
+  Ender links) nor the version and settings lines. The notice that some block types are disabled
+  still appears, since it is a warning rather than a greeting.
+- On/off server settings read **on** / **off** in the settings pages and in the confirmation
+  message, instead of `1b` / `0b`.
+
+### Changed
+
+- **List rows read [Add] [Edit all] [List], and start compact.** A list in the Data Handler is
+  one line now, its header: [Add] types one new entry for the end, [Edit all] (was "[Edit whole
+  list]") writes the whole list at once in the input book, and [List] shows the entries
+  underneath, each with its own buttons; click it again, or another list's, to fold it away. A
+  list you may not change keeps its locked row, and its [List] shows the entries without buttons.
+
+- **Tag Adders and Tag Removers placed from now on start with `tags: ["custom_tag"]`**, a list
+  of one tag, instead of `tag: "custom_tag"`. Blocks you already placed are converted when the
+  world loads: their tag becomes the list's one entry (`tag: "red_team"` becomes
+  `tags: ["red_team"]`), a Tag Remover without a tag, which cleared every tag, gets the empty
+  list and keeps doing exactly that, and a Tag Adder without one gets the empty
+  list and keeps adding nothing. The old
+  `tag` setting is gone.
+- **The Data Handler's list button is [Add]** (it was [Append]). It adds an entry at the end,
+  also to an empty list, and asks for it in the input book, checked like any other entry. Once
+  the list holds as many entries as it may (16 for a Tag Adder's or Tag Remover's tags), it is
+  greyed out, and hovering it says "Maximum 16 entries". The list's header shows how full it is,
+  like `tags: list (1/16)`.
+
+- **Liquid Drain `speed` is now `rate`, in mL per second** (5000 by default, one block a second;
+  100 to 100000), and it sets how fast a drain takes in and pours out alike. Existing drains and
+  the server default are converted when the world loads: a speed of 5 becomes a rate of 5000.
+- **Liquid Drains are silent.** They no longer play a bucket sound each time they take in, pour
+  out or empty a container.
+
 ## v6.0.1 (2026-11-08) — Leaner ticks
 
 **Supported version:** 26.3 (data pack format 121).
@@ -15,7 +142,7 @@ predicates built when the pack is generated. Worlds on v6.0.0 carry on without a
 - **Lists are edited one entry at a time.** In the Data Handler a list shows each entry on its
   own line with **[Edit]** (type a new value for that entry) and **[Remove]**, and the list
   itself has **[Append]** (greyed out once the list is at its maximum length) next to
-  **[Edit whole list]**. On a list whose positions mean something, such as a Teleport Anchor's
+  **[List]**. On a list whose positions mean something, such as a Teleport Anchor's
   fifteen strengths, **[Remove]** is **[Clear]**: the slot is emptied and the others stay where
   they are. Every entry is checked against the list's type before it is written.
 - **Pick a Teleport Anchor's destination by name.** Every anchor remembers its name in a shared
@@ -279,7 +406,7 @@ predicates built when the pack is generated. Worlds on v6.0.0 carry on without a
   edit. The value is written to the block it was asked about, it is refused if you selected a
   different block since, and the read-only check runs again just before the write.
 
-- **[Edit list] checks what you typed.** Anything that parsed was stored as is, so typing
+- **[List] checks what you typed.** Anything that parsed was stored as is, so typing
   `{a:1}` into a Teleport Anchor's targets replaced its table with something the anchor could
   not read. The text must now be a list, every entry must be text when the property holds text,
   and a Teleport Anchor's targets take at most 15 entries, padded with empty rows as
@@ -348,7 +475,7 @@ predicates built when the pack is generated. Worlds on v6.0.0 carry on without a
   own selected block (the same one the Data Handler uses), and the `/data` commands its buttons
   suggest name that block by number, so they still reach it when typed later.
 
-- **Teleport Anchor targets show in the Data Handler.** The [Edit list] row's hover text broke
+- **Teleport Anchor targets show in the Data Handler.** The [List] row's hover text broke
   the chat message, so no list setting was ever shown and the anchor's table could not be
   edited from the menu.
 

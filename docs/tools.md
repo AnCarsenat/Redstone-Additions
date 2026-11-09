@@ -58,6 +58,14 @@ The label sits just above the block and grows upward with what it has to say: a 
 line gets a small label close to its top, one with five a taller one from the same spot. An
 Item Pipe's filter item floats just above its label.
 
+You can turn that floating item off for yourself with **Show filter previews** in your own
+settings (`/trigger ra.settings.open`), and server operators can turn it off for everyone
+(*Filter previews*, General › Goggles). A label is a single entity that everyone nearby sees, so
+it cannot be hidden from one player only: a pipe draws its filter item while **any** player
+wearing Goggles within range of it has *Show filter previews* on. Turning yours off stops you
+asking for previews; you still see one that is drawn for another Goggles wearer near the same
+pipe.
+
 A label shows what the block is doing and the settings worth knowing at a glance. Settings the
 Data Handler hides from players are not shown, and a few fixed or uninteresting values (a
 generator's cooldown, the Magic Crate's pulse cooldown) are left off the label; the Data Handler
@@ -76,9 +84,10 @@ Shift + right-click a block to open its settings in chat.
 | **[Toggle]** | Switch an on/off setting |
 | **[Edit]** / **[Remove]** | On each entry of a list: type a new value for it, or delete it |
 | **[Clear]** | On a list whose positions matter (a Teleport Anchor's strengths): empty that entry, the others stay put |
-| **[Append]** | Add an entry at the end of a list (greyed out when the list is full) |
+| **[Add]** | Add an entry at the end of a list, also an empty one: you write it in the book, and it is checked like the others. Greyed out once the list is full ("Maximum N entries" on hover) |
 | **[Choose]** | Pick an entry from a list of known values (a Teleport Anchor's destinations: every anchor named so far) |
-| **[Edit whole list]** | Write the whole list at once, like `["A","B","C"]` |
+| **[Edit all]** | Write the whole list at once, like `["A","B","C"]` |
+| **[List]** | Show a list's entries under it, each with its own buttons; click again to hide them. One list is open at a time |
 | **[Set from hand]** | For item settings (an Item Pipe filter): use the item you are holding |
 | **[Clear]** | On item settings: set no item (removes an Item Pipe filter) |
 | **[Cancel Input]** | Abandon an edit you started |
@@ -92,13 +101,30 @@ e.g. *Enter a number for delay (1–1200)*), an on/off field accepts `true`/`fal
 `1`/`0`, and a text field keeps exactly what you wrote, even if it looks like a number. A list
 entry must be of the list's type. A refused value leaves the block unchanged and says why.
 
-A list looks like this (a Teleport Anchor):
+A list is one line until you open it with **[List]**. Opened, it looks like this (a Teleport
+Anchor):
 
 ```
-  targets: list (15/15)  [Edit whole list]
+  targets: list (15/15) [Edit all] [List]
     Strength 1: Mine  [Choose] [Edit] [Clear]
     Strength 2: (empty)  [Choose] [Edit]
 ```
+
+and like this for a list that grows (a Tag Adder's tags, at most 16), with its count in the header:
+
+```
+  tags: list (2/16) [Add] [Edit all] [List]
+    Tag 1: custom_tag  [Edit] [Remove]
+    Tag 2: red_team  [Edit] [Remove]
+```
+
+Selecting a block with the Handler shows every list closed again. A list you may not change
+(set by the block, or admins only) keeps its locked row; its **[List]** still shows the entries,
+without buttons.
+
+Every setting the block has is listed, even one it does not carry yet because it was placed
+before that setting existed. Such a row shows the setting's starting value marked *(default)*,
+or *(not set)* when it has none, and your first change writes it to the block.
 
 Text settings only accept the characters they can use, since some are used inside commands:
 names and channels take letters, digits, spaces and `_ . + - : / #`; most other text the same
@@ -157,5 +183,8 @@ connected. See [Transport Networks](transport-networks.md).
   tool (and for a short while after).
 - Goggles labels are `text_display` entities tagged `ra.billboard` (an item filter is an
   `item_display` with the same tag), one per block: the lines are joined into one text, drawn
-  from 0.3 above the block's top face upward. Which settings a label shows follows each
+  from 0.3 above the block's top face upward. During a redraw a block marker carries the tag
+  `ra.goggles_fprev` when a Goggles wearer in range has `ra.u.fprev` (Show filter previews) at 1
+  and the server's `goggles_filter_preview` is on; the Item Pipe draws its filter item only then.
+  Which settings a label shows follows each
   setting's `goggles` flag, see [Property schemas](tools-and-registries.md#property-schemas).

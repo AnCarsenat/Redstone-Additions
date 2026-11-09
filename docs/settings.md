@@ -24,8 +24,13 @@ No permissions needed. Click a value to change it.
 | Machine sounds | on | Sounds made by Redstone Additions blocks |
 | Machine particles | on | Particles made by Redstone Additions blocks |
 | Debug messages | off | Extra diagnostic messages in chat |
+| Show filter previews | on | The item an Item Pipe filters for, floating above its Goggles label |
 
-These only change what **you** see and hear.
+These only change what **you** see and hear — with one exception. Goggles labels are shared:
+everyone near a block sees the same label. So *Show filter previews* decides whether **you** ask
+for the floating filter item, and a pipe draws it while any Goggles wearer within range of it has
+the setting on. With yours off you can still see a preview drawn for another wearer next to you.
+Hover a setting's name in the menu to read this there.
 
 ## Server settings
 
@@ -62,11 +67,11 @@ Every setting is also a command, so you can tab-complete your way through them:
 
 | Page | Settings |
 | --- | --- |
-| General | show the load message; chat prefix (`RA`); subcategory **Goggles** |
-| General › Goggles | Goggles range (16 blocks); Goggles redraw (20 ticks); *Filter previews* (on): draw the item an Item Pipe filters for above its readout |
+| General | *Show the load message* (on): every line the pack prints in chat on load or `/reload` — the version, each module's "loaded!" line and the settings links. Warnings (some block types are disabled) are shown either way; chat prefix (`RA`); subcategory **Goggles** |
+| General › Goggles | Goggles range (16 blocks); Goggles redraw (20 ticks); *Filter previews* (on): draw the item an Item Pipe filters for above its readout. Off here means off for everyone; on lets each player choose with *Show filter previews* |
 | Logic Gates | default Clock interval (20), Delayer delay (20), Extender duration (20), Shortener pulse (2), Randomizer chance (50%) |
 | Interactive | default Magic Crate radius (8) and interval (20), Message Block range (16) |
-| Power & Fluids | default Generator EU/tick (60), Consumer EU draw (40), Industrial Light EU use (10), Liquid Drain speed (5 L per second) |
+| Power & Fluids | default Generator EU/tick (60), Consumer EU draw (40), Industrial Light EU use (10), Liquid Drain rate (5000 mL per second) |
 | Ender Links | default Power Vault EU/tick (80), Fluid Vault transfer (200) |
 | Infinite Generators | default interval of each generator (100) |
 | Jetpacks | Thruster Kit thrust (80%), speed cap (350), dead zone (25) |

@@ -33,10 +33,16 @@ internal object PropRows {
 	private fun Ra.row(fn: io.github.ayfri.kore.arguments.types.resources.FunctionArgument, vararg parts: String) =
 		pack.define(fn) { raw("\$tellraw @s [" + parts.joinToString(",") + "]") }
 
+	/** The locked row's parts; a declared list's adds a [List] (DataHandlerEntries.renderLocked). */
+	val LOCKED = arrayOf(
+		head("gray"), """{text:"locked",color:"dark_gray"}""", """{text:" "}""",
+		"""{text:"[Modify]",color:"red",strikethrough:true,hover_event:{action:"show_text",value:"$(reason)"}}""",
+	)
+
 	fun Ra.registerPropRows() {
 		row(rowNumber, head(), """{text:"number",color:"aqua"}""", """{text:" "}""", button("[Modify]", "Type a new number"))
 		row(rowBool, head(), """{text:"bool",color:"aqua"}""", """{text:" "}""", button("[Toggle]", "Flip this flag"))
-		row(rowList, head(), """{text:"list",color:"aqua"}""", """{text:" "}""", button("[Edit list]", "Write the whole list, e.g. [\\\"A\\\",\\\"B\\\"]"))
+		row(rowList, head(), """{text:"list",color:"aqua"}""", """{text:" "}""", button("[Edit all]", "Write the whole list, e.g. [\\\"A\\\",\\\"B\\\"]"))
 		// (The quotes are escaped for the SNBT string they sit in. Unescaped, they ended the hover
 		// text early, the game refused the whole tellraw, and no list row was ever shown.)
 		row(rowString, head(), """{text:"string",color:"aqua"}""", """{text:" "}""", button("[Modify]", "Write new text in the input book"))
@@ -74,9 +80,6 @@ internal object PropRows {
 		// has, and left the player guessing why a number they could see in the Goggles was missing
 		// here. The value is printed exactly as any other row; only the button is dead, struck
 		// through, and says why on hover.
-		row(
-			rowLocked, head("gray"), """{text:"locked",color:"dark_gray"}""", """{text:" "}""",
-			"""{text:"[Modify]",color:"red",strikethrough:true,hover_event:{action:"show_text",value:"$(reason)"}}""",
-		)
+		row(rowLocked, *LOCKED)
 	}
 }

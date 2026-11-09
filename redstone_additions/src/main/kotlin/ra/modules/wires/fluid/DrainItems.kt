@@ -16,7 +16,6 @@ import ra.core.Ns
 import ra.core.PackPart
 import ra.core.Ra
 import ra.core.Storage
-import ra.core.block.soundListenersSel
 import ra.core.define
 import ra.core.executeRun
 import ra.core.raw
@@ -96,7 +95,6 @@ object DrainItems : PackPart {
 			scoreboard.players.set(literal("#dr.took"), "ra.wires.tmp", 1)
 			raw("data modify entity @s data.status.drain_state set value \"emptied_container\"")
 			raw("\$function ${Fluid.drip.asId()} {medium:\"\$(medium)\"}")
-			raw("playsound minecraft:item.bucket_empty block ${soundListenersSel(8)} ~ ~ ~ 0.7 1.2")
 		}
 
 		pack.define(DrainItems.drainItems) {
@@ -213,7 +211,6 @@ object DrainItems : PackPart {
 			scoreboard.players.set(literal("#dr.took"), "ra.wires.tmp", 1)
 			raw("data modify entity @s data.status.drain_state set value \"emptied_container\"")
 			raw("\$function ${Fluid.drip.asId()} {medium:\"\$(medium)\"}")
-			raw("playsound minecraft:item.bucket_empty block ${soundListenersSel(8)} ~ ~ ~ 0.7 1.2")
 		}
 	}
 }

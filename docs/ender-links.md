@@ -63,10 +63,10 @@ A pad that sends you to another anchor. Each anchor has a **name** (`anchor_id`)
 1. Place two anchors. Shift + right-click each with the [Data Handler](tools.md) and use
    **[Modify]** on `anchor_id` to name them, e.g. `Home` and `Mine`. Names may contain letters,
    digits, spaces and `_ . + - : / #`.
-2. On `Home`, the Data Handler lists the fifteen strengths:
+2. On `Home`, click **[List]** on `targets` in the Data Handler to show the fifteen strengths:
 
     ```
-    targets: list (15/15)  [Edit whole list]
+    targets: list (15/15) [Edit all] [List]
       Strength 1: (empty)  [Choose] [Edit]
       Strength 2: (empty)  [Choose] [Edit]
       …
@@ -166,8 +166,13 @@ with fifteen empty entries.
 | `ra.ender.pull_target` | The vault a refill is being fetched for, for one command |
 | `ra.ender.tp_dest` | The anchor a teleport is aimed at, for one command |
 | `ra.ender.tp_cand` | An anchor whose name matches, while the nearest is picked |
+| `ra.ender.pick` | The vault picked as partner, for one command |
 
-Vault channels are matched in macro commands: the sender writes its channel into storage and the
-generated command carries it into the selector. A channel may only hold letters, digits, spaces
-and `_ . + - : / #` (format `NAME`), checked by `ra_lib:safe/guard` before each use; a vault whose
-channel fails the check links nothing. Anchor names are compared without a macro (above).
+Vault channels are compared without a macro, the same way as anchor names (above):
+`ra_ender:link/pick` visits the receiving vaults nearest first, copies each one's `channel` to
+storage and overwrites it with the sender's, and the first copy that does not change is the
+partner (it wears `ra.ender.pick` for one command). Vaults after the first match cost one command
+each. Before 6.0.2 the nearest receiving vault was taken first and its channel checked
+afterwards, so a closer vault on another channel hid the real partner. A channel may only hold
+letters, digits, spaces and `_ . + - : / #` (format `NAME`), still checked by `ra_lib:safe/guard`
+before each use; a vault whose channel fails the check links nothing.

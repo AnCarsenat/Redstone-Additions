@@ -5,7 +5,6 @@ import io.github.ayfri.kore.arguments.types.literals.literal
 import io.github.ayfri.kore.commands.data
 import io.github.ayfri.kore.commands.execute.execute
 import io.github.ayfri.kore.commands.function
-import io.github.ayfri.kore.commands.returnValue
 import io.github.ayfri.kore.commands.schedule
 import io.github.ayfri.kore.commands.scoreboard.scoreboard
 import io.github.ayfri.kore.functions.Function
@@ -25,8 +24,8 @@ import ra.core.Ra
 import ra.core.Storage
 import ra.core.define
 import ra.core.hook
-import ra.core.raMessage
-import ra.core.raw
+import ra.core.loadMessage
+import ra.core.loadNotice
 import ra.core.ref
 import ra.hub.items.giveAllItems
 import io.github.ayfri.kore.arguments.numbers.ticks
@@ -128,7 +127,7 @@ private fun Function.scoreboards() {
 }
 
 /**
- * Said before the welcome gate, and not subject to it. A disabled block leaves no trace anywhere
+ * A [loadNotice]: not subject to the load-message setting. A disabled block leaves no trace anywhere
  * a player looks -- it just refuses to place -- so a server that has some needs to be told on
  * every load, whether or not it wants the greeting.
  */
@@ -138,42 +137,30 @@ private fun Function.disabledBlocksNotice() {
 		storeResult { score(dis, Obj.SET_TMP) }
 		run { data(Storage.SETTINGS) { get("disabled") } }
 	}
-	raw("""execute if score #dis ${Obj.SET_TMP} matches 1.. run tellraw @a [$RA_CHAT_PREFIX,{score:{name:"#dis",objective:"${Obj.SET_TMP}"},color:"red",bold:true},{text:" block type(s) are disabled and cannot be placed.",color:"red"}]""")
-	raw("""execute if score #dis ${Obj.SET_TMP} matches 1.. run tellraw @a [{text:"  "},{text:"[ Which ones? ]",color:"yellow",hover_event:{action:"show_text",value:"List them, with a button to re-enable each"},click_event:{action:"run_command",command:"/trigger ra.settings.open set 3"}}]""")
+	loadNotice("""execute if score #dis ${Obj.SET_TMP} matches 1.. run tellraw @a [$RA_CHAT_PREFIX,{score:{name:"#dis",objective:"${Obj.SET_TMP}"},color:"red",bold:true},{text:" block type(s) are disabled and cannot be placed.",color:"red"}]""")
+	loadNotice("""execute if score #dis ${Obj.SET_TMP} matches 1.. run tellraw @a [{text:"  "},{text:"[ Which ones? ]",color:"yellow",hover_event:{action:"show_text",value:"List them, with a button to re-enable each"},click_event:{action:"run_command",command:"/trigger ra.settings.open set 3"}}]""")
 }
 
 /**
  * Gated on a setting, because a server that has run this pack for a year does not need to tell
- * everyone about it on every reload. Read into a score first: the messages below are plain
- * tellraw lines and `execute if data` on each would be the same test written six times.
+ * everyone about it on every reload. Every line carries the gate itself ([loadMessage]) rather
+ * than sitting behind one early `return`, the same gate the modules' "loaded!" lines use, so the
+ * build can prove nothing said at load escapes it: see
+ * [ra.core.PackValidator.ungatedLoadMessages].
  */
 private fun Function.welcome() {
-	val welcome = literal("#welcome")
-	execute {
-		storeResult { score(welcome, Obj.TEMP) }
-		run {
-			function(Settings.get, nbt {
-				this["key"] = "welcome"
-				this["default"] = 1
-			})
-		}
-	}
-	execute {
-		ifCondition { score(welcome, Obj.TEMP) lessThanOrEqualTo 0 }
-		run { returnValue(0) }
-	}
 	val v = RedstoneAdditions.VERSION
-	raw("""tellraw @a [{text:"[RA_Lib] ",color:"gold"},{text:"v$v loaded",color:"green"}]""")
-	raMessage("@a", "Redstone Additions v$v loaded!", "green")
+	loadMessage("""[{text:"[RA_Lib] ",color:"gold"},{text:"v$v loaded",color:"green"}]""")
+	loadMessage("""[$RA_CHAT_PREFIX,{text:"Redstone Additions v$v loaded!",color:"green"}]""")
 	// The server button fires a TRIGGER, not the function. A /function link raises a
 	// confirmation dialog and then fails for anyone without permission; the trigger opens the
 	// panel for an operator who already has a session, and hands everyone else the command unrun
 	// so the game can refuse them properly. See ra_settings:server_open.
-	raw("""tellraw @a [{text:"Server settings: ",color:"gray"},{text:"[ Open ]",color:"yellow",bold:true,hover_event:{action:"show_text",value:"World-wide settings — needs permission level 2"},click_event:{action:"run_command",command:"/trigger ra.settings.open set 2"}}]""")
+	loadMessage("""[{text:"Server settings: ",color:"gray"},{text:"[ Open ]",color:"yellow",bold:true,hover_event:{action:"show_text",value:"World-wide settings — needs permission level 2"},click_event:{action:"run_command",command:"/trigger ra.settings.open set 2"}}]""")
 	// User settings are SUGGESTED rather than run, so the command lands in the chat box and the
 	// player reads it before pressing enter. This one has to be remembered -- it is the only way
 	// back into the menu once this message has scrolled away -- and a button that silently works
 	// teaches nobody its name.
-	raw("""tellraw @a [{text:"Your settings: ",color:"gray"},{text:"/trigger ra.settings.open",color:"yellow",bold:true,hover_event:{action:"show_text",value:"Click to put this in your chat box — then press enter"},click_event:{action:"suggest_command",command:"/trigger ra.settings.open"}}]""")
-	raw("""tellraw @a [{text:"Use ",color:"gray"},{text:"/function ${giveAllItems.asId()}",color:"yellow",hover_event:{action:"show_text",value:"Give all items"},click_event:{action:"suggest_command",command:"/function ${giveAllItems.asId()}"}},{text:" to get items",color:"gray"}]""")
+	loadMessage("""[{text:"Your settings: ",color:"gray"},{text:"/trigger ra.settings.open",color:"yellow",bold:true,hover_event:{action:"show_text",value:"Click to put this in your chat box — then press enter"},click_event:{action:"suggest_command",command:"/trigger ra.settings.open"}}]""")
+	loadMessage("""[{text:"Use ",color:"gray"},{text:"/function ${giveAllItems.asId()}",color:"yellow",hover_event:{action:"show_text",value:"Give all items"},click_event:{action:"suggest_command",command:"/function ${giveAllItems.asId()}"}},{text:" to get items",color:"gray"}]""")
 }

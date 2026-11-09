@@ -26,6 +26,9 @@ internal object TrTag {
 
 	/** Rebuild only: the root of a network created from nothing in this rebuild, the only kind the clamp may trim. */
 	const val FRESH = "ra.tr.fresh"
+
+	/** Load only: a node whose network is already on `fullq`, while rebuild/full_collect lists them. */
+	const val LISTED = "ra.tr.listed"
 }
 
 /** `@e[type=marker,tag=<tag>]`, optionally narrowed further. */

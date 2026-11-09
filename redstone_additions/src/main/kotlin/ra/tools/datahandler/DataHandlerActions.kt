@@ -250,7 +250,8 @@ object DataHandlerActions {
 		// no value left to take the type of.
 		pack.define(propertyGone) {
 			raw("scoreboard players set #dh.gone ${Obj.TEMP} 0")
-			raw("\$execute unless data storage ra:dh properties.\$(name) run scoreboard players set #dh.gone ${Obj.TEMP} 1")
+			// Declared but not set (and no default): still editable, the edit writes it.
+			raw("\$execute unless data storage ra:dh properties.\$(name) unless data storage ra:dh schema.\$(name).type run scoreboard players set #dh.gone ${Obj.TEMP} 1")
 			raw("""${'$'}execute if score #dh.gone ${Obj.TEMP} matches 1 run tellraw @s [$PREFIX,{text:"This block no longer has ",color:"red"},{text:"$(name)",color:"yellow"},{text:"; nothing was changed.",color:"red"}]""")
 		}
 

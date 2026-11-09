@@ -71,7 +71,9 @@ forward. Without a filter, `invert` does nothing.
 
 Wear the [Goggles](tools.md) to see each pipe's filter (and *Mode: Inverted* when it is), with the
 filter item floating above it. The item preview can be turned off for the whole server under
-Server Settings › General › **Goggles** › *Filter previews*.
+Server Settings › General › **Goggles** › *Filter previews*, and each player can stop asking for it
+with *Show filter previews* in their own settings. The label is shared, so a pipe still draws the
+item while another Goggles wearer near it wants previews (see [Goggles](tools.md#goggles)).
 
 ## Item Mover
 

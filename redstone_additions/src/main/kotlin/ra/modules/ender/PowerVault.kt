@@ -173,7 +173,7 @@ object PowerVault {
 		// beforehand would have been refunded from whatever #ender.sent the previous vault left.
 		raw("data modify storage ra:ender power set value {}")
 		raw("data modify storage ra:ender power.channel set from entity @s data.properties.channel")
-		// Pasted into the link macro: an unsafe channel links nothing.
+		// Still checked though no longer pasted anywhere: an unsafe channel links nothing.
 		guardProperty("channel", TextFormat.NAME, onFail = "data remove storage ra:ender power.channel")
 		executeReturnRun("unless data storage ra:ender power.channel", Link.done)
 
@@ -197,10 +197,10 @@ object PowerVault {
 		executeStoreRun("", "#ender.carry", ModulesApi.Wires.takeEu, "with storage ra:wires eu")
 		executeReturnRun("if score #ender.carry $T matches ..0", Link.done)
 
-		// Zero before the call, not only inside it: a send that fails to run at all (a channel the
-		// macro cannot splice) must read as nothing delivered, so the refund below returns it all.
+		// Zero before the call, not only inside it: a send that finds no partner (or an unsafe
+		// channel) must read as nothing delivered, so the refund below returns it all.
 		raw("scoreboard players set #ender.sent $T 0")
-		function(Link.sendPower, Storage.ENDER, "power")
+		function(Link.sendPower)
 
 		// Refund whatever the partner's grid could not hold.
 		computeScore("#ender.back", T, provider { sub(scoreOf("#ender.carry", T), scoreOf("#ender.sent", T)) })
@@ -216,9 +216,9 @@ object PowerVault {
 		raw("scoreboard players set #ender.theirs $T -1")
 		raw("data modify storage ra:ender probe set value {}")
 		raw("data modify storage ra:ender probe.channel set from entity @s data.properties.channel")
-		// Pasted into the link macro: an unsafe channel links nothing.
+		// Still checked though no longer pasted anywhere: an unsafe channel links nothing.
 		guardProperty("channel", TextFormat.NAME, onFail = "data remove storage ra:ender probe.channel")
-		function(Link.probePower, Storage.ENDER, "probe")
+		function(Link.probePower)
 
 		raw("execute if score #ender.theirs $T matches ..-1 run return run scoreboard players set #ender.carry $T 0")
 

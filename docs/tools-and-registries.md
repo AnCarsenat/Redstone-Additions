@@ -125,7 +125,7 @@ declares for you). `ra/core/Properties.kt` holds the builder.
 | `text(name)` | string | the book; stored as typed, never parsed |
 | `item(name)` | string (item id) | the book, or **[Set from hand]** |
 | `text(name, TextFormat.SELECTOR)` | string in a [format](#text-formats) | the book, checked against the format |
-| `list(name, of = PropType.TEXT, max = 15, pad = true)` | list | one row per entry ([Edit], [Remove]/[Clear], [Append]) and **[Edit whole list]** |
+| `list(name, of = PropType.TEXT, max = 15, pad = true)` | list | a header with **[Add]** (until `max` entries), **[Edit all]** and **[List]**, which shows one row per entry ([Edit], [Remove]/[Clear]) |
 | `textList(name, max, pad, format, choices = "ra:ender" to "anchor_ids", entryLabel = "Strength ")` | list of text | the same, with **[Choose]** from `storage <choices>` and entries labelled *Strength 1…* |
 | `dynamic(name)` | read from the block instance | — (see below) |
 
@@ -137,6 +137,7 @@ Each also takes these flags:
 | `adminOnly = true` | locked for players without `ra.admin` (server-settings access), editable for admins; re-checked when the value is written | not offered to non-admins | not pasted by non-admins |
 | `adminOnly = true, adminSetting = "<key>"` | as `adminOnly`, unless the GLOBAL bool setting `<key>` is on (then everyone may edit it) | as `adminOnly` | as the Data Handler |
 | `visible = false` | not shown at all to non-admins (nor in the Properties summary); admins see it marked *(hidden from players)* and can edit it | not offered to non-admins | not pasted by non-admins |
+| `default = …` (`20`, `false`, `"@e"`, `listOf("custom_tag")` for `textList`, SNBT for `list`) | on a block that lacks the property, the row shows this value marked *(default)*; the first edit writes it to the block (an entry edit or **[Toggle]** starts from it). Without a default such a row says *(not set)* and the first edit writes what is typed. Generated as `storage ra:dh defaults."<type>"` | — | — |
 
 One more flag concerns only the Goggles:
 
@@ -159,8 +160,8 @@ The Creative Data Handler shows and edits everything regardless; it is an operat
 load, unguarded — configuration, not world state:
 
 ```mcfunction
-data modify storage ra:dh types."liquid_drain" set value {speed:{type:"number",code:1,min:1,max:100,readonly:0b,admin_only:1b,visible:1b,goggles:0b,i:0},cooldown:{type:"number",code:1,min:0,max:9999,readonly:1b,admin_only:0b,visible:0b,goggles:0b,i:1},interval:{type:"number",code:1,min:0,max:9999,readonly:1b,admin_only:0b,visible:0b,goggles:0b,i:2},mode:{type:"text",code:0,readonly:1b,admin_only:0b,visible:0b,goggles:0b,i:3}}
-data modify storage ra:dh order."liquid_drain" set value ["speed","cooldown","interval","mode"]
+data modify storage ra:dh types."liquid_drain" set value {rate:{type:"number",code:1,min:100,max:100000,readonly:0b,admin_only:1b,visible:1b,goggles:0b,i:0},speed:{type:"number",code:1,min:0,max:9999,readonly:1b,admin_only:0b,visible:0b,goggles:0b,i:1},cooldown:{type:"number",code:1,min:0,max:9999,readonly:1b,admin_only:0b,visible:0b,goggles:0b,i:2},interval:{type:"number",code:1,min:0,max:9999,readonly:1b,admin_only:0b,visible:0b,goggles:0b,i:3},mode:{type:"text",code:0,readonly:1b,admin_only:0b,visible:0b,fmt:1,goggles:0b,i:4}}
+data modify storage ra:dh order."liquid_drain" set value ["rate","speed","cooldown","interval","mode"]
 data modify storage ra:dh known set value ["anchor_id","chance","channel",...]
 ```
 
@@ -263,8 +264,10 @@ A row's button runs `/trigger ra.dh.action set <stamp × 10000 + code>`: code `1
 `i` of `order."<type>"`, `400 + i` is that row's **[Set from hand]**, `550 + i` its **[Clear]**
 (item rows), `700 + i` edits the
 undeclared property `known[i]`. A declared list's entries (rows 0–29, entries 0–98) use
-`1000 + 300 i + j` (**[Edit]** entry `j`), `+ 99` (**[Append]**), `+ 100 + j` (**[Remove]** /
-**[Clear]**) and `+ 200 + j` (**[Choose]**). A picker is a menu of its own (`ra.dh.mkind` 1)
+`1000 + 300 i + j` (**[Edit]** entry `j`), `+ 99` (**[Add]**), `+ 100 + j` (**[Remove]** /
+**[Clear]**), `+ 199` (**[List]**: show or hide the entries) and `+ 200 + j` (**[Choose]**);
+`+ 299` is unused. The open list is the player's `ra.dh.expand`, its row index + 1 (0 or unset:
+none), reset when a block is selected with a Data Handler and on load. A picker is a menu of its own (`ra.dh.mkind` 1)
 whose choices are kept, as drawn, in `storage ra:dh pick.s<stamp>`; its buttons are
 `100 + k`. An entry edit is filed under the player's input request with its index
 (`pend.r<id>.j`, `-1` for an append). The stamp numbers the menu (1 – 200,000); each player's

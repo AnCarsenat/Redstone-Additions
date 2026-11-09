@@ -19,6 +19,8 @@ object Source : PackPart {
 	val probeNext = ref(Ns.WIRES, "fluid/source/probe_next")
 	val probeTest = ref(Ns.WIRES, "fluid/source/probe_test")
 	val scan = ref(Ns.WIRES, "fluid/source/scan")
+	val scanBank = ref(Ns.WIRES, "fluid/source/scan_bank")
+	val flowing = ref(Ns.WIRES, "fluid/source/flowing")
 
 	override fun Ra.register() {
 		pack.define(Source.isInfinite) {
@@ -130,6 +132,42 @@ object Source : PackPart {
 			executeRun("positioned ~ ~ ~-1", Source.probe, "{dx:0,dy:0,dz:-1}")
 			executeRun("positioned ~ ~-1 ~", Source.probe, "{dx:0,dy:-1,dz:0}")
 			executeRun("positioned ~ ~1 ~", Source.probe, "{dx:0,dy:1,dz:0}")
+		}
+
+		pack.define(Source.scanBank) {
+			// Find a drainable world source one block down and one block out: the four blocks
+			// diagonally below the node's sides.
+			// Context: at the node position. Input and output as ra_wires:fluid/source/scan; run
+			// it only after that scan found nothing, since it leaves `found` alone once set.
+			//
+			// WHY
+			// A block put down beside a pool stands ON the bank, and the bank's top is level with
+			// the water's surface. So the pool is never next to the block -- it is next to the
+			// block underneath it, one down and one out -- and a six-way scan saw only air and the
+			// bank. That is how a Liquid Drain placed beside a lake said `no_source` forever.
+
+			executeRun("positioned ~1 ~-1 ~", Source.probe, "{dx:1,dy:-1,dz:0}")
+			executeRun("positioned ~-1 ~-1 ~", Source.probe, "{dx:-1,dy:-1,dz:0}")
+			executeRun("positioned ~ ~-1 ~1", Source.probe, "{dx:0,dy:-1,dz:1}")
+			executeRun("positioned ~ ~-1 ~-1", Source.probe, "{dx:0,dy:-1,dz:-1}")
+		}
+
+		pack.define(Source.flowing) {
+			// Is there liquid that is not a source block in any of the places the two scans look?
+			// Context: at the node position, after both scans found nothing.
+			// Returns 1 when there is.
+			//
+			// A pool that has just had the block beside a drain taken out of it fills that gap
+			// with flowing water, which no scan takes. It may well turn back into a source in a
+			// moment (two sources beside it make one), so the drain says it is waiting for one
+			// rather than claiming there is nothing there. No source is in these places by now,
+			// so any water or lava found is flowing.
+
+			for (pos in listOf("~1 ~ ~", "~-1 ~ ~", "~ ~ ~1", "~ ~ ~-1", "~ ~-1 ~", "~ ~1 ~", "~1 ~-1 ~", "~-1 ~-1 ~", "~ ~-1 ~1", "~ ~-1 ~-1")) {
+				raw("execute if block $pos minecraft:water run return 1")
+				raw("execute if block $pos minecraft:lava run return 1")
+			}
+			raw("return 0")
 		}
 	}
 }

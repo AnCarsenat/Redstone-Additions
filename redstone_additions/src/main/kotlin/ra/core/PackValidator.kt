@@ -33,6 +33,28 @@ object PackValidator {
 				.map { (i, line) -> "${fn.asId()}:${i + 1}: macro line with no \$(variable): ${line.trim().take(120)}" }
 		}
 
+	private val oldDispatchKey = Regex("""\{\s*(function|condition)\s*:\s*\\?"(minecraft:)?[a-z_]+""")
+	private val playsound = Regex("""\bplaysound \S+ \S+ \S+ \S+ \S+ \S+ \S+ ([0-9.]+)""")
+
+	/**
+	 * 26.3 renamed the dispatch key of inline item modifiers (`function`) and predicates
+	 * (`condition`) to `type`. A line still using the old key fails to parse and Minecraft drops
+	 * the WHOLE function -- and a function tag listing it then fails too: one Keypad placement
+	 * handler written `{function:"minecraft:fill_player_head"}` took `#ra:placement_handlers`
+	 * down and with it every block's placement. Also catches a `playsound` pitch above 2.0, which
+	 * fails the same way. Always fatal.
+	 */
+	fun preTwentySixThreeSyntax(pack: DataPack): List<String> =
+		(pack.functions + pack.generatedFunctions).flatMap { fn ->
+			fn.lines.withIndex().mapNotNull { (i, line) ->
+				if (line.trimStart().startsWith("#")) return@mapNotNull null
+				val where = "${fn.asId()}:${i + 1}"
+				oldDispatchKey.find(line)?.let { return@mapNotNull "$where: inline `${it.groupValues[1]}:` key, 26.3 uses `type:`: ${line.trim().take(120)}" }
+				playsound.find(line)?.groupValues?.get(1)?.toDoubleOrNull()?.takeIf { it > 2.0 }
+					?.let { "$where: playsound pitch $it above 2.0: ${line.trim().take(120)}" }
+			}
+		}
+
 	private val itemSummon = Regex("""\bsummon (minecraft:)?item\b(?!_)""")
 
 	/**

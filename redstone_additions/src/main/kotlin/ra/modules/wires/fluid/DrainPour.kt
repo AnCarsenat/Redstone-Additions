@@ -138,7 +138,7 @@ object DrainPour : PackPart {
 			// Water boils away where a bucket's would: the Nether, or any dimension whose
 			// environment says so. Commands ignore that rule, so it is applied here, the vanilla
 			// way: the water is spent (already taken above) and nothing is placed.
-			raw("\$execute if data storage ra:wires media.\$(medium){block:\"minecraft:water\"} if predicate {condition:\"minecraft:environment_attribute_check\",attribute:\"minecraft:gameplay/water_evaporates\",value:true} run return run function ${DrainPour.pourSizzle.asId()}")
+			raw("\$execute if data storage ra:wires media.\$(medium){block:\"minecraft:water\"} if predicate {type:\"minecraft:environment_attribute_check\",attribute:\"minecraft:gameplay/water_evaporates\",value:true} run return run function ${DrainPour.pourSizzle.asId()}")
 
 			// `destroy` drops what it replaces (grass, a snow layer), as a bucket does.
 			raw("\$execute store success score #pr.set ra.wires.tmp run setblock ~ ~ ~ \$(block) destroy")
@@ -162,7 +162,7 @@ object DrainPour : PackPart {
 
 			raw("data modify entity @s data.status.drain_state set value \"evaporates\"")
 			raw("particle minecraft:large_smoke ~ ~0.3 ~ 0.3 0.2 0.3 0.01 6 normal ${particleViewersSel()}")
-			raw("playsound minecraft:block.fire.extinguish block ${soundListenersSel(8)} ~ ~ ~ 0.5 2.6")
+			raw("playsound minecraft:block.fire.extinguish block ${soundListenersSel(8)} ~ ~ ~ 0.5 2.0")
 			raw("return 1")
 		}
 

@@ -340,6 +340,9 @@
   (`profile:"BoxMan01234"`), which the game has to look up, and the crate showed a broken head
   when it could not. The skin itself is now written into the crate. Crates made before keep the old
   head until the Boxer next adds a stack to them, which gives them the skin.
+- **A Liquid Drain pouring water in the Nether makes it evaporate.** The check for dimensions
+  where water evaporates used the predicate key from before 26.3, so it never ran, and its sizzle
+  sound had a pitch the game refuses. Both are fixed.
 
 ### For contributors
 

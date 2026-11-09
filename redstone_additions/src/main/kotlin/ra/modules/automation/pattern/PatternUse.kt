@@ -82,7 +82,7 @@ object PatternUse {
 	private val blankLore = Pattern.blankLore().joinToString(",", "[", "]") { it.text() }
 
 	private fun setLore(lines: String) =
-		"""{function:"minecraft:set_lore",entity:"this",mode:"replace_all",lore:$lines}"""
+		"""{type:"minecraft:set_lore",entity:"this",mode:"replace_all",lore:$lines}"""
 
 	fun Ra.registerPatternUse() {
 		val useAdvancement = pack.advancement("pattern/use") {

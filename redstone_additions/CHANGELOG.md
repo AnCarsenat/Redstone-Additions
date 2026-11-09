@@ -164,6 +164,17 @@
   and `book_upgrader_max` (1 to 20). The raised book stays on the block: throw it again for the
   next level. Looks like a lapis block; crafted from four lapis blocks, four books and an
   enchanting table. The Goggles show the chosen enchantment, what it is doing and the last price.
+- **Book Printer** (Enchant Crafting). Copies enchanted books. Throw an enchanted book on top: it
+  is used up, and with a 2% chance a **Schematic** of it comes out (otherwise the book is simply
+  gone, a gamble like the enchanting table). Then throw the Schematic and plain books on top: twice
+  a second, one book becomes a copy of the enchanted book, for 1000 mL of liquid experience per
+  enchantment level of the copy (Sharpness V: 5000 mL), all at once, from a fluid network touching
+  the block. The Schematic is kept, so one lucky draw prints as many copies as you have books and
+  experience. Server settings `book_printer_chance` (0 to 100%) and `book_printer_xp` (0 to 100000
+  mL; 0 prints for free). The Schematic lists its enchantments in its lore and cannot be
+  crafted; an anvil or grindstone does not take it for a book. Looks like a fletching table; crafted
+  from two ink sacs, a piston, two books, a lectern and three obsidian. The Goggles show what it is
+  doing and the last price. New advancement *Lucky Draw* for the first Schematic.
 - **Goggles Lens** (Tools). An expensive upgrade that gives any helmet the Goggles' view: hold it,
   wear a helmet (leather, copper, chainmail, iron, gold, diamond, netherite or a turtle shell) and
   right-click; the lens is used up and the helmet keeps its material, enchantments, trims and

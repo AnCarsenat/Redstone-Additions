@@ -4,11 +4,11 @@ Gamble items on a plain enchanting table. Throw items on top of it: once a secon
 one and rolls — a hit gives you an upgrade, a miss destroys the item. This is how you get the
 Cores for [Infinite Generators](infinite-generators.md) and the Infinite Jetpack Kit.
 
-There is nothing to craft for that: any vanilla enchanting table works. Two crafted blocks
+There is nothing to craft for that: any vanilla enchanting table works. Three crafted blocks
 work with enchanted books, paid in liquid experience from a
 [fluid network](transport-networks.md): the [Disenchanter](#disenchanter) moves an item's
-enchantments onto a book, and the [Book Upgrader](#book-upgrader) raises a book past its usual
-level.
+enchantments onto a book, the [Book Upgrader](#book-upgrader) raises a book past its usual
+level, and the [Book Printer](#book-printer) copies a book once you have drawn its Schematic.
 
 ## Using it
 
@@ -99,6 +99,52 @@ picks it up and throws it back, so a network is never drained by accident. A boo
 left to raise (all at the highest level, or without the chosen enchantment) is left alone. The
 Goggles show the chosen enchantment, what it is doing and the last price.
 
+## Book Printer
+
+![Book Printer recipe](images/recipes/ra_enchanting/book_printer.png){ width="220" }
+
+Copies enchanted books. First you gamble a book for its **Schematic**; then the Schematic prints
+copies of that book on plain books, for liquid experience.
+
+### Drawing a Schematic
+
+1. Place the Book Printer (it looks like a fletching table).
+2. Drop an **enchanted book** on top.
+
+The book is **used up**, whatever happens, and rolls once:
+
+| Outcome | Chance | You get |
+| --- | --- | --- |
+| Hit | 2% (server setting `book_printer_chance`, 0 to 100) | A Schematic of the book, on the block, with enchant particles and a level-up chime |
+| Miss | the rest | Nothing — the book is gone, with a puff of smoke |
+
+It is a gamble, like the enchanting table: at 2% you spend fifty books on average for one
+Schematic, so draw from a book worth copying. Drawing costs no experience.
+
+The Schematic is a map-like sheet whose tooltip lists the book's enchantments and levels. It
+cannot be crafted, and it is not an enchanted book: an anvil, a grindstone or the Disenchanter
+ignores it.
+
+### Printing
+
+1. Put a pipe, tank or [Liquid Drain](transport-networks.md#getting-fluid-in-and-out) holding
+   **experience** against a side of the printer or under it, as for the Disenchanter.
+2. Drop the **Schematic** and a stack of plain **books** on top.
+
+Twice a second, while there are books and experience, one book becomes an enchanted book with the
+Schematic's enchantments. The Schematic stays on the block: pick it up when you have enough copies.
+
+| | |
+| --- | --- |
+| Price | 1000 mL of experience (10 points) per enchantment level of the copy, all at once: Sharpness V costs 5000 mL, Efficiency V + Unbreaking III 8000 mL. Server setting `book_printer_xp` (0 to 100000; 0 makes it free and needs no network) |
+| Not enough | With less than the price in the network nothing is taken, and the book waits |
+| One thing at a time | An enchanted book lying on the printer is drawn before anything is printed, so do not drop books you want to keep while it prints |
+
+Copies and Schematics come out tagged as done: they are not drawn again or printed from until
+someone picks them up and throws them back. The Goggles show what it is doing (`needs a book`,
+`needs liquid experience`, `printed`, `the book crumbled`, `Schematic drawn!`, …) and the last
+price.
+
 ---
 
 ## Advanced
@@ -146,6 +192,21 @@ level is written by one macro (`book_upgrader/apply`) whose id comes from that s
 `book_upgrader_base` and `book_upgrader_max`; the cap stops at 20 so the price
 (`base × 2^19` at most) stays inside 32 bits. The price is one `/compute`
 (`mul(base, pow(2, level))`), and a price that ever failed to compute would read 0 and be refused.
+
+### The Book Printer
+
+No properties. Settings `book_printer_chance` (percent, rolled with `random value 1..100`) and
+`book_printer_xp`. A Schematic is `minecraft:paper` with `custom_data`
+`{ra:{schematic:1b,enchantments:{...}}}`: the book's `stored_enchantments`, copied compound to
+compound with `data modify`. They are kept in custom data rather than in an enchantment component
+so that no vanilla block (anvil, grindstone) treats the Schematic as a book. Its lore is written
+when it is drawn, one translated line per enchantment, by `book_printer/lore`, a list of the
+game's enchantment ids written from Kore at build time; the two macros (`lore_one`, `lore_add`)
+receive only those ids and the level as an int. A data pack's own enchantment is printed but shows
+as `+ other enchantments`. The price is one `/compute`, `mul(cost, levels)`, where `levels` adds
+up the levels from the same list (`book_printer/levels`); a data pack's own enchantment counts as
+one level. Experience is paid as for the other blocks (`ra_enchanting:xp/pay`). Status in
+`data.status.state` and `data.status.price`.
 
 ### Cost
 

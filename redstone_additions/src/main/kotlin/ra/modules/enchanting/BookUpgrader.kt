@@ -97,7 +97,7 @@ object BookUpgrader {
 	private const val STORED = "\"minecraft:stored_enchantments\""
 
 	/** Every enchantment of the game, by id: the order [pick] tries them in. */
-	private val IDS = Enchantments.entries.map { it.asId() }.sorted().onEach {
+	internal val IDS = Enchantments.entries.map { it.asId() }.sorted().onEach {
 		check(it.matches(Regex("[a-z0-9_.-]+:[a-z0-9_./-]+"))) { "enchantment id $it cannot be pasted into a path" }
 	}
 

@@ -32,6 +32,7 @@ import ra.core.block.markerSel
 import ra.core.executeRun
 import ra.modules.enchanting.Disenchanter.registerDisenchanter
 import ra.modules.enchanting.BookUpgrader.registerBookUpgrader
+import ra.modules.enchanting.BookPrinter.registerBookPrinter
 import ra.modules.enchanting.xp.XpPay.registerXpPay
 
 /**
@@ -47,8 +48,8 @@ import ra.modules.enchanting.xp.XpPay.registerXpPay
  * `chance` (percent, 1..100, defaults to 5). The first recipe that matches wins: write recipes
  * with [sacrificeRecipe], which steps aside when an earlier recipe already wrote `result`.
  *
- * Two crafted blocks work on enchanted books the same way, with items thrown on top: the
- * [Disenchanter] and the [BookUpgrader], paid in liquid experience ([ra.modules.enchanting.xp.XpPay]).
+ * Three crafted blocks work on enchanted books the same way, with items thrown on top: the
+ * [Disenchanter], the [BookUpgrader] and the [BookPrinter], paid in liquid experience ([ra.modules.enchanting.xp.XpPay]).
  * They run from the same scan, every [BLOCK_STEPS] steps.
  */
 object EnchantingModule : GameplayModule {
@@ -70,7 +71,7 @@ object EnchantingModule : GameplayModule {
 	private const val BLOCK_STEPS = 2
 
 	/** The module's placeable blocks with their `process`, in tick and give order. */
-	private val enchantBlocks get() = listOf(Disenchanter.block to Disenchanter.process, BookUpgrader.block to BookUpgrader.process)
+	private val enchantBlocks get() = listOf(Disenchanter.block to Disenchanter.process, BookUpgrader.block to BookUpgrader.process, BookPrinter.block to BookPrinter.process)
 
 	/**
 	 * `@e[type=item,dx=0,dy=0,dz=0,tag=!ra.ench.done,...]`: an untagged item lying on the block, from
@@ -92,11 +93,12 @@ object EnchantingModule : GameplayModule {
 		registerXpPay()
 		registerDisenchanter()
 		registerBookUpgrader()
+		registerBookPrinter()
 
 		pack.define(ref(ns, "items/give_all")) { for ((b, _) in enchantBlocks) function(b.give) }
 		bundles += GiveBundle(
-			"enchanting", "Enchant Crafting Bundle", "Disenchanter and Book Upgrader", ns,
-			listOf(Disenchanter.item, BookUpgrader.item).map { it.stackNbt() },
+			"enchanting", "Enchant Crafting Bundle", "Disenchanter, Book Upgrader and Book Printer", ns,
+			listOf(Disenchanter.item, BookUpgrader.item, BookPrinter.item).map { it.stackNbt() },
 		)
 
 		// Ask every registered recipe list whether it wants this item.

@@ -24,6 +24,7 @@ import ra.core.executeReturnRun
 import ra.tools.datahandler.props.DataHandlerTypes.registerDataHandlerTypes
 import ra.tools.datahandler.props.DataHandlerTypes.typeOfProbe
 import ra.tools.datahandler.props.PropRows.registerPropRows
+import ra.tools.datahandler.props.DataHandlerUnique.registerDataHandlerUnique
 import ra.tools.tool
 
 /**
@@ -327,6 +328,7 @@ object DataHandlerProps {
 		registerDataHandlerEntries()
 		registerDataHandlerTypes()
 		registerPropRows()
+		registerDataHandlerUnique()
 	}
 
 	/** On a player: server-settings access. */

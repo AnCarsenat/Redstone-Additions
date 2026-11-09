@@ -121,6 +121,8 @@ private fun Function.scoreboards() {
 	// buttons.
 	scoreboard.objectives.add(HOLD_WRENCH)
 	scoreboard.objectives.add(HOLD_DH)
+	// The Goggles Lens menu. Enabled only for whoever wears a lensed helmet: see goggles/tick.
+	scoreboard.objectives.add(ra.tools.goggles.lens.GogglesLens.TRIGGER, ScoreboardCriteria.TRIGGER)
 	// Clipboard slot number, assigned on first use. See ra:tools/clipboard/ensure_id.
 	scoreboard.objectives.add(CLIP_ID)
 	// The debug-only input handler objective (ra.input_handler.action) stays disabled, as in beet.

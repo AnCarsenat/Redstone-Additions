@@ -5,7 +5,7 @@
 <h1 align="center">Redstone Additions</h1>
 
 <p align="center">
-  <strong>77 custom blocks. 9 tools. 89 recipes. 2 jetpacks and 3 upgrade kits. Vanilla datapack for Minecraft 26.3.</strong>
+  <strong>77 custom blocks. 9 tools. 90 recipes. 2 jetpacks and 3 upgrade kits. Vanilla datapack for Minecraft 26.3.</strong>
 </p>
 
 <p align="center">
@@ -18,7 +18,7 @@
   <img src="https://img.shields.io/badge/Version-v6.0.3-blue" alt="Version v6.0.3">
   <img src="https://img.shields.io/badge/Blocks-77-red" alt="77 blocks">
   <img src="https://img.shields.io/badge/Tools-9-lightgrey" alt="9 tools">
-  <img src="https://img.shields.io/badge/Recipes-89-8A2BE2" alt="89 recipes">
+  <img src="https://img.shields.io/badge/Recipes-90-8A2BE2" alt="90 recipes">
 </p>
 
 <p align="center">
@@ -204,7 +204,7 @@ netherrack or poppies on an enchanting table.
 - Diamond Multiblock Base
 - Netherite Multiblock Base
 
-### Items (12)
+### Items (13)
 - Iron Jetpack Kit — right-click while wearing any chestplate to fit it
 - Infinite Iron Jetpack Kit — won on an enchanting table; burns no fuel
 - Thruster Kit — hold sprint while airborne to accelerate
@@ -217,6 +217,8 @@ netherrack or poppies on an enchanting table.
 - Enchanted Coal — won by sacrificing coal on an enchanting table
 - Enchanted Coal Block — nine Enchanted Coal make one; one block plus a stick makes a Big Torch
 - Item Crate — what the Boxer packs a chest into, and the Unboxer unpacks
+- Goggles Lens — fits into any helmet and gives it the Goggles' view;
+  `/trigger ra.goggles` switches it off or takes it back out
 
 Fitted kits live on the chestplate and are listed in its lore.
 `/trigger ra.jp.kits` switches one off or takes it back as an item.
@@ -340,6 +342,7 @@ Starter command:
 | `/function ra:tools/data_handler/give` | Data Handler |
 | `/function ra:tools/creative_data_handler/give` | Creative Data Handler |
 | `/function ra:tools/goggles/give` | Goggles |
+| `/function ra:tools/goggles/lens/give` | Goggles Lens |
 | `/function ra_wireless:tools/remote/give` | Redstone Remote |
 | `/function ra:uninstall` | Clean uninstall |
 

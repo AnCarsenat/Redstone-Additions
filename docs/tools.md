@@ -47,6 +47,7 @@ What Shift + right-click does depends on the block:
 | EU Consumer | draw (20 / 40 / 80 EU per tick) |
 | Creative Fluid Source | fluid |
 | Ender Item / Fluid / Power Vault | mode |
+| Weather Sensor | mode (rain / thunder / day / night) |
 
 ## Goggles
 

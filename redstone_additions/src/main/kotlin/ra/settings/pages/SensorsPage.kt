@@ -12,5 +12,7 @@ val SensorsPage = Page(
 		"entity_detector" to "Entity Detector",
 		"tag_adder" to "Tag Adder",
 		"tag_remover" to "Tag Remover",
+		"light_sensor" to "Light Sensor",
+		"weather_sensor" to "Weather Sensor",
 	),
 )

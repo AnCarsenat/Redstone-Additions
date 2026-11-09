@@ -1,6 +1,6 @@
 # Recipe Atlas
 
-Every recipe in the pack, in one place: 71 of them.
+Every recipe in the pack, in one place: 73 of them.
 
 !!! tip "Finding one"
     Use the search box with the item's name — every recipe below is indexed by
@@ -59,6 +59,7 @@ what the pack actually contains rather than what someone remembered to add.
 | [Item Mover](#interactive-machines) | [Interactive Machines](interactive-machines.md) | Crafting table |
 | [Item Pipe](#interactive-machines) | [Interactive Machines](interactive-machines.md) | Crafting table |
 | [Lift Kit](#jetpacks) | [Jetpacks](jetpacks.md) | Crafting table |
+| [Light Sensor](#sensors) | [Sensors](sensors.md) | Crafting table |
 | [Liquid Drain](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
 | [Liquid Filter](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
 | [Liquid Pump](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
@@ -86,6 +87,7 @@ what the pack actually contains rather than what someone remembered to add.
 | [Thruster Kit](#jetpacks) | [Jetpacks](jetpacks.md) | Crafting table |
 | [Unboxer](#storage) | [Storage](storage.md) | Crafting table |
 | [UNI Gate](#logic-gates) | [Logic Gates](logic-gates.md) | Crafting table |
+| [Weather Sensor](#sensors) | [Sensors](sensors.md) | Crafting table |
 | [Wire](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
 | [Wireless Emitter](#wireless-redstone) | [Wireless Redstone](wireless-redstone.md) | Crafting table |
 | [Wireless Receiver](#wireless-redstone) | [Wireless Redstone](wireless-redstone.md) | Crafting table |
@@ -186,8 +188,10 @@ Module page: [Sensors](sensors.md) — give everything: `/function ra_sensors:it
 | Item | Recipe | Station | Namespace id |
 | ---- | ------ | ------- | ------------ |
 | **Entity Detector** | ![Entity Detector recipe](images/recipes/ra_sensors/entity_detector.png){ width="220" } | Crafting table | `ra_sensors:entity_detector` |
+| **Light Sensor** | ![Light Sensor recipe](images/recipes/ra_sensors/light_sensor.png){ width="220" } | Crafting table | `ra_sensors:light_sensor` |
 | **Tag Adder** | ![Tag Adder recipe](images/recipes/ra_sensors/tag_adder.png){ width="220" } | Crafting table | `ra_sensors:tag_adder` |
 | **Tag Remover** | ![Tag Remover recipe](images/recipes/ra_sensors/tag_remover.png){ width="220" } | Crafting table | `ra_sensors:tag_remover` |
+| **Weather Sensor** | ![Weather Sensor recipe](images/recipes/ra_sensors/weather_sensor.png){ width="220" } | Crafting table | `ra_sensors:weather_sensor` |
 
 ## Storage
 

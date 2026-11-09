@@ -257,16 +257,16 @@ This page mirrors key datapack milestones from the main project changelog.
   the Pattern. The Goggles show its state and how many times it has fired. Crafted from five iron
   ingots, a redstone dust, two target blocks and a crafter.
 - **Security**, a new module (`ra_security`, [Security](security.md)): blocks that open only for the right code. Its
-  settings page lists its blocks and the Keypad's defaults, and it has its own branch in the
+  settings page lists its blocks and the Keypad Controller's defaults, and it has its own branch in the
   advancement tab.
-- **Keypad** (Security). A target block locked by a Pattern. Its owner (whoever placed it)
+- **Keypad Controller** (Security). A target block locked by a Pattern. Its owner (whoever placed it)
   sneak + right-clicks it with a recorded Pattern to set the code; anyone then right-clicks it with
-  a Pattern to enter one, and the Pattern stays in their hand. The right one makes the Keypad give a
+  a Pattern to enter one, and the Pattern stays in their hand. The right one makes the Keypad Controller give a
   redstone pulse (`pulse`, 20 ticks by default) and chime; a wrong one buzzes, and after three
   wrong tries in a row it refuses every try for 30 seconds (`max_attempts` and `lockout`, which only
   admins can change). Only the owner or an admin can change the code once it is set; a blank
   Pattern clears it, and so does a plain Wrench click. The code is never shown: the Goggles say only
-  whether one is set, who owns the Keypad and its state, and the Data Handler and Clipboard never
+  whether one is set, who owns the Keypad Controller and its state, and the Data Handler and Clipboard never
   see it. Shift+RMB with the Wrench steps the pulse through 2, 10, 20 and 40 ticks. Nothing runs
   while nobody uses it. Crafted from three stone buttons, four iron ingots, a target block and a
   redstone dust.
@@ -349,6 +349,9 @@ This page mirrors key datapack milestones from the main project changelog.
   (`profile:"BoxMan01234"`), which the game has to look up, and the crate showed a broken head
   when it could not. The skin itself is now written into the crate. Crates made before keep the old
   head until the Boxer next adds a stack to them, which gives them the skin.
+- **A Liquid Drain pouring water in the Nether makes it evaporate.** The check for dimensions
+  where water evaporates used the predicate key from before 26.3, so it never ran, and its sizzle
+  sound had a pitch the game refuses. Both are fixed.
 
 ### For contributors
 

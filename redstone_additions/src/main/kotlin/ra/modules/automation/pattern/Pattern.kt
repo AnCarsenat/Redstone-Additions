@@ -84,7 +84,7 @@ object Pattern {
 	const val MAX_STACK = 64
 
 	/** An item modifier taking one item from a stack (an emptied slot becomes air): `item modify ... $TAKE_ONE`. */
-	const val TAKE_ONE = """{function:"minecraft:set_count",count:-1,add:true}"""
+	const val TAKE_ONE = """{type:"minecraft:set_count",count:-1,add:true}"""
 
 	/** On the player whose Pattern is being used, for the duration of the use. */
 	const val USER = "ra.auto.pattern_user"
@@ -107,7 +107,7 @@ object Pattern {
 
 	/** The hint lines under a recorded grid. */
 	fun hintLore() = listOf(
-		loreLine("Right-click a Crafter Controller or a Keypad to use it", "dark_gray"),
+		loreLine("Right-click a Crafter Controller or a Keypad Controller to use it", "dark_gray"),
 		loreLine("Sneak + right-click air to clear", "dark_gray"),
 	)
 

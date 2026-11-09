@@ -37,7 +37,7 @@ described in [Contributing Guidelines](contributing-guidelines.md#installing-int
 
 ## Modules
 
-**Looking for a recipe? [The Recipe Atlas](recipe-atlas.md) has all 90 of them on one
+**Looking for a recipe? [The Recipe Atlas](recipe-atlas.md) has all 92 of them on one
 page**, listed A to Z and grouped by module — plus the four items that have no recipe
 and are instead gambled for on an [enchanting table](enchant-crafting.md). This table
 is the shortcut: one sample per module, and where to read about it.

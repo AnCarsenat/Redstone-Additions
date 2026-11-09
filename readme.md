@@ -5,7 +5,7 @@
 <h1 align="center">Redstone Additions</h1>
 
 <p align="center">
-  <strong>81 custom blocks. 9 tools. 94 recipes. 2 jetpacks and 3 upgrade kits. Vanilla datapack for Minecraft 26.3.</strong>
+  <strong>82 custom blocks. 9 tools. 97 recipes. 2 jetpacks and 3 upgrade kits. Vanilla datapack for Minecraft 26.3.</strong>
 </p>
 
 <p align="center">
@@ -16,9 +16,9 @@
 <p align="center">
   <img src="https://img.shields.io/badge/Minecraft-26.3-2EA44F" alt="Minecraft 26.3">
   <img src="https://img.shields.io/badge/Version-v6.0.3-blue" alt="Version v6.0.3">
-  <img src="https://img.shields.io/badge/Blocks-81-red" alt="81 blocks">
+  <img src="https://img.shields.io/badge/Blocks-82-red" alt="82 blocks">
   <img src="https://img.shields.io/badge/Tools-9-lightgrey" alt="9 tools">
-  <img src="https://img.shields.io/badge/Recipes-94-8A2BE2" alt="94 recipes">
+  <img src="https://img.shields.io/badge/Recipes-97-8A2BE2" alt="97 recipes">
 </p>
 
 <p align="center">
@@ -136,7 +136,7 @@ listed A to Z and grouped by module.
 - Analog Emitter — sends its input level (0-15) on a channel
 - Analog Receiver — outputs its channel's level on target blocks
 
-### Transport Networks (26)
+### Transport Networks (27)
 
 Fluids, in millilitres:
 
@@ -151,6 +151,7 @@ Fluids, in millilitres:
 - Gas Valve
 - Boiler — water plus heat to steam
 - Spout — fills buckets and bottles under it from the network
+- Air Charger — fills the Air Tank of whoever stands on it, from the network's oxygen
 
 Electricity, in EU:
 
@@ -170,6 +171,11 @@ Reading a network with redstone:
 
 - Network Gauge — redstone 0-15 from how full the network behind it is
 - Usage Meter — a pulse every N mL or EU used or made, and a running total
+
+Diving gear (worn, not placed):
+
+- Air Tank — a chestplate holding 15 minutes of air under water
+- Heavy Boots — sink and walk on the bottom at your usual pace
 
 Creative, for building and testing:
 

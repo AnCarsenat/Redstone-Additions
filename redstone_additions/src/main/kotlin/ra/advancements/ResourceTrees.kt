@@ -86,6 +86,16 @@ internal val jetpacksTree = listOf(
 
 internal val wiresTree = listOf(
 	category("ra_wires", Items.CONDUIT, "Fluid and EU Networks", "Build merged fluid transport and electric infrastructure with RA Wires.", "get_wires_item", Items.COPPER_INGOT),
+	egg("ra_wires", "air_charger", "Air Charger", Items.WAXED_WEATHERED_COPPER_GRATE, ONE),
+	// Partial: a tank also carries its air.
+	Unlock(
+		"ra_wires/get_air_tank", "ra_wires", Items.IRON_CHESTPLATE, "Deep Breath", "Craft an Air Tank: fifteen minutes of air under water.",
+		"get_air_tank", Items.IRON_CHESTPLATE, Match.Partial(raData("air_tank", TRUE)),
+	),
+	Unlock(
+		"ra_wires/get_heavy_boots", "ra_wires/get_air_tank", Items.IRON_BOOTS, "Walking on the Seabed", "Craft Heavy Boots: sink, and walk on the bottom.",
+		"get_heavy_boots", Items.IRON_BOOTS, Match.Partial(raData("heavy_boots", TRUE)),
+	),
 	egg("ra_wires", "battery", "Battery", Items.WAXED_COPPER_GRATE, ONE),
 	egg("ra_wires", "boiler", "Boiler", Items.FURNACE, TRUE),
 	egg("ra_wires", "electric_breaker", "EU Breaker", Items.WAXED_COPPER_BULB, ONE),

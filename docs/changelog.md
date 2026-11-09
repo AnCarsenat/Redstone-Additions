@@ -97,6 +97,20 @@ This page mirrors key datapack milestones from the main project changelog.
   flows, faster with three or more flowing blocks, and stops where it is when the water does.
   The Goggles show what it is doing, the flowing water it finds, what it makes and the grid's EU.
   It holds 1000 EU. Crafted from four spruce slabs, four sticks, a copper block and redstone.
+- **Air Tank, Air Charger and Heavy Boots** (Transport Networks). The Air Tank is a chestplate
+  (iron armour) holding 15 minutes of air: worn with your head under water, it breathes for you
+  and counts down a second of air per second, and keeps its air out of the water or while you have
+  Water Breathing or Conduit Power. Its tooltip shows the air left, and while you dive the action
+  bar shows a gauge (turn it off with *Air tank gauge* in Your Preferences). The **Air Charger**, a
+  gas network block, fills the tank of whoever stands on it from the network's **oxygen**: a minute
+  of air for 600 mL each second, all or nothing, so an empty tank is full in 15 seconds. **Heavy
+  Boots** (iron armour) make you sink in water and walk on the bottom at your usual pace; on land
+  they are ordinary boots. Neither item runs any command while worn: the tank breathes through a
+  hidden attribute, the boots through their own *Heavy* enchantment. Crafted from an iron
+  chestplate, iron, copper and two glass bottles; iron boots, iron and two heavy weighted pressure
+  plates; iron, copper, a heavy weighted pressure plate, a glass bottle and redstone.
+- **Oxygen in survival** (Transport Networks). A Gas Pump beside an upward bubble column (soul
+  sand under water) draws oxygen from it, 500 mL a second, without using it up.
 
 - **Elevator** (Interactive Machines). Stand on it and jump to go up, or sneak to go down, to the
   next Elevator straight above or below in the same column, at most *range* blocks away (2 to 64,

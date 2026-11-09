@@ -87,7 +87,6 @@ Shift + right-click a block to open its settings in chat.
 | **[Edit]** / **[Remove]** | On each entry of a list: type a new value for it, or delete it |
 | **[Clear]** | On a list whose positions matter (a Teleport Anchor's strengths): empty that entry, the others stay put |
 | **[Add]** | Add an entry at the end of a list, also an empty one: you write it in the book, and it is checked like the others. Greyed out once the list is full ("Maximum N entries" on hover) |
-| **[Choose]** | Pick an entry from a list of known values (a Teleport Anchor's destinations: every anchor named so far) |
 | **[Edit all]** | Write the whole list at once, like `["A","B","C"]` |
 | **[List]** | Show a list's entries under it, each with its own buttons; click again to hide them. One list is open at a time |
 | **[Set from hand]** | For item settings (an Item Pipe filter): use the item you are holding |
@@ -108,8 +107,8 @@ Anchor):
 
 ```
   targets: list (15/15) [Edit all] [List]
-    Strength 1: Mine  [Choose] [Edit] [Clear]
-    Strength 2: (empty)  [Choose] [Edit]
+    Strength 1: Mine  [Edit] [Clear]
+    Strength 2: (empty)  [Edit]
 ```
 
 and like this for a list that grows (a Tag Adder's tags, at most 16), with its count in the header:

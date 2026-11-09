@@ -167,7 +167,7 @@ own tick already detects that and runs its break.
 
 **Everything** also clears the world state that named the killed entities: `ra:transport nets`
 (emptied) and its rebuild queues (`dirtyq`, `dirtyset`, `pending`, `full`, `dirty` = 0b),
-`ra:ender anchor_ids`, `ra:dh pend` and the hand-over slots, and every player's `ra.dh.sel` /
+`ra:ender anchors` (the Teleport Anchor destinations table, emptied), `ra:dh pend` and the hand-over slots, and every player's `ra.dh.sel` /
 `ra.dh.pending`. Scores on the killed entities go with them; allocators (`#net_seq`,
 `#next ra.dh.mid`) are kept so no id is reused. Data Handler input sessions are cancelled through
 `ra_lib:input/cancel`.

@@ -42,26 +42,25 @@ private fun PropertiesBuilder.put(spec: PropSpec) {
 
 /**
  * A text property with an explicit [format]. [adminSetting] (with [adminOnly]) names a GLOBAL bool
- * setting that, when on, lets players without server-settings access edit it too.
+ * setting that, when on, lets players without server-settings access edit it too. [unique]: see
+ * [PropSpec.unique].
  */
 fun PropertiesBuilder.text(
 	name: String, format: TextFormat, adminOnly: Boolean = false, adminSetting: String? = null,
 	readonly: Boolean = false, visible: Boolean = true, default: String? = null,
-) = put(PropSpec(name, PropType.TEXT, readonly = readonly, adminOnly = adminOnly, visible = visible, format = format, adminSetting = adminSetting, default = default?.let(::snbtString)))
+	unique: Pair<String, String>? = null,
+) = put(PropSpec(name, PropType.TEXT, readonly = readonly, adminOnly = adminOnly, visible = visible, format = format, adminSetting = adminSetting, unique = unique, default = default?.let(::snbtString)))
 
-/**
- * A list of text, each entry checked against [format]. [choices] is a `storage` / `path` pair the
- * Data Handler offers as a pick list for each entry; [entryLabel] names an entry ("Strength 3").
- */
+/** A list of text, each entry checked against [format]. [entryLabel] names an entry ("Strength 3"). */
 fun PropertiesBuilder.textList(
 	name: String, max: Int? = null, pad: Boolean = false, format: TextFormat = TextFormat.ID,
-	choices: Pair<String, String>? = null, entryLabel: String? = null,
+	entryLabel: String? = null,
 	readonly: Boolean = false, adminOnly: Boolean = false, adminSetting: String? = null, visible: Boolean = true,
 	default: List<String>? = null,
 ) = put(
 	PropSpec(
 		name, PropType.LIST, of = PropType.TEXT, maxLength = max, pad = pad, readonly = readonly, adminOnly = adminOnly,
-		visible = visible, format = format, adminSetting = adminSetting, choices = choices, entryLabel = entryLabel,
+		visible = visible, format = format, adminSetting = adminSetting, entryLabel = entryLabel,
 		default = default?.joinToString(",", "[", "]", transform = ::snbtString),
 	),
 )

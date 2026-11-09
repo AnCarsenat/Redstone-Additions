@@ -78,8 +78,13 @@ data class PropSpec(
 	val format: TextFormat? = null,
 	/** With [adminOnly]: the GLOBAL bool setting that, when on, lets every player edit it. */
 	val adminSetting: String? = null,
-	/** A list whose entries can be picked from `storage <first> <second>` (the Data Handler's [Choose]). */
-	val choices: Pair<String, String>? = null,
+	/**
+	 * A text that must be the only one of its kind in the world: the Data Handler refuses a value
+	 * that is already a key of the compound `storage <first> <second>`, unless it is the block's
+	 * own current value (a Teleport Anchor's id, keyed in `storage ra:ender anchors`). The value
+	 * is pasted as a path key, so the format must be [TextFormat.ID] or [TextFormat.TAG].
+	 */
+	val unique: Pair<String, String>? = null,
 	/** The Data Handler's label before a list entry's number ("Strength " -> "Strength 3"). */
 	val entryLabel: String? = null,
 	/** Goggles billboard: null follows [visible]. See the class comment. */
@@ -100,6 +105,7 @@ data class PropSpec(
 		require(type == PropType.LIST || (of == null && maxLength == null && !pad)) { "$name: only a list has of / max / pad" }
 		require(adminSetting == null || adminOnly) { "$name: adminSetting needs adminOnly" }
 		require(adminMax == null || (max != null && adminMax > max)) { "$name: adminMax must be above max" }
+		require(unique == null || (type == PropType.TEXT && format in listOf(TextFormat.ID, TextFormat.TAG))) { "$name: unique needs a text in format ID or TAG" }
 	}
 
 	/** The registry entry, `{type:"number",min:1,...}`, at menu position [index]. */
@@ -119,7 +125,7 @@ data class PropSpec(
 		add("visible:${if (visible) 1 else 0}b")
 		if (type == PropType.TEXT || type == PropType.ITEM || type == PropType.LIST) add("fmt:${(format ?: TextFormat.ID).code}")
 		adminSetting?.let { add("admin_setting:\"$it\"") }
-		choices?.let { (st, path) -> add("choices:{storage:\"$st\",path:\"$path\"}") }
+		unique?.let { (st, path) -> add("unique:{storage:\"$st\",path:\"$path\"}") }
 		entryLabel?.let { add("entry_label:\"$it\"") }
 		if (!dynamic) add("goggles:${if (goggles ?: visible) 1 else 0}b")
 		add("i:$index")

@@ -127,7 +127,8 @@ declares for you). `ra/core/Properties.kt` holds the builder.
 | `item(name)` | string (item id) | the book, or **[Set from hand]** |
 | `text(name, TextFormat.SELECTOR)` | string in a [format](#text-formats) | the book, checked against the format |
 | `list(name, of = PropType.TEXT, max = 15, pad = true)` | list | a header with **[Add]** (until `max` entries), **[Edit all]** and **[List]**, which shows one row per entry ([Edit], [Remove]/[Clear]) |
-| `textList(name, max, pad, format, choices = "ra:ender" to "anchor_ids", entryLabel = "Strength ")` | list of text | the same, with **[Choose]** from `storage <choices>` and entries labelled *Strength 1…* |
+| `textList(name, max, pad, format, entryLabel = "Strength ")` | list of text | the same, each entry checked against the format, entries labelled *Strength 1…* |
+| `text(name, TextFormat.ID, unique = "ra:ender" to "anchors")` | string, one per world | the book; refused when it is already a key of the compound `storage ra:ender anchors` (unless it is this block's own value). The format must be `ID` or `TAG`, since the value is pasted as a path key |
 | `dynamic(name)` | read from the block instance | — (see below) |
 
 Each also takes these flags:
@@ -273,11 +274,10 @@ A row's button runs `/trigger ra.dh.action set <stamp × 10000 + code>`: code `1
 (item rows), `700 + i` edits the
 undeclared property `known[i]`. A declared list's entries (rows 0–29, entries 0–98) use
 `1000 + 300 i + j` (**[Edit]** entry `j`), `+ 99` (**[Add]**), `+ 100 + j` (**[Remove]** /
-**[Clear]**), `+ 199` (**[List]**: show or hide the entries) and `+ 200 + j` (**[Choose]**);
-`+ 299` is unused. The open list is the player's `ra.dh.expand`, its row index + 1 (0 or unset:
-none), reset when a block is selected with a Data Handler and on load. A picker is a menu of its own (`ra.dh.mkind` 1)
-whose choices are kept, as drawn, in `storage ra:dh pick.s<stamp>`; its buttons are
-`100 + k`. An entry edit is filed under the player's input request with its index
+**[Clear]**) and `+ 199` (**[List]**: show or hide the entries); `+ 200` to `+ 299` are unused
+(6.0.1 and 6.0.2 had a **[Choose]** there). The open list is the player's `ra.dh.expand`, its
+row index + 1 (0 or unset: none), reset when a block is selected with a Data Handler and on
+load. An entry edit is filed under the player's input request with its index
 (`pend.r<id>.j`, `-1` for an append). The stamp numbers the menu (1 – 200,000); each player's
 latest is in `ra.dh.menu`, and loading resets it for everyone. A click carrying any other stamp — an old menu
 scrolled back to, or one drawn before a `/reload` that may have reordered a schema — redraws the
@@ -322,6 +322,7 @@ an admin set to a large range keeps it, whoever powers or stands near it later, 
 | Big Torch `radius` | 100 | 256 | a sphere selector every 10 ticks per torch |
 | Magic Crate `radius` | 20 | 64 | an item selector every pull |
 | Message Block `range` | 128 | 1024 | a sane ceiling (one player selector per pulse) |
+| Elevator `range` | 64 | 384 | a world's height (one box selector per ride) |
 | Held Item Detector `radius` | 16 | 64 | an item test on every player in range, once a second |
 | Player Detector `radius` | 16 | 64 | one player selector per listed name, once a second |
 

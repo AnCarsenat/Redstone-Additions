@@ -1,6 +1,6 @@
 # Recipe Atlas
 
-Every recipe in the pack, in one place: 94 of them.
+Every recipe in the pack, in one place: 96 of them.
 
 !!! tip "Finding one"
     Use the search box with the item's name — every recipe below is indexed by
@@ -56,6 +56,7 @@ what the pack actually contains rather than what someone remembered to add.
 | [Gas Pump](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
 | [Gas Tank](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
 | [Gas Valve](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
+| [Gauge Bar](#displays) | [Displays](displays.md) | Crafting table |
 | [Generator Casing](#infinite-generators) | [Infinite Generators](infinite-generators.md) | Crafting table |
 | [Goggles](#tools) | [Tools](tools.md) | Crafting table |
 | [Goggles Lens](#tools) | [Tools](tools.md) | Crafting table |
@@ -68,6 +69,7 @@ what the pack actually contains rather than what someone remembered to add.
 | [Infinite Water Cauldron](#interactive-machines) | [Interactive Machines](interactive-machines.md) | Crafting table |
 | [Iron Jetpack Kit](#jetpacks) | [Jetpacks](jetpacks.md) | Crafting table |
 | [Iron Multiblock Base](#multiblocks) | [Multiblocks](multiblocks.md) | Crafting table |
+| [Item Hologram](#displays) | [Displays](displays.md) | Crafting table |
 | [Item Mover](#interactive-machines) | [Interactive Machines](interactive-machines.md) | Crafting table |
 | [Item Pipe](#interactive-machines) | [Interactive Machines](interactive-machines.md) | Crafting table |
 | [Lift Kit](#jetpacks) | [Jetpacks](jetpacks.md) | Crafting table |
@@ -121,6 +123,15 @@ Module page: [Chunk Loader](chunk-loader.md) — give everything: `/function ra_
 | Item | Recipe | Station | Namespace id |
 | ---- | ------ | ------- | ------------ |
 | **Chunk Loader** | ![Chunk Loader recipe](images/recipes/ra_chunk_loader/chunk_loader.png){ width="220" } | Crafting table | `ra_chunk_loader:chunk_loader` |
+
+## Displays
+
+Module page: [Displays](displays.md) — give everything: `/function ra_displays:items/give_all`
+
+| Item | Recipe | Station | Namespace id |
+| ---- | ------ | ------- | ------------ |
+| **Gauge Bar** | ![Gauge Bar recipe](images/recipes/ra_displays/gauge_bar.png){ width="220" } | Crafting table | `ra_displays:gauge_bar` |
+| **Item Hologram** | ![Item Hologram recipe](images/recipes/ra_displays/item_hologram.png){ width="220" } | Crafting table | `ra_displays:item_hologram` |
 
 ## Enchant Crafting
 

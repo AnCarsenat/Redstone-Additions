@@ -19,6 +19,7 @@ import ra.core.define
 import ra.core.raw
 import ra.hub.tick
 import ra.modules.chunkloader.ChunkLoader
+import ra.modules.displays.DisplayPoll
 import ra.modules.sensors.SensorPoll
 import ra.modules.wires.blocks.usage_meter.UsageMeter
 import ra.modules.wires.machine.MachineClock
@@ -112,6 +113,8 @@ internal fun DataPack.registerUninstallConfirm() {
 		schedules { clear(UsageMeter.pulseOff) }
 		// The machine clock (Tesla Coil, Spout, Water Wheel), scheduled only while one of them is loaded.
 		schedules { clear(MachineClock.run) }
+		// The Displays clock (hologram contents and spin, display repair), likewise.
+		schedules { clear(DisplayPoll.run) }
 
 		PLAYER_TAGS.forEach { t -> tag(allPlayers()) { remove(t) } }
 		untagMarkers("ra.dh_target")

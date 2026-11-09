@@ -37,7 +37,7 @@ described in [Contributing Guidelines](contributing-guidelines.md#installing-int
 
 ## Modules
 
-**Looking for a recipe? [The Recipe Atlas](recipe-atlas.md) has all 93 of them on one
+**Looking for a recipe? [The Recipe Atlas](recipe-atlas.md) has all 96 of them on one
 page**, listed A to Z and grouped by module — plus the five items that have no recipe
 and are instead gambled for on an [enchanting table](enchant-crafting.md). This table
 is the shortcut: one sample per module, and where to read about it.
@@ -56,11 +56,12 @@ is the shortcut: one sample per module, and where to read about it.
 | [Jetpacks](jetpacks.md) | 2 jetpacks + 3 upgrade kits | ![Iron Jetpack Kit recipe](images/recipes/ra_jetpacks/iron_jetpack_kit.png){ width="220" } |
 | [Infinite Generators](infinite-generators.md) | 3 self-growing blocks + casing | ![Mineral Generator recipe](images/recipes/ra_infinite/mineral_generator.png){ width="220" } |
 | [Ender Links](ender-links.md) | 3 remote vaults, teleport anchor, Anchor Terminal and Anchor Tablet | ![Teleport Anchor recipe](images/recipes/ra_ender/teleport_anchor.png){ width="220" } |
+| [Displays](displays.md) | Gauge Bar and Item Hologram | ![Gauge Bar recipe](images/recipes/ra_displays/gauge_bar.png){ width="220" } |
 
 Current pack totals:
 
-- 81 placeable custom blocks
-- 94 recipes, all of them in the [Recipe Atlas](recipe-atlas.md)
+- 83 placeable custom blocks
+- 96 recipes, all of them in the [Recipe Atlas](recipe-atlas.md)
 - 9 tools (Wrench, Goggles, Data Handler, Creative Data Handler, Clipboard,
   Multimeter, Redstone Remote, Pager, Anchor Tablet)
 
@@ -80,6 +81,7 @@ Current pack totals:
 | `/function ra_infinite:items/give_all` | Generator casing and generators |
 | `/function ra_jetpacks:items/give_all` | Jetpack kits |
 | `/function ra_ender:items/give_all` | Ender vaults and Teleport Anchors |
+| `/function ra_displays:items/give_all` | Display blocks |
 | `/function ra:uninstall` | Opens uninstall confirmation dialog |
 
 ## Tools At A Glance

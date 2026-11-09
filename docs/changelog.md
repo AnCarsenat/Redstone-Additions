@@ -190,6 +190,21 @@ This page mirrors key datapack milestones from the main project changelog.
   which) or remove it and get the lens back. Crafted from four tinted glass, two diamonds, two gold
   ingots and a netherite ingot; unlocked by picking up a netherite ingot. A helmet that already
   carries data or a description of its own (another pack's item, the Goggles) is refused.
+- **Displays** (new module, `ra_displays`). Blocks that show something with display entities;
+  `/function ra_displays:items/give_all` gives them, and the settings have a Displays page to turn
+  each one off.
+- **Gauge Bar** (Displays). A bar on its front face, filled to the redstone level feeding it, 0 to
+  15, from any side; a repeater or comparator pointing in fills it. It faces the way it was placed,
+  up and down included. Shift+right-click with the Wrench changes the colour (twelve) or turns the
+  bar vertical; the Goggles show the level. The fill is only redrawn when the level changes, and
+  slides to the new length. Crafted from three glass panes, two redstone, a comparator and three
+  polished blackstone.
+- **Item Hologram** (Displays). A barrel that shows the first item inside it floating above its
+  lid, turning slowly, with the item's name (its anvil name, or its usual name in your language)
+  over it. Fill it by hand or with a hopper or an Item Pipe; the hologram follows within a second.
+  Shift+right-click with the Wrench turns the spin or the name off. Nothing runs per tick: one
+  check a second, and the turning is done by the client. Crafted from a glass block, two amethyst
+  shards, an ender pearl and a barrel.
 
 ### Changed
 

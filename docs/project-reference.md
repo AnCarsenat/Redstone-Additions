@@ -155,6 +155,7 @@ Each module has `<Name>Module.kt` (the `GameplayModule` object: registration ord
 | `modules/infinite` | `Generator.kt` (shared generator shape), one file per generator, `InfiniteItems.kt`, `InfiniteTags.kt` |
 | `modules/enchanting` | `EnchantingModule.kt`, `RecipesTag.kt` (`#ra_enchanting:recipes`), `SacrificeRecipe.kt`, `sacrifice/` |
 | `modules/chunkloader` | `ChunkLoader.kt` |
+| `modules/displays` | `DisplaysModule.kt` (the `members` list), `DisplayBlock.kt` (the member interface and the display-entity rules), `DisplayPoll.kt` (the slow clock) |
 | `modules/interactive` | one file per block (`BlockBreaker.kt`, `BlockPlacer.kt`, `Breeder.kt` + `BreederBreeds.kt`, `ItemPipe.kt` + `ItemPipeTransfer.kt`, `ItemMover.kt` + `ItemMoverIo.kt`, `BigTorch.kt` + `BigTorchSweep.kt`, `Cauldrons.kt`, `MagicCrate.kt`, `MessageBlock.kt`, `Spitter.kt`), `EnchantedCoal.kt`, `InteractiveCommon.kt` |
 | `modules/storage` | `Boxer.kt`, `Unboxer.kt`, `StorageBox.kt` |
 | `modules/sensors` | `EntityDetector.kt`, `TagAdder.kt`, `TagRemover.kt`, `EdgeTrigger.kt`, `LightSensor.kt`, `WeatherSensor.kt`, `HeldItemDetector.kt`, `PlayerDetector.kt`, `SensorPoll.kt` |

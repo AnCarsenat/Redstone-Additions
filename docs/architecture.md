@@ -74,7 +74,7 @@ A gameplay module must define its `<ns>:load` and, unless it overrides `tick` to
 | 2 | `MultiblockLibPart` | `ra_lib_multiblock` | `ra.multiblocklib` |
 | 3 | `SettingsPart` | `ra_settings` | `ra.settings` |
 | 4 | `MigrationsPart` | `ra_migrations` | `ra.migrations` |
-| 5 | `InteractiveModule` … `EnderModule` (the 12 entries of `modules`) | `ra_interactive` … `ra_ender` | `ra.modules.*` |
+| 5 | `InteractiveModule` … `DisplaysModule` (the 13 entries of `modules`) | `ra_interactive` … `ra_displays` | `ra.modules.*` |
 | 6 | `ExamplePart` | `ra_example` | `ra.example` |
 | 7 | `AdvancementsPart` | `ra_advancements` | `ra.advancements` |
 | 8 | `ToolsPart` | `ra` (`tools/*`, tool recipes, predicates, advancements) | `ra.tools` |
@@ -84,7 +84,8 @@ A gameplay module must define its `<ns>:load` and, unless it overrides `tick` to
 
 ```
 InteractiveModule, StorageModule, SensorsModule, GatesModule, WirelessModule, WiresModule,
-ChunkLoaderModule, MultiblockModule, EnchantingModule, InfiniteModule, JetpacksModule, EnderModule
+ChunkLoaderModule, MultiblockModule, EnchantingModule, InfiniteModule, JetpacksModule, EnderModule,
+DisplaysModule
 ```
 
 That is the order the beet `ra:load` and `ra:tick` hard-coded, and `ra:load` / `ra:tick` still

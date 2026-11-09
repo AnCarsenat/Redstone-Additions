@@ -82,6 +82,7 @@ listed A to Z and grouped by module.
 | Jetpacks | <img src="https://github.com/AnCarsenat/Redstone-Additions/raw/main/docs/images/screenshots/JetpackHover.png" alt="Hover flight" width="320"> |
 | Infinite Generators | <img src="https://github.com/AnCarsenat/Redstone-Additions/raw/main/docs/images/banners/media-missing.png" alt="No screenshot yet" width="320"> |
 | Ender Links | <img src="https://github.com/AnCarsenat/Redstone-Additions/raw/main/docs/images/banners/media-missing.png" alt="No screenshot yet" width="320"> |
+| Displays | <img src="https://github.com/AnCarsenat/Redstone-Additions/raw/main/docs/images/banners/media-missing.png" alt="No screenshot yet" width="320"> |
 | Tools | <img src="https://github.com/AnCarsenat/Redstone-Additions/raw/main/docs/images/banners/media-missing.png" alt="No screenshot yet" width="320"> |
 
 ---
@@ -318,6 +319,7 @@ Starter command:
 | Jetpacks | https://ancarsenat.github.io/Redstone-Additions/jetpacks/ |
 | Infinite Generators | https://ancarsenat.github.io/Redstone-Additions/infinite-generators/ |
 | Ender Links | https://ancarsenat.github.io/Redstone-Additions/ender-links/ |
+| Displays | https://ancarsenat.github.io/Redstone-Additions/displays/ |
 | Item Reference | https://ancarsenat.github.io/Redstone-Additions/item-reference/ |
 | Recipe Atlas | https://ancarsenat.github.io/Redstone-Additions/recipe-atlas/ |
 | Changelog | https://ancarsenat.github.io/Redstone-Additions/changelog/ |
@@ -341,6 +343,7 @@ Starter command:
 | `/function ra_jetpacks:items/give_all` | Jetpack kits |
 | `/function ra_enchanting:items/give_all` | Disenchanter, Book Upgrader and Book Printer |
 | `/function ra_ender:items/give_all` | Ender vaults, Teleport Anchor, Anchor Terminal and Anchor Tablet |
+| `/function ra_displays:items/give_all` | Display blocks |
 | `/function ra:tools/wrench/give` | Wrench |
 | `/function ra:tools/data_handler/give` | Data Handler |
 | `/function ra:tools/creative_data_handler/give` | Creative Data Handler |

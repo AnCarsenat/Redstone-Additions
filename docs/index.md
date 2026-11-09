@@ -80,6 +80,7 @@ Current pack totals:
 | `/function ra_infinite:items/give_all` | Generator casing and generators |
 | `/function ra_jetpacks:items/give_all` | Jetpack kits |
 | `/function ra_ender:items/give_all` | Ender vaults and Teleport Anchors |
+| `/function ra_displays:items/give_all` | Display blocks |
 | `/function ra:uninstall` | Opens uninstall confirmation dialog |
 
 ## Tools At A Glance

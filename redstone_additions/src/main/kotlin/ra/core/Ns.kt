@@ -18,6 +18,7 @@ enum class Ns(val id: String) {
 	ADVANCEMENTS("ra_advancements"),
 	EXAMPLE("ra_example"),
 	CHUNK_LOADER("ra_chunk_loader"),
+	DISPLAYS("ra_displays"),
 	ENCHANTING("ra_enchanting"),
 	ENDER("ra_ender"),
 	GATES("ra_gates"),

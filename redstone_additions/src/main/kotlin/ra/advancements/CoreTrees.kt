@@ -111,3 +111,7 @@ internal val interactiveTree = listOf(
 	egg("ra_interactive", "spitter", "Spitter", Items.DROPPER, TRUE),
 	egg("ra_interactive", "trash_can", "Trash Can", Items.CACTUS, TRUE),
 )
+
+internal val displaysTree = listOf(
+	category("ra_displays", Items.GLOW_ITEM_FRAME, "Redstone Displays", "Show signals and items in the world.", "get_display_item", Items.GLASS_PANE),
+)

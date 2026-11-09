@@ -28,7 +28,7 @@ private val giveAll = ref(Ns.RA, "items/bundles/give_all")
  */
 private val HAND_OUT_ORDER = listOf(
 	"tools", "interactive", "storage", "gates", "sensors", "wireless", "wires",
-	"chunk_loader", "multiblock", "infinite", "jetpacks", "ender",
+	"chunk_loader", "multiblock", "infinite", "jetpacks", "ender", "displays",
 )
 
 /**

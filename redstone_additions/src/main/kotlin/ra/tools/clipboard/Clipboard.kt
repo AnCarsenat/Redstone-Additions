@@ -8,6 +8,8 @@ import io.github.ayfri.kore.commands.tag
 import io.github.ayfri.kore.generated.arguments.types.AdvancementArgument
 import net.benwoodworth.knbt.NbtByte
 import ra.api.Goggles
+import ra.api.RaLib
+import ra.core.TextFormat
 import ra.core.Obj
 import ra.core.Ra
 import ra.core.Storage
@@ -57,6 +59,7 @@ object Clipboard {
 	private val strip = tool("clipboard/strip")
 	private val stripNext = tool("clipboard/strip_next")
 	private val stripOne = tool("clipboard/strip_one")
+	private val stripText = tool("clipboard/strip_text")
 
 	private const val HOLDER = "@a[tag=ra.clip_active,limit=1]"
 	private const val PREFIX = """{text:"[Clipboard] ",color:"gold"}"""
@@ -214,7 +217,22 @@ object Clipboard {
 			raw("\$execute if score #clip.ro ${Obj.TEMP} matches 1 run return run data remove storage ra:temp clip.props.\$(name)")
 			raw("execute if score #clip.adm ${Obj.TEMP} matches 1 run return 0")
 			raw("\$execute if score #clip.ao ${Obj.TEMP} matches 1 run return run data remove storage ra:temp clip.props.\$(name)")
-			raw("\$execute if score #clip.vis ${Obj.TEMP} matches 0 run data remove storage ra:temp clip.props.\$(name)")
+			raw("\$execute if score #clip.vis ${Obj.TEMP} matches 0 run return run data remove storage ra:temp clip.props.\$(name)")
+			// Text in its format, as the Data Handler would have taken it (ra_lib:safe/check): what a
+			// player could not type, they cannot paste either -- a Message Block's rich text (a
+			// compound) among it.
+			raw("\$execute if data storage ra:dh schema.\$(name){code:0} run function ${stripText.asId()} {name:\"\$(name)\"}")
+			raw("\$execute if data storage ra:dh schema.\$(name){code:4} run function ${stripText.asId()} {name:\"\$(name)\"}")
+		}
+		// {name}: drop clip.props.<name> unless it is a string in its schema format.
+		pack.define(stripText) {
+			raw("data remove storage ra:safe s")
+			raw("\$data modify storage ra:safe s set from storage ra:temp clip.props.\$(name)")
+			raw("execute unless data storage ra:safe s run return 0")
+			raw("data modify storage ra:safe f set value ${TextFormat.ID.code}")
+			raw("\$execute if data storage ra:dh schema.\$(name).fmt run data modify storage ra:safe f set from storage ra:dh schema.\$(name).fmt")
+			raw("execute store result score #clip.fok ${Obj.TEMP} run function ${RaLib.Safe.check.asId()}")
+			raw("\$execute if score #clip.fok ${Obj.TEMP} matches 0 run data remove storage ra:temp clip.props.\$(name)")
 		}
 
 		// Say why the paste did not happen, naming both kinds.

@@ -54,15 +54,18 @@ object MessageBlock {
 
 	private const val WAS_POWERED = "ra.was_powered"
 
-	/** `[Message] <text>`: the message is stored JSON text, so it is interpreted. */
+	/** `[Message] <text>`: interpreted, so an operator's compound shows as rich text; a string shows as typed. */
 	private const val MESSAGE = """[{text:"[Message] ",color:"yellow"},{nbt:"message_block",storage:"ra:temp",interpret:true}]"""
 
 	fun Ra.registerMessageBlock() {
 		block(block)
 		properties(block) {
-			// Shown, never pasted into a command, but drawn with interpret:true: the text can carry
-			// a click_event that runs a command as whoever clicks it. So any text, admins only.
-			text("message_block", TextFormat.FREE, adminOnly = true)
+			// Shown, never pasted into a command. Drawn with interpret:true, which decodes the stored
+			// tag itself (since 1.21.5): a string is plain text, whatever it spells, and only a
+			// compound is rich text that could carry a click_event. Players can only ever write a
+			// string (the Data Handler types text, the Clipboard checks it with ra_lib:safe/check),
+			// so the text is everyone's; rich text stays with operators and commands.
+			text("message_block", TextFormat.FREE)
 			// Pasted into a command: admins only unless the server allows it (Sensors settings).
 			text("entity_selector", TextFormat.SELECTOR, adminOnly = true, adminSetting = SELECTOR_SETTING)
 			number("range", min = 1, max = 128)

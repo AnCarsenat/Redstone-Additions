@@ -37,14 +37,14 @@ described in [Contributing Guidelines](contributing-guidelines.md#installing-int
 
 ## Modules
 
-**Looking for a recipe? [The Recipe Atlas](recipe-atlas.md) has all 71 of them on one
+**Looking for a recipe? [The Recipe Atlas](recipe-atlas.md) has all 73 of them on one
 page**, listed A to Z and grouped by module — plus the four items that have no recipe
 and are instead gambled for on an [enchanting table](enchant-crafting.md). This table
 is the shortcut: one sample per module, and where to read about it.
 
 | Module | What you get | Sample recipe |
 |---|---|---|
-| [Logic Gates](logic-gates.md) | 6 timing/logic blocks | ![Clock recipe](images/recipes/ra_gates/clock.png){ width="220" } |
+| [Logic Gates](logic-gates.md) | 8 timing/logic blocks | ![Clock recipe](images/recipes/ra_gates/clock.png){ width="220" } |
 | [Interactive Machines](interactive-machines.md) | 12 automation and utility blocks | ![Block Placer recipe](images/recipes/ra_interactive/block_placer.png){ width="220" } |
 | [Storage](storage.md) | Boxer + Unboxer workflow | ![Boxer recipe](images/recipes/ra_storage/boxer.png){ width="220" } |
 | [Sensors](sensors.md) | Entity detector, tag operators, light and weather sensors | ![Entity Detector recipe](images/recipes/ra_sensors/entity_detector.png){ width="220" } |
@@ -59,8 +59,8 @@ is the shortcut: one sample per module, and where to read about it.
 
 Current pack totals:
 
-- 61 placeable custom blocks
-- 71 recipes, all of them in the [Recipe Atlas](recipe-atlas.md)
+- 63 placeable custom blocks
+- 73 recipes, all of them in the [Recipe Atlas](recipe-atlas.md)
 - 7 tools (Wrench, Goggles, Data Handler, Creative Data Handler, Clipboard,
   Multimeter, Redstone Remote)
 

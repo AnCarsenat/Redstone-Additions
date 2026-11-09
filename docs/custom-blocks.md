@@ -166,7 +166,7 @@ it, through the options of the core helpers:
 
 | Variant | Where | Spelled |
 | --- | --- | --- |
-| timing gates | `timingOnBreak` / `timingTick` in `modules/gates/GateCommon.kt` (Delayer, Extender, Shortener, Randomizer) | `blockOnBreak(block, drop = { dropBlockItem(block, tagged = false) }, sound, cloud = true, afterVanillaKill = { outputShell(false) })`, `blockTick(block, onBreak, BreakTest.NotBlock(physical))` |
+| timing gates | `timingOnBreak` / `timingTick` in `modules/gates/GateCommon.kt` (Delayer, Extender, Shortener, Randomizer, Counter, Edge Detector) | `blockOnBreak(block, drop = { dropBlockItem(block, tagged = false) }, sound, cloud = true, afterVanillaKill = { outputShell(false) })`, `blockTick(block, onBreak, BreakTest.NotBlock(physical))` |
 | blocks with a full `ItemSpec` item (Infinite generators, Chunk Loader, sensors, wireless, ender) | each block's file | `breakCheck(block, physical, onBreak, skipNew)`, `blockOnBreak(block, drop = { dropItem(item) }, sound = STONE_BREAK_SOUND, cloud = …)` |
 | shared `ra_wires:blocks/handle_placement` | `modules/wires/blocks/Placement.kt` + `PlacementSpecs.kt` | one handler for every Wires block, driven by a per-place-tag spec list (`placementHandlers += Placement.handlePlacement`); blocks register with `ra.block(b, placement = false, goggles = false)`, and goggles routes are added per *marker* type, because several items (the retired pipe tiers) place the same marker |
 

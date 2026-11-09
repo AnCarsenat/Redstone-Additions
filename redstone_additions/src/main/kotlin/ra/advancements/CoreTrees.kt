@@ -43,6 +43,8 @@ internal val gatesTree = listOf(
 	egg("ra_gates", "extender", "Extender", Items.MOSSY_COBBLESTONE, TRUE),
 	egg("ra_gates", "randomizer", "Randomizer", Items.BOOKSHELF, TRUE),
 	egg("ra_gates", "shortener", "Shortener", Items.MOSSY_STONE_BRICKS, TRUE),
+	egg("ra_gates", "counter", "Counter", Items.CHISELED_QUARTZ_BLOCK, TRUE),
+	egg("ra_gates", "edge_detector", "Edge Detector", Items.QUARTZ_PILLAR, TRUE),
 )
 
 internal val sensorsTree = listOf(

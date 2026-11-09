@@ -104,6 +104,10 @@ object RaLib {
 		val check = ref(Ns.LIB, "safe/check")
 		/** Macro `{p, f}`, as a marker: 1 when data.properties.<p> is safe; cached by value. */
 		val guard = ref(Ns.LIB, "safe/guard")
+		/** storage ra:safe {s, f} -> storage ra:safe out, s made safe in TextFormat f; 1 when usable. The core sanitiser. */
+		val clean = ref(Ns.LIB, "safe/clean")
+		/** storage ra:safe {s} -> storage ra:safe n (int) and #sf.n ra.temp; 1 when s is a number. */
+		val number = ref(Ns.LIB, "safe/number")
 	}
 
 	object Util {

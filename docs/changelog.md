@@ -6,18 +6,37 @@ This page mirrors key datapack milestones from the main project changelog.
 
 ### Added
 
+- **Counter** (Logic Gates). Counts the times its input turns on and fires when the count
+  reaches its *target* (1 to 1000, default 10). By default it then starts again from 0 and gives
+  a 2-tick pulse, so it divides a pulse train; with *hold* on (Shift+RMB with the Wrench, or the
+  Data Handler) the output stays on until it is reset. Redstone on the top of the block resets it
+  to 0; any other side counts. The Goggles show the count and the target.
+- **Edge Detector** (Logic Gates). Gives a pulse of *pulse* ticks (default 2) when its input turns
+  on (*rising*), turns off (*falling*), or both. Shift+RMB with the Wrench cycles the mode.
 - **Light Sensor** (Sensors). Outputs the light level of the block in front of it as a redstone
   signal of the same strength, 0 to 15, read once a second. It faces the way it was placed, like a
   dispenser, and is itself the source: dust, a repeater or a comparator next to it picks up the
   level, no iron blocks needed. The Goggles show the level and the facing. Crafted from three glass,
   two redstone, a daylight detector and three cobblestone. The world sensors share one slow clock
   that only runs while one of them is loaded.
-
 - **Weather Sensor** (Sensors). Turns on while it rains, during a thunderstorm, by day or by
   night, depending on its mode; Shift+right-click with the Wrench steps through them, and the
   Goggles show the mode and the output. Output as the Entity Detector's: iron blocks around it turn
   into redstone blocks. Read once a second on the same clock as the Light Sensor. Crafted from
   three glass, two redstone, a lightning rod and three copper ingots.
+
+### Changed
+
+- **Anyone can change a Message Block's text.** It was locked to admins in v6.0.1 because rich
+  chat text can carry a clickable command. The text a player types is always shown exactly as
+  typed, quotes and braces included, so it can never become a command. Rich text (colours,
+  links) is something only an operator can write, with the Creative Data Handler or `/data`, and
+  the Clipboard no longer pastes it for players without server-settings access. The selector
+  still follows *Players may edit entity selectors and tags*.
+- **The Clipboard checks text settings like the Data Handler.** For players without
+  server-settings access, a copied text value that its block would refuse from the Data Handler
+  (a selector with a command after it, a tag with spaces) is left out of the paste; the rest of
+  the paste goes through.
 
 ### Removed
 
@@ -36,6 +55,17 @@ This page mirrors key datapack milestones from the main project changelog.
   Drain pours a potion out as a cloud in the potion's colour, but the colour was read after the
   potion had been taken from the network, so the pour that emptied it could come out in the
   default water-bottle blue. The colour is now read first.
+
+### For contributors
+
+- **A core sanitiser for player input** (`ra_lib:safe/clean`, `ra_lib:safe/number`,
+  `ra/lib/safe/SafeClean.kt`). `clean` turns a value into one that is safe to paste in a given
+  text format: free text loses its double quotes, backslashes and line breaks, so it can sit inside
+  `{text:"$(value)"}` without closing it; an id, name or tag loses the characters its format does
+  not accept; a selector or coordinates are kept only when valid. `number` says whether a value is
+  a number and hands it back as an int. The Data Handler's number test now lives there, and the
+  Goggles' Teleport Anchor and Fluid Vault lines pass their value through `clean` before pasting
+  it. See the developer guide, *safe: player input in commands*.
 
 ## v6.0.2 (2026-11-09) — Drains, lists and fixes
 

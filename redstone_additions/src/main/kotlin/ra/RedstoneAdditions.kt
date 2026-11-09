@@ -125,6 +125,9 @@ object RedstoneAdditions {
 		PackValidator.itemSummonsWithoutItem(this).let { bad ->
 			check(bad.isEmpty()) { "Item entities summoned empty (discarded at once, and whatever fills them in hits another item):\n" + bad.joinToString("\n") { "  - $it" } }
 		}
+		PackValidator.ungatedLoadMessages(this).let { bad ->
+			check(bad.isEmpty()) { "Load-time chat lines that ignore \"Show the load message\" (use loadMessage, or loadNotice for a warning):\n" + bad.joinToString("\n") { "  - $it" } }
+		}
 		if (strict) PackValidator.validate(this) else PackValidator.report(this)
 	}
 }

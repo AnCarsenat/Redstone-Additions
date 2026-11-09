@@ -24,6 +24,25 @@ This page mirrors key datapack milestones from the main project changelog.
   instead of `network_too_small`. `network_full` still means the network has no room for a whole
   5000 mL block.
 
+### Added
+
+- **Show filter previews** (your own settings, `/trigger ra.settings.open`, on by default):
+  whether the Goggles draw the item an Item Pipe filters for above its label. A Goggles label is
+  one entity that everyone nearby sees, so it cannot be hidden from one player: a pipe draws its
+  filter item while any Goggles wearer within range of it has the setting on. Turn yours off and
+  you stop asking for previews, though you still see one drawn for another wearer beside you.
+  Hover the setting's name in the menu for this explanation. The server-wide *Filter previews*
+  switch (General › Goggles) still turns them off for everyone.
+
+
+- **"Show the load message" now silences the whole load message.** With it off, a `/reload` no
+  longer prints each module's "loaded!" line (Interactive blocks, Storage blocks, Sensors, Logic
+  Gates, Wireless Redstone, Wires, Chunk Loader, Enchant crafting, Infinite generators, Jetpacks,
+  Ender links) nor the version and settings lines. The notice that some block types are disabled
+  still appears, since it is a warning rather than a greeting.
+- On/off server settings read **on** / **off** in the settings pages and in the confirmation
+  message, instead of `1b` / `0b`.
+
 ## v6.0.1 (2026-11-08) — Leaner ticks
 
 **Supported version:** 26.3 (data pack format 121).

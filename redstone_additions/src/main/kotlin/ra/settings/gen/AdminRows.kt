@@ -121,7 +121,8 @@ internal object AdminRows {
 		for ((name, value) in listOf("on" to 1, "off" to 0)) {
 			define(action(pageId, row.label, name)) {
 				data(S) { modify(path) { set(NbtByte(value.toByte())) } }
-				raw(report(row.label, path))
+				// "is now on", not "is now 1b": the value is known here, so say it in words.
+				raw("""tellraw @s [{text:"[Settings] ",color:"gold"},{text:"${row.label}",color:"white"},{text:" is now ",color:"gray"},{text:"$name",color:"${if (value == 1) "green" else "red"}"}]""")
 			}
 		}
 	}

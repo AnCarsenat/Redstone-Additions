@@ -150,7 +150,9 @@ internal class Registries(private val pack: DataPack, private val gen: SettingsG
 			linkedMapOf<String, Any?>("type" to r.type, "key" to r.key, "label" to r.label, "scope" to r.scope.id).apply {
 				if (r.obj != null) put("obj", r.obj)
 				when (r) {
-					is BoolRow -> put("default", r.default)
+					// Every bool row carries a hint: row/bool splices $(hint) and a macro missing a
+					// key fails as a whole.
+					is BoolRow -> { put("default", r.default); put("hint", r.hint ?: r.label) }
 					is IntRow -> { put("default", r.default); put("min", r.min); put("max", r.max); put("step", r.step) }
 					is ListRow -> { put("default", r.default); put("values", r.values) }
 					is StrRow -> put("default", r.default)

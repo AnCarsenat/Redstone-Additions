@@ -57,7 +57,16 @@ data class BoolRow(
 	override val scope: Scope,
 	val default: Int,
 	override val obj: String? = null,
+	/**
+	 * What the row does, shown when hovering its label in the /trigger menu (user rows only).
+	 * Defaults to the label. Spliced into a macro inside a quoted string, so no `"` or `\`.
+	 */
+	val hint: String? = null,
 ) : ScopedRow {
+	init {
+		require(hint == null || ('"' !in hint && '\\' !in hint)) { "bool row $key: hint may not contain \" or \\" }
+	}
+
 	override val type get() = "bool"
 }
 

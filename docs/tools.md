@@ -58,6 +58,14 @@ The label sits just above the block and grows upward with what it has to say: a 
 line gets a small label close to its top, one with five a taller one from the same spot. An
 Item Pipe's filter item floats just above its label.
 
+You can turn that floating item off for yourself with **Show filter previews** in your own
+settings (`/trigger ra.settings.open`), and server operators can turn it off for everyone
+(*Filter previews*, General › Goggles). A label is a single entity that everyone nearby sees, so
+it cannot be hidden from one player only: a pipe draws its filter item while **any** player
+wearing Goggles within range of it has *Show filter previews* on. Turning yours off stops you
+asking for previews; you still see one that is drawn for another Goggles wearer near the same
+pipe.
+
 A label shows what the block is doing and the settings worth knowing at a glance. Settings the
 Data Handler hides from players are not shown, and a few fixed or uninteresting values (a
 generator's cooldown, the Magic Crate's pulse cooldown) are left off the label; the Data Handler
@@ -157,5 +165,8 @@ connected. See [Transport Networks](transport-networks.md).
   tool (and for a short while after).
 - Goggles labels are `text_display` entities tagged `ra.billboard` (an item filter is an
   `item_display` with the same tag), one per block: the lines are joined into one text, drawn
-  from 0.3 above the block's top face upward. Which settings a label shows follows each
+  from 0.3 above the block's top face upward. During a redraw a block marker carries the tag
+  `ra.goggles_fprev` when a Goggles wearer in range has `ra.u.fprev` (Show filter previews) at 1
+  and the server's `goggles_filter_preview` is on; the Item Pipe draws its filter item only then.
+  Which settings a label shows follows each
   setting's `goggles` flag, see [Property schemas](tools-and-registries.md#property-schemas).

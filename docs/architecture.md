@@ -198,7 +198,9 @@ Hooked into `#minecraft:load` by Hub (`ra/hub/Load.kt`). In order:
    `ra:tools/data_handler/init_registry`: configuration, rewritten on every load.
 10. `ra_migrations:run`: the world steps this world has not had yet (see [Migrations](#migrations)).
 11. `schedule function ra:tick 1t replace`.
-12. The disabled-blocks notice, then (if the `welcome` setting is on) the welcome messages.
+12. The disabled-blocks notice (always), then the welcome messages, each line gated on the `welcome`
+    setting. Every module's "loaded!" line (step 5) carries the same gate; see
+    [Load messages are gated](gotchas.md#load-messages-are-gated).
 
 ### `ra:tick`
 

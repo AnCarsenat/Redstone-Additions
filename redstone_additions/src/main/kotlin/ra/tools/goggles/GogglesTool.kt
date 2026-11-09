@@ -67,19 +67,23 @@ object GogglesTool {
 			// once. Drawing per player meant every billboard was summoned twice when two wearers stood
 			// near the same block, and cost one whole-world sweep per block type per player.
 			raw("tag @e[type=marker,tag=ra.goggles_seen] remove ra.goggles_seen")
-			// The range is a setting too, and a selector's distance cannot be a score, so the two
+			raw("tag @e[type=marker,tag=${Goggles.FILTER_PREVIEW_TAG}] remove ${Goggles.FILTER_PREVIEW_TAG}")
+			// Whether blocks may draw the item they filter for above their readout (server switch,
+			// Goggles page). Read once per redraw, here, so a block's draw tests a score instead of
+			// reading a setting -- and before the scan, which skips the per-player preview sweep
+			// when the server has previews off.
+			executeRun("store result score ${Goggles.FILTER_PREVIEW} ${Obj.TEMP}", Settings.get, "{key:\"goggles_filter_preview\",default:1}")
+			// The range is a setting too, and a selector's distance cannot be a score, so the
 			// scans go through a macro. One instantiation per redraw, not per player.
 			executeRun("store result storage ra:temp goggles.range int 1", Settings.get, "{key:\"goggles_range\",default:16}")
 			raw("execute if data storage ra:temp goggles{range:0} run data modify storage ra:temp goggles.range set value 16")
 			callWith(Goggles.scanRange, "storage ra:temp goggles")
-			// Whether blocks draw the item they filter for above their readout (Goggles page). Read
-			// once per redraw, here, so a block's draw tests a score instead of reading a setting.
-			executeRun("store result score ${Goggles.FILTER_PREVIEW} ${Obj.TEMP}", Settings.get, "{key:\"goggles_filter_preview\",default:1}")
 
 			executeRun("as @e[type=marker,tag=ra.goggles_seen,tag=${Tag.CUSTOM_BLOCK}] at @s", Goggles.drawBlock)
 			executeRun("as @e[type=marker,tag=ra.goggles_seen,tag=${Tag.MULTIBLOCK}] at @s", Goggles.drawMultiblock)
 
 			raw("tag @e[type=marker,tag=ra.goggles_seen] remove ra.goggles_seen")
+			raw("tag @e[type=marker,tag=${Goggles.FILTER_PREVIEW_TAG}] remove ${Goggles.FILTER_PREVIEW_TAG}")
 			// Re-applied next tick if still wearing/holding.
 			raw("tag @a remove ra.goggles_active")
 		}
@@ -89,6 +93,11 @@ object GogglesTool {
 		pack.define(Goggles.scanRange) {
 			for (kind in listOf(Tag.CUSTOM_BLOCK, Tag.MULTIBLOCK))
 				raw("\$execute as @a[tag=ra.goggles_active] at @s run tag @e[type=marker,tag=$kind,distance=..\$(range)] add ra.goggles_seen")
+			// Filter previews are per player only as far as a shared entity allows: a block marker
+			// is marked for a preview when a wearer who wants previews (`ra.u.fprev`) is in range.
+			// Skipped entirely while the server switch is off. Custom blocks only: no multiblock
+			// draws a filter item.
+			raw("\$execute if score ${Goggles.FILTER_PREVIEW} ${Obj.TEMP} matches 1 as @a[tag=ra.goggles_active,scores={${Obj.USER_FILTER_PREVIEW}=1..}] at @s run tag @e[type=marker,tag=${Tag.CUSTOM_BLOCK},distance=..\$(range)] add ${Goggles.FILTER_PREVIEW_TAG}")
 		}
 
 		// Pure routing, built from the registry: what each block shows, and what it is called, is

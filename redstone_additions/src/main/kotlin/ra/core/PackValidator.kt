@@ -34,6 +34,7 @@ object PackValidator {
 		}
 
 	private val oldDispatchKey = Regex("""\{\s*(function|condition)\s*:\s*\\?"(minecraft:)?[a-z_]+""")
+	private val oldBlockState = Regex("""block_state\s*:\s*\{\s*Name\s*:""")
 	private val playsound = Regex("""\bplaysound \S+ \S+ \S+ \S+ \S+ \S+ \S+ ([0-9.]+)""")
 
 	/**
@@ -42,7 +43,8 @@ object PackValidator {
 	 * the WHOLE function -- and a function tag listing it then fails too: one Keypad placement
 	 * handler written `{function:"minecraft:fill_player_head"}` took `#ra:placement_handlers`
 	 * down and with it every block's placement. Also catches a `playsound` pitch above 2.0, which
-	 * fails the same way. Always fatal.
+	 * fails the same way, and a display's `block_state:{Name:...}`, which 26.3 cannot decode (the
+	 * command succeeds, the display shows air; only the game log says why). Always fatal.
 	 */
 	fun preTwentySixThreeSyntax(pack: DataPack): List<String> =
 		(pack.functions + pack.generatedFunctions).flatMap { fn ->
@@ -50,6 +52,8 @@ object PackValidator {
 				if (line.trimStart().startsWith("#")) return@mapNotNull null
 				val where = "${fn.asId()}:${i + 1}"
 				oldDispatchKey.find(line)?.let { return@mapNotNull "$where: inline `${it.groupValues[1]}:` key, 26.3 uses `type:`: ${line.trim().take(120)}" }
+				// Not fatal to parse -- the command succeeds -- but the display decodes to air.
+				if (oldBlockState.containsMatchIn(line)) return@mapNotNull "$where: block_state {Name:...}, 26.3 reads {id:...} (the display shows air): ${line.trim().take(120)}"
 				playsound.find(line)?.groupValues?.get(1)?.toDoubleOrNull()?.takeIf { it > 2.0 }
 					?.let { "$where: playsound pitch $it above 2.0: ${line.trim().take(120)}" }
 			}

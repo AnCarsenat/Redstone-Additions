@@ -5,18 +5,18 @@
 **One place:** `version` in `redstone_additions/gradle.properties`.
 
 ```properties
-version=6.0.2
+version=6.0.3
 ```
 
 Everything in the Kore build reads it from there:
 
 ```mermaid
 flowchart LR
-    A["gradle.properties<br/>version=6.0.2"] --> B["Gradle project.version"]
+    A["gradle.properties<br/>version=6.0.3"] --> B["Gradle project.version"]
     B --> C["build.gradle.kts<br/>kore.systemProperties<br/>ra.version"]
     C --> D["RedstoneAdditions.VERSION"]
-    D --> E["pack.mcmeta description<br/>' v6.0.2'"]
-    D --> F["ra:load messages<br/>'v6.0.2 loaded'"]
+    D --> E["pack.mcmeta description<br/>' v6.0.3'"]
+    D --> F["ra:load messages<br/>'v6.0.3 loaded'"]
 ```
 
 | Step | Code |
@@ -109,7 +109,7 @@ To check the packages locally without uploading:
 
 ```bash
 cd redstone_additions && ./gradlew koreBuild && cd ..
-GAME_VERSIONS=26.3 python3 .github/scripts/modrinth_publish.py 6.0.2 --dry-run --out dist
+GAME_VERSIONS=26.3 python3 .github/scripts/modrinth_publish.py 6.0.3 --dry-run --out dist
 ```
 
 ### The changelog

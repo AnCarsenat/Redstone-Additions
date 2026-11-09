@@ -1,8 +1,8 @@
 # Sensors
 
 Blocks that react to entities and to the world: one detects entities, two add or remove scoreboard
-tags on them, one reads the light level, one the weather and time of day, and one looks for an item
-players carry. Handy for adventure
+tags on them, one reads the light level, one the weather and time of day, one looks for an item
+players carry and one for players by name. Handy for adventure
 maps, mob farms, trigger zones and automatic lighting.
 
 ## Getting them
@@ -15,6 +15,7 @@ maps, mob farms, trigger zones and automatic lighting.
 | Light Sensor | target block | ![Light Sensor recipe](images/recipes/ra_sensors/light_sensor.png){ width="220" } |
 | Weather Sensor | waxed weathered copper | ![Weather Sensor recipe](images/recipes/ra_sensors/weather_sensor.png){ width="220" } |
 | Held Item Detector | waxed exposed chiseled copper | ![Held Item Detector recipe](images/recipes/ra_sensors/held_item_detector.png){ width="220" } |
+| Player Detector | waxed oxidized chiseled copper | ![Player Detector recipe](images/recipes/ra_sensors/player_detector.png){ width="220" } |
 
 Operators: `/function ra_sensors:items/give_all`.
 
@@ -157,6 +158,19 @@ An id or tag the game does not know (a typo, an item from a pack that is no long
 detects nothing until it is corrected. The Goggles show the item, the slot, the radius and the
 output.
 
+### Player Detector
+
+Turns on while a player whose name is in its **players** list is in range. The list holds up to
+16 names and is edited in the [Data Handler](tools.md) like the Tag Adder's tags
+(`players: list (0/16) [Add] [Edit all] [List]`); a new detector starts with an empty list and
+stays off until you add someone. Names are matched exactly, capitals included: `Steve` is not
+`steve`.
+
+A name may hold letters, digits and `_` (as every Minecraft name does); one the Data Handler would
+refuse (with a space or a quote, written with a command) is skipped, and the Goggles show
+**Refused names: N** until it is fixed. The Goggles also show how many names are listed, the
+radius and the output.
+
 ## Ideas
 
 - A pressure plate into a Tag Adder marks players who entered a zone; a Tag Remover at the exit
@@ -167,6 +181,7 @@ output.
 - A Weather Sensor on `rain` closes a roof with pistons; one on `night` lights a village.
 - A Held Item Detector on `#minecraft:pickaxes` opens the mine door for anyone carrying a pickaxe;
   one on `mainhand` with a torch lights a cave while you hold it up.
+- A Player Detector at a base door opens it for its owners only.
 
 ---
 
@@ -216,3 +231,10 @@ output.
   `data.data.valid_item` or `data.data.invalid_item`, so a value is probed once per change, not
   every read. The radius is read clamped to 1..64 (`readCappedProperty`). The result is
   `data.status.output` ("on" / "off"). The wrench row `Slot` runs `…/cycle_slot`.
+- Player Detector: `data.properties.players` (a list) and `radius`. When the list differs from
+  `data.data.players_src` (the list last seen, compared with one `data modify`, not walked), each
+  entry is checked once with `ra_lib:safe/check` (format `ID`) and those that pass are kept in
+  `data.data.players`; `data.status.listed` counts them and `data.status.skipped` the refused ones.
+  Each read then runs `execute if entity @a[name="<name>",distance=..<radius>,gamemode=!spectator]`
+  per kept name (`…/player_detector/match`, a macro), stopping at the first hit. A checked name
+  has no quote, backslash or space, so inside the selector's quotes it can only be the name.

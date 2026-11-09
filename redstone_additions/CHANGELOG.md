@@ -30,6 +30,13 @@
   Detector's: iron blocks around it turn into redstone blocks. Read once a second on the world
   sensors' clock. The Goggles show the item, the slot, the radius and the output. Crafted from five
   copper ingots, an item frame, an observer and two redstone.
+- **Player Detector** (Sensors). Turns on while a player from its list of names is within its
+  *radius* (1 to 16, default 5). The list holds up to 16 names, edited in the Data Handler like the
+  Tag Adder's tags ([Add], [Edit all], [List]); names are matched exactly, capitals included, and a
+  new detector starts with an empty list. Spectators are never counted. Output as the Entity
+  Detector's. Read once a second on the world sensors' clock. The Goggles show how many names are
+  listed, the radius and the output. Crafted from five copper ingots, a book and quill, an observer
+  and two redstone.
 
 ### Changed
 

@@ -15,5 +15,6 @@ val SensorsPage = Page(
 		"light_sensor" to "Light Sensor",
 		"weather_sensor" to "Weather Sensor",
 		"held_item_detector" to "Held Item Detector",
+		"player_detector" to "Player Detector",
 	),
 )

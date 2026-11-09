@@ -1,6 +1,6 @@
 # Recipe Atlas
 
-Every recipe in the pack, in one place: 74 of them.
+Every recipe in the pack, in one place: 75 of them.
 
 !!! tip "Finding one"
     Use the search box with the item's name — every recipe below is indexed by
@@ -74,6 +74,7 @@ what the pack actually contains rather than what someone remembered to add.
 | [Nether Core](#not-crafted-won-on-an-enchanting-table) | [Infinite Generators](infinite-generators.md) | Enchanting table |
 | [Nether Generator](#infinite-generators) | [Infinite Generators](infinite-generators.md) | Crafting table, shapeless |
 | [Netherite Multiblock Base](#multiblocks) | [Multiblocks](multiblocks.md) | Crafting table |
+| [Player Detector](#sensors) | [Sensors](sensors.md) | Crafting table |
 | [Poppy Core](#not-crafted-won-on-an-enchanting-table) | [Infinite Generators](infinite-generators.md) | Enchanting table |
 | [Poppy Generator](#infinite-generators) | [Infinite Generators](infinite-generators.md) | Crafting table, shapeless |
 | [Randomizer](#logic-gates) | [Logic Gates](logic-gates.md) | Crafting table |
@@ -191,6 +192,7 @@ Module page: [Sensors](sensors.md) — give everything: `/function ra_sensors:it
 | **Entity Detector** | ![Entity Detector recipe](images/recipes/ra_sensors/entity_detector.png){ width="220" } | Crafting table | `ra_sensors:entity_detector` |
 | **Held Item Detector** | ![Held Item Detector recipe](images/recipes/ra_sensors/held_item_detector.png){ width="220" } | Crafting table | `ra_sensors:held_item_detector` |
 | **Light Sensor** | ![Light Sensor recipe](images/recipes/ra_sensors/light_sensor.png){ width="220" } | Crafting table | `ra_sensors:light_sensor` |
+| **Player Detector** | ![Player Detector recipe](images/recipes/ra_sensors/player_detector.png){ width="220" } | Crafting table | `ra_sensors:player_detector` |
 | **Tag Adder** | ![Tag Adder recipe](images/recipes/ra_sensors/tag_adder.png){ width="220" } | Crafting table | `ra_sensors:tag_adder` |
 | **Tag Remover** | ![Tag Remover recipe](images/recipes/ra_sensors/tag_remover.png){ width="220" } | Crafting table | `ra_sensors:tag_remover` |
 | **Weather Sensor** | ![Weather Sensor recipe](images/recipes/ra_sensors/weather_sensor.png){ width="220" } | Crafting table | `ra_sensors:weather_sensor` |

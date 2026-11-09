@@ -252,17 +252,20 @@ This page mirrors key datapack milestones from the main project changelog.
 - **Security**, a new module (`ra_security`, [Security](security.md)): blocks that open only for the right code. Its
   settings page lists its blocks and the Keypad Controller's defaults, and it has its own branch in the
   advancement tab.
-- **Keypad Controller** (Security). A target block locked by a Pattern. Its owner (whoever placed it)
-  sneak + right-clicks it with a recorded Pattern to set the code; anyone then right-clicks it with
-  a Pattern to enter one, and the Pattern stays in their hand. The right one makes the Keypad Controller give a
-  redstone pulse (`pulse`, 20 ticks by default) and chime; a wrong one buzzes, and after three
-  wrong tries in a row it refuses every try for 30 seconds (`max_attempts` and `lockout`, which only
-  admins can change). Only the owner or an admin can change the code once it is set; a blank
-  Pattern clears it, and so does a plain Wrench click. The code is never shown: the Goggles say only
-  whether one is set, who owns the Keypad Controller and its state, and the Data Handler and Clipboard never
-  see it. Shift+RMB with the Wrench steps the pulse through 2, 10, 20 and 40 ticks. Nothing runs
-  while nobody uses it. Crafted from three stone buttons, four iron ingots, a target block and a
-  redstone dust.
+- **Keypad Controller** (Security). A crafter whose slots are the keypad: open it and click its
+  empty slots to switch them off and on, and the set of slots switched off is the code. A
+  combination is entered once the grid has stopped changing for 4 seconds, and every slot is then
+  switched back on. The first combination entered becomes the code ("code set"); after that the
+  right one gives a redstone pulse (`pulse`, 20 ticks by default) and a chime, and a wrong one
+  buzzes; after three wrong tries in a row it refuses every try for 30 seconds (`max_attempts` and
+  `lockout`, which only admins can change). For the pulse it turns into a powered target block,
+  drawn as a lit crafter, so dust, repeaters and components next to it pick it up; then it is a
+  crafter again. Its owner (whoever placed it) or an admin clears the code with a plain Wrench
+  click, and the next combination entered sets a new one. It never crafts: items put into it are
+  thrown back out at once. The code is never shown: the Goggles say only whether one is set, who
+  owns the Keypad Controller and its state, and the Data Handler and Clipboard never see it.
+  Shift+RMB with the Wrench steps the pulse through 2, 10, 20 and 40 ticks. Crafted from three
+  stone buttons, four iron ingots, a crafter and a redstone dust.
 
 ### Changed
 

@@ -59,8 +59,9 @@ object EnderModule : GameplayModule {
 			scoreboard.objectives.add(EnderIds.GRACE)
 			// The destination menu (Anchor Terminal, Anchor Tablet).
 			scoreboard.objectives.add(Chooser.GO, ScoreboardCriteria.TRIGGER)
-			for (o in listOf(Chooser.MENU, Chooser.SRC, ChooserInput.PEND, ChooserInput.REQ) + AnchorTerminal.objectives + AnchorTablet.objectives)
+			for (o in listOf(Chooser.MENU, Chooser.SRC, ChooserInput.PEND, ChooserInput.REQ) + AnchorTablet.objectives)
 				scoreboard.objectives.add(o)
+			for (o in AnchorTerminal.objectives) raw("scoreboard objectives add $o")
 
 			for (b in blocks) function(b.fn("register_block"))
 

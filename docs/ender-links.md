@@ -195,14 +195,16 @@ The terminal and the tablet share one chat menu (`ra_ender:chooser/*`). Every bu
 `/trigger ra.ender.go set <n>`: 1 shows the menu again, 2 types a destination, 3 and 4 are the
 tablet's last trip ([Go], [Save]), 11–18 favourite 1–8, 21–28 forget favourite 1–8. The trigger is
 enabled when a menu is drawn and taken back a minute later or after a trip. A click is checked
-again where it lands: still on a terminal (the box above it), or still holding the tablet; the
+again where it lands: still on a terminal (its marker right under their feet), or still holding the tablet; the
 favourites are read again from the block or the item at that moment. A typed name comes back
 through `ra_lib:input` (request id kept in `ra.ender.req`) and is cleaned to format `ID`, as an
 anchor cleans its own name, before `ra_ender:anchors/lookup` and `ra_ender:anchors/send`.
 
-A terminal costs one player box test per tick (the block above it), and nothing when no terminal
-is loaded. The sneak is a pressed edge: a player seen on a terminal the tick before
-(`ra.ender.t_seen`) who was not sneaking then (`ra.ender.t_sneak`). The tablet's right-click is
+Terminals are driven from the player, as the Elevator: one `@a` score filter per tick, however
+many terminals there are (none when no terminal is loaded), for the players who sneaked during the
+last tick (`ra.ender.t_sneak`, the `minecraft.sneak_time` statistic, zeroed as it is read). Only a
+press counts: `ra.ender.t_sn` is the game time the player was last seen sneaking, so a sneak seen
+the tick before is a hold. Only then is a terminal looked for, under the player's feet. The tablet's right-click is
 the `using_item` advancement `ra_ender:tablet/use` (an endless `consumable`, as on the Redstone
 Remote), and only the first tick of a press counts (`ra.ender.used`). Its recharge is a game time
 (`ra.ender.ready`), compared when it is used, so nothing counts down while it waits; vanilla's
@@ -283,7 +285,7 @@ with fifteen empty entries.
 | `ra.ender.menu` | Game time a player's destination menu expires |
 | `ra.ender.src` | What opened the menu: 1 an Anchor Terminal, 2 an Anchor Tablet |
 | `ra.ender.pend` / `ra.ender.req` | Waiting for a typed destination, and its `ra_lib:input` request |
-| `ra.ender.t_seen` / `ra.ender.t_sneak` | Last game time on a terminal, and whether sneaking then |
+| `ra.ender.t_sneak` / `ra.ender.t_sn` | Ticks spent sneaking (statistic), and the game time last seen sneaking |
 | `ra.ender.slot` | Hotbar slot of the tablet whose menu is open |
 | `ra.ender.ready` / `ra.ender.used` | Game time the tablet is ready again; last tick it was used |
 | `ra.ender.pick` | The vault picked as partner, for one command |

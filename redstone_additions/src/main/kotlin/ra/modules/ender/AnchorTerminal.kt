@@ -15,7 +15,6 @@ import ra.core.block.BreakTest
 import ra.core.block.CustomBlock
 import ra.core.block.blockTick
 import ra.core.block.finishPlacement
-import ra.core.block.forEachMarker
 import ra.core.block.gogglesHeader
 import ra.core.block.markerSel
 import ra.core.block.placeBlock
@@ -43,10 +42,12 @@ import ra.modules.ender.chooser.Chooser
  * terminal could no longer be broken by hand. Standing on it is what the Teleport Anchor and the
  * Elevator already ask, and a sneak is a deliberate press, not something walking across does.
  *
- * WHAT IT COSTS WHILE NOBODY USES IT. One `@a` box test per terminal per tick (the block above
- * it), and the module tick runs none of it without a terminal in the world. Only a player in that
- * box is looked at further: a sneak pressed since the last tick (against [SNEAK], kept while the
- * player is seen on a terminal tick after tick, [SEEN]) opens the menu, holding it does not.
+ * DRIVEN FROM THE PLAYER, NOT FROM THE BLOCK, as the Elevator. The idle cost is one `@a` score
+ * filter per tick however many terminals a world holds (none without a terminal): the players who
+ * sneaked during the last tick ([SNEAK_TIME], the `minecraft.sneak_time` statistic, zeroed as it is
+ * read). The menu opens on the press, not while sneak is held: [SNEAK] is the game time the player
+ * was last seen sneaking, so a sneak seen the tick before is a hold. Only on a press is a terminal
+ * looked for, as the marker right under the player's feet ([find]).
  */
 object AnchorTerminal {
 	val block = CustomBlock(Ns.ENDER, "anchor_terminal", "Anchor Terminal", model = "minecraft:lodestone")
@@ -61,20 +62,17 @@ object AnchorTerminal {
 	 * `storage ra:ender menu.favs`, or returns 0.
 	 */
 	val find = block.fn("find")
-	private val check = block.fn("check")
-	private val rider = block.fn("rider")
+	private val sneaked = block.fn("sneaked")
 
-	/** The game time a player was last seen on a terminal. */
-	private const val SEEN = "ra.ender.t_seen"
-	/** 1 when the player was sneaking the last time they were seen on a terminal. */
-	private const val SNEAK = "ra.ender.t_sneak"
-	/** Objectives, for the module's load. */
-	val objectives = listOf(SEEN, SNEAK)
+	/** The sneak-time statistic: ticks spent sneaking. */
+	private const val SNEAK_TIME = "ra.ender.t_sneak"
+	/** The game time the player was last seen sneaking. */
+	private const val SNEAK = "ra.ender.t_sn"
+	/** Objectives (`name criterion`), for the module's load. */
+	val objectives = listOf("$SNEAK_TIME minecraft.custom:minecraft.sneak_time", "$SNEAK dummy")
 
-	/** On the terminal whose riders are being handled. */
+	/** On the terminal under the player [find] works for, for one function. */
 	private const val HERE = "ra.ender.terminal_here"
-	/** On the player [find] works for, for one command. */
-	private const val ME = "ra.ender.me"
 
 	private const val T = Obj.TEMP
 
@@ -101,8 +99,7 @@ object AnchorTerminal {
 			finishPlacement(block)
 		}
 
-		pack.define(check) { check() }
-		pack.define(rider) { rider() }
+		pack.define(sneaked) { sneaked() }
 		pack.define(find) { find() }
 
 		pack.define(block.goggles) {
@@ -115,53 +112,42 @@ object AnchorTerminal {
 		}
 
 		val onBreak = pack.enderOnBreak(block, item)
-		pack.blockTick(block, onBreak, BreakTest.NotBlock(Blocks.LODESTONE)) { forEachMarker(block, check) }
+		pack.blockTick(block, onBreak, BreakTest.NotBlock(Blocks.LODESTONE)) {
+			// The whole idle cost: one score filter, independent of the terminal count.
+			executeRun("as @a[scores={$SNEAK_TIME=1..}] at @s", sneaked)
+		}
 	}
 
-	/** One terminal. As its marker, at its block. */
-	private fun Function.check() {
-		// The block above it, the only place a rider stands. The idle cost of the whole block.
-		raw("execute positioned ~-0.5 ~0.5 ~-0.5 unless entity @a[dx=0,dy=0,dz=0,gamemode=!spectator,limit=1] run return 0")
+	/** A player sneaked during the last tick. As the player, at them. Opens the menu on a press only. */
+	private fun Function.sneaked() {
+		raw("scoreboard players set @s $SNEAK_TIME 0")
 		raw("execute store result score #ender.now $T run time query gametime")
-		raw("tag @s add $HERE")
-		executeRun("positioned ~-0.5 ~0.5 ~-0.5 as @a[dx=0,dy=0,dz=0,gamemode=!spectator]", rider)
-		raw("tag @s remove $HERE")
-	}
-
-	/** A player on top of a terminal. As the player; #ender.now is the game time. */
-	private fun Function.rider() {
-		// Handled already this tick (two terminals side by side both see a player on the seam).
-		raw("execute if score @s $SEEN = #ender.now $T run return 0")
 		raw("scoreboard players operation #ender.prev $T = #ender.now $T")
 		raw("scoreboard players remove #ender.prev $T 1")
-		raw("scoreboard players set #ender.fresh $T 0")
-		raw("execute unless score @s $SEEN = #ender.prev $T run scoreboard players set #ender.fresh $T 1")
-		raw("scoreboard players operation @s $SEEN = #ender.now $T")
-
-		// A sneak pressed since the last tick, by a player who was already here then: arriving
-		// while sneaking (or holding it) opens nothing.
-		raw("execute store success score #ender.sn $T if predicate ra:is_sneaking")
-		raw("scoreboard players set #ender.open $T 0")
-		raw("execute if score #ender.fresh $T matches 0 if score #ender.sn $T matches 1 unless score @s $SNEAK matches 1 run scoreboard players set #ender.open $T 1")
-		raw("scoreboard players operation @s $SNEAK = #ender.sn $T")
-		raw("execute if score #ender.open $T matches 0 run return 0")
+		raw("scoreboard players set #ender.held $T 0")
+		raw("execute if score @s $SNEAK = #ender.prev $T run scoreboard players set #ender.held $T 1")
+		raw("scoreboard players operation @s $SNEAK = #ender.now $T")
+		raw("execute if score #ender.held $T matches 1 run return 0")
+		raw("execute if entity @s[gamemode=spectator] run return 0")
 
 		raw("data modify storage ra:ender menu set value {}")
-		raw("data modify storage ra:ender menu.favs set from entity @e[type=marker,tag=$HERE,limit=1] data.properties.favourites")
+		raw("execute store result score #ender.ok $T run function ${find.asId()}")
+		raw("execute if score #ender.ok $T matches 0 run return 0")
 		raw("scoreboard players set @s ${Chooser.SRC} 1")
 		raw("function ${Chooser.open.asId()}")
-		raw("execute at @s run playsound minecraft:block.respawn_anchor.charge block ${soundListenersSel(8)} ~ ~ ~ 0.4 1.6")
+		raw("playsound minecraft:block.respawn_anchor.charge block ${soundListenersSel(8)} ~ ~ ~ 0.4 1.6")
 	}
 
-	/** As a player: is there a terminal under them? See [find]. */
+	/**
+	 * UNDER THE FEET, IN THIS COLUMN (as the Elevator). From the centre of the player's block
+	 * column, 0.9 below their feet, a terminal marker within 0.5 is the block they stand on; the
+	 * marker of the column next door is at least 1 away. As a player, anywhere.
+	 */
 	private fun Function.find() {
-		raw("tag @s add $ME")
-		raw("execute at @s as ${block.markerSel("distance=..3")} at @s positioned ~-0.5 ~0.5 ~-0.5 if entity @a[tag=$ME,dx=0,dy=0,dz=0,limit=1] run tag @s add $HERE")
-		raw("tag @s remove $ME")
-		raw("execute at @s run data modify storage ra:ender menu.favs set from entity ${block.markerSel("tag=$HERE", "distance=..3", "sort=nearest", "limit=1")} data.properties.favourites")
-		raw("scoreboard players set #ender.ok $T 0")
-		raw("execute at @s if entity ${block.markerSel("tag=$HERE", "distance=..3", "limit=1")} run scoreboard players set #ender.ok $T 1")
-		raw("execute at @s run tag ${block.markerSel("tag=$HERE", "distance=..3")} remove $HERE")
-		raw("return run scoreboard players get #ender.ok $T")
+		raw("execute at @s align xz positioned ~0.5 ~-0.9 ~0.5 as ${block.markerSel("distance=..0.5", "limit=1")} run tag @s add $HERE")
+		raw("execute unless entity ${block.markerSel("tag=$HERE", "limit=1")} run return 0")
+		raw("data modify storage ra:ender menu.favs set from entity ${block.markerSel("tag=$HERE", "limit=1")} data.properties.favourites")
+		raw("tag ${block.markerSel("tag=$HERE")} remove $HERE")
+		raw("return 1")
 	}
 }

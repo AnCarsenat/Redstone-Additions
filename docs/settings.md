@@ -76,6 +76,7 @@ Every setting is also a command, so you can tab-complete your way through them:
 | Power & Fluids | default Generator EU/tick (60), Consumer EU draw (40), Industrial Light EU use (10), Fluid Drain rate (5000 mL per second), Usage Meter units per pulse (1000), Tesla Coil damage per zap (6) and EU per mob zapped (200), Water Wheel EU per tick per flowing block (5) |
 | Ender Links | default Power Vault EU/tick (80), Fluid Vault transfer (200); Anchor Tablet ender pearls per trip (1, 0 to 16) and recharge (10 seconds, 0 to 600) |
 | Infinite Generators | default interval of each generator (100) |
+| Displays | default scale of a Gauge Bar, Item Hologram and Text Screen (100%, 25 to 1600) |
 | Jetpacks | Thruster Kit thrust (80%), speed cap (350), dead zone (25) |
 | Enchant Crafting | enchant crafting on/off; Disenchanter experience per enchantment moved (1000 mL, 0 to 100000); Book Upgrader base price (500 mL, 1 to 1000, doubled per level) and highest level (10, 1 to 20); Book Printer chance of a Schematic (2%, 0 to 100) and experience per level printed (1000 mL, 0 to 100000) |
 | Sensors | *Players may edit entity selectors and tags* (off): when on, players without server-settings access may change the selectors and tags of the Entity Detector, Tag Adder, Tag Remover and Message Block |

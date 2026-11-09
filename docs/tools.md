@@ -51,6 +51,9 @@ What Shift + right-click does depends on the block:
 | Ender Item / Fluid / Power Vault | mode |
 | Weather Sensor | mode (rain / thunder / day / night) |
 | Held Item Detector | slot (mainhand / offhand / either / inventory) |
+| Gauge Bar | facing, direction, colour, track colour |
+| Item Hologram | spin, name, facing, direction, name colour |
+| Text Screen | facing, direction, colour |
 
 ## Goggles
 

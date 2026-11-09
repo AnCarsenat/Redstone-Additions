@@ -15,6 +15,7 @@ object AdvancementsPart : PackPart {
 	private val trees = listOf(
 		coreTree, exampleTree, gatesTree, sensorsTree, wirelessTree, interactiveTree,
 		infiniteTree, jetpacksTree, wiresTree, enchantingTree,
+		automationTree,
 	)
 
 	override fun Ra.register() {

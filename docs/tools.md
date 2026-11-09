@@ -140,6 +140,16 @@ see it locked, and settings marked hidden do not appear for them at all. Some ad
 can be opened to everyone by a server setting: entity selectors and tags, with *Players may edit
 entity selectors and tags* (Sensors page).
 
+Admin-only settings are marked with a gold **(admin)** after their name, for everyone: an admin
+sees which of the things they can change are theirs alone, and other players see why the row is
+locked. The Wrench's cycle menu marks them the same way for admins.
+
+Admins also go past the maximum of a range or radius (a Big Torch's or Magic Crate's `radius`, a
+Message Block's `range`), up to a higher technical ceiling: the number prompt shows the admin's
+bounds. A value above the players' maximum is marked **(admin)** too (hover it), and the block
+keeps it whoever uses it later. Other players can still lower it to a value within their range.
+The Clipboard pastes a number only within the range its holder could type.
+
 A value no block declares (one added by an add-on or with the Creative Data Handler) still gets
 a row when the Handler can tell its type from its value, marked with a yellow **⚠**; hover it to
 see what was guessed. Anything it cannot place is listed under **Undeclared**.

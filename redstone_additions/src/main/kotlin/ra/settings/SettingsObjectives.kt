@@ -38,7 +38,7 @@ internal object SettingsObjectives {
 	const val DBG_WAS = "ra.u.dbg.was"
 
 	/** The server-settings permission. A role, not a session: it persists until revoked. */
-	const val ADMIN_TAG = "ra.admin"
+	const val ADMIN_TAG = ra.core.Admin.TAG
 
 	/** What `ra_settings:uninstall` removes besides the user-setting objectives, in its order. */
 	val REMOVED_ON_UNINSTALL = listOf(OPEN, ACT, ADMIN, PAGE, PEND, ra.core.Obj.SET_TMP, DBG_WAS, REQ)

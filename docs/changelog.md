@@ -13,6 +13,17 @@ This page mirrors key datapack milestones from the main project changelog.
   to 0; any other side counts. The Goggles show the count and the target.
 - **Edge Detector** (Logic Gates). Gives a pulse of *pulse* ticks (default 2) when its input turns
   on (*rising*), turns off (*falling*), or both. Shift+RMB with the Wrench cycles the mode.
+- **Light Sensor** (Sensors). Outputs the light level of the block in front of it as a redstone
+  signal of the same strength, 0 to 15, read once a second. It faces the way it was placed, like a
+  dispenser, and is itself the source: dust, a repeater or a comparator next to it picks up the
+  level, no iron blocks needed. The Goggles show the level and the facing. Crafted from three glass,
+  two redstone, a daylight detector and three cobblestone. The world sensors share one slow clock
+  that only runs while one of them is loaded.
+- **Weather Sensor** (Sensors). Turns on while it rains, during a thunderstorm, by day or by
+  night, depending on its mode; Shift+right-click with the Wrench steps through them, and the
+  Goggles show the mode and the output. Output as the Entity Detector's: iron blocks around it turn
+  into redstone blocks. Read once a second on the same clock as the Light Sensor. Crafted from
+  three glass, two redstone, a lightning rod and three copper ingots.
 
 ### Changed
 

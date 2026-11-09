@@ -41,7 +41,7 @@ off, the Tag Adder and Tag Remover do not fire.
 | --- | --- | --- | --- |
 | Entity Detector | every tick | Output is on while at least one entity matches the selector | `@e[type=minecraft:pig,distance=..5]` |
 | Tag Adder | when it gets powered | Adds `tag` to every matching entity | `@e[type=pig,distance=..5]`, tag `custom_tag` |
-| Tag Remover | when it gets powered | Removes `tag` from every matching entity — or **all** of their tags if `tag` is empty | `@e[distance=..3]`, tag `custom_tag` |
+| Tag Remover | when it gets powered | Removes `tag` from every matching entity — or **all** of their tags if `tag` is empty (never the pack's own `ra.` tags, and never on the pack's own entities) | `@e[distance=..3]`, tag `custom_tag` |
 
 **Detector output:** put **iron blocks** next to the Entity Detector (anywhere in the 3×3×3 cube
 around it). They turn into **redstone blocks** while it detects something.

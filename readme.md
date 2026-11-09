@@ -5,7 +5,7 @@
 <h1 align="center">Redstone Additions</h1>
 
 <p align="center">
-  <strong>75 custom blocks. 9 tools. 87 recipes. 2 jetpacks and 3 upgrade kits. Vanilla datapack for Minecraft 26.3.</strong>
+  <strong>76 custom blocks. 9 tools. 88 recipes. 2 jetpacks and 3 upgrade kits. Vanilla datapack for Minecraft 26.3.</strong>
 </p>
 
 <p align="center">
@@ -16,9 +16,9 @@
 <p align="center">
   <img src="https://img.shields.io/badge/Minecraft-26.3-2EA44F" alt="Minecraft 26.3">
   <img src="https://img.shields.io/badge/Version-v6.0.3-blue" alt="Version v6.0.3">
-  <img src="https://img.shields.io/badge/Blocks-75-red" alt="75 blocks">
+  <img src="https://img.shields.io/badge/Blocks-76-red" alt="76 blocks">
   <img src="https://img.shields.io/badge/Tools-9-lightgrey" alt="9 tools">
-  <img src="https://img.shields.io/badge/Recipes-87-8A2BE2" alt="87 recipes">
+  <img src="https://img.shields.io/badge/Recipes-88-8A2BE2" alt="88 recipes">
 </p>
 
 <p align="center">
@@ -136,7 +136,7 @@ listed A to Z and grouped by module.
 - Analog Emitter — sends its input level (0-15) on a channel
 - Analog Receiver — outputs its channel's level on target blocks
 
-### Transport Networks (23)
+### Transport Networks (24)
 
 Fluids, in millilitres:
 
@@ -162,6 +162,7 @@ Electricity, in EU:
 - Solar Panel
 - Industrial Light — redstone plus EU, a 10 block beam of real light
 - Electric Furnace — smelts on EU with no fuel, four power modes
+- Tesla Coil — redstone plus EU, zaps hostile mobs around it once a second
 
 Reading a network with redstone:
 

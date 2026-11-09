@@ -21,6 +21,7 @@ import ra.hub.tick
 import ra.modules.chunkloader.ChunkLoader
 import ra.modules.sensors.SensorPoll
 import ra.modules.wires.blocks.usage_meter.UsageMeter
+import ra.modules.wires.machine.MachineClock
 import ra.modules.wires.readout.Readout
 
 /**
@@ -109,6 +110,8 @@ internal fun DataPack.registerUninstallConfirm() {
 		// Usage Meter's pulse put-out.
 		schedules { clear(Readout.run) }
 		schedules { clear(UsageMeter.pulseOff) }
+		// The Tesla Coil clock, scheduled only while one of them is loaded.
+		schedules { clear(MachineClock.run) }
 
 		PLAYER_TAGS.forEach { t -> tag(allPlayers()) { remove(t) } }
 		untagMarkers("ra.dh_target")

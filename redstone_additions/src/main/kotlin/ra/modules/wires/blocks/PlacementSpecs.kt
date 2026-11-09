@@ -56,4 +56,7 @@ internal val SPECS: List<Pair<String, String>> = listOf(
 	// clock in ra_wires:readout.
 	"network_gauge" to """{block:"minecraft:target",marker:"network_gauge",dir:3,readout:1b}""",
 	"usage_meter" to """{block:"minecraft:target",marker:"usage_meter",dir:3,readout:1b,props:{mode:"consumed",every:${ra.modules.wires.blocks.usage_meter.UsageMeter.DEFAULT_EVERY},total:0}}""",
+
+	// Machines on the once-a-second clock (ra_wires:machine): `clocked` tags the marker for it.
+	"tesla_coil" to """{block:"minecraft:waxed_lightning_rod",marker:"tesla_coil",electric:1b,net:"electric",capacity:0,clocked:1b,props:{radius:${ra.modules.wires.blocks.tesla_coil.TeslaCoil.DEFAULT_RADIUS},damage:${ra.modules.wires.blocks.tesla_coil.TeslaCoil.DEFAULT_DAMAGE},eu_per_zap:${ra.modules.wires.blocks.tesla_coil.TeslaCoil.DEFAULT_EU}}}""",
 )

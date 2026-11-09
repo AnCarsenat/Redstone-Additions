@@ -29,6 +29,7 @@ import ra.modules.wires.blocks.liquid_tank.LiquidTank
 import ra.modules.wires.blocks.liquid_valve.LiquidValve
 import ra.modules.wires.blocks.network_gauge.NetworkGauge
 import ra.modules.wires.blocks.solar_panel.SolarPanel
+import ra.modules.wires.blocks.tesla_coil.TeslaCoil
 import ra.modules.wires.blocks.usage_meter.UsageMeter
 import ra.modules.wires.bridge.Bridge
 import ra.modules.wires.common.Common
@@ -50,6 +51,7 @@ import ra.modules.wires.fluid.Source
 import ra.modules.wires.liquid.Liquid
 import ra.modules.wires.liquid.LiquidBreak
 import ra.modules.wires.media.Media
+import ra.modules.wires.machine.MachineClock
 import ra.modules.wires.readout.Readout
 
 /**
@@ -59,7 +61,7 @@ import ra.modules.wires.readout.Readout
  *
  * Layout mirrors the generated paths: `blocks/<block>/` per block, `fluid/`, `electric/`,
  * `liquid/` (break handling), `bridge/`, `media/`, `common/` (display models), `debug/`,
- * `readout/` (the slow clock of the gauge and meter).
+ * `readout/` (the slow clock of the gauge and meter), `machine/` (the clock of the Tesla Coil).
  * Items, recipes and the give bundle are one data table in [WiresBlocks].
  */
 object WiresModule : GameplayModule {
@@ -77,6 +79,7 @@ object WiresModule : GameplayModule {
 		ElectricSwitch, ElectricWire, GasPump, GasTank, GasValve, IndustrialLight, LiquidDrain,
 		LiquidFilter, LiquidPipe, LiquidPump, LiquidTank, LiquidValve, SolarPanel,
 		Readout, NetworkGauge, UsageMeter,
+		MachineClock, TeslaCoil,
 	)
 
 	override fun Ra.register() {

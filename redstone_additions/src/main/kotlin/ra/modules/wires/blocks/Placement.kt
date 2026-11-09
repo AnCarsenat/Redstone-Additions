@@ -18,6 +18,7 @@ import ra.core.registeredLine
 import ra.modules.wires.blocks.electric_furnace.ElectricFurnace
 import ra.modules.wires.blocks.electric_generator.ElectricGenerator
 import ra.modules.wires.common.Common
+import ra.modules.wires.machine.MachineClock
 import ra.modules.wires.readout.Readout
 
 object Placement : PackPart {
@@ -99,6 +100,7 @@ object Placement : PackPart {
 			// networks on either side of it instead of joining one.
 			raw("execute if data storage ra:wires spec.bridge run tag @s add ra.wires.bridge")
 			raw("execute if data storage ra:wires spec.readout run tag @s add ${Readout.TAG}")
+			raw("execute if data storage ra:wires spec.clocked run tag @s add ${MachineClock.TAG}")
 			executeRun("if data storage ra:wires spec.net", Placement.placeJoin, "with storage ra:wires spec")
 
 			executeRun("""if data storage ra:wires spec{marker:"electric_generator"}""", ElectricGenerator.refreshDisplay)
@@ -151,6 +153,7 @@ object Placement : PackPart {
 				"Industrial Light",
 				"Network Gauge",
 				"Usage Meter",
+				"Tesla Coil",
 			)) registeredLine(name)
 		}
 	}

@@ -1,7 +1,8 @@
 # Transport Networks
 
 Pipes for liquids and gases, wires for electricity (EU), and the machines that fill, store and use
-them: pumps, tanks, boilers, generators, solar panels, batteries, an electric furnace and lights.
+them: pumps, tanks, boilers, generators, solar panels, batteries, an electric furnace, lights
+and a tesla coil.
 
 ![An EU grid running](images/screenshots/Electricity.png)
 
@@ -32,6 +33,7 @@ them: pumps, tanks, boilers, generators, solar panels, batteries, an electric fu
 | Industrial Light | ![Industrial Light recipe](images/recipes/ra_wires/industrial_light.png){ width="220" } |
 | Network Gauge | ![Network Gauge recipe](images/recipes/ra_wires/network_gauge.png){ width="220" } |
 | Usage Meter | ![Usage Meter recipe](images/recipes/ra_wires/usage_meter.png){ width="220" } |
+| Tesla Coil | ![Tesla Coil recipe](images/recipes/ra_wires/tesla_coil.png){ width="220" } |
 
 Operators: the **Wires Bundle** (`/function ra:items/bundles/give_wires_bundle`) has everything;
 `/function ra_wires:items/give_creative` gives the two creative sources.
@@ -52,7 +54,7 @@ capacity:
 | Pipe | 1000 mL |
 | Pump, Drain | 5000 mL |
 | Liquid Tank, Gas Tank | 100000 mL (20 buckets) |
-| Wire, EU Switch, EU Breaker | 0 EU |
+| Wire, EU Switch, EU Breaker, Industrial Light, Tesla Coil | 0 EU |
 | EU Generator, EU Consumer, Solar Panel, Electric Furnace | 50 EU |
 | **Battery** | 10000 EU |
 
@@ -184,6 +186,7 @@ either.
 | **EU Consumer** | A power load: draws a fixed amount every tick, all or nothing (20 / **40** / 80 EU per tick, cycled with the Wrench). Sparks while running |
 | **Electric Furnace** | Smelts with EU instead of fuel (below) |
 | **Industrial Light** | With redstone **and** EU, shines a 10-block beam of light (stops at the first solid block). Uses 10 EU by default (`eu_use`) |
+| **Tesla Coil** | With redstone **and** EU, zaps hostile mobs around it once a second ([Tesla Coil](#tesla-coil)) |
 | **Battery** | Stores 10000 EU for later |
 
 ### Electric Furnace
@@ -207,6 +210,25 @@ missing or full, the furnace stops and the Goggles show `Output blocked` — not
 
 It smelts ores and raw metals, iron and gold gear back into nuggets, food, sand, clay, stone,
 cracked bricks, and logs into charcoal.
+
+### Tesla Coil
+
+A **Tesla Coil** sits on an EU grid and, while it has a **redstone signal**, zaps every hostile mob
+within its *radius* once a second, with an electric arc and a crackle.
+
+- Each mob hit costs *eu_per_zap* EU (default 200) and takes *damage* (default 6, three hearts) of
+  lightning damage. The grid pays per mob: with EU for only three, the three nearest are zapped.
+  With no mob in range it costs nothing.
+- At most 16 mobs a zap.
+- Only hostile mobs are hit (the entity tag `#ra_wires:tesla_targets`): never players, pets,
+  villagers, golems, animals or armour stands. Bosses are not on the list.
+- *radius* is 1 to 16 blocks (default 8): Shift+right-click with the [Wrench](tools.md) steps it
+  through 4, 8, 12 and 16, and the [Data Handler](tools.md) sets any value; server admins can go
+  up to 32. *damage* and *eu_per_zap* are for admins only; the defaults for new coils are in
+  the [Server Settings](settings.md).
+- The Goggles show `Zapping`, `No targets`, `No EU`, `No redstone` or `No grid`, the radius, the
+  cost per mob and the grid's EU.
+- The arcs and the sound follow each player's particle and sound settings.
 
 ## Reading a network with redstone
 
@@ -337,6 +359,12 @@ you extend it.
   with a new epoch, and a meter seeing a different epoch counts from 0. A count reaching
   1000000000 is lowered by that much by the meter reading it, and the others add it back.
   Properties: `mode` (`consumed` / `produced`), `every` (1–100000000), `total` (read only).
+- **Machine clock** (`ra_wires:machine/*`): the Tesla Coil acts once a second, on a
+  clock scheduled every 20 ticks only while a marker tagged `ra.wires.clocked` is loaded; their only
+  per-tick work is the break check. Tesla Coil properties: `radius` (1–16, admin 32), `damage`
+  (1–40) and `eu_per_zap` (1–100000), both admin only. Status `data.status.coil`, `last_hits`.
+  Targets are the entity type tag `#ra_wires:tesla_targets`; another pack adds a mob to it to make
+  it a target.
 - **Media registry** (`ra_wires:media/init`): display name, state, colour, particle, optional world
   block and bucket; pumpable blocks are listed as `source_blocks`, each with its medium's
   `state` (a pump or drain only considers sources of the state it carries) and `keep:1b` on a

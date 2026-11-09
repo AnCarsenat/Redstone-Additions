@@ -74,6 +74,7 @@ internal val interactiveTree = listOf(
 	egg("ra_interactive", "block_breaker", "Block Breaker", Items.IRON_PICKAXE, ONE, "Obtain the Block Breaker item."),
 	egg("ra_interactive", "block_placer", "Block Placer", Items.DISPENSER, ONE, "Obtain the Block Placer item."),
 	egg("ra_interactive", "breeder", "Breeder", Items.DISPENSER, ONE, "Obtain the Breeder item."),
+	egg("ra_interactive", "elevator", "Elevator", Items.WHITE_WOOL, TRUE),
 	egg("ra_interactive", "infinite_lava_cauldron", "Infinite Lava Cauldron", Items.CAULDRON, TRUE),
 	egg("ra_interactive", "infinite_snow_cauldron", "Infinite Snow Cauldron", Items.CAULDRON, TRUE),
 	egg("ra_interactive", "infinite_water_cauldron", "Infinite Water Cauldron", Items.CAULDRON, TRUE),
@@ -82,4 +83,5 @@ internal val interactiveTree = listOf(
 	egg("ra_interactive", "magic_crate", "Magic Crate", Items.BARREL, ONE, "Obtain the Magic Crate item."),
 	egg("ra_interactive", "message_block", "Message Block", Items.NOTE_BLOCK, TRUE),
 	egg("ra_interactive", "spitter", "Spitter", Items.DROPPER, TRUE),
+	egg("ra_interactive", "trash_can", "Trash Can", Items.CACTUS, TRUE),
 )

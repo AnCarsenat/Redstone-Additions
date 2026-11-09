@@ -1,7 +1,8 @@
 # Interactive Machines
 
 Machines for everyday automation: break and place blocks, move and sort items, breed animals,
-endless water, lava and powder snow, item magnets, mob-proof torches and message blocks.
+endless water, lava and powder snow, item magnets, mob-proof torches, message blocks,
+elevators and a trash can.
 
 ## Getting them
 
@@ -19,6 +20,8 @@ endless water, lava and powder snow, item magnets, mob-proof torches and message
 | Magic Crate | barrel | ![Magic Crate recipe](images/recipes/ra_interactive/magic_crate.png){ width="220" } |
 | Big Torch | a tall torch | ![Big Torch recipe](images/recipes/ra_interactive/big_torch.png){ width="220" } |
 | Message Block | note block | ![Message Block recipe](images/recipes/ra_interactive/message_block.png){ width="220" } |
+| Elevator | white wool | ![Elevator recipe](images/recipes/ra_interactive/elevator.png){ width="220" } |
+| Trash Can | barrel | ![Trash Can recipe](images/recipes/ra_interactive/trash_can.png){ width="220" } |
 
 Operators: `/function ra_interactive:items/give_all`.
 
@@ -36,6 +39,8 @@ Operators: `/function ra_interactive:items/give_all`.
 | Magic Crate | no | Pulls dropped items within range into itself |
 | Big Torch | no | Lights the area and removes hostile mobs that spawn nearby |
 | Message Block | when it gets powered | Sends a chat message to nearby players |
+| Elevator | no | Jump on it to go up, sneak to go down, to the next Elevator in the column |
+| Trash Can | no | Destroys every item put into it or dropped on it |
 
 "Front" is the direction the block faces when you place it.
 
@@ -160,6 +165,35 @@ settings page).
 A block without a selector sends to the players within its `range` (1–128 blocks; admins: up to
 1024).
 
+## Elevator
+
+Put Elevators in a column, one per floor, and stand on one: **jump** to go up to the next
+Elevator above, **sneak** to go down to the next one below. You land on top of it, looking the
+same way. One craft gives two.
+
+| Setting | Default | Range | Meaning |
+| --- | --- | --- | --- |
+| `range` | 16 | 2–64 (admins: up to 384) | How far the next Elevator may be, in blocks |
+
+- The next Elevator must be straight above or below, in the same column, within `range`.
+- It needs room: the two blocks on top of it must be air. Otherwise nothing happens (a low note
+  plays), and an Elevator further on is not tried: the ride only ever goes one floor.
+- Pressing sneak moves you once; holding it does not keep going down. Holding jump takes you up
+  one floor per landing.
+- The teleport sound and particles follow your block sound and particle settings.
+
+## Trash Can
+
+A barrel that destroys whatever enters it, at once:
+
+- items you put in by hand (open it like a barrel);
+- items a hopper, an [Item Pipe](#item-pipe) or an [Item Mover](#item-mover) pushes into it;
+- dropped items that land on top of it, including the item of a block broken right above it.
+
+It has no settings. Breaking it gives back the Trash Can, never what went into it. Do not put a
+hopper **under** it: a hopper above can fill it and the one below empty it in the same moment,
+before it clears.
+
 ## Changing settings
 
 Every setting above is edited with the [Data Handler](tools.md): Shift + right-click the block,
@@ -172,7 +206,7 @@ then change the row. The [Goggles](tools.md) show the current values.
 - **Physical blocks.** The Breeder is a barrel wearing a dispenser skin, so redstone never makes it
   throw its food. The Block Breaker and Block Placer are real dispensers and react to
   `dispenser[triggered=true]`. The Big Torch is an end rod (the light source) wearing an
-  enlarged torch display; the Magic Crate is a plain barrel.
+  enlarged torch display; the Magic Crate and the Trash Can are plain barrels.
 - **Big Torch.** Sweeps every 10 ticks. It remembers every hostile mob in a band reaching 16
   blocks past the radius; a mob inside the radius that it never saw there is removed. Mobs are
   teleported far below the world instead of killed. Values above 256 (the admin ceiling) are written back as 256. The
@@ -180,6 +214,17 @@ then change the row. The [Goggles](tools.md) show the current values.
 - **Magic Crate.** Skips items with a permanent pickup delay. The radius is capped at 64 (the
   admin ceiling) when used, since an unlimited radius would be a world-wide entity scan; the
   players' 20 is checked when the radius is written, so an admin's larger radius stays.
+- **Elevator.** Driven from the player, not the block: each tick only the players who jumped
+  (`minecraft.jump` statistic, `ra.elev.jump`) or sneaked (`minecraft.sneak_time`, `ra.elev.sneak`)
+  since the last one are looked at, and both scores are zeroed as they are read, so the cost does
+  not grow with the number of Elevators. For those players, an Elevator is the marker right under
+  their feet in their own block column. A sneak rides only when the player was not sneaking the
+  tick before (`ra.elev.sn`, game time). The next floor is the nearest Elevator marker in a
+  `dx=0,dz=0` box above or below, not a block scan. 6 ticks between rides (`ra.elev.cd`).
+- **Trash Can.** A barrel, emptied every tick it has a first item (`data remove block ~ ~ ~ Items`),
+  and it kills the item entities in the one block above it (`dx=0`), except items with a permanent
+  pickup delay (display items). It ticks after the Item Pipe and the Item Mover, so what they push
+  in is gone within the same tick. Both tests cost next to nothing when it is empty.
 - **Item Pipe.** The filter is `data.properties.filter_item` (an item id, empty = none);
   `data.properties.invert` (`1b`) sends non-matching stacks to the side instead. Pipes
   built when filters were item frames are converted on load; the frames are left in place.

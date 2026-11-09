@@ -39,6 +39,9 @@ import ra.modules.automation.pattern.Pattern.USER
  *   opens the crafter);
  * - anything else, or nothing in reach: sneaking clears the Pattern, otherwise a hint.
  *
+ * Recording and clearing rewrite ONE Pattern ([writeHeld]): from a held stack, one is taken and
+ * the new one handed over separately, so the rest of the stack keeps its grid.
+ *
  * THE LORE. The grid is shown as item names. Each name is a translated component built from the
  * id (`item.minecraft.<path>`, falling back to `block.minecraft.<path>` through `fallback:"%s"`),
  * written into `storage ra_automation:pattern lore.c<n>` and read into the lore by `set_lore`
@@ -55,6 +58,7 @@ object PatternUse {
 	private val lore = fn("lore")
 	private val cell = fn("lore_cell")
 	private val cellName = fn("lore_cell_name")
+	private val split = fn("split")
 
 	/** The game time the player's Pattern was last seen in use. */
 	const val USED = "ra.auto.used"
@@ -62,6 +66,9 @@ object PatternUse {
 	private const val T = Obj.TEMP
 	private const val REACH_STEPS = 50
 	private const val MODIFIER = "ra_automation:pattern/write"
+	/** The single Pattern [split] hands over, until it is rewritten. */
+	private const val OUT = "ra.auto.pattern_out"
+	private const val OUT_SEL = "@e[type=minecraft:item,tag=$OUT,limit=1]"
 
 	/** The set_lore of a recorded Pattern: three rows of three names, then the hints. */
 	private val gridLore: String = buildList {
@@ -75,7 +82,7 @@ object PatternUse {
 	private val blankLore = Pattern.blankLore().joinToString(",", "[", "]") { it.text() }
 
 	private fun setLore(lines: String) =
-		"""item modify entity @s weapon.mainhand {function:"minecraft:set_lore",entity:"this",mode:"replace_all",lore:$lines}"""
+		"""{function:"minecraft:set_lore",entity:"this",mode:"replace_all",lore:$lines}"""
 
 	fun Ra.registerPatternUse() {
 		val useAdvancement = pack.advancement("pattern/use") {
@@ -132,9 +139,10 @@ object PatternUse {
 			raw("execute unless data block ~ ~ ~ Items[0] run return run ${say("This crafter is empty: fill its grid first.", "red")}")
 			raw("data modify storage $STORE rec set value {slots:${Pattern.blankSlotsSnbt}}")
 			for (n in 0 until 9) raw("data modify storage $STORE rec.slots[$n] set from block ~ ~ ~ Items[{Slot:${n}b}].id")
-			raw("item modify entity @s weapon.mainhand $MODIFIER")
 			function(lore)
+			writeHeld(setLore(gridLore))
 			raw("data remove storage $STORE rec")
+			raw("data remove storage $STORE lore")
 			raw(say("Pattern recorded.", "green"))
 			raw("playsound minecraft:ui.cartography_table.take_result player @s[scores={${Obj.USER_SOUND}=1..}] ~ ~ ~ 0.7 1.2")
 		}
@@ -142,14 +150,24 @@ object PatternUse {
 		// As the player.
 		pack.define(clear) {
 			raw("data modify storage $STORE rec set value {slots:${Pattern.blankSlotsSnbt}}")
-			raw("item modify entity @s weapon.mainhand $MODIFIER")
-			raw(setLore(blankLore))
+			writeHeld(setLore(blankLore))
 			raw("data remove storage $STORE rec")
 			raw(say("Pattern cleared.", "yellow"))
 			raw("playsound minecraft:item.book.page_turn player @s[scores={${Obj.USER_SOUND}=1..}] ~ ~ ~ 0.7 1.0")
 		}
 
-		// storage rec.slots -> lore.c0..c8 -> the held Pattern's lore. As the player.
+		// As the player holding two or more Patterns: one of them, as an item entity at the player
+		// that only they can pick up (into the inventory, or left at their feet when it is full),
+		// and one fewer in the hand.
+		pack.define(split) {
+			raw("""summon minecraft:item ~ ~ ~ {Item:{id:"minecraft:paper",count:1},Tags:["$OUT"],PickupDelay:0s}""")
+			raw("data modify entity $OUT_SEL Item set from entity @s SelectedItem")
+			raw("data modify entity $OUT_SEL Item.count set value 1")
+			raw("data modify entity $OUT_SEL Owner set from entity @s UUID")
+			raw("item modify entity @s weapon.mainhand ${Pattern.TAKE_ONE}")
+		}
+
+		// storage rec.slots -> lore.c0..c8, for the grid lore. As the player.
 		pack.define(lore) {
 			for (n in 0 until 9) {
 				raw("data modify storage $STORE cur set from storage $STORE rec.slots[$n]")
@@ -157,8 +175,6 @@ object PatternUse {
 				raw("execute unless data storage $STORE {cur:\"\"} run function ${cell.asId()}")
 				raw("data modify storage $STORE lore.c$n set from storage $STORE lore.cell")
 			}
-			raw(setLore(gridLore))
-			raw("data remove storage $STORE lore")
 			raw("data remove storage $STORE cur")
 		}
 		pack.define(cell) { cell() }
@@ -167,6 +183,22 @@ object PatternUse {
 		pack.define(cellName) {
 			raw("\$data modify storage $STORE lore.cell set value {translate:\"item.minecraft.\$(p)\",fallback:\"%s\",with:[{translate:\"block.minecraft.\$(p)\"}],color:\"gray\"}")
 		}
+	}
+
+	/**
+	 * `storage rec.slots` and [lore] (a set_lore modifier) into ONE held Pattern. A single one is
+	 * rewritten in the hand; from a stack, one is split off ([split]) and rewritten on its own,
+	 * the rest of the stack stays as it was.
+	 */
+	private fun Function.writeHeld(lore: String) {
+		raw("execute store result score #pat.cnt $T run data get entity @s SelectedItem.count")
+		raw("execute if score #pat.cnt $T matches ..1 run item modify entity @s weapon.mainhand $MODIFIER")
+		raw("execute if score #pat.cnt $T matches ..1 run item modify entity @s weapon.mainhand $lore")
+		// Not `return`: this is inlined in its caller, which still has lines to run.
+		raw("execute if score #pat.cnt $T matches 2.. at @s run function ${split.asId()}")
+		raw("execute if score #pat.cnt $T matches 2.. run item modify entity $OUT_SEL contents $MODIFIER")
+		raw("execute if score #pat.cnt $T matches 2.. run item modify entity $OUT_SEL contents $lore")
+		raw("execute if score #pat.cnt $T matches 2.. run tag @e[type=minecraft:item,tag=$OUT] remove $OUT")
 	}
 
 	/** `storage cur` (a non-empty id) into `storage lore.cell`. */

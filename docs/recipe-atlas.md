@@ -1,6 +1,6 @@
 # Recipe Atlas
 
-Every recipe in the pack, in one place: 81 of them.
+Every recipe in the pack, in one place: 82 of them.
 
 !!! tip "Finding one"
     Use the search box with the item's name — every recipe below is indexed by
@@ -44,6 +44,7 @@ what the pack actually contains rather than what someone remembered to add.
 | [EU Generator](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
 | [EU Switch](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
 | [Extender](#logic-gates) | [Logic Gates](logic-gates.md) | Crafting table |
+| [Fan](#interactive-machines) | [Interactive Machines](interactive-machines.md) | Crafting table |
 | [Gas Pump](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
 | [Gas Tank](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
 | [Gas Valve](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
@@ -143,6 +144,7 @@ Module page: [Interactive Machines](interactive-machines.md) — give everything
 | **Breeder** | ![Breeder recipe](images/recipes/ra_interactive/breeder.png){ width="220" } | Crafting table | `ra_interactive:breeder` |
 | **Elevator** | ![Elevator recipe](images/recipes/ra_interactive/elevator.png){ width="220" } | Crafting table | `ra_interactive:elevator` |
 | **Enchanted Coal Block** | ![Enchanted Coal Block recipe](images/recipes/ra_interactive/enchanted_coal_block.png){ width="220" } | Crafting table | `ra_interactive:enchanted_coal_block` |
+| **Fan** | ![Fan recipe](images/recipes/ra_interactive/fan.png){ width="220" } | Crafting table | `ra_interactive:fan` |
 | **Infinite Lava Cauldron** | ![Infinite Lava Cauldron recipe](images/recipes/ra_interactive/infinite_lava_cauldron.png){ width="220" } | Crafting table | `ra_interactive:infinite_lava_cauldron` |
 | **Infinite Snow Cauldron** | ![Infinite Snow Cauldron recipe](images/recipes/ra_interactive/infinite_snow_cauldron.png){ width="220" } | Crafting table | `ra_interactive:infinite_snow_cauldron` |
 | **Infinite Water Cauldron** | ![Infinite Water Cauldron recipe](images/recipes/ra_interactive/infinite_water_cauldron.png){ width="220" } | Crafting table | `ra_interactive:infinite_water_cauldron` |

@@ -37,7 +37,7 @@ described in [Contributing Guidelines](contributing-guidelines.md#installing-int
 
 ## Modules
 
-**Looking for a recipe? [The Recipe Atlas](recipe-atlas.md) has all 79 of them on one
+**Looking for a recipe? [The Recipe Atlas](recipe-atlas.md) has all 82 of them on one
 page**, listed A to Z and grouped by module — plus the four items that have no recipe
 and are instead gambled for on an [enchanting table](enchant-crafting.md). This table
 is the shortcut: one sample per module, and where to read about it.
@@ -45,7 +45,7 @@ is the shortcut: one sample per module, and where to read about it.
 | Module | What you get | Sample recipe |
 |---|---|---|
 | [Logic Gates](logic-gates.md) | 10 timing/logic blocks | ![Clock recipe](images/recipes/ra_gates/clock.png){ width="220" } |
-| [Interactive Machines](interactive-machines.md) | 14 automation and utility blocks | ![Block Placer recipe](images/recipes/ra_interactive/block_placer.png){ width="220" } |
+| [Interactive Machines](interactive-machines.md) | 15 automation and utility blocks | ![Block Placer recipe](images/recipes/ra_interactive/block_placer.png){ width="220" } |
 | [Storage](storage.md) | Boxer + Unboxer workflow | ![Boxer recipe](images/recipes/ra_storage/boxer.png){ width="220" } |
 | [Sensors](sensors.md) | Entity detector, tag operators, light and weather sensors, held item and player detectors | ![Entity Detector recipe](images/recipes/ra_sensors/entity_detector.png){ width="220" } |
 | [Wireless Redstone](wireless-redstone.md) | Emitter, Receiver, and Remote | ![Wireless Emitter recipe](images/recipes/ra_wireless/emitter.png){ width="220" } |
@@ -59,8 +59,8 @@ is the shortcut: one sample per module, and where to read about it.
 
 Current pack totals:
 
-- 71 placeable custom blocks
-- 81 recipes, all of them in the [Recipe Atlas](recipe-atlas.md)
+- 72 placeable custom blocks
+- 82 recipes, all of them in the [Recipe Atlas](recipe-atlas.md)
 - 7 tools (Wrench, Goggles, Data Handler, Creative Data Handler, Clipboard,
   Multimeter, Redstone Remote)
 

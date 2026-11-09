@@ -80,6 +80,14 @@
   it. Smoke and a hiss follow each player's particle and sound settings. Crafted from six iron
   ingots, a cactus and a barrel. An empty can costs two quick tests a tick.
 
+- **Fan** (Interactive Machines). While powered, pushes dropped items, mobs and players along its
+  face through the *range* blocks in front of it (1 to 16, default 8; admins up to 64), at a speed
+  set by *strength* (1 to 5, default 2, one block a second per step; admins up to 10). It faces
+  the way it was placed, up and down included. Players are never pushed into a wall, an upward Fan
+  lifts them with Levitation, and spectators and flying creative players are left alone. A wind
+  puff follows each player's particle setting. Crafted from four cobblestone, three feathers, a
+  dropper and redstone. An unpowered Fan only checks its own block every other tick.
+
 ### Changed
 
 - **Anyone can change a Message Block's text.** It was locked to admins in v6.0.1 because rich

@@ -21,5 +21,6 @@ val GatesPage = Page(
 		"randomizer" to "Randomizer",
 		"counter" to "Counter",
 		"edge_detector" to "Edge Detector",
+		"signal_calculator" to "Signal Calculator",
 	),
 )

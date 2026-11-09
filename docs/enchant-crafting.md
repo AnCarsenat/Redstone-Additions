@@ -7,7 +7,8 @@ Cores for [Infinite Generators](infinite-generators.md) and the Infinite Jetpack
 There is nothing to craft for that: any vanilla enchanting table works. Two crafted blocks
 work with enchanted books, paid in liquid experience from a
 [fluid network](transport-networks.md): the [Disenchanter](#disenchanter) moves an item's
-enchantments onto a book.
+enchantments onto a book, and the [Book Upgrader](#book-upgrader) raises a book past its usual
+level.
 
 ## Using it
 
@@ -65,6 +66,39 @@ longer looked at until someone picks them up. The Goggles show what it is doing 
 the first network beside it that holds the whole price; nothing is taken from a network that
 holds less.
 
+## Book Upgrader
+
+![Book Upgrader recipe](images/recipes/ra_enchanting/book_upgrader.png){ width="220" }
+
+Raises one enchantment of an enchanted book by one level, for a price that doubles every level.
+
+1. Place the Book Upgrader (it looks like a lapis block) and put a network holding
+   **experience** against a side or under it, as for the Disenchanter.
+2. Drop an **enchanted book** on top.
+
+Which enchantment it raises:
+
+- the one named by its **enchantment** property, set with the [Data Handler](tools.md):
+  `sharpness` or `minecraft:sharpness`. A book without it is left alone;
+- with the property empty (the default), the first enchantment of the book in alphabetical
+  order of its id that is below the highest level.
+
+| Level | Price (default base 500 mL) |
+| --- | --- |
+| I → II | 1000 mL (10 points) |
+| III → IV | 4000 mL (40 points) |
+| V → VI | 16000 mL (160 points) |
+| IX → X | 256000 mL (2560 points) |
+
+The price is `base × 2^level` mL, taken all at once; with less than that in the network nothing is
+taken and the book waits on the block. The highest level it makes is **10**. Server settings:
+`book_upgrader_base` (1 to 1000 mL) and `book_upgrader_max` (1 to 20).
+
+One level at a time: the raised book stays on the block and is not raised again until someone
+picks it up and throws it back, so a network is never drained by accident. A book with nothing
+left to raise (all at the highest level, or without the chosen enchantment) is left alone. The
+Goggles show the chosen enchantment, what it is doing and the last price.
+
 ---
 
 ## Advanced
@@ -102,6 +136,16 @@ the first whose network holds the whole price of `experience`, with `ra_lib:tran
 Only the vanilla curses (`minecraft:binding_curse`, `minecraft:vanishing_curse`) stay on the item;
 a data pack's own curse moves to the book. Status for the Goggles is in `data.status.state` and
 `data.status.price`. It has no properties.
+
+### The Book Upgrader
+
+Property `enchantment` (text, may be empty). It is never pasted into a command: it is compared
+with the ids of the game's enchantments, a list written into `ra_enchanting:blocks/book_upgrader/pick`
+and `only` when the pack is built. So an enchantment added by a data pack is never raised. The
+level is written by one macro (`book_upgrader/apply`) whose id comes from that same list. Settings
+`book_upgrader_base` and `book_upgrader_max`; the cap stops at 20 so the price
+(`base × 2^19` at most) stays inside 32 bits. The price is one `/compute`
+(`mul(base, pow(2, level))`), and a price that ever failed to compute would read 0 and be refused.
 
 ### Cost
 

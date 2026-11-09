@@ -1,6 +1,7 @@
 package ra.settings.pages
 
 import ra.core.Ns
+import ra.modules.enchanting.BookUpgrader
 import ra.modules.enchanting.Disenchanter
 
 val EnchantingPage = Page(
@@ -8,7 +9,10 @@ val EnchantingPage = Page(
 	listOf(
 		BoolRow("enchanting", "Enchant crafting", Scope.GLOBAL, default = 1),
 		IntRow(Disenchanter.COST_KEY, "Disenchanter mL of experience per enchantment", Scope.GLOBAL, default = Disenchanter.DEFAULT_COST, min = 0, max = 100000, step = 100),
+		IntRow(BookUpgrader.BASE_KEY, "Book Upgrader base price in mL (x2 per level)", Scope.GLOBAL, default = BookUpgrader.DEFAULT_BASE, min = 1, max = 1000, step = 50),
+		IntRow(BookUpgrader.CAP_KEY, "Book Upgrader highest level", Scope.GLOBAL, default = BookUpgrader.DEFAULT_CAP, min = 1, max = BookUpgrader.MAX_CAP, step = 1),
 	) + blocks(
 		"disenchanter" to "Disenchanter",
+		"book_upgrader" to "Book Upgrader",
 	),
 )

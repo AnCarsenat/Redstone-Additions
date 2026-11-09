@@ -1,6 +1,6 @@
 # Recipe Atlas
 
-Every recipe in the pack, in one place: 85 of them.
+Every recipe in the pack, in one place: 86 of them.
 
 !!! tip "Finding one"
     Use the search box with the item's name — every recipe below is indexed by
@@ -21,6 +21,7 @@ what the pack actually contains rather than what someone remembered to add.
 | [Block Breaker](#interactive-machines) | [Interactive Machines](interactive-machines.md) | Crafting table |
 | [Block Placer](#interactive-machines) | [Interactive Machines](interactive-machines.md) | Crafting table |
 | [Boiler](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
+| [Book Upgrader](#enchant-crafting) | [Enchant Crafting](enchant-crafting.md) | Crafting table |
 | [Boxer](#storage) | [Storage](storage.md) | Crafting table |
 | [Breeder](#interactive-machines) | [Interactive Machines](interactive-machines.md) | Crafting table |
 | [Chunk Loader](#chunk-loader) | [Chunk Loader](chunk-loader.md) | Crafting table |
@@ -119,6 +120,7 @@ Module page: [Enchant Crafting](enchant-crafting.md) — give everything: `/func
 
 | Item | Recipe | Station | Namespace id |
 | ---- | ------ | ------- | ------------ |
+| **Book Upgrader** | ![Book Upgrader recipe](images/recipes/ra_enchanting/book_upgrader.png){ width="220" } | Crafting table | `ra_enchanting:book_upgrader` |
 | **Disenchanter** | ![Disenchanter recipe](images/recipes/ra_enchanting/disenchanter.png){ width="220" } | Crafting table | `ra_enchanting:disenchanter` |
 
 ## Ender Links

@@ -31,6 +31,7 @@ import ra.core.block.CustomBlock
 import ra.core.block.markerSel
 import ra.core.executeRun
 import ra.modules.enchanting.Disenchanter.registerDisenchanter
+import ra.modules.enchanting.BookUpgrader.registerBookUpgrader
 import ra.modules.enchanting.xp.XpPay.registerXpPay
 
 /**
@@ -45,6 +46,10 @@ import ra.modules.enchanting.xp.XpPay.registerXpPay
  * sacrificed item compound) and writes `result` (the item to produce, absent = not mine) and
  * `chance` (percent, 1..100, defaults to 5). The first recipe that matches wins: write recipes
  * with [sacrificeRecipe], which steps aside when an earlier recipe already wrote `result`.
+ *
+ * Two crafted blocks work on enchanted books the same way, with items thrown on top: the
+ * [Disenchanter] and the [BookUpgrader], paid in liquid experience ([ra.modules.enchanting.xp.XpPay]).
+ * They run from the same scan, every [BLOCK_STEPS] steps.
  */
 object EnchantingModule : GameplayModule {
 	override val ns = Ns.ENCHANTING
@@ -65,7 +70,7 @@ object EnchantingModule : GameplayModule {
 	private const val BLOCK_STEPS = 2
 
 	/** The module's placeable blocks with their `process`, in tick and give order. */
-	private val enchantBlocks get() = listOf(Disenchanter.block to Disenchanter.process)
+	private val enchantBlocks get() = listOf(Disenchanter.block to Disenchanter.process, BookUpgrader.block to BookUpgrader.process)
 
 	/**
 	 * `@e[type=item,dx=0,dy=0,dz=0,tag=!ra.ench.done,...]`: an untagged item lying on the block, from
@@ -86,11 +91,12 @@ object EnchantingModule : GameplayModule {
 		registerSacrifice()
 		registerXpPay()
 		registerDisenchanter()
+		registerBookUpgrader()
 
 		pack.define(ref(ns, "items/give_all")) { for ((b, _) in enchantBlocks) function(b.give) }
 		bundles += GiveBundle(
-			"enchanting", "Enchant Crafting Bundle", "Disenchanter", ns,
-			listOf(Disenchanter.item).map { it.stackNbt() },
+			"enchanting", "Enchant Crafting Bundle", "Disenchanter and Book Upgrader", ns,
+			listOf(Disenchanter.item, BookUpgrader.item).map { it.stackNbt() },
 		)
 
 		// Ask every registered recipe list whether it wants this item.

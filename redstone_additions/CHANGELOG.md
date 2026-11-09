@@ -192,6 +192,12 @@
   bar vertical; the Goggles show the level. The fill is only redrawn when the level changes, and
   slides to the new length. Crafted from three glass panes, two redstone, a comparator and three
   polished blackstone.
+- **Item Hologram** (Displays). A barrel that shows the first item inside it floating above its
+  lid, turning slowly, with the item's name (its anvil name, or its usual name in your language)
+  over it. Fill it by hand or with a hopper or an Item Pipe; the hologram follows within a second.
+  Shift+right-click with the Wrench turns the spin or the name off. Nothing runs per tick: one
+  check a second, and the turning is done by the client. Crafted from a glass block, two amethyst
+  shards, an ender pearl and a barrel.
 
 ### Changed
 

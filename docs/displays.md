@@ -8,6 +8,7 @@ floating above its block.
 | Block | Looks like | Recipe |
 | --- | --- | --- |
 | Gauge Bar | polished blackstone | ![Gauge Bar recipe](images/recipes/ra_displays/gauge_bar.png){ width="220" } |
+| Item Hologram | barrel, lid up | ![Item Hologram recipe](images/recipes/ra_displays/item_hologram.png){ width="220" } |
 
 Operators: `/function ra_displays:items/give_all`.
 
@@ -31,6 +32,27 @@ Data Handler shows within a second.
 
 Crafted from three glass panes, two redstone, a comparator and three polished blackstone.
 
+## Item Hologram
+
+A barrel that shows the item inside it floating half a block above its lid, turning slowly, with
+the item's name over it.
+
+1. Place it and put an item in (by hand, a hopper, an Item Pipe...). The first item in the barrel
+   is the one shown; how many there are does not matter.
+2. Take it out, or put another one first, and the hologram follows within a second.
+3. A renamed item shows its anvil name; any other its usual name, in your language.
+
+| Property | Values | Default |
+| --- | --- | --- |
+| `spin` | the item turns (a full turn every 4 seconds) | on |
+| `show_name` | the item's name floats above it | on |
+
+Shift+right-click with the Wrench to turn either off. The display is the same for everyone looking
+at it, so these belong to the block, not to each player. Breaking it spills the barrel's contents
+as any barrel does.
+
+Crafted from a glass block, two amethyst shards, an ender pearl and a barrel.
+
 ---
 
 ## Advanced
@@ -45,3 +67,9 @@ Crafted from three glass panes, two redstone, a comparator and three polished bl
   `ra.displays.gauge_fill`. The input is read every tick (each side asked `any_side` first, as the
   gates do); the fill is redrawn only when the level changes, and the client eases it over 3 ticks.
   The last level drawn is the marker's `ra.power` score; `data.status.level` holds it for the Goggles.
+- Item Hologram: marker tag `ra.custom_block.item_hologram`, displays `ra.displays.holo_item` and
+  `ra.displays.holo_name`. Nothing runs per tick: once a second it compares `Items[0]` (without
+  slot and count) with `data.data.shown` and redraws only on a difference. The spin is the client's:
+  each second sets the next 90-degree step with a 20-tick interpolation. The name is copied as a
+  component (`custom_name`, else `item_name`), or a translation built from the item id
+  (`ra_displays:item_name/build`, there for the next display blocks too).

@@ -5,7 +5,7 @@
 <h1 align="center">Redstone Additions</h1>
 
 <p align="center">
-  <strong>81 custom blocks. 9 tools. 94 recipes. 2 jetpacks and 3 upgrade kits. Vanilla datapack for Minecraft 26.3.</strong>
+  <strong>82 custom blocks. 9 tools. 95 recipes. 2 jetpacks and 3 upgrade kits. Vanilla datapack for Minecraft 26.3.</strong>
 </p>
 
 <p align="center">
@@ -16,9 +16,9 @@
 <p align="center">
   <img src="https://img.shields.io/badge/Minecraft-26.3-2EA44F" alt="Minecraft 26.3">
   <img src="https://img.shields.io/badge/Version-v6.0.3-blue" alt="Version v6.0.3">
-  <img src="https://img.shields.io/badge/Blocks-81-red" alt="81 blocks">
+  <img src="https://img.shields.io/badge/Blocks-82-red" alt="82 blocks">
   <img src="https://img.shields.io/badge/Tools-9-lightgrey" alt="9 tools">
-  <img src="https://img.shields.io/badge/Recipes-94-8A2BE2" alt="94 recipes">
+  <img src="https://img.shields.io/badge/Recipes-95-8A2BE2" alt="95 recipes">
 </p>
 
 <p align="center">
@@ -201,8 +201,9 @@ netherrack or poppies on an enchanting table.
 - Teleport Anchor — redstone strength 1-15 picks which anchor you arrive at
 - Anchor Terminal — stand on it and sneak to pick a destination from a menu
 
-### Displays (1)
+### Displays (2)
 - Gauge Bar — a bar on its face, filled to the redstone level feeding it
+- Item Hologram — shows the item inside it, turning above the block, with its name
 
 ### Multiblock Bases (5)
 - Copper Multiblock Base

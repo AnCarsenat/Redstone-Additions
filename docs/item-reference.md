@@ -80,6 +80,7 @@ one page, A to Z and by module.
 | ra_enchanting:book_upgrader          | Book Upgrader             | ![Book Upgrader recipe](images/recipes/ra_enchanting/book_upgrader.png){ width="220" } |
 | ra_enchanting:book_printer           | Book Printer              | ![Book Printer recipe](images/recipes/ra_enchanting/book_printer.png){ width="220" } |
 | ra_displays:gauge_bar               | Gauge Bar                 | ![Gauge Bar recipe](images/recipes/ra_displays/gauge_bar.png){ width="220" } |
+| ra_displays:item_hologram           | Item Hologram             | ![Item Hologram recipe](images/recipes/ra_displays/item_hologram.png){ width="220" } |
 | ra_chunk_loader:chunk_loader         | Chunk Loader              | ![Chunk Loader recipe](images/recipes/ra_chunk_loader/chunk_loader.png){ width="220" } |
 | ra_multiblock:copper_base            | Copper Multiblock Base    | ![Copper Multiblock Base recipe](images/recipes/ra_multiblock/copper_base.png){ width="220" } |
 | ra_multiblock:iron_base              | Iron Multiblock Base      | ![Iron Multiblock Base recipe](images/recipes/ra_multiblock/iron_base.png){ width="220" } |

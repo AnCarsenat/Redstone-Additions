@@ -11,6 +11,7 @@ import ra.core.raMessage
 import ra.core.ref
 import ra.modules.displays.DisplayPoll.registerDisplayPoll
 import ra.modules.displays.DisplayPoll.resetFlag
+import ra.modules.displays.ItemName.registerItemName
 
 /**
  * Displays (`ra_displays`): blocks that show something with display entities.
@@ -25,9 +26,11 @@ object DisplaysModule : GameplayModule {
 	override val title = "Displays"
 
 	/** In registration order, which is also the placement-handler and tick order. Not `blocks`: see the gotcha. */
-	private val members: List<DisplayBlock> = listOf(GaugeBar)
+	private val members: List<DisplayBlock> = listOf(GaugeBar, ItemHologram)
 
 	override fun Ra.register() {
+		// Shared by the blocks that show an item's name.
+		registerItemName()
 		for (m in members) with(m) { registerBlock() }
 		registerDisplayPoll(members.mapNotNull { m -> m.poll?.let { m.block to it } })
 

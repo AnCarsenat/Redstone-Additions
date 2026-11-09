@@ -192,17 +192,23 @@ This page mirrors key datapack milestones from the main project changelog.
   carries data or a description of its own (another pack's item, the Goggles) is refused.
 - **Displays** (new module, `ra_displays`). Blocks that show something with display entities;
   `/function ra_displays:items/give_all` gives them, and the settings have a Displays page to turn
-  each one off.
+  each one off and to set the scale new ones get. Every display can be configured after it is
+  placed, with the Data Handler (and the Wrench for the choices): **facing** (the face it is
+  drawn on or floats from, all six), **direction** (how it is turned on that face), **colour**,
+  **position** (`offset_x/y/z`, -16 to 16 sixteenths of a block) and **scale** (25 % to 400 %,
+  admins up to 1600 %). A Data Handler change shows within a second.
 - **Gauge Bar** (Displays). A bar on its front face, filled to the redstone level feeding it, 0 to
   15, from any side; a repeater or comparator pointing in fills it. It faces the way it was placed,
-  up and down included. Shift+right-click with the Wrench changes the colour (twelve) or turns the
-  bar vertical; the Goggles show the level. The fill is only redrawn when the level changes, and
-  slides to the new length. Crafted from three glass panes, two redstone, a comparator and three
+  up and down included. *direction* is which way it fills (from the left, the right, the bottom
+  or the top); *color* and *track_color* take any of the sixteen dye colours. The Goggles show the
+  level. The fill is only redrawn when the level changes, and slides to the new length. Crafted from three glass panes, two redstone, a comparator and three
   polished blackstone.
 - **Item Hologram** (Displays). A barrel that shows the first item inside it floating above its
   lid, turning slowly, with the item's name (its anvil name, or its usual name in your language)
   over it. Fill it by hand or with a hopper or an Item Pipe; the hologram follows within a second.
-  Shift+right-click with the Wrench turns the spin or the name off. Nothing runs per tick: one
+  It can float out of any face; *direction* is where a still item faces, *color* the name's colour
+  (a colour name or `#RRGGBB`). Shift+right-click with the Wrench turns the spin or the name off,
+  or changes the rest. Nothing runs per tick: one
   check a second, and the turning is done by the client. Crafted from a glass block, two amethyst
   shards, an ender pearl and a barrel.
 - **Text Screen** (Displays). A barrel with a dark screen on its lid that shows one line of
@@ -211,7 +217,8 @@ This page mirrors key datapack milestones from the main project changelog.
   (an anvil name, or the usual name in your language); 0 or an empty slot leaves the tube dark,
   and an empty barrel shows the level itself in large digits. The text is only rewritten when what
   it shows changes; new contents show within a second. It faces the way it was placed, up and
-  down included, and breaking it spills the barrel. Crafted from three glass panes, two glowstone
+  down included (the lid follows a new facing, contents kept); *direction* turns the text a
+  quarter at a time and *color* takes a colour name or `#RRGGBB`. Breaking it spills the barrel. Crafted from three glass panes, two glowstone
   dust, a comparator and a barrel.
 - **Automation**, a new module (`ra_automation`, [Automation](automation.md)): blocks and items
   that run vanilla machines for you. Its settings page lists its blocks, and it has its own branch

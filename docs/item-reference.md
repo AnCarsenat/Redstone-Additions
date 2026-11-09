@@ -30,6 +30,9 @@ one page, A to Z and by module.
 | ra_interactive:message_block         | Message Block             | ![Message Block recipe](images/recipes/ra_interactive/message_block.png){ width="220" } |
 | ra_interactive:magic_crate           | Magic Crate               | ![Magic Crate recipe](images/recipes/ra_interactive/magic_crate.png){ width="220" } |
 | ra_interactive:big_torch             | Big Torch                 | ![Big Torch recipe](images/recipes/ra_interactive/big_torch.png){ width="220" } |
+| ra_interactive:elevator              | Elevator                  | ![Elevator recipe](images/recipes/ra_interactive/elevator.png){ width="220" } |
+| ra_interactive:trash_can             | Trash Can                 | ![Trash Can recipe](images/recipes/ra_interactive/trash_can.png){ width="220" } |
+| ra_interactive:fan                   | Fan                       | ![Fan recipe](images/recipes/ra_interactive/fan.png){ width="220" } |
 | ra_storage:boxer                     | Boxer                     | ![Boxer recipe](images/recipes/ra_storage/boxer.png){ width="220" } |
 | ra_storage:unboxer                   | Unboxer                   | ![Unboxer recipe](images/recipes/ra_storage/unboxer.png){ width="220" } |
 | ra_sensors:entity_detector           | Entity Detector           | ![Entity Detector recipe](images/recipes/ra_sensors/entity_detector.png){ width="220" } |
@@ -60,6 +63,8 @@ one page, A to Z and by module.
 | ra_wires:electric_breaker            | EU Breaker                | ![EU Breaker recipe](images/recipes/ra_wires/electric_breaker.png){ width="220" } |
 | ra_wires:industrial_light            | Industrial Light          | ![Industrial Light recipe](images/recipes/ra_wires/industrial_light.png){ width="220" } |
 | ra_wires:electric_furnace            | Electric Furnace          | ![Electric Furnace recipe](images/recipes/ra_wires/electric_furnace.png){ width="220" } |
+| ra_wires:network_gauge               | Network Gauge             | ![Network Gauge recipe](images/recipes/ra_wires/network_gauge.png){ width="220" } |
+| ra_wires:usage_meter                 | Usage Meter               | ![Usage Meter recipe](images/recipes/ra_wires/usage_meter.png){ width="220" } |
 | ra_wires:creative_eu                 | Creative EU Source        | No recipe — `ra_wires:items/give_creative` |
 | ra_wires:creative_fluid              | Creative Fluid Source     | No recipe — `ra_wires:items/give_creative` |
 | ra_ender:ender_item_vault            | Ender Item Vault          | ![Ender Item Vault recipe](images/recipes/ra_ender/ender_item_vault.png){ width="220" } |

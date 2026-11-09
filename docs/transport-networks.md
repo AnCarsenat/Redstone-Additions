@@ -30,6 +30,8 @@ them: pumps, tanks, boilers, generators, solar panels, batteries, an electric fu
 | EU Consumer | ![EU Consumer recipe](images/recipes/ra_wires/electric_consumer.png){ width="220" } |
 | Electric Furnace | ![Electric Furnace recipe](images/recipes/ra_wires/electric_furnace.png){ width="220" } |
 | Industrial Light | ![Industrial Light recipe](images/recipes/ra_wires/industrial_light.png){ width="220" } |
+| Network Gauge | ![Network Gauge recipe](images/recipes/ra_wires/network_gauge.png){ width="220" } |
+| Usage Meter | ![Usage Meter recipe](images/recipes/ra_wires/usage_meter.png){ width="220" } |
 
 Operators: the **Wires Bundle** (`/function ra:items/bundles/give_wires_bundle`) has everything;
 `/function ra_wires:items/give_creative` gives the two creative sources.
@@ -206,6 +208,48 @@ missing or full, the furnace stops and the Goggles show `Output blocked` — not
 It smelts ores and raw metals, iron and gold gear back into nuggets, food, sand, clay, stone,
 cracked bricks, and logs into charcoal.
 
+## Reading a network with redstone
+
+### Network Gauge
+
+A **Network Gauge** gives a redstone signal from how full a network is, the way a comparator reads
+a chest: `ceil(15 × stored / capacity)`, so any amount above nothing gives at least 1 and only a
+full network gives 15. It works on any network, fluid or electric: one gauge for a tank farm, a
+gas line or a battery bank.
+
+- Place it **against** a pipe, tank, wire or battery: like a dispenser it faces you, and it reads
+  the network **behind** it. With nothing there, it reads the first network beside it.
+- It is a target block and the signal comes from the block itself: dust, a repeater or a
+  comparator next to it picks it up.
+- It is not part of the network (like a valve), so placing or breaking one never splits or joins
+  anything.
+- It reads its network twice a second. A network with no capacity (wire with no Battery) reads 0.
+- The Goggles show the output level, the network number, and what the network holds out of its
+  capacity.
+
+### Usage Meter
+
+A **Usage Meter** counts what goes through a network, for an electricity or water bill: it gives
+a short redstone pulse every *every* units (mL or EU), and keeps a running *total*.
+
+- It is placed and finds its network like the Network Gauge, and is also a target block: the
+  pulse comes from the block itself.
+- *mode* `consumed` (the default) counts what is taken out of the network: what consumers,
+  furnaces and lights use, what drains pour out, and what a valve or EU Breaker moves away to
+  another network. `produced` counts what is put in: generators, solar panels, pumps, drains
+  taking in, and what a valve or breaker brings in. Shift+right-click with the
+  [Wrench](tools.md) switches the mode; the meter then counts from that moment.
+- *every* is 1 to 100000000 (default 1000; the default for new meters is in the
+  [Server Settings](settings.md)), set with the [Data Handler](tools.md).
+- *total* is read only and stops at 1000000000. **Right-click with the Wrench** sets it back to 0,
+  to start a new billing period.
+- It reads its network twice a second and gives at most one 2-tick pulse each time: with a small
+  *every* on a busy network, the pulses due wait their turn (shown as *Since last pulse*), so none
+  is lost.
+- It only counts from when it was placed. Several meters on one network each keep their own total.
+- The Goggles show the mode, the total, *every*, what has gone through since the last pulse, and
+  the network.
+
 ## Creative sources
 
 For testing, with no recipe (`/function ra_wires:items/give_creative`):
@@ -277,6 +321,22 @@ you extend it.
 - **Fixed rates** such as a generator's `generation_rate` are read-only: the Data Handler shows them
   locked.
 - **Heat sources** are the block tag `#ra_wires:heat_sources`.
+- **Readouts** (`ra_wires:readout/*`): the Network Gauge is not a node; it finds the node behind
+  it (`^ ^ ^-1` from its marker, which carries the placement facing), else the first face
+  neighbour, and runs `net/read` as that node. It is updated by a slow clock scheduled every 10
+  ticks only while a readout marker (`ra.wires.readout`) is loaded; there is no per-tick work
+  besides the break check. Network records keep no "changed" flag: adding one would put a write
+  on every transfer of every network for the sake of a few gauges. Status: `data.status.level`,
+  `network`, `amount`, `capacity`, `unit` (`mL` or `EU`).
+- **Usage counts.** A Usage Meter sets `meter:1b` and an `epoch` on its network's record; from
+  then on `net/offer_write` and `net/take_write` add each transfer to the record's `produced` or
+  `consumed` (every other network pays one `if data` per transfer). The counts are shared by
+  every meter on the network and only grow: each meter keeps the last count it read
+  (`data.data.last`, `data.data.epoch`) and adds the difference to its `total` and
+  `data.data.progress`. A rebuild writes a fresh record without the flag; the next meter flags it
+  with a new epoch, and a meter seeing a different epoch counts from 0. A count reaching
+  1000000000 is lowered by that much by the meter reading it, and the others add it back.
+  Properties: `mode` (`consumed` / `produced`), `every` (1–100000000), `total` (read only).
 - **Media registry** (`ra_wires:media/init`): display name, state, colour, particle, optional world
   block and bucket; pumpable blocks are listed as `source_blocks`, each with its medium's
   `state` (a pump or drain only considers sources of the state it carries) and `keep:1b` on a

@@ -5,7 +5,7 @@
 <h1 align="center">Redstone Additions</h1>
 
 <p align="center">
-  <strong>68 custom blocks. 8 tools. 79 recipes. 2 jetpacks and 3 upgrade kits. Vanilla datapack for Minecraft 26.3.</strong>
+  <strong>73 custom blocks. 8 tools. 84 recipes. 2 jetpacks and 3 upgrade kits. Vanilla datapack for Minecraft 26.3.</strong>
 </p>
 
 <p align="center">
@@ -16,9 +16,9 @@
 <p align="center">
   <img src="https://img.shields.io/badge/Minecraft-26.3-2EA44F" alt="Minecraft 26.3">
   <img src="https://img.shields.io/badge/Version-v6.0.3-blue" alt="Version v6.0.3">
-  <img src="https://img.shields.io/badge/Blocks-68-red" alt="68 blocks">
+  <img src="https://img.shields.io/badge/Blocks-73-red" alt="73 blocks">
   <img src="https://img.shields.io/badge/Tools-8-lightgrey" alt="8 tools">
-  <img src="https://img.shields.io/badge/Recipes-79-8A2BE2" alt="79 recipes">
+  <img src="https://img.shields.io/badge/Recipes-84-8A2BE2" alt="84 recipes">
 </p>
 
 <p align="center">
@@ -100,7 +100,7 @@ listed A to Z and grouped by module.
 - Signal Calculator
 - Sequencer
 
-### Interactive Machines (12)
+### Interactive Machines (15)
 - Block Breaker
 - Block Placer
 - Item Pipe — filters by an item id set from your hand, no item frame
@@ -109,6 +109,9 @@ listed A to Z and grouped by module.
 - Breeder
 - Magic Crate — pulls dropped items in from 5-20 blocks
 - Big Torch — drops mobs that spawn within 1-100 blocks into the void
+- Elevator — jump to go up, sneak to go down, to the next one in the column
+- Trash Can — destroys every item put into it
+- Fan — pushes items, mobs and players along its face while powered
 - Infinite Water Cauldron
 - Infinite Lava Cauldron
 - Infinite Snow Cauldron
@@ -131,7 +134,7 @@ listed A to Z and grouped by module.
 - Wireless Emitter
 - Wireless Receiver
 
-### Transport Networks (21)
+### Transport Networks (23)
 
 Fluids, in millilitres:
 
@@ -157,6 +160,11 @@ Electricity, in EU:
 - Solar Panel
 - Industrial Light — redstone plus EU, a 10 block beam of real light
 - Electric Furnace — smelts on EU with no fuel, four power modes
+
+Reading a network with redstone:
+
+- Network Gauge — redstone 0-15 from how full the network behind it is
+- Usage Meter — a pulse every N mL or EU used or made, and a running total
 
 Creative, for building and testing:
 

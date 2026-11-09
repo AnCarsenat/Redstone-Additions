@@ -138,6 +138,11 @@ fun Function.computeScoreScaled(
 	chain: String = "",
 ) = computeLine(listOf(storeScore(holder, objective)), "float ${value.snbt()} $scale", source, chain)
 
-/** `data modify storage <storage> <path> set compute default integer <value>`. [path] may hold macro arguments. */
-fun Function.computeStorage(storage: Argument, path: String, value: ContextIntProvider) =
-	line("data modify storage ${storage.asString()} $path set compute $COMPUTE_DEFAULT integer ${value.snbt()}")
+/**
+ * `[execute <chain> run ]data modify storage <storage> <path> set compute default integer <value>`.
+ * [path] may hold macro arguments; [chain] is a condition such as `if data storage ...`.
+ */
+fun Function.computeStorage(storage: Argument, path: String, value: ContextIntProvider, chain: String = "") {
+	val head = if (chain.isEmpty()) "" else "execute $chain run "
+	line("${head}data modify storage ${storage.asString()} $path set compute $COMPUTE_DEFAULT integer ${value.snbt()}")
+}

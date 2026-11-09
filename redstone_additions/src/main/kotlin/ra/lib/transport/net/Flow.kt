@@ -146,6 +146,22 @@ object Flow {
 		raw("\$execute if score #net_med ${Obj.TR_TMP} <= #net_want ${Obj.TR_TMP} run data modify storage ra:transport nets.n\$(id).media append value {m:\"\$(medium)\"}")
 
 		raw("\$data modify storage ra:transport nets.n\$(id).medium set from storage ra:transport nets.n\$(id).media[0].m")
+
+		countMetered("produced")
+	}
+
+	/**
+	 * USAGE METERS. A network a Usage Meter reads carries `meter:1b` (set by the meter, see
+	 * ra_wires:blocks/usage_meter), and only then does a transfer add what moved to its running
+	 * `produced` (offers) or `consumed` (takes) count. Every other network pays one `if data` per
+	 * transfer and writes nothing. The counts only grow; meters keep their own last reading and
+	 * take the difference, and the flag goes with the record at the next rebuild of the network.
+	 * Near 2^31 the add fails and writes nothing, so a count nobody wraps stops rather than wraps
+	 * negative.
+	 */
+	private fun Function.countMetered(key: String) {
+		val path = "nets.n\$(id).$key"
+		computeStorage(TR, path, provider { add(storageOf(TR, path), wantP) }, chain = "if data storage ra:transport nets.n\$(id).meter")
 	}
 
 	/**
@@ -197,5 +213,7 @@ object Flow {
 		// below fails silently on an empty list and would leave the old value standing.
 		raw("\$data remove storage ra:transport nets.n\$(id).medium")
 		raw("\$execute if score #net_new ${Obj.TR_TMP} matches 1.. run data modify storage ra:transport nets.n\$(id).medium set from storage ra:transport nets.n\$(id).media[0].m")
+
+		countMetered("consumed")
 	}
 }

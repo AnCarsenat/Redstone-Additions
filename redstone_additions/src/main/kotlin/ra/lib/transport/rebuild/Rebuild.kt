@@ -47,6 +47,16 @@ object Rebuild {
 			val claimed = sel(TrTag.CLAIMED)
 
 			raw("data remove storage ra:transport rb")
+
+			// A rebuild cut short by the command limit leaves its tags behind, and every one of them
+			// would be read as this rebuild's: a stale claimed node is counted into its network
+			// twice, a stale fresh root clamps a kept network, a stale frontier stops assign_next
+			// seeding. None of them means anything between rebuilds, so they all go first. The
+			// nodes it left on network 0 need nothing: every rebuild takes in unassigned nodes, and
+			// transport/tick asks for one when `running` shows the last was cut.
+			for (tag in listOf(TrTag.SCOPE, TrTag.CLAIMED, TrTag.FRESH, TrTag.FRONTIER, TrTag.WAVE)) raw("tag ${sel(tag)} remove $tag")
+			raw("data modify storage ra:transport running set value 1b")
+
 			scoreboard.players.set(tr("#meet"), Obj.TR_TMP, 0)
 			scoreboard.players.set(tr("#conflict"), Obj.TR_TMP, 0)
 			scoreboard.players.set(tr("#next_net"), Obj.TR_TMP, 0)
@@ -96,6 +106,7 @@ object Rebuild {
 			raw("scoreboard players set $claimed ${Obj.TR_OLD} 0")
 			for (tag in listOf(TrTag.SCOPE, TrTag.CLAIMED, TrTag.FRESH)) raw("tag ${sel(tag)} remove $tag")
 			for (scratch in listOf("arg", "snapq", "snapi", "absq", "rb")) raw("data remove storage ra:transport $scratch")
+			raw("data remove storage ra:transport running")
 
 			// Two kept networks met (rebuild/meet): go round once more, with both of them in scope
 			// from `pending`. Once only -- the second pass has no unassigned nodes left, so it cannot

@@ -186,12 +186,21 @@ object Bridge : PackPart {
 			scoreboard.players.set(literal("#br.found"), "ra.wires.tmp", 0)
 			data(Storage.WIRES) { remove("bridge") }
 
-			executeRun("positioned ~1 ~ ~ as @e[type=marker,tag=ra.tr.node,distance=..0.75,limit=1]", Bridge.consider, "{dx:1,dy:0,dz:0}")
-			executeRun("positioned ~-1 ~ ~ as @e[type=marker,tag=ra.tr.node,distance=..0.75,limit=1]", Bridge.consider, "{dx:-1,dy:0,dz:0}")
-			executeRun("positioned ~ ~ ~1 as @e[type=marker,tag=ra.tr.node,distance=..0.75,limit=1]", Bridge.consider, "{dx:0,dy:0,dz:1}")
-			executeRun("positioned ~ ~ ~-1 as @e[type=marker,tag=ra.tr.node,distance=..0.75,limit=1]", Bridge.consider, "{dx:0,dy:0,dz:-1}")
-			executeRun("positioned ~ ~1 ~ as @e[type=marker,tag=ra.tr.node,distance=..0.75,limit=1]", Bridge.consider, "{dx:0,dy:1,dz:0}")
-			executeRun("positioned ~ ~-1 ~ as @e[type=marker,tag=ra.tr.node,distance=..0.75,limit=1]", Bridge.consider, "{dx:0,dy:-1,dz:0}")
+			// Only networks of this bridge's own class count. Every transport node wears
+			// ra.tr.node, so without this an Item Pipe beside a valve (item class, no capacity)
+			// was picked as the emptiest neighbour and left the valve "blocked" for ever, and an
+			// EU Breaker beside a fluid pipe offered EU into a fluid network. Valves and the
+			// Liquid Filter work on fluid networks (liquid and gas share that class); the
+			// breaker works on electric ones. bridge/transfer runs from here and reads it too.
+			raw("execute store result score #br.class ra.wires.tmp run data get storage ra:transport classes.fluid")
+			raw("execute if entity @s[tag=ra.custom_block.electric_breaker] store result score #br.class ra.wires.tmp run data get storage ra:transport classes.electric")
+
+			executeRun("positioned ~1 ~ ~ as @e[type=marker,tag=ra.tr.node,distance=..0.75,limit=1] if score @s ra.tr.class = #br.class ra.wires.tmp", Bridge.consider, "{dx:1,dy:0,dz:0}")
+			executeRun("positioned ~-1 ~ ~ as @e[type=marker,tag=ra.tr.node,distance=..0.75,limit=1] if score @s ra.tr.class = #br.class ra.wires.tmp", Bridge.consider, "{dx:-1,dy:0,dz:0}")
+			executeRun("positioned ~ ~ ~1 as @e[type=marker,tag=ra.tr.node,distance=..0.75,limit=1] if score @s ra.tr.class = #br.class ra.wires.tmp", Bridge.consider, "{dx:0,dy:0,dz:1}")
+			executeRun("positioned ~ ~ ~-1 as @e[type=marker,tag=ra.tr.node,distance=..0.75,limit=1] if score @s ra.tr.class = #br.class ra.wires.tmp", Bridge.consider, "{dx:0,dy:0,dz:-1}")
+			executeRun("positioned ~ ~1 ~ as @e[type=marker,tag=ra.tr.node,distance=..0.75,limit=1] if score @s ra.tr.class = #br.class ra.wires.tmp", Bridge.consider, "{dx:0,dy:1,dz:0}")
+			executeRun("positioned ~ ~-1 ~ as @e[type=marker,tag=ra.tr.node,distance=..0.75,limit=1] if score @s ra.tr.class = #br.class ra.wires.tmp", Bridge.consider, "{dx:0,dy:-1,dz:0}")
 
 			raw("execute if score #br.found ra.wires.tmp matches ..1 run return run data modify entity @s data.status.bridge_state set value \"needs_two_networks\"")
 
@@ -269,8 +278,8 @@ object Bridge : PackPart {
 			data(Storage.WIRES) { remove("filter") }
 			raw("execute if data entity @s data.properties.filter_medium run data modify storage ra:wires filter.medium set from entity @s data.properties.filter_medium")
 
-			raw("\$execute positioned ~\$(sx) ~\$(sy) ~\$(sz) as @e[type=marker,tag=ra.tr.node,distance=..0.75,limit=1] run function ${Bridge.readSrc.asId()}")
-			raw("\$execute positioned ~\$(dx) ~\$(dy) ~\$(dz) as @e[type=marker,tag=ra.tr.node,distance=..0.75,limit=1] run function ${Bridge.readDst.asId()}")
+			raw("\$execute positioned ~\$(sx) ~\$(sy) ~\$(sz) as @e[type=marker,tag=ra.tr.node,distance=..0.75,limit=1] if score @s ra.tr.class = #br.class ra.wires.tmp run function ${Bridge.readSrc.asId()}")
+			raw("\$execute positioned ~\$(dx) ~\$(dy) ~\$(dz) as @e[type=marker,tag=ra.tr.node,distance=..0.75,limit=1] if score @s ra.tr.class = #br.class ra.wires.tmp run function ${Bridge.readDst.asId()}")
 
 			raw("execute if score #br.dst ra.wires.tmp matches 0 run return run data modify entity @s data.status.bridge_state set value \"blocked\"")
 
@@ -304,8 +313,8 @@ object Bridge : PackPart {
 
 			raw("execute if score #br.move ra.wires.tmp matches ..0 run return run data modify entity @s data.status.bridge_state set value \"blocked\"")
 
-			raw("\$execute positioned ~\$(sx) ~\$(sy) ~\$(sz) as @e[type=marker,tag=ra.tr.node,distance=..0.75,limit=1] run function ${Bridge.take.asId()} with storage ra:wires bridge")
-			raw("\$execute positioned ~\$(dx) ~\$(dy) ~\$(dz) as @e[type=marker,tag=ra.tr.node,distance=..0.75,limit=1] run function ${Bridge.give.asId()} with storage ra:wires bridge")
+			raw("\$execute positioned ~\$(sx) ~\$(sy) ~\$(sz) as @e[type=marker,tag=ra.tr.node,distance=..0.75,limit=1] if score @s ra.tr.class = #br.class ra.wires.tmp run function ${Bridge.take.asId()} with storage ra:wires bridge")
+			raw("\$execute positioned ~\$(dx) ~\$(dy) ~\$(dz) as @e[type=marker,tag=ra.tr.node,distance=..0.75,limit=1] if score @s ra.tr.class = #br.class ra.wires.tmp run function ${Bridge.give.asId()} with storage ra:wires bridge")
 
 			raw("data modify entity @s data.status.bridge_state set value \"transferring\"")
 			raw("execute store result entity @s data.status.moved int 1 run scoreboard players get #br.move ra.wires.tmp")

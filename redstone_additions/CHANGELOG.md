@@ -36,6 +36,22 @@
   another, clicking [CYCLE] in the menu of the upper one could change the setting of the block
   below it instead.
 
+- **Ender vaults find their partner past a vault on another channel.** A vault paired with the
+  nearest receiving vault first and only then checked its channel, so when the closest one was
+  on a different channel nothing moved at all, even with a matching vault further away. Item,
+  Fluid and Power Vaults now pick the nearest vault that is on their channel.
+- **Valves, the Liquid Filter and the EU Breaker ignore networks of another kind.** A bridge
+  counted any neighbouring network as a side to level. An Item Pipe next to a Liquid Valve was
+  picked as the empty side and left the valve stuck on `blocked`, and an EU Breaker beside a
+  fluid pipe tried to push EU into it. Valves and the filter now only work between fluid
+  networks (liquid or gas), and the breaker only between electric grids.
+- **Big worlds finish settling their networks after a load.** Every loaded network is rebuilt
+  once when the world loads or `/reload` runs, and in a world with well over a thousand loaded
+  pipes, tanks and wires that single rebuild ran past the game's command limit and stopped half
+  way, leaving some blocks out of any network until something else changed. The load now
+  rebuilds a few hundred blocks every 5 ticks until all are done, and networks keep working with
+  their contents while they wait. A rebuild that does get cut short is picked up by the next one.
+
 ### Added
 
 - **Tag Adder and Tag Remover take a list of tags.** The new `tags` property holds up to 16

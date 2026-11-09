@@ -50,4 +50,9 @@ internal val SPECS: List<Pair<String, String>> = listOf(
 	"electric_breaker" to """{block:"minecraft:waxed_copper_bulb",marker:"electric_breaker",bridge:1b,props:{rate:200}}""",
 
 	"boiler" to """{block:"minecraft:furnace",marker:"boiler",props:{}}""",
+
+	// Readouts: a target block facing the player (dir 3, so the marker carries the facing) that
+	// reads the network behind it without joining it. `readout` tags the marker for the slow
+	// clock in ra_wires:readout.
+	"network_gauge" to """{block:"minecraft:target",marker:"network_gauge",dir:3,readout:1b}""",
 )

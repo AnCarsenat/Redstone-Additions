@@ -48,6 +48,14 @@
   Detector's. Read once a second on the world sensors' clock. The Goggles show how many names are
   listed, the radius and the output. Crafted from five copper ingots, a book and quill, an observer
   and two redstone.
+- **Network Gauge** (Transport Networks). A redstone signal, 0 to 15, from how full a network
+  is: `ceil(15 × stored / capacity)`, so any contents give at least 1 and only a full network gives
+  15, as a comparator reads a chest. One block for every network: place it against a pipe, tank,
+  wire or battery and it reads the network behind it (or the first one beside it). It is a target
+  block, so dust, a repeater or a comparator next to it picks up the level; it is not part of the
+  network, so placing it never splits or joins anything. Read twice a second, on a clock that only
+  runs while a gauge is loaded. The Goggles show the level, the network and what it holds out of
+  its capacity. Crafted from four copper ingots, glass, two redstone, a comparator and a target.
 
 ### Changed
 

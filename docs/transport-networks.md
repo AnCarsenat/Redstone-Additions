@@ -30,6 +30,7 @@ them: pumps, tanks, boilers, generators, solar panels, batteries, an electric fu
 | EU Consumer | ![EU Consumer recipe](images/recipes/ra_wires/electric_consumer.png){ width="220" } |
 | Electric Furnace | ![Electric Furnace recipe](images/recipes/ra_wires/electric_furnace.png){ width="220" } |
 | Industrial Light | ![Industrial Light recipe](images/recipes/ra_wires/industrial_light.png){ width="220" } |
+| Network Gauge | ![Network Gauge recipe](images/recipes/ra_wires/network_gauge.png){ width="220" } |
 
 Operators: the **Wires Bundle** (`/function ra:items/bundles/give_wires_bundle`) has everything;
 `/function ra_wires:items/give_creative` gives the two creative sources.
@@ -206,6 +207,25 @@ missing or full, the furnace stops and the Goggles show `Output blocked` — not
 It smelts ores and raw metals, iron and gold gear back into nuggets, food, sand, clay, stone,
 cracked bricks, and logs into charcoal.
 
+## Reading a network with redstone
+
+### Network Gauge
+
+A **Network Gauge** gives a redstone signal from how full a network is, the way a comparator reads
+a chest: `ceil(15 × stored / capacity)`, so any amount above nothing gives at least 1 and only a
+full network gives 15. It works on any network, fluid or electric: one gauge for a tank farm, a
+gas line or a battery bank.
+
+- Place it **against** a pipe, tank, wire or battery: like a dispenser it faces you, and it reads
+  the network **behind** it. With nothing there, it reads the first network beside it.
+- It is a target block and the signal comes from the block itself: dust, a repeater or a
+  comparator next to it picks it up.
+- It is not part of the network (like a valve), so placing or breaking one never splits or joins
+  anything.
+- It reads its network twice a second. A network with no capacity (wire with no Battery) reads 0.
+- The Goggles show the output level, the network number, and what the network holds out of its
+  capacity.
+
 ## Creative sources
 
 For testing, with no recipe (`/function ra_wires:items/give_creative`):
@@ -277,6 +297,13 @@ you extend it.
 - **Fixed rates** such as a generator's `generation_rate` are read-only: the Data Handler shows them
   locked.
 - **Heat sources** are the block tag `#ra_wires:heat_sources`.
+- **Readouts** (`ra_wires:readout/*`): the Network Gauge is not a node; it finds the node behind
+  it (`^ ^ ^-1` from its marker, which carries the placement facing), else the first face
+  neighbour, and runs `net/read` as that node. It is updated by a slow clock scheduled every 10
+  ticks only while a readout marker (`ra.wires.readout`) is loaded; there is no per-tick work
+  besides the break check. Network records keep no "changed" flag: adding one would put a write
+  on every transfer of every network for the sake of a few gauges. Status: `data.status.level`,
+  `network`, `amount`, `capacity`, `unit` (`mL` or `EU`).
 - **Media registry** (`ra_wires:media/init`): display name, state, colour, particle, optional world
   block and bucket; pumpable blocks are listed as `source_blocks`, each with its medium's
   `state` (a pump or drain only considers sources of the state it carries) and `keep:1b` on a

@@ -24,5 +24,6 @@ val WiresPage = Page(
 		"gas_pump" to "Gas Pump",
 		"creative_eu" to "Creative EU Source",
 		"creative_fluid" to "Creative Fluid Source",
+		"network_gauge" to "Network Gauge",
 	),
 )

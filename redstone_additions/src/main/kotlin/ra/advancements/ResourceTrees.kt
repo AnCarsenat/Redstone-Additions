@@ -104,5 +104,6 @@ internal val wiresTree = listOf(
 	egg("ra_wires", "liquid_pump", "Liquid Pump", Items.DISPENSER, TRUE),
 	egg("ra_wires", "liquid_tank", "Liquid Tank", Items.WAXED_COPPER_BLOCK, TRUE),
 	egg("ra_wires", "liquid_valve", "Liquid Valve", Items.WAXED_CUT_COPPER, TRUE),
+	egg("ra_wires", "network_gauge", "Network Gauge", Items.COMPARATOR, TRUE),
 	egg("ra_wires", "solar_panel", "Solar Panel", Items.DAYLIGHT_DETECTOR, TRUE),
 )

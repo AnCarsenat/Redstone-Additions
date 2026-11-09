@@ -120,6 +120,9 @@ object WiresBlocks : PackPart {
 		WiresItem(item("liquid_filter", "Liquid Filter", "minecraft:waxed_exposed_cut_copper", "minecraft:waxed_exposed_cut_copper"),
 			lore = listOf("Passes only the medium it is set to" to "gray", "Set filter_medium with the Data Handler" to "dark_gray"),
 			recipe = WiresRecipe(listOf("CIC", "CHC", "CIC"), listOf("C" to Items.COPPER_INGOT, "I" to Items.IRON_INGOT, "H" to Items.HOPPER), Items.HOPPER, Criterion.MATERIAL, notify = false)),
+		WiresItem(item("network_gauge", "Network Gauge", "minecraft:comparator", "minecraft:target"),
+			lore = listOf("Redstone 0-15 from how full" to "gray", "the network behind it is" to "gray"),
+			recipe = WiresRecipe(listOf("CGC", "RKR", "CTC"), listOf("C" to Items.COPPER_INGOT, "G" to Items.GLASS, "R" to Items.REDSTONE, "K" to Items.COMPARATOR, "T" to Items.TARGET), Items.COMPARATOR, Criterion.INGREDIENT)),
 	)
 
 	/** Goggles readouts, in the order `ra:tools/goggles/draw_block` listed the module's markers. */
@@ -127,7 +130,7 @@ object WiresBlocks : PackPart {
 		"liquid_pipe", "liquid_tank", "liquid_pump", "liquid_valve", "liquid_filter", "liquid_drain",
 		"gas_tank", "gas_pump", "gas_valve", "boiler", "electric_wire", "electric_generator",
 		"electric_consumer", "electric_switch", "solar_panel", "battery", "creative_eu",
-		"creative_fluid", "electric_furnace", "industrial_light", "electric_breaker",
+		"creative_fluid", "electric_furnace", "industrial_light", "electric_breaker", "network_gauge",
 	)
 
 	private fun loreNbt(lore: List<Pair<String, String>>) = NbtList(lore.map { (text, color) ->
@@ -173,7 +176,7 @@ object WiresBlocks : PackPart {
 		// Property schemas, by marker type (what data.type holds -- liquid_pipe, not
 		// liquid_pipe_copper). `readonly` ones are the block's own working numbers: shown by the Data
 		// Handler, never edited there or cycled by the wrench.
-		for (t in listOf("liquid_pipe", "liquid_tank", "gas_tank", "liquid_pump", "gas_pump", "electric_wire", "electric_switch", "battery", "creative_eu", "boiler"))
+		for (t in listOf("liquid_pipe", "liquid_tank", "gas_tank", "liquid_pump", "gas_pump", "electric_wire", "electric_switch", "battery", "creative_eu", "boiler", "network_gauge"))
 			properties(t) {}
 		for (t in listOf("liquid_valve", "gas_valve", "electric_breaker"))
 			properties(t) { number("rate", min = 1, max = 1000000, readonly = true) }

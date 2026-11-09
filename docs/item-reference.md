@@ -78,6 +78,7 @@ one page, A to Z and by module.
 | ra_ender:anchor_terminal             | Anchor Terminal           | ![Anchor Terminal recipe](images/recipes/ra_ender/anchor_terminal.png){ width="220" } |
 | ra_enchanting:disenchanter           | Disenchanter              | ![Disenchanter recipe](images/recipes/ra_enchanting/disenchanter.png){ width="220" } |
 | ra_enchanting:book_upgrader          | Book Upgrader             | ![Book Upgrader recipe](images/recipes/ra_enchanting/book_upgrader.png){ width="220" } |
+| ra_enchanting:book_printer           | Book Printer              | ![Book Printer recipe](images/recipes/ra_enchanting/book_printer.png){ width="220" } |
 | ra_chunk_loader:chunk_loader         | Chunk Loader              | ![Chunk Loader recipe](images/recipes/ra_chunk_loader/chunk_loader.png){ width="220" } |
 | ra_multiblock:copper_base            | Copper Multiblock Base    | ![Copper Multiblock Base recipe](images/recipes/ra_multiblock/copper_base.png){ width="220" } |
 | ra_multiblock:iron_base              | Iron Multiblock Base      | ![Iron Multiblock Base recipe](images/recipes/ra_multiblock/iron_base.png){ width="220" } |
@@ -98,8 +99,9 @@ one page, A to Z and by module.
 | ra_infinite:poppy_core | Poppy Core | Sacrifice `minecraft:poppy` on an enchanting table (1%) |
 | ra_interactive:enchanted_coal | Enchanted Coal | Sacrifice `minecraft:coal` on an enchanting table (1%) |
 | ra_interactive:enchanted_coal_block | Enchanted Coal Block | Nine Enchanted Coal |
+| ra_enchanting:schematic | Schematic | Throw an enchanted book on a Book Printer (2%); not craftable |
 
-The Generator Casing and the Cores cannot be placed as blocks.
+The Generator Casing and the Cores cannot be placed as blocks. A Schematic is paper carrying a book's enchantments in `custom_data` (`{ra:{schematic:1b,enchantments:{...}}}`), used on the [Book Printer](enchant-crafting.md#book-printer).
 | ra_jetpacks:iron_jetpack_kit | Iron Jetpack Kit | Blaze rod over iron ingots, a redstone block and a coal block |
 | ra_jetpacks:infinite_jetpack_kit | Infinite Iron Jetpack Kit | Sacrifice an Iron Jetpack Kit on an enchanting table (1%) |
 

@@ -83,6 +83,13 @@ internal val enchantingTree = listOf(
 	category("ra_enchanting", Items.ENCHANTING_TABLE, "Enchant Crafting", "Move, raise and gamble enchantments.", "get_enchanting_item", Items.ENCHANTING_TABLE),
 	egg("ra_enchanting", "disenchanter", "Disenchanter", Items.CRYING_OBSIDIAN, TRUE),
 	egg("ra_enchanting", "book_upgrader", "Book Upgrader", Items.LAPIS_BLOCK, TRUE),
+	egg("ra_enchanting", "book_printer", "Book Printer", Items.FLETCHING_TABLE, TRUE),
+	// Partial: a Schematic also carries the book's enchantments.
+	Unlock(
+		"ra_enchanting/get_schematic", "ra_enchanting/get_book_printer", Items.MAP, "Lucky Draw",
+		"Draw a Schematic out of an enchanted book with a Book Printer.", "get_schematic",
+		Items.PAPER, Match.Partial(raData("schematic", TRUE)), frame = AdvancementFrameType.GOAL,
+	),
 )
 
 /** `criterion` is `get_sensor_item` here too: the tab was copied from Sensors and kept the name. */

@@ -225,6 +225,9 @@ you extend it.
   is never recounted or trimmed: a new pipe simply joins it, and a break that splits it takes
   effect once the whole network is loaded again (until then both halves share one pool).
   See [Scoped rebuilds](developer-guide.md#scoped-rebuilds).
+- **After a load.** Every loaded network is rebuilt once, a few hundred blocks at a time every
+  5 ticks, so a large world settles over a second or two instead of overrunning the command
+  limit in one tick. Networks keep working with their contents while they wait their turn.
 - **Storage.** Each network is `storage ra:transport nets.n<id>`: `amount` (total), `capacity`,
   `nodes` (block count), `amounts` (per fluid), `media` (fluids in arrival order), `medium` (the
   primary), and `potion`.

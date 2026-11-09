@@ -286,8 +286,25 @@ A rebuild now works on a **scope**:
   for a node whose network has no record, which is how networks emptied by the
   old bug repair themselves the first time something reads them. `pending` holds
   networks held back last time.
-- **On load**, `full:1b` puts every loaded network in scope once, because markers
-  may have been added or removed while the pack was off.
+- **On load**, `full:1b` asks for every loaded network to be rebuilt once, because
+  markers may have been added or removed while the pack was off. It is done in
+  batches: the first rebuild after the load lists every loaded network once in
+  `fullq` (`rebuild/full_collect`, about one command per node), and each rebuild
+  then takes networks off the front of it until 512 loaded nodes are in scope
+  (`rebuild/full_batch`, `Scope.FULL_BATCH_NODES`) and sets `dirty` again while
+  any are left, so the list is worked through one rebuild every 5 ticks. A
+  network is rebuilt whole or not at all, so a batch always takes at least one,
+  however big. Networks still waiting keep working from their records. Until
+  v6.0.2 the load put every loaded node in scope for a single rebuild; at ~40
+  commands a node, a world with ~1700 loaded nodes ran past the 65536-command
+  limit and was left half rebuilt.
+- **A cut rebuild** (the command limit stopped it) is recovered from. Every
+  rebuild starts by removing `ra.tr.scope`, `ra.tr.claimed`, `ra.tr.fresh`,
+  `ra.tr.frontier` and `ra.tr.wave` from every marker, since none of them means
+  anything between rebuilds and a leftover one would be read as the current
+  rebuild's (a claimed node counted twice, a kept network clamped). `running:1b`
+  is set for the length of a rebuild; `transport/tick` finding it still set asks
+  for another rebuild, which takes in the nodes the cut left on network 0.
 - **Held back.** A network in scope with a loaded node standing next to a chunk
   that is not loaded — or in one — may continue out of view. `rebuild/edge`
   tests the node's own position and its four horizontal sides with `execute if

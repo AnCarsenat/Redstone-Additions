@@ -1,7 +1,7 @@
 # Transport Networks
 
 Pipes for liquids and gases, wires for electricity (EU), and the machines that fill, store and use
-them: pumps, tanks, spouts, boilers, generators, solar panels, batteries, an electric furnace, lights
+them: pumps, tanks, spouts, gas vents, boilers, generators, solar panels, batteries, an electric furnace, lights
 and a tesla coil.
 
 ![An EU grid running](images/screenshots/Electricity.png)
@@ -35,6 +35,7 @@ and a tesla coil.
 | Usage Meter | ![Usage Meter recipe](images/recipes/ra_wires/usage_meter.png){ width="220" } |
 | Tesla Coil | ![Tesla Coil recipe](images/recipes/ra_wires/tesla_coil.png){ width="220" } |
 | Spout | ![Spout recipe](images/recipes/ra_wires/spout.png){ width="220" } |
+| Gas Vent | ![Gas Vent recipe](images/recipes/ra_wires/gas_vent.png){ width="220" } |
 
 Operators: the **Wires Bundle** (`/function ra:items/bundles/give_wires_bundle`) has everything;
 `/function ra_wires:items/give_creative` gives the two creative sources.
@@ -52,7 +53,7 @@ capacity:
 
 | Block | Holds |
 |---|---|
-| Pipe, Spout | 1000 mL |
+| Pipe, Spout, Gas Vent | 1000 mL |
 | Pump, Drain | 5000 mL |
 | Liquid Tank, Gas Tank | 100000 mL (20 buckets) |
 | Wire, EU Switch, EU Breaker, Industrial Light, Tesla Coil | 0 EU |
@@ -79,6 +80,7 @@ Different families never mix, so an electric wire and a pipe can run side by sid
 | **Liquid Drain**, facing up or down | Also a **loading point**: takes filled buckets/bottles from you (sneak while holding one), from a container on top of it, or from items dropped on it, and gives the empties back; with none of those, a sneaking player's **experience**. With nothing to load, it takes in a source block next to it like any drain |
 | **Spout** | Fills empty buckets and bottles under it from the network, one a second ([Spout](#spout)) |
 | **Gas Pump** | Like the Liquid Pump, for gases: draws **Smoke** from a lit campfire or soul campfire next to it, 500 mL a second. The campfire keeps burning and is never used up. Steam comes from a Boiler |
+| **Gas Vent**, powered by redstone | Lets the network's gas out around it, with the gas's effect ([Gas Vent](#gas-vent)) |
 
 A drain points where you look when you place it, so looking down to place one makes it face up.
 That is fine: an upright drain still drains the pool beside it.
@@ -99,7 +101,7 @@ will go. A drain stood on the floor faces up, and pours on top of itself.
 | Water, Lava, Powder Snow | One source block, 5000 mL — the same amount a drain takes in for one, so nothing is gained or lost going round. Goes into air, into grass, flowers, a snow layer or anything else a bucket would wash away (it drops as a bucket would make it drop), or into flowing water or lava of the same kind, which becomes a source |
 | Experience | Experience orbs, 1 point per 100 mL, up to 50 points at a time |
 | Potions | Poured over everyone within 4 blocks, in the potion's own colour ([Potions](#potions)) |
-| Milk, Steam, Smoke, Oxygen | Poured away as white drops, a cloud, smoke or blue mist. It really leaves the network |
+| Milk, Steam, Smoke, Oxygen, Toxic Gas | Poured away as white drops, a cloud, smoke, blue or green mist. It really leaves the network |
 
 The Goggles show `pouring` while it works, and otherwise why it is not:
 
@@ -126,7 +128,7 @@ left in place when pumped, so a large lake never runs dry. Smaller pools do empt
 | Fluid | Kind |
 |---|---|
 | Water, Lava, Powder Snow, Milk | liquid |
-| Steam, Smoke, Oxygen | gas |
+| Steam, Smoke, Oxygen, Toxic Gas | gas |
 | Experience | 1 point = 100 mL; a powered Drain gives it back as orbs |
 | Potion | keeps its effects (see below) |
 
@@ -176,6 +178,29 @@ container under it.
 - The Goggles show what it is doing: `filling`, `idle` (nothing under it), `nothing_to_fill`
   (nothing under it this network can fill), `not_enough` (less than a whole container of that
   fluid), `network_empty`, `locked`, `no_network`.
+
+### Gas Vent
+
+A **Gas Vent** lets its network's gas out while it has a **redstone signal**, once a second, and
+gives the gas's effect to every player and mob within its *radius*:
+
+| Gas | Effect |
+| --- | --- |
+| Oxygen | Water Breathing, 10 seconds, renewed every second while it vents |
+| Toxic Gas | Wither, 3 seconds, renewed every second while it vents |
+| Steam, Smoke | none: only vented, as a cloud or smoke |
+
+- It lets out up to *rate* mL a second (default 1000), and the gas really leaves the network.
+  *rate* is for admins only, from 100 to 100000; the default for new vents is in the
+  [Server Settings](settings.md).
+- *radius* is 1 to 8 blocks (default 4): Shift+right-click with the [Wrench](tools.md) steps it
+  through 2, 4, 6 and 8, and the [Data Handler](tools.md) sets any value; server admins can go up
+  to 16.
+- It vents the network's **primary** fluid only when that is a gas; a liquid stays in the pipes
+  (`not_a_gas`).
+- The Goggles show `venting`, `off` (no redstone), `network_empty`, `not_a_gas` or `no_network`,
+  the gas, the amount and the radius. The mist follows each player's particle setting.
+- Oxygen and Toxic Gas have no source in survival yet; the Creative Fluid Source makes both.
 
 ### Potions
 
@@ -305,7 +330,7 @@ For testing, with no recipe (`/function ra_wires:items/give_creative`):
 | Block | Does |
 | --- | --- |
 | Creative EU Source | Refills its grid to full every tick |
-| Creative Fluid Source | Adds `rate` mL of one fluid per tick (default 1000), until the network is full. Change the fluid with the Wrench |
+| Creative Fluid Source | Adds `rate` mL of one fluid per tick (default 1000), until the network is full. Change the fluid with the Wrench: water, lava, powder snow, milk, steam, smoke, oxygen, toxic gas |
 
 A network fed by a Creative Fluid Source fills up quickly, which leaves no room for a second fluid;
 for mixed-fluid tests, give the run extra tanks.
@@ -385,12 +410,18 @@ you extend it.
   with a new epoch, and a meter seeing a different epoch counts from 0. A count reaching
   1000000000 is lowered by that much by the meter reading it, and the others add it back.
   Properties: `mode` (`consumed` / `produced`), `every` (1–100000000), `total` (read only).
-- **Machine clock** (`ra_wires:machine/*`): the Tesla Coil and the Spout act once a second, on a
+- **Machine clock** (`ra_wires:machine/*`): the Tesla Coil, the Spout and the Gas Vent act once a second, on a
   clock scheduled every 20 ticks only while a marker tagged `ra.wires.clocked` is loaded; their only
   per-tick work is the break check. Tesla Coil properties: `radius` (1–16, admin 32), `damage`
   (1–40) and `eu_per_zap` (1–100000), both admin only. Status `data.status.coil`, `last_hits`.
   Targets are the entity type tag `#ra_wires:tesla_targets`; another pack adds a mob to it to make
-  it a target. Spout status `data.status.spout_state`.
+  it a target. Spout status `data.status.spout_state`. Gas Vent properties: `radius` (1–8,
+  admin 16) and `rate` (100–100000 mL/s, admin only); status `data.status.vent_state`, `vented`.
+- **Gas effects** (`storage ra:wires gas_effects`): what a Gas Vent does with each gas, keyed by
+  medium, each entry `{effect, seconds, amplifier}` (all three required; amplifier 0 is level I),
+  given with `effect give` to every living entity within the vent's radius each second it vents.
+  Another pack registers its gas in the media registry (`state:"gas"`, with a `pour` particle for
+  the mist) and sets `gas_effects.<its gas>` after `ra_wires:load`.
 - **Filling containers** (`storage ra:wires item_fills`): what a Spout makes, keyed by medium, each
   entry `{empty, item, volume, components?, sound?}`; `potion:1b` gives the network's recorded
   `potion_contents` instead of `components`. Another pack appends to `item_fills.<medium>` after

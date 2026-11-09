@@ -39,7 +39,8 @@ object CreativeFluid : PackPart {
 		pack.define(CreativeFluid.cycleMedium) {
 			// Wrench: step the medium round. Context: as the marker, at the block.
 			//
-			// Only the media a network can actually be built around. Potions and experience
+			// Only the media a network can actually be built around (oxygen and toxic gas have no
+			// survival source yet, so this is how they are tested). Potions and experience
 			// are media too, but they arrive by other routes and a creative source for them
 			// would be a different kind of block.
 
@@ -51,6 +52,8 @@ object CreativeFluid : PackPart {
 			raw("""execute if data entity @s data.properties{medium:"powder_snow"} run scoreboard players set #cr.m ra.wires.tmp 3""")
 			raw("""execute if data entity @s data.properties{medium:"milk"} run scoreboard players set #cr.m ra.wires.tmp 4""")
 			raw("""execute if data entity @s data.properties{medium:"steam"} run scoreboard players set #cr.m ra.wires.tmp 5""")
+			raw("""execute if data entity @s data.properties{medium:"smoke"} run scoreboard players set #cr.m ra.wires.tmp 6""")
+			raw("""execute if data entity @s data.properties{medium:"oxygen"} run scoreboard players set #cr.m ra.wires.tmp 7""")
 
 			raw("execute if score #cr.m ra.wires.tmp matches 0 run data modify entity @s data.properties.medium set value \"water\"")
 			raw("execute if score #cr.m ra.wires.tmp matches 1 run data modify entity @s data.properties.medium set value \"lava\"")
@@ -58,6 +61,8 @@ object CreativeFluid : PackPart {
 			raw("execute if score #cr.m ra.wires.tmp matches 3 run data modify entity @s data.properties.medium set value \"milk\"")
 			raw("execute if score #cr.m ra.wires.tmp matches 4 run data modify entity @s data.properties.medium set value \"steam\"")
 			raw("execute if score #cr.m ra.wires.tmp matches 5 run data modify entity @s data.properties.medium set value \"smoke\"")
+			raw("execute if score #cr.m ra.wires.tmp matches 6 run data modify entity @s data.properties.medium set value \"oxygen\"")
+			raw("execute if score #cr.m ra.wires.tmp matches 7 run data modify entity @s data.properties.medium set value \"toxic_gas\"")
 
 			raw("""tellraw @a[distance=..10] [{text:"[Wrench] ",color:"gold"},{text:"Creative source: ",color:"gray"},{nbt:"data.properties.medium",entity:"@s",color:"aqua"}]""")
 			raw("playsound minecraft:block.lever.click block ${soundListenersSel(10)} ~ ~ ~ 0.6 1.4")

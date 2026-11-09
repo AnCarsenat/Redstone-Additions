@@ -1,6 +1,6 @@
 # Recipe Atlas
 
-Every recipe in the pack, in one place: 92 of them.
+Every recipe in the pack, in one place: 93 of them.
 
 !!! tip "Finding one"
     Use the search box with the item's name — every recipe below is indexed by
@@ -54,6 +54,7 @@ what the pack actually contains rather than what someone remembered to add.
 | [Gas Pump](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
 | [Gas Tank](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
 | [Gas Valve](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
+| [Gas Vent](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
 | [Generator Casing](#infinite-generators) | [Infinite Generators](infinite-generators.md) | Crafting table |
 | [Goggles](#tools) | [Tools](tools.md) | Crafting table |
 | [Goggles Lens](#tools) | [Tools](tools.md) | Crafting table |
@@ -269,6 +270,7 @@ Module page: [Transport Networks](transport-networks.md) — give everything: `/
 | **Gas Pump** | ![Gas Pump recipe](images/recipes/ra_wires/gas_pump.png){ width="220" } | Crafting table | `ra_wires:gas_pump` |
 | **Gas Tank** | ![Gas Tank recipe](images/recipes/ra_wires/gas_tank.png){ width="220" } | Crafting table | `ra_wires:gas_tank` |
 | **Gas Valve** | ![Gas Valve recipe](images/recipes/ra_wires/gas_valve.png){ width="220" } | Crafting table | `ra_wires:gas_valve` |
+| **Gas Vent** | ![Gas Vent recipe](images/recipes/ra_wires/gas_vent.png){ width="220" } | Crafting table | `ra_wires:gas_vent` |
 | **Industrial Light** | ![Industrial Light recipe](images/recipes/ra_wires/industrial_light.png){ width="220" } | Crafting table | `ra_wires:industrial_light` |
 | **Liquid Drain** | ![Liquid Drain recipe](images/recipes/ra_wires/liquid_drain.png){ width="220" } | Crafting table | `ra_wires:liquid_drain` |
 | **Liquid Filter** | ![Liquid Filter recipe](images/recipes/ra_wires/liquid_filter.png){ width="220" } | Crafting table | `ra_wires:liquid_filter` |

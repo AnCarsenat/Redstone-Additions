@@ -12,6 +12,7 @@ val WiresPage = Page(
 		PropRow("usage_meter", "every", "Usage Meter units per pulse", default = 1000, min = 1, max = 100000000, step = 1000),
 		PropRow("tesla_coil", "damage", "Tesla Coil damage per zap", default = 6, min = 1, max = 40, step = 1),
 		PropRow("tesla_coil", "eu_per_zap", "Tesla Coil EU per mob zapped", default = 200, min = 1, max = 100000, step = 50),
+		PropRow("gas_vent", "rate", "Gas Vent rate (mL/s)", default = 1000, min = 100, max = 100000, step = 500),
 	) + blocks(
 		"electric_generator" to "EU Generator",
 		"electric_furnace" to "Electric Furnace",
@@ -31,5 +32,6 @@ val WiresPage = Page(
 		"usage_meter" to "Usage Meter",
 		"tesla_coil" to "Tesla Coil",
 		"spout" to "Spout",
+		"gas_vent" to "Gas Vent",
 	),
 )

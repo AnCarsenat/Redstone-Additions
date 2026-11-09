@@ -97,6 +97,7 @@ internal val wiresTree = listOf(
 	egg("ra_wires", "gas_pump", "Gas Pump", Items.SMOKER, TRUE),
 	egg("ra_wires", "gas_tank", "Gas Tank", Items.IRON_BLOCK, TRUE),
 	egg("ra_wires", "gas_valve", "Gas Valve", Items.SMOOTH_BASALT, TRUE),
+	egg("ra_wires", "gas_vent", "Gas Vent", Items.WAXED_WEATHERED_COPPER_GRATE, TRUE),
 	egg("ra_wires", "industrial_light", "Industrial Light", Items.SEA_LANTERN, ONE),
 	egg("ra_wires", "liquid_drain", "Liquid Drain", Items.DROPPER, TRUE),
 	egg("ra_wires", "liquid_filter", "Liquid Filter", Items.WAXED_EXPOSED_CUT_COPPER, ONE, "Obtain the Liquid Filter item."),

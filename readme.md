@@ -5,7 +5,7 @@
 <h1 align="center">Redstone Additions</h1>
 
 <p align="center">
-  <strong>79 custom blocks. 9 tools. 92 recipes. 2 jetpacks and 3 upgrade kits. Vanilla datapack for Minecraft 26.3.</strong>
+  <strong>80 custom blocks. 9 tools. 93 recipes. 2 jetpacks and 3 upgrade kits. Vanilla datapack for Minecraft 26.3.</strong>
 </p>
 
 <p align="center">
@@ -16,9 +16,9 @@
 <p align="center">
   <img src="https://img.shields.io/badge/Minecraft-26.3-2EA44F" alt="Minecraft 26.3">
   <img src="https://img.shields.io/badge/Version-v6.0.3-blue" alt="Version v6.0.3">
-  <img src="https://img.shields.io/badge/Blocks-79-red" alt="79 blocks">
+  <img src="https://img.shields.io/badge/Blocks-80-red" alt="80 blocks">
   <img src="https://img.shields.io/badge/Tools-9-lightgrey" alt="9 tools">
-  <img src="https://img.shields.io/badge/Recipes-92-8A2BE2" alt="92 recipes">
+  <img src="https://img.shields.io/badge/Recipes-93-8A2BE2" alt="93 recipes">
 </p>
 
 <p align="center">
@@ -136,7 +136,7 @@ listed A to Z and grouped by module.
 - Analog Emitter — sends its input level (0-15) on a channel
 - Analog Receiver — outputs its channel's level on target blocks
 
-### Transport Networks (25)
+### Transport Networks (26)
 
 Fluids, in millilitres:
 
@@ -151,6 +151,7 @@ Fluids, in millilitres:
 - Gas Valve
 - Boiler — water plus heat to steam
 - Spout — fills buckets and bottles under it from the network
+- Gas Vent — redstone lets the gas out: oxygen for water breathing, toxic gas withers
 
 Electricity, in EU:
 

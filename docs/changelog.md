@@ -89,6 +89,16 @@ This page mirrors key datapack milestones from the main project changelog.
   first is tried first. Redstone locks it, like a hopper. Other packs can add their own fluids to
   `storage ra:wires item_fills`. The Goggles show what it is doing and the network's fluid.
   Crafted from five copper ingots, a bucket and pointed dripstone.
+- **Gas Vent** (Transport Networks). With a redstone signal, lets its gas network's gas out into
+  the area, up to *rate* mL a second (default 1000, admin only), and gives its effect to everyone
+  and every mob within *radius* (1 to 8, default 4; admins up to 16; Shift+RMB with the Wrench
+  steps it through 2, 4, 6 and 8): **Oxygen** gives water breathing, the new **Toxic Gas** withers.
+  Other gases are only vented, as their mist. Liquids are left in the pipes. Other packs can give
+  their own gases an effect in `storage ra:wires gas_effects`. The Goggles show what it is doing,
+  the gas, the amount and the radius; the mist follows each player's particle setting. Crafted
+  from four iron ingots, four iron bars, a copper grate and redstone. Oxygen and Toxic Gas have no
+  source in survival yet (the Chemistry module will make them); the Creative Fluid Source now
+  cycles through both.
 
 - **Elevator** (Interactive Machines). Stand on it and jump to go up, or sneak to go down, to the
   next Elevator straight above or below in the same column, at most *range* blocks away (2 to 64,

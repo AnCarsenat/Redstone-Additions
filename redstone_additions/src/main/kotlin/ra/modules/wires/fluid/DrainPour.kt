@@ -32,7 +32,7 @@ import ra.core.ref
  * - `orb` (experience): one experience orb, at 100 mL a point -- ra_wires:fluid/drain_place_exp.
  * - `effect` (potions): a cloud in the potion's colour, applied to the players around it --
  *   ra_wires:fluid/drain_potion.
- * - `pour` (milk, steam, smoke, oxygen): no world form, so it is poured away as that particle.
+ * - `pour` (milk, steam, smoke, oxygen, toxic gas): no world form, so it is poured away as that particle.
  *   The contents really leave the network; the particle is only what a player sees.
  * Each action moves up to Drain.ML_PER_ACTION, so the drain's `rate` reads the same for all.
  *

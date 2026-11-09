@@ -155,6 +155,7 @@ object Placement : PackPart {
 				"Usage Meter",
 				"Tesla Coil",
 				"Spout",
+				"Gas Vent",
 			)) registeredLine(name)
 		}
 	}

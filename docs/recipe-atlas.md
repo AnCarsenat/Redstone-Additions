@@ -1,6 +1,6 @@
 # Recipe Atlas
 
-Every recipe in the pack, in one place: 75 of them.
+Every recipe in the pack, in one place: 77 of them.
 
 !!! tip "Finding one"
     Use the search box with the item's name — every recipe below is indexed by

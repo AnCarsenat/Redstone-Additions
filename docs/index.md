@@ -37,7 +37,7 @@ described in [Contributing Guidelines](contributing-guidelines.md#installing-int
 
 ## Modules
 
-**Looking for a recipe? [The Recipe Atlas](recipe-atlas.md) has all 75 of them on one
+**Looking for a recipe? [The Recipe Atlas](recipe-atlas.md) has all 77 of them on one
 page**, listed A to Z and grouped by module — plus the four items that have no recipe
 and are instead gambled for on an [enchanting table](enchant-crafting.md). This table
 is the shortcut: one sample per module, and where to read about it.
@@ -59,8 +59,8 @@ is the shortcut: one sample per module, and where to read about it.
 
 Current pack totals:
 
-- 65 placeable custom blocks
-- 75 recipes, all of them in the [Recipe Atlas](recipe-atlas.md)
+- 67 placeable custom blocks
+- 77 recipes, all of them in the [Recipe Atlas](recipe-atlas.md)
 - 7 tools (Wrench, Goggles, Data Handler, Creative Data Handler, Clipboard,
   Multimeter, Redstone Remote)
 

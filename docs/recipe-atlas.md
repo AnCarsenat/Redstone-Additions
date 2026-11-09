@@ -1,6 +1,6 @@
 # Recipe Atlas
 
-Every recipe in the pack, in one place: 73 of them.
+Every recipe in the pack, in one place: 75 of them.
 
 !!! tip "Finding one"
     Use the search box with the item's name — every recipe below is indexed by
@@ -78,7 +78,9 @@ what the pack actually contains rather than what someone remembered to add.
 | [Randomizer](#logic-gates) | [Logic Gates](logic-gates.md) | Crafting table |
 | [Redstone Remote](#wireless-redstone) | [Wireless Redstone](wireless-redstone.md) | Crafting table |
 | [Scorch Kit](#jetpacks) | [Jetpacks](jetpacks.md) | Crafting table |
+| [Sequencer](#logic-gates) | [Logic Gates](logic-gates.md) | Crafting table |
 | [Shortener](#logic-gates) | [Logic Gates](logic-gates.md) | Crafting table |
+| [Signal Calculator](#logic-gates) | [Logic Gates](logic-gates.md) | Crafting table |
 | [Solar Panel](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
 | [Spitter](#interactive-machines) | [Interactive Machines](interactive-machines.md) | Crafting table |
 | [Tag Adder](#sensors) | [Sensors](sensors.md) | Crafting table |
@@ -166,7 +168,9 @@ Module page: [Logic Gates](logic-gates.md) — give everything: `/function ra_ga
 | **Edge Detector** | ![Edge Detector recipe](images/recipes/ra_gates/edge_detector.png){ width="220" } | Crafting table | `ra_gates:edge_detector` |
 | **Extender** | ![Extender recipe](images/recipes/ra_gates/extender.png){ width="220" } | Crafting table | `ra_gates:extender` |
 | **Randomizer** | ![Randomizer recipe](images/recipes/ra_gates/randomizer.png){ width="220" } | Crafting table | `ra_gates:randomizer` |
+| **Sequencer** | ![Sequencer recipe](images/recipes/ra_gates/sequencer.png){ width="220" } | Crafting table | `ra_gates:sequencer` |
 | **Shortener** | ![Shortener recipe](images/recipes/ra_gates/shortener.png){ width="220" } | Crafting table | `ra_gates:shortener` |
+| **Signal Calculator** | ![Signal Calculator recipe](images/recipes/ra_gates/signal_calculator.png){ width="220" } | Crafting table | `ra_gates:signal_calculator` |
 | **UNI Gate** | ![UNI Gate recipe](images/recipes/ra_gates/uni_gate.png){ width="220" } | Crafting table | `ra_gates:uni_gate` |
 
 ## Multiblocks

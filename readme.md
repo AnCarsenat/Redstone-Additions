@@ -5,7 +5,7 @@
 <h1 align="center">Redstone Additions</h1>
 
 <p align="center">
-  <strong>63 custom blocks. 7 tools. 73 recipes. 2 jetpacks and 3 upgrade kits. Vanilla datapack for Minecraft 26.3.</strong>
+  <strong>65 custom blocks. 7 tools. 75 recipes. 2 jetpacks and 3 upgrade kits. Vanilla datapack for Minecraft 26.3.</strong>
 </p>
 
 <p align="center">
@@ -16,9 +16,9 @@
 <p align="center">
   <img src="https://img.shields.io/badge/Minecraft-26.3-2EA44F" alt="Minecraft 26.3">
   <img src="https://img.shields.io/badge/Version-v6.0.3-blue" alt="Version v6.0.3">
-  <img src="https://img.shields.io/badge/Blocks-63-red" alt="63 blocks">
+  <img src="https://img.shields.io/badge/Blocks-65-red" alt="65 blocks">
   <img src="https://img.shields.io/badge/Tools-7-lightgrey" alt="7 tools">
-  <img src="https://img.shields.io/badge/Recipes-73-8A2BE2" alt="73 recipes">
+  <img src="https://img.shields.io/badge/Recipes-75-8A2BE2" alt="75 recipes">
 </p>
 
 <p align="center">
@@ -88,7 +88,7 @@ listed A to Z and grouped by module.
 
 ## Blocks
 
-### Logic Gates (8)
+### Logic Gates (10)
 - UNI Gate
 - Clock
 - Delayer
@@ -97,6 +97,8 @@ listed A to Z and grouped by module.
 - Shortener
 - Counter
 - Edge Detector
+- Signal Calculator
+- Sequencer
 
 ### Interactive Machines (12)
 - Block Breaker

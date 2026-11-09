@@ -20,6 +20,15 @@ object Goggles {
 	 */
 	const val FILTER_PREVIEW = "#goggles_fprev"
 
+	/**
+	 * On a block marker, during a redraw only: some goggles wearer in range of it has the
+	 * personal "Show filter previews" setting on (`ra.u.fprev`). A billboard is one entity everyone
+	 * sees, so a preview cannot be hidden from one player; this is the closest per-player control,
+	 * deciding whether a preview is drawn at all from who is wearing goggles nearby. Only set while
+	 * [FILTER_PREVIEW] is 1. A block draws its filter item only when both hold.
+	 */
+	const val FILTER_PREVIEW_TAG = "ra.goggles_fprev"
+
 	/** Built from `Ra.goggles`: runs the readout of whichever block this marker is. */
 	val drawBlock = ref(Ns.RA, "tools/goggles/draw_block")
 

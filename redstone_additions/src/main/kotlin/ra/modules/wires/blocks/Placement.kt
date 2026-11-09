@@ -154,6 +154,7 @@ object Placement : PackPart {
 				"Network Gauge",
 				"Usage Meter",
 				"Tesla Coil",
+				"Spout",
 			)) registeredLine(name)
 		}
 	}

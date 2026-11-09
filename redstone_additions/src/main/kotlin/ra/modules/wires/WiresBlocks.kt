@@ -129,6 +129,9 @@ object WiresBlocks : PackPart {
 		WiresItem(item("tesla_coil", "Tesla Coil", "minecraft:lightning_rod", "minecraft:waxed_lightning_rod"),
 			lore = listOf("Redstone + EU: zaps hostile mobs" to "gray", "around it once a second" to "gray"),
 			recipe = WiresRecipe(listOf("CLC", "RBR", "CIC"), listOf("C" to Items.COPPER_INGOT, "L" to Items.LIGHTNING_ROD, "R" to Items.REDSTONE, "B" to Items.REDSTONE_BLOCK, "I" to Items.IRON_INGOT), Items.LIGHTNING_ROD, Criterion.INGREDIENT)),
+		WiresItem(item("spout", "Spout", "minecraft:waxed_exposed_copper_grate", "minecraft:waxed_exposed_copper_grate"),
+			lore = listOf("Fills buckets and bottles under it" to "gray", "from its fluid network" to "gray"),
+			recipe = WiresRecipe(listOf("C C", "CBC", " D "), listOf("C" to Items.COPPER_INGOT, "B" to Items.BUCKET, "D" to Items.POINTED_DRIPSTONE), Items.BUCKET, Criterion.INGREDIENT)),
 	)
 
 	/** Goggles readouts, in the order `ra:tools/goggles/draw_block` listed the module's markers. */
@@ -137,7 +140,7 @@ object WiresBlocks : PackPart {
 		"gas_tank", "gas_pump", "gas_valve", "boiler", "electric_wire", "electric_generator",
 		"electric_consumer", "electric_switch", "solar_panel", "battery", "creative_eu",
 		"creative_fluid", "electric_furnace", "industrial_light", "electric_breaker", "network_gauge", "usage_meter",
-		"tesla_coil",
+		"tesla_coil", "spout",
 	)
 
 	private fun loreNbt(lore: List<Pair<String, String>>) = NbtList(lore.map { (text, color) ->

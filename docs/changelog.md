@@ -80,6 +80,15 @@ This page mirrors key datapack milestones from the main project changelog.
   settings page. The Goggles show what it is doing, the radius, the cost per mob and the grid's EU.
   Crafted from four copper ingots, a lightning rod, two redstone, a block of redstone and an iron
   ingot.
+- **Spout** (Transport Networks). Fills one empty container a second from its fluid network: a
+  bucket becomes a water, lava, powder snow or milk bucket (5000 mL), a glass bottle a water
+  bottle or the network's potion, with its effects and colour (1000 mL), or a bottle o'
+  enchanting (700 mL of experience). The empty is taken from a container under it (hopper, chest,
+  barrel…), and the filled one goes back into it, so a hopper line makes a bottling line; an empty
+  dropped under it works too. Only a whole container's worth is taken; the fluid that arrived
+  first is tried first. Redstone locks it, like a hopper. Other packs can add their own fluids to
+  `storage ra:wires item_fills`. The Goggles show what it is doing and the network's fluid.
+  Crafted from five copper ingots, a bucket and pointed dripstone.
 
 - **Elevator** (Interactive Machines). Stand on it and jump to go up, or sneak to go down, to the
   next Elevator straight above or below in the same column, at most *range* blocks away (2 to 64,

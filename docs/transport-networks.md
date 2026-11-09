@@ -1,7 +1,7 @@
 # Transport Networks
 
 Pipes for liquids and gases, wires for electricity (EU), and the machines that fill, store and use
-them: pumps, tanks, boilers, generators, solar panels, batteries, an electric furnace, lights
+them: pumps, tanks, spouts, boilers, generators, solar panels, batteries, an electric furnace, lights
 and a tesla coil.
 
 ![An EU grid running](images/screenshots/Electricity.png)
@@ -34,6 +34,7 @@ and a tesla coil.
 | Network Gauge | ![Network Gauge recipe](images/recipes/ra_wires/network_gauge.png){ width="220" } |
 | Usage Meter | ![Usage Meter recipe](images/recipes/ra_wires/usage_meter.png){ width="220" } |
 | Tesla Coil | ![Tesla Coil recipe](images/recipes/ra_wires/tesla_coil.png){ width="220" } |
+| Spout | ![Spout recipe](images/recipes/ra_wires/spout.png){ width="220" } |
 
 Operators: the **Wires Bundle** (`/function ra:items/bundles/give_wires_bundle`) has everything;
 `/function ra_wires:items/give_creative` gives the two creative sources.
@@ -51,7 +52,7 @@ capacity:
 
 | Block | Holds |
 |---|---|
-| Pipe | 1000 mL |
+| Pipe, Spout | 1000 mL |
 | Pump, Drain | 5000 mL |
 | Liquid Tank, Gas Tank | 100000 mL (20 buckets) |
 | Wire, EU Switch, EU Breaker, Industrial Light, Tesla Coil | 0 EU |
@@ -76,6 +77,7 @@ Different families never mix, so an electric wire and a pipe can run side by sid
 | **Liquid Drain** | Same as the pump, taking in a source block next to it — or, failing that, one block down and out, so a drain standing on the bank of a pool drains the pool. Water and lava fall onto the drain as it does |
 | **Liquid Drain**, powered by redstone | Pours out instead, from its **front** (see [Pouring out](#pouring-out)). Needs nothing in the world: air in front of it is enough |
 | **Liquid Drain**, facing up or down | Also a **loading point**: takes filled buckets/bottles from you (sneak while holding one), from a container on top of it, or from items dropped on it, and gives the empties back; with none of those, a sneaking player's **experience**. With nothing to load, it takes in a source block next to it like any drain |
+| **Spout** | Fills empty buckets and bottles under it from the network, one a second ([Spout](#spout)) |
 | **Gas Pump** | Like the Liquid Pump, for gases: draws **Smoke** from a lit campfire or soul campfire next to it, 500 mL a second. The campfire keeps burning and is never used up. Steam comes from a Boiler |
 
 A drain points where you look when you place it, so looking down to place one makes it face up.
@@ -150,6 +152,30 @@ per tick. They work whichever way round you place them.
 
 To cut a pipe completely, remove a pipe block. To cut a wire, use an **EU Switch**: without a redstone
 signal it splits the grid in two; powered, it joins it again.
+
+### Spout
+
+A **Spout** fills empty containers from its network, one a second: put it on a pipe line with a
+container under it.
+
+| Empty | Becomes | Takes |
+| --- | --- | --- |
+| Bucket | Water, Lava, Powder Snow or Milk Bucket | 5000 mL |
+| Glass Bottle | Water Bottle | 1000 mL of water |
+| Glass Bottle | the network's potion, with its effects and colour ([Potions](#potions)) | 1000 mL of potion |
+| Glass Bottle | Bottle o' Enchanting | 700 mL of experience |
+
+- **Under it**: a container (hopper, chest, barrel, brewing stand…) holding empties. The filled
+  item goes back into the same container, or is dropped on top of it when it is full. A hopper
+  under the Spout feeding a chest is a bottling line: hoppers bring the empties in and carry the
+  filled ones on.
+- Or an empty **dropped** in the space under it: the filled one is dropped in its place.
+- On a network holding several fluids, the one that arrived first is tried first.
+- It only takes a whole container's worth, or nothing.
+- **Redstone locks it**, as it does a hopper.
+- The Goggles show what it is doing: `filling`, `idle` (nothing under it), `nothing_to_fill`
+  (nothing under it this network can fill), `not_enough` (less than a whole container of that
+  fluid), `network_empty`, `locked`, `no_network`.
 
 ### Potions
 
@@ -359,12 +385,17 @@ you extend it.
   with a new epoch, and a meter seeing a different epoch counts from 0. A count reaching
   1000000000 is lowered by that much by the meter reading it, and the others add it back.
   Properties: `mode` (`consumed` / `produced`), `every` (1–100000000), `total` (read only).
-- **Machine clock** (`ra_wires:machine/*`): the Tesla Coil acts once a second, on a
+- **Machine clock** (`ra_wires:machine/*`): the Tesla Coil and the Spout act once a second, on a
   clock scheduled every 20 ticks only while a marker tagged `ra.wires.clocked` is loaded; their only
   per-tick work is the break check. Tesla Coil properties: `radius` (1–16, admin 32), `damage`
   (1–40) and `eu_per_zap` (1–100000), both admin only. Status `data.status.coil`, `last_hits`.
   Targets are the entity type tag `#ra_wires:tesla_targets`; another pack adds a mob to it to make
-  it a target.
+  it a target. Spout status `data.status.spout_state`.
+- **Filling containers** (`storage ra:wires item_fills`): what a Spout makes, keyed by medium, each
+  entry `{empty, item, volume, components?, sound?}`; `potion:1b` gives the network's recorded
+  `potion_contents` instead of `components`. Another pack appends to `item_fills.<medium>` after
+  `ra_wires:load` to make its medium fillable. `item_sources` is the other direction (what a Drain
+  empties).
 - **Media registry** (`ra_wires:media/init`): display name, state, colour, particle, optional world
   block and bucket; pumpable blocks are listed as `source_blocks`, each with its medium's
   `state` (a pump or drain only considers sources of the state it carries) and `keep:1b` on a

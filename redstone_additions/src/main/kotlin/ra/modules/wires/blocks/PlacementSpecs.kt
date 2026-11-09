@@ -59,4 +59,5 @@ internal val SPECS: List<Pair<String, String>> = listOf(
 
 	// Machines on the once-a-second clock (ra_wires:machine): `clocked` tags the marker for it.
 	"tesla_coil" to """{block:"minecraft:waxed_lightning_rod",marker:"tesla_coil",electric:1b,net:"electric",capacity:0,clocked:1b,props:{radius:${ra.modules.wires.blocks.tesla_coil.TeslaCoil.DEFAULT_RADIUS},damage:${ra.modules.wires.blocks.tesla_coil.TeslaCoil.DEFAULT_DAMAGE},eu_per_zap:${ra.modules.wires.blocks.tesla_coil.TeslaCoil.DEFAULT_EU}}}""",
+	"spout" to """{block:"minecraft:waxed_exposed_copper_grate",marker:"spout",fluid:1b,net:"fluid",capacity:1000,clocked:1b}""",
 )

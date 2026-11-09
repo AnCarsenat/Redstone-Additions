@@ -53,6 +53,15 @@ object Media : PackPart {
 			// arrive once a network can hold more than one medium at a time.
 			raw("""data modify storage ra:wires item_sources set value [{item:"minecraft:water_bucket",medium:"water",volume:5000,empty:"minecraft:bucket"},{item:"minecraft:lava_bucket",medium:"lava",volume:5000,empty:"minecraft:bucket"},{item:"minecraft:powder_snow_bucket",medium:"powder_snow",volume:5000,empty:"minecraft:bucket"},{item:"minecraft:milk_bucket",medium:"milk",volume:5000,empty:"minecraft:bucket"},{item:"minecraft:experience_bottle",medium:"experience",volume:700,empty:"minecraft:glass_bottle"},{item:"minecraft:potion",medium:"potion",volume:1000,empty:"minecraft:glass_bottle"}]""")
 
+			// The other way round, for the Spout: what an empty container under it becomes, by
+			// medium. Keyed by medium because the spout walks the network's media in arrival
+			// order (the primary first) and asks each one what it can fill. Each entry: `empty`
+			// the container it takes, `item` what it gives back, `volume` in mL, optional
+			// `components` for the filled stack and `sound`. `potion:1b` gets the network's own
+			// potion_contents in place of `components` (water when the network has none on
+			// record). Another pack appends to item_fills.<its medium> after ra_wires:load.
+			raw("""data modify storage ra:wires item_fills set value {water:[{empty:"minecraft:bucket",item:"minecraft:water_bucket",volume:5000,sound:"minecraft:item.bucket.fill"},{empty:"minecraft:glass_bottle",item:"minecraft:potion",volume:1000,components:{"minecraft:potion_contents":{potion:"minecraft:water"}},sound:"minecraft:item.bottle.fill"}],lava:[{empty:"minecraft:bucket",item:"minecraft:lava_bucket",volume:5000,sound:"minecraft:item.bucket.fill_lava"}],powder_snow:[{empty:"minecraft:bucket",item:"minecraft:powder_snow_bucket",volume:5000,sound:"minecraft:item.bucket.fill_powder_snow"}],milk:[{empty:"minecraft:bucket",item:"minecraft:milk_bucket",volume:5000,sound:"minecraft:item.bucket.fill"}],experience:[{empty:"minecraft:glass_bottle",item:"minecraft:experience_bottle",volume:700,sound:"minecraft:item.bottle.fill"}],potion:[{empty:"minecraft:glass_bottle",item:"minecraft:potion",volume:1000,potion:1b,components:{"minecraft:potion_contents":{potion:"minecraft:water"}},sound:"minecraft:item.bottle.fill"}]}""")
+
 			// What the EU Generator will burn, and for how many ticks. Same shape as the
 			// other registries here, so a new fuel is a data edit.
 			//

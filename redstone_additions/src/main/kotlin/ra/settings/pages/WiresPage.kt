@@ -30,5 +30,6 @@ val WiresPage = Page(
 		"network_gauge" to "Network Gauge",
 		"usage_meter" to "Usage Meter",
 		"tesla_coil" to "Tesla Coil",
+		"spout" to "Spout",
 	),
 )

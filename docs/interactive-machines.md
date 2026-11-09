@@ -2,7 +2,7 @@
 
 Machines for everyday automation: break and place blocks, move and sort items, breed animals,
 endless water, lava and powder snow, item magnets, mob-proof torches, message blocks,
-elevators and a trash can.
+elevators, a trash can and a fan.
 
 ## Getting them
 
@@ -22,6 +22,7 @@ elevators and a trash can.
 | Message Block | note block | ![Message Block recipe](images/recipes/ra_interactive/message_block.png){ width="220" } |
 | Elevator | white wool | ![Elevator recipe](images/recipes/ra_interactive/elevator.png){ width="220" } |
 | Trash Can | barrel | ![Trash Can recipe](images/recipes/ra_interactive/trash_can.png){ width="220" } |
+| Fan | dropper | ![Fan recipe](images/recipes/ra_interactive/fan.png){ width="220" } |
 
 Operators: `/function ra_interactive:items/give_all`.
 
@@ -41,6 +42,7 @@ Operators: `/function ra_interactive:items/give_all`.
 | Message Block | when it gets powered | Sends a chat message to nearby players |
 | Elevator | no | Jump on it to go up, sneak to go down, to the next Elevator in the column |
 | Trash Can | no | Destroys every item put into it or dropped on it |
+| Fan | while powered | Pushes items, mobs and players along its face, up to `range` blocks away |
 
 "Front" is the direction the block faces when you place it.
 
@@ -194,6 +196,29 @@ It has no settings. Breaking it gives back the Trash Can, never what went into i
 hopper **under** it: a hopper above can fill it and the one below empty it in the same moment,
 before it clears.
 
+## Fan
+
+Place it like a dispenser: its face points back at you (up when you look down on it, down when
+you look up), and that is the way the wind blows. Then power it. While it has a signal, everything in the `range`
+blocks in front of its face is pushed away from it: dropped items, mobs and players. A Conveyor
+with a reach.
+
+| Setting | Default | Range | Meaning |
+| --- | --- | --- | --- |
+| `range` | 8 | 1–16 (admins: up to 64) | How many blocks in front of its face it reaches |
+| `strength` | 2 | 1–5 (admins: up to 10) | How fast it pushes: 1 block a second per step |
+
+- Items and mobs are brought up to the Fan's speed along its direction and keep any speed they
+  already had beyond it; sideways and falling are not touched.
+- Players are moved a little every other tick and never into a wall: a step that would put your
+  feet or head inside a solid block is not taken. An upward Fan lifts you with Levitation, which
+  ends a moment after you leave its column. Spectators and creative players who are flying are
+  not pushed.
+- Paintings, item frames, displays and other fixed entities stay put
+  (`#ra_interactive:fan_unmoved`).
+- A wind puff leaves the face for the players with block particles on.
+- It is a dropper underneath; leave it empty, or it drops its items when powered.
+
 ## Changing settings
 
 Every setting above is edited with the [Data Handler](tools.md): Shift + right-click the block,
@@ -225,6 +250,15 @@ then change the row. The [Goggles](tools.md) show the current values.
   and it kills the item entities in the one block above it (`dx=0`), except items with a permanent
   pickup delay (display items). It ticks after the Item Pipe and the Item Mover, so what they push
   in is gone within the same tick. Both tests cost next to nothing when it is empty.
+- **Fan.** A real dropper, so `dropper[triggered=true]` says whether it is powered; an unpowered
+  Fan costs one block-state test every other tick. A powered one reads its two properties and runs
+  two box selectors (`dx`/`dy`/`dz` over the `range` blocks in front) every other tick. Mobs and
+  items have their `Motion` along the axis raised to 0.05 × `strength` blocks per tick. Players
+  cannot have `Motion` written and 26.3 has no command that gives a player velocity, so a player is
+  moved by a relative `tp` of 0.1 × `strength` blocks every other tick (a relative teleport keeps
+  their own velocity), after checking the blocks their front edge would enter at feet and head
+  height against `#ra_lib:ray_passable`. Up, Levitation (amplifier `strength` − 1) refreshed every
+  other tick; players tagged `ra.fan.lifted` whose `ra.fan.lift` game time has passed lose it.
 - **Item Pipe.** The filter is `data.properties.filter_item` (an item id, empty = none);
   `data.properties.invert` (`1b`) sends non-matching stacks to the side instead. Pipes
   built when filters were item frames are converted on load; the frames are left in place.

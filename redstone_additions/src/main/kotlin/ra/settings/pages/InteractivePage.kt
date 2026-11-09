@@ -2,6 +2,7 @@ package ra.settings.pages
 
 import ra.core.Ns
 import ra.modules.interactive.Elevator
+import ra.modules.interactive.Fan
 import ra.modules.interactive.MagicCrate
 import ra.modules.interactive.MessageBlock
 
@@ -15,6 +16,8 @@ val InteractivePage = Page(
 		PropRow("block_placer", "cooldown", "Block Placer interval", default = 20, min = 1, max = 1200, step = 5),
 		PropRow("message_block", "range", "Message Block range", default = 16, min = 1, max = MessageBlock.ADMIN_MAX_RANGE, step = 4),
 		PropRow("elevator", "range", "Elevator range", default = Elevator.DEFAULT_RANGE, min = 2, max = Elevator.ADMIN_MAX_RANGE, step = 4),
+		PropRow("fan", "range", "Fan range", default = Fan.DEFAULT_RANGE, min = 1, max = Fan.ADMIN_MAX_RANGE, step = 1),
+		PropRow("fan", "strength", "Fan strength", default = Fan.DEFAULT_STRENGTH, min = 1, max = Fan.ADMIN_MAX_STRENGTH, step = 1),
 	) + blocks(
 		"block_breaker" to "Block Breaker",
 		"block_placer" to "Block Placer",
@@ -29,5 +32,6 @@ val InteractivePage = Page(
 		"infinite_snow_cauldron" to "Infinite Snow Cauldron",
 		"elevator" to "Elevator",
 		"trash_can" to "Trash Can",
+		"fan" to "Fan",
 	),
 )

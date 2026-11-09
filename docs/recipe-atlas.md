@@ -1,6 +1,6 @@
 # Recipe Atlas
 
-Every recipe in the pack, in one place: 84 of them.
+Every recipe in the pack, in one place: 87 of them.
 
 !!! tip "Finding one"
     Use the search box with the item's name — every recipe below is indexed by
@@ -16,6 +16,8 @@ what the pack actually contains rather than what someone remembered to add.
 | ---- | ------ | ------- |
 | [Analog Emitter](#wireless-redstone) | [Wireless Redstone](wireless-redstone.md) | Crafting table |
 | [Analog Receiver](#wireless-redstone) | [Wireless Redstone](wireless-redstone.md) | Crafting table |
+| [Anchor Tablet](#ender-links) | [Ender Links](ender-links.md) | Crafting table |
+| [Anchor Terminal](#ender-links) | [Ender Links](ender-links.md) | Crafting table |
 | [Battery](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
 | [Big Torch](#interactive-machines) | [Interactive Machines](interactive-machines.md) | Crafting table |
 | [Block Breaker](#interactive-machines) | [Interactive Machines](interactive-machines.md) | Crafting table |
@@ -46,6 +48,7 @@ what the pack actually contains rather than what someone remembered to add.
 | [EU Generator](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
 | [EU Switch](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
 | [Extender](#logic-gates) | [Logic Gates](logic-gates.md) | Crafting table |
+| [Fan](#interactive-machines) | [Interactive Machines](interactive-machines.md) | Crafting table |
 | [Gas Pump](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
 | [Gas Tank](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
 | [Gas Valve](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
@@ -118,6 +121,8 @@ Module page: [Ender Links](ender-links.md) — give everything: `/function ra_en
 
 | Item | Recipe | Station | Namespace id |
 | ---- | ------ | ------- | ------------ |
+| **Anchor Tablet** | ![Anchor Tablet recipe](images/recipes/ra_ender/anchor_tablet.png){ width="220" } | Crafting table | `ra_ender:anchor_tablet` |
+| **Anchor Terminal** | ![Anchor Terminal recipe](images/recipes/ra_ender/anchor_terminal.png){ width="220" } | Crafting table | `ra_ender:anchor_terminal` |
 | **Ender Fluid Vault** | ![Ender Fluid Vault recipe](images/recipes/ra_ender/ender_fluid_vault.png){ width="220" } | Crafting table | `ra_ender:ender_fluid_vault` |
 | **Ender Item Vault** | ![Ender Item Vault recipe](images/recipes/ra_ender/ender_item_vault.png){ width="220" } | Crafting table | `ra_ender:ender_item_vault` |
 | **Ender Power Vault** | ![Ender Power Vault recipe](images/recipes/ra_ender/ender_power_vault.png){ width="220" } | Crafting table | `ra_ender:ender_power_vault` |
@@ -146,6 +151,7 @@ Module page: [Interactive Machines](interactive-machines.md) — give everything
 | **Breeder** | ![Breeder recipe](images/recipes/ra_interactive/breeder.png){ width="220" } | Crafting table | `ra_interactive:breeder` |
 | **Elevator** | ![Elevator recipe](images/recipes/ra_interactive/elevator.png){ width="220" } | Crafting table | `ra_interactive:elevator` |
 | **Enchanted Coal Block** | ![Enchanted Coal Block recipe](images/recipes/ra_interactive/enchanted_coal_block.png){ width="220" } | Crafting table | `ra_interactive:enchanted_coal_block` |
+| **Fan** | ![Fan recipe](images/recipes/ra_interactive/fan.png){ width="220" } | Crafting table | `ra_interactive:fan` |
 | **Infinite Lava Cauldron** | ![Infinite Lava Cauldron recipe](images/recipes/ra_interactive/infinite_lava_cauldron.png){ width="220" } | Crafting table | `ra_interactive:infinite_lava_cauldron` |
 | **Infinite Snow Cauldron** | ![Infinite Snow Cauldron recipe](images/recipes/ra_interactive/infinite_snow_cauldron.png){ width="220" } | Crafting table | `ra_interactive:infinite_snow_cauldron` |
 | **Infinite Water Cauldron** | ![Infinite Water Cauldron recipe](images/recipes/ra_interactive/infinite_water_cauldron.png){ width="220" } | Crafting table | `ra_interactive:infinite_water_cauldron` |

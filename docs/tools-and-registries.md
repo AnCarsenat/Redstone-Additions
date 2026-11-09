@@ -323,6 +323,8 @@ an admin set to a large range keeps it, whoever powers or stands near it later, 
 | Magic Crate `radius` | 20 | 64 | an item selector every pull |
 | Message Block `range` | 128 | 1024 | a sane ceiling (one player selector per pulse) |
 | Elevator `range` | 64 | 384 | a world's height (one box selector per ride) |
+| Fan `range` | 16 | 64 | two box selectors of that length every other tick while powered |
+| Fan `strength` | 5 | 10 | a sane ceiling (10 blocks a second) |
 | Held Item Detector `radius` | 16 | 64 | an item test on every player in range, once a second |
 | Player Detector `radius` | 16 | 64 | one player selector per listed name, once a second |
 

@@ -1,6 +1,6 @@
 # Recipe Atlas
 
-Every recipe in the pack, in one place: 81 of them.
+Every recipe in the pack, in one place: 83 of them.
 
 !!! tip "Finding one"
     Use the search box with the item's name — every recipe below is indexed by
@@ -14,6 +14,8 @@ what the pack actually contains rather than what someone remembered to add.
 
 | Item | Module | Station |
 | ---- | ------ | ------- |
+| [Analog Emitter](#wireless-redstone) | [Wireless Redstone](wireless-redstone.md) | Crafting table |
+| [Analog Receiver](#wireless-redstone) | [Wireless Redstone](wireless-redstone.md) | Crafting table |
 | [Battery](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
 | [Big Torch](#interactive-machines) | [Interactive Machines](interactive-machines.md) | Crafting table |
 | [Block Breaker](#interactive-machines) | [Interactive Machines](interactive-machines.md) | Crafting table |
@@ -262,6 +264,8 @@ Module page: [Wireless Redstone](wireless-redstone.md) — give everything: `/fu
 
 | Item | Recipe | Station | Namespace id |
 | ---- | ------ | ------- | ------------ |
+| **Analog Emitter** | ![Analog Emitter recipe](images/recipes/ra_wireless/analog_emitter.png){ width="220" } | Crafting table | `ra_wireless:analog_emitter` |
+| **Analog Receiver** | ![Analog Receiver recipe](images/recipes/ra_wireless/analog_receiver.png){ width="220" } | Crafting table | `ra_wireless:analog_receiver` |
 | **Redstone Remote** | ![Redstone Remote recipe](images/recipes/ra_wireless/remote.png){ width="220" } | Crafting table | `ra_wireless:remote` |
 | **Wireless Emitter** | ![Wireless Emitter recipe](images/recipes/ra_wireless/emitter.png){ width="220" } | Crafting table | `ra_wireless:emitter` |
 | **Wireless Receiver** | ![Wireless Receiver recipe](images/recipes/ra_wireless/receiver.png){ width="220" } | Crafting table | `ra_wireless:receiver` |

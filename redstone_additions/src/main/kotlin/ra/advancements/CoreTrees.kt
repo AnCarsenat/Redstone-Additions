@@ -64,6 +64,8 @@ internal val wirelessTree = listOf(
 	category("ra_wireless", Items.END_STONE_BRICKS, "Redstone Wireless", "Control redstone signals wirelessly.", "get_wireless_item", Items.GOLD_INGOT),
 	egg("ra_wireless", "emitter", "Wireless Emitter", Items.END_STONE_BRICKS, TRUE),
 	egg("ra_wireless", "receiver", "Wireless Receiver", Items.PURPUR_BLOCK, TRUE),
+	egg("ra_wireless", "analog_emitter", "Analog Emitter", Items.END_STONE, TRUE),
+	egg("ra_wireless", "analog_receiver", "Analog Receiver", Items.AMETHYST_BLOCK, TRUE),
 	egg("ra_wireless", "remote", "Redstone Remote", Items.RED_DYE, TRUE, item = Items.WARPED_FUNGUS_ON_A_STICK),
 )
 

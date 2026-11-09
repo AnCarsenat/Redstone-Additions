@@ -82,6 +82,18 @@ This page mirrors key datapack milestones from the main project changelog.
   it. Smoke and a hiss follow each player's particle and sound settings. Crafted from six iron
   ingots, a cactus and a barrel. An empty can costs two quick tests a tick.
 
+- **Analog Emitter and Analog Receiver** (Wireless Redstone). Carry a signal strength, 0 to 15,
+  over a channel instead of only on or off. The Analog Emitter sends the strongest signal reaching
+  it; every Analog Receiver on the same channel outputs the strongest level the emitters on it
+  send, on the **target blocks** around it (dust or a comparator next to a target picks it up),
+  and iron blocks around it turn into redstone blocks while the level is above 0. A Wireless
+  Emitter on the channel counts as 15, and a Wireless Receiver turns on while an Analog Emitter on
+  its channel sends 1 or more. The level only travels when an emitter's signal changes, so a still
+  channel costs nothing; receivers check their channel again every two seconds, which picks up a
+  channel changed with the Data Handler. The Goggles show the channel and the level. Crafted like
+  the Wireless Emitter and Receiver, with a comparator (end stone) or a target (amethyst blocks) in
+  the middle.
+
 ### Changed
 
 - **Anyone can change a Message Block's text.** It was locked to admins in v6.0.1 because rich

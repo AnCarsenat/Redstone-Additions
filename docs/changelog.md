@@ -89,6 +89,14 @@ This page mirrors key datapack milestones from the main project changelog.
   first is tried first. Redstone locks it, like a hopper. Other packs can add their own fluids to
   `storage ra:wires item_fills`. The Goggles show what it is doing and the network's fluid.
   Crafted from five copper ingots, a bucket and pointed dripstone.
+- **Water Wheel** (Transport Networks). An EU generator turned by flowing water. Its wheel turns
+  facing you as you place it, and the eight blocks around the hub in the wheel's plane are where
+  its paddles dip: each one holding flowing or falling water (not a source block) adds
+  *eu_per_block* EU per tick (default 5, so 5 to 40 EU/t; admin only, default on the settings
+  page), day and night. The wheel is drawn with block displays and turns smoothly while water
+  flows, faster with three or more flowing blocks, and stops where it is when the water does.
+  The Goggles show what it is doing, the flowing water it finds, what it makes and the grid's EU.
+  It holds 1000 EU. Crafted from four spruce slabs, four sticks, a copper block and redstone.
 
 - **Elevator** (Interactive Machines). Stand on it and jump to go up, or sneak to go down, to the
   next Elevator straight above or below in the same column, at most *range* blocks away (2 to 64,
@@ -96,12 +104,18 @@ This page mirrors key datapack milestones from the main project changelog.
   it are free. Pressing sneak rides once, holding it does not keep going down. Teleport sound and
   particles follow each player's settings. Crafted from eight white wool around an ender pearl,
   two per craft. Only players who jump or sneak are checked, so idle Elevators cost nothing.
-
 - **Trash Can** (Interactive Machines). A barrel that destroys whatever enters it: items put in by
   hand, pushed in by a hopper, an Item Pipe or an Item Mover, and dropped items landing on top of
   it. Smoke and a hiss follow each player's particle and sound settings. Crafted from six iron
   ingots, a cactus and a barrel. An empty can costs two quick tests a tick.
-
+- **Fan** (Interactive Machines). While powered, pushes dropped items, mobs and players along its
+  face through the *range* blocks in front of it (1 to 16, default 8; admins up to 64), at a speed
+  set by *strength* (1 to 5, default 2, one block a second per step; admins up to 10). It faces
+  the way it was placed, up and down included. Players move in small steps every tick, so the
+  push looks smooth; they are never pushed into a wall, an upward Fan
+  lifts them with Levitation, and spectators and flying creative players are left alone. A wind
+  puff follows each player's particle setting. Crafted from four cobblestone, three feathers, a
+  dropper and redstone. An unpowered Fan only checks its own block every other tick.
 - **Analog Emitter and Analog Receiver** (Wireless Redstone). Carry a signal strength, 0 to 15,
   over a channel instead of only on or off. The Analog Emitter sends the strongest signal reaching
   it; every Analog Receiver on the same channel outputs the strongest level the emitters on it
@@ -113,7 +127,6 @@ This page mirrors key datapack milestones from the main project changelog.
   channel changed with the Data Handler. The Goggles show the channel and the level. Crafted like
   the Wireless Emitter and Receiver, with a comparator (end stone) or a target (amethyst blocks) in
   the middle.
-
 - **Pager** (Wireless Redstone). Carried anywhere in the inventory or in the offhand, it alerts you
   when its channel turns on: a title, a chat line and a chime (the chime follows your *Machine
   sounds* setting). A channel turns on when its first emitter starts sending, a Wireless Emitter
@@ -122,14 +135,6 @@ This page mirrors key datapack milestones from the main project changelog.
   `_ . + - : / #`). Nothing runs while channels stay as they are: players are only checked on the
   tick a channel turns on. Crafted from an amethyst shard, two iron ingots, a note block and
   redstone.
-
-- **Fan** (Interactive Machines). While powered, pushes dropped items, mobs and players along its
-  face through the *range* blocks in front of it (1 to 16, default 8; admins up to 64), at a speed
-  set by *strength* (1 to 5, default 2, one block a second per step; admins up to 10). It faces
-  the way it was placed, up and down included. Players are never pushed into a wall, an upward Fan
-  lifts them with Levitation, and spectators and flying creative players are left alone. A wind
-  puff follows each player's particle setting. Crafted from four cobblestone, three feathers, a
-  dropper and redstone. An unpowered Fan only checks its own block every other tick.
 - **Jetpack fuel gauge.** While an Iron jetpack is in the air, the action bar shows the fuel left
   in the burning piece as a coloured bar and a percentage, and the coal you carry
   (`Fuel ▮▮▮▮▮▮▯▯▯▯ 63% · 12 coal`). Green while there is coal to come, then yellow, red under a
@@ -203,6 +208,15 @@ This page mirrors key datapack milestones from the main project changelog.
 
 ### Changed
 
+- **The Liquid Drain is now the Fluid Drain, and also vents gases** (Transport Networks). Powered
+  by redstone on a gas network, it lets the gas out of its front with the gas's effect, renewed
+  at each action (once a second at the default rate): **Oxygen** bubbles up the water straight
+  above its front, like a magma block, and gives water breathing (10 seconds) to whoever is in
+  that column; the new **Toxic Gas** withers (3 seconds) everyone and every mob within 4 blocks. Steam and smoke are only vented, as before; liquids pour out as before. The Goggles say
+  `venting` for a gas. Other packs can give their own gases an effect in
+  `storage ra:wires gas_effects`. Only the name changed: drains already placed or in a chest keep
+  working, and its recipe is the same. Oxygen and Toxic Gas have no source in survival yet (the
+  Chemistry module will make them); the Creative Fluid Source now cycles through both.
 - **Anyone can change a Message Block's text.** It was locked to admins in v6.0.1 because rich
   chat text can carry a clickable command. The text a player types is always shown exactly as
   typed, quotes and braces included, so it can never become a command. Rich text (colours,
@@ -266,10 +280,6 @@ This page mirrors key datapack milestones from the main project changelog.
   Drain pours a potion out as a cloud in the potion's colour, but the colour was read after the
   potion had been taken from the network, so the pour that emptied it could come out in the
   default water-bottle blue. The colour is now read first.
-- **A Fan pushes players smoothly.** A player was moved by one step every other tick, which
-  looked like a series of jumps. The step is now half the size and taken every tick: the same
-  speed, and still never into a wall.
-
 - **The Item Crate shows its box skin again.** Its head only named the skin's owner
   (`profile:"BoxMan01234"`), which the game has to look up, and the crate showed a broken head
   when it could not. The skin itself is now written into the crate. Crates made before keep the old
@@ -288,7 +298,6 @@ This page mirrors key datapack milestones from the main project changelog.
   Remote's Sneak+right-click book prompt is now a class with one instance per item (its own
   pending, slot and request objectives), used by the Remote and the Pager; the Remote's functions
   are generated unchanged. An optional text format refuses a channel the item could not use.
-
 - **A core sanitiser for player input** (`ra_lib:safe/clean`, `ra_lib:safe/number`,
   `ra/lib/safe/SafeClean.kt`). `clean` turns a value into one that is safe to paste in a given
   text format: free text loses its double quotes, backslashes and line breaks, so it can sit inside

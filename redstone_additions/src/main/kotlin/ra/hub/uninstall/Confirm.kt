@@ -111,7 +111,7 @@ internal fun DataPack.registerUninstallConfirm() {
 		// Usage Meter's pulse put-out.
 		schedules { clear(Readout.run) }
 		schedules { clear(UsageMeter.pulseOff) }
-		// The Tesla Coil and Spout clock, scheduled only while one of them is loaded.
+		// The machine clock (Tesla Coil, Spout, Water Wheel), scheduled only while one of them is loaded.
 		schedules { clear(MachineClock.run) }
 		// The Displays clock (hologram contents and spin, display repair), likewise.
 		schedules { clear(DisplayPoll.run) }

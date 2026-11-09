@@ -5,6 +5,7 @@ import io.github.ayfri.kore.commands.function
 import io.github.ayfri.kore.commands.kill
 import io.github.ayfri.kore.commands.tag
 import io.github.ayfri.kore.utils.nbt
+import io.github.ayfri.kore.utils.toSnbt
 import ra.api.RaLib
 import ra.core.Ns
 import ra.core.PackPart
@@ -13,6 +14,8 @@ import ra.core.block.killVanillaDrop
 import ra.core.define
 import ra.core.raw
 import ra.core.ref
+import ra.modules.wires.WiresBlocks
+import ra.modules.wires.WiresBlocks.stackNbt
 import ra.modules.wires.common.Common
 
 object LiquidBreak : PackPart {
@@ -54,7 +57,8 @@ object LiquidBreak : PackPart {
 			function(RaLib.Transport.Net.leave)
 			function(Common.updateModelLocalAndNeighbors)
 			killVanillaDrop("minecraft:dropper")
-			raw("""summon item ~ ~ ~ {Item:{id:"minecraft:bat_spawn_egg",count:1,components:{"minecraft:item_model":"minecraft:dropper","minecraft:item_name":'Liquid Drain',"minecraft:custom_data":{ra:{liquid_drain:1b}},"minecraft:entity_data":{id:"minecraft:bat",Tags:["ra","ra.spawned","ra.place.liquid_drain"],Silent:1b,NoAI:1b,Invulnerable:1b}}}}""")
+			// The full stack, lore included, from the item table (the egg a refund gives back too).
+			raw("summon item ~ ~ ~ {Item:${WiresBlocks.items.first { it.block.id == "liquid_drain" }.stackNbt().toSnbt()}}")
 			kill(self())
 		}
 

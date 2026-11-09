@@ -1,6 +1,6 @@
 # Recipe Atlas
 
-Every recipe in the pack, in one place: 87 of them.
+Every recipe in the pack, in one place: 88 of them.
 
 !!! tip "Finding one"
     Use the search box with the item's name — every recipe below is indexed by
@@ -54,6 +54,7 @@ what the pack actually contains rather than what someone remembered to add.
 | [Gas Valve](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
 | [Generator Casing](#infinite-generators) | [Infinite Generators](infinite-generators.md) | Crafting table |
 | [Goggles](#tools) | [Tools](tools.md) | Crafting table |
+| [Goggles Lens](#tools) | [Tools](tools.md) | Crafting table |
 | [Gold Multiblock Base](#multiblocks) | [Multiblocks](multiblocks.md) | Crafting table |
 | [Held Item Detector](#sensors) | [Sensors](sensors.md) | Crafting table |
 | [Industrial Light](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
@@ -234,6 +235,7 @@ Module page: [Tools](tools.md) — give everything: `/function ra:tools/give_all
 | **Clipboard** | ![Clipboard recipe](images/recipes/ra/clipboard.png){ width="220" } | Crafting table | `ra:clipboard` |
 | **Data Handler** | ![Data Handler recipe](images/recipes/ra/data_handler.png){ width="220" } | Crafting table | `ra:data_handler` |
 | **Goggles** | ![Goggles recipe](images/recipes/ra/goggles.png){ width="220" } | Crafting table | `ra:goggles` |
+| **Goggles Lens** | ![Goggles Lens recipe](images/recipes/ra/goggles_lens.png){ width="220" } | Crafting table | `ra:goggles_lens` |
 | **Multimeter** | ![Multimeter recipe](images/recipes/ra/multimeter.png){ width="220" } | Crafting table | `ra:multimeter` |
 | **Wrench** | ![Wrench recipe](images/recipes/ra/wrench.png){ width="220" } | Crafting table | `ra:wrench` |
 

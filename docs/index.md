@@ -37,7 +37,7 @@ described in [Contributing Guidelines](contributing-guidelines.md#installing-int
 
 ## Modules
 
-**Looking for a recipe? [The Recipe Atlas](recipe-atlas.md) has all 84 of them on one
+**Looking for a recipe? [The Recipe Atlas](recipe-atlas.md) has all 88 of them on one
 page**, listed A to Z and grouped by module — plus the four items that have no recipe
 and are instead gambled for on an [enchanting table](enchant-crafting.md). This table
 is the shortcut: one sample per module, and where to read about it.
@@ -60,7 +60,7 @@ is the shortcut: one sample per module, and where to read about it.
 Current pack totals:
 
 - 75 placeable custom blocks
-- 87 recipes, all of them in the [Recipe Atlas](recipe-atlas.md)
+- 88 recipes, all of them in the [Recipe Atlas](recipe-atlas.md)
 - 9 tools (Wrench, Goggles, Data Handler, Creative Data Handler, Clipboard,
   Multimeter, Redstone Remote, Pager, Anchor Tablet)
 
@@ -89,6 +89,7 @@ Current pack totals:
 | Wrench | `/function ra:tools/wrench/give` | ![Wrench recipe](images/recipes/ra/wrench.png){ width="200" } | Change block modes, assemble multiblocks |
 | Data Handler | `/function ra:tools/data_handler/give` | ![Data Handler recipe](images/recipes/ra/data_handler.png){ width="200" } | Edit a block's settings |
 | Goggles | `/function ra:tools/goggles/give` | ![Goggles recipe](images/recipes/ra/goggles.png){ width="200" } | See every block's status |
+| Goggles Lens | `/function ra:tools/goggles/lens/give` | ![Goggles Lens recipe](images/recipes/ra/goggles_lens.png){ width="200" } | Gives any helmet the Goggles' view |
 
 ## What's New
 

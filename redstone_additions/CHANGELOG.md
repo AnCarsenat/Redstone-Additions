@@ -1,5 +1,14 @@
 # Changelog
 
+## [v6.0.3] - Unreleased
+
+### Fixed
+
+- **A poured potion shows its own colour when the pour empties the network.** A powered Liquid
+  Drain pours a potion out as a cloud in the potion's colour, but the colour was read after the
+  potion had been taken from the network, so the pour that emptied it could come out in the
+  default water-bottle blue. The colour is now read first.
+
 ## [v6.0.2] - 2026-11-09 - Drains, lists and fixes
 
 ### Fixed

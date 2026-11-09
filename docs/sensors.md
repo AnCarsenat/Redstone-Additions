@@ -71,7 +71,7 @@ The Goggles show the selector (**Targets**) and the first three tags (**Tags**, 
     Older Tag Adders and Tag Removers had a single `tag`. They are converted when the world
     loads: the tag becomes the list's one entry (`"red_team"` becomes `["red_team"]`). A Tag
     Remover without a tag, which cleared every tag, gets the empty list and still does; a Tag
-    Adder without one gets `["custom_tag"]`.
+    Adder without one gets the empty list and still adds nothing.
 
 **Detector output:** put **iron blocks** next to the Entity Detector (anywhere in the 3×3×3 cube
 around it). They turn into **redstone blocks** while it detects something.

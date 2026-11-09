@@ -1,7 +1,6 @@
 package ra.migrations
 
 import ra.core.raw
-import ra.modules.sensors.SensorTags
 import ra.modules.wires.fluid.Drain
 
 /**
@@ -30,12 +29,14 @@ internal val m6_0_1 = migration("6.0.1", "6.0.2") {
 
 	// The Tag Adder's and Tag Remover's single `tag` became the list `tags`: a tag it had is the
 	// list's one entry. Without one (missing, or ""), the Remover cleared every tag, which is now
-	// the empty list; the Adder added nothing, and gets the new block's ["custom_tag"]. A block that
-	// already has `tags` keeps it. `tag` goes, with the safe-check cache kept for it.
-	for ((type, none) in listOf("tag_adder" to SensorTags.DEFAULT_SNBT, "tag_remover" to "[]")) entity(type) {
+	// the empty list; the Adder added nothing, and an empty list still adds nothing (giving it the
+	// new block's ["custom_tag"] would start tagging entities it never touched). A block that
+	// already has `tags` keeps it. `tag` goes, with both safe-check caches kept for it.
+	for (type in listOf("tag_adder", "tag_remover")) entity(type) {
 		raw("execute unless data entity @s data.properties.tags unless data entity @s data.properties{tag:\"\"} if data entity @s data.properties.tag run data modify entity @s data.properties.tags append from entity @s data.properties.tag")
-		raw("execute unless data entity @s data.properties.tags run data modify entity @s data.properties.tags set value $none")
+		raw("execute unless data entity @s data.properties.tags run data modify entity @s data.properties.tags set value []")
 		raw("data remove entity @s data.properties.tag")
 		raw("data remove entity @s data.data.safe.tag")
+		raw("data remove entity @s data.data.unsafe.tag")
 	}
 }

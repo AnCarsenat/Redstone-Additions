@@ -1,6 +1,6 @@
 # Changelog
 
-## [v6.0.2] - Unreleased
+## [v6.0.2] - 2026-11-09 - Drains, lists and fixes
 
 ### Fixed
 
@@ -112,7 +112,8 @@
   of one tag, instead of `tag: "custom_tag"`. Blocks you already placed are converted when the
   world loads: their tag becomes the list's one entry (`tag: "red_team"` becomes
   `tags: ["red_team"]`), a Tag Remover without a tag, which cleared every tag, gets the empty
-  list and keeps doing exactly that, and a Tag Adder without one gets `["custom_tag"]`. The old
+  list and keeps doing exactly that, and a Tag Adder without one gets the empty
+  list and keeps adding nothing. The old
   `tag` setting is gone.
 - **The Data Handler's list button is [Add]** (it was [Append]). It adds an entry at the end,
   also to an empty list, and asks for it in the input book, checked like any other entry. Once

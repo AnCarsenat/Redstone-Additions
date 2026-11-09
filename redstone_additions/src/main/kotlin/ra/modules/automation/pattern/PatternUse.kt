@@ -141,7 +141,6 @@ object PatternUse {
 
 		// As the player.
 		pack.define(clear) {
-			raw("execute if items entity @s weapon.mainhand *[minecraft:custom_data~{ra:{pattern:{slots:${Pattern.blankSlotsSnbt}}}}] run return run ${hint()}")
 			raw("data modify storage $STORE rec set value {slots:${Pattern.blankSlotsSnbt}}")
 			raw("item modify entity @s weapon.mainhand $MODIFIER")
 			raw(setLore(blankLore))

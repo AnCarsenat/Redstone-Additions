@@ -15,10 +15,12 @@ import ra.modules.wireless.AnalogReceiver.registerAnalogReceiver
 import ra.modules.wireless.Channel.registerChannel
 import ra.modules.wireless.tools.Remote
 import ra.modules.wireless.tools.Remote.registerRemote
+import ra.modules.wireless.tools.Pager
+import ra.modules.wireless.tools.Pager.registerPager
 import ra.core.moduleLoaded
 import ra.core.executeRun
 
-/** Wireless Redstone (`ra_wireless`): emitters and receivers (on/off and analog) on string channels, and the Redstone Remote. */
+/** Wireless Redstone (`ra_wireless`): emitters and receivers (on/off and analog) on string channels, the Redstone Remote and the Pager. */
 object WirelessModule : GameplayModule {
 	override val ns = Ns.WIRELESS
 	override val title = "Wireless Redstone"
@@ -31,6 +33,7 @@ object WirelessModule : GameplayModule {
 		registerAnalogReceiver()
 		registerChannel()
 		registerRemote()
+		registerPager()
 
 		pack.define(load) {
 			// Pulse timer (remote pulse duration).
@@ -38,6 +41,9 @@ object WirelessModule : GameplayModule {
 			scoreboard.objectives.add(Remote.PENDING)
 			scoreboard.objectives.add(Remote.SLOT)
 			scoreboard.objectives.add(Remote.REQ)
+			scoreboard.objectives.add(Pager.prompt.pending)
+			scoreboard.objectives.add(Pager.prompt.slot)
+			scoreboard.objectives.add(Pager.prompt.req)
 
 			function(Emitter.block.fn("register_block"))
 			function(Receiver.block.fn("register_block"))
@@ -57,6 +63,7 @@ object WirelessModule : GameplayModule {
 
 			// Finish channel entry for anyone who has a book request outstanding.
 			executeRun("as @a[scores={${Remote.PENDING}=1..}]", Remote.applyPending)
+			executeRun("as @a[scores={${Pager.prompt.pending}=1..}]", Pager.prompt.applyPending)
 		}
 
 		pack.define(ref(ns, "items/give_all")) {
@@ -65,13 +72,14 @@ object WirelessModule : GameplayModule {
 			function(AnalogEmitter.block.give)
 			function(AnalogReceiver.block.give)
 			function(Remote.give)
+			function(Pager.give)
 		}
 
 		bundles += GiveBundle(
-			"wireless", "Wireless Bundle", "Emitters, receivers, and remote", ns,
+			"wireless", "Wireless Bundle", "Emitters, receivers, remote and pager", ns,
 			listOf(
 				Emitter.item.stackNbt(), Receiver.item.stackNbt(), AnalogEmitter.item.stackNbt(),
-				AnalogReceiver.item.stackNbt(), Remote.item.stackNbt(),
+				AnalogReceiver.item.stackNbt(), Remote.item.stackNbt(), Pager.item.stackNbt(),
 			),
 		)
 	}

@@ -23,7 +23,7 @@ import ra.core.block.markerSel
  *
  * Every Analog Receiver on the channel then gets `after` ([push]: written only when it differs
  * from what it shows), and the channel TURNED ON when other = 0, old = 0 and new > 0, which is
- * when Pagers ring.
+ * when Pagers ring ([page], see tools/Pager.kt).
  *
  * COST. Nothing per tick. An emitter calls [changed] on the tick its own output changes; an
  * Analog Receiver rebuilds its level from scratch only when it is placed and every
@@ -49,6 +49,9 @@ internal object Channel {
 
 	/** As an Analog Receiver, at it: show `#wl.level` unless it already does. */
 	val push = fn("push")
+
+	/** As the emitter that turned its channel on: ring the Pagers on it. Defined by the Pager. */
+	val page = fn("page")
 
 	private const val T = Obj.TEMP
 
@@ -90,6 +93,9 @@ internal object Channel {
 			raw("scoreboard players operation #wl.level $T = #wl.other $T")
 			raw("scoreboard players operation #wl.level $T > #wl.new $T")
 			raw("execute as ${AnalogReceiver.block.markerSel()} at @s if function ${matches.asId()} run function ${push.asId()}")
+
+			// Off before, on now: the channel turned on.
+			raw("execute if score #wl.other $T matches 0 if score #wl.old $T matches 0 if score #wl.new $T matches 1.. run function ${page.asId()}")
 		}
 	}
 }

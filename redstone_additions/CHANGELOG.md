@@ -92,6 +92,15 @@
   the Wireless Emitter and Receiver, with a comparator (end stone) or a target (amethyst blocks) in
   the middle.
 
+- **Pager** (Wireless Redstone). Carried anywhere in the inventory or in the offhand, it alerts you
+  when its channel turns on: a title, a chat line and a chime (the chime follows your *Machine
+  sounds* setting). A channel turns on when its first emitter starts sending, a Wireless Emitter
+  being powered or an Analog Emitter going above 0. Right-click shows the channel; Sneak+right-click
+  sets it with an Input Form book, like the Redstone Remote (letters, digits, spaces and
+  `_ . + - : / #`). Nothing runs while channels stay as they are: players are only checked on the
+  tick a channel turns on. Crafted from an amethyst shard, two iron ingots, a note block and
+  redstone.
+
 ### Changed
 
 - **Anyone can change a Message Block's text.** It was locked to admins in v6.0.1 because rich
@@ -156,6 +165,11 @@
   default water-bottle blue. The colour is now read first.
 
 ### For contributors
+
+- **Channel items share one prompt** (`ra/modules/wireless/tools/ChannelPrompt.kt`). The Redstone
+  Remote's Sneak+right-click book prompt is now a class with one instance per item (its own
+  pending, slot and request objectives), used by the Remote and the Pager; the Remote's functions
+  are generated unchanged. An optional text format refuses a channel the item could not use.
 
 - **A core sanitiser for player input** (`ra_lib:safe/clean`, `ra_lib:safe/number`,
   `ra/lib/safe/SafeClean.kt`). `clean` turns a value into one that is safe to paste in a given

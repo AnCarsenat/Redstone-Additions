@@ -53,6 +53,7 @@ private val PACK_ENTITY_TYPES = listOf(
 private val PLAYER_TAGS = listOf(
 	"ra.wrench_active", "ra.cdh_active", "ra.dh_active", "ra.goggles_active", "ra.wrench_clicked",
 	"ra.cdh_clicked", "ra.dh_clicked", "ra.remote_active", "ra.remote_clicked",
+	"ra.pager_active", "ra.pager_clicked", "ra.pager.paged",
 	"ra.input_handler_active", "ra.input_handler_clicked", "ra.input.active", Tag.DEBUG,
 )
 

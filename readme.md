@@ -5,7 +5,7 @@
 <h1 align="center">Redstone Additions</h1>
 
 <p align="center">
-  <strong>73 custom blocks. 7 tools. 83 recipes. 2 jetpacks and 3 upgrade kits. Vanilla datapack for Minecraft 26.3.</strong>
+  <strong>73 custom blocks. 8 tools. 84 recipes. 2 jetpacks and 3 upgrade kits. Vanilla datapack for Minecraft 26.3.</strong>
 </p>
 
 <p align="center">
@@ -17,8 +17,8 @@
   <img src="https://img.shields.io/badge/Minecraft-26.3-2EA44F" alt="Minecraft 26.3">
   <img src="https://img.shields.io/badge/Version-v6.0.3-blue" alt="Version v6.0.3">
   <img src="https://img.shields.io/badge/Blocks-73-red" alt="73 blocks">
-  <img src="https://img.shields.io/badge/Tools-7-lightgrey" alt="7 tools">
-  <img src="https://img.shields.io/badge/Recipes-83-8A2BE2" alt="83 recipes">
+  <img src="https://img.shields.io/badge/Tools-8-lightgrey" alt="8 tools">
+  <img src="https://img.shields.io/badge/Recipes-84-8A2BE2" alt="84 recipes">
 </p>
 
 <p align="center">
@@ -215,7 +215,7 @@ netherrack or poppies on an enchanting table.
 Fitted kits live on the chestplate and are listed in its lore.
 `/trigger ra.jp.kits` switches one off or takes it back as an item.
 
-### Tools (7)
+### Tools (8)
 - Wrench — the only tool that **changes** a block. Shift+RMB cycles a setting, or
   opens a menu when the block has more than one
 - Goggles — wear or hold to read every block in range. Read-only
@@ -224,6 +224,7 @@ Fitted kits live on the chestplate and are listed in its lore.
 - Clipboard — copies one block's settings onto others of the same kind
 - Multimeter — reads a network's numbers into chat
 - Redstone Remote — wireless channel control
+- Pager — alerts you when its channel turns on, anywhere in your inventory
 
 See the [Tools page](https://ancarsenat.github.io/Redstone-Additions/tools/) for
 recipes and usage.

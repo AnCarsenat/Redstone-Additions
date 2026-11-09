@@ -4,6 +4,17 @@ This page mirrors key datapack milestones from the main project changelog.
 
 ## [v6.0.3] - Unreleased
 
+### Removed
+
+- **The Upgrade Platform.** The netherite-tier multiblock that gambled dropped materials into the
+  next tier (10% success, otherwise destroyed) is gone, with its recipes and its two example
+  advancements (*Upgrade Platform Base* and *Example Progression*). Everything it made is a
+  vanilla item with its normal source, so nothing becomes unobtainable. In an existing world,
+  assembled platforms are taken apart on the first load (one in a chunk that is not loaded comes
+  apart when the chunk loads); the Netherite Base and the smooth stone stay where they were, and
+  the base can be broken and picked up as before. The Netherite Base itself stays, as a tier with
+  no machine yet.
+
 ### Fixed
 
 - **A poured potion shows its own colour when the pour empties the network.** A powered Liquid

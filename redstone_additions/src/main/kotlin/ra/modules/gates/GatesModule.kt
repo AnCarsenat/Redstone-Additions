@@ -15,6 +15,7 @@ import ra.modules.gates.Delayer.registerDelayer
 import ra.modules.gates.EdgeDetector.registerEdgeDetector
 import ra.modules.gates.Extender.registerExtender
 import ra.modules.gates.Randomizer.registerRandomizer
+import ra.modules.gates.Sequencer.registerSequencer
 import ra.modules.gates.Shortener.registerShortener
 import ra.modules.gates.SignalCalculator.registerSignalCalculator
 import ra.modules.gates.UniGate.registerUniGate
@@ -23,7 +24,7 @@ import ra.modules.gates.debug.ClockDebug.registerClockDebug
 /**
  * Logic Gates (`ra_gates`): the UNI Gate and the timing blocks (Clock, Delayer, Extender,
  * Randomizer, Shortener, Counter, Edge Detector) and the
- * analog blocks (Signal Calculator). Each block lives in its own file; this one
+ * analog blocks (Signal Calculator, Sequencer). Each block lives in its own file; this one
  * wires them together.
  */
 object GatesModule : GameplayModule {
@@ -31,7 +32,7 @@ object GatesModule : GameplayModule {
 	override val title = "Logic Gates"
 
 	/** Every block, in the order load, tick, give_all and the bundle list them. */
-	private val gateBlocks = listOf(UniGate.block, Clock.block, Delayer.block, Extender.block, Randomizer.block, Shortener.block, Counter.block, EdgeDetector.block, SignalCalculator.block)
+	private val gateBlocks = listOf(UniGate.block, Clock.block, Delayer.block, Extender.block, Randomizer.block, Shortener.block, Counter.block, EdgeDetector.block, SignalCalculator.block, Sequencer.block)
 
 	override fun Ra.register() {
 		// Registration order is the placement-handler order of the beet #ra:placement_handlers.
@@ -44,6 +45,7 @@ object GatesModule : GameplayModule {
 		registerCounter()
 		registerEdgeDetector()
 		registerSignalCalculator()
+		registerSequencer()
 		pack.defineAnalogOutput()
 		registerClockDebug()
 

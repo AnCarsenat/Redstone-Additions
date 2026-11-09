@@ -5,7 +5,7 @@
 <h1 align="center">Redstone Additions</h1>
 
 <p align="center">
-  <strong>67 custom blocks. 7 tools. 77 recipes. 2 jetpacks and 3 upgrade kits. Vanilla datapack for Minecraft 26.3.</strong>
+  <strong>68 custom blocks. 7 tools. 78 recipes. 2 jetpacks and 3 upgrade kits. Vanilla datapack for Minecraft 26.3.</strong>
 </p>
 
 <p align="center">
@@ -16,9 +16,9 @@
 <p align="center">
   <img src="https://img.shields.io/badge/Minecraft-26.3-2EA44F" alt="Minecraft 26.3">
   <img src="https://img.shields.io/badge/Version-v6.0.3-blue" alt="Version v6.0.3">
-  <img src="https://img.shields.io/badge/Blocks-67-red" alt="67 blocks">
+  <img src="https://img.shields.io/badge/Blocks-68-red" alt="68 blocks">
   <img src="https://img.shields.io/badge/Tools-7-lightgrey" alt="7 tools">
-  <img src="https://img.shields.io/badge/Recipes-77-8A2BE2" alt="77 recipes">
+  <img src="https://img.shields.io/badge/Recipes-78-8A2BE2" alt="78 recipes">
 </p>
 
 <p align="center">
@@ -176,11 +176,12 @@ Pipes and wires have a single tier.
 Built from a crafted Generator Casing plus a Core won by sacrificing stone,
 netherrack or poppies on an enchanting table.
 
-### Ender Links (4)
+### Ender Links (5)
 - Ender Item Vault — barrels that share their contents across a channel
 - Ender Fluid Vault — liquid and gas across a channel, as a fluid network node
 - Ender Power Vault — EU across a channel, as an electric node
 - Teleport Anchor — redstone strength 1-15 picks which anchor you arrive at
+- Anchor Terminal — stand on it and sneak to pick a destination from a menu
 
 ### Multiblock Bases (5)
 - Copper Multiblock Base
@@ -317,7 +318,7 @@ Starter command:
 | `/function ra_multiblock:blocks/give_all` | Multiblock base items |
 | `/function ra_infinite:items/give_all` | Generator casing and generators |
 | `/function ra_jetpacks:items/give_all` | Jetpack kits |
-| `/function ra_ender:items/give_all` | Ender vaults and Teleport Anchors |
+| `/function ra_ender:items/give_all` | Ender vaults, Teleport Anchor and Anchor Terminal |
 | `/function ra:tools/wrench/give` | Wrench |
 | `/function ra:tools/data_handler/give` | Data Handler |
 | `/function ra:tools/creative_data_handler/give` | Creative Data Handler |

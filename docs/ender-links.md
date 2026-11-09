@@ -1,7 +1,8 @@
 # Ender Links
 
 Move things between two places that are nowhere near each other. Three **vaults** link two
-endpoints by channel — items, fluids or power — and the **Teleport Anchor** moves players.
+endpoints by channel — items, fluids or power — and the **Teleport Anchor** moves players. The
+**Anchor Terminal** sends you to any anchor by its name.
 
 ## Getting them
 
@@ -11,6 +12,7 @@ endpoints by channel — items, fluids or power — and the **Teleport Anchor** 
 | Ender Fluid Vault | purpur block | liquids and gases | ![Ender Fluid Vault recipe](images/recipes/ra_ender/ender_fluid_vault.png){ width="220" } |
 | Ender Power Vault | purpur pillar | EU (electricity) | ![Ender Power Vault recipe](images/recipes/ra_ender/ender_power_vault.png){ width="220" } |
 | Teleport Anchor | crying obsidian | players | ![Teleport Anchor recipe](images/recipes/ra_ender/teleport_anchor.png){ width="220" } |
+| Anchor Terminal | lodestone | players, to the anchor you choose | ![Anchor Terminal recipe](images/recipes/ra_ender/anchor_terminal.png){ width="220" } |
 
 Operators: `/function ra_ender:items/give_all`.
 
@@ -115,6 +117,31 @@ Wear the [Goggles](tools.md) to see an anchor's id, the current signal and where
   anchor, for example) becomes `name_2`; its owner, server admins and players within 8 blocks are
   told in chat.
 
+## Anchor Terminal
+
+A station that sends you to the anchor you pick. Stand on it and **sneak**: a menu opens in chat.
+
+```
+── Anchor Terminal ──
+  ★ Home  [Go]
+  ★ Mine  [Go]
+  [Type a destination]
+```
+
+- **[Go]** sends you to that favourite.
+- **[Type a destination]** gives you the Input Form book: write the anchor's name (`Mine`,
+  `anchor_2`…) on page 1 and close it. You must still be standing on the terminal when you do.
+
+The favourites are the terminal's own: up to 8 anchor names in its `favourites`, set with the
+[Data Handler](tools.md) (**[List]**, then **[Add]** or **[Edit]**). Nothing lists the anchors of
+the world, so a destination is a name you saved or a name you know. You arrive on top of that
+Teleport Anchor, wherever it is (any chunk, the Overworld, the Nether or the End), with the same
+1.5 seconds of arrival grace as an anchor. Using a terminal is free.
+
+The menu's buttons work for one minute, and only while you stand on the terminal. Holding sneak
+opens it once; let go and sneak again to open it again. The Goggles show how many favourites the
+terminal has.
+
 ---
 
 ## Advanced
@@ -128,6 +155,21 @@ Wear the [Goggles](tools.md) to see an anchor's id, the current signal and where
 | Fluid, Power Vault | `transfer_rate` | units per move in one-way mode (200 fluid, 80 EU) |
 | Teleport Anchor | `anchor_id` | string in format `ID`, unique in the world, what other anchors aim at. Default `anchor`, `anchor_2`, … |
 | Teleport Anchor | `targets` | fifteen ids: `targets[0]` is signal 1, `targets[14]` is signal 15; `""` is unused |
+| Anchor Terminal | `favourites` | up to 8 anchor ids (format `ID`), shown as **[Go]** buttons |
+
+### The destination menu
+
+The terminal uses a chat menu (`ra_ender:chooser/*`). Every button runs
+`/trigger ra.ender.go set <n>`: 1 shows the menu again, 2 types a destination, 11–18 favourite 1–8. The trigger is
+enabled when a menu is drawn and taken back a minute later or after a trip. A click is checked
+again where it lands: still on a terminal (the box above it); the favourites are read again from
+the block at that moment. A typed name comes back
+through `ra_lib:input` (request id kept in `ra.ender.req`) and is cleaned to format `ID`, as an
+anchor cleans its own name, before `ra_ender:anchors/lookup` and `ra_ender:anchors/send`.
+
+A terminal costs one player box test per tick (the block above it), and nothing when no terminal
+is loaded. The sneak is a pressed edge: a player seen on a terminal the tick before
+(`ra.ender.t_seen`) who was not sneaking then (`ra.ender.t_sneak`).
 
 ### The destinations table
 
@@ -200,6 +242,11 @@ with fifteen empty entries.
 | `ra.ender.self` | Held for one cycle so a vault or anchor never links to itself |
 | `ra.ender.pull_target` | The vault a refill is being fetched for, for one command |
 | `ra.ender.tell` | Players told that an anchor's name was changed, for one command |
+| `ra.ender.go` | Trigger: the destination menu's buttons |
+| `ra.ender.menu` | Game time a player's destination menu expires |
+| `ra.ender.src` | What opened the menu: 1 an Anchor Terminal |
+| `ra.ender.pend` / `ra.ender.req` | Waiting for a typed destination, and its `ra_lib:input` request |
+| `ra.ender.t_seen` / `ra.ender.t_sneak` | Last game time on a terminal, and whether sneaking then |
 | `ra.ender.pick` | The vault picked as partner, for one command |
 
 Vault channels are compared without a macro:

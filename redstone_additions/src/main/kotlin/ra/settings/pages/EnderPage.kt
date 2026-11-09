@@ -12,5 +12,6 @@ val EnderPage = Page(
 		"ender_fluid_vault" to "Ender Fluid Vault",
 		"ender_power_vault" to "Ender Power Vault",
 		"teleport_anchor" to "Teleport Anchor",
+		"anchor_terminal" to "Anchor Terminal",
 	),
 )

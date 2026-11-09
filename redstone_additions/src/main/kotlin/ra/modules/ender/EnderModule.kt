@@ -13,6 +13,11 @@ import ra.modules.ender.FluidVault.registerFluidVault
 import ra.modules.ender.ItemVault.registerItemVault
 import ra.modules.ender.PowerVault.registerPowerVault
 import ra.modules.ender.TeleportAnchor.registerTeleportAnchor
+import ra.modules.ender.AnchorTerminal.registerAnchorTerminal
+import ra.modules.ender.chooser.Chooser
+import ra.modules.ender.chooser.Chooser.registerChooser
+import ra.modules.ender.chooser.ChooserInput
+import io.github.ayfri.kore.arguments.scores.ScoreboardCriteria
 import ra.modules.ender.anchors.AnchorTable.registerAnchorTable
 import ra.modules.ender.debug.EnderDebug.registerEnderDebug
 import ra.modules.ender.link.Link.registerLink
@@ -36,17 +41,23 @@ object EnderModule : GameplayModule {
 		registerPowerVault()
 		registerTeleportAnchor()
 		registerAnchorTable()
+		registerAnchorTerminal()
+		registerChooser()
 		registerLink()
 		registerAnchorTools()
 		registerEnderDebug()
 
-		val blocks = listOf(ItemVault.block, FluidVault.block, PowerVault.block, TeleportAnchor.block)
+		val blocks = listOf(ItemVault.block, FluidVault.block, PowerVault.block, TeleportAnchor.block, AnchorTerminal.block)
 
 		pack.define(load) {
 			scoreboard.objectives.add(EnderIds.CD)
 			// Teleport cooldowns: on the anchor, and on the player who just arrived.
 			scoreboard.objectives.add(EnderIds.TP_CD)
 			scoreboard.objectives.add(EnderIds.GRACE)
+			// The destination menu (Anchor Terminal, Anchor Tablet).
+			scoreboard.objectives.add(Chooser.GO, ScoreboardCriteria.TRIGGER)
+			for (o in listOf(Chooser.MENU, Chooser.SRC, ChooserInput.PEND, ChooserInput.REQ) + AnchorTerminal.objectives)
+				scoreboard.objectives.add(o)
 
 			for (b in blocks) function(b.fn("register_block"))
 
@@ -68,14 +79,21 @@ object EnderModule : GameplayModule {
 			// Arrival grace, so a player landing on an anchor that is itself powered is not bounced
 			// straight back.
 			raw("execute if entity @a[scores={${EnderIds.GRACE}=1..}] run scoreboard players remove @a[scores={${EnderIds.GRACE}=1..}] ${EnderIds.GRACE} 1")
+
+			// The destination menu: a click, a finished Input Form, a menu to take back. One
+			// selector each while nobody has one open. After ra_lib:input/tick (ra:tick runs the
+			// modules after it), so a book signed this tick is read this tick.
+			raw("execute as @a[scores={${Chooser.GO}=1..}] at @s run function ${Chooser.act.asId()}")
+			raw("execute as @a[scores={${ChooserInput.PEND}=1..}] run function ${ChooserInput.answer.asId()}")
+			raw("execute as @a[scores={${Chooser.MENU}=1..}] run function ${Chooser.expire.asId()}")
 		}
 
 		// Give every RA Ender block.
 		pack.define(ref(ns, "items/give_all")) { for (b in blocks) function(b.give) }
 
 		bundles += GiveBundle(
-			"ender", "Ender Bundle", "Remote vaults and teleport anchors", ns,
-			listOf(ItemVault.item, FluidVault.item, PowerVault.item, TeleportAnchor.item).map { it.stackNbt() },
+			"ender", "Ender Bundle", "Remote vaults, teleport anchors and terminal", ns,
+			listOf(ItemVault.item, FluidVault.item, PowerVault.item, TeleportAnchor.item, AnchorTerminal.item).map { it.stackNbt() },
 		)
 	}
 }

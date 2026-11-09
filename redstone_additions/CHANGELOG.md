@@ -48,6 +48,13 @@
   Detector's. Read once a second on the world sensors' clock. The Goggles show how many names are
   listed, the radius and the output. Crafted from five copper ingots, a book and quill, an observer
   and two redstone.
+- **Anchor Terminal** (Ender Links). A block to choose where to go: stand on it and sneak, and a
+  menu opens in chat with its *favourites* (up to 8 anchor names, set with the Data Handler) as
+  **[Go]** buttons, and **[Type a destination]**, which asks for any anchor name in the Input Form
+  book. You arrive on top of that Teleport Anchor, in any chunk or dimension, with the usual
+  arrival grace. The anchors of the world are not listed: a destination is a favourite or a name
+  you know. Using it is free. Looks like a lodestone; crafted from five obsidian, a glass pane, two
+  ender pearls and a compass. The Goggles show how many favourites it has.
 
 ### Changed
 

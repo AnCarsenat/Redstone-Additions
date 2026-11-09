@@ -67,6 +67,8 @@ one page, A to Z and by module.
 | ra_wires:electric_furnace            | Electric Furnace          | ![Electric Furnace recipe](images/recipes/ra_wires/electric_furnace.png){ width="220" } |
 | ra_wires:network_gauge               | Network Gauge             | ![Network Gauge recipe](images/recipes/ra_wires/network_gauge.png){ width="220" } |
 | ra_wires:usage_meter                 | Usage Meter               | ![Usage Meter recipe](images/recipes/ra_wires/usage_meter.png){ width="220" } |
+| ra_wires:tesla_coil                  | Tesla Coil                | ![Tesla Coil recipe](images/recipes/ra_wires/tesla_coil.png){ width="220" } |
+| ra_wires:spout                       | Spout                     | ![Spout recipe](images/recipes/ra_wires/spout.png){ width="220" } |
 | ra_wires:creative_eu                 | Creative EU Source        | No recipe — `ra_wires:items/give_creative` |
 | ra_wires:creative_fluid              | Creative Fluid Source     | No recipe — `ra_wires:items/give_creative` |
 | ra_ender:ender_item_vault            | Ender Item Vault          | ![Ender Item Vault recipe](images/recipes/ra_ender/ender_item_vault.png){ width="220" } |

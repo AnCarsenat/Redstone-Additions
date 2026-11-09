@@ -2,6 +2,15 @@
 
 ## [v6.0.3] - Unreleased
 
+### Added
+
+- **Light Sensor** (Sensors). Outputs the light level of the block in front of it as a redstone
+  signal of the same strength, 0 to 15, read once a second. It faces the way it was placed, like a
+  dispenser, and is itself the source: dust, a repeater or a comparator next to it picks up the
+  level, no iron blocks needed. The Goggles show the level and the facing. Crafted from three glass,
+  two redstone, a daylight detector and three cobblestone. The world sensors share one slow clock
+  that only runs while one of them is loaded.
+
 ### Removed
 
 - **The Upgrade Platform.** The netherite-tier multiblock that gambled dropped materials into the

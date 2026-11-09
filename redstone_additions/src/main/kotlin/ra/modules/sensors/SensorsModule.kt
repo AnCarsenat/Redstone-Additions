@@ -8,13 +8,16 @@ import ra.core.Ra
 import ra.core.define
 import ra.core.ref
 import ra.modules.sensors.EntityDetector.registerEntityDetector
+import ra.modules.sensors.LightSensor.registerLightSensor
+import ra.modules.sensors.SensorPoll.registerSensorPoll
+import ra.modules.sensors.SensorPoll.resetFlag
 import ra.modules.sensors.TagAdder.registerTagAdder
 import ra.modules.sensors.TagRemover.registerTagRemover
 import ra.modules.sensors.SensorTags.registerSensorTags
 import ra.core.moduleLoaded
 import ra.core.raMessage
 
-/** Sensors (`ra_sensors`): entity detection and tag manipulation blocks. */
+/** Sensors (`ra_sensors`): entity detection, tag manipulation and world (light) sensing blocks. */
 object SensorsModule : GameplayModule {
 	override val ns = Ns.SENSORS
 	override val title = "Sensors"
@@ -31,11 +34,16 @@ object SensorsModule : GameplayModule {
 		registerEntityDetector()
 		registerTagAdder()
 		registerTagRemover()
+		registerLightSensor()
+		// After every polled block: one slow clock for all of them.
+		registerSensorPoll(listOf(LightSensor.block to LightSensor.update))
 
-		val blocks = listOf(EntityDetector.block, TagAdder.block, TagRemover.block)
+		val blocks = listOf(EntityDetector.block, TagAdder.block, TagRemover.block, LightSensor.block)
 
 		pack.define(load) {
 			for (b in blocks) function(b.fn("register_block"))
+			// A schedule that did not survive is started again by the next polled block's tick.
+			resetFlag()
 			moduleLoaded("Sensors loaded!", "aqua")
 		}
 
@@ -48,8 +56,8 @@ object SensorsModule : GameplayModule {
 		}
 
 		bundles += GiveBundle(
-			"sensors", "Sensors Bundle", "Entity detector and tag blocks", ns,
-			listOf(EntityDetector.item, TagAdder.item, TagRemover.item).map { it.stackNbt() },
+			"sensors", "Sensors Bundle", "Entity detector, tag and light sensor blocks", ns,
+			listOf(EntityDetector.item, TagAdder.item, TagRemover.item, LightSensor.item).map { it.stackNbt() },
 		)
 	}
 }

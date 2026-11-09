@@ -37,7 +37,7 @@ described in [Contributing Guidelines](contributing-guidelines.md#installing-int
 
 ## Modules
 
-**Looking for a recipe? [The Recipe Atlas](recipe-atlas.md) has all 69 of them on one
+**Looking for a recipe? [The Recipe Atlas](recipe-atlas.md) has all 70 of them on one
 page**, listed A to Z and grouped by module — plus the four items that have no recipe
 and are instead gambled for on an [enchanting table](enchant-crafting.md). This table
 is the shortcut: one sample per module, and where to read about it.
@@ -47,7 +47,7 @@ is the shortcut: one sample per module, and where to read about it.
 | [Logic Gates](logic-gates.md) | 6 timing/logic blocks | ![Clock recipe](images/recipes/ra_gates/clock.png){ width="220" } |
 | [Interactive Machines](interactive-machines.md) | 12 automation and utility blocks | ![Block Placer recipe](images/recipes/ra_interactive/block_placer.png){ width="220" } |
 | [Storage](storage.md) | Boxer + Unboxer workflow | ![Boxer recipe](images/recipes/ra_storage/boxer.png){ width="220" } |
-| [Sensors](sensors.md) | Entity detector + tag operators | ![Entity Detector recipe](images/recipes/ra_sensors/entity_detector.png){ width="220" } |
+| [Sensors](sensors.md) | Entity detector, tag operators, light sensor | ![Entity Detector recipe](images/recipes/ra_sensors/entity_detector.png){ width="220" } |
 | [Wireless Redstone](wireless-redstone.md) | Emitter, Receiver, and Remote | ![Wireless Emitter recipe](images/recipes/ra_wireless/emitter.png){ width="220" } |
 | [Transport Networks](transport-networks.md) | Liquid, gas, EU, Boiler, Solar Panel | ![Liquid Pump recipe](images/recipes/ra_wires/liquid_pump.png){ width="220" } |
 | [Chunk Loader](chunk-loader.md) | 1 force-load block | ![Chunk Loader recipe](images/recipes/ra_chunk_loader/chunk_loader.png){ width="220" } |
@@ -59,8 +59,8 @@ is the shortcut: one sample per module, and where to read about it.
 
 Current pack totals:
 
-- 59 placeable custom blocks
-- 69 recipes, all of them in the [Recipe Atlas](recipe-atlas.md)
+- 60 placeable custom blocks
+- 70 recipes, all of them in the [Recipe Atlas](recipe-atlas.md)
 - 7 tools (Wrench, Goggles, Data Handler, Creative Data Handler, Clipboard,
   Multimeter, Redstone Remote)
 

@@ -19,6 +19,7 @@ import ra.core.define
 import ra.core.raw
 import ra.hub.tick
 import ra.modules.chunkloader.ChunkLoader
+import ra.modules.sensors.SensorPoll
 
 /**
  * Objectives only old worlds have (`ra.edit_step`, `ra.filter_cd`...), in the order beet removed
@@ -99,6 +100,8 @@ internal fun DataPack.registerUninstallConfirm() {
 		}
 
 		schedules { clear(tick) }
+		// The sensors' slow clock, scheduled only while a Light or Weather Sensor is loaded.
+		schedules { clear(SensorPoll.run) }
 
 		PLAYER_TAGS.forEach { t -> tag(allPlayers()) { remove(t) } }
 		untagMarkers("ra.dh_target")

@@ -1,7 +1,8 @@
 # Sensors
 
-Blocks that react to entities: one detects them, two add or remove scoreboard tags on them. Handy
-for adventure maps, mob farms and trigger zones.
+Blocks that react to entities and to the world: one detects entities, two add or remove scoreboard
+tags on them, and one reads the light level. Handy for adventure maps, mob farms, trigger zones and
+automatic lighting.
 
 ## Getting them
 
@@ -10,12 +11,13 @@ for adventure maps, mob farms and trigger zones.
 | Entity Detector | waxed chiseled copper | ![Entity Detector recipe](images/recipes/ra_sensors/entity_detector.png){ width="220" } |
 | Tag Adder | green glazed terracotta | ![Tag Adder recipe](images/recipes/ra_sensors/tag_adder.png){ width="220" } |
 | Tag Remover | red glazed terracotta | ![Tag Remover recipe](images/recipes/ra_sensors/tag_remover.png){ width="220" } |
+| Light Sensor | target block | ![Light Sensor recipe](images/recipes/ra_sensors/light_sensor.png){ width="220" } |
 
 Operators: `/function ra_sensors:items/give_all`.
 
 ## Using them
 
-All three are configured with a **target selector** (`entity_selector`), the same syntax as
+The Entity Detector, Tag Adder and Tag Remover are configured with a **target selector** (`entity_selector`), the same syntax as
 commands: `@e[type=zombie,distance=..8]`, `@a[tag=red_team]`, … Edit it with the
 [Data Handler](tools.md).
 
@@ -83,11 +85,32 @@ The Entity Detector never counts Redstone Additions' own machines.
     A selector with a `distance` or `type` filter is cheap. A bare `@e` checks every entity in
     the world every tick.
 
+## World sensors
+
+These read the world rather than entities. They have nothing to configure and are read **once a
+second** (every 20 ticks), all of them on one shared clock that only runs while one is loaded.
+
+### Light Sensor
+
+Outputs the **light level of the block in front of it** as a redstone signal of the same strength,
+0 to 15. The front is the face that looked at you when you placed it, as with a dispenser (look up
+or down to aim it up or down); the Goggles show it as **Facing**, with the level as **Light**.
+
+The level is the one mobs and crops see: the brighter of the block light and the sky light at
+that time of day (so it drops at night and under rain). Put something solid in front and it
+reads 0.
+
+**Output:** the sensor itself is the source, like a daylight detector. Redstone dust, a repeater
+or a comparator next to it reads the level directly; no iron blocks are needed. An arrow that hits
+it (it is a target block) pulses it as usual until the next reading.
+
 ## Ideas
 
 - A pressure plate into a Tag Adder marks players who entered a zone; a Tag Remover at the exit
   clears it.
 - An Entity Detector set to `@e[type=item,distance=..2]` turns on when something is dropped on it.
+- A Light Sensor facing out of a window, into an inverter, switches lamps on as it gets dark; a
+  comparator behind it can compare the level against a fixed strength instead.
 
 ---
 
@@ -108,3 +131,14 @@ The Entity Detector never counts Redstone Additions' own machines.
   evaluated once per pulse; each matched entity then gets the whole list.
 - Tag Adder / Remover fire on a rising edge: `ra.powered` without `ra.was_powered`, from
   `ra_lib:redstone/detect`.
+- World sensors are updated by `ra_sensors:poll/run`, scheduled every 20 ticks by
+  `ra_sensors:poll/start` while `#sn.poll ra.temp` is 1. A world sensor's tick starts it when the
+  flag is 0 and one of its markers is loaded; the run schedules itself again only while one still
+  is. Load resets the flag, so a lost schedule restarts on the next tick.
+- Light Sensor: the marker (placed with `dir_type` 3, the facing on the marker only) runs four
+  `location_check` predicates on `light` at `^ ^ ^1`, a binary search, and writes the result to
+  `data.status.level`; `data.status.facing` is the facing it was placed with. The block is a
+  `minecraft:target`, set to `target[power=<level>]` with `fill ... replace minecraft:target`: a
+  target replacing a target keeps its power, while one placed over another block would reset to 0.
+  The predicate's `light` is the combined level, the only one a data pack can test, so there is no
+  block-light or sky-light mode.

@@ -5,7 +5,7 @@
 <h1 align="center">Redstone Additions</h1>
 
 <p align="center">
-  <strong>59 custom blocks. 7 tools. 69 recipes. 2 jetpacks and 3 upgrade kits. Vanilla datapack for Minecraft 26.3.</strong>
+  <strong>60 custom blocks. 7 tools. 70 recipes. 2 jetpacks and 3 upgrade kits. Vanilla datapack for Minecraft 26.3.</strong>
 </p>
 
 <p align="center">
@@ -16,9 +16,9 @@
 <p align="center">
   <img src="https://img.shields.io/badge/Minecraft-26.3-2EA44F" alt="Minecraft 26.3">
   <img src="https://img.shields.io/badge/Version-v6.0.3-blue" alt="Version v6.0.3">
-  <img src="https://img.shields.io/badge/Blocks-59-red" alt="59 blocks">
+  <img src="https://img.shields.io/badge/Blocks-60-red" alt="60 blocks">
   <img src="https://img.shields.io/badge/Tools-7-lightgrey" alt="7 tools">
-  <img src="https://img.shields.io/badge/Recipes-69-8A2BE2" alt="69 recipes">
+  <img src="https://img.shields.io/badge/Recipes-70-8A2BE2" alt="70 recipes">
 </p>
 
 <p align="center">
@@ -114,10 +114,11 @@ listed A to Z and grouped by module.
 - Boxer
 - Unboxer
 
-### Sensors (3)
+### Sensors (4)
 - Entity Detector
 - Tag Adder
 - Tag Remover
+- Light Sensor — outputs the light level in front of it (0-15)
 
 ### Wireless (2)
 - Wireless Emitter

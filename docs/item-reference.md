@@ -107,7 +107,7 @@ one page, A to Z and by module.
 | ra_enchanting:schematic | Schematic | Throw an enchanted book on a Book Printer (2%); not craftable |
 | ra_automation:pattern | Pattern | ![Pattern recipe](images/recipes/ra_automation/pattern.png){ width="220" } |
 
-The Generator Casing and the Cores cannot be placed as blocks. A Schematic is paper carrying a book's enchantments in `custom_data` (`{ra:{schematic:1b,enchantments:{...}}}`), used on the [Book Printer](enchant-crafting.md#book-printer). A Pattern is paper carrying a 3×3 grid of item ids (`{ra:{pattern:{slots:[<9 ids or "">]}}}`, see [Automation](automation.md#pattern-data)).
+The Generator Casing and the Cores cannot be placed as blocks. A Schematic is paper carrying a book's enchantments in `custom_data` (`{ra:{schematic:1b,enchantments:{...}}}`), right-clicked into a [Book Printer](enchant-crafting.md#setting-the-schematic) to set what it prints. A Pattern is paper carrying a 3×3 grid of item ids (`{ra:{pattern:{slots:[<9 ids or "">]}}}`, see [Automation](automation.md#pattern-data)).
 | ra_jetpacks:iron_jetpack_kit | Iron Jetpack Kit | Blaze rod over iron ingots, a redstone block and a coal block |
 | ra_jetpacks:infinite_jetpack_kit | Infinite Iron Jetpack Kit | Sacrifice an Iron Jetpack Kit on an enchanting table (1%) |
 

@@ -114,12 +114,18 @@ This page mirrors key datapack milestones from the main project changelog.
   it are free. Pressing sneak rides once, holding it does not keep going down. Teleport sound and
   particles follow each player's settings. Crafted from eight white wool around an ender pearl,
   two per craft. Only players who jump or sneak are checked, so idle Elevators cost nothing.
-
 - **Trash Can** (Interactive Machines). A barrel that destroys whatever enters it: items put in by
   hand, pushed in by a hopper, an Item Pipe or an Item Mover, and dropped items landing on top of
   it. Smoke and a hiss follow each player's particle and sound settings. Crafted from six iron
   ingots, a cactus and a barrel. An empty can costs two quick tests a tick.
-
+- **Fan** (Interactive Machines). While powered, pushes dropped items, mobs and players along its
+  face through the *range* blocks in front of it (1 to 16, default 8; admins up to 64), at a speed
+  set by *strength* (1 to 5, default 2, one block a second per step; admins up to 10). It faces
+  the way it was placed, up and down included. Players move in small steps every tick, so the
+  push looks smooth; they are never pushed into a wall, an upward Fan
+  lifts them with Levitation, and spectators and flying creative players are left alone. A wind
+  puff follows each player's particle setting. Crafted from four cobblestone, three feathers, a
+  dropper and redstone. An unpowered Fan only checks its own block every other tick.
 - **Analog Emitter and Analog Receiver** (Wireless Redstone). Carry a signal strength, 0 to 15,
   over a channel instead of only on or off. The Analog Emitter sends the strongest signal reaching
   it; every Analog Receiver on the same channel outputs the strongest level the emitters on it
@@ -131,7 +137,6 @@ This page mirrors key datapack milestones from the main project changelog.
   channel changed with the Data Handler. The Goggles show the channel and the level. Crafted like
   the Wireless Emitter and Receiver, with a comparator (end stone) or a target (amethyst blocks) in
   the middle.
-
 - **Pager** (Wireless Redstone). Carried anywhere in the inventory or in the offhand, it alerts you
   when its channel turns on: a title, a chat line and a chime (the chime follows your *Machine
   sounds* setting). A channel turns on when its first emitter starts sending, a Wireless Emitter
@@ -140,14 +145,6 @@ This page mirrors key datapack milestones from the main project changelog.
   `_ . + - : / #`). Nothing runs while channels stay as they are: players are only checked on the
   tick a channel turns on. Crafted from an amethyst shard, two iron ingots, a note block and
   redstone.
-
-- **Fan** (Interactive Machines). While powered, pushes dropped items, mobs and players along its
-  face through the *range* blocks in front of it (1 to 16, default 8; admins up to 64), at a speed
-  set by *strength* (1 to 5, default 2, one block a second per step; admins up to 10). It faces
-  the way it was placed, up and down included. Players are never pushed into a wall, an upward Fan
-  lifts them with Levitation, and spectators and flying creative players are left alone. A wind
-  puff follows each player's particle setting. Crafted from four cobblestone, three feathers, a
-  dropper and redstone. An unpowered Fan only checks its own block every other tick.
 - **Jetpack fuel gauge.** While an Iron jetpack is in the air, the action bar shows the fuel left
   in the burning piece as a coloured bar and a percentage, and the coal you carry
   (`Fuel ▮▮▮▮▮▮▯▯▯▯ 63% · 12 coal`). Green while there is coal to come, then yellow, red under a
@@ -184,6 +181,17 @@ This page mirrors key datapack milestones from the main project changelog.
   and `book_upgrader_max` (1 to 20). The raised book stays on the block: throw it again for the
   next level. Looks like a lapis block; crafted from four lapis blocks, four books and an
   enchanting table. The Goggles show the chosen enchantment, what it is doing and the last price.
+- **Book Printer** (Enchant Crafting). Copies enchanted books. Throw an enchanted book on top: it
+  is used up, and with a 2% chance a **Schematic** of it comes out (otherwise the book is simply
+  gone, a gamble like the enchanting table). Then throw the Schematic and plain books on top: twice
+  a second, one book becomes a copy of the enchanted book, for 1000 mL of liquid experience per
+  enchantment level of the copy (Sharpness V: 5000 mL), all at once, from a fluid network touching
+  the block. The Schematic is kept, so one lucky draw prints as many copies as you have books and
+  experience. Server settings `book_printer_chance` (0 to 100%) and `book_printer_xp` (0 to 100000
+  mL; 0 prints for free). The Schematic lists its enchantments in its lore and cannot be
+  crafted; an anvil or grindstone does not take it for a book. Looks like a fletching table; crafted
+  from two ink sacs, a piston, two books, a lectern and three obsidian. The Goggles show what it is
+  doing and the last price. New advancement *Lucky Draw* for the first Schematic.
 - **Goggles Lens** (Tools). An expensive upgrade that gives any helmet the Goggles' view: hold it,
   wear a helmet (leather, copper, chainmail, iron, gold, diamond, netherite or a turtle shell) and
   right-click; the lens is used up and the helmet keeps its material, enchantments, trims and
@@ -258,10 +266,6 @@ This page mirrors key datapack milestones from the main project changelog.
   Drain pours a potion out as a cloud in the potion's colour, but the colour was read after the
   potion had been taken from the network, so the pour that emptied it could come out in the
   default water-bottle blue. The colour is now read first.
-- **A Fan pushes players smoothly.** A player was moved by one step every other tick, which
-  looked like a series of jumps. The step is now half the size and taken every tick: the same
-  speed, and still never into a wall.
-
 - **The Item Crate shows its box skin again.** Its head only named the skin's owner
   (`profile:"BoxMan01234"`), which the game has to look up, and the crate showed a broken head
   when it could not. The skin itself is now written into the crate. Crates made before keep the old
@@ -280,7 +284,6 @@ This page mirrors key datapack milestones from the main project changelog.
   Remote's Sneak+right-click book prompt is now a class with one instance per item (its own
   pending, slot and request objectives), used by the Remote and the Pager; the Remote's functions
   are generated unchanged. An optional text format refuses a channel the item could not use.
-
 - **A core sanitiser for player input** (`ra_lib:safe/clean`, `ra_lib:safe/number`,
   `ra/lib/safe/SafeClean.kt`). `clean` turns a value into one that is safe to paste in a given
   text format: free text loses its double quotes, backslashes and line breaks, so it can sit inside

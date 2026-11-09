@@ -5,7 +5,7 @@
 <h1 align="center">Redstone Additions</h1>
 
 <p align="center">
-  <strong>81 custom blocks. 9 tools. 94 recipes. 2 jetpacks and 3 upgrade kits. Vanilla datapack for Minecraft 26.3.</strong>
+  <strong>82 custom blocks. 9 tools. 95 recipes. 2 jetpacks and 3 upgrade kits. Vanilla datapack for Minecraft 26.3.</strong>
 </p>
 
 <p align="center">
@@ -16,9 +16,9 @@
 <p align="center">
   <img src="https://img.shields.io/badge/Minecraft-26.3-2EA44F" alt="Minecraft 26.3">
   <img src="https://img.shields.io/badge/Version-v6.0.3-blue" alt="Version v6.0.3">
-  <img src="https://img.shields.io/badge/Blocks-81-red" alt="81 blocks">
+  <img src="https://img.shields.io/badge/Blocks-82-red" alt="82 blocks">
   <img src="https://img.shields.io/badge/Tools-9-lightgrey" alt="9 tools">
-  <img src="https://img.shields.io/badge/Recipes-94-8A2BE2" alt="94 recipes">
+  <img src="https://img.shields.io/badge/Recipes-95-8A2BE2" alt="95 recipes">
 </p>
 
 <p align="center">
@@ -182,9 +182,10 @@ Pipes and wires have a single tier.
 ### Chunk Loader (1)
 - Chunk Loader
 
-### Enchant Crafting (2)
+### Enchant Crafting (3)
 - Disenchanter — moves an item's enchantments onto a book, for liquid experience
 - Book Upgrader — raises one enchantment of a book by a level, each level twice the price of the last
+- Book Printer — a small chance of a book's Schematic, then prints copies of it for liquid experience
 
 ### Infinite Generators (3)
 - Mineral Generator
@@ -340,7 +341,7 @@ Starter command:
 | `/function ra_multiblock:blocks/give_all` | Multiblock base items |
 | `/function ra_infinite:items/give_all` | Generator casing and generators |
 | `/function ra_jetpacks:items/give_all` | Jetpack kits |
-| `/function ra_enchanting:items/give_all` | Disenchanter and Book Upgrader |
+| `/function ra_enchanting:items/give_all` | Disenchanter, Book Upgrader and Book Printer |
 | `/function ra_ender:items/give_all` | Ender vaults, Teleport Anchor, Anchor Terminal and Anchor Tablet |
 | `/function ra:tools/wrench/give` | Wrench |
 | `/function ra:tools/data_handler/give` | Data Handler |

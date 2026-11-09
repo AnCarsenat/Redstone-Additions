@@ -203,6 +203,14 @@
   Shift+right-click with the Wrench turns the spin or the name off. Nothing runs per tick: one
   check a second, and the turning is done by the client. Crafted from a glass block, two amethyst
   shards, an ender pearl and a barrel.
+- **Text Screen** (Displays). A barrel with a dark screen on its lid that shows one line of
+  glowing amber text, nixie-tube style, picked by the redstone level feeding it from any side:
+  15 shows the name of the item in the first slot, 14 the second, down to 1 for the fifteenth
+  (an anvil name, or the usual name in your language); 0 or an empty slot leaves the tube dark,
+  and an empty barrel shows the level itself in large digits. The text is only rewritten when what
+  it shows changes; new contents show within a second. It faces the way it was placed, up and
+  down included, and breaking it spills the barrel. Crafted from three glass panes, two glowstone
+  dust, a comparator and a barrel.
 
 ### Changed
 

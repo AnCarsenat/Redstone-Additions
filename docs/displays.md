@@ -1,7 +1,7 @@
 # Displays
 
 Blocks that show something in the world with display entities: a signal level as a bar, an item
-floating above its block.
+floating above its block, a name or a number in glowing tube-style text.
 
 ## Getting them
 
@@ -9,6 +9,7 @@ floating above its block.
 | --- | --- | --- |
 | Gauge Bar | polished blackstone | ![Gauge Bar recipe](images/recipes/ra_displays/gauge_bar.png){ width="220" } |
 | Item Hologram | barrel, lid up | ![Item Hologram recipe](images/recipes/ra_displays/item_hologram.png){ width="220" } |
+| Text Screen | barrel, a dark screen on its lid | ![Text Screen recipe](images/recipes/ra_displays/text_screen.png){ width="220" } |
 
 Operators: `/function ra_displays:items/give_all`.
 
@@ -53,6 +54,33 @@ as any barrel does.
 
 Crafted from a glass block, two amethyst shards, an ender pearl and a barrel.
 
+## Text Screen
+
+A barrel with a dark screen on its lid, showing one line of glowing amber text like a nixie tube.
+The redstone level feeding it picks what it shows:
+
+| Level | Shows |
+| --- | --- |
+| 15 | the name of the item in the barrel's first slot |
+| 14 | the second slot |
+| ... | ... |
+| 1 | the fifteenth slot |
+| 0, or the chosen slot empty | nothing: the tube is dark |
+| any, barrel empty | the level itself, 0 to 15, in large digits |
+
+1. Place it: the screen is on the face looking at you (it can face up or down too).
+2. Put items in its first fifteen slots, one per name to show: a renamed item shows its anvil
+   name, any other its usual name, in your language. Long names wrap onto a second line.
+3. Feed it redstone from any side. The strongest level wins; a repeater or comparator pointing
+   into it reads as 15. A dust line from a Sequencer, a Signal Calculator or a comparator turns
+   it into a small message board.
+
+The screen changes as soon as the level does; a change to the barrel's contents shows within a
+second. Breaking it spills the barrel's contents as any barrel does. The Goggles show the level
+and the facing. It has no properties.
+
+Crafted from three glass panes, two glowstone dust, a comparator and a barrel.
+
 ---
 
 ## Advanced
@@ -72,4 +100,10 @@ Crafted from a glass block, two amethyst shards, an ender pearl and a barrel.
   slot and count) with `data.data.shown` and redraws only on a difference. The spin is the client's:
   each second sets the next 90-degree step with a 20-tick interpolation. The name is copied as a
   component (`custom_name`, else `item_name`), or a translation built from the item id
-  (`ra_displays:item_name/build`, there for the next display blocks too).
+  (`ra_displays:item_name/build`, shared with the Text Screen).
+- Text Screen: marker tag `ra.custom_block.text_screen`, displays `ra.displays.screen_panel` (a
+  black concrete `block_display`) and `ra.displays.screen_text`. The input is read every tick like
+  the Gauge Bar's, the last level in `ra.power` (`data.status.level` for the Goggles). What it
+  would show (`{item:...}` without slot and count, `{level:L}`, or `{}`) is built when the level
+  changes and once a second on the slow clock, and compared with `data.data.shown`: the text is
+  only rewritten on a difference.

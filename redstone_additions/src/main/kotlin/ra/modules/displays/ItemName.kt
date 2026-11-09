@@ -9,8 +9,8 @@ import ra.core.ref
 
 /**
  * `ra_displays:item_name/build`: the name an item stack shows, as a text component, for a
- * `text_display`. Shared by the display blocks (the Item Hologram's name line; the Text Screen
- * will need the same).
+ * `text_display`. Shared by the display blocks (the Item Hologram's name line, the Text Screen's
+ * text).
  *
  * In: `storage ra:temp dsp.item`, an item stack. Out: `storage ra:temp dsp.name`.
  *

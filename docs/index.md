@@ -44,7 +44,7 @@ is the shortcut: one sample per module, and where to read about it.
 
 | Module | What you get | Sample recipe |
 |---|---|---|
-| [Logic Gates](logic-gates.md) | 8 timing/logic blocks | ![Clock recipe](images/recipes/ra_gates/clock.png){ width="220" } |
+| [Logic Gates](logic-gates.md) | 10 timing/logic blocks | ![Clock recipe](images/recipes/ra_gates/clock.png){ width="220" } |
 | [Interactive Machines](interactive-machines.md) | 12 automation and utility blocks | ![Block Placer recipe](images/recipes/ra_interactive/block_placer.png){ width="220" } |
 | [Storage](storage.md) | Boxer + Unboxer workflow | ![Boxer recipe](images/recipes/ra_storage/boxer.png){ width="220" } |
 | [Sensors](sensors.md) | Entity detector, tag operators, light and weather sensors, held item and player detectors | ![Entity Detector recipe](images/recipes/ra_sensors/entity_detector.png){ width="220" } |

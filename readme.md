@@ -88,7 +88,7 @@ listed A to Z and grouped by module.
 
 ## Blocks
 
-### Logic Gates (8)
+### Logic Gates (10)
 - UNI Gate
 - Clock
 - Delayer
@@ -97,6 +97,8 @@ listed A to Z and grouped by module.
 - Shortener
 - Counter
 - Edge Detector
+- Signal Calculator
+- Sequencer
 
 ### Interactive Machines (12)
 - Block Breaker

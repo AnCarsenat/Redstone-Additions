@@ -16,6 +16,8 @@ one page, A to Z and by module.
 | ra_gates:shortener                   | Shortener                 | ![Shortener recipe](images/recipes/ra_gates/shortener.png){ width="220" } |
 | ra_gates:counter                     | Counter                   | ![Counter recipe](images/recipes/ra_gates/counter.png){ width="220" } |
 | ra_gates:edge_detector               | Edge Detector             | ![Edge Detector recipe](images/recipes/ra_gates/edge_detector.png){ width="220" } |
+| ra_gates:signal_calculator           | Signal Calculator         | ![Signal Calculator recipe](images/recipes/ra_gates/signal_calculator.png){ width="220" } |
+| ra_gates:sequencer                   | Sequencer                 | ![Sequencer recipe](images/recipes/ra_gates/sequencer.png){ width="220" } |
 | ra_interactive:block_breaker         | Block Breaker             | ![Block Breaker recipe](images/recipes/ra_interactive/block_breaker.png){ width="220" } |
 | ra_interactive:block_placer          | Block Placer              | ![Block Placer recipe](images/recipes/ra_interactive/block_placer.png){ width="220" } |
 | ra_interactive:item_pipe             | Item Pipe                 | ![Item Pipe recipe](images/recipes/ra_interactive/item_pipe.png){ width="220" } |

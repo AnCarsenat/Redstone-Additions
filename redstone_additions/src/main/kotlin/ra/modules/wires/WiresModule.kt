@@ -29,6 +29,7 @@ import ra.modules.wires.blocks.liquid_tank.LiquidTank
 import ra.modules.wires.blocks.liquid_valve.LiquidValve
 import ra.modules.wires.blocks.network_gauge.NetworkGauge
 import ra.modules.wires.blocks.solar_panel.SolarPanel
+import ra.modules.wires.blocks.usage_meter.UsageMeter
 import ra.modules.wires.bridge.Bridge
 import ra.modules.wires.common.Common
 import ra.modules.wires.debug.Debug
@@ -75,7 +76,7 @@ object WiresModule : GameplayModule {
 		ElectricFurnace, ElectricFurnaceSettings, ElectricFurnaceSmelting, ElectricGenerator,
 		ElectricSwitch, ElectricWire, GasPump, GasTank, GasValve, IndustrialLight, LiquidDrain,
 		LiquidFilter, LiquidPipe, LiquidPump, LiquidTank, LiquidValve, SolarPanel,
-		Readout, NetworkGauge,
+		Readout, NetworkGauge, UsageMeter,
 	)
 
 	override fun Ra.register() {

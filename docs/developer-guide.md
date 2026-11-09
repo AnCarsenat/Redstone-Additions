@@ -206,6 +206,7 @@ Every bug this system has had was that invariant breaking somewhere.
 | `media` | `[{m:"water"},{m:"lava"}]` | The same keys as a list, in arrival order. |
 | `medium` | `"water"` | A copy of `media[0].m`, because every display and every bridge already reads it. |
 | `potion` | *(optional)* | A potion network's effect list. It belongs to the network, not to any node. |
+| `meter`, `epoch`, `produced`, `consumed` | *(optional)* | Set when a Usage Meter reads the network: from then on every offer adds to `produced` and every take to `consumed`. Gone with the record at the next rebuild; see [Transport Networks](transport-networks.md). |
 
 `amounts` and `media` are the same data indexed twice, and both are needed. A
 function cannot enumerate a compound's keys, so the walk has to go over a list;

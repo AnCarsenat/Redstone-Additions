@@ -123,6 +123,9 @@ object WiresBlocks : PackPart {
 		WiresItem(item("network_gauge", "Network Gauge", "minecraft:comparator", "minecraft:target"),
 			lore = listOf("Redstone 0-15 from how full" to "gray", "the network behind it is" to "gray"),
 			recipe = WiresRecipe(listOf("CGC", "RKR", "CTC"), listOf("C" to Items.COPPER_INGOT, "G" to Items.GLASS, "R" to Items.REDSTONE, "K" to Items.COMPARATOR, "T" to Items.TARGET), Items.COMPARATOR, Criterion.INGREDIENT)),
+		WiresItem(item("usage_meter", "Usage Meter", "minecraft:clock", "minecraft:target"),
+			lore = listOf("A redstone pulse every N units used" to "gray", "or made on the network behind it" to "gray"),
+			recipe = WiresRecipe(listOf("CGC", "RKR", "CTC"), listOf("C" to Items.COPPER_INGOT, "G" to Items.GLASS, "R" to Items.REDSTONE, "K" to Items.CLOCK, "T" to Items.TARGET), Items.CLOCK, Criterion.INGREDIENT)),
 	)
 
 	/** Goggles readouts, in the order `ra:tools/goggles/draw_block` listed the module's markers. */
@@ -130,7 +133,7 @@ object WiresBlocks : PackPart {
 		"liquid_pipe", "liquid_tank", "liquid_pump", "liquid_valve", "liquid_filter", "liquid_drain",
 		"gas_tank", "gas_pump", "gas_valve", "boiler", "electric_wire", "electric_generator",
 		"electric_consumer", "electric_switch", "solar_panel", "battery", "creative_eu",
-		"creative_fluid", "electric_furnace", "industrial_light", "electric_breaker", "network_gauge",
+		"creative_fluid", "electric_furnace", "industrial_light", "electric_breaker", "network_gauge", "usage_meter",
 	)
 
 	private fun loreNbt(lore: List<Pair<String, String>>) = NbtList(lore.map { (text, color) ->

@@ -56,6 +56,17 @@
   network, so placing it never splits or joins anything. Read twice a second, on a clock that only
   runs while a gauge is loaded. The Goggles show the level, the network and what it holds out of
   its capacity. Crafted from four copper ingots, glass, two redstone, a comparator and a target.
+- **Usage Meter** (Transport Networks). A redstone pulse every *every* units (1 to 100000000,
+  default 1000, mL or EU) consumed from or produced into the network behind it, for electricity
+  or water bills, with a running *total* that the Wrench resets (plain right-click) and the
+  Data Handler shows read only. Shift+right-click with the Wrench switches between *consumed*
+  (what is taken out: machines, drains pouring, a valve or breaker moving it away) and *produced*
+  (what is put in). The pulse is 2 ticks on the meter's own target block, at most one per read
+  (twice a second); pulses due beyond that wait their turn and none are lost. Only networks a
+  meter reads keep counts, so others cost one test per transfer. The Goggles show the mode, the
+  total, the pulse size and what has gone through since the last pulse. The default *every* for
+  new meters is on the Power & Fluids settings page. Crafted like the Network Gauge with a clock
+  in place of the comparator.
 
 ### Changed
 

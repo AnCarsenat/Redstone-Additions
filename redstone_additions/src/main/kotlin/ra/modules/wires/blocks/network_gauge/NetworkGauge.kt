@@ -32,6 +32,7 @@ import ra.modules.wires.WiresBlocks.stackNbt
 import ra.modules.wires.common.Common
 import ra.modules.wires.readout.Readout
 import ra.modules.wires.readout.Readout.findNetwork
+import ra.modules.wires.readout.Readout.storeNetworkStatus
 
 /**
  * Network Gauge: a redstone signal, 0 to 15, from how full a network is.
@@ -123,12 +124,9 @@ object NetworkGauge : PackPart {
 		raw("execute if score #rd.level ra.wires.tmp matches 16.. run scoreboard players set #rd.level ra.wires.tmp 15")
 		raw("execute if score #rd.level ra.wires.tmp matches ..-1 run scoreboard players set #rd.level ra.wires.tmp 0")
 
-		raw("execute store result entity @s data.status.network int 1 run scoreboard players get #rd.net ra.wires.tmp")
+		storeNetworkStatus()
 		raw("execute store result entity @s data.status.amount int 1 run scoreboard players get #net_amount ra.tr.tmp")
 		raw("execute store result entity @s data.status.capacity int 1 run scoreboard players get #net_capacity ra.tr.tmp")
-		raw("data modify entity @s data.status.unit set value \"mL\"")
-		raw("execute store result score #rd.eu ra.wires.tmp run data get storage ra:transport classes.electric")
-		raw("execute if score #rd.class ra.wires.tmp = #rd.eu ra.wires.tmp run data modify entity @s data.status.unit set value \"EU\"")
 
 		// Written every read, not only on a change: a fill to the state already there changes
 		// and updates nothing, and an arrow that pulsed the target gets its level back.

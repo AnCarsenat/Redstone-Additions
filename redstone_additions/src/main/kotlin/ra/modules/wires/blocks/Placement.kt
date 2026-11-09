@@ -150,6 +150,7 @@ object Placement : PackPart {
 				"EU Breaker",
 				"Industrial Light",
 				"Network Gauge",
+				"Usage Meter",
 			)) registeredLine(name)
 		}
 	}

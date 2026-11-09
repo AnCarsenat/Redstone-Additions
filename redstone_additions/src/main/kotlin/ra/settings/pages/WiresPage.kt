@@ -9,6 +9,7 @@ val WiresPage = Page(
 		PropRow("electric_consumer", "eu_use", "Consumer EU draw", default = 40, min = 1, max = 10000, step = 10),
 		PropRow("industrial_light", "eu_use", "Industrial Light EU", default = 10, min = 0, max = 1000, step = 5),
 		PropRow("liquid_drain", "rate", "Liquid Drain rate (mL/s)", default = 5000, min = 100, max = 100000, step = 1000),
+		PropRow("usage_meter", "every", "Usage Meter units per pulse", default = 1000, min = 1, max = 100000000, step = 1000),
 	) + blocks(
 		"electric_generator" to "EU Generator",
 		"electric_furnace" to "Electric Furnace",
@@ -25,5 +26,6 @@ val WiresPage = Page(
 		"creative_eu" to "Creative EU Source",
 		"creative_fluid" to "Creative Fluid Source",
 		"network_gauge" to "Network Gauge",
+		"usage_meter" to "Usage Meter",
 	),
 )

@@ -14,6 +14,7 @@ import ra.core.executeRun
 import ra.core.raw
 import ra.core.ref
 import ra.modules.wires.blocks.network_gauge.NetworkGauge
+import ra.modules.wires.blocks.usage_meter.UsageMeter
 
 /**
  * The slow clock of the blocks that read a network without being part of it (the Network Gauge,
@@ -72,11 +73,23 @@ object Readout : PackPart {
 			executeRun("if score #rd.net ra.wires.tmp matches 0 positioned $side as @e[type=marker,tag=ra.tr.node,distance=..0.75,limit=1] if score @s ra.tr.net matches 1..", node)
 	}
 
+	/**
+	 * After [findNetwork]: `data.status.network` (0 for none) and `data.status.unit`, `EU` on an
+	 * electric grid and `mL` on anything else.
+	 */
+	fun Function.storeNetworkStatus() {
+		raw("execute store result entity @s data.status.network int 1 run scoreboard players get #rd.net ra.wires.tmp")
+		raw("data modify entity @s data.status.unit set value \"mL\"")
+		raw("execute store result score #rd.eu ra.wires.tmp run data get storage ra:transport classes.electric")
+		raw("execute if score #rd.class ra.wires.tmp = #rd.eu ra.wires.tmp run data modify entity @s data.status.unit set value \"EU\"")
+	}
+
 	override fun Ra.register() {
 		pack.define(tick) {
 			// Per tick: the break checks (a target block's own drop must be caught within a few
 			// ticks, see killVanillaDrop) and one score test while the clock runs.
 			executeRun("as @e[type=marker,tag=ra.custom_block.network_gauge] at @s unless block ~ ~ ~ minecraft:target", NetworkGauge.onBreak)
+			executeRun("as @e[type=marker,tag=ra.custom_block.usage_meter] at @s unless block ~ ~ ~ minecraft:target", UsageMeter.onBreak)
 			executeRun("unless score $FLAG ra.wires.tmp2 matches 1 if entity @e[type=marker,tag=$TAG,limit=1]", start)
 		}
 
@@ -88,6 +101,11 @@ object Readout : PackPart {
 		pack.define(run) {
 			raw("scoreboard players set $FLAG ra.wires.tmp2 0")
 			executeRun("as @e[type=marker,tag=ra.custom_block.network_gauge] at @s", NetworkGauge.update)
+			// A meter that reaches its count lights its target and sets #rd.lit; one schedule
+			// puts every pulse of this pass out together.
+			raw("scoreboard players set #rd.lit ra.wires.tmp 0")
+			executeRun("as @e[type=marker,tag=ra.custom_block.usage_meter] at @s", UsageMeter.update)
+			executeRun("if score #rd.lit ra.wires.tmp matches 1", UsageMeter.pulseLater)
 			executeReturnRun("if entity @e[type=marker,tag=$TAG,limit=1]", start)
 		}
 

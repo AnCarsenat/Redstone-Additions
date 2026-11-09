@@ -55,4 +55,5 @@ internal val SPECS: List<Pair<String, String>> = listOf(
 	// reads the network behind it without joining it. `readout` tags the marker for the slow
 	// clock in ra_wires:readout.
 	"network_gauge" to """{block:"minecraft:target",marker:"network_gauge",dir:3,readout:1b}""",
+	"usage_meter" to """{block:"minecraft:target",marker:"usage_meter",dir:3,readout:1b,props:{mode:"consumed",every:${ra.modules.wires.blocks.usage_meter.UsageMeter.DEFAULT_EVERY},total:0}}""",
 )

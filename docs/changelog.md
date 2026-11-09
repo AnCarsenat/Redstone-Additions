@@ -2,6 +2,20 @@
 
 This page mirrors key datapack milestones from the main project changelog.
 
+## [v6.0.2] - Unreleased
+
+### Fixed
+
+- **A Liquid Drain beside a pool drains it.** A drain put down next to a pool stands on the
+  bank, one block above the water, and only looked at the six blocks touching it — so it still
+  said `no_source` and took nothing in, upright or not. It now also looks one block down and out
+  from each side, which is where the pool is.
+- **The drain says why it is idle.** Besides `no_source`, the Goggles now show
+  `waiting_for_source` when only flowing water or lava is beside the drain (a small pool
+  refilling the gap it just took from), and `no_network` when the drain is not part of a network,
+  instead of `network_too_small`. `network_full` still means the network has no room for a whole
+  5000 mL block.
+
 ## v6.0.1 (2026-11-08) — Leaner ticks
 
 **Supported version:** 26.3 (data pack format 121).

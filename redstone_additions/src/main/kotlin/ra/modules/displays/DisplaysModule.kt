@@ -12,6 +12,7 @@ import ra.core.ref
 import ra.modules.displays.DisplayPoll.registerDisplayPoll
 import ra.modules.displays.DisplayPoll.resetFlag
 import ra.modules.displays.ItemName.registerItemName
+import ra.modules.displays.TextColor.registerTextColor
 
 /**
  * Displays (`ra_displays`): blocks that show something with display entities.
@@ -31,6 +32,7 @@ object DisplaysModule : GameplayModule {
 	override fun Ra.register() {
 		// Shared by the blocks that show an item's name.
 		registerItemName()
+		registerTextColor()
 		for (m in members) with(m) { registerBlock() }
 		registerDisplayPoll(members.mapNotNull { m -> m.poll?.let { m.block to it } })
 

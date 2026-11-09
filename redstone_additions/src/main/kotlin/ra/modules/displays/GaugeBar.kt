@@ -1,6 +1,7 @@
 package ra.modules.displays
 
 import io.github.ayfri.kore.arguments.types.literals.literal
+import io.github.ayfri.kore.arguments.types.resources.FunctionArgument
 import io.github.ayfri.kore.commands.execute.execute
 import io.github.ayfri.kore.commands.function
 import io.github.ayfri.kore.commands.returnRun
@@ -13,7 +14,6 @@ import ra.api.RaLib
 import ra.core.Ns
 import ra.core.Obj
 import ra.core.Ra
-import ra.core.WrenchCycle
 import ra.core.block.BreakTest
 import ra.core.block.CustomBlock
 import ra.core.block.STONE_BREAK_SOUND
@@ -31,7 +31,6 @@ import ra.core.block.placementGuard
 import ra.core.block.propLine
 import ra.core.block.recipeResult
 import ra.core.block.shapedRecipe
-import ra.core.block.soundListenersSel
 import ra.core.blockRegisterMessage
 import ra.core.define
 import ra.core.executeReturnRun
@@ -45,24 +44,26 @@ import ra.modules.displays.DisplayEntities.killDisplays
 import ra.modules.displays.DisplayEntities.sel
 import ra.modules.displays.DisplayEntities.summonDisplay
 import ra.modules.displays.DisplayPoll.startIfIdle
+import ra.modules.displays.DisplayStyle.Companion.defineForms
 
 /**
- * Gauge Bar: a bar on its front face, filled to the redstone level feeding it (0-15).
+ * Gauge Bar: a bar on one face, filled to the redstone level feeding it (0-15).
  *
  * INPUT. The strongest level on any of its six sides; a repeater or comparator pointing in reads
  * as 15. Each side is first asked `any_side` (stops at the first source) and only a powered side
  * has its level resolved, so an unpowered gauge costs six `any_side` reads a tick, like a gate.
  *
- * DRAWING. Two block displays standing on the marker, turned the way the block faces (the
- * marker's Rotation, so all six facings work): a grey track and a coloured fill in front of it.
- * Only the fill's length changes, and only when the level does: the last level drawn is the
+ * DRAWING. Two block displays standing on the marker: a track and a coloured fill in front of
+ * it. Only the fill's length changes, and only when the level does: the last level drawn is the
  * marker's `ra.power` score (this block uses it for nothing else), and a new one is one
- * `store result` into `transformation.scale`, interpolated over [GROW] ticks by the client.
+ * `store result` into `transformation.scale[0]`, interpolated over [GROW] ticks by the client.
  *
- * STYLE. `color` (a name, see [COLORS]; anything else draws red) and `vertical`. The wrench and
- * placement redraw at once; a Data Handler edit, or a display killed by hand, is picked up by
- * [poll] within a second: it compares `data.properties` with the copy last drawn
- * (`data.data.style`).
+ * CONFIGURATION ([DisplayStyle]): `facing` (the face), `direction` (which way the bar fills:
+ * `right` from the left edge, `left`, `up` from the bottom, `down`; the bar is rolled on its
+ * face, so the fill always grows along its own x), `color` and `track_color` (a dye, see [DYES];
+ * anything else draws the default), offsets and scale. The wrench and placement redraw at once;
+ * a Data Handler edit, or a display killed by hand, is picked up by [poll] within a second: it
+ * compares `data.properties` with the copy last drawn (`data.data.style`).
  */
 object GaugeBar : DisplayBlock {
 	override val block = CustomBlock(Ns.DISPLAYS, "gauge_bar", "Gauge Bar", model = "minecraft:polished_blackstone", dirType = 3)
@@ -73,11 +74,12 @@ object GaugeBar : DisplayBlock {
 	private val restyle = block.fn("restyle")
 	private val summon = block.fn("summon")
 	override val poll = block.fn("poll")
-	val cycleColor = block.fn("cycle_color")
-	val cycleOrientation = block.fn("cycle_orientation")
 
-	/** The fill's colour names, in wrench order; the first is the default and the fallback. */
-	val COLORS = listOf("red", "orange", "yellow", "lime", "green", "cyan", "light_blue", "blue", "purple", "magenta", "pink", "white")
+	/** The colours a bar may take: the sixteen dyes, as concrete. */
+	val DYES = listOf(
+		"white", "light_gray", "gray", "black", "brown", "red", "orange", "yellow",
+		"lime", "green", "cyan", "light_blue", "blue", "purple", "magenta", "pink",
+	)
 
 	private const val TAG = "ra.displays.gauge"
 	private const val TRACK_TAG = "ra.displays.gauge_track"
@@ -85,27 +87,33 @@ object GaugeBar : DisplayBlock {
 	private val TRACK = sel("block_display", TRACK_TAG)
 	private val FILL = sel("block_display", FILL_TAG)
 
+	private val style = DisplayStyle(
+		block, defaultFacing = "south", directions = listOf("right", "left", "up", "down"),
+		colors = listOf(ColorProp("color", "Colour", "red", DYES), ColorProp("track_color", "Track colour", "gray", DYES)),
+		displays = listOf(TRACK, FILL),
+	)
+
+	/** The bar's roll for each direction, counter-clockwise: the fill grows along the rolled x. */
+	private val ROLLS = mapOf("right" to 0, "left" to 180, "up" to 90, "down" to 270)
+	private val FACE = Vec(0.0, 0.0, 0.5)
+
 	/** Ticks the fill takes to grow or shrink to a new level. */
 	private const val GROW = 3
 
-	/** Fill length per level: 13/16 of a block at 15. */
+	/** Fill length per level at 100 %: 13/16 of a block at 15. */
 	private const val PER_LEVEL = 0.0541667
 
 	private const val T = Obj.TEMP
 	private const val LEVEL = "#gauge.l"
 	private const val LAST = Obj.POWER
-	private const val VERTICAL = "data.properties{vertical:1b}"
 
 	private fun any(s: Side) = block.fn("any_${s.id}")
 	private fun level(s: Side) = block.fn("level_${s.id}")
 
 	override fun Ra.registerBlock() {
 		block(block)
-		properties(block) {
-			text("color", default = COLORS.first())
-			bool("vertical", default = false)
-		}
-		wrenchCycle(block.id, WrenchCycle("Colour", "color", cycleColor), WrenchCycle("Vertical", "vertical", cycleOrientation))
+		properties(block) { with(style) { declare() } }
+		wrenchCycle(block.id, *style.wrenchRows())
 		pack.blockRegisterMessage(block)
 		pack.define(block.give) { raw("give @s ${item.giveArg()}") }
 		pack.shapedRecipe(block.ns, block.id, item.recipeResult(), Unlock(Items.COMPARATOR), count = null) {
@@ -116,12 +124,12 @@ object GaugeBar : DisplayBlock {
 			key("B", Items.POLISHED_BLACKSTONE)
 		}
 
-		// As the bat, at it.
+		// As the bat, at it. The bar goes on the face looking at the player.
 		pack.define(block.handlePlacement) {
 			placementGuard(block, checkExisting = false)
 			placeBlock(block)
-			raw("data modify entity ${block.newMarkerSel()} data.status.facing set from storage ra:temp facing_name")
-			raw("""data modify entity ${block.newMarkerSel()} data.properties set value {color:"${COLORS.first()}",vertical:0b}""")
+			raw("data modify entity ${block.newMarkerSel()} data.properties set value {${style.placementSnbt()}}")
+			raw("data modify entity ${block.newMarkerSel()} data.properties.facing set from storage ra:temp facing_name")
 			executeRun("as ${block.newMarkerSel()} at @s", restyle)
 			executeRun("as ${block.newMarkerSel()} at @s", process)
 			finishPlacement(block, removePlaceTag = false)
@@ -137,20 +145,23 @@ object GaugeBar : DisplayBlock {
 				raw("scoreboard players operation $LEVEL $T > #gauge.s $T")
 			}
 		}
+		with(style) { registerStyle(restyle) }
+		val track = defineForms(block, "track", TRACK, ROLLS.mapValues { (_, r) -> Form(Vec(-0.4375, -0.125, 0.5), Vec(0.875, 0.25, 0.03125), FACE, r) })
+		// The fill's length (its x) is show's.
+		val fill = defineForms(block, "fill", FILL, ROLLS.mapValues { (_, r) -> Form(Vec(-0.40625, -0.09375, 0.5), Vec(0.0, 0.1875, 0.0625), FACE, r) })
+
 		pack.define(process) { process() }
 		pack.define(show) { show() }
-		pack.define(restyle) { restyle() }
+		pack.define(restyle) { restyle(track, fill) }
 		pack.define(summon) { summon() }
 		pack.define(poll) { poll() }
-		pack.define(cycleColor) { cycleColor() }
-		pack.define(cycleOrientation) { cycleOrientation() }
 
 		pack.define(block.goggles) {
 			gogglesHeader(block, nameY = 1.0)
 			dataLine("level", "Level: ", "red", y = 0.8)
-			propLine("color", "Colour: ", "aqua", y = 0.6)
-			propLine("vertical", "Vertical: ", "aqua", y = 0.4)
-			dataLine("facing", "Facing: ", "aqua", y = 0.2)
+			propLine("facing", "Facing: ", "aqua", y = 0.6)
+			propLine("direction", "Direction: ", "aqua", y = 0.4)
+			propLine("color", "Colour: ", "aqua", y = 0.2)
 		}
 
 		val onBreak = pack.blockOnBreak(block, drop = { dropItem(item) }, sound = STONE_BREAK_SOUND, cloud = true, cleanup = { killDisplays(TAG) })
@@ -172,79 +183,55 @@ object GaugeBar : DisplayBlock {
 		function(show)
 	}
 
-	/** The fill's length from the last level, along the bar's axis. As the marker, at it. */
+	/** The fill's length from the last level, times the scale. As the marker, at it. */
 	private fun Function.show() {
-		raw("execute if data entity @s $VERTICAL store result entity $FILL transformation.scale[1] float $PER_LEVEL run scoreboard players get @s $LAST")
-		raw("execute unless data entity @s $VERTICAL store result entity $FILL transformation.scale[0] float $PER_LEVEL run scoreboard players get @s $LAST")
+		function(style.read)
+		raw("scoreboard players operation #gauge.v $T = @s $LAST")
+		raw("scoreboard players operation #gauge.v $T *= #dsp.k $T")
+		raw("execute store result entity $FILL transformation.scale[0] float ${"%.9f".format(java.util.Locale.ROOT, PER_LEVEL / 100)} run scoreboard players get #gauge.v $T")
 		// The client eases from the old length to the new one over `interpolation_duration`.
 		raw("data modify entity $FILL start_interpolation set value 0")
 	}
 
-	/** Colour and orientation from the properties, both displays put back if one is missing. As the marker, at it. */
-	private fun Function.restyle() {
+	/** Everything from the properties, both displays put back if one is missing. As the marker, at it. */
+	private fun Function.restyle(track: FunctionArgument, fill: FunctionArgument) {
+		function(style.defaults)
 		executeRun("unless entity $TRACK", summon)
 		executeRun("unless entity $FILL", summon)
 		raw("data modify entity @s data.data.style set from entity @s data.properties")
 
-		raw("""data modify entity $FILL block_state.Name set value "minecraft:${COLORS.first()}_concrete"""")
-		for (c in COLORS.drop(1)) {
-			raw("""execute if data entity @s data.properties{color:"$c"} run data modify entity $FILL block_state.Name set value "minecraft:${c}_concrete"""")
-		}
-
-		// The fill's length along the bar is left at 0 here and set by show.
-		raw("execute if data entity @s $VERTICAL run data merge entity $TRACK {transformation:{translation:[-0.125f,-0.4375f,0.5f],scale:[0.25f,0.875f,0.03125f]}}")
-		raw("execute if data entity @s $VERTICAL run data merge entity $FILL {transformation:{translation:[-0.09375f,-0.40625f,0.5f],scale:[0.1875f,0f,0.0625f]}}")
-		raw("execute unless data entity @s $VERTICAL run data merge entity $TRACK {transformation:{translation:[-0.4375f,-0.125f,0.5f],scale:[0.875f,0.25f,0.03125f]}}")
-		raw("execute unless data entity @s $VERTICAL run data merge entity $FILL {transformation:{translation:[-0.40625f,-0.09375f,0.5f],scale:[0f,0.1875f,0.0625f]}}")
+		concrete(FILL, "color", "red")
+		concrete(TRACK, "track_color", "gray")
+		function(style.turn)
+		function(style.read)
+		function(track)
+		function(fill)
 		function(show)
 	}
 
-	/**
-	 * Both displays, new. As the marker, at it. Local +z is out of the front face (the marker's
-	 * Rotation is the facing), +x to the viewer's right, so the bar is drawn on that face.
-	 */
+	/** [target]'s block from the dye named by [prop]; [default] for anything else. */
+	private fun Function.concrete(target: String, prop: String, default: String) {
+		raw("""data modify entity $target block_state set value {id:"minecraft:${default}_concrete"}""")
+		for (c in DYES) if (c != default) {
+			raw("""execute if data entity @s data.properties{$prop:"$c"} run data modify entity $target block_state set value {id:"minecraft:${c}_concrete"}""")
+		}
+	}
+
+	/** Both displays, new and empty; restyle shapes them. As the marker, at it. */
 	private fun Function.summon() {
 		raw("kill @e[tag=$TAG,distance=..0.01]")
-		val rot = "left_rotation:[0f,0f,0f,1f],right_rotation:[0f,0f,0f,1f]"
-		summonDisplay("block_display", listOf(TAG, TRACK_TAG),
-			"""block_state:{Name:"minecraft:gray_concrete"},transformation:{$rot,translation:[-0.4375f,-0.125f,0.5f],scale:[0.875f,0.25f,0.03125f]}""", rotated = true)
-		summonDisplay("block_display", listOf(TAG, FILL_TAG),
-			"""block_state:{Name:"minecraft:${COLORS.first()}_concrete"},interpolation_duration:$GROW,transformation:{$rot,translation:[-0.40625f,-0.09375f,0.5f],scale:[0f,0.1875f,0.0625f]}""", rotated = true)
+		val zero = "transformation:{left_rotation:[0f,0f,0f,1f],right_rotation:[0f,0f,0f,1f],translation:[0f,0f,0f],scale:[0f,0f,0f]}"
+		summonDisplay("block_display", listOf(TAG, TRACK_TAG), """block_state:{id:"minecraft:gray_concrete"},$zero""")
+		summonDisplay("block_display", listOf(TAG, FILL_TAG), """block_state:{id:"minecraft:red_concrete"},interpolation_duration:$GROW,$zero""")
 	}
 
 	/** Once a second, as the marker at its block: redraw if a display is gone or the properties changed. */
 	private fun Function.poll() {
 		executeReturnRun("unless entity $TRACK", restyle)
 		executeReturnRun("unless entity $FILL", restyle)
+		// Placed before the display settings existed: restyle fills the defaults (scale, colours).
+		executeReturnRun("unless data entity @s data.properties.scale", restyle)
 		raw("execute store success score #gauge.ch $T run data modify entity @s data.data.style set from entity @s data.properties")
 		executeRun("if score #gauge.ch $T matches 1", restyle)
-	}
-
-	/** Wrench: the next colour. Read into a score first, so a write is never tested again. As the marker, at it. */
-	private fun Function.cycleColor() {
-		val m = "#gauge.c $T"
-		raw("scoreboard players set $m 0")
-		COLORS.forEachIndexed { i, c ->
-			if (i > 0) raw("""execute if data entity @s data.properties{color:"$c"} run scoreboard players set $m $i""")
-		}
-		COLORS.forEachIndexed { i, _ ->
-			val next = COLORS[(i + 1) % COLORS.size]
-			raw("""execute if score $m matches $i run data modify entity @s data.properties.color set value "$next"""")
-			raw("""execute if score $m matches $i run tellraw @a[distance=..10] [{text:"[Wrench] ",color:"gold"},{text:"${block.name}: ",color:"gray"},{text:"$next",color:"aqua"}]""")
-		}
-		raw("playsound minecraft:block.lever.click block ${soundListenersSel(10)} ~ ~ ~ 0.6 1.4")
-		function(restyle)
-	}
-
-	/** Wrench: horizontal <-> vertical. As the marker, at it. */
-	private fun Function.cycleOrientation() {
-		val m = "#gauge.v $T"
-		raw("execute store result score $m run data get entity @s data.properties.vertical")
-		raw("execute if score $m matches 1.. run data modify entity @s data.properties.vertical set value 0b")
-		raw("""execute if score $m matches 1.. run tellraw @a[distance=..10] [{text:"[Wrench] ",color:"gold"},{text:"${block.name}: ",color:"gray"},{text:"horizontal",color:"aqua"}]""")
-		raw("execute if score $m matches ..0 run data modify entity @s data.properties.vertical set value 1b")
-		raw("""execute if score $m matches ..0 run tellraw @a[distance=..10] [{text:"[Wrench] ",color:"gold"},{text:"${block.name}: ",color:"gray"},{text:"vertical",color:"aqua"}]""")
-		raw("playsound minecraft:block.lever.click block ${soundListenersSel(10)} ~ ~ ~ 0.6 1.4")
-		function(restyle)
 	}
 }

@@ -28,5 +28,6 @@ val InteractivePage = Page(
 		"infinite_lava_cauldron" to "Infinite Lava Cauldron",
 		"infinite_snow_cauldron" to "Infinite Snow Cauldron",
 		"elevator" to "Elevator",
+		"trash_can" to "Trash Can",
 	),
 )

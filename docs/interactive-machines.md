@@ -1,8 +1,8 @@
 # Interactive Machines
 
 Machines for everyday automation: break and place blocks, move and sort items, breed animals,
-endless water, lava and powder snow, item magnets, mob-proof torches, message blocks and
-elevators.
+endless water, lava and powder snow, item magnets, mob-proof torches, message blocks,
+elevators and a trash can.
 
 ## Getting them
 
@@ -21,6 +21,7 @@ elevators.
 | Big Torch | a tall torch | ![Big Torch recipe](images/recipes/ra_interactive/big_torch.png){ width="220" } |
 | Message Block | note block | ![Message Block recipe](images/recipes/ra_interactive/message_block.png){ width="220" } |
 | Elevator | white wool | ![Elevator recipe](images/recipes/ra_interactive/elevator.png){ width="220" } |
+| Trash Can | barrel | ![Trash Can recipe](images/recipes/ra_interactive/trash_can.png){ width="220" } |
 
 Operators: `/function ra_interactive:items/give_all`.
 
@@ -39,6 +40,7 @@ Operators: `/function ra_interactive:items/give_all`.
 | Big Torch | no | Lights the area and removes hostile mobs that spawn nearby |
 | Message Block | when it gets powered | Sends a chat message to nearby players |
 | Elevator | no | Jump on it to go up, sneak to go down, to the next Elevator in the column |
+| Trash Can | no | Destroys every item put into it or dropped on it |
 
 "Front" is the direction the block faces when you place it.
 
@@ -180,6 +182,18 @@ same way. One craft gives two.
   one floor per landing.
 - The teleport sound and particles follow your block sound and particle settings.
 
+## Trash Can
+
+A barrel that destroys whatever enters it, at once:
+
+- items you put in by hand (open it like a barrel);
+- items a hopper, an [Item Pipe](#item-pipe) or an [Item Mover](#item-mover) pushes into it;
+- dropped items that land on top of it, including the item of a block broken right above it.
+
+It has no settings. Breaking it gives back the Trash Can, never what went into it. Do not put a
+hopper **under** it: a hopper above can fill it and the one below empty it in the same moment,
+before it clears.
+
 ## Changing settings
 
 Every setting above is edited with the [Data Handler](tools.md): Shift + right-click the block,
@@ -192,7 +206,7 @@ then change the row. The [Goggles](tools.md) show the current values.
 - **Physical blocks.** The Breeder is a barrel wearing a dispenser skin, so redstone never makes it
   throw its food. The Block Breaker and Block Placer are real dispensers and react to
   `dispenser[triggered=true]`. The Big Torch is an end rod (the light source) wearing an
-  enlarged torch display; the Magic Crate is a plain barrel.
+  enlarged torch display; the Magic Crate and the Trash Can are plain barrels.
 - **Big Torch.** Sweeps every 10 ticks. It remembers every hostile mob in a band reaching 16
   blocks past the radius; a mob inside the radius that it never saw there is removed. Mobs are
   teleported far below the world instead of killed. Values above 256 (the admin ceiling) are written back as 256. The
@@ -206,6 +220,10 @@ then change the row. The [Goggles](tools.md) show the current values.
   (`ra.elev.t`, game time) is only synced, so a jump taken elsewhere never fires. The next floor is
   the nearest Elevator marker in a `dx=0,dz=0` box above or below, not a block scan. 6 ticks
   between rides (`ra.elev.cd`).
+- **Trash Can.** A barrel, emptied every tick it has a first item (`data remove block ~ ~ ~ Items`),
+  and it kills the item entities in the one block above it (`dx=0`), except items with a permanent
+  pickup delay (display items). It ticks after the Item Pipe and the Item Mover, so what they push
+  in is gone within the same tick. Both tests cost next to nothing when it is empty.
 - **Item Pipe.** The filter is `data.properties.filter_item` (an item id, empty = none);
   `data.properties.invert` (`1b`) sends non-matching stacks to the side instead. Pipes
   built when filters were item frames are converted on load; the frames are left in place.

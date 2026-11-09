@@ -1,6 +1,6 @@
 # Recipe Atlas
 
-Every recipe in the pack, in one place: 76 of them.
+Every recipe in the pack, in one place: 77 of them.
 
 !!! tip "Finding one"
     Use the search box with the item's name — every recipe below is indexed by
@@ -88,6 +88,7 @@ what the pack actually contains rather than what someone remembered to add.
 | [Tag Remover](#sensors) | [Sensors](sensors.md) | Crafting table |
 | [Teleport Anchor](#ender-links) | [Ender Links](ender-links.md) | Crafting table |
 | [Thruster Kit](#jetpacks) | [Jetpacks](jetpacks.md) | Crafting table |
+| [Trash Can](#interactive-machines) | [Interactive Machines](interactive-machines.md) | Crafting table |
 | [Unboxer](#storage) | [Storage](storage.md) | Crafting table |
 | [UNI Gate](#logic-gates) | [Logic Gates](logic-gates.md) | Crafting table |
 | [Weather Sensor](#sensors) | [Sensors](sensors.md) | Crafting table |
@@ -146,6 +147,7 @@ Module page: [Interactive Machines](interactive-machines.md) — give everything
 | **Magic Crate** | ![Magic Crate recipe](images/recipes/ra_interactive/magic_crate.png){ width="220" } | Crafting table | `ra_interactive:magic_crate` |
 | **Message Block** | ![Message Block recipe](images/recipes/ra_interactive/message_block.png){ width="220" } | Crafting table | `ra_interactive:message_block` |
 | **Spitter** | ![Spitter recipe](images/recipes/ra_interactive/spitter.png){ width="220" } | Crafting table | `ra_interactive:spitter` |
+| **Trash Can** | ![Trash Can recipe](images/recipes/ra_interactive/trash_can.png){ width="220" } | Crafting table | `ra_interactive:trash_can` |
 
 ## Jetpacks
 

@@ -81,4 +81,5 @@ internal val interactiveTree = listOf(
 	egg("ra_interactive", "magic_crate", "Magic Crate", Items.BARREL, ONE, "Obtain the Magic Crate item."),
 	egg("ra_interactive", "message_block", "Message Block", Items.NOTE_BLOCK, TRUE),
 	egg("ra_interactive", "spitter", "Spitter", Items.DROPPER, TRUE),
+	egg("ra_interactive", "trash_can", "Trash Can", Items.CACTUS, TRUE),
 )

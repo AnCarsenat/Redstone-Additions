@@ -18,6 +18,7 @@ import ra.modules.interactive.Breeder.registerBreeder
 import ra.modules.interactive.Cauldrons.registerCauldrons
 import ra.modules.interactive.EnchantedCoal.registerEnchantedCoal
 import ra.modules.interactive.Elevator.registerElevator
+import ra.modules.interactive.TrashCan.registerTrashCan
 import ra.modules.interactive.ItemMover.registerItemMover
 import ra.modules.interactive.ItemPipe.registerItemPipe
 import ra.modules.interactive.MagicCrate.registerMagicCrate
@@ -49,15 +50,19 @@ object InteractiveModule : GameplayModule {
 	private val crate = Entry(MagicCrate.block, MagicCrate.item, MagicCrate.registerBlock)
 	private val torch = Entry(BigTorch.block, BigTorch.item, BigTorch.registerBlock)
 	private val elevator = Entry(Elevator.block, Elevator.item, Elevator.registerBlock)
+	private val trash = Entry(TrashCan.block, TrashCan.item, TrashCan.registerBlock)
 
 	/** The order the beet `load` registered blocks in. */
-	private val loadOrder = listOf(breaker, breeder, placer, spitter, pipe) + cauldrons + listOf(message, mover, crate, torch, elevator)
+	private val loadOrder = listOf(breaker, breeder, placer, spitter, pipe) + cauldrons + listOf(message, mover, crate, torch, elevator, trash)
 
-	/** The order `tick` and `items/give_all` list them in. */
-	private val tickOrder = listOf(breaker, spitter, placer, pipe, breeder) + cauldrons + listOf(message, mover, crate, torch, elevator)
+	/**
+	 * The order `tick` and `items/give_all` list them in. The Trash Can ticks after the Item Pipe and
+	 * the Item Mover, so what they push into it is gone before any hopper under it could pull it out.
+	 */
+	private val tickOrder = listOf(breaker, spitter, placer, pipe, breeder) + cauldrons + listOf(message, mover, crate, torch, elevator, trash)
 
 	/** The order of the bundle: the Magic Crate sits after the pipe there. */
-	private val bundleOrder = listOf(breaker, spitter, placer, pipe, crate, breeder) + cauldrons + listOf(message, mover, torch, elevator)
+	private val bundleOrder = listOf(breaker, spitter, placer, pipe, crate, breeder) + cauldrons + listOf(message, mover, torch, elevator, trash)
 
 	override fun Ra.register() {
 		// Registration order is the placement-handler order of the beet #ra:placement_handlers.
@@ -73,6 +78,7 @@ object InteractiveModule : GameplayModule {
 		registerBigTorch()
 		registerEnchantedCoal()
 		registerElevator()
+		registerTrashCan()
 
 		pack.define(load) {
 			// Countdown until each item pipe re-reads its filter frame. The frame is gone (the
@@ -94,7 +100,7 @@ object InteractiveModule : GameplayModule {
 		}
 
 		bundles += GiveBundle(
-			"interactive", "Interactive Bundle", "13 automation and utility blocks", ns,
+			"interactive", "Interactive Bundle", "14 automation and utility blocks", ns,
 			bundleOrder.map { it.item.stackNbt() },
 		)
 	}

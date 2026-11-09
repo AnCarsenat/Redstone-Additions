@@ -43,6 +43,11 @@ This page mirrors key datapack milestones from the main project changelog.
   particles follow each player's settings. Crafted from eight white wool around an ender pearl,
   two per craft. An Elevator only checks the block above itself for a player.
 
+- **Trash Can** (Interactive Machines). A barrel that destroys whatever enters it: items put in by
+  hand, pushed in by a hopper, an Item Pipe or an Item Mover, and dropped items landing on top of
+  it. Smoke and a hiss follow each player's particle and sound settings. Crafted from six iron
+  ingots, a cactus and a barrel. An empty can costs two quick tests a tick.
+
 ### Changed
 
 - **Anyone can change a Message Block's text.** It was locked to admins in v6.0.1 because rich

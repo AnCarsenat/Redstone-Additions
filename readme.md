@@ -5,7 +5,7 @@
 <h1 align="center">Redstone Additions</h1>
 
 <p align="center">
-  <strong>69 custom blocks. 7 tools. 79 recipes. 2 jetpacks and 3 upgrade kits. Vanilla datapack for Minecraft 26.3.</strong>
+  <strong>70 custom blocks. 7 tools. 80 recipes. 2 jetpacks and 3 upgrade kits. Vanilla datapack for Minecraft 26.3.</strong>
 </p>
 
 <p align="center">
@@ -16,9 +16,9 @@
 <p align="center">
   <img src="https://img.shields.io/badge/Minecraft-26.3-2EA44F" alt="Minecraft 26.3">
   <img src="https://img.shields.io/badge/Version-v6.0.3-blue" alt="Version v6.0.3">
-  <img src="https://img.shields.io/badge/Blocks-69-red" alt="69 blocks">
+  <img src="https://img.shields.io/badge/Blocks-70-red" alt="70 blocks">
   <img src="https://img.shields.io/badge/Tools-7-lightgrey" alt="7 tools">
-  <img src="https://img.shields.io/badge/Recipes-79-8A2BE2" alt="79 recipes">
+  <img src="https://img.shields.io/badge/Recipes-80-8A2BE2" alt="80 recipes">
 </p>
 
 <p align="center">
@@ -100,7 +100,7 @@ listed A to Z and grouped by module.
 - Signal Calculator
 - Sequencer
 
-### Interactive Machines (14)
+### Interactive Machines (15)
 - Block Breaker
 - Block Placer
 - Item Pipe — filters by an item id set from your hand, no item frame
@@ -111,6 +111,7 @@ listed A to Z and grouped by module.
 - Big Torch — drops mobs that spawn within 1-100 blocks into the void
 - Elevator — jump to go up, sneak to go down, to the next one in the column
 - Trash Can — destroys every item put into it
+- Fan — pushes items, mobs and players along its face while powered
 - Infinite Water Cauldron
 - Infinite Lava Cauldron
 - Infinite Snow Cauldron

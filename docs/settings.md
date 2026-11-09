@@ -70,7 +70,7 @@ Every setting is also a command, so you can tab-complete your way through them:
 | General | *Show the load message* (on): every line the pack prints in chat on load or `/reload` — the version, each module's "loaded!" line and the settings links. Warnings (some block types are disabled) are shown either way; chat prefix (`RA`); subcategory **Goggles** |
 | General › Goggles | Goggles range (16 blocks); Goggles redraw (20 ticks); *Filter previews* (on): draw the item an Item Pipe filters for above its readout. Off here means off for everyone; on lets each player choose with *Show filter previews* |
 | Logic Gates | default Clock interval (20), Delayer delay (20), Extender duration (20), Shortener pulse (2), Randomizer chance (50%), Counter target (10), Edge Detector pulse (2), Sequencer steps (4) |
-| Interactive | default Magic Crate radius (8) and interval (20), Message Block range (16), Elevator range (16) |
+| Interactive | default Magic Crate radius (8) and interval (20), Message Block range (16), Elevator range (16), Fan range (8) and strength (2) |
 | Power & Fluids | default Generator EU/tick (60), Consumer EU draw (40), Industrial Light EU use (10), Liquid Drain rate (5000 mL per second) |
 | Ender Links | default Power Vault EU/tick (80), Fluid Vault transfer (200) |
 | Infinite Generators | default interval of each generator (100) |
@@ -117,7 +117,7 @@ operator gives you the tag automatically.
 
 Admins (players with this tag) also go past the players' maximum of a range or radius, in the
 Data Handler and on the placement-default rows here (Magic Crate radius up to 64, Message Block
-range up to 1024, Elevator range up to 384); see [Tools](tools.md).
+range up to 1024, Elevator range up to 384, Fan range up to 64 and strength up to 10); see [Tools](tools.md).
 
 !!! warning "Access stays until you revoke it"
     The tag survives reloads and is **not** removed when someone loses operator status. Use

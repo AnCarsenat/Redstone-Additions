@@ -20,6 +20,7 @@ import ra.core.raw
 import ra.hub.tick
 import ra.modules.chunkloader.ChunkLoader
 import ra.modules.displays.DisplayPoll
+import ra.modules.security.keypad.KeypadUse
 import ra.modules.sensors.SensorPoll
 import ra.modules.wires.blocks.usage_meter.UsageMeter
 import ra.modules.wires.machine.MachineClock
@@ -115,6 +116,8 @@ internal fun DataPack.registerUninstallConfirm() {
 		schedules { clear(MachineClock.run) }
 		// The Displays clock (hologram contents and spin, display repair), likewise.
 		schedules { clear(DisplayPoll.run) }
+		// The Keypad clock (pulse ends, lockouts), scheduled only while a keypad is pulsing or locked.
+		schedules { clear(KeypadUse.run) }
 
 		PLAYER_TAGS.forEach { t -> tag(allPlayers()) { remove(t) } }
 		untagMarkers("ra.dh_target")

@@ -1,6 +1,6 @@
 # Recipe Atlas
 
-Every recipe in the pack, in one place: 98 of them.
+Every recipe in the pack, in one place: 99 of them.
 
 !!! tip "Finding one"
     Use the search box with the item's name — every recipe below is indexed by
@@ -73,6 +73,7 @@ what the pack actually contains rather than what someone remembered to add.
 | [Item Hologram](#displays) | [Displays](displays.md) | Crafting table |
 | [Item Mover](#interactive-machines) | [Interactive Machines](interactive-machines.md) | Crafting table |
 | [Item Pipe](#interactive-machines) | [Interactive Machines](interactive-machines.md) | Crafting table |
+| [Keypad](#security) | [Security](security.md) | Crafting table |
 | [Lift Kit](#jetpacks) | [Jetpacks](jetpacks.md) | Crafting table |
 | [Light Sensor](#sensors) | [Sensors](sensors.md) | Crafting table |
 | [Liquid Filter](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
@@ -240,6 +241,14 @@ Module page: [Multiblocks](multiblocks.md) — give everything: `/function ra_mu
 | **Gold Multiblock Base** | ![Gold Multiblock Base recipe](images/recipes/ra_multiblock/gold_base.png){ width="220" } | Crafting table | `ra_multiblock:gold_base` |
 | **Iron Multiblock Base** | ![Iron Multiblock Base recipe](images/recipes/ra_multiblock/iron_base.png){ width="220" } | Crafting table | `ra_multiblock:iron_base` |
 | **Netherite Multiblock Base** | ![Netherite Multiblock Base recipe](images/recipes/ra_multiblock/netherite_base.png){ width="220" } | Crafting table | `ra_multiblock:netherite_base` |
+
+## Security
+
+Module page: [Security](security.md) — give everything: `/function ra_security:items/give_all`
+
+| Item | Recipe | Station | Namespace id |
+| ---- | ------ | ------- | ------------ |
+| **Keypad** | ![Keypad recipe](images/recipes/ra_security/keypad.png){ width="220" } | Crafting table | `ra_security:keypad` |
 
 ## Sensors
 

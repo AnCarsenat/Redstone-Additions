@@ -36,7 +36,8 @@ import ra.core.block.soundListenersSel
 
 /**
  * Tag Remover: on a rising redstone edge, removes `tag` from every entity matching
- * `entity_selector`, or clears all their tags when `tag` is empty or missing.
+ * `entity_selector`, or clears all their tags (except the pack's own `ra.` ones) when `tag` is
+ * empty or missing. The pack's own entities are never touched.
  * Properties: entity_selector (default `@e[distance=..3]`), tag (default `custom_tag`).
  */
 object TagRemover {
@@ -45,6 +46,12 @@ object TagRemover {
 
 	private val removeTagMacro = block.fn("remove_tag_macro")
 	private val clearAllTagsMacro = block.fn("clear_all_tags_macro")
+	private val clearTags = block.fn("clear_tags")
+	private val clearTagsStep = block.fn("clear_tags_step")
+	private val clearOneTag = block.fn("clear_one_tag")
+
+	/** Never touched: the pack's own entities. `ra` is on all of them; markers also carry `ra.custom_block`. */
+	private val NOT_RA = "tag=!${Tag.RA},tag=!${Tag.CUSTOM_BLOCK}"
 	private val fire = block.fn("fire")
 
 	fun Ra.registerTagRemover() {
@@ -75,14 +82,40 @@ object TagRemover {
 		// Macro {tag, entity_selector}. As the marker, at its position.
 		pack.define(removeTagMacro) {
 			// Anchor position to the marker for distance calculations in the selector.
-			raw("\$execute at @s as \$(entity_selector) if entity @s[tag=!${Tag.CUSTOM_BLOCK}] run tag @s remove \$(tag)")
+			raw("\$execute at @s as \$(entity_selector) if entity @s[$NOT_RA] run tag @s remove \$(tag)")
 			raw("playsound minecraft:block.note_block.bit block ${soundListenersSel()} ~ ~ ~ 0.5 0.8")
 		}
 
-		// Macro {entity_selector}: clear every tag. As the marker, at its position.
+		// Macro {entity_selector}: clear every tag the pack does not own. As the marker, at its
+		// position. Not `Tags set value []`: that also took `ra.` tags off players (ra.admin,
+		// tool and prompt state), and, before the pack's entities were left out, wiped the
+		// `ra` / `ra.multiblock` / skin tags that keep markers and displays alive.
 		pack.define(clearAllTagsMacro) {
-			raw("\$execute at @s as \$(entity_selector) if entity @s[tag=!${Tag.CUSTOM_BLOCK}] run data modify entity @s Tags set value []")
+			raw("\$execute at @s as \$(entity_selector) if entity @s[$NOT_RA] run function ${clearTags.asId()}")
 			raw("playsound minecraft:block.note_block.bit block ${soundListenersSel()} ~ ~ ~ 0.5 0.5")
+		}
+
+		// As the entity: walk a copy of its tags, removing each one that is not `ra` or `ra.*`.
+		pack.define(clearTags) {
+			raw("data modify storage ra:temp tag_remover.tags set from entity @s Tags")
+			raw("execute if data storage ra:temp tag_remover.tags[0] run function ${clearTagsStep.asId()}")
+			raw("data remove storage ra:temp tag_remover")
+		}
+
+		pack.define(clearTagsStep) {
+			raw("data modify storage ra:temp tag_remover.t set from storage ra:temp tag_remover.tags[0]")
+			// The first three characters; a shorter tag fails the copy, so clear the last one first.
+			raw("data remove storage ra:temp tag_remover.p")
+			raw("data modify storage ra:temp tag_remover.p set string storage ra:temp tag_remover.t 0 3")
+			raw("""execute unless data storage ra:temp tag_remover{p:"ra."} unless data storage ra:temp tag_remover{t:"ra"} run function ${clearOneTag.asId()} with storage ra:temp tag_remover""")
+			raw("data remove storage ra:temp tag_remover.tags[0]")
+			raw("execute if data storage ra:temp tag_remover.tags[0] run function ${clearTagsStep.asId()}")
+		}
+
+		// Macro {t}. A tag read back from the entity: `tag remove` takes one word, so nothing else
+		// can ride along; an odd tag only makes the line fail.
+		pack.define(clearOneTag) {
+			raw("\$tag @s remove \$(t)")
 		}
 
 		// One rising edge. As the marker, at its position.

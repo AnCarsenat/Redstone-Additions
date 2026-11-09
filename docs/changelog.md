@@ -23,6 +23,20 @@ This page mirrors key datapack milestones from the main project changelog.
   refilling the gap it just took from), and `no_network` when the drain is not part of a network,
   instead of `network_too_small`. `network_full` still means the network has no room for a whole
   5000 mL block.
+- **The tools see past redstone again.** Since v6.0.1 the Data Handler, Clipboard, Wrench and
+  Multimeter stopped at the first block in the way that was not air, water or grass, so aiming at
+  a custom block over redstone dust, a repeater, a comparator, a torch, a lever, a rail, a carpet,
+  a sign, a ladder, a flower and the like said "No custom block found". These small blocks are now
+  looked past, as is any block you are standing in (an open door), and only a block that fills
+  its space stops the look.
+- **The Tag Remover's "clear all" leaves the pack's own tags alone.** With an empty `tag`, it
+  used to wipe every tag off every matching entity except custom-block markers, including the
+  pack's own skins, displays and multiblock markers (which then stopped working) and the `ra.`
+  tags on players. It now skips the pack's entities entirely, and on everything else removes
+  every tag except the `ra.` ones.
+- **The Wrench's [CYCLE] button changes the right block.** With one custom block on top of
+  another, clicking [CYCLE] in the menu of the upper one could change the setting of the block
+  below it instead.
 
 ### Added
 

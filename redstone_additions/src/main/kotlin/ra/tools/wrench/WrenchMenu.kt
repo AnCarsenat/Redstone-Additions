@@ -214,8 +214,11 @@ object WrenchMenu {
 		// it can have been broken between opening the menu and clicking, and a button that silently
 		// did nothing would be worse than one that says so.
 		pack.define(menuAt) {
-			raw("""${'$'}execute positioned $(x) $(y) $(z) unless entity @e[type=marker,tag=${Tag.CUSTOM_BLOCK},distance=..1.5,limit=1] run return run tellraw @s [{text:"[Wrench] ",color:"gold"},{text:"That block is gone.",color:"gray"}]""")
-			raw("\$execute positioned \$(x) \$(y) \$(z) as $RAY_TARGET at @s run ${macroCall(cycleIndex, "{i:\$(i)}")}")
+			// x y z are the block's (floored) coordinates: centre on the block before looking, or
+			// the marker of the block below is as near as this one's.
+			val centre = "positioned \$(x) \$(y) \$(z) align xyz positioned ~0.5 ~0.5 ~0.5"
+			raw("""${'$'}execute $centre unless entity $RAY_TARGET run return run tellraw @s [{text:"[Wrench] ",color:"gold"},{text:"That block is gone.",color:"gray"}]""")
+			raw("\$execute $centre as $RAY_TARGET at @s run ${macroCall(cycleIndex, "{i:\$(i)}")}")
 		}
 
 		// {i}: run cyclable number i. As the marker, at the block.

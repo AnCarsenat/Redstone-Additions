@@ -127,6 +127,23 @@
   server settings on the Ender Links page (`ender_tablet_pearls`, 0 to 16, and
   `ender_tablet_cooldown`, 0 to 600 seconds). Crafted from an eye of ender, three gold ingots and a
   compass.
+- **Disenchanter** (Enchant Crafting). Moves an item's enchantments onto a book. Throw an
+  enchanted item and a book on top: it makes an enchanted book holding the item's enchantments and
+  leaves the item without them, its repair cost reset as at a grindstone. Curses stay on the item.
+  The price is 1000 mL of liquid experience (10 points) per enchantment moved, taken all at once
+  from a fluid network touching the block (a pipe, tank or drain on a side or below); the server
+  setting `disenchanter_xp` (0 to 100000, 0 = free, no network needed) changes it. Looks like
+  crying obsidian; crafted from two books, a grindstone, a diamond and five obsidian. The Goggles
+  show what it is doing and the last price. It only works while something lies on it.
+- **Book Upgrader** (Enchant Crafting). Raises one enchantment of a book by one level. Throw an
+  enchanted book on top: it raises the enchantment named by its *enchantment* property (set with
+  the Data Handler, `sharpness` or `minecraft:sharpness`), or with none set the first one in
+  alphabetical order that is below the highest level. Going from level L to L+1 costs 500 × 2^L mL
+  of liquid experience (Sharpness V to VI: 16000 mL), all at once, from a fluid network touching
+  the block. The highest level it makes is 10. Server settings `book_upgrader_base` (1 to 1000)
+  and `book_upgrader_max` (1 to 20). The raised book stays on the block: throw it again for the
+  next level. Looks like a lapis block; crafted from four lapis blocks, four books and an
+  enchanting table. The Goggles show the chosen enchantment, what it is doing and the last price.
 - **Goggles Lens** (Tools). An expensive upgrade that gives any helmet the Goggles' view: hold it,
   wear a helmet (leather, copper, chainmail, iron, gold, diamond, netherite or a turtle shell) and
   right-click; the lens is used up and the helmet keeps its material, enchantments, trims and

@@ -25,6 +25,7 @@ MODULES = {
     "ra_infinite": ("Infinite Generators", "infinite-generators.md"),
     "ra_jetpacks": ("Jetpacks", "jetpacks.md"),
     "ra_ender": ("Ender Links", "ender-links.md"),
+    "ra_enchanting": ("Enchant Crafting", "enchant-crafting.md"),
 }
 
 GIVE = {
@@ -40,6 +41,7 @@ GIVE = {
     "ra_infinite": "/function ra_infinite:items/give_all",
     "ra_jetpacks": "/function ra_jetpacks:items/give_all",
     "ra_ender": "/function ra_ender:items/give_all",
+    "ra_enchanting": "/function ra_enchanting:items/give_all",
 }
 
 TYPE_NAMES = {

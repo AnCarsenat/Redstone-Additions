@@ -203,6 +203,22 @@
   Shift+right-click with the Wrench turns the spin or the name off. Nothing runs per tick: one
   check a second, and the turning is done by the client. Crafted from a glass block, two amethyst
   shards, an ender pearl and a barrel.
+- **Automation**, a new module (`ra_automation`): blocks and items
+  that run vanilla machines for you. Its settings page lists its blocks, and it has its own branch
+  in the advancement tab.
+- **Pattern** (Automation). An item that remembers a 3×3 crafting grid: sneak + right-click a
+  crafter to copy which item is in each of its nine slots (counts and item details are ignored),
+  sneak + right-click air to clear it. The lore shows the grid as item names. Crafted from three
+  paper and a redstone dust; unlocked by picking up a crafter.
+- **Crafter Controller** (Automation). A target block placed against a vanilla crafter. Right-click
+  it with a recorded Pattern to load it (the Pattern it held comes back to you). Twice a second it
+  compares the crafter's slots with the Pattern; when every slot holds the Pattern's item and every
+  slot the Pattern leaves empty is empty, it gives the crafter a short redstone pulse and the
+  crafter crafts once. It then waits until the crafter's contents change, so a crafter that cannot
+  craft is not fired again and again. Shift+RMB with the Wrench switches it off and on, a plain
+  wrench click takes the Pattern back out, and breaking it drops the Pattern. The Goggles show its
+  state and how many times it has fired. Crafted from five iron ingots, a redstone dust, two target
+  blocks and a crafter.
 
 ### Changed
 
@@ -316,6 +332,14 @@
   declare `unique = "<storage>" to "<path>"` (format `ID` or `TAG`): the Data Handler then refuses a
   value that is already a key of that compound. The Data Handler's list picker and the `choices`
   declaration are gone with the destination list.
+- **Automation module** (`ra/modules/automation/`). A block that takes Patterns adds itself to
+  `Pattern.targets` (`TagRoute(markerTag, fn)`); right-clicking it with a Pattern runs `fn` as its
+  marker, the player tagged `ra.auto.pattern_user`. The Pattern's data is
+  `{ra:{pattern:{slots:[<nine item ids, "" for empty>]}}}` in crafter slot order; check an id with
+  `ra_lib:safe/check` (format ID) before pasting it, as the Crafter Controller does when a Pattern
+  is loaded. The Controller only runs while one with a valid Pattern is loaded (tag
+  `ra.auto.cc_armed`, a 10-tick schedule), and skips the slot comparison while the crafter's
+  `Items` are unchanged since its last look.
 
 ## [v6.0.2] - 2026-11-09 - Drains, lists and fixes
 

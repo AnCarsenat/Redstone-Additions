@@ -91,6 +91,7 @@ one page, A to Z and by module.
 | ra_infinite:mineral_generator        | Mineral Generator         | Generator Casing + Mineral Core |
 | ra_infinite:nether_generator         | Nether Generator          | Generator Casing + Nether Core |
 | ra_infinite:poppy_generator          | Poppy Generator           | Generator Casing + Poppy Core |
+| ra_automation:crafter_controller     | Crafter Controller        | ![Crafter Controller recipe](images/recipes/ra_automation/crafter_controller.png){ width="220" } |
 
 ## Crafting Items
 
@@ -103,8 +104,9 @@ one page, A to Z and by module.
 | ra_interactive:enchanted_coal | Enchanted Coal | Sacrifice `minecraft:coal` on an enchanting table (1%) |
 | ra_interactive:enchanted_coal_block | Enchanted Coal Block | Nine Enchanted Coal |
 | ra_enchanting:schematic | Schematic | Throw an enchanted book on a Book Printer (2%); not craftable |
+| ra_automation:pattern | Pattern | ![Pattern recipe](images/recipes/ra_automation/pattern.png){ width="220" } |
 
-The Generator Casing and the Cores cannot be placed as blocks. A Schematic is paper carrying a book's enchantments in `custom_data` (`{ra:{schematic:1b,enchantments:{...}}}`), used on the [Book Printer](enchant-crafting.md#book-printer).
+The Generator Casing and the Cores cannot be placed as blocks. A Schematic is paper carrying a book's enchantments in `custom_data` (`{ra:{schematic:1b,enchantments:{...}}}`), used on the [Book Printer](enchant-crafting.md#book-printer). A Pattern is paper carrying a 3×3 grid of item ids (`{ra:{pattern:{slots:[<9 ids or "">]}}}`, see [Automation](automation.md#pattern-data)).
 | ra_jetpacks:iron_jetpack_kit | Iron Jetpack Kit | Blaze rod over iron ingots, a redstone block and a coal block |
 | ra_jetpacks:infinite_jetpack_kit | Infinite Iron Jetpack Kit | Sacrifice an Iron Jetpack Kit on an enchanting table (1%) |
 

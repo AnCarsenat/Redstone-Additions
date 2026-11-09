@@ -94,6 +94,20 @@ This page mirrors key datapack milestones from the main project changelog.
   (`Fuel ▮▮▮▮▮▮▯▯▯▯ 63% · 12 coal`). Green while there is coal to come, then yellow, red under a
   quarter of the last piece. It waits for the jetpack's other action bar messages instead of
   overwriting them. Turn it off for yourself with *Jetpack fuel gauge* in Your Preferences.
+- **Anchor Terminal** (Ender Links). A block to choose where to go: stand on it and sneak, and a
+  menu opens in chat with its *favourites* (up to 8 anchor names, set with the Data Handler) as
+  **[Go]** buttons, and **[Type a destination]**, which asks for any anchor name in the Input Form
+  book. You arrive on top of that Teleport Anchor, in any chunk or dimension, with the usual
+  arrival grace. The anchors of the world are not listed: a destination is a favourite or a name
+  you know. Using it is free. Looks like a lodestone; crafted from five obsidian, a glass pane, two
+  ender pearls and a compass. The Goggles show how many favourites it has.
+- **Anchor Tablet** (Ender Links). An item that sends you to a Teleport Anchor from anywhere:
+  right-click it for the same menu as the Anchor Terminal. The tablet keeps its own favourites (up
+  to 8) and its last trip: **[Save]** keeps the last trip, **[Forget]** removes a favourite. A trip
+  costs 1 ender pearl (none in creative) and the tablet then recharges for 10 seconds; both are
+  server settings on the Ender Links page (`ender_tablet_pearls`, 0 to 16, and
+  `ender_tablet_cooldown`, 0 to 600 seconds). Crafted from an eye of ender, three gold ingots and a
+  compass.
 
 ### Changed
 

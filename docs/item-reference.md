@@ -71,6 +71,7 @@ one page, A to Z and by module.
 | ra_ender:ender_fluid_vault           | Ender Fluid Vault         | ![Ender Fluid Vault recipe](images/recipes/ra_ender/ender_fluid_vault.png){ width="220" } |
 | ra_ender:ender_power_vault           | Ender Power Vault         | ![Ender Power Vault recipe](images/recipes/ra_ender/ender_power_vault.png){ width="220" } |
 | ra_ender:teleport_anchor             | Teleport Anchor           | ![Teleport Anchor recipe](images/recipes/ra_ender/teleport_anchor.png){ width="220" } |
+| ra_ender:anchor_terminal             | Anchor Terminal           | ![Anchor Terminal recipe](images/recipes/ra_ender/anchor_terminal.png){ width="220" } |
 | ra_chunk_loader:chunk_loader         | Chunk Loader              | ![Chunk Loader recipe](images/recipes/ra_chunk_loader/chunk_loader.png){ width="220" } |
 | ra_multiblock:copper_base            | Copper Multiblock Base    | ![Copper Multiblock Base recipe](images/recipes/ra_multiblock/copper_base.png){ width="220" } |
 | ra_multiblock:iron_base              | Iron Multiblock Base      | ![Iron Multiblock Base recipe](images/recipes/ra_multiblock/iron_base.png){ width="220" } |
@@ -107,4 +108,5 @@ The Generator Casing and the Cores cannot be placed as blocks.
 | ra     | Clipboard             | `ra:tools/clipboard/give`             | ![Clipboard recipe](images/recipes/ra/clipboard.png){ width="220" } |
 | ra     | Multimeter            | `ra:tools/multimeter/give`            | ![Multimeter recipe](images/recipes/ra/multimeter.png){ width="220" } |
 | ra_wireless | Redstone Remote  | `ra_wireless:tools/remote/give`       | ![Redstone Remote recipe](images/recipes/ra_wireless/remote.png){ width="220" } |
+| ra_ender    | Anchor Tablet    | `ra_ender:tablet/give`                | ![Anchor Tablet recipe](images/recipes/ra_ender/anchor_tablet.png){ width="220" } |
 

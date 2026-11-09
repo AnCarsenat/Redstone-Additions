@@ -159,7 +159,7 @@ Each module has `<Name>Module.kt` (the `GameplayModule` object: registration ord
 | `modules/storage` | `Boxer.kt`, `Unboxer.kt`, `StorageBox.kt` |
 | `modules/sensors` | `EntityDetector.kt`, `TagAdder.kt`, `TagRemover.kt`, `EdgeTrigger.kt`, `LightSensor.kt`, `WeatherSensor.kt`, `HeldItemDetector.kt`, `PlayerDetector.kt`, `SensorPoll.kt` |
 | `modules/wireless` | `Emitter.kt`, `Receiver.kt`, `WirelessCommon.kt`, `tools/Remote.kt` |
-| `modules/ender` | `ItemVault.kt`, `FluidVault.kt`, `PowerVault.kt`, `TeleportAnchor.kt`, `EnderCommon.kt`, `link/Link.kt`, `tools/Anchor.kt`, `debug/` |
+| `modules/ender` | `ItemVault.kt`, `FluidVault.kt`, `PowerVault.kt`, `TeleportAnchor.kt`, `AnchorTerminal.kt`, `EnderCommon.kt`, `anchors/AnchorTable.kt`, `chooser/` (the destination menu: `Chooser.kt`, `ChooserInput.kt`), `tablet/AnchorTablet.kt`, `link/Link.kt`, `tools/Anchor.kt`, `debug/` |
 
 ## Others
 

@@ -5,7 +5,7 @@
 <h1 align="center">Redstone Additions</h1>
 
 <p align="center">
-  <strong>81 custom blocks. 9 tools. 95 recipes. 2 jetpacks and 3 upgrade kits. Vanilla datapack for Minecraft 26.3.</strong>
+  <strong>84 custom blocks. 9 tools. 98 recipes. 2 jetpacks and 3 upgrade kits. Vanilla datapack for Minecraft 26.3.</strong>
 </p>
 
 <p align="center">
@@ -16,9 +16,9 @@
 <p align="center">
   <img src="https://img.shields.io/badge/Minecraft-26.3-2EA44F" alt="Minecraft 26.3">
   <img src="https://img.shields.io/badge/Version-v6.0.3-blue" alt="Version v6.0.3">
-  <img src="https://img.shields.io/badge/Blocks-81-red" alt="81 blocks">
+  <img src="https://img.shields.io/badge/Blocks-84-red" alt="84 blocks">
   <img src="https://img.shields.io/badge/Tools-9-lightgrey" alt="9 tools">
-  <img src="https://img.shields.io/badge/Recipes-95-8A2BE2" alt="95 recipes">
+  <img src="https://img.shields.io/badge/Recipes-98-8A2BE2" alt="98 recipes">
 </p>
 
 <p align="center">
@@ -82,6 +82,7 @@ listed A to Z and grouped by module.
 | Jetpacks | <img src="https://github.com/AnCarsenat/Redstone-Additions/raw/main/docs/images/screenshots/JetpackHover.png" alt="Hover flight" width="320"> |
 | Infinite Generators | <img src="https://github.com/AnCarsenat/Redstone-Additions/raw/main/docs/images/banners/media-missing.png" alt="No screenshot yet" width="320"> |
 | Ender Links | <img src="https://github.com/AnCarsenat/Redstone-Additions/raw/main/docs/images/banners/media-missing.png" alt="No screenshot yet" width="320"> |
+| Displays | <img src="https://github.com/AnCarsenat/Redstone-Additions/raw/main/docs/images/banners/media-missing.png" alt="No screenshot yet" width="320"> |
 | Automation | <img src="https://github.com/AnCarsenat/Redstone-Additions/raw/main/docs/images/banners/media-missing.png" alt="No screenshot yet" width="320"> |
 | Tools | <img src="https://github.com/AnCarsenat/Redstone-Additions/raw/main/docs/images/banners/media-missing.png" alt="No screenshot yet" width="320"> |
 
@@ -137,7 +138,7 @@ listed A to Z and grouped by module.
 - Analog Emitter — sends its input level (0-15) on a channel
 - Analog Receiver — outputs its channel's level on target blocks
 
-### Transport Networks (25)
+### Transport Networks (26)
 
 Fluids, in millilitres:
 
@@ -146,7 +147,7 @@ Fluids, in millilitres:
 - Liquid Pump
 - Liquid Valve — moves contents between the two networks it separates
 - Liquid Filter — passes only the one medium it is set to
-- Liquid Drain — world source in, or network contents back out
+- Fluid Drain — world source in, or network contents back out; vents gases with their effect
 - Gas Tank
 - Gas Pump
 - Gas Valve
@@ -162,6 +163,7 @@ Electricity, in EU:
 - Battery — 10000 EU of grid capacity
 - EU Breaker — evens EU between the grids either side
 - Solar Panel
+- Water Wheel — EU from flowing water, with a turning wheel
 - Industrial Light — redstone plus EU, a 10 block beam of real light
 - Electric Furnace — smelts on EU with no fuel, four power modes
 - Tesla Coil — redstone plus EU, zaps hostile mobs around it once a second
@@ -201,6 +203,9 @@ netherrack or poppies on an enchanting table.
 - Teleport Anchor — redstone strength 1-15 picks which anchor you arrive at
 - Anchor Terminal — stand on it and sneak to pick a destination from a menu
 
+### Displays (2)
+- Gauge Bar — a bar on its face, filled to the redstone level feeding it
+- Item Hologram — shows the item inside it, turning above the block, with its name
 ### Automation (1)
 - Crafter Controller — fires the crafter next to it once it holds what its Pattern says
 
@@ -323,6 +328,7 @@ Starter command:
 | Jetpacks | https://ancarsenat.github.io/Redstone-Additions/jetpacks/ |
 | Infinite Generators | https://ancarsenat.github.io/Redstone-Additions/infinite-generators/ |
 | Ender Links | https://ancarsenat.github.io/Redstone-Additions/ender-links/ |
+| Displays | https://ancarsenat.github.io/Redstone-Additions/displays/ |
 | Automation | https://ancarsenat.github.io/Redstone-Additions/automation/ |
 | Item Reference | https://ancarsenat.github.io/Redstone-Additions/item-reference/ |
 | Recipe Atlas | https://ancarsenat.github.io/Redstone-Additions/recipe-atlas/ |
@@ -347,6 +353,7 @@ Starter command:
 | `/function ra_jetpacks:items/give_all` | Jetpack kits |
 | `/function ra_enchanting:items/give_all` | Disenchanter, Book Upgrader and Book Printer |
 | `/function ra_ender:items/give_all` | Ender vaults, Teleport Anchor, Anchor Terminal and Anchor Tablet |
+| `/function ra_displays:items/give_all` | Display blocks |
 | `/function ra_automation:items/give_all` | Crafter Controller and a Pattern |
 | `/function ra:tools/wrench/give` | Wrench |
 | `/function ra:tools/data_handler/give` | Data Handler |

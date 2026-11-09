@@ -26,6 +26,7 @@ MODULES = {
     "ra_jetpacks": ("Jetpacks", "jetpacks.md"),
     "ra_ender": ("Ender Links", "ender-links.md"),
     "ra_enchanting": ("Enchant Crafting", "enchant-crafting.md"),
+    "ra_displays": ("Displays", "displays.md"),
     "ra_automation": ("Automation", "automation.md"),
 }
 
@@ -43,6 +44,7 @@ GIVE = {
     "ra_jetpacks": "/function ra_jetpacks:items/give_all",
     "ra_ender": "/function ra_ender:items/give_all",
     "ra_enchanting": "/function ra_enchanting:items/give_all",
+    "ra_displays": "/function ra_displays:items/give_all",
     "ra_automation": "/function ra_automation:items/give_all",
 }
 

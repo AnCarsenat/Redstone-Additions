@@ -51,7 +51,7 @@ one page, A to Z and by module.
 | ra_wires:liquid_pump                 | Liquid Pump               | ![Liquid Pump recipe](images/recipes/ra_wires/liquid_pump.png){ width="220" } |
 | ra_wires:liquid_valve                | Liquid Valve              | ![Liquid Valve recipe](images/recipes/ra_wires/liquid_valve.png){ width="220" } |
 | ra_wires:liquid_filter               | Liquid Filter             | ![Liquid Filter recipe](images/recipes/ra_wires/liquid_filter.png){ width="220" } |
-| ra_wires:liquid_drain                | Liquid Drain              | ![Liquid Drain recipe](images/recipes/ra_wires/liquid_drain.png){ width="220" } |
+| ra_wires:liquid_drain                | Fluid Drain               | ![Fluid Drain recipe](images/recipes/ra_wires/liquid_drain.png){ width="220" } |
 | ra_wires:gas_tank                    | Gas Tank                  | ![Gas Tank recipe](images/recipes/ra_wires/gas_tank.png){ width="220" } |
 | ra_wires:gas_pump                    | Gas Pump                  | ![Gas Pump recipe](images/recipes/ra_wires/gas_pump.png){ width="220" } |
 | ra_wires:gas_valve                   | Gas Valve                 | ![Gas Valve recipe](images/recipes/ra_wires/gas_valve.png){ width="220" } |
@@ -69,6 +69,7 @@ one page, A to Z and by module.
 | ra_wires:usage_meter                 | Usage Meter               | ![Usage Meter recipe](images/recipes/ra_wires/usage_meter.png){ width="220" } |
 | ra_wires:tesla_coil                  | Tesla Coil                | ![Tesla Coil recipe](images/recipes/ra_wires/tesla_coil.png){ width="220" } |
 | ra_wires:spout                       | Spout                     | ![Spout recipe](images/recipes/ra_wires/spout.png){ width="220" } |
+| ra_wires:water_wheel                 | Water Wheel               | ![Water Wheel recipe](images/recipes/ra_wires/water_wheel.png){ width="220" } |
 | ra_wires:creative_eu                 | Creative EU Source        | No recipe — `ra_wires:items/give_creative` |
 | ra_wires:creative_fluid              | Creative Fluid Source     | No recipe — `ra_wires:items/give_creative` |
 | ra_ender:ender_item_vault            | Ender Item Vault          | ![Ender Item Vault recipe](images/recipes/ra_ender/ender_item_vault.png){ width="220" } |
@@ -79,6 +80,8 @@ one page, A to Z and by module.
 | ra_enchanting:disenchanter           | Disenchanter              | ![Disenchanter recipe](images/recipes/ra_enchanting/disenchanter.png){ width="220" } |
 | ra_enchanting:book_upgrader          | Book Upgrader             | ![Book Upgrader recipe](images/recipes/ra_enchanting/book_upgrader.png){ width="220" } |
 | ra_enchanting:book_printer           | Book Printer              | ![Book Printer recipe](images/recipes/ra_enchanting/book_printer.png){ width="220" } |
+| ra_displays:gauge_bar               | Gauge Bar                 | ![Gauge Bar recipe](images/recipes/ra_displays/gauge_bar.png){ width="220" } |
+| ra_displays:item_hologram           | Item Hologram             | ![Item Hologram recipe](images/recipes/ra_displays/item_hologram.png){ width="220" } |
 | ra_chunk_loader:chunk_loader         | Chunk Loader              | ![Chunk Loader recipe](images/recipes/ra_chunk_loader/chunk_loader.png){ width="220" } |
 | ra_multiblock:copper_base            | Copper Multiblock Base    | ![Copper Multiblock Base recipe](images/recipes/ra_multiblock/copper_base.png){ width="220" } |
 | ra_multiblock:iron_base              | Iron Multiblock Base      | ![Iron Multiblock Base recipe](images/recipes/ra_multiblock/iron_base.png){ width="220" } |

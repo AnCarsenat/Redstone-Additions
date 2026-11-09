@@ -89,6 +89,15 @@ This page mirrors key datapack milestones from the main project changelog.
   first is tried first. Redstone locks it, like a hopper. Other packs can add their own fluids to
   `storage ra:wires item_fills`. The Goggles show what it is doing and the network's fluid.
   Crafted from five copper ingots, a bucket and pointed dripstone.
+- **Water Wheel** (Transport Networks). An EU generator turned by flowing water. Its wheel turns
+  facing you as you place it, and the eight blocks around the hub in the wheel's plane are where
+  its paddles dip: each one holding flowing or falling water (not a source block) adds
+  *eu_per_block* EU per tick (default 5, so 5 to 40 EU/t; admin only, default on the settings
+  page), day and night. The wheel is drawn with block displays and turns smoothly while water
+  flows, faster with three or more flowing blocks, and stops where it is when the water does.
+  The Goggles show what it is doing, the flowing water it finds, what it makes and the grid's EU.
+  It holds 1000 EU. Crafted from four spruce slabs, four sticks, a copper block and redstone.
+
 - **Elevator** (Interactive Machines). Stand on it and jump to go up, or sneak to go down, to the
   next Elevator straight above or below in the same column, at most *range* blocks away (2 to 64,
   default 16; admins up to 384). You land on top of it facing the same way, if the two blocks above
@@ -181,6 +190,21 @@ This page mirrors key datapack milestones from the main project changelog.
   which) or remove it and get the lens back. Crafted from four tinted glass, two diamonds, two gold
   ingots and a netherite ingot; unlocked by picking up a netherite ingot. A helmet that already
   carries data or a description of its own (another pack's item, the Goggles) is refused.
+- **Displays** (new module, `ra_displays`). Blocks that show something with display entities;
+  `/function ra_displays:items/give_all` gives them, and the settings have a Displays page to turn
+  each one off.
+- **Gauge Bar** (Displays). A bar on its front face, filled to the redstone level feeding it, 0 to
+  15, from any side; a repeater or comparator pointing in fills it. It faces the way it was placed,
+  up and down included. Shift+right-click with the Wrench changes the colour (twelve) or turns the
+  bar vertical; the Goggles show the level. The fill is only redrawn when the level changes, and
+  slides to the new length. Crafted from three glass panes, two redstone, a comparator and three
+  polished blackstone.
+- **Item Hologram** (Displays). A barrel that shows the first item inside it floating above its
+  lid, turning slowly, with the item's name (its anvil name, or its usual name in your language)
+  over it. Fill it by hand or with a hopper or an Item Pipe; the hologram follows within a second.
+  Shift+right-click with the Wrench turns the spin or the name off. Nothing runs per tick: one
+  check a second, and the turning is done by the client. Crafted from a glass block, two amethyst
+  shards, an ender pearl and a barrel.
 - **Automation**, a new module (`ra_automation`, [Automation](automation.md)): blocks and items
   that run vanilla machines for you. Its settings page lists its blocks, and it has its own branch
   in the advancement tab.
@@ -200,6 +224,15 @@ This page mirrors key datapack milestones from the main project changelog.
 
 ### Changed
 
+- **The Liquid Drain is now the Fluid Drain, and also vents gases** (Transport Networks). Powered
+  by redstone on a gas network, it lets the gas out of its front with the gas's effect, renewed
+  at each action (once a second at the default rate): **Oxygen** bubbles up the water straight
+  above its front, like a magma block, and gives water breathing (10 seconds) to whoever is in
+  that column; the new **Toxic Gas** withers (3 seconds) everyone and every mob within 4 blocks. Steam and smoke are only vented, as before; liquids pour out as before. The Goggles say
+  `venting` for a gas. Other packs can give their own gases an effect in
+  `storage ra:wires gas_effects`. Only the name changed: drains already placed or in a chest keep
+  working, and its recipe is the same. Oxygen and Toxic Gas have no source in survival yet (the
+  Chemistry module will make them); the Creative Fluid Source now cycles through both.
 - **Anyone can change a Message Block's text.** It was locked to admins in v6.0.1 because rich
   chat text can carry a clickable command. The text a player types is always shown exactly as
   typed, quotes and braces included, so it can never become a command. Rich text (colours,

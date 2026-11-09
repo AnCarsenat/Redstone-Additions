@@ -1,6 +1,6 @@
 # Recipe Atlas
 
-Every recipe in the pack, in one place: 95 of them.
+Every recipe in the pack, in one place: 98 of them.
 
 !!! tip "Finding one"
     Use the search box with the item's name — every recipe below is indexed by
@@ -53,9 +53,11 @@ what the pack actually contains rather than what someone remembered to add.
 | [EU Switch](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
 | [Extender](#logic-gates) | [Logic Gates](logic-gates.md) | Crafting table |
 | [Fan](#interactive-machines) | [Interactive Machines](interactive-machines.md) | Crafting table |
+| [Fluid Drain](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
 | [Gas Pump](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
 | [Gas Tank](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
 | [Gas Valve](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
+| [Gauge Bar](#displays) | [Displays](displays.md) | Crafting table |
 | [Generator Casing](#infinite-generators) | [Infinite Generators](infinite-generators.md) | Crafting table |
 | [Goggles](#tools) | [Tools](tools.md) | Crafting table |
 | [Goggles Lens](#tools) | [Tools](tools.md) | Crafting table |
@@ -68,11 +70,11 @@ what the pack actually contains rather than what someone remembered to add.
 | [Infinite Water Cauldron](#interactive-machines) | [Interactive Machines](interactive-machines.md) | Crafting table |
 | [Iron Jetpack Kit](#jetpacks) | [Jetpacks](jetpacks.md) | Crafting table |
 | [Iron Multiblock Base](#multiblocks) | [Multiblocks](multiblocks.md) | Crafting table |
+| [Item Hologram](#displays) | [Displays](displays.md) | Crafting table |
 | [Item Mover](#interactive-machines) | [Interactive Machines](interactive-machines.md) | Crafting table |
 | [Item Pipe](#interactive-machines) | [Interactive Machines](interactive-machines.md) | Crafting table |
 | [Lift Kit](#jetpacks) | [Jetpacks](jetpacks.md) | Crafting table |
 | [Light Sensor](#sensors) | [Sensors](sensors.md) | Crafting table |
-| [Liquid Drain](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
 | [Liquid Filter](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
 | [Liquid Pump](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
 | [Liquid Tank](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
@@ -109,6 +111,7 @@ what the pack actually contains rather than what someone remembered to add.
 | [Unboxer](#storage) | [Storage](storage.md) | Crafting table |
 | [UNI Gate](#logic-gates) | [Logic Gates](logic-gates.md) | Crafting table |
 | [Usage Meter](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
+| [Water Wheel](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
 | [Weather Sensor](#sensors) | [Sensors](sensors.md) | Crafting table |
 | [Wire](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
 | [Wireless Emitter](#wireless-redstone) | [Wireless Redstone](wireless-redstone.md) | Crafting table |
@@ -131,6 +134,15 @@ Module page: [Chunk Loader](chunk-loader.md) — give everything: `/function ra_
 | Item | Recipe | Station | Namespace id |
 | ---- | ------ | ------- | ------------ |
 | **Chunk Loader** | ![Chunk Loader recipe](images/recipes/ra_chunk_loader/chunk_loader.png){ width="220" } | Crafting table | `ra_chunk_loader:chunk_loader` |
+
+## Displays
+
+Module page: [Displays](displays.md) — give everything: `/function ra_displays:items/give_all`
+
+| Item | Recipe | Station | Namespace id |
+| ---- | ------ | ------- | ------------ |
+| **Gauge Bar** | ![Gauge Bar recipe](images/recipes/ra_displays/gauge_bar.png){ width="220" } | Crafting table | `ra_displays:gauge_bar` |
+| **Item Hologram** | ![Item Hologram recipe](images/recipes/ra_displays/item_hologram.png){ width="220" } | Crafting table | `ra_displays:item_hologram` |
 
 ## Enchant Crafting
 
@@ -279,11 +291,11 @@ Module page: [Transport Networks](transport-networks.md) — give everything: `/
 | **EU Consumer** | ![EU Consumer recipe](images/recipes/ra_wires/electric_consumer.png){ width="220" } | Crafting table | `ra_wires:electric_consumer` |
 | **EU Generator** | ![EU Generator recipe](images/recipes/ra_wires/electric_generator.png){ width="220" } | Crafting table | `ra_wires:electric_generator` |
 | **EU Switch** | ![EU Switch recipe](images/recipes/ra_wires/electric_switch.png){ width="220" } | Crafting table | `ra_wires:electric_switch` |
+| **Fluid Drain** | ![Fluid Drain recipe](images/recipes/ra_wires/liquid_drain.png){ width="220" } | Crafting table | `ra_wires:liquid_drain` |
 | **Gas Pump** | ![Gas Pump recipe](images/recipes/ra_wires/gas_pump.png){ width="220" } | Crafting table | `ra_wires:gas_pump` |
 | **Gas Tank** | ![Gas Tank recipe](images/recipes/ra_wires/gas_tank.png){ width="220" } | Crafting table | `ra_wires:gas_tank` |
 | **Gas Valve** | ![Gas Valve recipe](images/recipes/ra_wires/gas_valve.png){ width="220" } | Crafting table | `ra_wires:gas_valve` |
 | **Industrial Light** | ![Industrial Light recipe](images/recipes/ra_wires/industrial_light.png){ width="220" } | Crafting table | `ra_wires:industrial_light` |
-| **Liquid Drain** | ![Liquid Drain recipe](images/recipes/ra_wires/liquid_drain.png){ width="220" } | Crafting table | `ra_wires:liquid_drain` |
 | **Liquid Filter** | ![Liquid Filter recipe](images/recipes/ra_wires/liquid_filter.png){ width="220" } | Crafting table | `ra_wires:liquid_filter` |
 | **Liquid Pump** | ![Liquid Pump recipe](images/recipes/ra_wires/liquid_pump.png){ width="220" } | Crafting table | `ra_wires:liquid_pump` |
 | **Liquid Tank** | ![Liquid Tank recipe](images/recipes/ra_wires/liquid_tank.png){ width="220" } | Crafting table | `ra_wires:liquid_tank` |
@@ -293,6 +305,7 @@ Module page: [Transport Networks](transport-networks.md) — give everything: `/
 | **Spout** | ![Spout recipe](images/recipes/ra_wires/spout.png){ width="220" } | Crafting table | `ra_wires:spout` |
 | **Tesla Coil** | ![Tesla Coil recipe](images/recipes/ra_wires/tesla_coil.png){ width="220" } | Crafting table | `ra_wires:tesla_coil` |
 | **Usage Meter** | ![Usage Meter recipe](images/recipes/ra_wires/usage_meter.png){ width="220" } | Crafting table | `ra_wires:usage_meter` |
+| **Water Wheel** | ![Water Wheel recipe](images/recipes/ra_wires/water_wheel.png){ width="220" } | Crafting table | `ra_wires:water_wheel` |
 | **Wire** | ![Wire recipe](images/recipes/ra_wires/electric_wire_copper.png){ width="220" } | Crafting table | `ra_wires:electric_wire_copper` |
 
 ## Wireless Redstone

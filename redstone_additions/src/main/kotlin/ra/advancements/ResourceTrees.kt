@@ -98,7 +98,7 @@ internal val wiresTree = listOf(
 	egg("ra_wires", "gas_tank", "Gas Tank", Items.IRON_BLOCK, TRUE),
 	egg("ra_wires", "gas_valve", "Gas Valve", Items.SMOOTH_BASALT, TRUE),
 	egg("ra_wires", "industrial_light", "Industrial Light", Items.SEA_LANTERN, ONE),
-	egg("ra_wires", "liquid_drain", "Liquid Drain", Items.DROPPER, TRUE),
+	egg("ra_wires", "liquid_drain", "Fluid Drain", Items.DROPPER, TRUE),
 	egg("ra_wires", "liquid_filter", "Liquid Filter", Items.WAXED_EXPOSED_CUT_COPPER, ONE, "Obtain the Liquid Filter item."),
 	egg("ra_wires", "liquid_pipe_copper", "Copper Pipe", Items.COPPER_BLOCK, TRUE),
 	egg("ra_wires", "liquid_pump", "Liquid Pump", Items.DISPENSER, TRUE),
@@ -109,4 +109,5 @@ internal val wiresTree = listOf(
 	egg("ra_wires", "spout", "Spout", Items.WAXED_EXPOSED_COPPER_GRATE, ONE),
 	egg("ra_wires", "tesla_coil", "Tesla Coil", Items.LIGHTNING_ROD, ONE),
 	egg("ra_wires", "usage_meter", "Usage Meter", Items.CLOCK, TRUE),
+	egg("ra_wires", "water_wheel", "Water Wheel", Items.STRIPPED_SPRUCE_LOG, TRUE),
 )

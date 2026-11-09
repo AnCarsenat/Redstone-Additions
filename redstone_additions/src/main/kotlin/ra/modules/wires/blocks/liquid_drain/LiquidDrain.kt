@@ -26,7 +26,7 @@ object LiquidDrain : PackPart {
 			// the same dispatch to answer the Data Handlers, which used to carry two
 			// separate hand-written name tables that had already drifted apart.
 
-			gogglesHeader("Liquid Drain", nameY = 1.0)
+			gogglesHeader("Fluid Drain", nameY = 1.0)
 
 			// Contents belong to the network, not this node; refresh_status copies them here.
 			// Same three lines as the Liquid Pump. `speed` is an admin knob and stays off the

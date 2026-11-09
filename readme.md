@@ -5,7 +5,7 @@
 <h1 align="center">Redstone Additions</h1>
 
 <p align="center">
-  <strong>80 custom blocks. 9 tools. 93 recipes. 2 jetpacks and 3 upgrade kits. Vanilla datapack for Minecraft 26.3.</strong>
+  <strong>81 custom blocks. 9 tools. 94 recipes. 2 jetpacks and 3 upgrade kits. Vanilla datapack for Minecraft 26.3.</strong>
 </p>
 
 <p align="center">
@@ -16,9 +16,9 @@
 <p align="center">
   <img src="https://img.shields.io/badge/Minecraft-26.3-2EA44F" alt="Minecraft 26.3">
   <img src="https://img.shields.io/badge/Version-v6.0.3-blue" alt="Version v6.0.3">
-  <img src="https://img.shields.io/badge/Blocks-80-red" alt="80 blocks">
+  <img src="https://img.shields.io/badge/Blocks-81-red" alt="81 blocks">
   <img src="https://img.shields.io/badge/Tools-9-lightgrey" alt="9 tools">
-  <img src="https://img.shields.io/badge/Recipes-93-8A2BE2" alt="93 recipes">
+  <img src="https://img.shields.io/badge/Recipes-94-8A2BE2" alt="94 recipes">
 </p>
 
 <p align="center">
@@ -136,7 +136,7 @@ listed A to Z and grouped by module.
 - Analog Emitter — sends its input level (0-15) on a channel
 - Analog Receiver — outputs its channel's level on target blocks
 
-### Transport Networks (25)
+### Transport Networks (26)
 
 Fluids, in millilitres:
 
@@ -145,7 +145,7 @@ Fluids, in millilitres:
 - Liquid Pump
 - Liquid Valve — moves contents between the two networks it separates
 - Liquid Filter — passes only the one medium it is set to
-- Liquid Drain — world source in, or network contents back out
+- Fluid Drain — world source in, or network contents back out; vents gases with their effect
 - Gas Tank
 - Gas Pump
 - Gas Valve
@@ -161,6 +161,7 @@ Electricity, in EU:
 - Battery — 10000 EU of grid capacity
 - EU Breaker — evens EU between the grids either side
 - Solar Panel
+- Water Wheel — EU from flowing water, with a turning wheel
 - Industrial Light — redstone plus EU, a 10 block beam of real light
 - Electric Furnace — smelts on EU with no fuel, four power modes
 - Tesla Coil — redstone plus EU, zaps hostile mobs around it once a second

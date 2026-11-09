@@ -44,7 +44,7 @@ Generator Casing.
 Moves an item's enchantments onto a book.
 
 1. Place the Disenchanter (it looks like crying obsidian).
-2. Put a pipe, tank or [Liquid Drain](transport-networks.md#getting-fluid-in-and-out) holding
+2. Put a pipe, tank or [Fluid Drain](transport-networks.md#getting-fluid-in-and-out) holding
    **experience** against one of its sides or under it. A drain facing up takes a sneaking
    player's experience into the network.
 3. Drop a **book** and an **enchanted item** on top.
@@ -127,7 +127,7 @@ ignores it.
 
 ### Printing
 
-1. Put a pipe, tank or [Liquid Drain](transport-networks.md#getting-fluid-in-and-out) holding
+1. Put a pipe, tank or [Fluid Drain](transport-networks.md#getting-fluid-in-and-out) holding
    **experience** against a side of the printer or under it, as for the Disenchanter.
 2. Drop the **Schematic** and a stack of plain **books** on top.
 

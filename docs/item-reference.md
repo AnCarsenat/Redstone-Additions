@@ -69,6 +69,9 @@ one page, A to Z and by module.
 | ra_wires:usage_meter                 | Usage Meter               | ![Usage Meter recipe](images/recipes/ra_wires/usage_meter.png){ width="220" } |
 | ra_wires:tesla_coil                  | Tesla Coil                | ![Tesla Coil recipe](images/recipes/ra_wires/tesla_coil.png){ width="220" } |
 | ra_wires:spout                       | Spout                     | ![Spout recipe](images/recipes/ra_wires/spout.png){ width="220" } |
+| ra_wires:air_charger                 | Air Charger               | ![Air Charger recipe](images/recipes/ra_wires/air_charger.png){ width="220" } |
+| ra_wires:air_tank                    | Air Tank                  | ![Air Tank recipe](images/recipes/ra_wires/air_tank.png){ width="220" } |
+| ra_wires:heavy_boots                 | Heavy Boots               | ![Heavy Boots recipe](images/recipes/ra_wires/heavy_boots.png){ width="220" } |
 | ra_wires:water_wheel                 | Water Wheel               | ![Water Wheel recipe](images/recipes/ra_wires/water_wheel.png){ width="220" } |
 | ra_wires:creative_eu                 | Creative EU Source        | No recipe — `ra_wires:items/give_creative` |
 | ra_wires:creative_fluid              | Creative Fluid Source     | No recipe — `ra_wires:items/give_creative` |

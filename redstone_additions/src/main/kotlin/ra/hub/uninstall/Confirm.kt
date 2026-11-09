@@ -22,6 +22,7 @@ import ra.modules.chunkloader.ChunkLoader
 import ra.modules.displays.DisplayPoll
 import ra.modules.sensors.SensorPoll
 import ra.modules.wires.blocks.usage_meter.UsageMeter
+import ra.modules.wires.diving.AirTank
 import ra.modules.wires.machine.MachineClock
 import ra.modules.wires.readout.Readout
 
@@ -56,7 +57,7 @@ private val PLAYER_TAGS = listOf(
 	"ra.wrench_active", "ra.cdh_active", "ra.dh_active", "ra.goggles_active", "ra.wrench_clicked",
 	"ra.cdh_clicked", "ra.dh_clicked", "ra.remote_active", "ra.remote_clicked",
 	"ra.pager_active", "ra.pager_clicked", "ra.pager.paged",
-	"ra.input_handler_active", "ra.input_handler_clicked", "ra.input.active", Tag.DEBUG,
+	"ra.input_handler_active", "ra.input_handler_clicked", "ra.input.active", "ra.wires.ac_user", "ra.wires.ac_user.now", Tag.DEBUG,
 )
 
 /**
@@ -113,6 +114,8 @@ internal fun DataPack.registerUninstallConfirm() {
 		schedules { clear(UsageMeter.pulseOff) }
 		// The machine clock (Tesla Coil, Spout, Water Wheel), scheduled only while one of them is loaded.
 		schedules { clear(MachineClock.run) }
+		// The Air Tank's clock, started at load.
+		schedules { clear(AirTank.second) }
 		// The Displays clock (hologram contents and spin, display repair), likewise.
 		schedules { clear(DisplayPoll.run) }
 

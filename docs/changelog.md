@@ -185,6 +185,15 @@ This page mirrors key datapack milestones from the main project changelog.
   which) or remove it and get the lens back. Crafted from four tinted glass, two diamonds, two gold
   ingots and a netherite ingot; unlocked by picking up a netherite ingot. A helmet that already
   carries data or a description of its own (another pack's item, the Goggles) is refused.
+- **Displays** (new module, `ra_displays`). Blocks that show something with display entities;
+  `/function ra_displays:items/give_all` gives them, and the settings have a Displays page to turn
+  each one off.
+- **Gauge Bar** (Displays). A bar on its front face, filled to the redstone level feeding it, 0 to
+  15, from any side; a repeater or comparator pointing in fills it. It faces the way it was placed,
+  up and down included. Shift+right-click with the Wrench changes the colour (twelve) or turns the
+  bar vertical; the Goggles show the level. The fill is only redrawn when the level changes, and
+  slides to the new length. Crafted from three glass panes, two redstone, a comparator and three
+  polished blackstone.
 
 ### Changed
 

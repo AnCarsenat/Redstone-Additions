@@ -25,7 +25,7 @@ object DisplaysModule : GameplayModule {
 	override val title = "Displays"
 
 	/** In registration order, which is also the placement-handler and tick order. Not `blocks`: see the gotcha. */
-	private val members: List<DisplayBlock> = listOf()
+	private val members: List<DisplayBlock> = listOf(GaugeBar)
 
 	override fun Ra.register() {
 		for (m in members) with(m) { registerBlock() }

@@ -114,4 +114,5 @@ internal val interactiveTree = listOf(
 
 internal val displaysTree = listOf(
 	category("ra_displays", Items.GLOW_ITEM_FRAME, "Redstone Displays", "Show signals and items in the world.", "get_display_item", Items.GLASS_PANE),
+	egg("ra_displays", "gauge_bar", "Gauge Bar", Items.POLISHED_BLACKSTONE, TRUE),
 )

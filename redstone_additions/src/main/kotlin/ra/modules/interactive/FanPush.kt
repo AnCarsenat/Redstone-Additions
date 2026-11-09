@@ -13,21 +13,25 @@ import ra.core.macroCall
 import ra.core.raw
 
 /**
- * What a powered [Fan] does, every other tick: the box in front of it, then a push for each thing
- * in it.
+ * What a powered [Fan] does, every tick: the box in front of it, then a push for each thing in it.
  *
  * MOBS AND ITEMS get their `Motion` along the Fan's axis raised to the Fan's speed (lowered, for a
  * Fan facing a negative axis), never cut: something already moving faster that way keeps its speed,
  * and the other two axes are left alone, so a pushed mob still falls and still walks sideways.
  *
- * PLAYERS cannot have `Motion` written, and 26.3 has no command that gives a player velocity (the
- * `apply_impulse` enchantment effect only runs from an enchanted item's own events). So:
- *  - along the ground or down, a relative `tp` by one step (0.1 × strength blocks every other
- *    tick, the same speed the mobs get). A relative teleport keeps the player's own velocity, so
- *    walking, jumping and falling carry on through it. Each step first checks the block the
+ * PLAYERS cannot have `Motion` written, and 26.3 has no command that gives a player velocity. The
+ * routes that do move a player for real all need something the pack cannot fire on demand: the
+ * `apply_impulse` and `explode` enchantment effects run only from an enchanted item the player
+ * wears or holds (or a projectile fired from one, on a hit), which would mean putting an item into
+ * the player's equipment; a wind charge is a single burst that also flips levers and doors;
+ * `/damage` knockback hurts and has a fixed size; geysers only push up. So:
+ *  - along the ground or down, a relative `tp` by one small step every tick (0.05 × strength
+ *    blocks, the speed the mobs get): 20 steps a second instead of 10 twice the size, which is
+ *    what makes it look smooth. A relative teleport keeps the player's own velocity, so walking,
+ *    jumping and falling carry on through it. Each step first checks the block the
  *    player's front edge would enter, at the feet and the head, against `#ra_lib:ray_passable`
  *    (air, water, plants, rails, redstone...): a Fan never pushes anyone into a wall.
- *  - up, Levitation of the Fan's strength, refreshed every other tick, and taken away within three
+ *  - up, Levitation of the Fan's strength, refreshed every tick, and taken away within three
  *    ticks of leaving the column ([liftEnd]) -- a step up would be undone by gravity in between.
  * Spectators and creative players who are flying are left alone.
  */
@@ -72,7 +76,7 @@ internal object FanPush {
 				"qx:${q[0]},qy:${q[1]},qz:${q[2]},px:${p[0]},py:${p[1]},pz:${p[2]},ps:0,dx:0,dy:0,dz:0,cx:0,cy:0.5,cz:0,amp:0}")
 			raw("execute store result storage $STORE.e$a int 1 run scoreboard players get #fan.r1 $T")
 			if (sign < 0) raw("execute store result storage $STORE.o$a int 1 run scoreboard players get #fan.rn $T")
-			raw("execute store result storage $STORE.ps double 0.001 run scoreboard players get #fan.step $T")
+			raw("execute store result storage $STORE.ps double 0.001 run scoreboard players get #fan.puff $T")
 			raw("execute store result storage $STORE.amp int 1 run scoreboard players get #fan.amp $T")
 			if (sign < 0) for (s in listOf("#fan.v", "#fan.step", "#fan.reach")) raw("scoreboard players operation $s $T *= #fan.neg $T")
 			raw("execute store result storage $STORE.d$a double 0.001 run scoreboard players get #fan.step $T")
@@ -116,13 +120,14 @@ internal object FanPush {
 		raw("scoreboard players operation #fan.rn $T = #prop $T")
 		raw("scoreboard players operation #fan.rn $T *= #fan.neg $T")
 		readCappedProperty("strength", default = Fan.DEFAULT_STRENGTH, min = 1, adminMax = Fan.ADMIN_MAX_STRENGTH)
-		// Thousandths of a block: v per tick for Motion, a step every other tick for players,
-		// the step plus a player's half-width for the wall check.
+		// Thousandths of a block: v per tick, for Motion and as the players' step; the step plus a
+		// player's half-width for the wall check; the puff's particle speed, twice v.
 		raw("scoreboard players set #fan.k $T 50")
 		raw("scoreboard players operation #fan.v $T = #prop $T")
 		raw("scoreboard players operation #fan.v $T *= #fan.k $T")
 		raw("scoreboard players operation #fan.step $T = #fan.v $T")
-		raw("scoreboard players operation #fan.step $T += #fan.v $T")
+		raw("scoreboard players operation #fan.puff $T = #fan.v $T")
+		raw("scoreboard players operation #fan.puff $T += #fan.v $T")
 		raw("scoreboard players operation #fan.reach $T = #fan.step $T")
 		raw("scoreboard players add #fan.reach $T 350")
 		raw("scoreboard players operation #fan.amp $T = #prop $T")
@@ -137,7 +142,8 @@ internal object FanPush {
 		val extent = "dx=\$(ex),dy=\$(ey),dz=\$(ez)"
 		raw("\$execute $box as @e[type=!minecraft:player,type=!#${Ns.INTERACTIVE.id}:${Fan.UNMOVED},$extent] run ${macroCall(pushMotion)}")
 		raw("\$execute $box as @a[gamemode=!spectator,$extent] at @s run ${macroCall(pushPlayer)} with storage $STORE")
-		raw("\$particle minecraft:cloud ~\$(qx) ~\$(qy) ~\$(qz) \$(px) \$(py) \$(pz) \$(ps) 0 normal ${particleViewersSel(32)}")
+		// The puff every other tick, as before the push went every tick.
+		raw("\$execute if score ${Fan.PHASE} $T matches 0 run particle minecraft:cloud ~\$(qx) ~\$(qy) ~\$(qz) \$(px) \$(py) \$(pz) \$(ps) 0 normal ${particleViewersSel(32)}")
 	}
 
 	/** Raise (or lower) Motion[i] to the Fan's speed. As the entity. */

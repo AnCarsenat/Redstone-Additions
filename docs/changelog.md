@@ -220,6 +220,10 @@ This page mirrors key datapack milestones from the main project changelog.
   Drain pours a potion out as a cloud in the potion's colour, but the colour was read after the
   potion had been taken from the network, so the pour that emptied it could come out in the
   default water-bottle blue. The colour is now read first.
+- **A Fan pushes players smoothly.** A player was moved by one step every other tick, which
+  looked like a series of jumps. The step is now half the size and taken every tick: the same
+  speed, and still never into a wall.
+
 - **The Item Crate shows its box skin again.** Its head only named the skin's owner
   (`profile:"BoxMan01234"`), which the game has to look up, and the crate showed a broken head
   when it could not. The skin itself is now written into the crate. Crates made before keep the old

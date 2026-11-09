@@ -84,11 +84,6 @@ object DrainPour : PackPart {
 			// Internal: put one source block of the medium in front, if it has room for one.
 			// Macro: {medium}. Context: as the drain marker, at the block in front of it.
 
-			// Water boils away where a bucket's would: the Nether, or any dimension whose
-			// environment says so. Commands ignore that rule, so it is checked here. Nothing is
-			// taken -- the drain refuses rather than pouring the network away a block a second.
-			raw("\$execute if data storage ra:wires media.\$(medium){block:\"minecraft:water\"} if predicate {condition:\"minecraft:environment_attribute_check\",attribute:\"minecraft:gameplay/water_evaporates\",value:true} run return run function ${DrainPour.pourSizzle.asId()}")
-
 			// A whole block of THIS medium, not of the network's total: take caps at what the
 			// network holds of the medium, so 3000 mL of water beside 3000 mL of lava is not a
 			// water block.
@@ -127,6 +122,11 @@ object DrainPour : PackPart {
 			raw("execute if score #pr.got ra.wires.tmp matches 1..${VOLUME - 1} run function ${DrainPour.pourRefund.asId()} with storage ra:wires pour")
 			raw("execute if score #pr.got ra.wires.tmp matches ..${VOLUME - 1} run return run data modify entity @s data.status.drain_state set value \"not_enough\"")
 
+			// Water boils away where a bucket's would: the Nether, or any dimension whose
+			// environment says so. Commands ignore that rule, so it is applied here, the vanilla
+			// way: the water is spent (already taken above) and nothing is placed.
+			raw("\$execute if data storage ra:wires media.\$(medium){block:\"minecraft:water\"} if predicate {condition:\"minecraft:environment_attribute_check\",attribute:\"minecraft:gameplay/water_evaporates\",value:true} run return run function ${DrainPour.pourSizzle.asId()}")
+
 			// `destroy` drops what it replaces (grass, a snow layer), as a bucket does.
 			raw("\$execute store success score #pr.set ra.wires.tmp run setblock ~ ~ ~ \$(block) destroy")
 			raw("execute if score #pr.set ra.wires.tmp matches 0 run function ${DrainPour.pourRefund.asId()} with storage ra:wires pour")
@@ -144,7 +144,8 @@ object DrainPour : PackPart {
 		}
 
 		pack.define(DrainPour.pourSizzle) {
-			// Internal: water poured where it evaporates. Context: at the block in front.
+			// Internal: water poured where it evaporates -- it is gone, as from a bucket.
+			// Context: at the block in front.
 
 			raw("data modify entity @s data.status.drain_state set value \"evaporates\"")
 			raw("particle minecraft:large_smoke ~ ~0.3 ~ 0.3 0.2 0.3 0.01 6 normal ${particleViewersSel()}")

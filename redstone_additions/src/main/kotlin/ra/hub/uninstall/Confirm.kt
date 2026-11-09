@@ -19,6 +19,7 @@ import ra.core.define
 import ra.core.raw
 import ra.hub.tick
 import ra.modules.chunkloader.ChunkLoader
+import ra.modules.displays.DisplayPoll
 import ra.modules.sensors.SensorPoll
 import ra.modules.wires.blocks.usage_meter.UsageMeter
 import ra.modules.wires.diving.AirTank
@@ -115,6 +116,8 @@ internal fun DataPack.registerUninstallConfirm() {
 		schedules { clear(MachineClock.run) }
 		// The Air Tank's clock, started at load.
 		schedules { clear(AirTank.second) }
+		// The Displays clock (hologram contents and spin, display repair), likewise.
+		schedules { clear(DisplayPoll.run) }
 
 		PLAYER_TAGS.forEach { t -> tag(allPlayers()) { remove(t) } }
 		untagMarkers("ra.dh_target")

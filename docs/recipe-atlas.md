@@ -1,6 +1,6 @@
 # Recipe Atlas
 
-Every recipe in the pack, in one place: 97 of them.
+Every recipe in the pack, in one place: 102 of them.
 
 !!! tip "Finding one"
     Use the search box with the item's name — every recipe below is indexed by
@@ -35,6 +35,7 @@ what the pack actually contains rather than what someone remembered to add.
 | [Copper Multiblock Base](#multiblocks) | [Multiblocks](multiblocks.md) | Crafting table |
 | [Copper Pipe](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
 | [Counter](#logic-gates) | [Logic Gates](logic-gates.md) | Crafting table |
+| [Crafter Controller](#automation) | [Automation](automation.md) | Crafting table |
 | [Data Handler](#tools) | [Tools](tools.md) | Crafting table |
 | [Delayer](#logic-gates) | [Logic Gates](logic-gates.md) | Crafting table |
 | [Diamond Multiblock Base](#multiblocks) | [Multiblocks](multiblocks.md) | Crafting table |
@@ -58,6 +59,7 @@ what the pack actually contains rather than what someone remembered to add.
 | [Gas Pump](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
 | [Gas Tank](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
 | [Gas Valve](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
+| [Gauge Bar](#displays) | [Displays](displays.md) | Crafting table |
 | [Generator Casing](#infinite-generators) | [Infinite Generators](infinite-generators.md) | Crafting table |
 | [Goggles](#tools) | [Tools](tools.md) | Crafting table |
 | [Goggles Lens](#tools) | [Tools](tools.md) | Crafting table |
@@ -71,6 +73,7 @@ what the pack actually contains rather than what someone remembered to add.
 | [Infinite Water Cauldron](#interactive-machines) | [Interactive Machines](interactive-machines.md) | Crafting table |
 | [Iron Jetpack Kit](#jetpacks) | [Jetpacks](jetpacks.md) | Crafting table |
 | [Iron Multiblock Base](#multiblocks) | [Multiblocks](multiblocks.md) | Crafting table |
+| [Item Hologram](#displays) | [Displays](displays.md) | Crafting table |
 | [Item Mover](#interactive-machines) | [Interactive Machines](interactive-machines.md) | Crafting table |
 | [Item Pipe](#interactive-machines) | [Interactive Machines](interactive-machines.md) | Crafting table |
 | [Lift Kit](#jetpacks) | [Jetpacks](jetpacks.md) | Crafting table |
@@ -89,6 +92,7 @@ what the pack actually contains rather than what someone remembered to add.
 | [Netherite Multiblock Base](#multiblocks) | [Multiblocks](multiblocks.md) | Crafting table |
 | [Network Gauge](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
 | [Pager](#wireless-redstone) | [Wireless Redstone](wireless-redstone.md) | Crafting table |
+| [Pattern](#automation) | [Automation](automation.md) | Crafting table |
 | [Player Detector](#sensors) | [Sensors](sensors.md) | Crafting table |
 | [Poppy Core](#not-crafted-won-on-an-enchanting-table) | [Infinite Generators](infinite-generators.md) | Enchanting table |
 | [Poppy Generator](#infinite-generators) | [Infinite Generators](infinite-generators.md) | Crafting table, shapeless |
@@ -105,6 +109,7 @@ what the pack actually contains rather than what someone remembered to add.
 | [Tag Remover](#sensors) | [Sensors](sensors.md) | Crafting table |
 | [Teleport Anchor](#ender-links) | [Ender Links](ender-links.md) | Crafting table |
 | [Tesla Coil](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
+| [Text Screen](#displays) | [Displays](displays.md) | Crafting table |
 | [Thruster Kit](#jetpacks) | [Jetpacks](jetpacks.md) | Crafting table |
 | [Trash Can](#interactive-machines) | [Interactive Machines](interactive-machines.md) | Crafting table |
 | [Unboxer](#storage) | [Storage](storage.md) | Crafting table |
@@ -117,6 +122,15 @@ what the pack actually contains rather than what someone remembered to add.
 | [Wireless Receiver](#wireless-redstone) | [Wireless Redstone](wireless-redstone.md) | Crafting table |
 | [Wrench](#tools) | [Tools](tools.md) | Crafting table |
 
+## Automation
+
+Module page: [Automation](automation.md) — give everything: `/function ra_automation:items/give_all`
+
+| Item | Recipe | Station | Namespace id |
+| ---- | ------ | ------- | ------------ |
+| **Crafter Controller** | ![Crafter Controller recipe](images/recipes/ra_automation/crafter_controller.png){ width="220" } | Crafting table | `ra_automation:crafter_controller` |
+| **Pattern** | ![Pattern recipe](images/recipes/ra_automation/pattern.png){ width="220" } | Crafting table | `ra_automation:pattern` |
+
 ## Chunk Loader
 
 Module page: [Chunk Loader](chunk-loader.md) — give everything: `/function ra_chunk_loader:items/give_all`
@@ -124,6 +138,16 @@ Module page: [Chunk Loader](chunk-loader.md) — give everything: `/function ra_
 | Item | Recipe | Station | Namespace id |
 | ---- | ------ | ------- | ------------ |
 | **Chunk Loader** | ![Chunk Loader recipe](images/recipes/ra_chunk_loader/chunk_loader.png){ width="220" } | Crafting table | `ra_chunk_loader:chunk_loader` |
+
+## Displays
+
+Module page: [Displays](displays.md) — give everything: `/function ra_displays:items/give_all`
+
+| Item | Recipe | Station | Namespace id |
+| ---- | ------ | ------- | ------------ |
+| **Gauge Bar** | ![Gauge Bar recipe](images/recipes/ra_displays/gauge_bar.png){ width="220" } | Crafting table | `ra_displays:gauge_bar` |
+| **Item Hologram** | ![Item Hologram recipe](images/recipes/ra_displays/item_hologram.png){ width="220" } | Crafting table | `ra_displays:item_hologram` |
+| **Text Screen** | ![Text Screen recipe](images/recipes/ra_displays/text_screen.png){ width="220" } | Crafting table | `ra_displays:text_screen` |
 
 ## Enchant Crafting
 

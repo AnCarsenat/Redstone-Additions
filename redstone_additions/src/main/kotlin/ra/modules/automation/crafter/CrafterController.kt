@@ -44,8 +44,8 @@ import ra.modules.automation.pattern.Pattern
  *
  * A target block. Placed against a crafter (above, below or beside it; the first found of up,
  * north, south, east, west, down is the one it runs). Right-click it with a recorded Pattern to
- * load it; the Pattern it held comes back to you. A plain wrench click gives the Pattern back,
- * Shift+RMB with the wrench switches it off and on (`enabled`). Breaking it drops the Pattern.
+ * load it (one Pattern from a held stack); the Pattern it held comes back to you. A plain
+ * wrench click gives the Pattern back, Shift+RMB with the wrench switches it off and on (`enabled`). Breaking it drops the Pattern.
  *
  * FIRING. A crafter crafts on a rising redstone edge. The controller powers itself for
  * [CrafterControllerRun.PULSE_TICKS] ticks (`target[power=15]`, a state change of the same
@@ -159,11 +159,13 @@ object CrafterController {
 		raw("execute if score #cc.n $T matches ..0 run data remove storage $CC new")
 		raw("""execute if score #cc.n $T matches ..0 run return run tellraw $USER [$RA_CHAT_PREFIX,{text:"This Pattern is blank: sneak + right-click a crafter to record one.",color:"red"}]""")
 
-		// The Pattern it held goes back to the player, at their feet with no pickup delay.
+		// The Pattern it held goes back to the player, at their feet with no pickup delay, theirs only.
 		raw("execute if data entity @s data.data.item at $USER run function ${dropPattern.asId()}")
 		raw("data modify entity @e[type=minecraft:item,tag=$OUT,limit=1] PickupDelay set value 0s")
+		raw("data modify entity @e[type=minecraft:item,tag=$OUT,limit=1] Owner set from entity $USER UUID")
 		raw(untagOut)
-		raw("item replace entity $USER weapon.mainhand with minecraft:air")
+		// One Pattern of a held stack: the rest stays in the hand.
+		raw("item modify entity $USER weapon.mainhand ${Pattern.TAKE_ONE}")
 
 		raw("data modify entity @s data.data.item set from storage $CC new")
 		raw("data modify entity @s data.data.item.count set value 1")

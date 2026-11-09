@@ -26,6 +26,7 @@ No permissions needed. Click a value to change it.
 | Debug messages | off | Extra diagnostic messages in chat |
 | Show filter previews | on | The item an Item Pipe filters for, floating above its Goggles label |
 | Jetpack fuel gauge | on | The [fuel bar](jetpacks.md#fuel-gauge) on the action bar while you fly an Iron jetpack |
+| Air tank gauge | on | The [air bar](transport-networks.md#diving-air-tank-air-charger-heavy-boots) on the action bar while you dive with an Air Tank or stand on an Air Charger |
 
 These only change what **you** see and hear — with one exception. Goggles labels are shared:
 everyone near a block sees the same label. So *Show filter previews* decides whether **you** ask

@@ -95,6 +95,20 @@
   flows, faster with three or more flowing blocks, and stops where it is when the water does.
   The Goggles show what it is doing, the flowing water it finds, what it makes and the grid's EU.
   It holds 1000 EU. Crafted from four spruce slabs, four sticks, a copper block and redstone.
+- **Air Tank, Air Charger and Heavy Boots** (Transport Networks). The Air Tank is a chestplate
+  (iron armour) holding 15 minutes of air: worn with your head under water, it breathes for you
+  and counts down a second of air per second, and keeps its air out of the water or while you have
+  Water Breathing or Conduit Power. Its tooltip shows the air left, and while you dive the action
+  bar shows a gauge (turn it off with *Air tank gauge* in Your Preferences). The **Air Charger**, a
+  gas network block, fills the tank of whoever stands on it from the network's **oxygen**: a minute
+  of air for 600 mL each second, all or nothing, so an empty tank is full in 15 seconds. **Heavy
+  Boots** (iron armour) make you sink in water and walk on the bottom at your usual pace; on land
+  they are ordinary boots. Neither item runs any command while worn: the tank breathes through a
+  hidden attribute, the boots through their own *Heavy* enchantment. Crafted from an iron
+  chestplate, iron, copper and two glass bottles; iron boots, iron and two heavy weighted pressure
+  plates; iron, copper, a heavy weighted pressure plate, a glass bottle and redstone.
+- **Oxygen in survival** (Transport Networks). A Gas Pump beside an upward bubble column (soul
+  sand under water) draws oxygen from it, 500 mL a second, without using it up.
 
 - **Elevator** (Interactive Machines). Stand on it and jump to go up, or sneak to go down, to the
   next Elevator straight above or below in the same column, at most *range* blocks away (2 to 64,
@@ -171,15 +185,19 @@
   enchanting table. The Goggles show the chosen enchantment, what it is doing and the last price.
 - **Book Printer** (Enchant Crafting). Copies enchanted books. Throw an enchanted book on top: it
   is used up, and with a 2% chance a **Schematic** of it comes out (otherwise the book is simply
-  gone, a gamble like the enchanting table). Then throw the Schematic and plain books on top: twice
-  a second, one book becomes a copy of the enchanted book, for 1000 mL of liquid experience per
-  enchantment level of the copy (Sharpness V: 5000 mL), all at once, from a fluid network touching
-  the block. The Schematic is kept, so one lucky draw prints as many copies as you have books and
-  experience. Server settings `book_printer_chance` (0 to 100%) and `book_printer_xp` (0 to 100000
-  mL; 0 prints for free). The Schematic lists its enchantments in its lore and cannot be
-  crafted; an anvil or grindstone does not take it for a book. Looks like a fletching table; crafted
-  from two ink sacs, a piston, two books, a lectern and three obsidian. The Goggles show what it is
-  doing and the last price. New advancement *Lucky Draw* for the first Schematic.
+  gone, a gamble like the enchanting table). Right-click the printer with a Schematic to set it
+  as the target (one is taken from your hand; the one it held comes back to you), then throw plain
+  books on top: twice a second, one book becomes a copy of the enchanted book, for 1000 mL of
+  liquid experience per enchantment level of the copy (Sharpness V: 5000 mL), all at once, from a
+  fluid network touching the block. The Schematic stays in the printer, so one lucky draw prints as
+  many copies as you have books and experience; a plain Wrench click takes it back out, and
+  breaking the printer drops it. Server settings `book_printer_chance` (0 to 100%) and
+  `book_printer_xp` (0 to 100000 mL; 0 prints for free). The Schematic lists its enchantments in
+  its lore and cannot be crafted; an anvil or grindstone does not take it for a book. Looks like a
+  fletching table; crafted from two ink sacs, a piston, two books, a lectern and three obsidian.
+  The Goggles show what it is doing, the last price and the stored Schematic's enchantments; the
+  Data Handler shows whether a Schematic is set. New advancement *Lucky Draw* for the first
+  Schematic.
 - **Goggles Lens** (Tools). An expensive upgrade that gives any helmet the Goggles' view: hold it,
   wear a helmet (leather, copper, chainmail, iron, gold, diamond, netherite or a turtle shell) and
   right-click; the lens is used up and the helmet keeps its material, enchantments, trims and
@@ -223,17 +241,33 @@
   in the advancement tab.
 - **Pattern** (Automation). An item that remembers a 3×3 crafting grid: sneak + right-click a
   crafter to copy which item is in each of its nine slots (counts and item details are ignored),
-  sneak + right-click air to clear it. The lore shows the grid as item names. Crafted from three
-  paper and a redstone dust; unlocked by picking up a crafter.
+  sneak + right-click air to clear it. The lore shows the grid as item names. Patterns stack to
+  64 (identical ones together, blank with blank); recording or clearing from a stack rewrites one
+  Pattern and hands it to you, the rest of the stack stays as it was. Three paper and a redstone
+  dust make three; unlocked by picking up a crafter.
 - **Crafter Controller** (Automation). A target block placed against a vanilla crafter. Right-click
-  it with a recorded Pattern to load it (the Pattern it held comes back to you). Twice a second it
-  compares the crafter's slots with the Pattern; when every slot holds the Pattern's item and every
-  slot the Pattern leaves empty is empty, it gives the crafter a short redstone pulse and the
-  crafter crafts once. It then waits until the crafter's contents change, so a crafter that cannot
-  craft is not fired again and again. Shift+RMB with the Wrench switches it off and on, a plain
-  wrench click takes the Pattern back out, and breaking it drops the Pattern. The Goggles show its
-  state and how many times it has fired. Crafted from five iron ingots, a redstone dust, two target
-  blocks and a crafter.
+  it with a recorded Pattern to load it (it takes one from a stack; the Pattern it held comes back
+  to you). Twice a second it compares the crafter's slots with the Pattern; when every slot holds
+  the Pattern's item and every slot the Pattern leaves empty is empty, it gives the crafter a
+  short redstone pulse and the crafter crafts once. It then waits until the crafter's contents
+  change, so a crafter that cannot craft is not fired again and again. Shift+RMB with the Wrench
+  switches it off and on, a plain wrench click takes the Pattern back out, and breaking it drops
+  the Pattern. The Goggles show its state and how many times it has fired. Crafted from five iron
+  ingots, a redstone dust, two target blocks and a crafter.
+- **Security**, a new module (`ra_security`): blocks that open only for the right code. Its
+  settings page lists its blocks and the Keypad's defaults, and it has its own branch in the
+  advancement tab.
+- **Keypad** (Security). A target block locked by a Pattern. Its owner (whoever placed it)
+  sneak + right-clicks it with a recorded Pattern to set the code; anyone then right-clicks it with
+  a Pattern to enter one, and the Pattern stays in their hand. The right one makes the Keypad give a
+  redstone pulse (`pulse`, 20 ticks by default) and chime; a wrong one buzzes, and after three
+  wrong tries in a row it refuses every try for 30 seconds (`max_attempts` and `lockout`, which only
+  admins can change). Only the owner or an admin can change the code once it is set; a blank
+  Pattern clears it, and so does a plain Wrench click. The code is never shown: the Goggles say only
+  whether one is set, who owns the Keypad and its state, and the Data Handler and Clipboard never
+  see it. Shift+RMB with the Wrench steps the pulse through 2, 10, 20 and 40 ticks. Nothing runs
+  while nobody uses it. Crafted from three stone buttons, four iron ingots, a target block and a
+  redstone dust.
 
 ### Changed
 

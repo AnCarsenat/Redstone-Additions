@@ -25,5 +25,6 @@ object SettingsPages {
 		GogglesPage,
 		DisplaysPage,
 		AutomationPage,
+		SecurityPage,
 	)
 }

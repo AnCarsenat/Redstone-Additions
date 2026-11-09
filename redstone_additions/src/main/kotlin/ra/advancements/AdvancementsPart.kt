@@ -16,6 +16,7 @@ object AdvancementsPart : PackPart {
 		coreTree, exampleTree, gatesTree, sensorsTree, wirelessTree, interactiveTree,
 		infiniteTree, jetpacksTree, wiresTree, enchantingTree, displaysTree,
 		automationTree,
+		securityTree,
 	)
 
 	override fun Ra.register() {

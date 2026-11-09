@@ -36,6 +36,9 @@ and a tesla coil.
 | Tesla Coil | ![Tesla Coil recipe](images/recipes/ra_wires/tesla_coil.png){ width="220" } |
 | Spout | ![Spout recipe](images/recipes/ra_wires/spout.png){ width="220" } |
 | Water Wheel | ![Water Wheel recipe](images/recipes/ra_wires/water_wheel.png){ width="220" } |
+| Air Charger | ![Air Charger recipe](images/recipes/ra_wires/air_charger.png){ width="220" } |
+| Air Tank (chestplate) | ![Air Tank recipe](images/recipes/ra_wires/air_tank.png){ width="220" } |
+| Heavy Boots | ![Heavy Boots recipe](images/recipes/ra_wires/heavy_boots.png){ width="220" } |
 
 Operators: the **Wires Bundle** (`/function ra:items/bundles/give_wires_bundle`) has everything;
 `/function ra_wires:items/give_creative` gives the two creative sources.
@@ -53,7 +56,7 @@ capacity:
 
 | Block | Holds |
 |---|---|
-| Pipe, Spout | 1000 mL |
+| Pipe, Spout, Air Charger | 1000 mL |
 | Pump, Drain | 5000 mL |
 | Liquid Tank, Gas Tank | 100000 mL (20 buckets) |
 | Wire, EU Switch, EU Breaker, Industrial Light, Tesla Coil | 0 EU |
@@ -80,7 +83,7 @@ Different families never mix, so an electric wire and a pipe can run side by sid
 | **Fluid Drain**, powered by redstone | Pours out instead, from its **front** (see [Pouring out](#pouring-out)), or on a gas network lets the gas out with its effect ([Venting gases](#venting-gases)). Needs nothing in the world: air in front of it is enough |
 | **Fluid Drain**, facing up or down | Also a **loading point**: takes filled buckets/bottles from you (sneak while holding one), from a container on top of it, or from items dropped on it, and gives the empties back; with none of those, a sneaking player's **experience**. With nothing to load, it takes in a source block next to it like any drain |
 | **Spout** | Fills empty buckets and bottles under it from the network, one a second ([Spout](#spout)) |
-| **Gas Pump** | Like the Liquid Pump, for gases: draws **Smoke** from a lit campfire or soul campfire next to it, 500 mL a second. The campfire keeps burning and is never used up. Steam comes from a Boiler |
+| **Gas Pump** | Like the Liquid Pump, for gases: draws **Smoke** from a lit campfire or soul campfire next to it, and **Oxygen** from an upward bubble column (soul sand under water) next to it, 500 mL a second. Neither is ever used up. Steam comes from a Boiler |
 
 A drain points where you look when you place it, so looking down to place one makes it face up.
 That is fine: an upright drain still drains the pool beside it.
@@ -132,7 +135,8 @@ For an underwater air supply, stand a drain on the floor of the pool facing up, 
 network, and give it redstone: anyone swimming in the column above it can breathe.
 
 At the default rate an action comes once a second, so the effect lasts as long as the gas does.
-Oxygen and Toxic Gas have no source in survival yet; the Creative Fluid Source makes both. The
+Oxygen comes from a Gas Pump beside an upward bubble column; Toxic Gas has no source in
+survival yet. The Creative Fluid Source makes both. The
 mist follows each player's particle setting.
 
 A drain's **rate** is in millilitres per second, for taking in and pouring out alike: 5000 (the
@@ -198,6 +202,30 @@ container under it.
 - The Goggles show what it is doing: `filling`, `idle` (nothing under it), `nothing_to_fill`
   (nothing under it this network can fill), `not_enough` (less than a whole container of that
   fluid), `network_empty`, `locked`, `no_network`.
+
+### Diving: Air Tank, Air Charger, Heavy Boots
+
+The **Air Tank** is a chestplate (an iron chestplate's armour) holding **15 minutes** of air.
+Worn with your head under water, it breathes for you: your own air bar stays full while the tank
+counts down, one second of air per second under water. Out of the water it spends nothing, and
+with Water Breathing or Conduit Power it keeps its air. Its tooltip shows what is left
+(`Air: 7m 30s / 15m`); an empty one is just a chestplate.
+
+While you dive, the actionbar shows the tank: `Air ▮▮▮▮▮▯▯▯▯▯ 52% · 7m 48s`, aqua, then
+yellow under a quarter and red under a tenth. Turn it off with **Air tank gauge** in your
+[settings](settings.md).
+
+The **Air Charger** fills it. Put it on a gas network carrying **Oxygen** (a Gas Pump beside an
+upward bubble column, or a Creative Fluid Source) and stand on it wearing the tank: each second
+it adds a minute of air for **600 mL** of oxygen (10 mL a second of air), so an empty tank is
+full in 15 seconds and takes 9000 mL. A step is all or nothing: a network holding less than a
+whole step gives none. Only oxygen fills a tank. The Goggles show `charging`, `full`, `idle`
+(nobody on it wearing a tank), `no_oxygen` or `no_network`.
+
+**Heavy Boots** (iron boots' armour) make you sink in water, about four times faster than
+without, and walk on the bottom at your usual pace; jumping still swims you up. On land they are
+ordinary boots. Their weight is the boots' own enchantment, **Heavy**, so it goes where the
+enchantment goes (an anvil or the Disenchanter can move it to other iron boots).
 
 ### Potions
 
@@ -428,12 +456,25 @@ you extend it.
   with a new epoch, and a meter seeing a different epoch counts from 0. A count reaching
   1000000000 is lowered by that much by the meter reading it, and the others add it back.
   Properties: `mode` (`consumed` / `produced`), `every` (1–100000000), `total` (read only).
-- **Machine clock** (`ra_wires:machine/*`): the Tesla Coil, the Spout and the Water Wheel act once a second, on a
+- **Machine clock** (`ra_wires:machine/*`): the Tesla Coil, the Spout, the Water Wheel and the Air Charger act once a second, on a
   clock scheduled every 20 ticks only while a marker tagged `ra.wires.clocked` is loaded; their only
   per-tick work is the break check. Tesla Coil properties: `radius` (1–16, admin 32), `damage`
   (1–40) and `eu_per_zap` (1–100000), both admin only. Status `data.status.coil`, `last_hits`.
   Targets are the entity type tag `#ra_wires:tesla_targets`; another pack adds a mob to it to make
-  it a target. Spout status `data.status.spout_state`.
+  it a target. Spout status `data.status.spout_state`; Air Charger status
+  `data.status.charger_state`.
+- **Diving** (`ra_wires:diving/*`): an Air Tank is an iron chestplate with
+  `custom_data:{ra:{air_tank:1b,air:<seconds>}}`, 0 to 900. A charged tank carries a hidden
+  `oxygen_bonus` modifier at the attribute's maximum (1024, id `ra_wires:air_tank`), so the game
+  spends the wearer's own air about 1000 times slower; no effect is given. `ra_wires:diving/second`
+  is a 20-tick schedule started at `ra_wires:load` that runs `ra_wires:diving/tank` for every
+  player wearing a tank, which does nothing unless their eyes are in water. At each spent second
+  `ra_wires:diving/write` rewrites the tank (custom data, lore, and the modifiers, without the
+  breath once it reaches 0). The Air Charger serves the nearest player standing on it, one per
+  second. The Heavy Boots carry `water_movement_efficiency` +1 and the enchantment
+  `ra_wires:heavy`, whose `location_changed` effect adds `gravity` x4
+  (`ra_wires:heavy_boots_gravity`) while the wearer is in water; the game removes it when they
+  leave. Neither item runs a function.
 - **Water Wheel** (`ra_wires:blocks/water_wheel/*`): property `eu_per_block` (1–1000, admin
   only); status `data.status.wheel`, `water`, `output` (EU/t), `accepted`. The marker's facing
   (placed with dir 3) is the axle: north or south turns the wheel in the X-Y plane, anything else
@@ -461,7 +502,7 @@ you extend it.
 - **Media registry** (`ra_wires:media/init`): display name, state, colour, particle, optional world
   block and bucket; pumpable blocks are listed as `source_blocks`, each with its medium's
   `state` (a pump or drain only considers sources of the state it carries) and `keep:1b` on a
-  source that is never used up (the campfires). Preset potions get their effects
+  source that is never used up (the campfires, the upward bubble column). Preset potions get their effects
   from `ra_wires:media/potions`; a potion with `custom_effects` is read from the item.
 - **Bridges** (Valves, Filters, Breakers, the Boiler, the Ender Power Vault) belong to neither
   network they touch, which is why a valve always splits a run in two. A bridge picks

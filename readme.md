@@ -5,7 +5,7 @@
 <h1 align="center">Redstone Additions</h1>
 
 <p align="center">
-  <strong>85 custom blocks. 9 tools. 99 recipes. 2 jetpacks and 3 upgrade kits. Vanilla datapack for Minecraft 26.3.</strong>
+  <strong>87 custom blocks. 9 tools. 103 recipes. 2 jetpacks and 3 upgrade kits. Vanilla datapack for Minecraft 26.3.</strong>
 </p>
 
 <p align="center">
@@ -16,9 +16,9 @@
 <p align="center">
   <img src="https://img.shields.io/badge/Minecraft-26.3-2EA44F" alt="Minecraft 26.3">
   <img src="https://img.shields.io/badge/Version-v6.0.3-blue" alt="Version v6.0.3">
-  <img src="https://img.shields.io/badge/Blocks-85-red" alt="85 blocks">
+  <img src="https://img.shields.io/badge/Blocks-87-red" alt="87 blocks">
   <img src="https://img.shields.io/badge/Tools-9-lightgrey" alt="9 tools">
-  <img src="https://img.shields.io/badge/Recipes-99-8A2BE2" alt="99 recipes">
+  <img src="https://img.shields.io/badge/Recipes-103-8A2BE2" alt="103 recipes">
 </p>
 
 <p align="center">
@@ -84,6 +84,7 @@ listed A to Z and grouped by module.
 | Ender Links | <img src="https://github.com/AnCarsenat/Redstone-Additions/raw/main/docs/images/banners/media-missing.png" alt="No screenshot yet" width="320"> |
 | Displays | <img src="https://github.com/AnCarsenat/Redstone-Additions/raw/main/docs/images/banners/media-missing.png" alt="No screenshot yet" width="320"> |
 | Automation | <img src="https://github.com/AnCarsenat/Redstone-Additions/raw/main/docs/images/banners/media-missing.png" alt="No screenshot yet" width="320"> |
+| Security | <img src="https://github.com/AnCarsenat/Redstone-Additions/raw/main/docs/images/banners/media-missing.png" alt="No screenshot yet" width="320"> |
 | Tools | <img src="https://github.com/AnCarsenat/Redstone-Additions/raw/main/docs/images/banners/media-missing.png" alt="No screenshot yet" width="320"> |
 
 ---
@@ -138,7 +139,7 @@ listed A to Z and grouped by module.
 - Analog Emitter — sends its input level (0-15) on a channel
 - Analog Receiver — outputs its channel's level on target blocks
 
-### Transport Networks (26)
+### Transport Networks (27)
 
 Fluids, in millilitres:
 
@@ -153,6 +154,7 @@ Fluids, in millilitres:
 - Gas Valve
 - Boiler — water plus heat to steam
 - Spout — fills buckets and bottles under it from the network
+- Air Charger — fills the Air Tank of whoever stands on it, from the network's oxygen
 
 Electricity, in EU:
 
@@ -172,6 +174,11 @@ Reading a network with redstone:
 
 - Network Gauge — redstone 0-15 from how full the network behind it is
 - Usage Meter — a pulse every N mL or EU used or made, and a running total
+
+Diving gear (worn, not placed):
+
+- Air Tank — a chestplate holding 15 minutes of air under water
+- Heavy Boots — sink and walk on the bottom at your usual pace
 
 Creative, for building and testing:
 
@@ -210,6 +217,9 @@ netherrack or poppies on an enchanting table.
 
 ### Automation (1)
 - Crafter Controller — fires the crafter next to it once it holds what its Pattern says
+
+### Security (1)
+- Keypad — gives a redstone pulse when shown the Pattern it was locked with
 
 ### Multiblock Bases (5)
 - Copper Multiblock Base
@@ -332,6 +342,7 @@ Starter command:
 | Ender Links | https://ancarsenat.github.io/Redstone-Additions/ender-links/ |
 | Displays | https://ancarsenat.github.io/Redstone-Additions/displays/ |
 | Automation | https://ancarsenat.github.io/Redstone-Additions/automation/ |
+| Security | https://ancarsenat.github.io/Redstone-Additions/security/ |
 | Item Reference | https://ancarsenat.github.io/Redstone-Additions/item-reference/ |
 | Recipe Atlas | https://ancarsenat.github.io/Redstone-Additions/recipe-atlas/ |
 | Changelog | https://ancarsenat.github.io/Redstone-Additions/changelog/ |
@@ -357,6 +368,7 @@ Starter command:
 | `/function ra_ender:items/give_all` | Ender vaults, Teleport Anchor, Anchor Terminal and Anchor Tablet |
 | `/function ra_displays:items/give_all` | Display blocks |
 | `/function ra_automation:items/give_all` | Crafter Controller and a Pattern |
+| `/function ra_security:items/give_all` | Keypad |
 | `/function ra:tools/wrench/give` | Wrench |
 | `/function ra:tools/data_handler/give` | Data Handler |
 | `/function ra:tools/creative_data_handler/give` | Creative Data Handler |

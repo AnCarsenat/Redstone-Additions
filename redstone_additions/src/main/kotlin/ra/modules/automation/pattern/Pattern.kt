@@ -42,12 +42,16 @@ import ra.modules.automation.pattern.PatternUse.registerPatternUse
  * [HELD]). Readers must treat the ids as player data: an edited item can hold anything, so a
  * value is checked (`ra_lib:safe/check`, format ID) before it is ever pasted into a command.
  *
- * Who reads it: the Crafter Controller (what to wait for), and later the Keypad (a Pattern as a
- * code: two patterns are equal when their `slots` lists are).
+ * Who reads it: the Crafter Controller (what to wait for), and the Keypad (`ra_security`, a
+ * Pattern as a code: two patterns are equal when their `slots` lists are).
  *
  * HOW IT IS SET. Sneak + right-click a vanilla crafter: its nine slots are copied in (see
  * [PatternUse]). Sneak + right-click anything else clears it. Right-click a block that takes
  * patterns (registered in [targets]) to hand it over.
+ *
+ * STACKING. Patterns stack to [MAX_STACK]. Recording or clearing acts on ONE Pattern: a held stack
+ * of two or more loses one and the rewritten Pattern is handed over separately (an item entity at
+ * the player, only they can pick it up). A target that keeps a Pattern takes one from the stack.
  */
 object Pattern {
 	private fun fn(path: String) = ref(Ns.AUTOMATION, "pattern/$path")
@@ -66,11 +70,21 @@ object Pattern {
 
 	/**
 	 * Custom blocks that accept a Pattern: right-clicking one of them with a Pattern runs `fn` as
-	 * its marker, at the block's centre, with the player tagged [USER]. The function takes the
-	 * Pattern from the player's main hand and must set `#pat.hit ra.temp` to 1. Register
+	 * its marker, at the block's centre, with the player tagged [USER]. The main hand may hold a
+	 * stack: a block that keeps the Pattern takes ONE ([TAKE_ONE]), a block that only reads it
+	 * leaves the stack alone. The function must set `#pat.hit ra.temp` to 1. Register
 	 * before the pack is complete; the ray is written after every part.
 	 */
 	val targets = mutableListOf<TagRoute>()
+
+	/**
+	 * Patterns stack: identical ones (same `slots`, hence the same lore) merge, blank with blank.
+	 * The endless `consumable` that detects the use works on a stack as on a single item.
+	 */
+	const val MAX_STACK = 64
+
+	/** An item modifier taking one item from a stack (an emptied slot becomes air): `item modify ... $TAKE_ONE`. */
+	const val TAKE_ONE = """{function:"minecraft:set_count",count:-1,add:true}"""
 
 	/** On the player whose Pattern is being used, for the duration of the use. */
 	const val USER = "ra.auto.pattern_user"
@@ -78,7 +92,7 @@ object Pattern {
 	val item = itemSpec("minecraft:paper") {
 		model("minecraft:flow_banner_pattern")
 		name("Pattern")
-		add("max_stack_size", SInt(1))
+		add("max_stack_size", SInt(MAX_STACK))
 		customData(raData("pattern" to comp("slots" to SList(BLANK_SLOTS.map { SStr(it) }))))
 		lore(*blankLore().toTypedArray())
 		add("food", comp("nutrition" to SInt(0), "saturation" to SInt(0), "can_always_eat" to SBool(true)))
@@ -93,14 +107,14 @@ object Pattern {
 
 	/** The hint lines under a recorded grid. */
 	fun hintLore() = listOf(
-		loreLine("Right-click a Crafter Controller to load it", "dark_gray"),
+		loreLine("Right-click a Crafter Controller or a Keypad to use it", "dark_gray"),
 		loreLine("Sneak + right-click air to clear", "dark_gray"),
 	)
 
 	fun Ra.registerPattern() {
 		pack.define(give) { raw("give @s ${item.giveArg()}") }
 
-		pack.shapedRecipe(Ns.AUTOMATION, "pattern", item.recipeResult(Items.PAPER), Unlock(Items.CRAFTER), RecipeCategory.MISC) {
+		pack.shapedRecipe(Ns.AUTOMATION, "pattern", item.recipeResult(Items.PAPER), Unlock(Items.CRAFTER), RecipeCategory.MISC, count = 3) {
 			pattern(" R ", "PPP")
 			key("R", Items.REDSTONE)
 			key("P", Items.PAPER)

@@ -158,6 +158,7 @@ object Placement : PackPart {
 				"Tesla Coil",
 				"Spout",
 				"Water Wheel",
+				"Air Charger",
 			)) registeredLine(name)
 		}
 	}

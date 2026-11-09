@@ -14,6 +14,8 @@ one page, A to Z and by module.
 | ra_gates:extender                    | Extender                  | ![Extender recipe](images/recipes/ra_gates/extender.png){ width="220" } |
 | ra_gates:randomizer                  | Randomizer                | ![Randomizer recipe](images/recipes/ra_gates/randomizer.png){ width="220" } |
 | ra_gates:shortener                   | Shortener                 | ![Shortener recipe](images/recipes/ra_gates/shortener.png){ width="220" } |
+| ra_gates:counter                     | Counter                   | ![Counter recipe](images/recipes/ra_gates/counter.png){ width="220" } |
+| ra_gates:edge_detector               | Edge Detector             | ![Edge Detector recipe](images/recipes/ra_gates/edge_detector.png){ width="220" } |
 | ra_interactive:block_breaker         | Block Breaker             | ![Block Breaker recipe](images/recipes/ra_interactive/block_breaker.png){ width="220" } |
 | ra_interactive:block_placer          | Block Placer              | ![Block Placer recipe](images/recipes/ra_interactive/block_placer.png){ width="220" } |
 | ra_interactive:item_pipe             | Item Pipe                 | ![Item Pipe recipe](images/recipes/ra_interactive/item_pipe.png){ width="220" } |

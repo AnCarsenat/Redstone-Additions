@@ -17,7 +17,9 @@ import ra.core.block.forEachMarker
 import ra.core.block.gogglesHeader
 import ra.core.block.outputShell
 import ra.core.block.propLine
+import ra.core.Obj
 import ra.core.define
+import ra.core.raw
 
 /**
  * Pieces every `ra_gates` block shares: the redstone read that ignores the output shell
@@ -29,6 +31,47 @@ internal const val IGNORE_BLOCKS = "ra.redstone.ignore_blocks"
 
 /** Input latch of the edge-triggered blocks: @s was powered last tick. */
 internal const val WAS_POWERED = "ra.was_powered"
+
+/** A gate whose output pulse is lit; its `ra.cooldown` score is the ticks left. See [pulseCountdown]. */
+internal const val PULSING = "ra.gate.pulsing"
+
+/** The lit pulse ran out this tick; [pulseFinish] puts it out unless [pulseStart] re-lit it. */
+private const val PULSE_ENDING = "ra.gate.pulse_ending"
+
+/*
+ * OUTPUT PULSES (Counter, Edge Detector). A pulse of N ticks is lit by [pulseStart] and put out N
+ * ticks later. process runs [pulseCountdown] first and [pulseFinish] last, with any [pulseStart] in
+ * between, so a pulse re-triggered on the very tick it runs out is extended rather than switched
+ * off and on again inside one tick (both fills in the same tick read as no pulse at all; see the
+ * Clock). An idle gate pays two tag tests: the shell is only written when a pulse starts or ends.
+ */
+
+/** Top of process: count the lit pulse down. As the marker. */
+internal fun Function.pulseCountdown() {
+	raw("scoreboard players remove @s[tag=$PULSING] ${Obj.COOLDOWN} 1")
+	raw("execute if entity @s[tag=$PULSING] if score @s ${Obj.COOLDOWN} matches ..0 run tag @s add $PULSE_ENDING")
+}
+
+/** Light the output for `#prop ra.temp` ticks (at least 1), or restart a lit pulse. As the marker, at it. */
+internal fun Function.pulseStart() {
+	raw("scoreboard players operation @s ${Obj.COOLDOWN} = #prop ${Obj.TEMP}")
+	raw("tag @s remove $PULSE_ENDING")
+	raw("execute if entity @s[tag=!$PULSING] run fill ~-1 ~-1 ~-1 ~1 ~1 ~1 redstone_block replace iron_block")
+	raw("tag @s add $PULSING")
+}
+
+/** End of process: put out a pulse that ran out. As the marker, at it. */
+internal fun Function.pulseFinish() {
+	raw("execute if entity @s[tag=$PULSE_ENDING] run fill ~-1 ~-1 ~-1 ~1 ~1 ~1 iron_block replace redstone_block")
+	raw("tag @s[tag=$PULSE_ENDING] remove $PULSING")
+	raw("tag @s remove $PULSE_ENDING")
+}
+
+/** Drop a lit pulse without touching the shell (the caller puts it out). As the marker. */
+internal fun Function.pulseCancel() {
+	raw("tag @s remove $PULSING")
+	raw("tag @s remove $PULSE_ENDING")
+}
 
 /** `ra_lib:redstone/detect_switch` with the shell ignored. Sets `ra.powered` on @s. */
 internal fun Function.detectSwitchIgnoringShell() {

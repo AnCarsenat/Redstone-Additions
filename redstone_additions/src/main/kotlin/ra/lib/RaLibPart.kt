@@ -23,6 +23,7 @@ import ra.lib.transport.Transport.registerTransport
 import ra.lib.util.Util.registerUtil
 import ra.lib.safe.SafeText
 import ra.lib.safe.SafeText.registerSafeText
+import ra.lib.safe.SafeClean.registerSafeClean
 
 /**
  * Shared library (`ra_lib`): placement, orientation, redstone reading, inventories, the transport
@@ -42,6 +43,7 @@ object RaLibPart : PackPart {
 		registerTransport()
 		registerUtil()
 		registerSafeText()
+		registerSafeClean()
 
 		// Initialize every sub-system. Called on datapack load, from ra:load.
 		pack.define(RaLib.init) {

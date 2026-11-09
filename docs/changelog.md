@@ -4,6 +4,19 @@ This page mirrors key datapack milestones from the main project changelog.
 
 ## [v6.0.3] - Unreleased
 
+### Changed
+
+- **Anyone can change a Message Block's text.** It was locked to admins in v6.0.1 because rich
+  chat text can carry a clickable command. The text a player types is always shown exactly as
+  typed, quotes and braces included, so it can never become a command. Rich text (colours,
+  links) is something only an operator can write, with the Creative Data Handler or `/data`, and
+  the Clipboard no longer pastes it for players without server-settings access. The selector
+  still follows *Players may edit entity selectors and tags*.
+- **The Clipboard checks text settings like the Data Handler.** For players without
+  server-settings access, a copied text value that its block would refuse from the Data Handler
+  (a selector with a command after it, a tag with spaces) is left out of the paste; the rest of
+  the paste goes through.
+
 ### Removed
 
 - **The Upgrade Platform.** The netherite-tier multiblock that gambled dropped materials into the
@@ -21,6 +34,17 @@ This page mirrors key datapack milestones from the main project changelog.
   Drain pours a potion out as a cloud in the potion's colour, but the colour was read after the
   potion had been taken from the network, so the pour that emptied it could come out in the
   default water-bottle blue. The colour is now read first.
+
+### For contributors
+
+- **A core sanitiser for player input** (`ra_lib:safe/clean`, `ra_lib:safe/number`,
+  `ra/lib/safe/SafeClean.kt`). `clean` turns a value into one that is safe to paste in a given
+  text format: free text loses its double quotes, backslashes and line breaks, so it can sit inside
+  `{text:"$(value)"}` without closing it; an id, name or tag loses the characters its format does
+  not accept; a selector or coordinates are kept only when valid. `number` says whether a value is
+  a number and hands it back as an int. The Data Handler's number test now lives there, and the
+  Goggles' Teleport Anchor and Fluid Vault lines pass their value through `clean` before pasting
+  it. See the developer guide, *safe: player input in commands*.
 
 ## v6.0.2 (2026-11-09) — Drains, lists and fixes
 

@@ -15,6 +15,7 @@ import ra.core.item.SBool
 import ra.core.item.SComp
 import ra.core.item.SInt
 import ra.core.item.SList
+import ra.core.item.SRaw
 import ra.core.item.SStr
 import ra.core.item.comp
 import ra.core.item.flag
@@ -40,13 +41,24 @@ object StorageBox {
 	val crate = itemSpec("minecraft:command_block") {
 		model("minecraft:player_head")
 		add("custom_name", comp("text" to SStr("Item Crate"), "color" to SStr("white"), "italic" to SBool(false)))
-		add("profile", SStr("BoxMan01234"))
+		add("profile", SKIN)
 		add("max_stack_size", SInt(64))
 		lore(EMPTY)
 		customData(raData(flag("item_box"), "storage_box" to comp("items" to SList(emptyList()), "preview" to SList(emptyList()))))
 	}
 
 	private val EMPTY: SComp get() = loreLine("(empty)", "gray")
+
+	/**
+	 * The crate's head skin, BoxMan01234's, as a static profile: the id plus the `textures`
+	 * property, so the game never has to look the name up. A name alone (`profile:"BoxMan01234"`,
+	 * before 6.0.3) is resolved at runtime and drew a broken head when that failed. The property
+	 * is base64 of `{"textures":{"SKIN":{"url":"http://textures.minecraft.net/texture/dccbb5f1dbb551fde8d5e26835742a557540dec82b5fcad1581e4a2e101da7d0"}}}`.
+	 */
+	private val SKIN: SRaw get() = SRaw(
+		"{id:[I;1762048015,484985711,-1926722649,111618629],name:\"BoxMan01234\",properties:[{name:\"textures\"," +
+			"value:\"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZGNjYmI1ZjFkYmI1NTFmZGU4ZDVlMjY4MzU3NDJhNTU3NTQwZGVjODJiNWZjYWQxNTgxZTRhMmUxMDFkYTdkMCJ9fX0=\"}]}"
+	)
 
 	val giveStorageBox = ref(Ns.STORAGE, "items/give_storage_box")
 	val updateLoreStorageTarget = fn("update_lore_storage_target")
@@ -63,6 +75,7 @@ object StorageBox {
 	private const val ENTITY = "entity @s Item"
 	private const val BOX = """components."minecraft:custom_data".ra.storage_box"""
 	private const val LORE = """components."minecraft:lore""""
+	private const val PROFILE = """components."minecraft:profile""""
 
 	fun Ra.registerStorageBox() {
 		pack.define(giveStorageBox) { raw("give @s ${crate.giveArg()}") }
@@ -95,6 +108,8 @@ object StorageBox {
 		raw("execute unless data $holder.$BOX.preview run data modify $holder.$BOX.preview set value []")
 
 		raw("data modify $holder.$LORE set value []")
+		// Crates made before 6.0.3 carry the name-only profile: give them the skin as they are touched.
+		raw("data modify $holder.$PROFILE set value ${SKIN.text()}")
 
 		for (i in 0..4) raw("execute if data $holder.$BOX.preview[$i] run data modify $holder.$LORE append from $holder.$BOX.preview[$i]")
 

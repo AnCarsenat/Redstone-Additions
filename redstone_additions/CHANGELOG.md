@@ -218,6 +218,10 @@
   Drain pours a potion out as a cloud in the potion's colour, but the colour was read after the
   potion had been taken from the network, so the pour that emptied it could come out in the
   default water-bottle blue. The colour is now read first.
+- **The Item Crate shows its box skin again.** Its head only named the skin's owner
+  (`profile:"BoxMan01234"`), which the game has to look up, and the crate showed a broken head
+  when it could not. The skin itself is now written into the crate. Crates made before keep the old
+  head until the Boxer next adds a stack to them, which gives them the skin.
 
 ### For contributors
 

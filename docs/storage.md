@@ -63,8 +63,10 @@ Both blocks work at most once every 4 ticks, like a hopper.
   `output1 = "^ ^ ^1"`. Both must be in `#ra_lib:containers`.
 - The Unboxer is a barrel wearing a dispenser skin, so redstone never makes it fire crates out.
 - An Item Crate is a `minecraft:command_block` drawn as a player head (`item_model
-  minecraft:player_head`, profile `BoxMan01234`). Survival players cannot place command blocks,
-  which is what protects the contents.
+  minecraft:player_head`). The skin is BoxMan01234's, written into the `profile` component as a
+  static profile (its id and `textures` property) so it needs no name lookup; a crate the Boxer
+  adds to is given it too, which updates crates from before 6.0.3. Survival players cannot place
+  command blocks, which is what protects the contents.
 - Crate data: `custom_data.ra.storage_box.items` (the stacks), `custom_data.ra.storage_box.preview`
   (lore lines), marker `custom_data.ra.item_box`. Older crates marked `ra.storage_box_item` are
   still accepted.

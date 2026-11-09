@@ -20,8 +20,8 @@ import ra.modules.sensors.SensorsModule.SELECTOR_SETTING
  * The Tag Adder's and Tag Remover's `tags` list, shared.
  *
  * `tags` is a list of entity tags (format TAG, at most [MAX]), edited per entry in the Data
- * Handler. It replaces the single `tag` of older blocks: a block without `tags` still runs on its
- * `tag` (the block's own fallback), and once `tags` is written, `tag` is ignored.
+ * Handler; a new block starts with [DEFAULT]. It replaced the single `tag` of blocks from before
+ * v6.0.2, which the 6.0.1-to-6.0.2 migration turned into a list (ra/migrations/Step6_0_1To6_0_2.kt).
  *
  * Every entry is checked by `ra_lib:safe/check` (TAG: letters, digits, `_ . + -`, never `ra.`)
  * before it is pasted into a `tag` command. An entry that fails is skipped and counted in
@@ -31,6 +31,10 @@ import ra.modules.sensors.SensorsModule.SELECTOR_SETTING
  */
 object SensorTags {
 	const val MAX = 16
+
+	/** A new block's list, and the Data Handler's default for one that has none. */
+	val DEFAULT = listOf("custom_tag")
+	val DEFAULT_SNBT = DEFAULT.joinToString(",", "[", "]") { "\"$it\"" }
 
 	/**
 	 * As the marker: `data.properties.tags` -> `storage ra:temp sensor_tags.ok`, the entries that
@@ -52,9 +56,6 @@ object SensorTags {
 	val gogglesLine = ref(Ns.SENSORS, "tags/goggles_line")
 	private val gogglesStep = ref(Ns.SENSORS, "tags/goggles_step")
 
-	/** As the marker of a block from before v6.0.2 (no `tags`): its single `tag`, `{empty}` when it has none. */
-	val legacyLine = ref(Ns.SENSORS, "tags/legacy_line")
-
 	/** Shown entries before "+N more", to keep the billboard narrow. */
 	private const val SHOWN = 3
 
@@ -64,7 +65,7 @@ object SensorTags {
 	/** The `tags` declaration, the same on both blocks. */
 	fun PropertiesBuilder.tagsList() = textList(
 		"tags", max = MAX, format = TextFormat.TAG, entryLabel = "Tag ",
-		adminOnly = true, adminSetting = SELECTOR_SETTING,
+		adminOnly = true, adminSetting = SELECTOR_SETTING, default = DEFAULT,
 	)
 
 	fun Function.done() = raw("data remove $S")
@@ -120,6 +121,9 @@ object SensorTags {
 			raw("execute if data storage ra:temp gg.schema.tags.goggles unless data storage ra:temp gg.schema.tags{goggles:1b} run return 0")
 			raw("""${'$'}data modify storage ra:temp gg.line set value {text:"Tags: ",color:"gray",extra:[{text:"$(empty)",color:"yellow"}]}""")
 			raw("data remove $S")
+			// Removed with a command: the block does nothing, so say so.
+			raw("""execute unless data entity @s data.properties.tags run data modify storage ra:temp gg.line.extra[0] set value {text:"not set",color:"red"}""")
+			raw("execute unless data entity @s data.properties.tags run return run function ${Goggles.Billboard.append.asId()}")
 			raw("data modify $S.w set from entity @s data.properties.tags")
 			// Not a list (written with a command): the block does nothing with it, so say so.
 			raw("execute store success score #st.l $T run data modify $S.w insert 0 value 0b")
@@ -137,14 +141,6 @@ object SensorTags {
 			raw("execute if score #st.more $T matches 1.. run data modify storage ra:temp gg.line.extra[-1].text set string $S.more")
 			raw("""execute if score #st.more $T matches 1.. run data modify storage ra:temp gg.line.extra append value {text:" more",color:"gray"}""")
 			raw("data remove $S")
-			function(Goggles.Billboard.append)
-		}
-		// {empty}. Not gated by `tag`'s schema flag (hidden): on such a block it is what fires.
-		pack.define(legacyLine) {
-			raw("""${'$'}data modify storage ra:temp gg.line set value {text:"Tag: ",color:"gray",extra:[{text:"$(empty)",color:"yellow"}]}""")
-			raw("scoreboard players set #st.l $T 0")
-			raw("""execute unless data entity @s data.properties{tag:""} store success score #st.l $T run data modify storage ra:temp gg.line.extra[0].text set string entity @s data.properties.tag""")
-			raw("""execute if score #st.l $T matches 1 run data modify storage ra:temp gg.line.extra[0].color set value "aqua"""" + "")
 			function(Goggles.Billboard.append)
 		}
 		pack.define(gogglesStep) {

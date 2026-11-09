@@ -45,10 +45,13 @@ off, the Tag Adder and Tag Remover do not fire.
 
 ### The tag list
 
-The Tag Adder and Tag Remover each take a list of up to 16 tags, `tags`. In the
-[Data Handler](tools.md) it is shown one entry per line: **[Edit]** changes an entry,
-**[Remove]** deletes it, **[Append]** adds one at the end, and **[Edit whole list]** takes the
-whole list at once, written like `["red_team","in_zone"]`. Like the selector, the list is changed
+The Tag Adder and Tag Remover each take a list of up to 16 tags, `tags`; a new block starts with
+one, `custom_tag`. In the [Data Handler](tools.md) it is shown one entry per line under a header
+that counts them, `tags: list (1/16)`: **[Edit]** changes an entry, **[Remove]** deletes it,
+**[Add]** asks for a new one and puts it at the end (also on an empty list; greyed out, with
+"Maximum 16 entries" on hover, once the list is full), and **[Edit whole list]** takes the whole
+list at once, written like `["red_team","in_zone"]`. A new entry is checked like the others
+before it is added. Like the selector, the list is changed
 by admins only unless *Players may edit entity selectors and tags* is on.
 
 | `tags` | Tag Adder | Tag Remover |
@@ -64,11 +67,10 @@ are all refused does nothing: it is never read as "clear them all", only a truly
 The Goggles show the selector (**Targets**) and the first three tags (**Tags**, then "+N more").
 
 !!! note "Blocks from before v6.0.2"
-    Older Tag Adders and Tag Removers have a single `tag` instead of a list, and keep working
-    exactly as before (an empty `tag` on a Tag Remover still clears every tag). Their Goggles
-    show **Tag**. As soon as you give one a `tags` list (with **[Append]** or
-    **[Edit whole list]**), the list is used and the old `tag` is ignored. Admins still see the
-    old `tag` in the Data Handler, greyed as hidden from players.
+    Older Tag Adders and Tag Removers had a single `tag`. They are converted when the world
+    loads: the tag becomes the list's one entry (`"red_team"` becomes `["red_team"]`). A Tag
+    Remover without a tag, which cleared every tag, gets the empty list and still does; a Tag
+    Adder without one gets `["custom_tag"]`.
 
 **Detector output:** put **iron blocks** next to the Entity Detector (anywhere in the 3×3×3 cube
 around it). They turn into **redstone blocks** while it detects something.
@@ -91,11 +93,12 @@ The Entity Detector never counts Redstone Additions' own machines.
 ## Advanced
 
 - Properties on the marker: `data.properties.entity_selector`, and on the Tag Adder / Remover
-  `data.properties.tags` (a list; `data.properties.tag` on blocks from before v6.0.2, read only
-  while `tags` is absent). `data.status.skipped` holds the number of refused tags from the last
+  `data.properties.tags` (a list; the single `data.properties.tag` of blocks from before v6.0.2
+  is turned into it by the 6.0.1-to-6.0.2 migration and removed). A marker without `tags` does
+  nothing when powered, and its Goggles say **not set**. `data.status.skipped` holds the number of refused tags from the last
   pulse, and is removed when none were refused.
-- The selector and the tag are pasted into macro commands
-  (`ra_sensors:blocks/entity_detector/detect_macro`, `…/tag_adder/add_tag_macro`, …). Before each
+- The selector and the tags are pasted into macro commands
+  (`ra_sensors:blocks/entity_detector/detect_macro`, `…/tag_adder/add_listed_macro`, …). Before each
   use, `ra_lib:safe/guard` checks them (formats `SELECTOR` and `TAG`, see
   [Tools and Registries](tools-and-registries.md#text-formats)); the value last found safe is
   cached in `data.data.safe.<name>`, so an unchanged value costs one comparison. Each entry of

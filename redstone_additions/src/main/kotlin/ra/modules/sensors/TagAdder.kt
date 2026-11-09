@@ -3,6 +3,7 @@ package ra.modules.sensors
 import ra.core.TextFormat
 import ra.core.text
 import ra.lib.safe.SafeText.guardProperty
+import ra.modules.sensors.SensorTags.DEFAULT_SNBT
 import ra.modules.sensors.SensorsModule.SELECTOR_SETTING
 import io.github.ayfri.kore.features.recipes.types.key
 import io.github.ayfri.kore.features.recipes.types.pattern
@@ -18,7 +19,6 @@ import ra.core.block.placeBlock
 import ra.core.block.propLine
 import ra.core.define
 import ra.core.raw
-import ra.core.Storage
 import io.github.ayfri.kore.commands.function
 import ra.core.item.loreItem
 import ra.core.block.shapedRecipe
@@ -43,17 +43,16 @@ import ra.modules.sensors.SensorTags.tagsList
  * `entity_selector`. An empty list adds nothing.
  *
  * Properties: entity_selector (default `@e[type=pig,distance=..5]`), tags (default
- * `["custom_tag"]`, see [SensorTags]). A block from before v6.0.2 has no `tags` and runs on its
- * single `tag` instead; `tag` is hidden from the Data Handler for players and ignored as soon as
- * `tags` is written.
+ * `["custom_tag"]`, see [SensorTags]; a block from before v6.0.2 had a single `tag`, which the
+ * 6.0.1-to-6.0.2 migration made into the list).
  */
 object TagAdder {
+	const val DEFAULT_SELECTOR = "@e[type=pig,distance=..5]"
+
 	val block = CustomBlock(Ns.SENSORS, "tag_adder", "Tag Adder", model = "minecraft:green_glazed_terracotta")
 	val item = block.loreItem {}
 
-	private val addTagMacro = block.fn("add_tag_macro")
 	private val fire = block.fn("fire")
-	private val fireSingle = block.fn("fire_single")
 	private val fireList = block.fn("fire_list")
 	private val addListedMacro = block.fn("add_listed_macro")
 
@@ -62,10 +61,8 @@ object TagAdder {
 		properties(block) {
 			// Pasted into commands, and able to reach any entity: admins only, unless the server
 			// lets players edit them (Sensors settings). Checked again before every use.
-			text("entity_selector", TextFormat.SELECTOR, adminOnly = true, adminSetting = SELECTOR_SETTING)
+			text("entity_selector", TextFormat.SELECTOR, adminOnly = true, adminSetting = SELECTOR_SETTING, default = DEFAULT_SELECTOR)
 			tagsList()
-			// Pre-6.0.2 blocks only, read while they have no `tags`. Admins still see and edit it.
-			text("tag", TextFormat.TAG, adminOnly = true, adminSetting = SELECTOR_SETTING, visible = false)
 		}
 		pack.blockRegisterMessage(block)
 		pack.blockGive(block)
@@ -80,17 +77,8 @@ object TagAdder {
 			placementGuard(block, checkExisting = false)
 			// Green glazed terracotta with a marker (dir_type 0 = non-directional).
 			placeBlock(block)
-			setOnNew(block, "data.properties", """{entity_selector:"@e[type=pig,distance=..5]",tags:["custom_tag"]}""")
+			setOnNew(block, "data.properties", """{entity_selector:"$DEFAULT_SELECTOR",tags:$DEFAULT_SNBT}""")
 			finishPlacement(block, removePlaceTag = false)
-		}
-
-		// Macro {tag, entity_selector}. As the marker, at its position.
-		pack.define(addTagMacro) {
-			// Anchor position to the marker for distance calculations in the selector.
-			raw("\$execute store success score @s ${Obj.TEMP} at @s run execute as \$(entity_selector) if entity @s[tag=!${Tag.CUSTOM_BLOCK}] run tag @s add \$(tag)")
-
-			raw("execute if score @s ${Obj.TEMP} matches 1.. at @s run playsound minecraft:block.note_block.bit block @a[distance=..16] ~ ~ ~ 0.5 1.5")
-			raw("execute if score @s ${Obj.TEMP} matches 0 at @s run playsound minecraft:block.note_block.bass block @a[distance=..16] ~ ~ ~ 0.5 0.5")
 		}
 
 		// kept: beet contract. Macro {entity_selector, range}: detection only. Nothing in the pack
@@ -119,39 +107,26 @@ object TagAdder {
 		// are removed before the copy so a marker missing a property cannot run with the previous
 		// marker's value; it does nothing instead.
 		pack.define(fire) {
-			raw("data remove storage ra:temp tag")
 			raw("data remove storage ra:temp entity_selector")
 			raw("data modify storage ra:temp entity_selector set from entity @s data.properties.entity_selector")
 			raw("execute unless data storage ra:temp entity_selector run return 0")
 			// Pasted into the command: refuse anything that could be more than one argument.
 			guardProperty("entity_selector", TextFormat.SELECTOR)
-			raw("execute unless data entity @s data.properties.tags run function ${fireSingle.asId()}")
-			raw("execute if data entity @s data.properties.tags run function ${fireList.asId()}")
+			function(fireList)
 		}
 
-		// `tags`: the entries that passed the check. Nothing for an empty list, a value that is not
-		// a list, or a list with no valid entry.
+		// `tags`: the entries that passed the check. Nothing for an empty list, a missing one, a
+		// value that is not a list, or a list with no valid entry.
 		pack.define(fireList) {
 			function(SensorTags.load)
 			raw("execute if score #st.n ${Obj.TEMP} matches 1.. run function ${addListedMacro.asId()} with storage ra:temp")
 			done()
 		}
 
-		// The single `tag` of a block from before v6.0.2, as it worked then.
-		pack.define(fireSingle) {
-			raw("data remove entity @s data.status.skipped")
-			raw("data modify storage ra:temp tag set from entity @s data.properties.tag")
-			raw("execute unless data storage ra:temp tag run return 0")
-			guardProperty("tag", TextFormat.TAG)
-			function(addTagMacro, Storage.TEMP)
-		}
-
 		pack.define(block.goggles) {
 			gogglesHeader(block, nameY = 1.0)
 			propLine("entity_selector", "Targets: ", "yellow", y = 0.8)
-			raw("""execute if data entity @s data.properties.tags run function ${SensorTags.gogglesLine.asId()} {empty:"none"}""")
-			// A pre-6.0.2 block: its single tag.
-			raw("""execute unless data entity @s data.properties.tags run function ${SensorTags.legacyLine.asId()} {empty:"none"}""")
+			raw("""function ${SensorTags.gogglesLine.asId()} {empty:"none"}""")
 			raw("execute if data entity @s data.status.skipped run function ${Goggles.Billboard.dataLine.asId()} {path:\"skipped\",label:\"Refused tags: \",color:\"red\",suffix:\"\",y:0.6}")
 		}
 

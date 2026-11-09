@@ -76,6 +76,19 @@ This page mirrors key datapack milestones from the main project changelog.
   way, and the Wrench's cycle menu marks admin-only rows for admins. The Wrench now also offers an
   admin-only setting to everyone when its server setting opens it to players, like the Data
   Handler.
+- **Teleport Anchor names are unique, and anchors reach anywhere.** Every anchor is filed by name
+  in one destinations table, so a teleport looks the name up instead of searching the loaded
+  anchors: the destination may be in a chunk that is not loaded, or in another dimension. A name
+  belongs to one anchor: the Data Handler (and `/function ra_ender:tools/anchor/set_id`) refuses a
+  name another anchor has, and a new anchor is named `anchor`, `anchor_2`, … instead of `A`. Names
+  use letters, digits and `_ . + - : / #`, without spaces. An anchor that ends up with a taken
+  name some other way (a Clipboard paste) becomes `name_2`, and its owner, admins and players
+  nearby are told. The Goggles mark a target no anchor has with *(no such anchor)*. Operators can
+  drop the entry of an anchor removed without being broken with
+  `/function ra_ender:tools/anchor/forget {id:"…"}`. In an existing world, names and targets lose
+  the characters no longer allowed (`Main base` becomes `Mainbase`); where several anchors shared
+  a name (every anchor was `A` until now), the first one loaded keeps it and the others become
+  `A_2`, `A_3`, …, each announced in chat, and targets that named it lead to the one that kept it.
 
 ### Removed
 
@@ -87,6 +100,9 @@ This page mirrors key datapack milestones from the main project changelog.
   apart when the chunk loads); the Netherite Base and the smooth stone stay where they were, and
   the base can be broken and picked up as before. The Netherite Base itself stays, as a tier with
   no machine yet.
+- **The Teleport Anchor destination list** (v6.0.1): the Data Handler's **[Choose]** on each
+  strength and `/function ra_ender:tools/anchor/list`. Destinations are typed with **[Edit]**,
+  and anchor names are no longer listed anywhere to pick from.
 
 ### Fixed
 
@@ -113,6 +129,13 @@ This page mirrors key datapack milestones from the main project changelog.
   `raiseMaxForAdmin` lifts an edit-time bound for an admin, `overPlayerMax` tells a menu to mark
   a value, and `readCappedProperty` reads a property at use time clamped only to `adminMax`. See
   *Admin limits* in Tools and registries.
+- **The Teleport Anchor destinations table** (`storage ra:ender anchors`,
+  `ra/modules/ender/anchors/AnchorTable.kt`): one entry per anchor, keyed by its id,
+  `{id, x, y, z, dim, owner}`. `ra_ender:anchors/lookup` reads an entry from `lookup.id`, and
+  `ra_ender:anchors/send` teleports `@s` to it; neither searches entities. A text property can
+  declare `unique = "<storage>" to "<path>"` (format `ID` or `TAG`): the Data Handler then refuses a
+  value that is already a key of that compound. The Data Handler's list picker and the `choices`
+  declaration are gone with the destination list.
 
 ## v6.0.2 (2026-11-09) — Drains, lists and fixes
 

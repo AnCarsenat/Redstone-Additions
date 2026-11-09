@@ -13,6 +13,7 @@ import ra.modules.ender.FluidVault.registerFluidVault
 import ra.modules.ender.ItemVault.registerItemVault
 import ra.modules.ender.PowerVault.registerPowerVault
 import ra.modules.ender.TeleportAnchor.registerTeleportAnchor
+import ra.modules.ender.anchors.AnchorTable.registerAnchorTable
 import ra.modules.ender.debug.EnderDebug.registerEnderDebug
 import ra.modules.ender.link.Link.registerLink
 import ra.modules.ender.tools.Anchor.registerAnchorTools
@@ -34,6 +35,7 @@ object EnderModule : GameplayModule {
 		registerFluidVault()
 		registerPowerVault()
 		registerTeleportAnchor()
+		registerAnchorTable()
 		registerLink()
 		registerAnchorTools()
 		registerEnderDebug()

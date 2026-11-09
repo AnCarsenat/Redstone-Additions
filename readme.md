@@ -5,7 +5,7 @@
 <h1 align="center">Redstone Additions</h1>
 
 <p align="center">
-  <strong>72 custom blocks. 7 tools. 82 recipes. 2 jetpacks and 3 upgrade kits. Vanilla datapack for Minecraft 26.3.</strong>
+  <strong>73 custom blocks. 8 tools. 84 recipes. 2 jetpacks and 3 upgrade kits. Vanilla datapack for Minecraft 26.3.</strong>
 </p>
 
 <p align="center">
@@ -16,9 +16,9 @@
 <p align="center">
   <img src="https://img.shields.io/badge/Minecraft-26.3-2EA44F" alt="Minecraft 26.3">
   <img src="https://img.shields.io/badge/Version-v6.0.3-blue" alt="Version v6.0.3">
-  <img src="https://img.shields.io/badge/Blocks-72-red" alt="72 blocks">
-  <img src="https://img.shields.io/badge/Tools-7-lightgrey" alt="7 tools">
-  <img src="https://img.shields.io/badge/Recipes-82-8A2BE2" alt="82 recipes">
+  <img src="https://img.shields.io/badge/Blocks-73-red" alt="73 blocks">
+  <img src="https://img.shields.io/badge/Tools-8-lightgrey" alt="8 tools">
+  <img src="https://img.shields.io/badge/Recipes-84-8A2BE2" alt="84 recipes">
 </p>
 
 <p align="center">
@@ -184,11 +184,12 @@ Pipes and wires have a single tier.
 Built from a crafted Generator Casing plus a Core won by sacrificing stone,
 netherrack or poppies on an enchanting table.
 
-### Ender Links (4)
+### Ender Links (5)
 - Ender Item Vault — barrels that share their contents across a channel
 - Ender Fluid Vault — liquid and gas across a channel, as a fluid network node
 - Ender Power Vault — EU across a channel, as an electric node
 - Teleport Anchor — redstone strength 1-15 picks which anchor you arrive at
+- Anchor Terminal — stand on it and sneak to pick a destination from a menu
 
 ### Multiblock Bases (5)
 - Copper Multiblock Base
@@ -214,7 +215,7 @@ netherrack or poppies on an enchanting table.
 Fitted kits live on the chestplate and are listed in its lore.
 `/trigger ra.jp.kits` switches one off or takes it back as an item.
 
-### Tools (7)
+### Tools (8)
 - Wrench — the only tool that **changes** a block. Shift+RMB cycles a setting, or
   opens a menu when the block has more than one
 - Goggles — wear or hold to read every block in range. Read-only
@@ -223,6 +224,7 @@ Fitted kits live on the chestplate and are listed in its lore.
 - Clipboard — copies one block's settings onto others of the same kind
 - Multimeter — reads a network's numbers into chat
 - Redstone Remote — wireless channel control
+- Anchor Tablet — teleport to any Teleport Anchor from anywhere, for ender pearls
 
 See the [Tools page](https://ancarsenat.github.io/Redstone-Additions/tools/) for
 recipes and usage.
@@ -325,7 +327,7 @@ Starter command:
 | `/function ra_multiblock:blocks/give_all` | Multiblock base items |
 | `/function ra_infinite:items/give_all` | Generator casing and generators |
 | `/function ra_jetpacks:items/give_all` | Jetpack kits |
-| `/function ra_ender:items/give_all` | Ender vaults and Teleport Anchors |
+| `/function ra_ender:items/give_all` | Ender vaults, Teleport Anchor, Anchor Terminal and Anchor Tablet |
 | `/function ra:tools/wrench/give` | Wrench |
 | `/function ra:tools/data_handler/give` | Data Handler |
 | `/function ra:tools/creative_data_handler/give` | Creative Data Handler |

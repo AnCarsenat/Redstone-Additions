@@ -1,6 +1,6 @@
 # Recipe Atlas
 
-Every recipe in the pack, in one place: 98 of them.
+Every recipe in the pack, in one place: 99 of them.
 
 !!! tip "Finding one"
     Use the search box with the item's name — every recipe below is indexed by
@@ -106,6 +106,7 @@ what the pack actually contains rather than what someone remembered to add.
 | [Tag Remover](#sensors) | [Sensors](sensors.md) | Crafting table |
 | [Teleport Anchor](#ender-links) | [Ender Links](ender-links.md) | Crafting table |
 | [Tesla Coil](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
+| [Text Screen](#displays) | [Displays](displays.md) | Crafting table |
 | [Thruster Kit](#jetpacks) | [Jetpacks](jetpacks.md) | Crafting table |
 | [Trash Can](#interactive-machines) | [Interactive Machines](interactive-machines.md) | Crafting table |
 | [Unboxer](#storage) | [Storage](storage.md) | Crafting table |
@@ -143,6 +144,7 @@ Module page: [Displays](displays.md) — give everything: `/function ra_displays
 | ---- | ------ | ------- | ------------ |
 | **Gauge Bar** | ![Gauge Bar recipe](images/recipes/ra_displays/gauge_bar.png){ width="220" } | Crafting table | `ra_displays:gauge_bar` |
 | **Item Hologram** | ![Item Hologram recipe](images/recipes/ra_displays/item_hologram.png){ width="220" } | Crafting table | `ra_displays:item_hologram` |
+| **Text Screen** | ![Text Screen recipe](images/recipes/ra_displays/text_screen.png){ width="220" } | Crafting table | `ra_displays:text_screen` |
 
 ## Enchant Crafting
 

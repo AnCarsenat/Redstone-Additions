@@ -5,7 +5,7 @@
 <h1 align="center">Redstone Additions</h1>
 
 <p align="center">
-  <strong>84 custom blocks. 9 tools. 98 recipes. 2 jetpacks and 3 upgrade kits. Vanilla datapack for Minecraft 26.3.</strong>
+  <strong>85 custom blocks. 9 tools. 99 recipes. 2 jetpacks and 3 upgrade kits. Vanilla datapack for Minecraft 26.3.</strong>
 </p>
 
 <p align="center">
@@ -16,9 +16,9 @@
 <p align="center">
   <img src="https://img.shields.io/badge/Minecraft-26.3-2EA44F" alt="Minecraft 26.3">
   <img src="https://img.shields.io/badge/Version-v6.0.3-blue" alt="Version v6.0.3">
-  <img src="https://img.shields.io/badge/Blocks-84-red" alt="84 blocks">
+  <img src="https://img.shields.io/badge/Blocks-85-red" alt="85 blocks">
   <img src="https://img.shields.io/badge/Tools-9-lightgrey" alt="9 tools">
-  <img src="https://img.shields.io/badge/Recipes-98-8A2BE2" alt="98 recipes">
+  <img src="https://img.shields.io/badge/Recipes-99-8A2BE2" alt="99 recipes">
 </p>
 
 <p align="center">
@@ -203,9 +203,11 @@ netherrack or poppies on an enchanting table.
 - Teleport Anchor — redstone strength 1-15 picks which anchor you arrive at
 - Anchor Terminal — stand on it and sneak to pick a destination from a menu
 
-### Displays (2)
+### Displays (3)
 - Gauge Bar — a bar on its face, filled to the redstone level feeding it
 - Item Hologram — shows the item inside it, turning above the block, with its name
+- Text Screen — glowing nixie-style text: the redstone level picks which item's name it shows
+
 ### Automation (1)
 - Crafter Controller — fires the crafter next to it once it holds what its Pattern says
 

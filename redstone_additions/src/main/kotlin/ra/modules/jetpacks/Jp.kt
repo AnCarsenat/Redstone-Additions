@@ -45,6 +45,12 @@ object Jp {
 	const val VX = "ra.jp.vx"
 	const val VZ = "ra.jp.vz"
 
+	/**
+	 * Thruster kit: the throttle, 0..100. Eases towards 100 while sprinting and back to 0 after,
+	 * and scales the push -- see flight/ThrustRamp.
+	 */
+	const val RAMP = "ra.jp.ramp"
+
 	/** The thruster tier currently written onto the gravity attribute. */
 	const val GRAV = "ra.jp.grav"
 

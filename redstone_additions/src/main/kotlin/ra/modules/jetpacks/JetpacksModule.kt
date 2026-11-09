@@ -129,6 +129,7 @@ object JetpacksModule : GameplayModule {
 		scoreboard.objectives.add(Jp.KITS, ScoreboardCriteria.TRIGGER)
 		scoreboard.objectives.add(Jp.VX)
 		scoreboard.objectives.add(Jp.VZ)
+		scoreboard.objectives.add(Jp.RAMP)
 		scoreboard.objectives.add(Jp.GRAV)
 		scoreboard.objectives.add(Jp.AIR)
 		scoreboard.objectives.add(Jp.OFF)

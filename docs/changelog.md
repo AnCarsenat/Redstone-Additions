@@ -128,6 +128,9 @@ This page mirrors key datapack milestones from the main project changelog.
   the characters no longer allowed (`Main base` becomes `Mainbase`); where several anchors shared
   a name (every anchor was `A` until now), the first one loaded keeps it and the others become
   `A_2`, `A_3`, …, each announced in chat, and targets that named it lead to the one that kept it.
+- **Smoother Thruster.** The Thruster Kit's push now builds up over about half a second when you
+  start sprinting in the air and fades the same way when you stop, instead of arriving and
+  vanishing in one tick.
 
 ### Removed
 

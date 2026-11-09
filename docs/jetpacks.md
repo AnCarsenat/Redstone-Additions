@@ -60,7 +60,7 @@ Right-click these **while already wearing a jetpack**. Each is used up and can b
 
 | Kit | Effect |
 | --- | --- |
-| Thruster Kit | **Hold sprint** in the air to speed up in the direction you are moving, up to about 7 extra blocks a second |
+| Thruster Kit | **Hold sprint** in the air to speed up in the direction you are moving, up to about 7 extra blocks a second. The push builds up over about half a second and fades the same way when you let go |
 | Lift Kit | Climbs at about six blocks a second instead of three, and sinks faster |
 | Scorch Kit | Sets fire to everything in a 3×3 column up to 6 blocks under you and hurts it (3 damage every half second) |
 
@@ -125,8 +125,11 @@ up coal again.
 - **Thruster** measures how far you actually moved, smooths it over about four ticks
   (`smoothed = floor((smoothed × 3 + delta) / 4)`) and, while you sprint, adds a capped push in
   that direction (`clamp(floor(smoothed × k / 100), −cap, cap)` per axis, cap 0.35 blocks a
-  tick). Each of those is a single 26.3 `/compute`, so the whole step is about 14 commands per
-  tick for an airborne player. It does nothing while you hover still: a push under the dead zone
+  tick). That push is scaled by a throttle, `ra.jp.ramp` (0 to 100): each tick it covers a
+  quarter of the way to its target, 100 while you sprint and 0 after, and at least 6
+  (`0 → 25 → 43 → 57 → 67 → …` up, `100 → 75 → 57 → 43 → …` down), so the push eases in and out
+  over about ten ticks instead of switching. Each of those is a single 26.3 `/compute`, so the
+  whole step is about 16 commands per tick for an airborne player. It does nothing while you hover still: a push under the dead zone
   is skipped.
 - **Engine sound** is `minecraft:item.elytra.flying` at volume 0.35, pitch 0.6, replayed once a
   second while the jetpack holds you up, stopped (for everyone within 20 blocks) when it doesn't.
@@ -148,6 +151,7 @@ up coal again.
 | `ra.jp.sound_on` | An engine loop is currently playing |
 | `ra.jp.air` | `1` once the player has left the ground, so a landing can be spotted |
 | `ra.jp.y` | Last sampled height, in thousandths of a block |
+| `ra.jp.ramp` | Thruster throttle, 0 to 100 |
 | `ra.jp.grav` | Current thrust tier on the gravity attribute |
 | `ra.jp.state` | `0` classic, `1` hover |
 | `ra.jp.fuel` | Ticks of powered flight since the last coal |

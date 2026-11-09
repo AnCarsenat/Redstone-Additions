@@ -80,7 +80,7 @@ object Engine {
 		tag(self()) { remove(Jp.HOVER_ON) }
 		tag(self()) { remove(Jp.SPEED_ON) }
 		tag(self()) { remove(Jp.ON) }
-		for (obj in listOf(Jp.Y, Jp.X, Jp.Z, Jp.VX, Jp.VZ)) scoreboard.players.reset(self(), obj)
+		for (obj in listOf(Jp.Y, Jp.X, Jp.Z, Jp.VX, Jp.VZ, Jp.RAMP)) scoreboard.players.reset(self(), obj)
 		tag(self()) { remove(Jp.THRUSTING) }
 		for (obj in listOf(Jp.GRAV, Jp.SND, Jp.AIR)) scoreboard.players.reset(self(), obj)
 

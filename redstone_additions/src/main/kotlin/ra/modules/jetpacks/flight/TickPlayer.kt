@@ -26,9 +26,9 @@ object TickPlayer {
 		pack.define(tickPlayer) { tickPlayer() }
 	}
 
-	/** Drops the Thruster's smoothing state: x/z samples, smoothed speed and the thrusting tag. */
+	/** Drops the Thruster's smoothing state: x/z samples, smoothed speed, throttle and the thrusting tag. */
 	private fun Function.resetThrust(condition: String) {
-		for (obj in listOf(Jp.X, Jp.Z, Jp.VX, Jp.VZ)) raw("execute if score $condition run scoreboard players reset @s $obj")
+		for (obj in listOf(Jp.X, Jp.Z, Jp.VX, Jp.VZ, Jp.RAMP)) raw("execute if score $condition run scoreboard players reset @s $obj")
 		raw("execute if score $condition run tag @s remove ${Jp.THRUSTING}")
 	}
 

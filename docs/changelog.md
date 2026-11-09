@@ -50,6 +50,25 @@ This page mirrors key datapack milestones from the main project changelog.
   Detector's. Read once a second on the world sensors' clock. The Goggles show how many names are
   listed, the radius and the output. Crafted from five copper ingots, a book and quill, an observer
   and two redstone.
+- **Network Gauge** (Transport Networks). A redstone signal, 0 to 15, from how full a network
+  is: `ceil(15 × stored / capacity)`, so any contents give at least 1 and only a full network gives
+  15, as a comparator reads a chest. One block for every network: place it against a pipe, tank,
+  wire or battery and it reads the network behind it (or the first one beside it). It is a target
+  block, so dust, a repeater or a comparator next to it picks up the level; it is not part of the
+  network, so placing it never splits or joins anything. Read twice a second, on a clock that only
+  runs while a gauge is loaded. The Goggles show the level, the network and what it holds out of
+  its capacity. Crafted from four copper ingots, glass, two redstone, a comparator and a target.
+- **Usage Meter** (Transport Networks). A redstone pulse every *every* units (1 to 100000000,
+  default 1000, mL or EU) consumed from or produced into the network behind it, for electricity
+  or water bills, with a running *total* that the Wrench resets (plain right-click) and the
+  Data Handler shows read only. Shift+right-click with the Wrench switches between *consumed*
+  (what is taken out: machines, drains pouring, a valve or breaker moving it away) and *produced*
+  (what is put in). The pulse is 2 ticks on the meter's own target block, at most one per read
+  (twice a second); pulses due beyond that wait their turn and none are lost. Only networks a
+  meter reads keep counts, so others cost one test per transfer. The Goggles show the mode, the
+  total, the pulse size and what has gone through since the last pulse. The default *every* for
+  new meters is on the Power & Fluids settings page. Crafted like the Network Gauge with a clock
+  in place of the comparator.
 
 - **Elevator** (Interactive Machines). Stand on it and jump to go up, or sneak to go down, to the
   next Elevator straight above or below in the same column, at most *range* blocks away (2 to 64,

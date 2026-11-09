@@ -52,6 +52,47 @@ object PackValidator {
 				.map { (i, line) -> "${fn.asId()}:${i + 1}: item summoned without an Item: ${line.trim().take(120)}" }
 		}
 
+	/**
+	 * Every `tellraw` a function reachable from `#minecraft:load` runs must be one of:
+	 * - gated on the "Show the load message" setting ([loadMessage] / [LoadMessages.GATE]);
+	 * - a deliberate [loadNotice] (a warning shown whatever the setting);
+	 * - for `@a[tag=ra.debug]` only: those players asked for debug lines;
+	 * - for `@s`: at load that is the server console, not anybody's chat.
+	 *
+	 * v6.0.1 gated the hub's greeting but every module printed its own "loaded!" line before it,
+	 * ungated, so turning the setting off still left eleven lines in chat. Always fatal.
+	 *
+	 * Calls are followed through `function` and function tags; `schedule` is not followed (a
+	 * scheduled function does not run during load), nor is any `function` inside a tellraw, which
+	 * is a click event, not a call.
+	 */
+	fun ungatedLoadMessages(pack: DataPack): List<String> {
+		val byId = (pack.functions + pack.generatedFunctions).associateBy { it.asId() }
+		val tags = pack.tags.filter { it.type == "function" }.associate { "${it.namespace}:${it.fileName}" to it.values.map { v -> v.name } }
+		val seen = mutableSetOf<String>()
+		val queue = ArrayDeque(tags["minecraft:load"].orEmpty())
+		val bad = mutableListOf<String>()
+		while (queue.isNotEmpty()) {
+			val ref = queue.removeFirst()
+			if (!seen.add(ref)) continue
+			if (ref.startsWith("#")) { queue += tags[ref.removePrefix("#")].orEmpty(); continue }
+			val fn = byId[ref] ?: continue
+			for ((i, raw) in fn.lines.withIndex()) {
+				val line = raw.trimStart()
+				if (line.startsWith("#")) continue
+				if ("tellraw" !in line) {
+					if ("schedule " in line) continue
+					call.findAll(line).forEach { m -> m.destructured.let { (t, ns, p) -> if ("$" !in p) queue += "$t$ns:$p" } }
+					continue
+				}
+				val ok = line.startsWith(LoadMessages.GATE) || raw in LoadMessages.alwaysShown ||
+					Regex("""tellraw @a\[tag=ra\.debug] """).containsMatchIn(line) || Regex("""tellraw @s """).containsMatchIn(line)
+				if (!ok) bad += "$ref:${i + 1}: tellraw at load not gated on the load-message setting: ${line.take(120)}"
+			}
+		}
+		return bad
+	}
+
 	/** Fails generation listing every unresolved call. */
 	fun validate(pack: DataPack) {
 		val problems = problems(pack)

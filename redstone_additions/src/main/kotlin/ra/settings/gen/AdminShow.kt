@@ -78,6 +78,20 @@ internal object AdminShow {
 			else -> """{text:""}"""
 		}
 
+		// An on/off value reads "on"/"off", not the stored 1b/0b: "Show the load message: 0b" does
+		// not look like a switch. 0b is off and anything else on, the same test the load-message
+		// gate makes (ra.core.LoadMessages).
+		if (row is BoolRow) {
+			val off = "global{\"${row.key}\":0b}"
+			fun line(word: String, color: String) =
+				"""tellraw @s [{text:"  $label: ",color:"white"},{text:"$word",color:"$color"},{text:"  "},$buttons]"""
+			return listOf(
+				// Whole lines: Kore moves a raw() inside execute-run into a generated scope.
+				{ raw("execute unless data storage ra:settings $off run ${line("on", "green")}") },
+				{ raw("execute if data storage ra:settings $off run ${line("off", "red")}") },
+			)
+		}
+
 		return listOf { raw("tellraw @s [$head,$buttons]") }
 	}
 }

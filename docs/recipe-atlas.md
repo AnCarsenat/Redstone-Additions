@@ -1,6 +1,6 @@
 # Recipe Atlas
 
-Every recipe in the pack, in one place: 75 of them.
+Every recipe in the pack, in one place: 76 of them.
 
 !!! tip "Finding one"
     Use the search box with the item's name — every recipe below is indexed by
@@ -32,6 +32,7 @@ what the pack actually contains rather than what someone remembered to add.
 | [Diamond Multiblock Base](#multiblocks) | [Multiblocks](multiblocks.md) | Crafting table |
 | [Edge Detector](#logic-gates) | [Logic Gates](logic-gates.md) | Crafting table |
 | [Electric Furnace](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
+| [Elevator](#interactive-machines) | [Interactive Machines](interactive-machines.md) | Crafting table |
 | [Enchanted Coal](#not-crafted-won-on-an-enchanting-table) | [Interactive Machines](interactive-machines.md) | Enchanting table |
 | [Enchanted Coal Block](#interactive-machines) | [Interactive Machines](interactive-machines.md) | Crafting table |
 | [Ender Fluid Vault](#ender-links) | [Ender Links](ender-links.md) | Crafting table |
@@ -135,6 +136,7 @@ Module page: [Interactive Machines](interactive-machines.md) — give everything
 | **Block Breaker** | ![Block Breaker recipe](images/recipes/ra_interactive/block_breaker.png){ width="220" } | Crafting table | `ra_interactive:block_breaker` |
 | **Block Placer** | ![Block Placer recipe](images/recipes/ra_interactive/block_placer.png){ width="220" } | Crafting table | `ra_interactive:block_placer` |
 | **Breeder** | ![Breeder recipe](images/recipes/ra_interactive/breeder.png){ width="220" } | Crafting table | `ra_interactive:breeder` |
+| **Elevator** | ![Elevator recipe](images/recipes/ra_interactive/elevator.png){ width="220" } | Crafting table | `ra_interactive:elevator` |
 | **Enchanted Coal Block** | ![Enchanted Coal Block recipe](images/recipes/ra_interactive/enchanted_coal_block.png){ width="220" } | Crafting table | `ra_interactive:enchanted_coal_block` |
 | **Infinite Lava Cauldron** | ![Infinite Lava Cauldron recipe](images/recipes/ra_interactive/infinite_lava_cauldron.png){ width="220" } | Crafting table | `ra_interactive:infinite_lava_cauldron` |
 | **Infinite Snow Cauldron** | ![Infinite Snow Cauldron recipe](images/recipes/ra_interactive/infinite_snow_cauldron.png){ width="220" } | Crafting table | `ra_interactive:infinite_snow_cauldron` |

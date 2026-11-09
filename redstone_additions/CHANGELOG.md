@@ -34,6 +34,13 @@
   into redstone blocks. Read once a second on the same clock as the Light Sensor. Crafted from
   three glass, two redstone, a lightning rod and three copper ingots.
 
+- **Elevator** (Interactive Machines). Stand on it and jump to go up, or sneak to go down, to the
+  next Elevator straight above or below in the same column, at most *range* blocks away (2 to 64,
+  default 16; admins up to 384). You land on top of it facing the same way, if the two blocks above
+  it are free. Pressing sneak rides once, holding it does not keep going down. Teleport sound and
+  particles follow each player's settings. Crafted from eight white wool around an ender pearl,
+  two per craft. An Elevator only checks the block above itself for a player.
+
 ### Changed
 
 - **Anyone can change a Message Block's text.** It was locked to admins in v6.0.1 because rich

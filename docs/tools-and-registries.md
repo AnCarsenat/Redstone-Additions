@@ -322,6 +322,7 @@ an admin set to a large range keeps it, whoever powers or stands near it later, 
 | Big Torch `radius` | 100 | 256 | a sphere selector every 10 ticks per torch |
 | Magic Crate `radius` | 20 | 64 | an item selector every pull |
 | Message Block `range` | 128 | 1024 | a sane ceiling (one player selector per pulse) |
+| Elevator `range` | 64 | 384 | a world's height (one box selector per ride) |
 
 The server settings' placement defaults for these (`PropRow`) step up to the admin cap, since
 only admins reach those pages.

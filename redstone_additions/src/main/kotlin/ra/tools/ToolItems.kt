@@ -64,6 +64,15 @@ object ToolItems {
 		lore("RMB a block: read its network", "Stored, capacity, and what this block adds"),
 	)
 
+	/**
+	 * The Goggles' upgrade for any helmet (see [ra.tools.goggles.lens.GogglesLens]). Clicked, like
+	 * a jetpack kit: right-click while wearing the helmet fits it.
+	 */
+	val gogglesLens = clickTool(
+		"goggles_lens", "minecraft:firework_star", "minecraft:spyglass", "Goggles Lens",
+		lore("RMB while wearing a helmet to fit it", "The helmet then works as Goggles", "/trigger ra.goggles switches it off"),
+	)
+
 	/** Worn, not used: no food trick. Dyed copper-orange so it reads as goggles. */
 	val goggles = ToolItem(
 		"goggles", ItemSpec.fromSnbt(

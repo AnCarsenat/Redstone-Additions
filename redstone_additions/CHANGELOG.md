@@ -127,6 +127,14 @@
   server settings on the Ender Links page (`ender_tablet_pearls`, 0 to 16, and
   `ender_tablet_cooldown`, 0 to 600 seconds). Crafted from an eye of ender, three gold ingots and a
   compass.
+- **Goggles Lens** (Tools). An expensive upgrade that gives any helmet the Goggles' view: hold it,
+  wear a helmet (leather, copper, chainmail, iron, gold, diamond, netherite or a turtle shell) and
+  right-click; the lens is used up and the helmet keeps its material, enchantments, trims and
+  durability. A lensed helmet shows every block's label exactly like the Goggles, worn or held.
+  `/trigger ra.goggles` opens a small menu to switch the lens off and on (the helmet's lore says
+  which) or remove it and get the lens back. Crafted from four tinted glass, two diamonds, two gold
+  ingots and a netherite ingot; unlocked by picking up a netherite ingot. A helmet that already
+  carries data or a description of its own (another pack's item, the Goggles) is refused.
 
 ### Changed
 
@@ -196,6 +204,13 @@
 
 ### For contributors
 
+- **Goggles Lens** (`ra/tools/goggles/lens/GogglesLens.kt`). A switched-on lensed helmet carries
+  `{ra:{goggles:1b,lensed:1b}}`, so goggles/tick finds it with its existing
+  `custom_data~{ra:{goggles:1b}}` check and nothing per tick was added for detection; off is
+  `{ra:{lensed:1b}}`. Unlike a jetpack kit's switch, "off" is on the item, not a player tag, so the
+  Goggles check stays one predicate. The `ra.goggles` trigger is polled with one score selector
+  per tick and handed to lensed-helmet wearers once per Goggles redraw. The helmet's state is
+  written with inline `set_components` item modifiers.
 - **Channel items share one prompt** (`ra/modules/wireless/tools/ChannelPrompt.kt`). The Redstone
   Remote's Sneak+right-click book prompt is now a class with one instance per item (its own
   pending, slot and request objectives), used by the Remote and the Pager; the Remote's functions

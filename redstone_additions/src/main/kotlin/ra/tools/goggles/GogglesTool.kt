@@ -17,6 +17,7 @@ import ra.tools.ToolItems
 import ra.tools.goggles.billboard.BLOCK_BASE
 import ra.tools.goggles.billboard.registerBillboardLines
 import ra.tools.goggles.billboard.registerBillboardRender
+import ra.tools.goggles.lens.GogglesLens
 import ra.tools.goggles.status.registerGogglesStatus
 
 /**
@@ -39,8 +40,14 @@ object GogglesTool {
 
 		// Called every tick from ra:tick.
 		pack.define(Goggles.tick) {
+			// A helmet with a Goggles Lens switched on carries the same flag, so this one check per
+			// slot covers it too: the lens adds nothing here. See lens/GogglesLens.
 			for (slot in SLOTS)
 				raw("execute as @a at @s if items entity @s $slot *[custom_data~{ra:{goggles:1b}}] run tag @s add ra.goggles_active")
+
+			// The lens menu (/trigger ra.goggles). Every tick so a click answers at once; one
+			// score selector, empty unless someone just clicked.
+			raw("execute as @a[scores={${GogglesLens.TRIGGER}=1..}] at @s run function ${GogglesLens.menuAction.asId()}")
 
 			// Redraw once a second, by default.
 			//
@@ -56,6 +63,11 @@ object GogglesTool {
 			raw("execute if score #goggles_want ${Obj.TEMP} matches ..0 run scoreboard players set #goggles_want ${Obj.TEMP} 20")
 			raw("execute if score #goggles_timer ${Obj.TEMP} < #goggles_want ${Obj.TEMP} run return 0")
 			scoreboard.players.set(literal("#goggles_timer"), Obj.TEMP, 0)
+
+			// Hand the lens trigger to whoever wears a lensed helmet, on or off, once per redraw
+			// rather than every tick: it stays enabled once given (menu_action re-enables it after
+			// each use), so this only catches a helmet that changed hands.
+			raw("execute as @a if ${GogglesLens.LENSED} run scoreboard players enable @s ${GogglesLens.TRIGGER}")
 
 			// Remove old billboards. Item displays as well as text ones since blocks can draw an item
 			// into their readout -- see billboard/item_line. A display left behind by this sweep is a

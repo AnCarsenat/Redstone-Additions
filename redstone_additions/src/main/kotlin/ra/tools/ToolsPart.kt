@@ -9,6 +9,7 @@ import ra.tools.creativedatahandler.CreativeDataHandler.registerCreativeDataHand
 import ra.tools.datahandler.DataHandler.registerDataHandler
 import ra.tools.datahandler.DataHandlerRegistry.registerDataHandlerRegistry
 import ra.tools.goggles.GogglesTool.registerGoggles
+import ra.tools.goggles.lens.GogglesLens.registerGogglesLens
 import ra.tools.inputdatahandler.InputDataHandler.registerInputDataHandler
 import ra.tools.multimeter.Multimeter.registerMultimeter
 import ra.tools.readonly.Readonly.registerReadonly
@@ -19,7 +20,7 @@ import ra.tools.wrench.WrenchRegistry.registerToolsWrenchCycles
 import ra.tools.wrench.WrenchRegistry.registerWrenchRegistry
 
 /**
- * Tools (`ra:tools/...`): wrench, goggles, the three data handlers, clipboard, multimeter.
+ * Tools (`ra:tools/...`): wrench, goggles (and the Goggles Lens), the three data handlers, clipboard, multimeter.
  *
  * Runs after every module, so the registries it builds shared functions from (goggles dispatch,
  * wrench cycles and toggles, read-only properties) are complete when it reads them.
@@ -32,6 +33,7 @@ object ToolsPart : PackPart {
 		pack.registerToolResources()
 		registerBlockName()
 		registerGoggles()
+		registerGogglesLens()
 		registerWrench()
 		registerWrenchMenu()
 		registerWrenchMultiblock()
@@ -53,7 +55,7 @@ object ToolsPart : PackPart {
 			ns = Ns.RA,
 			items = listOf(
 				ToolItems.multimeter, ToolItems.clipboard, ToolItems.wrench,
-				ToolItems.creativeDataHandler, ToolItems.dataHandler, ToolItems.goggles,
+				ToolItems.creativeDataHandler, ToolItems.dataHandler, ToolItems.goggles, ToolItems.gogglesLens,
 			).map { it.spec.stackNbt() },
 		)
 	}

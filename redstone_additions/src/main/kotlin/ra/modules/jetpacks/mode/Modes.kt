@@ -36,6 +36,7 @@ object Modes {
 			function(Engine.stop)
 			raw("""execute if score @s ${Jp.STATE} matches 1 run title @s actionbar [{text:"Jetpack: ",color:"gray"},{text:"hover",color:"aqua"},{text:" — sneak and look up or down",color:"dark_gray"}]""")
 			raw("""execute unless score @s ${Jp.STATE} matches 1 run title @s actionbar [{text:"Jetpack: ",color:"gray"},{text:"classic",color:"green"},{text:" — sneak to rise",color:"dark_gray"}]""")
+			raw(Jp.HOLD_GAUGE)
 			click()
 		}
 
@@ -50,6 +51,7 @@ object Modes {
 			}
 			raw("""execute if score @s ${Jp.MUTE} matches 1 run title @s actionbar [{text:"Jetpack sound: ",color:"gray"},{text:"off",color:"red"}]""")
 			raw("""execute unless score @s ${Jp.MUTE} matches 1 run title @s actionbar [{text:"Jetpack sound: ",color:"gray"},{text:"on",color:"green"}]""")
+			raw(Jp.HOLD_GAUGE)
 			click()
 		}
 
@@ -65,6 +67,7 @@ object Modes {
 			}
 			raw("""execute if score @s ${Jp.OFF} matches 1 run title @s actionbar [{text:"Jetpack: ",color:"gray"},{text:"off",color:"red"},{text:" — /trigger ra.jp.power to switch it back on",color:"dark_gray"}]""")
 			raw("""execute unless score @s ${Jp.OFF} matches 1 run title @s actionbar [{text:"Jetpack: ",color:"gray"},{text:"on",color:"green"}]""")
+			raw(Jp.HOLD_GAUGE)
 			click()
 		}
 	}

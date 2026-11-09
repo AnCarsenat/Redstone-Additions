@@ -57,6 +57,16 @@ object Jp {
 	/** 1 once the player has actually left the ground, so touching down can be told apart from standing there. */
 	const val AIR = "ra.jp.air"
 
+	/**
+	 * Fuel gauge: ticks until the actionbar gauge may be drawn again. Counts down while the
+	 * jetpack is worn; every other jetpack actionbar message sets it with [HOLD_GAUGE], so the
+	 * gauge waits for that message to fade instead of writing over it. See flight/Gauge.
+	 */
+	const val GAUGE = "ra.jp.gauge"
+
+	/** After any jetpack `title @s actionbar`: keep the fuel gauge off it for two seconds. */
+	const val HOLD_GAUGE = "scoreboard players set @s $GAUGE 40"
+
 	/** Master switch: a player with it set wears a jetpack that does nothing at all. */
 	const val OFF = "ra.jp.off"
 

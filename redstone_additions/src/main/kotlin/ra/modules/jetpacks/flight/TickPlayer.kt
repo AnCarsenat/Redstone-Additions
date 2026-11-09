@@ -78,6 +78,10 @@ object TickPlayer {
 		// flight/thrust for why movement_speed does almost nothing once you are in the air.
 		resetThrust("#jp.airborne $t matches 0")
 
+		// Fuel gauge on the actionbar. Above the dry check so its hold timer keeps counting; it
+		// draws nothing on the ground, when dry, or for the infinite tier.
+		function(Gauge.gauge)
+
 		// A jetpack that ran dry comes back the moment there is fuel again.
 		for (fuel in listOf("minecraft:coal", "minecraft:charcoal")) for (slot in listOf("container.*", "weapon.offhand")) {
 			raw("execute if entity @s[tag=${Jp.DRY}] if items entity @s $slot $fuel run tag @s remove ${Jp.DRY}")

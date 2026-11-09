@@ -25,6 +25,7 @@ No permissions needed. Click a value to change it.
 | Machine particles | on | Particles made by Redstone Additions blocks |
 | Debug messages | off | Extra diagnostic messages in chat |
 | Show filter previews | on | The item an Item Pipe filters for, floating above its Goggles label |
+| Jetpack fuel gauge | on | The [fuel bar](jetpacks.md#fuel-gauge) on the action bar while you fly an Iron jetpack |
 
 These only change what **you** see and hear — with one exception. Goggles labels are shared:
 everyone near a block sees the same label. So *Show filter previews* decides whether **you** ask

@@ -64,6 +64,8 @@ object Obj {
 	 * preview is drawn when any goggles wearer in range has it on. See ra.tools.goggles.GogglesTool.
 	 */
 	const val USER_FILTER_PREVIEW = "ra.u.fprev"
+	/** Player wants the jetpack fuel gauge on the actionbar while flying. See ra.modules.jetpacks.flight.Gauge. */
+	const val USER_JETPACK_GAUGE = "ra.u.jpfuel"
 }
 
 /** Entity tags shared across modules. Per-block tags are built by [ra.core.block.CustomBlock]. */

@@ -125,6 +125,7 @@ object Engine {
 		tag(self()) { add(Jp.DRY) }
 
 		raw("""title @s actionbar [{text:"Jetpack out of fuel",color:"red"},{text:" — carry coal",color:"gray"}]""")
+		raw(Jp.HOLD_GAUGE)
 		raw("playsound minecraft:block.fire.extinguish player $SELF_IF_SOUND ~ ~ ~ 0.8 0.6")
 	}
 }

@@ -93,6 +93,24 @@ inventory, or charcoal if you have no coal.
 With neither, the jetpack cuts out and says so in the action bar. It comes back once you pick
 up coal again.
 
+### Fuel gauge
+
+While an Iron jetpack is in the air, the action bar shows how much fuel is left:
+
+```
+Fuel ▮▮▮▮▮▮▯▯▯▯ 63% · 12 coal
+```
+
+The bar and the percentage are what is left of the piece burning now (two minutes of flight when
+full); the count is the coal and charcoal you carry, each another two minutes. It is green while
+there is coal to come, yellow on the last piece (the count then reads *no coal*), and red once
+that piece is under a quarter. It is redrawn once a second while you fly and disappears on the
+ground; the Infinite jetpack has no gauge. Other jetpack messages (mode switch, kit fitted, out of
+fuel) are not overwritten: the gauge waits two seconds after each.
+
+Turn it off for yourself with *Jetpack fuel gauge* in `/trigger ra.settings.open`
+([settings](settings.md)).
+
 ## Commands
 
 | Command | Does |
@@ -152,6 +170,8 @@ up coal again.
 | `ra.jp.air` | `1` once the player has left the ground, so a landing can be spotted |
 | `ra.jp.y` | Last sampled height, in thousandths of a block |
 | `ra.jp.ramp` | Thruster throttle, 0 to 100 |
+| `ra.jp.gauge` | Ticks until the fuel gauge may be redrawn (held at 40 after another jetpack message) |
+| `ra.u.jpfuel` | *Jetpack fuel gauge* setting: `1` shows the gauge |
 | `ra.jp.grav` | Current thrust tier on the gravity attribute |
 | `ra.jp.state` | `0` classic, `1` hover |
 | `ra.jp.fuel` | Ticks of powered flight since the last coal |

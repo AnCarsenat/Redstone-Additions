@@ -35,6 +35,7 @@ import ra.modules.jetpacks.Kits.registerKits
 import ra.modules.jetpacks.flight.Classic.registerClassic
 import ra.modules.jetpacks.flight.Engine
 import ra.modules.jetpacks.flight.Engine.registerEngine
+import ra.modules.jetpacks.flight.Gauge.registerGauge
 import ra.modules.jetpacks.flight.Hover.registerHover
 import ra.modules.jetpacks.flight.Scorch.registerScorch
 import ra.modules.jetpacks.flight.Thrust.registerThrust
@@ -77,6 +78,7 @@ object JetpacksModule : GameplayModule {
 		registerClassic()
 		registerThrust()
 		registerScorch()
+		registerGauge()
 		registerTickPlayer()
 
 		// After ra_infinite's list and ahead of ra_interactive's, as in the beet tag: see hookEnchantRecipes.
@@ -130,6 +132,7 @@ object JetpacksModule : GameplayModule {
 		scoreboard.objectives.add(Jp.VX)
 		scoreboard.objectives.add(Jp.VZ)
 		scoreboard.objectives.add(Jp.RAMP)
+		scoreboard.objectives.add(Jp.GAUGE)
 		scoreboard.objectives.add(Jp.GRAV)
 		scoreboard.objectives.add(Jp.AIR)
 		scoreboard.objectives.add(Jp.OFF)

@@ -89,6 +89,11 @@ This page mirrors key datapack milestones from the main project changelog.
   lifts them with Levitation, and spectators and flying creative players are left alone. A wind
   puff follows each player's particle setting. Crafted from four cobblestone, three feathers, a
   dropper and redstone. An unpowered Fan only checks its own block every other tick.
+- **Jetpack fuel gauge.** While an Iron jetpack is in the air, the action bar shows the fuel left
+  in the burning piece as a coloured bar and a percentage, and the coal you carry
+  (`Fuel ▮▮▮▮▮▮▯▯▯▯ 63% · 12 coal`). Green while there is coal to come, then yellow, red under a
+  quarter of the last piece. It waits for the jetpack's other action bar messages instead of
+  overwriting them. Turn it off for yourself with *Jetpack fuel gauge* in Your Preferences.
 
 ### Changed
 

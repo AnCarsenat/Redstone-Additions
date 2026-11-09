@@ -4,5 +4,8 @@ import ra.core.Ns
 
 val WirelessPage = Page(
 	"wireless", "Wireless Redstone", Ns.WIRELESS,
-	blocks("emitter" to "Emitter", "receiver" to "Receiver"),
+	blocks(
+		"emitter" to "Emitter", "receiver" to "Receiver",
+		"analog_emitter" to "Analog Emitter", "analog_receiver" to "Analog Receiver",
+	),
 )

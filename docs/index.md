@@ -48,7 +48,7 @@ is the shortcut: one sample per module, and where to read about it.
 | [Interactive Machines](interactive-machines.md) | 15 automation and utility blocks | ![Block Placer recipe](images/recipes/ra_interactive/block_placer.png){ width="220" } |
 | [Storage](storage.md) | Boxer + Unboxer workflow | ![Boxer recipe](images/recipes/ra_storage/boxer.png){ width="220" } |
 | [Sensors](sensors.md) | Entity detector, tag operators, light and weather sensors, held item and player detectors | ![Entity Detector recipe](images/recipes/ra_sensors/entity_detector.png){ width="220" } |
-| [Wireless Redstone](wireless-redstone.md) | Emitter, Receiver, and Remote | ![Wireless Emitter recipe](images/recipes/ra_wireless/emitter.png){ width="220" } |
+| [Wireless Redstone](wireless-redstone.md) | Emitters and Receivers (on/off and analog), Remote and Pager | ![Wireless Emitter recipe](images/recipes/ra_wireless/emitter.png){ width="220" } |
 | [Transport Networks](transport-networks.md) | Liquid, gas, EU, Boiler, Solar Panel | ![Liquid Pump recipe](images/recipes/ra_wires/liquid_pump.png){ width="220" } |
 | [Chunk Loader](chunk-loader.md) | 1 force-load block | ![Chunk Loader recipe](images/recipes/ra_chunk_loader/chunk_loader.png){ width="220" } |
 | [Multiblocks](multiblocks.md) | 5 base tiers + structures | ![Copper Base recipe](images/recipes/ra_multiblock/copper_base.png){ width="220" } |
@@ -59,10 +59,10 @@ is the shortcut: one sample per module, and where to read about it.
 
 Current pack totals:
 
-- 73 placeable custom blocks
-- 84 recipes, all of them in the [Recipe Atlas](recipe-atlas.md)
-- 8 tools (Wrench, Goggles, Data Handler, Creative Data Handler, Clipboard,
-  Multimeter, Redstone Remote, Anchor Tablet)
+- 75 placeable custom blocks
+- 87 recipes, all of them in the [Recipe Atlas](recipe-atlas.md)
+- 9 tools (Wrench, Goggles, Data Handler, Creative Data Handler, Clipboard,
+  Multimeter, Redstone Remote, Pager, Anchor Tablet)
 
 ## Commands Most Players Need
 

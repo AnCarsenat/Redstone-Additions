@@ -96,7 +96,7 @@ one page, A to Z and by module.
 | ra_infinite:nether_generator         | Nether Generator          | Generator Casing + Nether Core |
 | ra_infinite:poppy_generator          | Poppy Generator           | Generator Casing + Poppy Core |
 | ra_automation:crafter_controller     | Crafter Controller        | ![Crafter Controller recipe](images/recipes/ra_automation/crafter_controller.png){ width="220" } |
-| ra_security:keypad                   | Keypad                    | ![Keypad recipe](images/recipes/ra_security/keypad.png){ width="220" } |
+| ra_security:keypad                   | Keypad Controller                    | ![Keypad Controller recipe](images/recipes/ra_security/keypad.png){ width="220" } |
 
 ## Crafting Items
 

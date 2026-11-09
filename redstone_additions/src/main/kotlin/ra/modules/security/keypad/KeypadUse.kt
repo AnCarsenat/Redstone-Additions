@@ -104,7 +104,7 @@ object KeypadUse {
 			raw("data modify entity @s data.data.code set from entity $USER $SLOTS")
 			raw("data modify entity @s data.status.code set value \"set\"")
 			raw("data modify entity @s data.data.fails set value 0")
-			raw(say("Keypad code set. Right-click it with the same Pattern to open it.", "green"))
+			raw(say("Keypad Controller code set. Right-click it with the same Pattern to open it.", "green"))
 			raw(sound("minecraft:ui.cartography_table.take_result", "1.2"))
 		}
 

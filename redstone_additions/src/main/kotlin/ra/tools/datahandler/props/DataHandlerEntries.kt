@@ -127,7 +127,7 @@ object DataHandlerEntries {
 	private fun btn(label: String, color: String, action: String, hover: String) =
 		"""{text:"$label",color:"$color",click_event:{action:"run_command",command:"/trigger ra.dh.action set $($action)"},hover_event:{action:"show_text",value:"$hover"}}"""
 
-	private const val HEAD = """{text:"  "},{text:"$(name)",color:"white"},{text:"$(note)",color:"dark_gray",italic:true},{text:": ",color:"white"},{text:"list",color:"aqua"},{text:" ($(count)) ",color:"gray"}"""
+	private const val HEAD = """{text:"  "},{text:"$(name)",color:"white"},{text:"$(note)",color:"dark_gray",italic:true},${PropRows.ADMIN_MARK},{text:": ",color:"white"},{text:"list",color:"aqua"},{text:" ($(count)) ",color:"gray"}"""
 	private val WHOLE = btn("[Edit all]", "yellow", "whole", "Write the whole list at once, in the input book")
 	/** $(lc) and $(lh): aqua "Show the entries" while the list is compact, gold "Hide the entries" open. */
 	private val LIST_BTN = btn("[List]", "$(lc)", "list", "$(lh)")
@@ -170,6 +170,8 @@ object DataHandlerEntries {
 		raw("data modify storage ra:dh eq set value {label:\"#\",rm:\"[Remove]\",rmh:\"Delete this entry; the ones after it move up\",lc:\"aqua\",lh:\"Show the entries\"}")
 		raw("data modify storage ra:dh eq.name set from storage ra:dh q.name")
 		raw("data modify storage ra:dh eq.note set from storage ra:dh q.note")
+		raw("data modify storage ra:dh eq.admin set from storage ra:dh q.admin")
+		raw("data modify storage ra:dh eq.admin_why set from storage ra:dh q.admin_why")
 		raw("data modify storage ra:dh eq.whole set from storage ra:dh q.action")
 		raw("execute if data storage ra:dh spec.entry_label run data modify storage ra:dh eq.label set from storage ra:dh spec.entry_label")
 		raw("scoreboard players set #dh.lpad $T 0")

@@ -29,8 +29,11 @@ package ra.core
  * Flags:
  *   readonly    the block's own working value. Shown, never editable by the Data Handler, never
  *               cycled by the wrench. The Creative Data Handler still edits it.
- *   adminOnly   only players holding `ra.admin` (server-settings access) may change it. Others
- *               see it locked, with the reason on hover; the write re-checks.
+ *   adminOnly   only players holding `ra.admin` (server-settings access, [Admin.TAG]) may change
+ *               it. Others see it locked, with the reason on hover; the write re-checks. Every
+ *               player sees the row marked "(admin)".
+ *   adminMax    a number's ceiling for admins, above the players' `max` (a range or radius). See
+ *               [Admin]: checked at edit time; use time clamps only to this technical cap.
  *   visible     false: not shown to players without `ra.admin`, and not editable by them. Admins
  *               see it greyed "hidden from players" and can edit it.
  *   goggles     whether a `prop_line` of it is drawn on the Goggles billboard. Unset (null) follows
@@ -59,6 +62,8 @@ data class PropSpec(
 	val type: PropType,
 	val min: Int? = null,
 	val max: Int? = null,
+	/** A number's ceiling for admins (players stop at [max]); see [Admin]. */
+	val adminMax: Int? = null,
 	/** A list's entry type; only [PropType.TEXT] is checked. */
 	val of: PropType? = null,
 	/** A list's longest length. */
@@ -94,6 +99,7 @@ data class PropSpec(
 		require(type == PropType.NUMBER || (min == null && max == null)) { "$name: only a number has bounds" }
 		require(type == PropType.LIST || (of == null && maxLength == null && !pad)) { "$name: only a list has of / max / pad" }
 		require(adminSetting == null || adminOnly) { "$name: adminSetting needs adminOnly" }
+		require(adminMax == null || (max != null && adminMax > max)) { "$name: adminMax must be above max" }
 	}
 
 	/** The registry entry, `{type:"number",min:1,...}`, at menu position [index]. */
@@ -104,6 +110,7 @@ data class PropSpec(
 		}
 		min?.let { add("min:$it") }
 		max?.let { add("max:$it") }
+		adminMax?.let { add("${Admin.MAX_KEY}:$it") }
 		of?.let { add("of:\"${it.id}\""); add("of_code:${it.code}") }
 		maxLength?.let { add("max_length:$it") }
 		if (pad) add("pad:1b")
@@ -129,8 +136,9 @@ class PropertiesBuilder {
 		specs += spec
 	}
 
-	fun number(name: String, min: Int = 0, max: Int = 9999, readonly: Boolean = false, adminOnly: Boolean = false, visible: Boolean = true, goggles: Boolean? = null, default: Int? = null) =
-		add(PropSpec(name, PropType.NUMBER, min, max, readonly = readonly, adminOnly = adminOnly, visible = visible, goggles = goggles, default = default?.toString()))
+	/** [adminMax]: for a range or radius, how far an admin may go past [max]; see [Admin]. */
+	fun number(name: String, min: Int = 0, max: Int = 9999, readonly: Boolean = false, adminOnly: Boolean = false, visible: Boolean = true, goggles: Boolean? = null, default: Int? = null, adminMax: Int? = null) =
+		add(PropSpec(name, PropType.NUMBER, min, max, adminMax, readonly = readonly, adminOnly = adminOnly, visible = visible, goggles = goggles, default = default?.toString()))
 
 	fun bool(name: String, readonly: Boolean = false, adminOnly: Boolean = false, visible: Boolean = true, goggles: Boolean? = null, default: Boolean? = null) =
 		add(PropSpec(name, PropType.BOOL, readonly = readonly, adminOnly = adminOnly, visible = visible, goggles = goggles, default = default?.let { if (it) "1b" else "0b" }))

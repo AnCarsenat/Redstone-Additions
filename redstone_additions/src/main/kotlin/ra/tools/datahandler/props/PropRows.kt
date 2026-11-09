@@ -22,10 +22,18 @@ internal object PropRows {
 	 * `  name: [value] ` -- the part every row shares; [valueColor] is gray on a locked row. A row
 	 * whose type was guessed rather than declared starts with a yellow `⚠ ` ($(warn), "" otherwise)
 	 * that names the guess ($(guess)) on hover. $(note) is " (hidden from players)" on a row only an
-	 * admin sees, "" otherwise.
+	 * admin sees, "" otherwise. [ADMIN_MARK] follows it.
 	 */
 	private fun head(valueColor: String = "green") =
-		"""{text:"  "},{text:"$(warn)",color:"yellow",hover_event:{action:"show_text",value:[{text:"Undeclared type",color:"yellow"},{text:" — guessed $(guess) from the value.\nDeclare it in the block's properties { }.",color:"gray"}]}},{text:"$(name)",color:"white"},{text:"$(note)",color:"dark_gray",italic:true},{text:": ",color:"white"},{text:"[",color:"dark_gray"},{nbt:"properties.$(name)",storage:"ra:dh",color:"$valueColor"},{text:"]",color:"dark_gray"},{text:" "}"""
+		"""{text:"  "},{text:"$(warn)",color:"yellow",hover_event:{action:"show_text",value:[{text:"Undeclared type",color:"yellow"},{text:" — guessed $(guess) from the value.\nDeclare it in the block's properties { }.",color:"gray"}]}},{text:"$(name)",color:"white"},{text:"$(note)",color:"dark_gray",italic:true},$ADMIN_MARK,{text:": ",color:"white"},{text:"[",color:"dark_gray"},{nbt:"properties.$(name)",storage:"ra:dh",color:"$valueColor"},{text:"]",color:"dark_gray"},{text:" "}"""
+
+	/**
+	 * $(admin): " (admin)" on a property only an admin may change, or on a number an admin set
+	 * above the players' maximum; "" otherwise. Shown to everyone, so an admin sees which of the
+	 * things they can do are theirs alone, and a player sees why. $(admin_why) on hover. See
+	 * ra.core.Admin.
+	 */
+	const val ADMIN_MARK = """{text:"$(admin)",color:"${ra.core.Admin.MARK_COLOR}",hover_event:{action:"show_text",value:"$(admin_why)"}}"""
 
 	private fun button(label: String, hover: String, color: String = "yellow", action: String = "action") =
 		"""{text:"$label",color:"$color",click_event:{action:"run_command",command:"/trigger ra.dh.action set $($action)"},hover_event:{action:"show_text",value:"$hover"}}"""

@@ -115,6 +115,10 @@ operator gives you the tag automatically.
 /function ra_settings:admin/revoke     take it away
 ```
 
+Admins (players with this tag) also go past the players' maximum of a range or radius, in the
+Data Handler and on the placement-default rows here (Magic Crate radius up to 64, Message Block
+range up to 1024); see [Tools](tools.md).
+
 !!! warning "Access stays until you revoke it"
     The tag survives reloads and is **not** removed when someone loses operator status. Use
     `/function ra_settings:admin/revoke` (or `/tag <player> remove ra.admin`).

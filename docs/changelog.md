@@ -48,6 +48,19 @@ This page mirrors key datapack milestones from the main project changelog.
   server-settings access, a copied text value that its block would refuse from the Data Handler
   (a selector with a command after it, a tag with spaces) is left out of the paste; the rest of
   the paste goes through.
+- **Admins go past range limits.** Players with server-settings access can set a range or radius
+  above the players' maximum, up to a higher ceiling that protects the server: Big Torch radius
+  up to 256 (players 100), Magic Crate radius up to 64 (players 20), Message Block range up to
+  1024 (players 128), in the Data Handler and on the server settings' placement defaults. The
+  block keeps the larger value whoever uses it later; only the ceiling is applied when it runs.
+  Other players can still lower it within their own range, and the Clipboard pastes a number only
+  within the range its holder could type.
+- **Admin-only settings are marked.** A setting only an admin may change shows a gold *(admin)*
+  after its name in the Data Handler, for everyone: admins see which changes are theirs alone,
+  other players see why the row is locked. A value above the players' maximum is marked the same
+  way, and the Wrench's cycle menu marks admin-only rows for admins. The Wrench now also offers an
+  admin-only setting to everyone when its server setting opens it to players, like the Data
+  Handler.
 
 ### Removed
 
@@ -62,6 +75,9 @@ This page mirrors key datapack milestones from the main project changelog.
 
 ### Fixed
 
+- **A Message Block's range reaches as far as it says.** A block without a selector sent to the
+  players within its `range`, but the range was rounded to 8, 16, 32 or 64 blocks, so a range of
+  10 reached 16 and a range of 128 stopped at 64. It now reaches the exact range.
 - **A poured potion shows its own colour when the pour empties the network.** A powered Liquid
   Drain pours a potion out as a cloud in the potion's colour, but the colour was read after the
   potion had been taken from the network, so the pour that emptied it could come out in the
@@ -77,6 +93,11 @@ This page mirrors key datapack milestones from the main project changelog.
   a number and hands it back as an int. The Data Handler's number test now lives there, and the
   Goggles' Teleport Anchor and Fluid Vault lines pass their value through `clean` before pasting
   it. See the developer guide, *safe: player input in commands*.
+- **Admin limits in one place** (`ra/core/Admin.kt`). `Admin.TAG` is the `ra.admin` tag every
+  admin check uses. A number declares `adminMax` next to `max` (generated as `admin_max`);
+  `raiseMaxForAdmin` lifts an edit-time bound for an admin, `overPlayerMax` tells a menu to mark
+  a value, and `readCappedProperty` reads a property at use time clamped only to `adminMax`. See
+  *Admin limits* in Tools and registries.
 
 ## v6.0.2 (2026-11-09) — Drains, lists and fixes
 

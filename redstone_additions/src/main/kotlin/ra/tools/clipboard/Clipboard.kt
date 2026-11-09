@@ -9,6 +9,7 @@ import io.github.ayfri.kore.generated.arguments.types.AdvancementArgument
 import net.benwoodworth.knbt.NbtByte
 import ra.api.Goggles
 import ra.api.RaLib
+import ra.core.Admin.raiseMaxForAdmin
 import ra.core.TextFormat
 import ra.core.Obj
 import ra.core.Ra
@@ -60,6 +61,7 @@ object Clipboard {
 	private val stripNext = tool("clipboard/strip_next")
 	private val stripOne = tool("clipboard/strip_one")
 	private val stripText = tool("clipboard/strip_text")
+	private val stripNumber = tool("clipboard/strip_number")
 
 	private const val HOLDER = "@a[tag=ra.clip_active,limit=1]"
 	private const val PREFIX = """{text:"[Clipboard] ",color:"gold"}"""
@@ -215,6 +217,10 @@ object Clipboard {
 			raw("scoreboard players set #clip.vis ${Obj.TEMP} 1")
 			raw("\$execute if data storage ra:dh schema.\$(name).visible store result score #clip.vis ${Obj.TEMP} run data get storage ra:dh schema.\$(name).visible")
 			raw("\$execute if score #clip.ro ${Obj.TEMP} matches 1 run return run data remove storage ra:temp clip.props.\$(name)")
+			// A number in its range, as the Data Handler would have taken it: the players' maximum,
+			// or an admin's admin_max (ra.core.Admin). An admin's 200-block torch is not copied by a
+			// player onto theirs.
+			raw("\$execute if data storage ra:dh schema.\$(name){code:1} run function ${stripNumber.asId()} {name:\"\$(name)\"}")
 			raw("execute if score #clip.adm ${Obj.TEMP} matches 1 run return 0")
 			raw("\$execute if score #clip.ao ${Obj.TEMP} matches 1 run return run data remove storage ra:temp clip.props.\$(name)")
 			raw("\$execute if score #clip.vis ${Obj.TEMP} matches 0 run return run data remove storage ra:temp clip.props.\$(name)")
@@ -223,6 +229,20 @@ object Clipboard {
 			// compound) among it.
 			raw("\$execute if data storage ra:dh schema.\$(name){code:0} run function ${stripText.asId()} {name:\"\$(name)\"}")
 			raw("\$execute if data storage ra:dh schema.\$(name){code:4} run function ${stripText.asId()} {name:\"\$(name)\"}")
+		}
+		// {name}: drop clip.props.<name> when it is outside the declared bounds for the holder.
+		pack.define(stripNumber) {
+			raw("data remove storage ra:temp clip_spec")
+			raw("\$data modify storage ra:temp clip_spec set from storage ra:dh schema.\$(name)")
+			raw("scoreboard players set #clip.min ${Obj.TEMP} -2147483648")
+			raw("scoreboard players set #clip.max ${Obj.TEMP} 2147483647")
+			raw("execute if data storage ra:temp clip_spec.min store result score #clip.min ${Obj.TEMP} run data get storage ra:temp clip_spec.min")
+			raw("execute if data storage ra:temp clip_spec.max store result score #clip.max ${Obj.TEMP} run data get storage ra:temp clip_spec.max")
+			raiseMaxForAdmin("storage ra:temp clip_spec", "#clip.max", Obj.TEMP, "if score #clip.adm ${Obj.TEMP} matches 1")
+			raw("data remove storage ra:temp clip_spec")
+			raw("\$execute store result score #clip.v ${Obj.TEMP} run data get storage ra:temp clip.props.\$(name)")
+			raw("\$execute unless score #clip.v ${Obj.TEMP} >= #clip.min ${Obj.TEMP} run data remove storage ra:temp clip.props.\$(name)")
+			raw("\$execute unless score #clip.v ${Obj.TEMP} <= #clip.max ${Obj.TEMP} run data remove storage ra:temp clip.props.\$(name)")
 		}
 		// {name}: drop clip.props.<name> unless it is a string in its schema format.
 		pack.define(stripText) {

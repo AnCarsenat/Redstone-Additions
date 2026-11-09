@@ -23,10 +23,12 @@ import ra.lib.BlockTags
 fun tool(path: String): FunctionArgument = ref(Ns.RA, "tools/$path")
 
 /**
- * The custom-block marker nearest a known block position (within 1.5). Only for a position that
- * IS a block's centre (a stored x y z); to find what a player is looking at, use [raycast].
+ * The custom-block marker of the block whose centre this is (within 0.5: a neighbour's marker is
+ * a whole block away). Only for a position that IS a block's centre -- a stored x y z goes
+ * through `align xyz positioned ~0.5 ~0.5 ~0.5` first; to find what a player is looking at, use
+ * [raycast].
  */
-const val RAY_TARGET = "@e[type=marker,tag=${Tag.CUSTOM_BLOCK},distance=..1.5,limit=1,sort=nearest]"
+const val RAY_TARGET = "@e[type=marker,tag=${Tag.CUSTOM_BLOCK},distance=..0.5,limit=1,sort=nearest]"
 
 /** How far the tools reach, in blocks: creative block reach. */
 const val REACH = 5.0

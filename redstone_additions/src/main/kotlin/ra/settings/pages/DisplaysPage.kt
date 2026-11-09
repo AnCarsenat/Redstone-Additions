@@ -7,5 +7,6 @@ val DisplaysPage = Page(
 	blocks(
 		"gauge_bar" to "Gauge Bar",
 		"item_hologram" to "Item Hologram",
+		"text_screen" to "Text Screen",
 	),
 )

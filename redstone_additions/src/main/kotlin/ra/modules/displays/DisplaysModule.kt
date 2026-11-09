@@ -26,7 +26,7 @@ object DisplaysModule : GameplayModule {
 	override val title = "Displays"
 
 	/** In registration order, which is also the placement-handler and tick order. Not `blocks`: see the gotcha. */
-	private val members: List<DisplayBlock> = listOf(GaugeBar, ItemHologram)
+	private val members: List<DisplayBlock> = listOf(GaugeBar, ItemHologram, TextScreen)
 
 	override fun Ra.register() {
 		// Shared by the blocks that show an item's name.

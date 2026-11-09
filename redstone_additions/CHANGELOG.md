@@ -55,6 +55,13 @@
   arrival grace. The anchors of the world are not listed: a destination is a favourite or a name
   you know. Using it is free. Looks like a lodestone; crafted from five obsidian, a glass pane, two
   ender pearls and a compass. The Goggles show how many favourites it has.
+- **Anchor Tablet** (Ender Links). An item that sends you to a Teleport Anchor from anywhere:
+  right-click it for the same menu as the Anchor Terminal. The tablet keeps its own favourites (up
+  to 8) and its last trip: **[Save]** keeps the last trip, **[Forget]** removes a favourite. A trip
+  costs 1 ender pearl (none in creative) and the tablet then recharges for 10 seconds; both are
+  server settings on the Ender Links page (`ender_tablet_pearls`, 0 to 16, and
+  `ender_tablet_cooldown`, 0 to 600 seconds). Crafted from an eye of ender, three gold ingots and a
+  compass.
 
 ### Changed
 

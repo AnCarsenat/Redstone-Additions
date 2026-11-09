@@ -12,6 +12,7 @@ import ra.core.ref
 import ra.modules.ender.AnchorTerminal
 import ra.modules.ender.chooser.Chooser.SRC
 import ra.modules.ender.chooser.Chooser.say
+import ra.modules.ender.tablet.AnchorTablet
 
 /**
  * [Type a destination]: the anchor id through the shared Input Form book (ra_lib:input), as the
@@ -19,6 +20,7 @@ import ra.modules.ender.chooser.Chooser.say
  *
  * The answer arrives ticks later, so where it applies is checked again then: the player must still
  * stand on an Anchor Terminal, or the tablet must still be in the hotbar slot it was in when the
+ * book opened ([AnchorTablet.SLOT]; the book itself takes the hand while it is written).
  */
 object ChooserInput {
 	private fun fn(path: String) = ref(Ns.ENDER, "chooser/$path")
@@ -65,6 +67,7 @@ object ChooserInput {
 			raw("data modify storage ra:ender menu set value {}")
 			raw("scoreboard players set #ender.ctx $T 0")
 			raw("execute if score @s $SRC matches 1 store result score #ender.ctx $T run function ${AnchorTerminal.find.asId()}")
+			raw("execute if score @s $SRC matches 2 store result score #ender.ctx $T run function ${AnchorTablet.loadSlot.asId()}")
 			raw("execute if score #ender.ctx $T matches 0 if score @s $SRC matches 1 run return run ${say("You left the ${AnchorTerminal.block.name}: nobody was sent.", "red")}")
 			raw("execute if score #ender.ctx $T matches 0 if score @s $SRC matches 2 run return run ${say("The Anchor Tablet left its hotbar slot: nobody was sent.", "red")}")
 

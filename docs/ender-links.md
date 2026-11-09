@@ -2,7 +2,7 @@
 
 Move things between two places that are nowhere near each other. Three **vaults** link two
 endpoints by channel — items, fluids or power — and the **Teleport Anchor** moves players. The
-**Anchor Terminal** sends you to any anchor by its name.
+**Anchor Terminal** and the **Anchor Tablet** send you to any anchor by its name.
 
 ## Getting them
 
@@ -13,8 +13,9 @@ endpoints by channel — items, fluids or power — and the **Teleport Anchor** 
 | Ender Power Vault | purpur pillar | EU (electricity) | ![Ender Power Vault recipe](images/recipes/ra_ender/ender_power_vault.png){ width="220" } |
 | Teleport Anchor | crying obsidian | players | ![Teleport Anchor recipe](images/recipes/ra_ender/teleport_anchor.png){ width="220" } |
 | Anchor Terminal | lodestone | players, to the anchor you choose | ![Anchor Terminal recipe](images/recipes/ra_ender/anchor_terminal.png){ width="220" } |
+| Anchor Tablet (item) | recovery compass | you, from anywhere | ![Anchor Tablet recipe](images/recipes/ra_ender/anchor_tablet.png){ width="220" } |
 
-Operators: `/function ra_ender:items/give_all`.
+Operators: `/function ra_ender:items/give_all` (the tablet alone: `/function ra_ender:tablet/give`).
 
 ## Vaults
 
@@ -142,6 +143,32 @@ The menu's buttons work for one minute, and only while you stand on the terminal
 opens it once; let go and sneak again to open it again. The Goggles show how many favourites the
 terminal has.
 
+## Anchor Tablet
+
+The same menu, from anywhere: **right-click** the tablet.
+
+```
+── Anchor Tablet ──
+  ★ Home  [Go] [Forget]
+  Last: Mine  [Go] [Save]
+  [Type a destination]
+  A trip: 1 ender pearl(s), then 10 s to recharge.
+```
+
+- **[Type a destination]** asks for an anchor name in the Input Form book, as on the terminal.
+  Keep the tablet in the same hotbar slot until you close the book.
+- **Last** is your last trip; **[Save]** keeps it as a favourite (up to 8 per tablet),
+  **[Forget]** removes one. Favourites and the last trip are stored on the tablet itself, so they
+  go wherever it goes.
+
+Each trip costs **1 ender pearl** (none in creative) and the tablet then **recharges for 10
+seconds**. Server operators set both on the Ender Links settings page:
+
+| Setting | Default | Range |
+| --- | --- | --- |
+| `ender_tablet_pearls` — ender pearls per trip | 1 | 0 to 16 |
+| `ender_tablet_cooldown` — recharge, in seconds | 10 | 0 to 600 |
+
 ---
 
 ## Advanced
@@ -157,19 +184,29 @@ terminal has.
 | Teleport Anchor | `targets` | fifteen ids: `targets[0]` is signal 1, `targets[14]` is signal 15; `""` is unused |
 | Anchor Terminal | `favourites` | up to 8 anchor ids (format `ID`), shown as **[Go]** buttons |
 
+The Anchor Tablet keeps `favs` (up to 8 ids) and `last` in its `custom_data`, under `ra`. They are
+written only through the item modifier `ra_ender:tablet_data`, from `storage ra_ender:tablet`, and
+read back through the cleaner (format `ID`) before every use, so an edited tablet can only name a
+key of the destinations table.
+
 ### The destination menu
 
-The terminal uses a chat menu (`ra_ender:chooser/*`). Every button runs
-`/trigger ra.ender.go set <n>`: 1 shows the menu again, 2 types a destination, 11–18 favourite 1–8. The trigger is
+The terminal and the tablet share one chat menu (`ra_ender:chooser/*`). Every button runs
+`/trigger ra.ender.go set <n>`: 1 shows the menu again, 2 types a destination, 3 and 4 are the
+tablet's last trip ([Go], [Save]), 11–18 favourite 1–8, 21–28 forget favourite 1–8. The trigger is
 enabled when a menu is drawn and taken back a minute later or after a trip. A click is checked
-again where it lands: still on a terminal (the box above it); the favourites are read again from
-the block at that moment. A typed name comes back
+again where it lands: still on a terminal (the box above it), or still holding the tablet; the
+favourites are read again from the block or the item at that moment. A typed name comes back
 through `ra_lib:input` (request id kept in `ra.ender.req`) and is cleaned to format `ID`, as an
 anchor cleans its own name, before `ra_ender:anchors/lookup` and `ra_ender:anchors/send`.
 
 A terminal costs one player box test per tick (the block above it), and nothing when no terminal
 is loaded. The sneak is a pressed edge: a player seen on a terminal the tick before
-(`ra.ender.t_seen`) who was not sneaking then (`ra.ender.t_sneak`).
+(`ra.ender.t_seen`) who was not sneaking then (`ra.ender.t_sneak`). The tablet's right-click is
+the `using_item` advancement `ra_ender:tablet/use` (an endless `consumable`, as on the Redstone
+Remote), and only the first tick of a press counts (`ra.ender.used`). Its recharge is a game time
+(`ra.ender.ready`), compared when it is used, so nothing counts down while it waits; vanilla's
+`use_cooldown` would need the use to finish, and the tablet's never does.
 
 ### The destinations table
 
@@ -244,9 +281,11 @@ with fifteen empty entries.
 | `ra.ender.tell` | Players told that an anchor's name was changed, for one command |
 | `ra.ender.go` | Trigger: the destination menu's buttons |
 | `ra.ender.menu` | Game time a player's destination menu expires |
-| `ra.ender.src` | What opened the menu: 1 an Anchor Terminal |
+| `ra.ender.src` | What opened the menu: 1 an Anchor Terminal, 2 an Anchor Tablet |
 | `ra.ender.pend` / `ra.ender.req` | Waiting for a typed destination, and its `ra_lib:input` request |
 | `ra.ender.t_seen` / `ra.ender.t_sneak` | Last game time on a terminal, and whether sneaking then |
+| `ra.ender.slot` | Hotbar slot of the tablet whose menu is open |
+| `ra.ender.ready` / `ra.ender.used` | Game time the tablet is ready again; last tick it was used |
 | `ra.ender.pick` | The vault picked as partner, for one command |
 
 Vault channels are compared without a macro:

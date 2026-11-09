@@ -13,6 +13,7 @@ import ra.lib.safe.SafeClean.cleanFrom
 import ra.modules.ender.AnchorTerminal
 import ra.modules.ender.anchors.AnchorTable
 import ra.modules.ender.chooser.ChooserInput.registerChooserInput
+import ra.modules.ender.tablet.AnchorTablet
 
 /**
  * THE DESTINATION MENU of the Anchor Terminal and the Anchor Tablet: one chat panel, one trigger.
@@ -33,6 +34,7 @@ import ra.modules.ender.chooser.ChooserInput.registerChooserInput
  *
  * WHICH MENU. [SRC] says what opened it: 1 the terminal (the player must still stand on one when
  * they click), 2 the tablet (it must be in their main hand; its hotbar slot is kept in
+ * [AnchorTablet.SLOT] for the book, which takes the hand). The favourites are read again from the
  * terminal or the item on every click, never trusted from the moment the menu was drawn.
  *
  * The trigger is enabled while a menu is live: [MENU] holds the game time it expires, and the
@@ -124,6 +126,7 @@ object Chooser {
 		raw("""tellraw @s [{text:"  "},${button("[Type a destination]", "yellow", "2", "Write an anchor id in the Input Form book")}]""")
 
 		// What a trip costs, from the server settings.
+		raw("execute if score @s $SRC matches 2 run function ${AnchorTablet.showCost.asId()}")
 	}
 
 	private fun Function.act() {
@@ -139,6 +142,7 @@ object Chooser {
 		raw("data modify storage ra:ender menu set value {}")
 		raw("scoreboard players set #ender.ctx $T 0")
 		raw("execute if score @s $SRC matches 1 store result score #ender.ctx $T run function ${AnchorTerminal.find.asId()}")
+		raw("execute if score @s $SRC matches 2 store result score #ender.ctx $T run function ${AnchorTablet.loadHeld.asId()}")
 		raw("execute if score #ender.ctx $T matches 0 if score @s $SRC matches 1 run return run ${say("Stand on the ${AnchorTerminal.block.name} to use its menu.", "red")}")
 		raw("execute if score #ender.ctx $T matches 0 if score @s $SRC matches 2 run return run ${say("Hold the Anchor Tablet to use its menu.", "red")}")
 
@@ -153,6 +157,8 @@ object Chooser {
 		raw("execute if data storage ra:ender lookup.id run return run function ${go.asId()}")
 
 		// The tablet's own list.
+		raw("execute if score @s $SRC matches 2 if score #ender.act $T matches 4 run return run function ${AnchorTablet.save.asId()}")
+		raw("execute if score @s $SRC matches 2 if score #ender.act $T matches 21..28 run return run function ${AnchorTablet.forget.asId()}")
 		raw("execute if score #ender.act $T matches 3..18 run ${say("Nothing is saved there any more.", "red")}")
 	}
 
@@ -169,12 +175,14 @@ object Chooser {
 
 		// The tablet pays first: a cooldown, ender pearls (server settings).
 		raw("scoreboard players set #ender.pay $T 1")
+		raw("execute if score @s $SRC matches 2 store result score #ender.pay $T run function ${AnchorTablet.canPay.asId()}")
 		raw("execute if score #ender.pay $T matches 0 run return 0")
 
 		raw("data modify storage ra:ender trip set from storage ra:ender lookup.id")
 		raw("execute store result score #ender.sent $T run function ${AnchorTable.send.asId()}")
 		raw("data remove storage ra:ender lookup")
 		raw("execute if score #ender.sent $T matches 0 run return run data remove storage ra:ender trip")
+		raw("execute if score @s $SRC matches 2 run function ${AnchorTablet.charge.asId()}")
 
 		raw("""title @s actionbar [{text:"→ ",color:"dark_purple"},{nbt:"trip",storage:"ra:ender",color:"light_purple"}]""")
 		raw("data remove storage ra:ender trip")

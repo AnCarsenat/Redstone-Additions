@@ -103,4 +103,5 @@ The Generator Casing and the Cores cannot be placed as blocks.
 | ra     | Clipboard             | `ra:tools/clipboard/give`             | ![Clipboard recipe](images/recipes/ra/clipboard.png){ width="220" } |
 | ra     | Multimeter            | `ra:tools/multimeter/give`            | ![Multimeter recipe](images/recipes/ra/multimeter.png){ width="220" } |
 | ra_wireless | Redstone Remote  | `ra_wireless:tools/remote/give`       | ![Redstone Remote recipe](images/recipes/ra_wireless/remote.png){ width="220" } |
+| ra_ender    | Anchor Tablet    | `ra_ender:tablet/give`                | ![Anchor Tablet recipe](images/recipes/ra_ender/anchor_tablet.png){ width="220" } |
 

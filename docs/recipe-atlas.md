@@ -1,6 +1,6 @@
 # Recipe Atlas
 
-Every recipe in the pack, in one place: 69 of them.
+Every recipe in the pack, in one place: 71 of them.
 
 !!! tip "Finding one"
     Use the search box with the item's name — every recipe below is indexed by
@@ -26,9 +26,11 @@ what the pack actually contains rather than what someone remembered to add.
 | [Clock](#logic-gates) | [Logic Gates](logic-gates.md) | Crafting table |
 | [Copper Multiblock Base](#multiblocks) | [Multiblocks](multiblocks.md) | Crafting table |
 | [Copper Pipe](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
+| [Counter](#logic-gates) | [Logic Gates](logic-gates.md) | Crafting table |
 | [Data Handler](#tools) | [Tools](tools.md) | Crafting table |
 | [Delayer](#logic-gates) | [Logic Gates](logic-gates.md) | Crafting table |
 | [Diamond Multiblock Base](#multiblocks) | [Multiblocks](multiblocks.md) | Crafting table |
+| [Edge Detector](#logic-gates) | [Logic Gates](logic-gates.md) | Crafting table |
 | [Electric Furnace](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
 | [Enchanted Coal](#not-crafted-won-on-an-enchanting-table) | [Interactive Machines](interactive-machines.md) | Enchanting table |
 | [Enchanted Coal Block](#interactive-machines) | [Interactive Machines](interactive-machines.md) | Crafting table |
@@ -157,7 +159,9 @@ Module page: [Logic Gates](logic-gates.md) — give everything: `/function ra_ga
 | Item | Recipe | Station | Namespace id |
 | ---- | ------ | ------- | ------------ |
 | **Clock** | ![Clock recipe](images/recipes/ra_gates/clock.png){ width="220" } | Crafting table | `ra_gates:clock` |
+| **Counter** | ![Counter recipe](images/recipes/ra_gates/counter.png){ width="220" } | Crafting table | `ra_gates:counter` |
 | **Delayer** | ![Delayer recipe](images/recipes/ra_gates/delayer.png){ width="220" } | Crafting table | `ra_gates:delayer` |
+| **Edge Detector** | ![Edge Detector recipe](images/recipes/ra_gates/edge_detector.png){ width="220" } | Crafting table | `ra_gates:edge_detector` |
 | **Extender** | ![Extender recipe](images/recipes/ra_gates/extender.png){ width="220" } | Crafting table | `ra_gates:extender` |
 | **Randomizer** | ![Randomizer recipe](images/recipes/ra_gates/randomizer.png){ width="220" } | Crafting table | `ra_gates:randomizer` |
 | **Shortener** | ![Shortener recipe](images/recipes/ra_gates/shortener.png){ width="220" } | Crafting table | `ra_gates:shortener` |

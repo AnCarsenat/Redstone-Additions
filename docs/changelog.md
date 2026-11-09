@@ -4,6 +4,16 @@ This page mirrors key datapack milestones from the main project changelog.
 
 ## [v6.0.3] - Unreleased
 
+### Added
+
+- **Counter** (Logic Gates). Counts the times its input turns on and fires when the count
+  reaches its *target* (1 to 1000, default 10). By default it then starts again from 0 and gives
+  a 2-tick pulse, so it divides a pulse train; with *hold* on (Shift+RMB with the Wrench, or the
+  Data Handler) the output stays on until it is reset. Redstone on the top of the block resets it
+  to 0; any other side counts. The Goggles show the count and the target.
+- **Edge Detector** (Logic Gates). Gives a pulse of *pulse* ticks (default 2) when its input turns
+  on (*rising*), turns off (*falling*), or both. Shift+RMB with the Wrench cycles the mode.
+
 ### Fixed
 
 - **A poured potion shows its own colour when the pour empties the network.** A powered Liquid

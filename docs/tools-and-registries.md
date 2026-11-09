@@ -159,8 +159,8 @@ The Creative Data Handler shows and edits everything regardless; it is an operat
 load, unguarded — configuration, not world state:
 
 ```mcfunction
-data modify storage ra:dh types."liquid_drain" set value {speed:{type:"number",code:1,min:1,max:100,readonly:0b,admin_only:1b,visible:1b,goggles:0b,i:0},cooldown:{type:"number",code:1,min:0,max:9999,readonly:1b,admin_only:0b,visible:0b,goggles:0b,i:1},interval:{type:"number",code:1,min:0,max:9999,readonly:1b,admin_only:0b,visible:0b,goggles:0b,i:2},mode:{type:"text",code:0,readonly:1b,admin_only:0b,visible:0b,goggles:0b,i:3}}
-data modify storage ra:dh order."liquid_drain" set value ["speed","cooldown","interval","mode"]
+data modify storage ra:dh types."liquid_drain" set value {rate:{type:"number",code:1,min:100,max:100000,readonly:0b,admin_only:1b,visible:1b,goggles:0b,i:0},speed:{type:"number",code:1,min:0,max:9999,readonly:1b,admin_only:0b,visible:0b,goggles:0b,i:1},cooldown:{type:"number",code:1,min:0,max:9999,readonly:1b,admin_only:0b,visible:0b,goggles:0b,i:2},interval:{type:"number",code:1,min:0,max:9999,readonly:1b,admin_only:0b,visible:0b,goggles:0b,i:3},mode:{type:"text",code:0,readonly:1b,admin_only:0b,visible:0b,fmt:1,goggles:0b,i:4}}
+data modify storage ra:dh order."liquid_drain" set value ["rate","speed","cooldown","interval","mode"]
 data modify storage ra:dh known set value ["anchor_id","chance","channel",...]
 ```
 

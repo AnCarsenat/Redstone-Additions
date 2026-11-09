@@ -38,6 +38,7 @@ import ra.modules.wires.electric.Fuel
 import ra.modules.wires.electric.Generator
 import ra.modules.wires.fluid.Drain
 import ra.modules.wires.fluid.DrainExperience
+import ra.modules.wires.fluid.DrainPour
 import ra.modules.wires.fluid.DrainItems
 import ra.modules.wires.fluid.DrainPotion
 import ra.modules.wires.fluid.Fluid
@@ -65,7 +66,7 @@ object WiresModule : GameplayModule {
 	private val parts: List<PackPart> = listOf(
 		WiresLifecycle, Placement, Common, Media, Debug,
 		Bridge, Liquid, LiquidBreak,
-		Fluid, FluidBoiler, Pump, Drain, DrainItems, DrainExperience, DrainPotion, Source,
+		Fluid, FluidBoiler, Pump, Drain, DrainItems, DrainExperience, DrainPotion, DrainPour, Source,
 		Electric, ElectricBreak, EuApi, Fuel, Generator,
 		Battery, Boiler, CreativeEu, CreativeFluid, ElectricBreaker, ElectricConsumer,
 		ElectricFurnace, ElectricFurnaceSettings, ElectricFurnaceSmelting, ElectricGenerator,

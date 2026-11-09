@@ -6,12 +6,14 @@ import ra.core.Tag
 import ra.core.fn
 import ra.core.raw
 import ra.modules.ender.TeleportAnchor
-import ra.modules.wires.fluid.Drain
 
 /**
  * 6.0.0 -> 6.0.1. Also the home of the one-time fixes that, until 6.0.1, ran from block ticks on
  * every tick (the Liquid Drain's, the Boxer/Unboxer's, the Teleport Anchor's): a marker below 6.0.1
  * gets each of them once, here, and the blocks' ticks no longer carry them.
+ *
+ * The drain numbers here (100 ticks at speed 1, default speed 5) are 6.0.1's, written out: the
+ * drain has counted in mL per second (`rate`) since 6.0.2, and 6.0.1-to-6.0.2 converts on from them.
  */
 internal val m6_0_0 = migration("6.0.0", "6.0.1") {
 	world {
@@ -20,7 +22,7 @@ internal val m6_0_0 = migration("6.0.0", "6.0.1") {
 		raw("execute unless data storage ra:settings global.props.liquid_drain.cooldown run return run data remove storage ra:settings global.props.liquid_drain.mode")
 		raw("execute store result score #mg.cd ra.temp run data get storage ra:settings global.props.liquid_drain.cooldown")
 		raw("execute if score #mg.cd ra.temp matches ..0 run scoreboard players set #mg.cd ra.temp 1")
-		raw("scoreboard players set #mg.sp ra.temp ${Drain.TICKS_AT_SPEED_1}")
+		raw("scoreboard players set #mg.sp ra.temp 100")
 		raw("scoreboard players operation #mg.sp ra.temp /= #mg.cd ra.temp")
 		raw("execute if score #mg.sp ra.temp matches ..0 run scoreboard players set #mg.sp ra.temp 1")
 		raw("execute store result storage ra:settings global.props.liquid_drain.speed int 1 run scoreboard players get #mg.sp ra.temp")
@@ -40,7 +42,7 @@ internal val m6_0_0 = migration("6.0.0", "6.0.1") {
 		val speedFromCooldown = fn(Ns.MIGRATIONS, "6.0.0-to-6.0.1/liquid_drain_speed") {
 			raw("execute store result score #mg.cd ra.temp run data get entity @s data.properties.cooldown")
 			raw("execute if score #mg.cd ra.temp matches ..0 run scoreboard players set #mg.cd ra.temp 1")
-			raw("scoreboard players set #mg.sp ra.temp ${Drain.TICKS_AT_SPEED_1}")
+			raw("scoreboard players set #mg.sp ra.temp 100")
 			raw("scoreboard players operation #mg.sp ra.temp /= #mg.cd ra.temp")
 			raw("execute if score #mg.sp ra.temp matches ..0 run scoreboard players set #mg.sp ra.temp 1")
 			raw("execute store result entity @s data.properties.speed int 1 run scoreboard players get #mg.sp ra.temp")
@@ -50,7 +52,7 @@ internal val m6_0_0 = migration("6.0.0", "6.0.1") {
 		raw("data remove entity @s data.properties.interval")
 		raw("data remove entity @s data.properties.cooldown")
 		raw("data remove entity @s data.properties.mode")
-		raw("execute unless data entity @s data.properties.speed run data modify entity @s data.properties.speed set value ${Drain.DEFAULT_SPEED}")
+		raw("execute unless data entity @s data.properties.speed run data modify entity @s data.properties.speed set value 5")
 		raw("tag @s remove ra.wires.drain_v2")
 	}
 

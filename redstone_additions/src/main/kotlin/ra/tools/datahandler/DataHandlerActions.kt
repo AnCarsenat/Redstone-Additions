@@ -30,6 +30,7 @@ import ra.tools.datahandler.props.DataHandlerEntries
 import ra.tools.datahandler.props.DataHandlerProps
 import ra.tools.datahandler.DataHandlerRegistry
 import ra.tools.datahandler.props.DataHandlerTypes
+import ra.tools.datahandler.props.DataHandlerUnique
 import ra.tools.tool
 
 /**
@@ -41,7 +42,6 @@ import ra.tools.tool
  *   stamp * 1000 + 550 + i    [Clear] of item row i
  *   stamp * 1000 + 700 + i    edit an undeclared property, by its index in storage ra:dh known
  *   stamp * 1000 + 1000..     a list entry's buttons (DataHandlerEntries)
- *   picker stamp * 1000 + 100 + k   choice k of a picker (DataHandlerEntries)
  *
  * (1000 stands for DataHandlerRegistry.MUL, which is 10000: room for the list entries.)
  *
@@ -94,10 +94,7 @@ object DataHandlerActions {
 			raw("""execute if score #dh.code ${Obj.TEMP} matches 100.. if score #dh.fresh ${Obj.TEMP} matches 0 run tellraw @s [$PREFIX,{text:"That menu is out of date; here is the current one.",color:"gray"}]""")
 			executeRun("if score #dh.code ${Obj.TEMP} matches 100.. if score #dh.fresh ${Obj.TEMP} matches 0", refresh)
 
-			// A picker (ra.dh.mkind 1) has buttons of its own; the block's menu has the rest.
-			val kind = DataHandlerRegistry.KIND
-			executeRun("if score #dh.fresh ${Obj.TEMP} matches 1 if score @s $kind matches 1 if score #dh.code ${Obj.TEMP} matches 100..", DataHandlerEntries.pickAction)
-			val main = "if score #dh.fresh ${Obj.TEMP} matches 1 unless score @s $kind matches 1"
+			val main = "if score #dh.fresh ${Obj.TEMP} matches 1"
 			executeRun("$main if score #dh.code ${Obj.TEMP} matches ${DataHandlerProps.HAND_BASE}..${DataHandlerProps.CLEAR_BASE - 1}", DataHandlerProps.handAction)
 			executeRun("$main if score #dh.code ${Obj.TEMP} matches ${DataHandlerProps.CLEAR_BASE}..699", DataHandlerProps.clearAction)
 			executeRun("$main if score #dh.code ${Obj.TEMP} matches 100..399", genericAction)
@@ -241,6 +238,9 @@ object DataHandlerActions {
 			// pasted into a command later.
 			raw("data modify storage ra:safe s set from storage ra:dh q.text")
 			raw("execute store result score #dh.fok ${Obj.TEMP} run function ${DataHandlerEntries.checkFormat.asId()}")
+			raw("execute if score #dh.fok ${Obj.TEMP} matches 0 run return 0")
+			// One per world (a Teleport Anchor's id): refused when another block has it already.
+			raw("execute store result score #dh.fok ${Obj.TEMP} run function ${DataHandlerUnique.check.asId()} with storage ra:dh q")
 			raw("execute if score #dh.fok ${Obj.TEMP} matches 0 run return 0")
 			callWith(DataHandlerProps.writeText, "storage ra:dh q")
 			raw("return 1")

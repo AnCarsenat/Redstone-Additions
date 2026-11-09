@@ -131,7 +131,7 @@ player preferences and scoreboards stay. Placed blocks stay too, as ordinary van
 
 | Option | Removes | Keeps |
 |---|---|---|
-| **Everything** | every RA marker (so every machine, network and multiblock), block skins, pipe and wire displays, goggles readouts, RA-tagged dropped items, abandoned input books; releases the chunks powered Chunk Loaders kept loaded; clears transport networks, the Teleport Anchor name list and pending Data Handler edits | settings, disabled blocks, player preferences, clipboards |
+| **Everything** | every RA marker (so every machine, network and multiblock), block skins, pipe and wire displays, goggles readouts, RA-tagged dropped items, abandoned input books; releases the chunks powered Chunk Loaders kept loaded; clears transport networks, the Teleport Anchor destinations table and pending Data Handler edits | settings, disabled blocks, player preferences, clipboards |
 | **Orphaned displays** | skins, pipe and wire displays and floating block items with no block under them | working blocks, goggles readouts |
 | **Goggles readouts** | the floating goggles text and icons (redrawn for anyone still wearing goggles) | everything else |
 | **Dropped RA items** | RA-tagged items on the ground (including a dropped Clock, UNI Gate or Message Block nobody picked up) and Data Handler or settings input books lying around | everything else |

@@ -15,7 +15,6 @@ import ra.core.raw
 import ra.tools.datahandler.DataHandler
 import ra.tools.datahandler.DataHandlerActions
 import ra.tools.datahandler.DataHandlerRegistry
-import ra.tools.datahandler.DataHandlerSelection
 import ra.tools.datahandler.props.DataHandlerTypes.typeOfProbe
 import ra.tools.tool
 
@@ -24,8 +23,8 @@ import ra.tools.tool
  *
  * ```
  *   targets: list (15/15) [Edit all] [List]
- *     Strength 1: B   [Choose] [Edit] [Clear]
- *     Strength 2: (empty)   [Choose] [Edit]
+ *     Strength 1: B   [Edit] [Clear]
+ *     Strength 2: (empty)   [Edit]
  *
  *   tags: list (1/16) [Add] [Edit all] [List]
  * ```
@@ -47,8 +46,7 @@ import ra.tools.tool
  *                             struck through with "Maximum N entries" once `max_length` is reached
  *   1000 + 300 i + 100 + j    [Remove] (or [Clear] on a padded list) entry j
  *   1000 + 300 i + 199        [List]: show or hide the entries (LIST; no [Remove] is 199, j < 99)
- *   1000 + 300 i + 200 + j    [Choose]: pick entry j from the list the schema names (`choices`)
- *   1000 + 300 i + 299        unused
+ *   1000 + 300 i + 200..299   unused (6.0.1 - 6.0.2: [Choose], a pick list of Teleport Anchor ids)
  *
  * A PADDED list (`pad`, a Teleport Anchor's fifteen strengths) has a fixed length and each slot
  * means something by its position, so its [Remove] is [Clear]: the slot becomes "" and the rest
@@ -59,19 +57,12 @@ import ra.tools.tool
  * list's length, `max_length`) and checks the new entry against the element type -- `of`, or with
  * none the type of the entry it replaces -- and, for text, against the format (TextFormat).
  * Typed text reaches a command only through DataHandlerTypes.parse, and only for a number entry.
- *
- * The picker ([Choose]) is a menu of its own, with its own stamp: `ra.dh.mkind` 1 says the
- * player's latest menu is a picker, and its choices are kept, as they were drawn, under
- * `storage ra:dh pick.s<stamp>`, so a value registered after the menu was drawn cannot shift what a
- * button picks.
  */
 object DataHandlerEntries {
 	val render = tool("data_handler/props/list/editor")
 	val renderLocked = tool("data_handler/props/list/locked")
 	val entryAction = tool("data_handler/props/list/entry_action")
 	val applyEntry = tool("data_handler/props/list/apply_entry")
-	val pickAction = tool("data_handler/props/list/pick_action")
-	val dropPick = tool("data_handler/props/list/drop_pick")
 	val waived = tool("data_handler/props/waived")
 	val checkFormat = tool("data_handler/props/check_format")
 	val formatHintFor5 = tool("data_handler/props/list/format_refused")
@@ -87,9 +78,7 @@ object DataHandlerEntries {
 	private val entryShown = tool("data_handler/props/list/entry_shown")
 	private val entryShownEmpty = tool("data_handler/props/list/entry_shown_empty")
 	private val entryRow = tool("data_handler/props/list/entry")
-	private val entryRowChoose = tool("data_handler/props/list/entry_choose")
 	private val entryEmpty = tool("data_handler/props/list/entry_empty")
-	private val entryEmptyChoose = tool("data_handler/props/list/entry_empty_choose")
 	private val ask = tool("data_handler/props/list/ask")
 	private val remove = tool("data_handler/props/list/remove")
 	private val elemType = tool("data_handler/props/list/elem_type")
@@ -97,22 +86,11 @@ object DataHandlerEntries {
 	private val typeOf = tool("data_handler/props/list/type_of")
 	private val writeAt =tool("data_handler/props/list/write_at")
 	private val writeAppend = tool("data_handler/props/list/write_append")
-	private val pickShow = tool("data_handler/props/list/pick_show")
-	private val pickLoad = tool("data_handler/props/list/pick_load")
-	private val pickSave = tool("data_handler/props/list/pick_save")
-	private val pickNext = tool("data_handler/props/list/pick_next")
-	private val pickRow = tool("data_handler/props/list/pick_row")
-	private val pickRead = tool("data_handler/props/list/pick_read")
-	private val pickElem = tool("data_handler/props/list/pick_elem")
-	private val dropPickAt = tool("data_handler/props/list/drop_pick_at")
 	private val formatHint = tool("data_handler/props/format_hint")
 
 	private const val T = Obj.TEMP
 	private const val PREFIX = DataHandlerProps.PREFIX
 	private const val TARGET = DataHandlerProps.TARGET
-	private const val MUL = DataHandlerRegistry.MUL
-	private const val KIND = DataHandlerRegistry.KIND
-	private const val PSTAMP = DataHandlerRegistry.PSTAMP
 	private const val EXPAND = DataHandlerRegistry.EXPAND
 
 	/** The [List] button's offset in a row's entry action space (see the table above). */
@@ -136,7 +114,6 @@ object DataHandlerEntries {
 	private const val ENTRY = """{text:"    "},{text:"$(label)$(n)",color:"gray"},{text:": ",color:"dark_gray"}"""
 	private const val VALUE = """{nbt:"lw[0]",storage:"ra:dh",color:"green"},{text:"  "}"""
 	private const val EMPTY = """{text:"(empty)",color:"dark_gray",italic:true},{text:"  "}"""
-	private val CHOOSE = btn("[Choose]", "aqua", "c", "Pick from a list") + """,{text:" "}"""
 	private val EDIT = btn("[Edit]", "yellow", "e", "Type a new value for this entry")
 	private val REMOVE = """{text:" "},""" + btn("$(rm)", "red", "r", "$(rmh)")
 
@@ -163,7 +140,7 @@ object DataHandlerEntries {
 
 	/**
 	 * For row #dh.ri, with q {name, note, action}: storage ra:dh eq, every field a header and its
-	 * entries read; #dh.eb the row's entry actions; #dh.lpad, #dh.chs, #dh.llen, #dh.lmax; and
+	 * entries read; #dh.eb the row's entry actions; #dh.lpad, #dh.llen, #dh.lmax; and
 	 * #dh.xp 1 when this player has the list open.
 	 */
 	private fun Function.prepare() {
@@ -178,8 +155,6 @@ object DataHandlerEntries {
 		raw("execute if data storage ra:dh spec.pad run scoreboard players set #dh.lpad $T 1")
 		raw("execute if score #dh.lpad $T matches 1 run data modify storage ra:dh eq.rm set value \"[Clear]\"")
 		raw("execute if score #dh.lpad $T matches 1 run data modify storage ra:dh eq.rmh set value \"Empty this slot; the others keep their place\"")
-		raw("scoreboard players set #dh.chs $T 0")
-		raw("execute if data storage ra:dh spec.choices run scoreboard players set #dh.chs $T 1")
 
 		// Entry actions: base + 1000 + 300 * row.
 		raw("scoreboard players set #dh.k300 $T 300")
@@ -291,7 +266,7 @@ object DataHandlerEntries {
 			raw("scoreboard players operation #dh.n $T = #dh.j $T")
 			raw("scoreboard players add #dh.n $T 1")
 			raw("execute store result storage ra:dh ee.n int 1 run scoreboard players get #dh.n $T")
-			for ((key, off) in listOf("e" to 0, "r" to 100, "c" to 200)) {
+			for ((key, off) in listOf("e" to 0, "r" to 100)) {
 				raw("scoreboard players operation #dh.n $T = #dh.eb $T")
 				raw("scoreboard players operation #dh.n $T += #dh.j $T")
 				raw("scoreboard players add #dh.n $T $off")
@@ -300,8 +275,8 @@ object DataHandlerEntries {
 			raw("data modify storage ra:dh le set from storage ra:dh lw[0]")
 			raw("scoreboard players set #dh.emp $T 0")
 			raw("""execute if score #dh.lpad $T matches 1 if data storage ra:dh {le:""} run scoreboard players set #dh.emp $T 1""")
-			for ((emp, chs, fn) in listOf(Triple(0, 0, entryRow), Triple(0, 1, entryRowChoose), Triple(1, 0, entryEmpty), Triple(1, 1, entryEmptyChoose)))
-				raw("execute if score #dh.erw $T matches 1 if score #dh.emp $T matches $emp if score #dh.chs $T matches $chs run function ${fn.asId()} with storage ra:dh ee")
+			for ((emp, fn) in listOf(0 to entryRow, 1 to entryEmpty))
+				raw("execute if score #dh.erw $T matches 1 if score #dh.emp $T matches $emp run function ${fn.asId()} with storage ra:dh ee")
 			for ((emp, fn) in listOf(0 to entryShown, 1 to entryShownEmpty))
 				raw("execute if score #dh.erw $T matches 0 if score #dh.emp $T matches $emp run function ${fn.asId()} with storage ra:dh ee")
 			raw("data remove storage ra:dh lw[0]")
@@ -328,9 +303,7 @@ object DataHandlerEntries {
 		line(headFull, HEAD, """{text:"[Add]",color:"dark_gray",strikethrough:true,hover_event:{action:"show_text",value:"Maximum $(max) entries"}}""", SP, WHOLE, SP, LIST_BTN)
 		line(headLocked, *PropRows.LOCKED, SP, LIST_BTN)
 		line(entryRow, ENTRY, VALUE, EDIT, REMOVE)
-		line(entryRowChoose, ENTRY, VALUE, CHOOSE, EDIT, REMOVE)
 		line(entryEmpty, ENTRY, EMPTY, EDIT)
-		line(entryEmptyChoose, ENTRY, EMPTY, CHOOSE, EDIT)
 		line(entryShown, ENTRY, VALUE)
 		line(entryShownEmpty, ENTRY, EMPTY)
 
@@ -365,18 +338,16 @@ object DataHandlerEntries {
 			// Which button: j and what to do with it.
 			raw("scoreboard players operation #dh.j $T = #dh.r $T")
 			raw("execute if score #dh.r $T matches 100..198 run scoreboard players remove #dh.j $T 100")
-			raw("execute if score #dh.r $T matches 200..298 run scoreboard players remove #dh.j $T 200")
 			raw("execute if score #dh.r $T matches 99 run scoreboard players set #dh.j $T -1")
 			raw("execute store result storage ra:dh q.j int 1 run scoreboard players get #dh.j $T")
 			raw("scoreboard players operation #dh.n $T = #dh.j $T")
 			raw("scoreboard players add #dh.n $T 1")
-			raw("execute if score #dh.r $T matches 299 run return 0")
+			raw("execute if score #dh.r $T matches 200.. run return 0")
 			// An entry that is not there (the list got shorter since the menu was drawn).
 			raw("""execute unless score #dh.r $T matches 99 unless score #dh.j $T < #dh.llen $T run return run tellraw @s [$PREFIX,{text:"That entry no longer exists; here is the list as it is now.",color:"red"}]""")
 			raw("""execute if score #dh.r $T matches 99 unless score #dh.llen $T < #dh.lmax $T run return run tellraw @s [$PREFIX,{nbt:"q.name",storage:"ra:dh",color:"yellow"},{text:" is full.",color:"red"}]""")
 
 			executeReturnRun("if score #dh.r $T matches 100..198", remove, "with storage ra:dh q")
-			executeReturnRun("if score #dh.r $T matches 200..298", pickShow, "with storage ra:dh q")
 			raw("data modify storage ra:dh pending_kind set value \"entry\"")
 			raw("execute if score #dh.r $T matches 99 run data modify storage ra:dh pending_kind set value \"append\"")
 			callWith(ask, "storage ra:dh q")
@@ -484,111 +455,5 @@ object DataHandlerEntries {
 			raw("data remove storage ra:dh elem")
 			raw("return 1")
 		}
-
-		// ── The picker ───────────────────────────────────────────────────────────────────────
-
-		// {name, j}: a menu of the schema's `choices`, each a button. As the player.
-		pack.define(pickShow) {
-			function(dropPick)
-			val mid = DataHandlerSelection.MID
-			raw("scoreboard players add #dh.stamp $mid 1")
-			raw("execute unless score #dh.stamp $mid matches 1..${DataHandlerRegistry.STAMP_MAX} run scoreboard players set #dh.stamp $mid 1")
-			raw("scoreboard players operation @s ${DataHandlerRegistry.MENU} = #dh.stamp $mid")
-			raw("scoreboard players set @s $KIND 1")
-			raw("scoreboard players operation @s $PSTAMP = #dh.stamp $mid")
-
-			raw("data modify storage ra:dh pl set value []")
-			callWith(pickLoad, "storage ra:dh spec.choices")
-			raw("data modify storage ra:dh pk set value {}")
-			raw("data modify storage ra:dh pk.name set from storage ra:dh q.name")
-			raw("data modify storage ra:dh pk.j set from storage ra:dh q.j")
-			raw("data modify storage ra:dh pk.list set from storage ra:dh pl")
-			raw("data modify storage ra:dh pk.label set value \"#\"")
-			raw("execute if data storage ra:dh spec.entry_label run data modify storage ra:dh pk.label set from storage ra:dh spec.entry_label")
-			raw("execute store result storage ra:dh pk.s int 1 run scoreboard players get #dh.stamp $mid")
-			callWith(pickSave, "storage ra:dh pk")
-
-			raw("scoreboard players operation #dh.n $T = #dh.j $T")
-			raw("scoreboard players add #dh.n $T 1")
-			raw("tellraw @s \"\"")
-			raw("""tellraw @s [{text:"══ ",color:"dark_gray"},{text:"Choose ",color:"aqua",bold:true},{nbt:"pk.name",storage:"ra:dh",color:"yellow"},{text:" ",color:"gray"},{nbt:"pk.label",storage:"ra:dh",color:"gray"},{score:{name:"#dh.n",objective:"$T"},color:"gray"},{text:" ══",color:"dark_gray"}]""")
-			raw("""execute unless data storage ra:dh pl[0] run tellraw @s [{text:"  Nothing to choose from yet.",color:"gray",italic:true}]""")
-			raw("scoreboard players operation #dh.pa $T = #dh.stamp $mid")
-			raw("scoreboard players set #dh.kmul $T $MUL")
-			raw("scoreboard players operation #dh.pa $T *= #dh.kmul $T")
-			raw("scoreboard players add #dh.pa $T 100")
-			raw("scoreboard players set #dh.k $T 0")
-			function(pickNext)
-			raw("""tellraw @s [{text:"[Back]",color:"gray",click_event:{action:"run_command",command:"/trigger ra.dh.action set 91"},hover_event:{action:"show_text",value:"Back to the block's settings"}}]""")
-			raw("data remove storage ra:dh pl")
-			raw("data remove storage ra:dh pk")
-			raw("data remove storage ra:dh pq2")
-		}
-		// {storage, path}: the schema's own constants.
-		pack.define(pickLoad) { raw("\$data modify storage ra:dh pl set from storage \$(storage) \$(path)") }
-		// {s}
-		pack.define(pickSave) { raw("\$data modify storage ra:dh pick.s\$(s) set from storage ra:dh pk") }
-		pack.define(pickNext) {
-			raw("execute unless data storage ra:dh pl[0] run return 0")
-			raw("""execute if score #dh.k $T matches 200.. run return run tellraw @s [{text:"  … and more.",color:"gray",italic:true}]""")
-			raw("execute store result storage ra:dh pq2.a int 1 run scoreboard players get #dh.pa $T")
-			callWith(pickRow, "storage ra:dh pq2")
-			raw("data remove storage ra:dh pl[0]")
-			raw("scoreboard players add #dh.pa $T 1")
-			raw("scoreboard players add #dh.k $T 1")
-			function(pickNext)
-		}
-		pack.define(pickRow) {
-			raw("""${'$'}tellraw @s [{text:"  ▸ ",color:"dark_gray"},{nbt:"pl[0]",storage:"ra:dh",color:"aqua",click_event:{action:"run_command",command:"/trigger ra.dh.action set $(a)"},hover_event:{action:"show_text",value:"Choose this"}}]""")
-		}
-
-		// A picker's button: as the player, #dh.code 100 + k, #dh.stamp the menu it was in.
-		pack.define(pickAction) {
-			raw("data remove storage ra:dh pk")
-			raw("execute store result storage ra:dh pq2.s int 1 run scoreboard players get #dh.stamp $T")
-			raw("scoreboard players remove #dh.code $T 100")
-			raw("execute store result storage ra:dh pq2.k int 1 run scoreboard players get #dh.code $T")
-			callWith(pickRead, "storage ra:dh pq2")
-			raw("""execute unless data storage ra:dh pk.elem run tellraw @s [$PREFIX,{text:"That menu is out of date; here is the current one.",color:"gray"}]""")
-			executeReturnRun("unless data storage ra:dh pk.elem", DataHandler.refresh)
-
-			raw("data modify storage ra:dh q set value {op:\"entry\"}")
-			raw("data modify storage ra:dh q.name set from storage ra:dh pk.name")
-			raw("data modify storage ra:dh q.j set from storage ra:dh pk.j")
-			raw("data modify storage ra:dh elem set from storage ra:dh pk.elem")
-			callWith(DataHandlerActions.propertyGone, "storage ra:dh q")
-			raw("execute if score #dh.gone $T matches 0 run function ${pickElem.asId()}")
-			function(dropPick)
-			raw("data remove storage ra:dh pk")
-			raw("data remove storage ra:dh pq2")
-			raw("data remove storage ra:dh elem")
-			function(DataHandler.refresh)
-		}
-		// {s, k}
-		pack.define(pickRead) {
-			raw("\$data modify storage ra:dh pk set from storage ra:dh pick.s\$(s)")
-			raw("\$data modify storage ra:dh pk.elem set from storage ra:dh pk.list[\$(k)]")
-		}
-		pack.define(pickElem) {
-			callWith(DataHandlerProps.probe, "storage ra:dh q")
-			callWith(DataHandlerProps.refuse, "storage ra:dh q")
-			raw("execute if data storage ra:dh denied run return run data remove storage ra:dh denied")
-			raw("""execute unless score #dh.type $T matches 3 run return run tellraw @s [$PREFIX,{nbt:"q.name",storage:"ra:dh",color:"yellow"},{text:" is not a list any more.",color:"red"}]""")
-			callWith(readLen, "storage ra:dh q")
-			callWith(elemType, "storage ra:dh q")
-			raw("execute store result score #dh.ok $T run function ${commit.asId()} with storage ra:dh q")
-			raw("""execute if score #dh.ok $T matches 1 run tellraw @s [$PREFIX,{text:"Property updated.",color:"green"}]""")
-		}
-
-		// Forget this player's last picker (its stored choices). As the player.
-		pack.define(dropPick) {
-			raw("execute unless score @s $PSTAMP matches 1.. run return 0")
-			raw("data modify storage ra:dh pq3 set value {}")
-			raw("execute store result storage ra:dh pq3.s int 1 run scoreboard players get @s $PSTAMP")
-			callWith(dropPickAt, "storage ra:dh pq3")
-			raw("data remove storage ra:dh pq3")
-			raw("scoreboard players reset @s $PSTAMP")
-		}
-		pack.define(dropPickAt) { raw("\$data remove storage ra:dh pick.s\$(s)") }
 	}
 }

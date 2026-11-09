@@ -46,6 +46,9 @@ import ra.core.block.BreakTest
 import ra.core.block.markerSel
 import ra.core.block.soundListenersSel
 import ra.core.block.particleViewersSel
+import ra.core.block.newMarkerSel
+import ra.core.Tag
+import ra.modules.ender.anchors.AnchorTable
 
 /**
  * Teleport Anchor: sends whoever stands on it to the anchor the redstone strength names.
@@ -54,15 +57,14 @@ import ra.core.block.particleViewersSel
  * redstone strength: signal 1 uses targets[0], signal 15 uses targets[14]. An empty string means
  * "nothing wired to that strength".
  *
- * Every anchor files its id in `storage ra:ender anchor_ids` (see [registerCheck]), the list the
- * Data Handler's [Choose] offers for each strength: a player sets a destination by clicking a
- * name, not by typing SNBT. The list survives the anchor's chunk unloading, so a far anchor kept
- * loaded by a Chunk Loader can still be picked.
+ * Ids are unique and in format ID. Every anchor files itself in the destinations table,
+ * `storage ra:ender anchors` (see [AnchorTable]), when it is placed and when its id changes, and
+ * leaves it when broken; a teleport is one key lookup there, not a search through the loaded
+ * anchors, so the destination may be in an unloaded chunk or another dimension.
  *
- * Ids are compared, never pasted into a command: [findDest] tests each anchor's id with a
- * `data modify ... set from` that changes nothing on a match. (6.0.0 put the wanted id inside an
- * `nbt=` selector through a macro, so a target such as `A"}}}] as @a if function ...` ran any
- * function it named.)
+ * (6.0.0 put the wanted id inside an `nbt=` selector through a macro, so a target such as
+ * `A"}}}] as @a if function ...` ran any function it named. The id now reaches a command only as a
+ * path key, after `ra_lib:safe/check` in format ID: [AnchorTable.lookup].)
  */
 object TeleportAnchor {
 	val block = CustomBlock(Ns.ENDER, "teleport_anchor", "Teleport Anchor", model = "minecraft:crying_obsidian")
@@ -78,28 +80,13 @@ object TeleportAnchor {
 
 	val process = block.fn("process")
 	val readTarget = block.fn("read_target")
-	private val findDest = block.fn("find_dest")
-	private val matchId = block.fn("match_id")
 	private val registerCheck = block.fn("register_check")
-	private val registerId = block.fn("register_id")
-	private val registerWalk = block.fn("register_walk")
-	private val dropId = block.fn("drop_id")
-	private val dropCount = block.fn("drop_count")
-	private val dropWalk = block.fn("drop_walk")
 	/**
 	 * As an anchor: make `targets` a table of exactly fifteen entries. Run once per anchor by the
 	 * 6.0.1 migration (ra_migrations:6.0.0-to-6.0.1/teleport_anchor). Safe to run twice.
 	 */
 	val repairTargets = block.fn("repair_targets")
 	private val repairPad = block.fn("repair_pad")
-
-	/** The known anchor ids, in the order they were first seen: `storage ra:ender anchor_ids`. */
-	const val REGISTRY = "anchor_ids"
-
-	/** At most this many ids are remembered. */
-	private const val REGISTRY_MAX = 200
-
-	private val sendPlayer = block.fn("send_player")
 
 	private const val T = Obj.TEMP
 
@@ -112,14 +99,11 @@ object TeleportAnchor {
 	fun Ra.registerTeleportAnchor() {
 		block(block)
 		properties(block) {
-			// Compared, never pasted into a command, so spaces are fine ("Main base").
-			text("anchor_id", TextFormat.NAME)
-			// One per strength. The Data Handler shows a row per strength with [Choose] (a known
-			// anchor id), [Edit] and [Clear]; padded, so clearing one never moves another.
-			textList(
-				"targets", max = 15, pad = true, format = TextFormat.NAME,
-				choices = "ra:ender" to REGISTRY, entryLabel = "Strength ",
-			)
+			// A path key of the destinations table, so format ID, and one per world: the Data Handler
+			// refuses an id another anchor has.
+			text("anchor_id", TextFormat.ID, unique = "ra:ender" to AnchorTable.TABLE)
+			// One per strength, each [Edit] and [Clear]; padded, so clearing one never moves another.
+			textList("targets", max = 15, pad = true, format = TextFormat.ID, entryLabel = "Strength ")
 		}
 		pack.blockRegisterMessage(block)
 		pack.enderGive(
@@ -137,8 +121,11 @@ object TeleportAnchor {
 		pack.define(block.handlePlacement) {
 			placementGuard(block, checkExisting = false)
 			placeBlock(block)
-			setOnNew(block, "data.properties.anchor_id", "\"A\"")
 			setOnNew(block, "data.properties.targets", EMPTY_TABLE)
+			// Who placed it, for the messages about its id. Then its id: none yet, so it gets the
+			// first free one of anchor, anchor_2, ... and files itself in the table.
+			raw("data modify entity ${block.newMarkerSel()} data.data.owner set from entity @a[tag=${Tag.PLACER},limit=1] UUID")
+			raw("execute as ${block.newMarkerSel()} run function ${AnchorTable.register.asId()}")
 			finishPlacement(block)
 		}
 
@@ -152,32 +139,9 @@ object TeleportAnchor {
 			raw("\$data modify storage ra:ender anchor.want set from entity @s data.properties.targets[\$(i)]")
 		}
 
-		// Tag the nearest OTHER anchor whose anchor_id is storage ra:ender anchor.want. As the
-		// sending anchor marker, wearing ra.ender.self, at it.
-		//
-		// Every anchor's id is compared, then the nearest match is taken -- the order the beet line
-		// got wrong (it took the nearest anchor first and compared after, so a third anchor closer
-		// than the target hid it). No macro: the id never becomes part of a command.
-		pack.define(findDest) {
-			raw("execute as ${block.markerSel("tag=!${EnderIds.SELF}")} run function ${matchId.asId()}")
-			raw("execute as @e[type=marker,tag=$CANDIDATE,sort=nearest,limit=1] run tag @s add ${EnderIds.TP_DEST}")
-			raw("tag @e[type=marker,tag=$CANDIDATE] remove $CANDIDATE")
-		}
-		// As a candidate anchor: tag it when its id is the wanted one. `set from` over a copy of the
-		// id succeeds only when it changes something, so 0 means equal.
-		pack.define(matchId) {
-			raw("data remove storage ra:ender cmp")
-			raw("data modify storage ra:ender cmp set from entity @s data.properties.anchor_id")
-			raw("execute store success score #ender.diff $T run data modify storage ra:ender cmp set from storage ra:ender anchor.want")
-			raw("execute if score #ender.diff $T matches 0 run tag @s add $CANDIDATE")
-			raw("data remove storage ra:ender cmp")
-		}
-
-		registerRegistry()
-
 		// kept: beet contract. Tag this anchor if its id is the one being aimed at, first match
 		// wins. As a candidate anchor marker. Nothing calls it any more (ids became strings,
-		// matched in find_dest's macro); kept because the beet pack shipped it.
+		// keys of the destinations table since 6.0.3); kept because the beet pack shipped it.
 		pack.define(block.fn("match_target")) {
 			raw("execute if entity @e[type=marker,tag=${EnderIds.TP_DEST},limit=1] run return 0")
 
@@ -187,33 +151,26 @@ object TeleportAnchor {
 			tag(self()) { add(EnderIds.TP_DEST) }
 		}
 
-		// Move one player to the tagged destination anchor. As the player.
-		pack.define(sendPlayer) {
-			// `at` the destination marker rather than a macro with its coordinates: the marker sits
-			// at the middle of its block, so ~ ~1 ~ is standing on top of it.
-			raw("execute at @e[type=marker,tag=${EnderIds.TP_DEST},limit=1] run tp @s ~ ~1 ~")
-
-			// Long enough that an anchor which is itself powered does not bounce the player straight
-			// back, short enough to be usable as a two-way door.
-			scoreboard.players.set(self(), EnderIds.GRACE, 30)
-
-			raw("playsound minecraft:entity.enderman.teleport player @s[scores={${Obj.USER_SOUND}=1..}] ~ ~ ~ 0.8 1")
-			raw("execute at @s run particle minecraft:portal ~ ~1 ~ 0.4 0.8 0.4 0.3 40 normal ${particleViewersSel()}")
-		}
-
 		pack.define(block.goggles) { goggles() }
 
-		// A broken anchor takes its id off the known list, unless another loaded anchor shares it.
-		val onBreak = pack.enderOnBreak(block, item) {
-			raw("data modify storage ra:ender reg set value {}")
-			raw("data modify storage ra:ender reg.drop set from entity @s data.properties.anchor_id")
-			function(dropId)
-			raw("data remove storage ra:ender reg")
+		// A broken anchor leaves the destinations table.
+		val onBreak = pack.enderOnBreak(block, item) { function(AnchorTable.drop) }
+
+		// As an anchor: has its id changed since it filed it (the Data Handler, a command, a
+		// Clipboard paste, /data)? Then file it again. One comparison while it has not.
+		pack.define(registerCheck) {
+			raw("data remove storage ra:ender rc")
+			raw("data modify storage ra:ender rc set from entity @s data.data.registered_id")
+			raw("execute store success score #ender.chg $T run data modify storage ra:ender rc set from entity @s data.properties.anchor_id")
+			raw("execute unless data entity @s data.properties.anchor_id run scoreboard players set #ender.chg $T 1")
+			raw("data remove storage ra:ender rc")
+			raw("execute if score #ender.chg $T matches 1 run function ${AnchorTable.register.asId()}")
 		}
+		registerRepair()
 		pack.blockTick(block, onBreak, BreakTest.NotBlock(Blocks.CRYING_OBSIDIAN)) {
 			// An anchor from an older version (no anchor_id, a malformed targets table) is brought up
-			// to date by the 6.0.1 migration before it ever gets here.
-			// Its id on the known list (cheap when unchanged: one comparison).
+			// to date by the migrations before it ever gets here.
+			// Its id in the destinations table (cheap when unchanged: one comparison).
 			executeRun("as ${block.markerSel()}", registerCheck)
 
 			// A selector on scores skips entities that have no score at all, so every anchor needs
@@ -224,72 +181,8 @@ object TeleportAnchor {
 		}
 	}
 
-	/** The tag a matching anchor wears while the nearest is picked. */
-	private const val CANDIDATE = "ra.ender.tp_cand"
-
-	/** The known-ids list and the one-time repair of old target tables. */
-	private fun Ra.registerRegistry() {
-		// As an anchor: has its id changed since it was filed? Then file the new one and drop the
-		// old one (if no other loaded anchor still has it).
-		pack.define(registerCheck) {
-			raw("data modify storage ra:ender reg set value {}")
-			raw("data modify storage ra:ender reg.id set from entity @s data.properties.anchor_id")
-			raw("data modify storage ra:ender reg.was set from entity @s data.data.registered_id")
-			raw("data modify storage ra:ender reg.cmp set from storage ra:ender reg.was")
-			raw("execute store success score #ender.chg $T run data modify storage ra:ender reg.cmp set from storage ra:ender reg.id")
-			raw("execute if score #ender.chg $T matches 0 run return run data remove storage ra:ender reg")
-			raw("data modify entity @s data.data.registered_id set from storage ra:ender reg.id")
-			raw("execute unless data storage ra:ender reg.id run data remove entity @s data.data.registered_id")
-			raw("data modify storage ra:ender reg.drop set from storage ra:ender reg.was")
-			raw("execute if data storage ra:ender reg.drop run function ${dropId.asId()}")
-			raw("""execute if data storage ra:ender reg.id unless data storage ra:ender reg{id:""} run function ${registerId.asId()}""")
-			raw("data remove storage ra:ender reg")
-		}
-		// reg.id onto the list, unless it is there already.
-		pack.define(registerId) {
-			raw("execute unless data storage ra:ender $REGISTRY run data modify storage ra:ender $REGISTRY set value []")
-			raw("execute store result score #ender.n $T run data get storage ra:ender $REGISTRY")
-			raw("execute if score #ender.n $T matches $REGISTRY_MAX.. run return 0")
-			raw("data modify storage ra:ender reg.walk set from storage ra:ender $REGISTRY")
-			raw("scoreboard players set #ender.found $T 0")
-			function(registerWalk)
-			raw("execute if score #ender.found $T matches 0 run data modify storage ra:ender $REGISTRY append from storage ra:ender reg.id")
-			raw("data remove storage ra:ender reg.walk")
-		}
-		pack.define(registerWalk) {
-			raw("execute unless data storage ra:ender reg.walk[0] run return 0")
-			raw("data modify storage ra:ender reg.cmp set from storage ra:ender reg.walk[0]")
-			raw("execute store success score #ender.diff $T run data modify storage ra:ender reg.cmp set from storage ra:ender reg.id")
-			raw("execute if score #ender.diff $T matches 0 run return run scoreboard players set #ender.found $T 1")
-			raw("data remove storage ra:ender reg.walk[0]")
-			function(registerWalk)
-		}
-		// As an anchor: take reg.drop off the list when no OTHER loaded anchor has that id.
-		pack.define(dropId) {
-			raw("tag @s add ${EnderIds.SELF}")
-			raw("scoreboard players set #ender.others $T 0")
-			raw("execute as ${block.markerSel("tag=!${EnderIds.SELF}")} run function ${dropCount.asId()}")
-			raw("tag @s remove ${EnderIds.SELF}")
-			raw("execute if score #ender.others $T matches 1.. run return 0")
-			raw("data modify storage ra:ender reg.walk set from storage ra:ender $REGISTRY")
-			raw("data modify storage ra:ender $REGISTRY set value []")
-			function(dropWalk)
-			raw("data remove storage ra:ender reg.walk")
-		}
-		pack.define(dropCount) {
-			raw("data modify storage ra:ender reg.cmp set from entity @s data.properties.anchor_id")
-			raw("execute store success score #ender.diff $T run data modify storage ra:ender reg.cmp set from storage ra:ender reg.drop")
-			raw("execute if score #ender.diff $T matches 0 run scoreboard players add #ender.others $T 1")
-		}
-		pack.define(dropWalk) {
-			raw("execute unless data storage ra:ender reg.walk[0] run return 0")
-			raw("data modify storage ra:ender reg.cmp set from storage ra:ender reg.walk[0]")
-			raw("execute store success score #ender.diff $T run data modify storage ra:ender reg.cmp set from storage ra:ender reg.drop")
-			raw("execute unless score #ender.diff $T matches 0 run data modify storage ra:ender $REGISTRY append from storage ra:ender reg.walk[0]")
-			raw("data remove storage ra:ender reg.walk[0]")
-			function(dropWalk)
-		}
-
+	/** The one-time repair of old target tables (6.0.1 migration). */
+	private fun Ra.registerRepair() {
 		// As an anchor, once: a target table of exactly fifteen entries. 6.0.0's Data Handler pasted
 		// whatever parsed, so a table may be a compound, or a list of another length.
 		pack.define(repairTargets) {
@@ -327,21 +220,22 @@ object TeleportAnchor {
 		raw("execute unless data storage ra:ender anchor.want run return 0")
 		raw("execute if data storage ra:ender anchor{want:\"\"} run return 0")
 
-		// Find the destination. The tag is the handle for the teleport, since carrying a position
-		// through a macro would mean formatting doubles. `self` keeps an anchor from sending a
-		// player onto itself when a row names its own id.
-		raw("tag @e[type=marker,tag=${EnderIds.TP_DEST}] remove ${EnderIds.TP_DEST}")
-		tag(self()) { add(EnderIds.SELF) }
-		function(findDest)
-		tag(self()) { remove(EnderIds.SELF) }
-		raw("execute unless entity @e[type=marker,tag=${EnderIds.TP_DEST}] run return 0")
+		// A row naming this anchor's own id sends nobody anywhere.
+		raw("data modify storage ra:ender anchor.self set from entity @s data.properties.anchor_id")
+		raw("execute store success score #ender.diff $T run data modify storage ra:ender anchor.self set from storage ra:ender anchor.want")
+		raw("data remove storage ra:ender anchor.self")
+		raw("execute if score #ender.diff $T matches 0 run return 0")
+
+		// The destination is one key of the table (AnchorTable.send): no search, any chunk, any dimension.
+		raw("data modify storage ra:ender lookup set value {}")
+		raw("data modify storage ra:ender lookup.id set from storage ra:ender anchor.want")
+		raw("scoreboard players set #ender.sent $T 0")
+		raw("execute store result score #ender.sent $T as @a[distance=..2,scores={${EnderIds.GRACE}=..0},limit=1,sort=nearest] run function ${AnchorTable.send.asId()}")
+		raw("data remove storage ra:ender lookup")
+		raw("execute if score #ender.sent $T matches 0 run return 0")
 
 		raw("playsound minecraft:entity.enderman.teleport block ${soundListenersSel(12)} ~ ~ ~ 0.7 1.2")
 		raw("particle minecraft:portal ~ ~0.6 ~ 0.3 0.5 0.3 0.2 30 normal ${particleViewersSel()}")
-
-		executeRun("as @a[distance=..2,scores={${EnderIds.GRACE}=..0},limit=1,sort=nearest]", sendPlayer)
-
-		raw("tag @e[type=marker,tag=${EnderIds.TP_DEST}] remove ${EnderIds.TP_DEST}")
 		scoreboard.players.set(self(), EnderIds.TP_CD, 20)
 	}
 
@@ -364,8 +258,15 @@ object TeleportAnchor {
 		executeRun("if score #ender.slot $T matches 0..14", readTarget, "with storage ra:ender anchor")
 
 		raw("data modify storage ra:temp ender_line set value {label:\"Target: \",value:\"none\",color:\"red\",suffix:\"\"}")
-		raw("execute if data storage ra:ender anchor.want unless data storage ra:ender anchor{want:\"\"} run data modify storage ra:temp ender_line.value set from storage ra:ender anchor.want")
-		raw("execute if data storage ra:ender anchor.want unless data storage ra:ender anchor{want:\"\"} run data modify storage ra:temp ender_line.color set value \"green\"")
+		val wired = "if data storage ra:ender anchor.want unless data storage ra:ender anchor{want:\"\"}"
+		raw("execute $wired run data modify storage ra:temp ender_line.value set from storage ra:ender anchor.want")
+		// Green when the table has that anchor, red with a note when it has none.
+		raw("data modify storage ra:ender lookup set value {}")
+		raw("data modify storage ra:ender lookup.id set from storage ra:ender anchor.want")
+		raw("execute store result score #ender.found $T run function ${AnchorTable.lookup.asId()}")
+		raw("data remove storage ra:ender lookup")
+		raw("execute $wired if score #ender.found $T matches 1 run data modify storage ra:temp ender_line.color set value \"green\"")
+		raw("execute $wired if score #ender.found $T matches 0 run data modify storage ra:temp ender_line.suffix set value \" (no such anchor)\"")
 		stackedTextLineFromStorage()
 	}
 }

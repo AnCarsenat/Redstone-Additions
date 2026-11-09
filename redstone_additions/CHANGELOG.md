@@ -38,6 +38,17 @@
 
 ### Added
 
+- **Tag Adder and Tag Remover take a list of tags.** The new `tags` property holds up to 16
+  tags, edited one entry at a time in the Data Handler ([Edit], [Remove], [Append]). A Tag Remover
+  removes every listed tag from the entities its selector matches and leaves their other tags
+  alone; with an empty list it clears all of their tags except the `ra.` ones, as an empty `tag`
+  did. A Tag Adder adds every listed tag. Like the selector, the list can only be changed by
+  admins unless *Players may edit entity selectors and tags* is on. Every tag is checked again
+  each time the block fires: one that is not allowed (an `ra.` tag, a space) is skipped while the
+  others still apply, and the Goggles show **Refused tags: N** until it is fixed. A list with only
+  refused tags does nothing; it is never taken as "clear them all".
+- **The Tag Adder's and Tag Remover's Goggles show their selector and tags** (**Targets**, and
+  the first three tags then "+N more").
 - **Show filter previews** (your own settings, `/trigger ra.settings.open`, on by default):
   whether the Goggles draw the item an Item Pipe filters for above its label. A Goggles label is
   one entity that everyone nearby sees, so it cannot be hidden from one player: a pipe draws its
@@ -54,6 +65,14 @@
   still appears, since it is a warning rather than a greeting.
 - On/off server settings read **on** / **off** in the settings pages and in the confirmation
   message, instead of `1b` / `0b`.
+
+### Changed
+
+- **Tag Adders and Tag Removers placed from now on start with `tags: ["custom_tag"]`** instead of
+  `tag: "custom_tag"`. Blocks you already placed keep their single `tag` and work exactly as
+  before, including a Tag Remover with an empty `tag` clearing every tag. Give one a `tags` list
+  and the list is used from then on; the old `tag` is then ignored, and is only shown to admins
+  in the Data Handler.
 
 ## [v6.0.1] - 2026-11-08 - Leaner ticks
 

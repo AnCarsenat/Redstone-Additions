@@ -10,6 +10,7 @@ import ra.core.ref
 import ra.modules.sensors.EntityDetector.registerEntityDetector
 import ra.modules.sensors.TagAdder.registerTagAdder
 import ra.modules.sensors.TagRemover.registerTagRemover
+import ra.modules.sensors.SensorTags.registerSensorTags
 import ra.core.moduleLoaded
 import ra.core.raMessage
 
@@ -26,6 +27,7 @@ object SensorsModule : GameplayModule {
 
 	override fun Ra.register() {
 		// Registration order is the placement-handler order of the beet #ra:placement_handlers.
+		registerSensorTags()
 		registerEntityDetector()
 		registerTagAdder()
 		registerTagRemover()

@@ -364,6 +364,8 @@ object DataHandlerProps {
 		// it does. The Creative Data Handler edits anything.
 		for ((code, reason) in LOCK_REASON)
 			raw("execute if score #dh.lock $T matches $code run data modify storage ra:dh q.reason set value \"$reason\"")
+		// A declared list keeps its locked row, with a [List] to look at its entries.
+		executeReturnRun("if score #dh.lock $T matches 1..2 if score #dh.type $T matches 3 if score #dh.decl $T matches 1", DataHandlerEntries.renderLocked, "with storage ra:dh q")
 		raw("execute if score #dh.lock $T matches 1..2 run return run function ${PropRows.rowLocked.asId()} with storage ra:dh q")
 
 		// A declared list gets the per-entry editor (DataHandlerEntries); a guessed one the whole-list row.

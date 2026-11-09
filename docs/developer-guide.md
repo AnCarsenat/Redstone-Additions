@@ -616,7 +616,7 @@ has, `props/render` probes the value's type and draws the matching row:
 | Type | Detected by | Editor |
 | ---- | ----------- | ------ |
 | string | `data modify … set string` accepts it | `[Modify]`, text input |
-| list | `<name>[0]` exists | `[List]`, text input parsed as SNBT into storage and checked before it is written (`props/DataHandlerList.kt`) |
+| list | `<name>[0]` exists | `[Edit all]`, text input parsed as SNBT into storage and checked before it is written (`props/DataHandlerList.kt`) |
 | bool | the value matches `0b` or `1b` | `[Toggle]`, applied at once |
 | number | none of the above | `[Modify]`, number input |
 

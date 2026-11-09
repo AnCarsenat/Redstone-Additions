@@ -125,7 +125,7 @@ declares for you). `ra/core/Properties.kt` holds the builder.
 | `text(name)` | string | the book; stored as typed, never parsed |
 | `item(name)` | string (item id) | the book, or **[Set from hand]** |
 | `text(name, TextFormat.SELECTOR)` | string in a [format](#text-formats) | the book, checked against the format |
-| `list(name, of = PropType.TEXT, max = 15, pad = true)` | list | one row per entry ([Edit], [Remove]/[Clear]), **[Add]** until `max` entries, and **[List]** |
+| `list(name, of = PropType.TEXT, max = 15, pad = true)` | list | a header with **[Add]** (until `max` entries), **[Edit all]** and **[List]**, which shows one row per entry ([Edit], [Remove]/[Clear]) |
 | `textList(name, max, pad, format, choices = "ra:ender" to "anchor_ids", entryLabel = "Strength ")` | list of text | the same, with **[Choose]** from `storage <choices>` and entries labelled *Strength 1…* |
 | `dynamic(name)` | read from the block instance | — (see below) |
 
@@ -265,7 +265,9 @@ A row's button runs `/trigger ra.dh.action set <stamp × 10000 + code>`: code `1
 (item rows), `700 + i` edits the
 undeclared property `known[i]`. A declared list's entries (rows 0–29, entries 0–98) use
 `1000 + 300 i + j` (**[Edit]** entry `j`), `+ 99` (**[Add]**), `+ 100 + j` (**[Remove]** /
-**[Clear]**) and `+ 200 + j` (**[Choose]**). A picker is a menu of its own (`ra.dh.mkind` 1)
+**[Clear]**), `+ 199` (**[List]**: show or hide the entries) and `+ 200 + j` (**[Choose]**);
+`+ 299` is unused. The open list is the player's `ra.dh.expand`, its row index + 1 (0 or unset:
+none), reset when a block is selected with a Data Handler and on load. A picker is a menu of its own (`ra.dh.mkind` 1)
 whose choices are kept, as drawn, in `storage ra:dh pick.s<stamp>`; its buttons are
 `100 + k`. An entry edit is filed under the player's input request with its index
 (`pend.r<id>.j`, `-1` for an append). The stamp numbers the menu (1 – 200,000); each player's

@@ -28,6 +28,7 @@ MODULES = {
     "ra_enchanting": ("Enchant Crafting", "enchant-crafting.md"),
     "ra_displays": ("Displays", "displays.md"),
     "ra_automation": ("Automation", "automation.md"),
+    "ra_security": ("Security", "security.md"),
 }
 
 GIVE = {
@@ -46,6 +47,7 @@ GIVE = {
     "ra_enchanting": "/function ra_enchanting:items/give_all",
     "ra_displays": "/function ra_displays:items/give_all",
     "ra_automation": "/function ra_automation:items/give_all",
+    "ra_security": "/function ra_security:items/give_all",
 }
 
 TYPE_NAMES = {

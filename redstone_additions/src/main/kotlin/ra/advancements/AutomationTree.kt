@@ -7,6 +7,7 @@ import io.github.ayfri.kore.utils.set
 /** Automation (`ra_automation`). */
 internal val automationTree = listOf(
 	category("ra_automation", Items.CRAFTER, "Automation", "Let machines run your vanilla blocks.", "get_automation_item", Items.CRAFTER),
+	egg("ra_automation", "crafter_controller", "Crafter Controller", Items.TARGET, Flag.TRUE),
 	// Partial: a Pattern also carries its grid.
 	Unlock(
 		"ra_automation/get_pattern", "ra_automation", Items.FLOW_BANNER_PATTERN, "Pattern", "Obtain a Pattern.", "get_pattern",

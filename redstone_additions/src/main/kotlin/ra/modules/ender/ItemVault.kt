@@ -219,7 +219,7 @@ object ItemVault {
 		pack.define(pull) {
 			tag(self()) { add(EnderIds.PULL_TARGET) }
 			linkRequest(EnderIds.PULL_TARGET)
-			function(Link.requestItems, Storage.ENDER, "link")
+			function(Link.requestItems)
 			tag(self()) { remove(EnderIds.PULL_TARGET) }
 		}
 
@@ -246,7 +246,7 @@ object ItemVault {
 	private fun Function.linkRequest(recv: String) {
 		raw("data modify storage ra:ender link set value {}")
 		raw("data modify storage ra:ender link.channel set from entity @s data.properties.channel")
-		// Pasted into the link macro: an unsafe channel links nothing.
+		// Still checked though no longer pasted anywhere: an unsafe channel links nothing.
 		guardProperty("channel", TextFormat.NAME, onFail = "data remove storage ra:ender link.channel")
 		raw("data modify storage ra:ender link.recv set value \"$recv\"")
 	}

@@ -1,6 +1,6 @@
 # Recipe Atlas
 
-Every recipe in the pack, in one place: 97 of them.
+Every recipe in the pack, in one place: 99 of them.
 
 !!! tip "Finding one"
     Use the search box with the item's name — every recipe below is indexed by
@@ -33,6 +33,7 @@ what the pack actually contains rather than what someone remembered to add.
 | [Copper Multiblock Base](#multiblocks) | [Multiblocks](multiblocks.md) | Crafting table |
 | [Copper Pipe](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
 | [Counter](#logic-gates) | [Logic Gates](logic-gates.md) | Crafting table |
+| [Crafter Controller](#automation) | [Automation](automation.md) | Crafting table |
 | [Data Handler](#tools) | [Tools](tools.md) | Crafting table |
 | [Delayer](#logic-gates) | [Logic Gates](logic-gates.md) | Crafting table |
 | [Diamond Multiblock Base](#multiblocks) | [Multiblocks](multiblocks.md) | Crafting table |
@@ -88,6 +89,7 @@ what the pack actually contains rather than what someone remembered to add.
 | [Netherite Multiblock Base](#multiblocks) | [Multiblocks](multiblocks.md) | Crafting table |
 | [Network Gauge](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
 | [Pager](#wireless-redstone) | [Wireless Redstone](wireless-redstone.md) | Crafting table |
+| [Pattern](#automation) | [Automation](automation.md) | Crafting table |
 | [Player Detector](#sensors) | [Sensors](sensors.md) | Crafting table |
 | [Poppy Core](#not-crafted-won-on-an-enchanting-table) | [Infinite Generators](infinite-generators.md) | Enchanting table |
 | [Poppy Generator](#infinite-generators) | [Infinite Generators](infinite-generators.md) | Crafting table, shapeless |
@@ -116,6 +118,15 @@ what the pack actually contains rather than what someone remembered to add.
 | [Wireless Emitter](#wireless-redstone) | [Wireless Redstone](wireless-redstone.md) | Crafting table |
 | [Wireless Receiver](#wireless-redstone) | [Wireless Redstone](wireless-redstone.md) | Crafting table |
 | [Wrench](#tools) | [Tools](tools.md) | Crafting table |
+
+## Automation
+
+Module page: [Automation](automation.md) — give everything: `/function ra_automation:items/give_all`
+
+| Item | Recipe | Station | Namespace id |
+| ---- | ------ | ------- | ------------ |
+| **Crafter Controller** | ![Crafter Controller recipe](images/recipes/ra_automation/crafter_controller.png){ width="220" } | Crafting table | `ra_automation:crafter_controller` |
+| **Pattern** | ![Pattern recipe](images/recipes/ra_automation/pattern.png){ width="220" } | Crafting table | `ra_automation:pattern` |
 
 ## Chunk Loader
 

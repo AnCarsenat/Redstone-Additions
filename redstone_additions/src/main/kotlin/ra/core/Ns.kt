@@ -29,7 +29,8 @@ enum class Ns(val id: String) {
 	SENSORS("ra_sensors"),
 	STORAGE("ra_storage"),
 	WIRELESS("ra_wireless"),
-	WIRES("ra_wires");
+	WIRES("ra_wires"),
+	AUTOMATION("ra_automation");
 
 	override fun toString() = id
 }

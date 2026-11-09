@@ -19,6 +19,7 @@ import ra.hub.uninstall.uninstallGaps
 import ra.settings.purge.Purge
 import ra.lib.RaLibPart
 import ra.migrations.MigrationsPart
+import ra.modules.automation.AutomationModule
 import ra.modules.chunkloader.ChunkLoaderModule
 import ra.modules.displays.DisplaysModule
 import ra.modules.enchanting.EnchantingModule
@@ -68,6 +69,7 @@ object RedstoneAdditions {
 		JetpacksModule,
 		EnderModule,
 		DisplaysModule,
+		AutomationModule,
 	)
 
 	/**

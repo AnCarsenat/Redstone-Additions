@@ -5,7 +5,7 @@
 <h1 align="center">Redstone Additions</h1>
 
 <p align="center">
-  <strong>84 custom blocks. 9 tools. 97 recipes. 2 jetpacks and 3 upgrade kits. Vanilla datapack for Minecraft 26.3.</strong>
+  <strong>85 custom blocks. 9 tools. 99 recipes. 2 jetpacks and 3 upgrade kits. Vanilla datapack for Minecraft 26.3.</strong>
 </p>
 
 <p align="center">
@@ -16,9 +16,9 @@
 <p align="center">
   <img src="https://img.shields.io/badge/Minecraft-26.3-2EA44F" alt="Minecraft 26.3">
   <img src="https://img.shields.io/badge/Version-v6.0.3-blue" alt="Version v6.0.3">
-  <img src="https://img.shields.io/badge/Blocks-84-red" alt="84 blocks">
+  <img src="https://img.shields.io/badge/Blocks-85-red" alt="85 blocks">
   <img src="https://img.shields.io/badge/Tools-9-lightgrey" alt="9 tools">
-  <img src="https://img.shields.io/badge/Recipes-97-8A2BE2" alt="97 recipes">
+  <img src="https://img.shields.io/badge/Recipes-99-8A2BE2" alt="99 recipes">
 </p>
 
 <p align="center">
@@ -83,6 +83,7 @@ listed A to Z and grouped by module.
 | Infinite Generators | <img src="https://github.com/AnCarsenat/Redstone-Additions/raw/main/docs/images/banners/media-missing.png" alt="No screenshot yet" width="320"> |
 | Ender Links | <img src="https://github.com/AnCarsenat/Redstone-Additions/raw/main/docs/images/banners/media-missing.png" alt="No screenshot yet" width="320"> |
 | Displays | <img src="https://github.com/AnCarsenat/Redstone-Additions/raw/main/docs/images/banners/media-missing.png" alt="No screenshot yet" width="320"> |
+| Automation | <img src="https://github.com/AnCarsenat/Redstone-Additions/raw/main/docs/images/banners/media-missing.png" alt="No screenshot yet" width="320"> |
 | Tools | <img src="https://github.com/AnCarsenat/Redstone-Additions/raw/main/docs/images/banners/media-missing.png" alt="No screenshot yet" width="320"> |
 
 ---
@@ -207,6 +208,9 @@ netherrack or poppies on an enchanting table.
 - Item Hologram — shows the item inside it, turning above the block, with its name
 - Text Screen — glowing nixie-style text: the redstone level picks which item's name it shows
 
+### Automation (1)
+- Crafter Controller — fires the crafter next to it once it holds what its Pattern says
+
 ### Multiblock Bases (5)
 - Copper Multiblock Base
 - Iron Multiblock Base
@@ -214,7 +218,7 @@ netherrack or poppies on an enchanting table.
 - Diamond Multiblock Base
 - Netherite Multiblock Base
 
-### Items (13)
+### Items (14)
 - Iron Jetpack Kit — right-click while wearing any chestplate to fit it
 - Infinite Iron Jetpack Kit — won on an enchanting table; burns no fuel
 - Thruster Kit — hold sprint while airborne to accelerate
@@ -227,6 +231,7 @@ netherrack or poppies on an enchanting table.
 - Enchanted Coal — won by sacrificing coal on an enchanting table
 - Enchanted Coal Block — nine Enchanted Coal make one; one block plus a stick makes a Big Torch
 - Item Crate — what the Boxer packs a chest into, and the Unboxer unpacks
+- Pattern — sneak + right-click a crafter to record its grid, for the Crafter Controller
 - Goggles Lens — fits into any helmet and gives it the Goggles' view;
   `/trigger ra.goggles` switches it off or takes it back out
 
@@ -326,6 +331,7 @@ Starter command:
 | Infinite Generators | https://ancarsenat.github.io/Redstone-Additions/infinite-generators/ |
 | Ender Links | https://ancarsenat.github.io/Redstone-Additions/ender-links/ |
 | Displays | https://ancarsenat.github.io/Redstone-Additions/displays/ |
+| Automation | https://ancarsenat.github.io/Redstone-Additions/automation/ |
 | Item Reference | https://ancarsenat.github.io/Redstone-Additions/item-reference/ |
 | Recipe Atlas | https://ancarsenat.github.io/Redstone-Additions/recipe-atlas/ |
 | Changelog | https://ancarsenat.github.io/Redstone-Additions/changelog/ |
@@ -350,6 +356,7 @@ Starter command:
 | `/function ra_enchanting:items/give_all` | Disenchanter, Book Upgrader and Book Printer |
 | `/function ra_ender:items/give_all` | Ender vaults, Teleport Anchor, Anchor Terminal and Anchor Tablet |
 | `/function ra_displays:items/give_all` | Display blocks |
+| `/function ra_automation:items/give_all` | Crafter Controller and a Pattern |
 | `/function ra:tools/wrench/give` | Wrench |
 | `/function ra:tools/data_handler/give` | Data Handler |
 | `/function ra:tools/creative_data_handler/give` | Creative Data Handler |

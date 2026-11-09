@@ -64,6 +64,9 @@ object BookBackend {
 	/** Ticks the form may be missing (a creative-mode inventory shuffle) before the session is cancelled. */
 	private const val GONE_GRACE = 40
 
+	/** PickupDelay of the never-pickup ghost item `/give` spawns for its pickup animation. */
+	private const val GHOST_PICKUP_DELAY = "32767s"
+
 	/** Main inventory and hotbar slots give_book_safe checks for room. */
 	private val playerSlots = 0..35
 
@@ -120,8 +123,16 @@ object BookBackend {
 			// Dropping the form cancels the request. This has to be tested before anything else
 			// touches the item: the previous order killed the dropped book and then handed a fresh
 			// one straight back, which left no way out of a request short of waiting for the timeout.
+			//
+			// `/give` leaves a ghost behind: after a successful give the game spawns a copy of the
+			// item at the player for the pickup animation, which nobody can pick up
+			// (PickupDelay 32767) and which vanishes on its first entity tick. When the prompt opens
+			// outside the tick functions (an advancement reward, like the Remote's Shift+RMB) that
+			// ghost is still there when this scan runs next tick, and it looked exactly like a
+			// dropped form: the prompt was cancelled the instant it opened. A thrown form has a
+			// normal pickup delay, so the ghost is told apart by it.
 			scoreboard.players.set(dropped, Obj.TEMP, 0)
-			raw("\$execute at @s as @e[type=item,distance=..8] if data entity @s {Item:{id:\"minecraft:writable_book\",components:{$FORM_DATA}}} run scoreboard players set #input_dropped ${Obj.TEMP} 1")
+			raw("\$execute at @s as @e[type=item,distance=..8] if data entity @s {Item:{id:\"minecraft:writable_book\",components:{$FORM_DATA}}} unless data entity @s {PickupDelay:$GHOST_PICKUP_DELAY} run scoreboard players set #input_dropped ${Obj.TEMP} 1")
 
 			execute {
 				ifCondition { score(dropped, Obj.TEMP) equalTo 1 }

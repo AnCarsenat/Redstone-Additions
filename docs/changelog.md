@@ -2,6 +2,18 @@
 
 This page mirrors key datapack milestones from the main project changelog.
 
+## [v6.0.2] - Unreleased
+
+### Fixed
+
+- **The Redstone Remote's channel prompt no longer cancels itself.** Shift+RMB with the remote
+  hands out the Input Form, and the prompt was being called off the moment it opened, with
+  "Input cancelled." in chat and the book taken straight back. The game leaves a short-lived
+  copy of any item it gives a player floating at their feet for the pickup animation, and that
+  copy was being mistaken for the form being thrown away. It is now told apart from a real
+  drop, so the form stays in hand until you write on it, drop it or put it away. The same fix
+  covers any other text prompt opened by using an item.
+
 ## v6.0.1 (2026-11-08) — Leaner ticks
 
 **Supported version:** 26.3 (data pack format 121).

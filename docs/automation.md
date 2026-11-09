@@ -28,13 +28,19 @@ type counts.
 Hover over a recorded Pattern to see its grid, row by row, as item names; `-` is an empty
 slot. A crafter's disabled slots are recorded as empty.
 
+Patterns stack to 64: identical Patterns (the same grid) stack together, blank ones with blank
+ones. The recipe makes three. Holding a stack, recording or clearing acts on one Pattern only:
+one is taken from the stack and the new one goes into your inventory (or lands at your feet when
+it is full), so the rest of the stack keeps its grid. A Crafter Controller takes one Pattern from
+a held stack.
+
 ## Crafter Controller
 
 1. Place a vanilla **crafter** and fill its grid once by hand with the recipe you want.
 2. Record it with a Pattern (sneak + right-click the crafter).
 3. Place the **Crafter Controller** right against the crafter: under it, beside it or on top.
-4. Right-click the Controller with the Pattern. The Controller keeps it; if it already held one,
-   that one comes back to you.
+4. Right-click the Controller with the Pattern. The Controller keeps it (one from a stack); if it
+   already held one, that one comes back to you.
 5. Feed the crafter with hoppers, droppers or pipes as usual.
 
 Whenever every slot of the crafter holds the Pattern's item (and every slot the Pattern leaves
@@ -92,6 +98,10 @@ grid:
 - A blank Pattern has nine `""`.
 - An item is a Pattern when its `custom_data` contains `ra.pattern`:
   `*[minecraft:custom_data~{ra:{pattern:{}}}]`.
+- Patterns stack (`max_stack_size` 64). The item carries nothing per-item: two Patterns are the
+  same stack exactly when their `slots` are equal (the lore is built from `slots`). The use is
+  detected through an endless `consumable` (a `using_item` advancement), which works on a stack
+  as on a single item.
 
 The format is generic on purpose: other blocks read Patterns too (the Keypad will use one as a
 code: two Patterns are equal when their `slots` lists are). Treat the ids as player data: an
@@ -100,7 +110,9 @@ pasting it into a command, as the Crafter Controller does.
 
 A custom block that takes Patterns adds itself to `Pattern.targets` (Kotlin,
 `ra/modules/automation/pattern/Pattern.kt`): right-clicking it with a Pattern then runs its
-function as the block's marker, the player tagged `ra.auto.pattern_user`.
+function as the block's marker, the player tagged `ra.auto.pattern_user`. The main hand may hold
+a stack: a block that keeps the Pattern takes one (`Pattern.TAKE_ONE`, a `set_count` -1
+modifier), a block that only compares it leaves the stack alone.
 
 ### Crafter Controller data
 

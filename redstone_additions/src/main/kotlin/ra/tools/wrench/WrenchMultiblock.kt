@@ -46,10 +46,7 @@ object WrenchMultiblock {
 		Tier("iron", "iron_block"),
 		Tier("gold", "gold_block"),
 		Tier("diamond", "diamond_block"),
-		Tier(
-			"netherite", "netherite_block",
-			hints = listOf("Upgrade Platform: 3x3 smooth stone platform with netherite base in center"),
-		),
+		Tier("netherite", "netherite_block"),
 	)
 
 	/** At the block-aligned centre of a position: is an assembled multiblock's marker right here? */

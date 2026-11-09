@@ -151,8 +151,11 @@ When it gets powered, it sends its message to the players picked by its selector
 | `message_block` (the text) | `Hello World!` |
 | `entity_selector` (who reads it) | `@a[distance=..16]` |
 
-Both are admin-only. The text is shown as rich chat text, so it can carry a clickable command that runs
-as whoever clicks it.
+Anyone can change the text: it is shown exactly as typed, quotes and braces included. Rich text
+(colours, clickable links) is a compound only an operator can write, with the Creative Data
+Handler or `/data`; the Clipboard does not paste one for players without server-settings access.
+The selector is admin-only unless *Players may edit entity selectors and tags* is on (Sensors
+settings page).
 
 ## Changing settings
 

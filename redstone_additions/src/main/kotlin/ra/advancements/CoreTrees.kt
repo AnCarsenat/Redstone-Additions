@@ -23,26 +23,16 @@ internal val coreTree = listOf(
 	egg("ra", "multimeter", "Multimeter", Items.CLOCK, ONE, item = Items.CLOCK),
 )
 
-/** The example multiblocks: a path rather than a fan, each step the parent of the next. */
+/** The example multiblock: a path rather than a fan, each step the parent of the next. */
 internal val exampleTree = listOf(
 	Unlock(
-		"ra_example", "ra", Items.BLAST_FURNACE, "Example Multiblocks", "Learn the two example multiblocks and how they progress.",
+		"ra_example", "ra", Items.BLAST_FURNACE, "Example Multiblocks", "Learn the example multiblock.",
 		"start_example", Items.BAT_SPAWN_EGG, Match.Exact(raData("example_copper_base", TRUE)),
 	),
 	Unlock(
 		"ra_example/get_blast_forge_base", "ra_example", Items.BLAST_FURNACE, "Blast Forge Base",
 		"Obtain the example Blast Forge core and place it in the world.",
 		"get_blast_forge_base", Items.BAT_SPAWN_EGG, Match.Exact(raData("example_copper_base", TRUE)),
-	),
-	Unlock(
-		"ra_example/get_upgrade_platform_base", "ra_example/get_blast_forge_base", Items.LODESTONE, "Upgrade Platform Base",
-		"Obtain the example Upgrade Platform core after the forge path.",
-		"get_upgrade_platform_base", Items.BAT_SPAWN_EGG, Match.Exact(raData("example_netherite_base", TRUE)),
-	),
-	Unlock(
-		"ra_example/guide", "ra_example/get_upgrade_platform_base", Items.DIAMOND, "Example Progression",
-		"A guide path for the moved example multiblocks, including the new failure chance on upgrades.",
-		"example_progress", Items.BAT_SPAWN_EGG, Match.Exact(raData("example_netherite_base", TRUE)),
 	),
 )
 

@@ -150,7 +150,7 @@ Each module has `<Name>Module.kt` (the `GameplayModule` object: registration ord
 | --- | --- |
 | `modules/gates` | `Clock.kt` (the reference block), `UniGate.kt`, `Delayer.kt`, `Extender.kt`, `Randomizer.kt`, `Shortener.kt`, `Counter.kt`, `EdgeDetector.kt`, `GateCommon.kt` (`timingOnBreak`, `timingTick`, `gateGoggles`, the output pulse helpers), `debug/` |
 | `modules/wires` | `WiresBlocks.kt` (every item, recipe, bundle, wrench rows, read-only), `blocks/Placement.kt` + `PlacementSpecs.kt` (one shared handler), `blocks/<block>/`, `electric/`, `fluid/`, `liquid/`, `bridge/`, `media/`, `common/` (`Line.kt`, `ConduitModel.kt`), `Lifecycle.kt` |
-| `modules/multiblock` | `blocks/Bases.kt` + `BaseTier.kt`, `blastforge/`, `upgradeplatform/`, `drills/RockMetallicDrill.kt`, `goggles/ShowIoLabel.kt` |
+| `modules/multiblock` | `blocks/Bases.kt` + `BaseTier.kt`, `blastforge/`, `drills/RockMetallicDrill.kt`, `goggles/ShowIoLabel.kt` |
 | `modules/jetpacks` | `Jp.kt` (identifiers), `Kits.kt`, `kit/` (`FitModifiers.kt` generates `fit_<tier>_<n>`), `flight/`, `mode/` |
 | `modules/infinite` | `Generator.kt` (shared generator shape), one file per generator, `InfiniteItems.kt`, `InfiniteTags.kt` |
 | `modules/enchanting` | `EnchantingModule.kt`, `RecipesTag.kt` (`#ra_enchanting:recipes`), `SacrificeRecipe.kt`, `sacrifice/` |

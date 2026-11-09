@@ -391,6 +391,51 @@ Runtime behavior:
 - Full inventory produces a red user warning and skips book give.
 - Dropped request books are cleaned through request-aware selectors.
 
+### safe: player input in commands
+
+Anything a player typed (a book page, a Data Handler value, a Clipboard paste) is text, and a
+macro pastes text into the command before the game parses it. `ra_lib:safe` is the one place
+that decides what such a value may become. All of it works on `storage ra:safe`; formats are
+the [text formats](tools-and-registries.md#text-formats) (`TextFormat` in `ra/core/PropFormats.kt`).
+
+| Function | Input | Output | Returns |
+| --- | --- | --- | --- |
+| `ra_lib:safe/check` | `s` value, `f` format code | — | 1 when `s` is a string in format `f` |
+| `ra_lib:safe/guard {p, f}` | as a block's marker: `data.properties.<p>` | cached in `data.data.safe.<p>` | 1 when the property is safe |
+| `ra_lib:safe/clean` | `s` value, `f` format code | `out`, a string | 1 when `out` is usable, 0 (no `out`) when nothing usable is left |
+| `ra_lib:safe/number` | `s` value | `n` int, and `#sf.n ra.temp` | 1 when `s` is a number of any numeric type |
+
+`check` and `guard` **refuse** a value; `clean` **makes** one, for a place that must show or paste
+something whatever it got:
+
+- **Free text** (`FREE`, 0): `"` becomes `'`, `\` becomes `/`, a line break or tab a space. The
+  result can sit inside a double-quoted string of a macro line (`{text:"$(value)"}`) and cannot
+  close it, so it cannot add a key, a component or an argument.
+- **Identifiers** (`ID`, `NAME`, `TAG`): characters the format does not accept are dropped, so a
+  tag typed as `My Tag!"} run say x` comes out `MyTagrunsayx`. A `TAG` still starting with `ra.` is
+  refused.
+- **Selectors and coordinates** (`SELECTOR`, `COORDS`): copied when valid, refused otherwise:
+  dropping a character would change what they point at.
+- A number is cleaned as its digits; a compound or a list is refused. At most 256 characters are
+  read, and the result always passes `check` in the same format: `clean` ends by calling it.
+
+`number` is the type test the Data Handler uses (a storage number provider read with two
+fallbacks, through `/compute`): `"5"` in quotes is text and returns 0. Store what it gives in a
+score or an int path and it can never be pasted as text.
+
+In Kotlin (`ra/lib/safe/SafeClean.kt`): `cleanFrom("storage ra:temp x.value", TextFormat.FREE)`
+leaves `SafeClean.OK` (`#sf.cl ra.temp`) at 1 and the result in `storage ra:safe out`;
+`isNumberAt(source, "#my.score")` sets the score to 1 or 0. `guardProperty(name, format)`
+(`SafeText.kt`) guards a property before a macro call. `clean` walks the string, so call it when a
+value is shown or written, not every tick: the Goggles' Teleport Anchor and Fluid Vault lines use
+it, once per refresh of a billboard someone is looking at.
+
+Better still, never paste a player's value: compare it with `data modify ... set from` (success 0
+means equal), or show it with an `nbt` text component. Under `interpret:true` an `nbt` component
+decodes the stored tag itself (since 1.21.5), so a string is plain text whatever it spells; only a
+compound is rich text. That is why the Message Block's text is open to players: they can only ever
+write a string.
+
 ## 2b) Settings: `ra_settings`
 
 Values that are not a property of one placed block. Per-block properties already

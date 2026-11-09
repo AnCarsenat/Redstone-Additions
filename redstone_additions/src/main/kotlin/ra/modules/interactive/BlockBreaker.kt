@@ -49,7 +49,7 @@ object BlockBreaker {
 		// Ticks between two breaks. A server admin's setting, not a player's: a fast breaker is a
 		// fast quarry. Read with a default, so a breaker placed before it was seeded acts at 20.
 		properties(block) {
-			number("cooldown", min = 1, max = 1200, adminOnly = true, goggles = false)
+			number("cooldown", min = 1, max = 1200, adminOnly = true, goggles = false, default = DEFAULT_COOLDOWN)
 		}
 		pack.blockRegisterMessage(block)
 		pack.specGive(block, item)

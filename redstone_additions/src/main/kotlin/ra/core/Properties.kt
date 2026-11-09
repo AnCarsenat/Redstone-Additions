@@ -79,6 +79,15 @@ data class PropSpec(
 	val entryLabel: String? = null,
 	/** Goggles billboard: null follows [visible]. See the class comment. */
 	val goggles: Boolean? = null,
+	/**
+	 * What the Data Handler shows, marked "(default)", for a block that does not carry this
+	 * property yet (one placed before it existed), as SNBT: `5`, `1b`, `"@e"`, `["custom_tag"]`.
+	 * Written to the block on the first edit. Null: no default is made up (a block's code may read
+	 * a missing value as anything; a cooldown read with a fallback of 20 is not 0): such a row
+	 * shows "(not set)" with an empty value instead. Give one wherever the block has a known
+	 * starting value, the one its placement writes.
+	 */
+	val default: String? = null,
 ) {
 	init {
 		require(name.matches(Regex("[a-z_][a-z0-9_]*"))) { "property name '$name' must be [a-z_][a-z0-9_]*" }
@@ -120,23 +129,27 @@ class PropertiesBuilder {
 		specs += spec
 	}
 
-	fun number(name: String, min: Int = 0, max: Int = 9999, readonly: Boolean = false, adminOnly: Boolean = false, visible: Boolean = true, goggles: Boolean? = null) =
-		add(PropSpec(name, PropType.NUMBER, min, max, readonly = readonly, adminOnly = adminOnly, visible = visible, goggles = goggles))
+	fun number(name: String, min: Int = 0, max: Int = 9999, readonly: Boolean = false, adminOnly: Boolean = false, visible: Boolean = true, goggles: Boolean? = null, default: Int? = null) =
+		add(PropSpec(name, PropType.NUMBER, min, max, readonly = readonly, adminOnly = adminOnly, visible = visible, goggles = goggles, default = default?.toString()))
 
-	fun bool(name: String, readonly: Boolean = false, adminOnly: Boolean = false, visible: Boolean = true, goggles: Boolean? = null) =
-		add(PropSpec(name, PropType.BOOL, readonly = readonly, adminOnly = adminOnly, visible = visible, goggles = goggles))
+	fun bool(name: String, readonly: Boolean = false, adminOnly: Boolean = false, visible: Boolean = true, goggles: Boolean? = null, default: Boolean? = null) =
+		add(PropSpec(name, PropType.BOOL, readonly = readonly, adminOnly = adminOnly, visible = visible, goggles = goggles, default = default?.let { if (it) "1b" else "0b" }))
 
-	fun text(name: String, readonly: Boolean = false, adminOnly: Boolean = false, visible: Boolean = true, goggles: Boolean? = null) =
-		add(PropSpec(name, PropType.TEXT, readonly = readonly, adminOnly = adminOnly, visible = visible, goggles = goggles))
+	fun text(name: String, readonly: Boolean = false, adminOnly: Boolean = false, visible: Boolean = true, goggles: Boolean? = null, default: String? = null) =
+		add(PropSpec(name, PropType.TEXT, readonly = readonly, adminOnly = adminOnly, visible = visible, goggles = goggles, default = default?.let(::snbtString)))
 
-	fun item(name: String, readonly: Boolean = false, adminOnly: Boolean = false, visible: Boolean = true, goggles: Boolean? = null) =
-		add(PropSpec(name, PropType.ITEM, readonly = readonly, adminOnly = adminOnly, visible = visible, goggles = goggles))
+	fun item(name: String, readonly: Boolean = false, adminOnly: Boolean = false, visible: Boolean = true, goggles: Boolean? = null, default: String? = null) =
+		add(PropSpec(name, PropType.ITEM, readonly = readonly, adminOnly = adminOnly, visible = visible, goggles = goggles, default = default?.let(::snbtString)))
 
+	/** [default]: the list's value as SNBT, `["a","b"]`. */
 	fun list(
 		name: String, of: PropType? = null, max: Int? = null, pad: Boolean = false,
-		readonly: Boolean = false, adminOnly: Boolean = false, visible: Boolean = true, goggles: Boolean? = null,
-	) = add(PropSpec(name, PropType.LIST, of = of, maxLength = max, pad = pad, readonly = readonly, adminOnly = adminOnly, visible = visible, goggles = goggles))
+		readonly: Boolean = false, adminOnly: Boolean = false, visible: Boolean = true, goggles: Boolean? = null, default: String? = null,
+	) = add(PropSpec(name, PropType.LIST, of = of, maxLength = max, pad = pad, readonly = readonly, adminOnly = adminOnly, visible = visible, goggles = goggles, default = default))
 
 	/** Type and flags come from each block instance (`data.property_types.<name>`). Discouraged. */
 	fun dynamic(name: String) = add(PropSpec(name, PropType.TEXT, dynamic = true))
 }
+
+/** [value] as a quoted SNBT string. */
+internal fun snbtString(value: String) = "\"" + value.replace("\\", "\\\\").replace("\"", "\\\"") + "\""

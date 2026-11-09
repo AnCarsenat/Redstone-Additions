@@ -125,7 +125,7 @@ declares for you). `ra/core/Properties.kt` holds the builder.
 | `text(name)` | string | the book; stored as typed, never parsed |
 | `item(name)` | string (item id) | the book, or **[Set from hand]** |
 | `text(name, TextFormat.SELECTOR)` | string in a [format](#text-formats) | the book, checked against the format |
-| `list(name, of = PropType.TEXT, max = 15, pad = true)` | list | one row per entry ([Edit], [Remove]/[Clear], [Append]) and **[Edit whole list]** |
+| `list(name, of = PropType.TEXT, max = 15, pad = true)` | list | one row per entry ([Edit], [Remove]/[Clear]), **[Add]** until `max` entries, and **[Edit whole list]** |
 | `textList(name, max, pad, format, choices = "ra:ender" to "anchor_ids", entryLabel = "Strength ")` | list of text | the same, with **[Choose]** from `storage <choices>` and entries labelled *Strength 1…* |
 | `dynamic(name)` | read from the block instance | — (see below) |
 
@@ -137,6 +137,7 @@ Each also takes these flags:
 | `adminOnly = true` | locked for players without `ra.admin` (server-settings access), editable for admins; re-checked when the value is written | not offered to non-admins | not pasted by non-admins |
 | `adminOnly = true, adminSetting = "<key>"` | as `adminOnly`, unless the GLOBAL bool setting `<key>` is on (then everyone may edit it) | as `adminOnly` | as the Data Handler |
 | `visible = false` | not shown at all to non-admins (nor in the Properties summary); admins see it marked *(hidden from players)* and can edit it | not offered to non-admins | not pasted by non-admins |
+| `default = …` (`20`, `false`, `"@e"`, `listOf("custom_tag")` for `textList`, SNBT for `list`) | on a block that lacks the property, the row shows this value marked *(default)*; the first edit writes it to the block (an entry edit or **[Toggle]** starts from it). Without a default such a row says *(not set)* and the first edit writes what is typed. Generated as `storage ra:dh defaults."<type>"` | — | — |
 
 One more flag concerns only the Goggles:
 
@@ -263,7 +264,7 @@ A row's button runs `/trigger ra.dh.action set <stamp × 10000 + code>`: code `1
 `i` of `order."<type>"`, `400 + i` is that row's **[Set from hand]**, `550 + i` its **[Clear]**
 (item rows), `700 + i` edits the
 undeclared property `known[i]`. A declared list's entries (rows 0–29, entries 0–98) use
-`1000 + 300 i + j` (**[Edit]** entry `j`), `+ 99` (**[Append]**), `+ 100 + j` (**[Remove]** /
+`1000 + 300 i + j` (**[Edit]** entry `j`), `+ 99` (**[Add]**), `+ 100 + j` (**[Remove]** /
 **[Clear]**) and `+ 200 + j` (**[Choose]**). A picker is a menu of its own (`ra.dh.mkind` 1)
 whose choices are kept, as drawn, in `storage ra:dh pick.s<stamp>`; its buttons are
 `100 + k`. An entry edit is filed under the player's input request with its index

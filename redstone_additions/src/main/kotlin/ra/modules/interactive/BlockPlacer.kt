@@ -48,7 +48,7 @@ object BlockPlacer {
 		block(block)
 		// Ticks between two placements; an admin's setting, like the Block Breaker's.
 		properties(block) {
-			number("cooldown", min = 1, max = 1200, adminOnly = true, goggles = false)
+			number("cooldown", min = 1, max = 1200, adminOnly = true, goggles = false, default = DEFAULT_COOLDOWN)
 		}
 		pack.blockRegisterMessage(block)
 		pack.specGive(block, item)

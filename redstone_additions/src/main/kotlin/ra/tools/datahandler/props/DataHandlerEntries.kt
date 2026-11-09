@@ -26,20 +26,24 @@ import ra.tools.tool
  *   targets: list (15/15)  [Edit whole list]
  *     Strength 1: B   [Choose] [Edit] [Clear]
  *     Strength 2: (empty)   [Choose] [Edit]
+ *
+ *   tags: list (1/16) [Add] [Edit whole list]
+ *     Tag 1: custom_tag   [Edit] [Remove]
  * ```
  *
  * Buttons, as `menu stamp * MUL + code` like every other row (see DataHandlerActions), with
  * i the row's index in the block's schema (0..29) and j the entry (0..98):
  *
  *   1000 + 300 i + j          [Edit]: type a new value for entry j
- *   1000 + 300 i + 99         [Append]: type a new entry for the end
+ *   1000 + 300 i + 99         [Add]: type a new entry for the end (also on an empty list),
+ *                             struck through with "Maximum N entries" once `max_length` is reached
  *   1000 + 300 i + 100 + j    [Remove] (or [Clear] on a padded list) entry j
  *   1000 + 300 i + 200 + j    [Choose]: pick entry j from the list the schema names (`choices`)
  *
  * A PADDED list (`pad`, a Teleport Anchor's fifteen strengths) has a fixed length and each slot
  * means something by its position, so its [Remove] is [Clear]: the slot becomes "" and the rest
  * stay where they are. Deleting would shift strength 5's target onto strength 4. It has no
- * [Append] either: it is always full.
+ * [Add] either: it is always full.
  *
  * Every write goes through [commit], which re-reads the block and its schema first (flags, the
  * list's length, `max_length`) and checks the new entry against the element type -- `of`, or with
@@ -242,8 +246,8 @@ object DataHandlerEntries {
 		fun Ra.line(fn: io.github.ayfri.kore.arguments.types.resources.FunctionArgument, vararg parts: String) =
 			pack.define(fn) { raw("\$tellraw @s [" + parts.joinToString(",") + "]") }
 		line(headPadded, HEAD, WHOLE)
-		line(headAppend, HEAD, btn("[Append]", "green", "append", "Add an entry at the end"), """{text:" "}""", WHOLE)
-		line(headFull, HEAD, """{text:"[Append]",color:"dark_gray",strikethrough:true,hover_event:{action:"show_text",value:"The list is full ($(count))."}}""", """{text:" "}""", WHOLE)
+		line(headAppend, HEAD, btn("[Add]", "green", "append", "Add an entry at the end"), """{text:" "}""", WHOLE)
+		line(headFull, HEAD, """{text:"[Add]",color:"dark_gray",strikethrough:true,hover_event:{action:"show_text",value:"Maximum $(max) entries"}}""", """{text:" "}""", WHOLE)
 		line(entryRow, ENTRY, VALUE, EDIT, REMOVE)
 		line(entryRowChoose, ENTRY, VALUE, CHOOSE, EDIT, REMOVE)
 		line(entryEmpty, ENTRY, EMPTY, EDIT)
@@ -310,6 +314,7 @@ object DataHandlerEntries {
 
 		// {name, j}: remove entry j, or on a padded list clear it to "".
 		pack.define(remove) {
+			callWith(DataHandlerProps.materialize, "storage ra:dh q")
 			raw("\$execute if score #dh.lpad $T matches 1 run data modify entity $TARGET data.properties.\$(name)[\$(j)] set value \"\"")
 			raw("\$execute if score #dh.lpad $T matches 0 run data remove entity $TARGET data.properties.\$(name)[\$(j)]")
 			raw("""execute if score #dh.lpad $T matches 1 run tellraw @s [$PREFIX,{text:"Entry cleared.",color:"green"}]""")
@@ -375,7 +380,9 @@ object DataHandlerEntries {
 			raw("data modify storage ra:safe s set from storage ra:dh elem")
 			raw("execute if score #dh.ft $T matches 0 store result score #dh.fok $T run function ${checkFormat.asId()}")
 			raw("execute if score #dh.ft $T matches 0 if score #dh.fok $T matches 0 run return 0")
-			// Still there, and still room.
+			// Still there, and still room -- on the block, which gets the shown default first if it
+			// did not carry the list yet (DataHandlerProps.materialize).
+			callWith(DataHandlerProps.materialize, "storage ra:dh q")
 			raw("\$execute store result score #dh.llen $T run data get entity $TARGET data.properties.\$(name)")
 			fail("""if data storage ra:dh q{op:"append"} unless score #dh.llen $T < #dh.lmax $T""", """[$PREFIX,{text:"$(name)",color:"yellow"},{text:" is full; nothing was changed.",color:"red"}]""", macro = true)
 			raw("execute store result score #dh.j $T run data get storage ra:dh q.j")

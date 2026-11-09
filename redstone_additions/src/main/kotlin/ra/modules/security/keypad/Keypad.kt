@@ -112,7 +112,7 @@ object Keypad {
 			raw("data modify entity $m data.data.owner set from entity @a[tag=${Tag.PLACER},limit=1] UUID")
 			// The placer's name: a player head given their profile, read back, thrown away.
 			raw("""summon minecraft:item_display ~ ~ ~ {Tags:["ra","$nameTag"],item:{id:"minecraft:player_head",count:1}}""")
-			raw("""execute as @a[tag=${Tag.PLACER},limit=1] run item modify entity @n[type=minecraft:item_display,tag=$nameTag] contents {function:"minecraft:fill_player_head",entity:"this"}""")
+			raw("""execute as @a[tag=${Tag.PLACER},limit=1] run item modify entity @n[type=minecraft:item_display,tag=$nameTag] contents {type:"minecraft:fill_player_head",entity:"this"}""")
 			raw("data modify entity $m data.properties.owner set from entity @n[type=minecraft:item_display,tag=$nameTag] item.components.\"minecraft:profile\".name")
 			raw("data modify entity $m data.status.owner set from entity $m data.properties.owner")
 			raw("kill @e[type=minecraft:item_display,tag=$nameTag]")

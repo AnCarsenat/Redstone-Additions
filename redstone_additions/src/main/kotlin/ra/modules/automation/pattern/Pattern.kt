@@ -84,7 +84,7 @@ object Pattern {
 	const val MAX_STACK = 64
 
 	/** An item modifier taking one item from a stack (an emptied slot becomes air): `item modify ... $TAKE_ONE`. */
-	const val TAKE_ONE = """{function:"minecraft:set_count",count:-1,add:true}"""
+	const val TAKE_ONE = """{type:"minecraft:set_count",count:-1,add:true}"""
 
 	/** On the player whose Pattern is being used, for the duration of the use. */
 	const val USER = "ra.auto.pattern_user"

@@ -169,7 +169,7 @@ object BookPrinter {
 		raw("data modify entity @e[type=minecraft:item,tag=$OUT,limit=1] PickupDelay set value 0s")
 		raw(untagOut)
 		// One off the stack: Schematics of the same book stack.
-		raw("""item modify entity $USER weapon.mainhand {function:"minecraft:set_count",count:-1,add:true}""")
+		raw("""item modify entity $USER weapon.mainhand {type:"minecraft:set_count",count:-1,add:true}""")
 
 		raw("data modify entity @s data.data.item set from storage ra:enchant pr.new")
 		raw("data modify entity @s data.data.item.count set value 1")

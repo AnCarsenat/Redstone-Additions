@@ -23,5 +23,10 @@ val YouPage = Page(
 			hint = "A fuel bar on the actionbar while you fly a coal-burning jetpack: " +
 				"how much of the burning piece is left, and how much coal you carry.",
 		),
+		BoolRow(
+			"airg", "Air tank gauge", Scope.USER, default = 1, obj = Obj.USER_AIR_GAUGE,
+			hint = "An air bar on the actionbar while you wear an Air Tank with your head under water, " +
+				"or stand on an Air Charger: how full the tank is, and the minutes of air left.",
+		),
 	),
 )

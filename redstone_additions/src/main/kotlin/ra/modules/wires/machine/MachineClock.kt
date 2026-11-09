@@ -11,6 +11,7 @@ import ra.core.executeReturnRun
 import ra.core.executeRun
 import ra.core.raw
 import ra.core.ref
+import ra.modules.wires.blocks.air_charger.AirCharger
 import ra.modules.wires.blocks.spout.Spout
 import ra.modules.wires.blocks.tesla_coil.TeslaCoil
 import ra.modules.wires.blocks.water_wheel.WaterWheel
@@ -19,7 +20,7 @@ import ra.modules.wires.blocks.water_wheel.WaterWheel
  * The once-a-second clock of the network machines that act on the world around them in steps:
  * the Tesla Coil (one zap a second), the Spout (one container a second, a bucket being the
  * 5000 mL a Fluid Drain moves a second at its default rate) and the Water Wheel (one second of
- * EU, and one turn of its animation).
+ * EU, and one turn of its animation) and the Air Charger (one step of an Air Tank's air).
  *
  * Same shape as the readout clock (ra_wires:readout) and the sensors' SensorPoll: [run] is
  * scheduled every [PERIOD] ticks and reschedules itself only while a marker tagged [TAG] is
@@ -53,6 +54,7 @@ object MachineClock : PackPart {
 			executeRun("as @e[type=marker,tag=ra.custom_block.${TeslaCoil.ID}] at @s unless block ~ ~ ~ ${TeslaCoil.BLOCK}", TeslaCoil.onBreak)
 			executeRun("as @e[type=marker,tag=ra.custom_block.${Spout.ID}] at @s unless block ~ ~ ~ ${Spout.BLOCK}", Spout.onBreak)
 			executeRun("as @e[type=marker,tag=ra.custom_block.${WaterWheel.ID}] at @s unless block ~ ~ ~ ${WaterWheel.BLOCK}", WaterWheel.onBreak)
+			executeRun("as @e[type=marker,tag=ra.custom_block.${AirCharger.ID}] at @s unless block ~ ~ ~ ${AirCharger.BLOCK}", AirCharger.onBreak)
 			executeRun("unless score $FLAG ra.wires.tmp2 matches 1 if entity @e[type=marker,tag=$TAG,limit=1]", start)
 		}
 
@@ -66,6 +68,7 @@ object MachineClock : PackPart {
 			executeRun("as @e[type=marker,tag=ra.custom_block.${TeslaCoil.ID}] at @s", TeslaCoil.run)
 			executeRun("as @e[type=marker,tag=ra.custom_block.${Spout.ID}] at @s", Spout.run)
 			executeRun("as @e[type=marker,tag=ra.custom_block.${WaterWheel.ID}] at @s", WaterWheel.run)
+			executeRun("as @e[type=marker,tag=ra.custom_block.${AirCharger.ID}] at @s", AirCharger.run)
 			executeReturnRun("if entity @e[type=marker,tag=$TAG,limit=1]", start)
 		}
 	}

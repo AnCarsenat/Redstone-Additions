@@ -31,6 +31,7 @@ import ra.modules.wires.blocks.Placement
 import ra.modules.wires.blocks.creative_fluid.CreativeFluid
 import ra.modules.wires.blocks.electric_consumer.ElectricConsumer
 import ra.modules.wires.blocks.electric_furnace.ElectricFurnaceSettings
+import ra.modules.wires.diving.DivingItems
 import ra.modules.wires.fluid.Drain
 
 /**
@@ -135,7 +136,10 @@ object WiresBlocks : PackPart {
 			recipe = WiresRecipe(listOf("C C", "CBC", " D "), listOf("C" to Items.COPPER_INGOT, "B" to Items.BUCKET, "D" to Items.POINTED_DRIPSTONE), Items.BUCKET, Criterion.INGREDIENT)),
 		WiresItem(item("water_wheel", "Water Wheel", "minecraft:stripped_spruce_log", "minecraft:stripped_spruce_log"),
 			lore = listOf("Generates EU from flowing water" to "gray", "around its paddles" to "gray"),
-			recipe = WiresRecipe(listOf("PSP", "SCS", "PRP"), listOf("P" to Items.SPRUCE_SLAB, "S" to Items.STICK, "C" to Items.COPPER_BLOCK, "R" to Items.REDSTONE), Items.SPRUCE_SLAB, Criterion.INGREDIENT)),
+				recipe = WiresRecipe(listOf("PSP", "SCS", "PRP"), listOf("P" to Items.SPRUCE_SLAB, "S" to Items.STICK, "C" to Items.COPPER_BLOCK, "R" to Items.REDSTONE), Items.SPRUCE_SLAB, Criterion.INGREDIENT)),
+		WiresItem(item("air_charger", "Air Charger", "minecraft:waxed_weathered_copper_grate", "minecraft:waxed_weathered_copper_grate"),
+			lore = listOf("Stand on it to fill an Air Tank" to "gray", "from its gas network's oxygen" to "gray"),
+			recipe = WiresRecipe(listOf("IPI", "CBC", "IRI"), listOf("I" to Items.IRON_INGOT, "P" to Items.HEAVY_WEIGHTED_PRESSURE_PLATE, "C" to Items.COPPER_INGOT, "B" to Items.GLASS_BOTTLE, "R" to Items.REDSTONE), Items.HEAVY_WEIGHTED_PRESSURE_PLATE, Criterion.INGREDIENT)),
 	)
 
 	/** Goggles readouts, in the order `ra:tools/goggles/draw_block` listed the module's markers. */
@@ -144,7 +148,7 @@ object WiresBlocks : PackPart {
 		"gas_tank", "gas_pump", "gas_valve", "boiler", "electric_wire", "electric_generator",
 		"electric_consumer", "electric_switch", "solar_panel", "battery", "creative_eu",
 		"creative_fluid", "electric_furnace", "industrial_light", "electric_breaker", "network_gauge", "usage_meter",
-		"tesla_coil", "spout", "water_wheel",
+		"tesla_coil", "spout", "water_wheel", "air_charger",
 	)
 
 	private fun loreNbt(lore: List<Pair<String, String>>) = NbtList(lore.map { (text, color) ->
@@ -173,7 +177,8 @@ object WiresBlocks : PackPart {
 
 		for (it in items) it.recipe?.let { r -> recipe(it, r) }
 
-		bundles += GiveBundle("wires", "Wires Bundle", "Fluid and electric network blocks", Ns.WIRES, items.map { it.stackNbt() })
+		bundles += GiveBundle("wires", "Wires Bundle", "Fluid and electric network blocks", Ns.WIRES,
+			items.map { it.stackNbt() } + listOf(DivingItems.airTank.stackNbt(), DivingItems.heavyBoots.stackNbt()))
 
 		// The retired pipe and wire tiers (see SPECS) place a Copper Pipe or a Wire; a refused
 		// placement gives that back.

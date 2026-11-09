@@ -33,5 +33,6 @@ val WiresPage = Page(
 		"tesla_coil" to "Tesla Coil",
 		"spout" to "Spout",
 		"water_wheel" to "Water Wheel",
+		"air_charger" to "Air Charger",
 	),
 )

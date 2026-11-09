@@ -17,6 +17,7 @@ import ra.core.block.forEachMarker
 import ra.core.block.gogglesHeader
 import ra.core.block.outputShell
 import ra.core.block.propLine
+import ra.core.block.targetPowerFill
 import ra.core.Ns
 import ra.core.Obj
 import ra.core.define
@@ -76,14 +77,8 @@ internal fun Function.pulseCancel() {
 }
 
 /*
- * ANALOG OUTPUT (Signal Calculator, Sequencer). The iron/redstone block shell is on or off; a
- * level needs a block that holds one. A target block does: its `power` state (0-15) is the weak
- * power it gives every neighbour, so dust beside it carries that level and a comparator behind
- * it reads it. The gate sets every target block in its 3x3x3 cube with
- * `fill ... target[power=N] replace target`. A target placed by a command is reset to 0 only
- * when it replaces a different block (TargetBlock#onPlace); target over target keeps the state,
- * and a fill to the state already there changes and updates nothing. An arrow hitting one
- * pulses it as in vanilla; the gate's next write puts the level back.
+ * ANALOG OUTPUT (Signal Calculator, Sequencer): the target blocks of the 3x3x3 cube carry the
+ * level as their `power` state, the same mechanism as the Light Sensor (see [targetPowerFill]).
  */
 
 /** `ra_gates:analog_output {level}`: every target block in the cube gets `power=level`. As the marker, at it. */
@@ -94,7 +89,7 @@ private const val ANALOG_ARGS = "gate_out"
 
 internal fun DataPack.defineAnalogOutput() = define(analogOutput) {
 	// Macro {level}: only ever the integer [analogShell] stored from a score.
-	raw("\$fill ~-1 ~-1 ~-1 ~1 ~1 ~1 minecraft:target[power=\$(level)] replace minecraft:target")
+	raw("\$" + targetPowerFill(1, "\$(level)"))
 }
 
 /** Set the target shell to the score `<holder> ra.temp` (0-15). As the marker, at it. */
@@ -114,7 +109,7 @@ internal fun DataPack.analogOnBreak(block: CustomBlock, breakSound: String): Fun
 	cloud = true,
 	afterVanillaKill = {
 		outputShell(on = false)
-		raw("fill ~-1 ~-1 ~-1 ~1 ~1 ~1 minecraft:target[power=0] replace minecraft:target")
+		raw(targetPowerFill(1, "0"))
 	},
 )
 

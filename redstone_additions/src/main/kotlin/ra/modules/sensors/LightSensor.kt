@@ -22,6 +22,7 @@ import ra.core.block.placeBlock
 import ra.core.block.placementGuard
 import ra.core.block.recipeResult
 import ra.core.block.shapedRecipe
+import ra.core.block.targetPowerFill
 import ra.core.blockRegisterMessage
 import ra.core.define
 import ra.core.executeRun
@@ -85,7 +86,7 @@ object LightSensor {
 
 		pack.define(update) { update() }
 		// Macro {level}: only ever the integer stored from the score just above.
-		pack.define(output) { raw("\$fill ~ ~ ~ ~ ~ ~ minecraft:target[power=\$(level)] replace minecraft:target") }
+		pack.define(output) { raw("\$" + targetPowerFill(0, "\$(level)")) }
 
 		pack.define(block.goggles) {
 			gogglesHeader(block, nameY = 1.0)

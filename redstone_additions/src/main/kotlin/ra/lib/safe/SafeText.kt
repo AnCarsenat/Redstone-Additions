@@ -21,6 +21,9 @@ import ra.core.Ns
  *           last found safe is kept in `data.data.safe.<p>`, so a value that has not changed costs
  *           one comparison and no walk -- this sits in per-tick paths (the Entity Detector).
  *
+ * These refuse an unsafe value; [SafeClean] (`clean`, `number`) makes one safe instead, on the
+ * same class table and [step].
+ *
  * Every macro sink of a player-editable value calls `guard` first and does nothing when it fails.
  * That holds for any way the value got there: the Data Handler (which checks too, to say why),
  * the Clipboard, an old world, a command.
@@ -37,8 +40,8 @@ object SafeText {
 	val guard = RaLib.Safe.guard
 	val init = ref(Ns.LIB, "safe/init")
 	private val walk = ref(Ns.LIB, "safe/walk")
-	private val classify = ref(Ns.LIB, "safe/class")
-	private val step = ref(Ns.LIB, "safe/step")
+	internal val classify = ref(Ns.LIB, "safe/class")
+	internal val step = ref(Ns.LIB, "safe/step")
 	private val stepSel = ref(Ns.LIB, "safe/step_selector")
 	private val selKind = ref(Ns.LIB, "safe/selector_kind")
 	private val stepCoords = ref(Ns.LIB, "safe/step_coords")

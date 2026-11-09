@@ -2,6 +2,7 @@ package ra.tools.datahandler.props
 
 import io.github.ayfri.kore.commands.returnValue
 import io.github.ayfri.kore.functions.Function
+import ra.lib.safe.SafeClean.isNumberAt
 import ra.core.Obj
 import ra.core.Ra
 import ra.core.callWith
@@ -78,14 +79,8 @@ object DataHandlerTypes {
 		raw("execute if score #dh.lst $T matches 1 run scoreboard players set $into $T 3")
 	}
 
-	/** [into] = 1 when storage ra:dh [path] holds a number (any numeric type), else 0. */
-	fun Function.isNumber(path: String, into: String) {
-		fun provider(fallback: Int) = """{type:"minecraft:storage",storage:"ra:dh",path:"$path",fallback:$fallback}"""
-		raw("execute store result score #dh.n0 $T run compute default integer ${provider(0)}")
-		raw("execute store result score #dh.n1 $T run compute default integer ${provider(1)}")
-		raw("scoreboard players set $into $T 0")
-		raw("execute if score #dh.n0 $T = #dh.n1 $T run scoreboard players set $into $T 1")
-	}
+	/** [into] = 1 when storage ra:dh [path] holds a number (any numeric type), else 0: ra_lib:safe/number. */
+	fun Function.isNumber(path: String, into: String) = isNumberAt("storage ra:dh $path", into)
 
 	fun Ra.registerDataHandlerTypes() {
 		pack.define(parse) { raw("\$data modify storage ra:dh parsed set value \$(text)") }

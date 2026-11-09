@@ -208,4 +208,11 @@ Declare such a property with its [text format](tools-and-registries.md#text-form
 (`text("entity_selector", TextFormat.SELECTOR)`) and call `guardProperty(name, format)`
 (`ra/lib/safe/SafeText.kt`) on the marker before the macro call. Better still, do not paste it
 at all: compare two strings with `data modify storage s a set from storage s b` (success 0 means
-equal), as the Teleport Anchor and the Wireless Receiver do.
+equal), as the Teleport Anchor and the Wireless Receiver do. When it must be pasted whatever it
+holds (a Goggles line), run it through `ra_lib:safe/clean` first (`cleanFrom(source, format)`,
+see [the core sanitiser](developer-guide.md#safe-player-input-in-commands)).
+
+The reverse trap: `interpret:true` on an `nbt` text component does **not** parse a string. Since
+1.21.5 it decodes the stored tag as a component directly, so the string `{text:'x',click_event:…}`
+shows as exactly those characters. Only a stored compound is rich text. A player who can only
+write strings cannot add a click event through it.

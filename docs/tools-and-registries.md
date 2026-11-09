@@ -207,6 +207,12 @@ with plain NBT tests first; every other character is looked up as a quoted key i
 and the last refused one in `data.data.unsafe.<p>`, so an unchanged value costs a comparison.
 In Kotlin, `guardProperty("entity_selector", TextFormat.SELECTOR)` before the macro call.
 
+Where a value must be shown or pasted whatever it holds, `ra_lib:safe/clean` makes it safe instead
+of refusing it (free text loses its quotes and line breaks, an identifier the characters its format
+does not accept), and `ra_lib:safe/number` turns a value into an int or says it is not a number.
+See [the core sanitiser](developer-guide.md#safe-player-input-in-commands). The Clipboard checks
+each text value against its format too, for players without server-settings access.
+
 The checks apply to admins too: a value that needs more than its format can carry more than one
 argument, which no block ever needs. Admin-only status decides *who* may choose what a block
 targets; the format decides that what they write is only ever that one argument.

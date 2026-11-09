@@ -79,6 +79,11 @@ Every setting is also a command, so you can tab-complete your way through them:
 | Sensors | *Players may edit entity selectors and tags* (off): when on, players without server-settings access may change the selectors and tags of the Entity Detector, Tag Adder, Tag Remover and Message Block |
 | every module | which of its blocks may be placed |
 
+A few block settings are kept for players with server-settings access, whatever the pages say:
+the Block Breaker, Block Placer, generator and Magic Crate cooldowns and the Liquid Drain rate.
+A Message Block's **text** is no longer one of them (since v6.0.3): it is shown exactly as typed,
+so any player may change it. Its selector follows *Players may edit entity selectors and tags*.
+
 ### Defaults for new blocks
 
 Settings marked *(new blocks only)* are the value a block gets **when it is placed**. Blocks

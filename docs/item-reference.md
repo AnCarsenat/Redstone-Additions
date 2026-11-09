@@ -72,6 +72,7 @@ one page, A to Z and by module.
 | ra_ender:ender_power_vault           | Ender Power Vault         | ![Ender Power Vault recipe](images/recipes/ra_ender/ender_power_vault.png){ width="220" } |
 | ra_ender:teleport_anchor             | Teleport Anchor           | ![Teleport Anchor recipe](images/recipes/ra_ender/teleport_anchor.png){ width="220" } |
 | ra_ender:anchor_terminal             | Anchor Terminal           | ![Anchor Terminal recipe](images/recipes/ra_ender/anchor_terminal.png){ width="220" } |
+| ra_enchanting:disenchanter           | Disenchanter              | ![Disenchanter recipe](images/recipes/ra_enchanting/disenchanter.png){ width="220" } |
 | ra_chunk_loader:chunk_loader         | Chunk Loader              | ![Chunk Loader recipe](images/recipes/ra_chunk_loader/chunk_loader.png){ width="220" } |
 | ra_multiblock:copper_base            | Copper Multiblock Base    | ![Copper Multiblock Base recipe](images/recipes/ra_multiblock/copper_base.png){ width="220" } |
 | ra_multiblock:iron_base              | Iron Multiblock Base      | ![Iron Multiblock Base recipe](images/recipes/ra_multiblock/iron_base.png){ width="220" } |

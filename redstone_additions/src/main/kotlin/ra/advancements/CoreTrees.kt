@@ -67,6 +67,11 @@ internal val wirelessTree = listOf(
 	egg("ra_wireless", "remote", "Redstone Remote", Items.RED_DYE, TRUE, item = Items.WARPED_FUNGUS_ON_A_STICK),
 )
 
+internal val enchantingTree = listOf(
+	category("ra_enchanting", Items.ENCHANTING_TABLE, "Enchant Crafting", "Move, raise and gamble enchantments.", "get_enchanting_item", Items.ENCHANTING_TABLE),
+	egg("ra_enchanting", "disenchanter", "Disenchanter", Items.CRYING_OBSIDIAN, TRUE),
+)
+
 /** `criterion` is `get_sensor_item` here too: the tab was copied from Sensors and kept the name. */
 internal val interactiveTree = listOf(
 	category("ra_interactive", Items.PISTON, "Redstone Interactive", "Utilize blocks to interact with the world around you.", "get_sensor_item", Items.OBSERVER),

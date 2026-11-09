@@ -5,7 +5,7 @@
 <h1 align="center">Redstone Additions</h1>
 
 <p align="center">
-  <strong>73 custom blocks. 8 tools. 84 recipes. 2 jetpacks and 3 upgrade kits. Vanilla datapack for Minecraft 26.3.</strong>
+  <strong>74 custom blocks. 8 tools. 85 recipes. 2 jetpacks and 3 upgrade kits. Vanilla datapack for Minecraft 26.3.</strong>
 </p>
 
 <p align="center">
@@ -16,9 +16,9 @@
 <p align="center">
   <img src="https://img.shields.io/badge/Minecraft-26.3-2EA44F" alt="Minecraft 26.3">
   <img src="https://img.shields.io/badge/Version-v6.0.3-blue" alt="Version v6.0.3">
-  <img src="https://img.shields.io/badge/Blocks-73-red" alt="73 blocks">
+  <img src="https://img.shields.io/badge/Blocks-74-red" alt="74 blocks">
   <img src="https://img.shields.io/badge/Tools-8-lightgrey" alt="8 tools">
-  <img src="https://img.shields.io/badge/Recipes-84-8A2BE2" alt="84 recipes">
+  <img src="https://img.shields.io/badge/Recipes-85-8A2BE2" alt="85 recipes">
 </p>
 
 <p align="center">
@@ -176,6 +176,9 @@ Pipes and wires have a single tier.
 ### Chunk Loader (1)
 - Chunk Loader
 
+### Enchant Crafting (1)
+- Disenchanter — moves an item's enchantments onto a book, for liquid experience
+
 ### Infinite Generators (3)
 - Mineral Generator
 - Nether Generator
@@ -327,6 +330,7 @@ Starter command:
 | `/function ra_multiblock:blocks/give_all` | Multiblock base items |
 | `/function ra_infinite:items/give_all` | Generator casing and generators |
 | `/function ra_jetpacks:items/give_all` | Jetpack kits |
+| `/function ra_enchanting:items/give_all` | Disenchanter |
 | `/function ra_ender:items/give_all` | Ender vaults, Teleport Anchor, Anchor Terminal and Anchor Tablet |
 | `/function ra:tools/wrench/give` | Wrench |
 | `/function ra:tools/data_handler/give` | Data Handler |

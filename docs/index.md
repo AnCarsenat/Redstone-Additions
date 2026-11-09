@@ -37,7 +37,7 @@ described in [Contributing Guidelines](contributing-guidelines.md#installing-int
 
 ## Modules
 
-**Looking for a recipe? [The Recipe Atlas](recipe-atlas.md) has all 84 of them on one
+**Looking for a recipe? [The Recipe Atlas](recipe-atlas.md) has all 85 of them on one
 page**, listed A to Z and grouped by module — plus the four items that have no recipe
 and are instead gambled for on an [enchanting table](enchant-crafting.md). This table
 is the shortcut: one sample per module, and where to read about it.
@@ -52,15 +52,15 @@ is the shortcut: one sample per module, and where to read about it.
 | [Transport Networks](transport-networks.md) | Liquid, gas, EU, Boiler, Solar Panel | ![Liquid Pump recipe](images/recipes/ra_wires/liquid_pump.png){ width="220" } |
 | [Chunk Loader](chunk-loader.md) | 1 force-load block | ![Chunk Loader recipe](images/recipes/ra_chunk_loader/chunk_loader.png){ width="220" } |
 | [Multiblocks](multiblocks.md) | 5 base tiers + structures | ![Copper Base recipe](images/recipes/ra_multiblock/copper_base.png){ width="220" } |
-| [Enchant Crafting](enchant-crafting.md) | Sacrifice items on an enchanting table | No recipe — uses the vanilla table |
+| [Enchant Crafting](enchant-crafting.md) | Sacrifice items on an enchanting table; Disenchanter | ![Disenchanter recipe](images/recipes/ra_enchanting/disenchanter.png){ width="220" } |
 | [Jetpacks](jetpacks.md) | 2 jetpacks + 3 upgrade kits | ![Iron Jetpack Kit recipe](images/recipes/ra_jetpacks/iron_jetpack_kit.png){ width="220" } |
 | [Infinite Generators](infinite-generators.md) | 3 self-growing blocks + casing | ![Mineral Generator recipe](images/recipes/ra_infinite/mineral_generator.png){ width="220" } |
 | [Ender Links](ender-links.md) | 3 remote vaults, teleport anchor, Anchor Terminal and Anchor Tablet | ![Teleport Anchor recipe](images/recipes/ra_ender/teleport_anchor.png){ width="220" } |
 
 Current pack totals:
 
-- 73 placeable custom blocks
-- 84 recipes, all of them in the [Recipe Atlas](recipe-atlas.md)
+- 74 placeable custom blocks
+- 85 recipes, all of them in the [Recipe Atlas](recipe-atlas.md)
 - 8 tools (Wrench, Goggles, Data Handler, Creative Data Handler, Clipboard,
   Multimeter, Redstone Remote, Anchor Tablet)
 

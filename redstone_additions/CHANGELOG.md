@@ -101,6 +101,14 @@
   server settings on the Ender Links page (`ender_tablet_pearls`, 0 to 16, and
   `ender_tablet_cooldown`, 0 to 600 seconds). Crafted from an eye of ender, three gold ingots and a
   compass.
+- **Disenchanter** (Enchant Crafting). Moves an item's enchantments onto a book. Throw an
+  enchanted item and a book on top: it makes an enchanted book holding the item's enchantments and
+  leaves the item without them, its repair cost reset as at a grindstone. Curses stay on the item.
+  The price is 1000 mL of liquid experience (10 points) per enchantment moved, taken all at once
+  from a fluid network touching the block (a pipe, tank or drain on a side or below); the server
+  setting `disenchanter_xp` (0 to 100000, 0 = free, no network needed) changes it. Looks like
+  crying obsidian; crafted from two books, a grindstone, a diamond and five obsidian. The Goggles
+  show what it is doing and the last price. It only works while something lies on it.
 
 ### Changed
 

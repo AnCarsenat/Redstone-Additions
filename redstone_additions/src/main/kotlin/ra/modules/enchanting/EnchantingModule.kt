@@ -26,6 +26,12 @@ import ra.core.ref
 import ra.modules.enchanting.sacrifice.Sacrifice
 import ra.modules.enchanting.sacrifice.Sacrifice.registerSacrifice
 import ra.core.moduleLoaded
+import ra.core.GiveBundle
+import ra.core.block.CustomBlock
+import ra.core.block.markerSel
+import ra.core.executeRun
+import ra.modules.enchanting.Disenchanter.registerDisenchanter
+import ra.modules.enchanting.xp.XpPay.registerXpPay
 
 /**
  * Enchant Crafting (`ra_enchanting`): sacrifice crafting on a vanilla enchanting table.
@@ -55,6 +61,19 @@ object EnchantingModule : GameplayModule {
 	/** On items a sacrifice produced: skipped by every later scan. */
 	const val DONE = "ra.ench.done"
 
+	/** Scan steps (of five ticks) between two runs of the enchanting blocks: ten ticks. */
+	private const val BLOCK_STEPS = 2
+
+	/** The module's placeable blocks with their `process`, in tick and give order. */
+	private val enchantBlocks get() = listOf(Disenchanter.block to Disenchanter.process)
+
+	/**
+	 * `@e[type=item,dx=0,dy=0,dz=0,tag=!ra.ench.done,...]`: an untagged item lying on the block, from
+	 * `positioned ~-0.5 ~0.5 ~-0.5` at its marker -- the cube just above the block.
+	 */
+	internal fun onTop(vararg extra: String) =
+		(listOf("type=item", "dx=0", "dy=0", "dz=0", "tag=!$DONE") + extra).joinToString(",", "@e[", "]")
+
 	/** `#ra_enchanting:recipes`. */
 	val recipesTag = FunctionTagArgument("recipes", Ns.ENCHANTING.id)
 	val match = ref(Ns.ENCHANTING, "recipes/match")
@@ -65,6 +84,14 @@ object EnchantingModule : GameplayModule {
 		pack.functionTag(recipesTag.name, recipesTag.namespace)
 
 		registerSacrifice()
+		registerXpPay()
+		registerDisenchanter()
+
+		pack.define(ref(ns, "items/give_all")) { for ((b, _) in enchantBlocks) function(b.give) }
+		bundles += GiveBundle(
+			"enchanting", "Enchant Crafting Bundle", "Disenchanter", ns,
+			listOf(Disenchanter.item).map { it.stackNbt() },
+		)
 
 		// Ask every registered recipe list whether it wants this item.
 		// Input:  storage ra:enchant input   -- the sacrificed item compound
@@ -84,6 +111,7 @@ object EnchantingModule : GameplayModule {
 			data(Storage.ENCHANT) { merge(nbt { this["input"] = nbt {}; this["chance"] = 0 }) }
 			data(Storage.ENCHANT) { remove("result") }
 
+			for ((b, _) in enchantBlocks) function(b.fn("register_block"))
 			moduleLoaded("Enchant crafting loaded!", "light_purple")
 		}
 
@@ -98,6 +126,10 @@ object EnchantingModule : GameplayModule {
 	 * sacrifice/on_table.
 	 */
 	private fun Function.tick() {
+		// Break checks first, so a block broken while the module is switched off still drops. One
+		// existence check per type: a world without the block pays for nothing else.
+		for ((b, _) in enchantBlocks) executeRun("if entity ${b.markerSel("limit=1")}", b.tick)
+
 		// Defaults to ON. A settings lookup that fails must not be able to switch a module off --
 		// see ra_settings:get for why this used to be possible.
 		execute {
@@ -124,5 +156,13 @@ object EnchantingModule : GameplayModule {
 			at(self())
 			run { function(Sacrifice.onTable) }
 		}
+
+		// The enchanting blocks, every BLOCK_STEPS scan steps, and only those with an untagged item
+		// lying on them: a block with nothing on it costs one entity test.
+		scoreboard.players.add(literal("#blocks"), SCAN, 1)
+		raw("execute unless score #blocks $SCAN matches $BLOCK_STEPS.. run return 0")
+		scoreboard.players.set(literal("#blocks"), SCAN, 0)
+		for ((b, process) in enchantBlocks)
+			executeRun("as ${b.markerSel()} at @s positioned ~-0.5 ~0.5 ~-0.5 if entity ${onTop("limit=1")} at @s", process)
 	}
 }

@@ -29,6 +29,7 @@ import ra.modules.infinite.InfiniteModule
 import ra.modules.interactive.InteractiveModule
 import ra.modules.jetpacks.JetpacksModule
 import ra.modules.multiblock.MultiblockModule
+import ra.modules.security.SecurityModule
 import ra.modules.sensors.SensorsModule
 import ra.modules.storage.StorageModule
 import ra.modules.wireless.WirelessModule
@@ -70,6 +71,7 @@ object RedstoneAdditions {
 		EnderModule,
 		DisplaysModule,
 		AutomationModule,
+		SecurityModule,
 	)
 
 	/**

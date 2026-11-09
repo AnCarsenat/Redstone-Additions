@@ -1,8 +1,8 @@
 # Sensors
 
 Blocks that react to entities and to the world: one detects entities, two add or remove scoreboard
-tags on them, and one reads the light level. Handy for adventure maps, mob farms, trigger zones and
-automatic lighting.
+tags on them, one reads the light level and one the weather and time of day. Handy for adventure
+maps, mob farms, trigger zones and automatic lighting.
 
 ## Getting them
 
@@ -12,6 +12,7 @@ automatic lighting.
 | Tag Adder | green glazed terracotta | ![Tag Adder recipe](images/recipes/ra_sensors/tag_adder.png){ width="220" } |
 | Tag Remover | red glazed terracotta | ![Tag Remover recipe](images/recipes/ra_sensors/tag_remover.png){ width="220" } |
 | Light Sensor | target block | ![Light Sensor recipe](images/recipes/ra_sensors/light_sensor.png){ width="220" } |
+| Weather Sensor | waxed weathered copper | ![Weather Sensor recipe](images/recipes/ra_sensors/weather_sensor.png){ width="220" } |
 
 Operators: `/function ra_sensors:items/give_all`.
 
@@ -87,8 +88,8 @@ The Entity Detector never counts Redstone Additions' own machines.
 
 ## World sensors
 
-These read the world rather than entities. They have nothing to configure and are read **once a
-second** (every 20 ticks), all of them on one shared clock that only runs while one is loaded.
+These read the world rather than entities. They are read **once a second** (every 20 ticks), all
+of them on one shared clock that only runs while one is loaded.
 
 ### Light Sensor
 
@@ -104,6 +105,27 @@ reads 0.
 or a comparator next to it reads the level directly; no iron blocks are needed. An arrow that hits
 it (it is a target block) pulses it as usual until the next reading.
 
+### Weather Sensor
+
+Turns its output **on** while the world matches its **mode**, and off otherwise:
+
+| `mode` | On while |
+| --- | --- |
+| `rain` (default) | it rains (or snows) |
+| `thunder` | a thunderstorm is going on |
+| `day` | it is day: time of day 0 to 12999 and 23000 to 23999, sunrise included |
+| `night` | it is night: time of day 13000 to 22999, when monsters spawn |
+
+Shift+right-click it with the **Wrench** to step through the modes, or set `mode` with the
+[Data Handler](tools.md). The Goggles show the mode and whether the output is on.
+
+Rain and thunder are the weather of the whole dimension, as `/weather` sets it: a sensor in a desert
+still turns on when it rains elsewhere. Day and night follow the overworld clock, also in the
+Nether and the End.
+
+**Output:** like the Entity Detector, put **iron blocks** next to it (anywhere in the 3×3×3 cube);
+they turn into **redstone blocks** while it is on.
+
 ## Ideas
 
 - A pressure plate into a Tag Adder marks players who entered a zone; a Tag Remover at the exit
@@ -111,6 +133,7 @@ it (it is a target block) pulses it as usual until the next reading.
 - An Entity Detector set to `@e[type=item,distance=..2]` turns on when something is dropped on it.
 - A Light Sensor facing out of a window, into an inverter, switches lamps on as it gets dark; a
   comparator behind it can compare the level against a fixed strength instead.
+- A Weather Sensor on `rain` closes a roof with pistons; one on `night` lights a village.
 
 ---
 
@@ -142,3 +165,10 @@ it (it is a target block) pulses it as usual until the next reading.
   target replacing a target keeps its power, while one placed over another block would reset to 0.
   The predicate's `light` is the combined level, the only one a data pack can test, so there is no
   block-light or sky-light mode.
+- Weather Sensor: `data.properties.mode`, tested with the loot predicates `weather_check`
+  (`raining` / `thundering`) and `time_check` on `clock` `minecraft:overworld`, `period` 24000,
+  `value` 13000..22999 for night (`day` is its negation). The result is written to
+  `data.status.output` ("on" / "off"). The shell is switched with one `fill` or the other, never
+  off then on, so a steady output does not pulse every second. The wrench row `Mode` runs
+  `ra_sensors:blocks/weather_sensor/cycle_mode` (rain, thunder, day, night; anything else goes to
+  rain), which updates the output at once.

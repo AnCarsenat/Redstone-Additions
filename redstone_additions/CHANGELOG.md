@@ -11,6 +11,12 @@
   two redstone, a daylight detector and three cobblestone. The world sensors share one slow clock
   that only runs while one of them is loaded.
 
+- **Weather Sensor** (Sensors). Turns on while it rains, during a thunderstorm, by day or by
+  night, depending on its mode; Shift+right-click with the Wrench steps through them, and the
+  Goggles show the mode and the output. Output as the Entity Detector's: iron blocks around it turn
+  into redstone blocks. Read once a second on the same clock as the Light Sensor. Crafted from
+  three glass, two redstone, a lightning rod and three copper ingots.
+
 ### Removed
 
 - **The Upgrade Platform.** The netherite-tier multiblock that gambled dropped materials into the

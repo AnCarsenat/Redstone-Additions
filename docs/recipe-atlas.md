@@ -1,6 +1,6 @@
 # Recipe Atlas
 
-Every recipe in the pack, in one place: 95 of them.
+Every recipe in the pack, in one place: 94 of them.
 
 !!! tip "Finding one"
     Use the search box with the item's name — every recipe below is indexed by
@@ -52,10 +52,10 @@ what the pack actually contains rather than what someone remembered to add.
 | [EU Switch](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
 | [Extender](#logic-gates) | [Logic Gates](logic-gates.md) | Crafting table |
 | [Fan](#interactive-machines) | [Interactive Machines](interactive-machines.md) | Crafting table |
+| [Fluid Drain](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
 | [Gas Pump](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
 | [Gas Tank](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
 | [Gas Valve](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
-| [Gas Vent](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
 | [Generator Casing](#infinite-generators) | [Infinite Generators](infinite-generators.md) | Crafting table |
 | [Goggles](#tools) | [Tools](tools.md) | Crafting table |
 | [Goggles Lens](#tools) | [Tools](tools.md) | Crafting table |
@@ -72,7 +72,6 @@ what the pack actually contains rather than what someone remembered to add.
 | [Item Pipe](#interactive-machines) | [Interactive Machines](interactive-machines.md) | Crafting table |
 | [Lift Kit](#jetpacks) | [Jetpacks](jetpacks.md) | Crafting table |
 | [Light Sensor](#sensors) | [Sensors](sensors.md) | Crafting table |
-| [Liquid Drain](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
 | [Liquid Filter](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
 | [Liquid Pump](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
 | [Liquid Tank](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
@@ -270,12 +269,11 @@ Module page: [Transport Networks](transport-networks.md) — give everything: `/
 | **EU Consumer** | ![EU Consumer recipe](images/recipes/ra_wires/electric_consumer.png){ width="220" } | Crafting table | `ra_wires:electric_consumer` |
 | **EU Generator** | ![EU Generator recipe](images/recipes/ra_wires/electric_generator.png){ width="220" } | Crafting table | `ra_wires:electric_generator` |
 | **EU Switch** | ![EU Switch recipe](images/recipes/ra_wires/electric_switch.png){ width="220" } | Crafting table | `ra_wires:electric_switch` |
+| **Fluid Drain** | ![Fluid Drain recipe](images/recipes/ra_wires/liquid_drain.png){ width="220" } | Crafting table | `ra_wires:liquid_drain` |
 | **Gas Pump** | ![Gas Pump recipe](images/recipes/ra_wires/gas_pump.png){ width="220" } | Crafting table | `ra_wires:gas_pump` |
 | **Gas Tank** | ![Gas Tank recipe](images/recipes/ra_wires/gas_tank.png){ width="220" } | Crafting table | `ra_wires:gas_tank` |
 | **Gas Valve** | ![Gas Valve recipe](images/recipes/ra_wires/gas_valve.png){ width="220" } | Crafting table | `ra_wires:gas_valve` |
-| **Gas Vent** | ![Gas Vent recipe](images/recipes/ra_wires/gas_vent.png){ width="220" } | Crafting table | `ra_wires:gas_vent` |
 | **Industrial Light** | ![Industrial Light recipe](images/recipes/ra_wires/industrial_light.png){ width="220" } | Crafting table | `ra_wires:industrial_light` |
-| **Liquid Drain** | ![Liquid Drain recipe](images/recipes/ra_wires/liquid_drain.png){ width="220" } | Crafting table | `ra_wires:liquid_drain` |
 | **Liquid Filter** | ![Liquid Filter recipe](images/recipes/ra_wires/liquid_filter.png){ width="220" } | Crafting table | `ra_wires:liquid_filter` |
 | **Liquid Pump** | ![Liquid Pump recipe](images/recipes/ra_wires/liquid_pump.png){ width="220" } | Crafting table | `ra_wires:liquid_pump` |
 | **Liquid Tank** | ![Liquid Tank recipe](images/recipes/ra_wires/liquid_tank.png){ width="220" } | Crafting table | `ra_wires:liquid_tank` |

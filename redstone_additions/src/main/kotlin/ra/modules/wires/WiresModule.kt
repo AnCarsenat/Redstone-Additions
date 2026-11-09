@@ -29,7 +29,6 @@ import ra.modules.wires.blocks.liquid_tank.LiquidTank
 import ra.modules.wires.blocks.liquid_valve.LiquidValve
 import ra.modules.wires.blocks.network_gauge.NetworkGauge
 import ra.modules.wires.blocks.solar_panel.SolarPanel
-import ra.modules.wires.blocks.gas_vent.GasVent
 import ra.modules.wires.blocks.spout.Spout
 import ra.modules.wires.blocks.tesla_coil.TeslaCoil
 import ra.modules.wires.blocks.usage_meter.UsageMeter
@@ -83,7 +82,7 @@ object WiresModule : GameplayModule {
 		ElectricSwitch, ElectricWire, GasPump, GasTank, GasValve, IndustrialLight, LiquidDrain,
 		LiquidFilter, LiquidPipe, LiquidPump, LiquidTank, LiquidValve, SolarPanel,
 		Readout, NetworkGauge, UsageMeter,
-		MachineClock, TeslaCoil, Spout, GasVent, WaterWheel,
+		MachineClock, TeslaCoil, Spout, WaterWheel,
 	)
 
 	override fun Ra.register() {

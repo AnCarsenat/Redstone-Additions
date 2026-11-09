@@ -72,7 +72,7 @@ Every setting is also a command, so you can tab-complete your way through them:
 | General › Goggles | Goggles range (16 blocks); Goggles redraw (20 ticks); *Filter previews* (on): draw the item an Item Pipe filters for above its readout. Off here means off for everyone; on lets each player choose with *Show filter previews* |
 | Logic Gates | default Clock interval (20), Delayer delay (20), Extender duration (20), Shortener pulse (2), Randomizer chance (50%), Counter target (10), Edge Detector pulse (2), Sequencer steps (4) |
 | Interactive | default Magic Crate radius (8) and interval (20), Message Block range (16), Elevator range (16), Fan range (8) and strength (2) |
-| Power & Fluids | default Generator EU/tick (60), Consumer EU draw (40), Industrial Light EU use (10), Liquid Drain rate (5000 mL per second), Usage Meter units per pulse (1000), Tesla Coil damage per zap (6) and EU per mob zapped (200), Gas Vent rate (1000 mL per second), Water Wheel EU per tick per flowing block (5) |
+| Power & Fluids | default Generator EU/tick (60), Consumer EU draw (40), Industrial Light EU use (10), Fluid Drain rate (5000 mL per second), Usage Meter units per pulse (1000), Tesla Coil damage per zap (6) and EU per mob zapped (200), Water Wheel EU per tick per flowing block (5) |
 | Ender Links | default Power Vault EU/tick (80), Fluid Vault transfer (200); Anchor Tablet ender pearls per trip (1, 0 to 16) and recharge (10 seconds, 0 to 600) |
 | Infinite Generators | default interval of each generator (100) |
 | Jetpacks | Thruster Kit thrust (80%), speed cap (350), dead zone (25) |
@@ -81,7 +81,7 @@ Every setting is also a command, so you can tab-complete your way through them:
 | every module | which of its blocks may be placed |
 
 A few block settings are kept for players with server-settings access, whatever the pages say:
-the Block Breaker, Block Placer, generator and Magic Crate cooldowns and the Liquid Drain rate.
+the Block Breaker, Block Placer, generator and Magic Crate cooldowns and the Fluid Drain rate.
 A Message Block's **text** is no longer one of them (since v6.0.3): it is shown exactly as typed,
 so any player may change it. Its selector follows *Players may edit entity selectors and tags*.
 

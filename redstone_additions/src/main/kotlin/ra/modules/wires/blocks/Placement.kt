@@ -140,7 +140,7 @@ object Placement : PackPart {
 				"Liquid Tank",
 				"Liquid Pump",
 				"Liquid Valve",
-				"Liquid Drain",
+				"Fluid Drain",
 				"Gas Tank",
 				"Gas Pump",
 				"Gas Valve",
@@ -157,7 +157,6 @@ object Placement : PackPart {
 				"Usage Meter",
 				"Tesla Coil",
 				"Spout",
-				"Gas Vent",
 				"Water Wheel",
 			)) registeredLine(name)
 		}

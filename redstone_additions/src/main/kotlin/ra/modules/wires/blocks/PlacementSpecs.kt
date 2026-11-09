@@ -60,7 +60,6 @@ internal val SPECS: List<Pair<String, String>> = listOf(
 	// Machines on the once-a-second clock (ra_wires:machine): `clocked` tags the marker for it.
 	"tesla_coil" to """{block:"minecraft:waxed_lightning_rod",marker:"tesla_coil",electric:1b,net:"electric",capacity:0,clocked:1b,props:{radius:${ra.modules.wires.blocks.tesla_coil.TeslaCoil.DEFAULT_RADIUS},damage:${ra.modules.wires.blocks.tesla_coil.TeslaCoil.DEFAULT_DAMAGE},eu_per_zap:${ra.modules.wires.blocks.tesla_coil.TeslaCoil.DEFAULT_EU}}}""",
 	"spout" to """{block:"minecraft:waxed_exposed_copper_grate",marker:"spout",fluid:1b,net:"fluid",capacity:1000,clocked:1b}""",
-	"gas_vent" to """{block:"${ra.modules.wires.blocks.gas_vent.GasVent.BLOCK}",marker:"gas_vent",fluid:1b,net:"fluid",capacity:${ra.modules.wires.blocks.gas_vent.GasVent.CAPACITY},clocked:1b,props:{radius:${ra.modules.wires.blocks.gas_vent.GasVent.DEFAULT_RADIUS},rate:${ra.modules.wires.blocks.gas_vent.GasVent.DEFAULT_RATE}}}""",
 	// dir 3: the marker carries the facing (the wheel's axle), the log is placed plain and turned
 	// along the axle by blocks/water_wheel/setup.
 	"water_wheel" to """{block:"${ra.modules.wires.blocks.water_wheel.WaterWheel.BLOCK}",marker:"water_wheel",electric:1b,net:"electric",dir:3,capacity:${ra.modules.wires.blocks.water_wheel.WaterWheel.CAPACITY},clocked:1b,props:{eu_per_block:${ra.modules.wires.blocks.water_wheel.WaterWheel.DEFAULT_EU}}}""",

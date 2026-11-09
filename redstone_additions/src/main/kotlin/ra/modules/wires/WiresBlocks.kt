@@ -80,7 +80,8 @@ object WiresBlocks : PackPart {
 			recipe = WiresRecipe(listOf("IRI", "PDP", "IBI"), listOf("I" to Items.IRON_INGOT, "R" to Items.REDSTONE, "P" to Items.COPPER_INGOT, "D" to Items.DISPENSER, "B" to Items.BUCKET), Items.DISPENSER, Criterion.MATERIAL)),
 		WiresItem(item("liquid_valve", "Liquid Valve", "minecraft:waxed_cut_copper", "minecraft:waxed_cut_copper"),
 			recipe = WiresRecipe(listOf(" C ", "RLR", " C "), listOf("C" to Items.COPPER_INGOT, "R" to Items.REDSTONE, "L" to Items.LEVER), Items.LEVER, Criterion.MATERIAL)),
-		WiresItem(item("liquid_drain", "Liquid Drain", "minecraft:dropper", "minecraft:dropper"),
+		WiresItem(item("liquid_drain", "Fluid Drain", "minecraft:dropper", "minecraft:dropper"),
+			lore = listOf("Takes fluid in; redstone lets it out" to "gray", "Gases are vented with their effect" to "gray"),
 			recipe = WiresRecipe(listOf("ICI", "RDR", "IBI"), listOf("I" to Items.IRON_INGOT, "C" to Items.COPPER_INGOT, "R" to Items.REDSTONE, "D" to Items.DROPPER, "B" to Items.BUCKET), Items.DROPPER, Criterion.MATERIAL)),
 		WiresItem(item("gas_tank", "Gas Tank", "minecraft:iron_block", "minecraft:iron_block"),
 			recipe = WiresRecipe(listOf("I I", "IBI", "I I"), listOf("I" to Items.IRON_INGOT, "B" to Items.BARREL), Items.BARREL, Criterion.MATERIAL)),
@@ -132,9 +133,6 @@ object WiresBlocks : PackPart {
 		WiresItem(item("spout", "Spout", "minecraft:waxed_exposed_copper_grate", "minecraft:waxed_exposed_copper_grate"),
 			lore = listOf("Fills buckets and bottles under it" to "gray", "from its fluid network" to "gray"),
 			recipe = WiresRecipe(listOf("C C", "CBC", " D "), listOf("C" to Items.COPPER_INGOT, "B" to Items.BUCKET, "D" to Items.POINTED_DRIPSTONE), Items.BUCKET, Criterion.INGREDIENT)),
-		WiresItem(item("gas_vent", "Gas Vent", "minecraft:waxed_weathered_copper_grate", "minecraft:waxed_weathered_copper_grate"),
-			lore = listOf("Redstone: lets its network's gas out" to "gray", "Oxygen: water breathing. Toxic gas: wither" to "gray"),
-			recipe = WiresRecipe(listOf("IBI", "BGB", "IRI"), listOf("I" to Items.IRON_INGOT, "B" to Items.IRON_BARS, "G" to Items.COPPER_GRATE, "R" to Items.REDSTONE), Items.IRON_BARS, Criterion.INGREDIENT)),
 		WiresItem(item("water_wheel", "Water Wheel", "minecraft:stripped_spruce_log", "minecraft:stripped_spruce_log"),
 			lore = listOf("Generates EU from flowing water" to "gray", "around its paddles" to "gray"),
 			recipe = WiresRecipe(listOf("PSP", "SCS", "PRP"), listOf("P" to Items.SPRUCE_SLAB, "S" to Items.STICK, "C" to Items.COPPER_BLOCK, "R" to Items.REDSTONE), Items.SPRUCE_SLAB, Criterion.INGREDIENT)),
@@ -146,7 +144,7 @@ object WiresBlocks : PackPart {
 		"gas_tank", "gas_pump", "gas_valve", "boiler", "electric_wire", "electric_generator",
 		"electric_consumer", "electric_switch", "solar_panel", "battery", "creative_eu",
 		"creative_fluid", "electric_furnace", "industrial_light", "electric_breaker", "network_gauge", "usage_meter",
-		"tesla_coil", "spout", "gas_vent", "water_wheel",
+		"tesla_coil", "spout", "water_wheel",
 	)
 
 	private fun loreNbt(lore: List<Pair<String, String>>) = NbtList(lore.map { (text, color) ->

@@ -87,16 +87,6 @@
   first is tried first. Redstone locks it, like a hopper. Other packs can add their own fluids to
   `storage ra:wires item_fills`. The Goggles show what it is doing and the network's fluid.
   Crafted from five copper ingots, a bucket and pointed dripstone.
-- **Gas Vent** (Transport Networks). With a redstone signal, lets its gas network's gas out into
-  the area, up to *rate* mL a second (default 1000, admin only), and gives its effect to everyone
-  and every mob within *radius* (1 to 8, default 4; admins up to 16; Shift+RMB with the Wrench
-  steps it through 2, 4, 6 and 8): **Oxygen** gives water breathing, the new **Toxic Gas** withers.
-  Other gases are only vented, as their mist. Liquids are left in the pipes. Other packs can give
-  their own gases an effect in `storage ra:wires gas_effects`. The Goggles show what it is doing,
-  the gas, the amount and the radius; the mist follows each player's particle setting. Crafted
-  from four iron ingots, four iron bars, a copper grate and redstone. Oxygen and Toxic Gas have no
-  source in survival yet (the Chemistry module will make them); the Creative Fluid Source now
-  cycles through both.
 - **Water Wheel** (Transport Networks). An EU generator turned by flowing water. Its wheel turns
   facing you as you place it, and the eight blocks around the hub in the wheel's plane are where
   its paddles dip: each one holding flowing or falling water (not a source block) adds
@@ -201,6 +191,15 @@
 
 ### Changed
 
+- **The Liquid Drain is now the Fluid Drain, and also vents gases** (Transport Networks). Powered
+  by redstone on a gas network, it lets the gas out of its front with the gas's effect, renewed
+  at each action (once a second at the default rate): **Oxygen** bubbles up the water straight
+  above its front, like a magma block, and gives water breathing (10 seconds) to whoever is in
+  that column; the new **Toxic Gas** withers (3 seconds) everyone and every mob within 4 blocks. Steam and smoke are only vented, as before; liquids pour out as before. The Goggles say
+  `venting` for a gas. Other packs can give their own gases an effect in
+  `storage ra:wires gas_effects`. Only the name changed: drains already placed or in a chest keep
+  working, and its recipe is the same. Oxygen and Toxic Gas have no source in survival yet (the
+  Chemistry module will make them); the Creative Fluid Source now cycles through both.
 - **Anyone can change a Message Block's text.** It was locked to admins in v6.0.1 because rich
   chat text can carry a clickable command. The text a player types is always shown exactly as
   typed, quotes and braces included, so it can never become a command. Rich text (colours,

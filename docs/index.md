@@ -49,7 +49,7 @@ is the shortcut: one sample per module, and where to read about it.
 | [Storage](storage.md) | Boxer + Unboxer workflow | ![Boxer recipe](images/recipes/ra_storage/boxer.png){ width="220" } |
 | [Sensors](sensors.md) | Entity detector, tag operators, light and weather sensors, held item and player detectors | ![Entity Detector recipe](images/recipes/ra_sensors/entity_detector.png){ width="220" } |
 | [Wireless Redstone](wireless-redstone.md) | Emitters and Receivers (on/off and analog), Remote and Pager | ![Wireless Emitter recipe](images/recipes/ra_wireless/emitter.png){ width="220" } |
-| [Transport Networks](transport-networks.md) | Liquid, gas, EU, Boiler, Solar Panel, Water Wheel, Spout, Gas Vent, Tesla Coil | ![Liquid Pump recipe](images/recipes/ra_wires/liquid_pump.png){ width="220" } |
+| [Transport Networks](transport-networks.md) | Liquid, gas, EU, Boiler, Solar Panel, Water Wheel, Spout, Tesla Coil | ![Liquid Pump recipe](images/recipes/ra_wires/liquid_pump.png){ width="220" } |
 | [Chunk Loader](chunk-loader.md) | 1 force-load block | ![Chunk Loader recipe](images/recipes/ra_chunk_loader/chunk_loader.png){ width="220" } |
 | [Multiblocks](multiblocks.md) | 5 base tiers + structures | ![Copper Base recipe](images/recipes/ra_multiblock/copper_base.png){ width="220" } |
 | [Enchant Crafting](enchant-crafting.md) | Sacrifice items on an enchanting table; Disenchanter, Book Upgrader and Book Printer | ![Disenchanter recipe](images/recipes/ra_enchanting/disenchanter.png){ width="220" } |
@@ -59,8 +59,8 @@ is the shortcut: one sample per module, and where to read about it.
 
 Current pack totals:
 
-- 82 placeable custom blocks
-- 95 recipes, all of them in the [Recipe Atlas](recipe-atlas.md)
+- 81 placeable custom blocks
+- 94 recipes, all of them in the [Recipe Atlas](recipe-atlas.md)
 - 9 tools (Wrench, Goggles, Data Handler, Creative Data Handler, Clipboard,
   Multimeter, Redstone Remote, Pager, Anchor Tablet)
 

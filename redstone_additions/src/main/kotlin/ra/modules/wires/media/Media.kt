@@ -62,11 +62,14 @@ object Media : PackPart {
 			// record). Another pack appends to item_fills.<its medium> after ra_wires:load.
 			raw("""data modify storage ra:wires item_fills set value {water:[{empty:"minecraft:bucket",item:"minecraft:water_bucket",volume:5000,sound:"minecraft:item.bucket.fill"},{empty:"minecraft:glass_bottle",item:"minecraft:potion",volume:1000,components:{"minecraft:potion_contents":{potion:"minecraft:water"}},sound:"minecraft:item.bottle.fill"}],lava:[{empty:"minecraft:bucket",item:"minecraft:lava_bucket",volume:5000,sound:"minecraft:item.bucket.fill_lava"}],powder_snow:[{empty:"minecraft:bucket",item:"minecraft:powder_snow_bucket",volume:5000,sound:"minecraft:item.bucket.fill_powder_snow"}],milk:[{empty:"minecraft:bucket",item:"minecraft:milk_bucket",volume:5000,sound:"minecraft:item.bucket.fill"}],experience:[{empty:"minecraft:glass_bottle",item:"minecraft:experience_bottle",volume:700,sound:"minecraft:item.bottle.fill"}],potion:[{empty:"minecraft:glass_bottle",item:"minecraft:potion",volume:1000,potion:1b,components:{"minecraft:potion_contents":{potion:"minecraft:water"}},sound:"minecraft:item.bottle.fill"}]}""")
 
-			// What a powered Gas Vent does to the living entities around it, by gas: the effect, how
-			// many seconds it lasts and its amplifier (0 = level I). Given again every second the
-			// vent lets gas out, so a few seconds is enough to keep it up. A gas with no entry is
-			// only vented. Another pack sets gas_effects.<its gas> after ra_wires:load.
-			raw("""data modify storage ra:wires gas_effects set value {oxygen:{effect:"minecraft:water_breathing",seconds:10,amplifier:0},toxic_gas:{effect:"minecraft:wither",seconds:3,amplifier:0}}""")
+			// What a powered Fluid Drain venting a gas does to the living entities in front of it, by
+			// gas: the effect, how many seconds it lasts and its amplifier (0 = level I). Given again
+			// at each action (once a second at the default rate), so a few seconds keeps it up. A gas
+			// with no entry is only vented. `area` is "column" (only in the water straight above the
+			// front, like a magma block: oxygen) or "radius" (4 blocks around it, the default when
+			// absent: toxic gas). Another pack sets gas_effects.<its gas> after
+			// ra_wires:load. See ra_wires:fluid/drain_pour_away.
+			raw("""data modify storage ra:wires gas_effects set value {oxygen:{effect:"minecraft:water_breathing",seconds:10,amplifier:0,area:"column"},toxic_gas:{effect:"minecraft:wither",seconds:3,amplifier:0,area:"radius"}}""")
 
 			// What the EU Generator will burn, and for how many ticks. Same shape as the
 			// other registries here, so a new fuel is a data edit.

@@ -251,6 +251,8 @@ object TextScreen : DisplayBlock {
 	private fun Function.poll() {
 		executeReturnRun("unless entity $PANEL", restyle)
 		executeReturnRun("unless entity $TEXT", restyle)
+		// Placed before the display settings existed: restyle fills the defaults (scale, colours).
+		executeReturnRun("unless data entity @s data.properties.scale", restyle)
 		raw("execute store success score #tscr.st $T run data modify entity @s data.data.style set from entity @s data.properties")
 		executeReturnRun("if score #tscr.st $T matches 1", restyle)
 		function(show)

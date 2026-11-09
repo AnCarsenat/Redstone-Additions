@@ -194,6 +194,8 @@ object ItemHologram : DisplayBlock {
 		raw("scoreboard players set $CHANGED $T 0")
 		raw("execute if data storage ra:temp dsp.item store success score $CHANGED $T run data modify entity @s data.data.shown set from storage ra:temp dsp.item")
 		raw("execute unless data storage ra:temp dsp.item store success score $CHANGED $T run data remove entity @s data.data.shown")
+		// Placed before the display settings existed: restyle fills the defaults (scale, colours).
+		executeRun("unless data entity @s data.properties.scale", restyle)
 		raw("execute store success score #holo.st $T run data modify entity @s data.data.style set from entity @s data.properties")
 		executeRun("if score #holo.st $T matches 1", restyle)
 		executeRun("if score $CHANGED $T matches 1", show)

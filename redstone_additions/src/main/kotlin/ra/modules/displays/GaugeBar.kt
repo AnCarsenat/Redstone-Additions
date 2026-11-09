@@ -229,6 +229,8 @@ object GaugeBar : DisplayBlock {
 	private fun Function.poll() {
 		executeReturnRun("unless entity $TRACK", restyle)
 		executeReturnRun("unless entity $FILL", restyle)
+		// Placed before the display settings existed: restyle fills the defaults (scale, colours).
+		executeReturnRun("unless data entity @s data.properties.scale", restyle)
 		raw("execute store success score #gauge.ch $T run data modify entity @s data.data.style set from entity @s data.properties")
 		executeRun("if score #gauge.ch $T matches 1", restyle)
 	}

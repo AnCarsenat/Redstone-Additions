@@ -69,13 +69,18 @@ Different families never mix, so an electric wire and a pipe can run side by sid
 | Block | Does |
 | --- | --- |
 | **Liquid Pump** | Pulls a fluid source block next to it (any side) into the network — only when the whole 5000 mL fits. Cauldrons give 1667 + 1667 + 1666 mL |
-| **Liquid Drain** | Same as the pump, taking in a source block next to it. Water and lava fall onto the drain as it does |
+| **Liquid Drain** | Same as the pump, taking in a source block next to it — or, failing that, one block down and out, so a drain standing on the bank of a pool drains the pool. Water and lava fall onto the drain as it does |
 | **Liquid Drain**, powered by redstone | Pours out instead: spends 5000 mL to put a source block back into the world on a free side (says `not_enough` below 5000 mL) |
 | **Liquid Drain**, facing up or down | Also a **loading point**: takes filled buckets/bottles from you (sneak while holding one), from a container on top of it, or from items dropped on it, and gives the empties back; with none of those, a sneaking player's **experience**. With nothing to load, it takes in a source block next to it like any drain |
 | **Gas Pump** | Like the Liquid Pump, for gases: draws **Smoke** from a lit campfire or soul campfire next to it, 500 mL a second. The campfire keeps burning and is never used up. Steam comes from a Boiler |
 
 A drain points where you look when you place it, so looking down to place one makes it face up.
 That is fine: an upright drain still drains the pool beside it.
+
+The Goggles say what a drain is doing: `pumping`; `no_source` (nothing it can take beside it, or
+one block down and out); `waiting_for_source` (only flowing water or lava there, as when a small
+pool is refilling the gap); `network_full` (wait for the network to have room for a whole
+5000 mL block, or add a tank); `no_network` (the drain is not part of a network).
 
 A drain's **speed** is in litres per second: 5 (the default) is one source block a second, 10 is
 two, 1 is one every five seconds. Only operators change it, with the [Data Handler](tools.md);

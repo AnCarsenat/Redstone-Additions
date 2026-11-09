@@ -125,8 +125,9 @@ object Drain : PackPart {
 			// 2. Stood on end (facing up or down): be a loading point first -- empty a sneaking
 			//    player's held container, a container on top, or dropped containers into the
 			//    network, or take a sneaking player's experience. See ra_wires:fluid/drain_items.
-			// 3. Otherwise -- and also when a vertical drain had nothing to load -- take an
-			//    adjacent world source in, like a pump.
+			// 3. Otherwise -- and also when a vertical drain had nothing to load -- take a world
+			//    source in, like a pump: one beside it, or one block down and out (a pool seen
+			//    from its bank).
 			//
 			// WHY THIS REPLACED THE `mode` PROPERTY (6.0.1)
 			// A drain picks its facing from where the player looks, and placing one on the
@@ -147,6 +148,11 @@ object Drain : PackPart {
 			raw("execute if score @s ${Obj.COOLDOWN} < #dr.ticks ra.wires.tmp run return 0")
 			scoreboard.players.set(self(), Obj.COOLDOWN, 0)
 
+			// Off a network there is nowhere to put anything, and nothing to pour. Said here, before
+			// the world is looked at: the offer would only come back empty and read as
+			// `network_too_small`, which suggests adding a tank to a network that does not exist.
+			raw("execute unless score @s ra.tr.net matches 1.. run return run data modify entity @s data.status.drain_state set value \"no_network\"")
+
 			// 1. Redstone pours out.
 			executeReturnRun("if function ${RaLib.Redstone.any.asId()}", DrainExperience.drainPlace)
 
@@ -159,10 +165,20 @@ object Drain : PackPart {
 
 			// 3. Take a world source in. Liquids only: a drain beside a lit campfire must not pull
 			// its smoke into a liquid network.
+			//
+			// The six blocks around the drain first, then the four one block down and out: a drain
+			// put down beside a pool stands on the bank, level with nothing but air and the bank,
+			// and the water is diagonally below it. Only scanning the six sides is why a drain beside
+			// a lake still said `no_source` after the 6.0.1 fix.
 			raw("data modify storage ra:wires probe_state set value \"liquid\"")
 			function(Source.scan)
+			executeRun("unless data storage ra:wires found", Source.scanBank)
 			data(Storage.WIRES) { remove("probe_state") }
 
+			// Nothing to take. Flowing water or lava where a source was (a small pool refilling the
+			// gap the last block left) is "waiting for a source", not "no source".
+			raw("execute unless data storage ra:wires found store result score #dr.flow ra.wires.tmp run function ${Source.flowing.asId()}")
+			raw("execute unless data storage ra:wires found if score #dr.flow ra.wires.tmp matches 1 run return run data modify entity @s data.status.drain_state set value \"waiting_for_source\"")
 			raw("execute unless data storage ra:wires found run data modify entity @s data.status.drain_state set value \"no_source\"")
 			raw("execute unless data storage ra:wires found unless score @s ra.facing matches 0..1 run particle minecraft:smoke ~ ~0.8 ~ 0.25 0.25 0.25 0.01 4 normal ${particleViewersSel()}")
 			raw("execute unless data storage ra:wires found run return 0")

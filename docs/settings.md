@@ -69,7 +69,7 @@ Every setting is also a command, so you can tab-complete your way through them:
 | --- | --- |
 | General | *Show the load message* (on): every line the pack prints in chat on load or `/reload` — the version, each module's "loaded!" line and the settings links. Warnings (some block types are disabled) are shown either way; chat prefix (`RA`); subcategory **Goggles** |
 | General › Goggles | Goggles range (16 blocks); Goggles redraw (20 ticks); *Filter previews* (on): draw the item an Item Pipe filters for above its readout. Off here means off for everyone; on lets each player choose with *Show filter previews* |
-| Logic Gates | default Clock interval (20), Delayer delay (20), Extender duration (20), Shortener pulse (2), Randomizer chance (50%), Counter target (10), Edge Detector pulse (2) |
+| Logic Gates | default Clock interval (20), Delayer delay (20), Extender duration (20), Shortener pulse (2), Randomizer chance (50%), Counter target (10), Edge Detector pulse (2), Sequencer steps (4) |
 | Interactive | default Magic Crate radius (8) and interval (20), Message Block range (16) |
 | Power & Fluids | default Generator EU/tick (60), Consumer EU draw (40), Industrial Light EU use (10), Liquid Drain rate (5000 mL per second) |
 | Ender Links | default Power Vault EU/tick (80), Fluid Vault transfer (200) |

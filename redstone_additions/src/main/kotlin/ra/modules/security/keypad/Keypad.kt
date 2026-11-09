@@ -59,7 +59,7 @@ import ra.modules.security.keypad.KeypadUse.startIfIdle
  * name, read from a player head filled with their profile.
  */
 object Keypad {
-	val block = CustomBlock(Ns.SECURITY, "keypad", "Keypad", model = "minecraft:target")
+	val block = CustomBlock(Ns.SECURITY, "keypad", "Keypad Controller", model = "minecraft:target")
 	val item = block.loreItem {
 		lore(
 			loreLine("Powers itself when shown the right Pattern", "gray"),

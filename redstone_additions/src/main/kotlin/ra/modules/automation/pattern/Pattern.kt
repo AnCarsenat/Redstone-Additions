@@ -107,7 +107,7 @@ object Pattern {
 
 	/** The hint lines under a recorded grid. */
 	fun hintLore() = listOf(
-		loreLine("Right-click a Crafter Controller or a Keypad to use it", "dark_gray"),
+		loreLine("Right-click a Crafter Controller or a Keypad Controller to use it", "dark_gray"),
 		loreLine("Sneak + right-click air to clear", "dark_gray"),
 	)
 

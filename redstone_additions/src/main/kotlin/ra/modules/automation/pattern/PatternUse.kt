@@ -136,9 +136,17 @@ object PatternUse {
 		// As the player, at the crafter's centre.
 		pack.define(record) {
 			raw("scoreboard players set #pat.hit $T 1")
-			raw("execute unless data block ~ ~ ~ Items[0] run return run ${say("This crafter is empty: fill its grid first.", "red")}")
 			raw("data modify storage $STORE rec set value {slots:${Pattern.blankSlotsSnbt}}")
 			for (n in 0 until 9) raw("data modify storage $STORE rec.slots[$n] set from block ~ ~ ~ Items[{Slot:${n}b}].id")
+			// Empty only when all nine read nothing: not `Items[0]`, which the game failed on for a
+			// partly filled crafter, refusing any grid with an empty cell.
+			// Not an NBT filter either: a list in a filter matches partially, so `["",…]` would match
+			// any grid with one empty cell. Overwriting a blank copy changes nothing only when equal.
+			raw("data modify storage $STORE blank set value ${Pattern.blankSlotsSnbt}")
+			raw("execute store success score #pat.any $T run data modify storage $STORE blank set from storage $STORE rec.slots")
+			raw("data remove storage $STORE blank")
+			raw("execute if score #pat.any $T matches 0 run data remove storage $STORE rec")
+			raw("execute if score #pat.any $T matches 0 run return run ${say("This crafter is empty: put at least one item in its grid.", "red")}")
 			function(lore)
 			writeHeld(setLore(gridLore))
 			raw("data remove storage $STORE rec")

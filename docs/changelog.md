@@ -104,8 +104,11 @@ This page mirrors key datapack milestones from the main project changelog.
 
 ### Changed
 
-- **List buttons read [Add] [List].** [Add] types one new entry; [List] (was "[Edit whole list]")
-  writes the whole list at once in the input book.
+- **List rows read [Add] [Edit all] [List], and start compact.** A list in the Data Handler is
+  one line now, its header: [Add] types one new entry for the end, [Edit all] (was "[Edit whole
+  list]") writes the whole list at once in the input book, and [List] shows the entries
+  underneath, each with its own buttons; click it again, or another list's, to fold it away. A
+  list you may not change keeps its locked row, and its [List] shows the entries without buttons.
 
 - **Tag Adders and Tag Removers placed from now on start with `tags: ["custom_tag"]`**, a list
   of one tag, instead of `tag: "custom_tag"`. Blocks you already placed are converted when the

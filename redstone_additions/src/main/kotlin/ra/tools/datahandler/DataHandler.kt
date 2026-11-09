@@ -68,6 +68,8 @@ object DataHandler {
 			raw("execute unless predicate ra:is_sneaking run return 0")
 			// Forget this player's previous block. Only theirs: other players keep their own selection.
 			scoreboard.players.set(self(), DataHandlerSelection.SEL, 0)
+			// Opened fresh from the tool: every list compact again.
+			raw("scoreboard players reset @s ${DataHandlerRegistry.EXPAND}")
 			data(Storage.TEMP) { remove("dh_found") }
 			raycast("dh_found", foundBlock)
 			raw("execute if data storage ra:temp dh_found run scoreboard players operation @s ${DataHandlerSelection.SEL} = #dh.found ${Obj.TEMP}")

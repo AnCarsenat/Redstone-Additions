@@ -86,7 +86,8 @@ Shift + right-click a block to open its settings in chat.
 | **[Clear]** | On a list whose positions matter (a Teleport Anchor's strengths): empty that entry, the others stay put |
 | **[Add]** | Add an entry at the end of a list, also an empty one: you write it in the book, and it is checked like the others. Greyed out once the list is full ("Maximum N entries" on hover) |
 | **[Choose]** | Pick an entry from a list of known values (a Teleport Anchor's destinations: every anchor named so far) |
-| **[List]** | Write the whole list at once, like `["A","B","C"]` |
+| **[Edit all]** | Write the whole list at once, like `["A","B","C"]` |
+| **[List]** | Show a list's entries under it, each with its own buttons; click again to hide them. One list is open at a time |
 | **[Set from hand]** | For item settings (an Item Pipe filter): use the item you are holding |
 | **[Clear]** | On item settings: set no item (removes an Item Pipe filter) |
 | **[Cancel Input]** | Abandon an edit you started |
@@ -100,10 +101,11 @@ e.g. *Enter a number for delay (1–1200)*), an on/off field accepts `true`/`fal
 `1`/`0`, and a text field keeps exactly what you wrote, even if it looks like a number. A list
 entry must be of the list's type. A refused value leaves the block unchanged and says why.
 
-A list looks like this (a Teleport Anchor):
+A list is one line until you open it with **[List]**. Opened, it looks like this (a Teleport
+Anchor):
 
 ```
-  targets: list (15/15)  [List]
+  targets: list (15/15) [Edit all] [List]
     Strength 1: Mine  [Choose] [Edit] [Clear]
     Strength 2: (empty)  [Choose] [Edit]
 ```
@@ -111,10 +113,14 @@ A list looks like this (a Teleport Anchor):
 and like this for a list that grows (a Tag Adder's tags, at most 16), with its count in the header:
 
 ```
-  tags: list (2/16) [Add] [List]
+  tags: list (2/16) [Add] [Edit all] [List]
     Tag 1: custom_tag  [Edit] [Remove]
     Tag 2: red_team  [Edit] [Remove]
 ```
+
+Selecting a block with the Handler shows every list closed again. A list you may not change
+(set by the block, or admins only) keeps its locked row; its **[List]** still shows the entries,
+without buttons.
 
 Every setting the block has is listed, even one it does not carry yet because it was placed
 before that setting existed. Such a row shows the setting's starting value marked *(default)*,

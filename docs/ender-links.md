@@ -63,10 +63,10 @@ A pad that sends you to another anchor. Each anchor has a **name** (`anchor_id`)
 1. Place two anchors. Shift + right-click each with the [Data Handler](tools.md) and use
    **[Modify]** on `anchor_id` to name them, e.g. `Home` and `Mine`. Names may contain letters,
    digits, spaces and `_ . + - : / #`.
-2. On `Home`, the Data Handler lists the fifteen strengths:
+2. On `Home`, click **[List]** on `targets` in the Data Handler to show the fifteen strengths:
 
     ```
-    targets: list (15/15)  [List]
+    targets: list (15/15) [Edit all] [List]
       Strength 1: (empty)  [Choose] [Edit]
       Strength 2: (empty)  [Choose] [Edit]
       …

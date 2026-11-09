@@ -49,6 +49,9 @@ object DataHandlerRegistry {
 	/** On a player: the stamp of their open picker, whose choices are in storage ra:dh pick.s<stamp>. */
 	const val PSTAMP = "ra.dh.pstamp"
 
+	/** On a player: the row index + 1 of the list they have open in the menu (DataHandlerEntries); 0 or unset, none. */
+	const val EXPAND = "ra.dh.expand"
+
 	fun Ra.registerDataHandlerRegistry() {
 		val schemas = blockProperties.toSortedMap()
 		val known = schemas.values.flatten().filter { !it.dynamic }.map { it.name }.distinct().sorted()
@@ -71,10 +74,13 @@ object DataHandlerRegistry {
 			raw("scoreboard objectives add $MENU dummy")
 			raw("scoreboard objectives add $KIND dummy")
 			raw("scoreboard objectives add $PSTAMP dummy")
+			raw("scoreboard objectives add $EXPAND dummy")
 			// Pickers drawn before this load are void too.
 			raw("data remove storage ra:dh pick")
 			raw("scoreboard players reset * $PSTAMP")
 			raw("scoreboard players reset * $MENU")
+			// Row indexes of a schema that may have changed.
+			raw("scoreboard players reset * $EXPAND")
 		}
 
 		afterAllParts { checkSchemas(schemas) }

@@ -16,7 +16,6 @@ import ra.core.PackPart
 import ra.core.Ra
 import ra.core.Storage
 import ra.core.block.particleViewersSel
-import ra.core.block.soundListenersSel
 import ra.core.define
 import ra.core.executeRun
 import ra.core.raw
@@ -30,14 +29,22 @@ object DrainPotion : PackPart {
 	val drainPotionPresetRun = ref(Ns.WIRES, "fluid/drain_potion_preset_run")
 	val drainPotionRead = ref(Ns.WIRES, "fluid/drain_potion_read")
 	val drainPotionScale = ref(Ns.WIRES, "fluid/drain_potion_scale")
+	val drainPotionColor = ref(Ns.WIRES, "fluid/drain_potion_color")
+	val drainPotionColorPreset = ref(Ns.WIRES, "fluid/drain_potion_color_preset")
+	val drainPotionColorEffect = ref(Ns.WIRES, "fluid/drain_potion_color_effect")
+	val drainPotionParticle = ref(Ns.WIRES, "fluid/drain_potion_particle")
+
+	/** A potion with no colour of its own (water, awkward, unknown): the vanilla water bottle's blue. */
+	private const val DEFAULT_COLOR = 3694022
 
 	override fun Ra.register() {
 		pack.define(DrainPotion.drainPotion) {
 			// Pour the network's potion over whoever is standing by the drain.
-			// Context: as the drain marker, at the drain position.
+			// Context: as the drain marker, at the block in front of it (ra_wires:fluid/drain_pour).
 			//
 			// The output side of the potion medium. A potion has no world block to place, so
-			// the thing a drain does with it is apply it -- one bottle's worth, 1000 mL, per
+			// the thing a drain does with it is pour it out as a cloud in the potion's colour
+			// and apply it -- up to one action's worth (Drain.ML_PER_ACTION, five bottles) per
 			// operation, to every player within four blocks.
 			//
 			// DURATION FOLLOWS THE VOLUME
@@ -56,7 +63,7 @@ object DrainPotion : PackPart {
 			function(RaLib.Transport.Net.read)
 			raw("execute unless data storage ra:transport cur.amounts.potion run return run data modify entity @s data.status.drain_state set value \"nothing_to_pour\"")
 
-			executeRun("store result score #pt.got ra.wires.tmp", RaLib.Transport.Net.take, """{amount:1000,medium:"potion"}""")
+			executeRun("store result score #pt.got ra.wires.tmp", RaLib.Transport.Net.take, """{amount:${Drain.ML_PER_ACTION},medium:"potion"}""")
 			raw("execute if score #pt.got ra.wires.tmp matches ..0 run return run data modify entity @s data.status.drain_state set value \"nothing_to_pour\"")
 
 			// Nobody to pour it over is not a failure, but the potion has already left the
@@ -69,8 +76,45 @@ object DrainPotion : PackPart {
 			raw("execute store result storage ra:wires apply.id int 1 run scoreboard players get @s ra.tr.net")
 			function(DrainPotion.drainPotionRead, Storage.WIRES, "apply")
 
-			raw("particle minecraft:effect ~ ~1 ~ 0.4 0.4 0.4 0.1 12 normal ${particleViewersSel(16)}")
-			raw("playsound minecraft:entity.generic.drink block ${soundListenersSel(8)} ~ ~ ~ 0.7 1.1")
+			// The colour is worked out after the effects were applied: drain_potion_read empties
+			// its own copy of the effect list, and this reads the network's potion afresh.
+			data(Storage.WIRES) { remove("pc") }
+			raw("data modify storage ra:wires pc.color set value $DEFAULT_COLOR")
+			function(DrainPotion.drainPotionColor, Storage.WIRES, "apply")
+			function(DrainPotion.drainPotionParticle, Storage.WIRES, "pc")
+			data(Storage.WIRES) { remove("pc") }
+		}
+
+		pack.define(DrainPotion.drainPotionColor) {
+			// Internal: the colour of this network's potion, into storage ra:wires pc.color.
+			// Macro: {id} (the network id).
+			//
+			// A potion that names its colour (custom_color) is that colour. Otherwise it is the
+			// colour of its first effect -- custom_effects first, then the preset's table entry --
+			// looked up in ra:wires effect_colors (ra_wires:media/potions). That is the colour a
+			// one-effect vanilla potion has; a mixed one shows its first effect's.
+
+			raw("\$execute if data storage ra:transport nets.n\$(id).potion.custom_color run return run data modify storage ra:wires pc.color set from storage ra:transport nets.n\$(id).potion.custom_color")
+			raw("\$data modify storage ra:wires pc.e set from storage ra:transport nets.n\$(id).potion.custom_effects[0].id")
+			raw("\$execute unless data storage ra:wires pc.e run data modify storage ra:wires pc.potion set from storage ra:transport nets.n\$(id).potion.potion")
+			raw("execute unless data storage ra:wires pc.e if data storage ra:wires pc.potion run function ${DrainPotion.drainPotionColorPreset.asId()} with storage ra:wires pc")
+			raw("execute if data storage ra:wires pc.e run function ${DrainPotion.drainPotionColorEffect.asId()} with storage ra:wires pc")
+		}
+
+		pack.define(DrainPotion.drainPotionColorPreset) {
+			// Internal: a preset potion's first effect. Macro: {potion}.
+			raw("\$data modify storage ra:wires pc.e set from storage ra:wires potion_effects.\"\$(potion)\"[0].e")
+		}
+
+		pack.define(DrainPotion.drainPotionColorEffect) {
+			// Internal: an effect's colour, when the table has it. Macro: {e}.
+			raw("\$data modify storage ra:wires pc.color set from storage ra:wires effect_colors.\"\$(e)\"")
+		}
+
+		pack.define(DrainPotion.drainPotionParticle) {
+			// Internal: the poured potion, as a cloud of its colour. Macro: {color}.
+			// Context: at the block in front of the drain.
+			raw("\$particle minecraft:dust{color:\$(color),scale:1.5f} ~ ~ ~ 0.4 0.4 0.4 0 16 normal ${particleViewersSel(16)}")
 		}
 
 		pack.define(DrainPotion.drainPotionGive) {

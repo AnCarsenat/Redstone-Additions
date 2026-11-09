@@ -19,7 +19,6 @@ import ra.core.PackPart
 import ra.core.Ra
 import ra.core.Storage
 import ra.core.block.particleViewersSel
-import ra.core.block.soundListenersSel
 import ra.core.define
 import ra.core.executeReturnRun
 import ra.core.executeRun
@@ -32,11 +31,22 @@ object Drain : PackPart {
 	val drainAboveTry = ref(Ns.WIRES, "fluid/drain_above_try")
 	val drainTick = ref(Ns.WIRES, "fluid/drain_tick")
 
-	/** Default `speed`: litres per second, i.e. one 5 L source block a second (20 ticks). */
-	const val DEFAULT_SPEED = 5
+	/**
+	 * What one action moves, in mL: one source block, the same 5000 mL a pump takes for one, so
+	 * draining a block and pouring it back round-trip exactly. Pouring experience, potions, milk
+	 * or gas moves up to this much an action too, so `rate` means the same for every medium.
+	 */
+	const val ML_PER_ACTION = 5000
 
-	/** Ticks between actions at speed 1; the interval is this divided by `speed`. */
-	const val TICKS_AT_SPEED_1 = 100
+	/** Default `rate`, in mL per second: one source block a second. */
+	const val DEFAULT_RATE = 5000
+
+	/** Slowest and fastest `rate`: one block every 50 seconds, one block every tick. */
+	const val MIN_RATE = 100
+	const val MAX_RATE = ML_PER_ACTION * 20
+
+	/** Ticks between actions at 1 mL/s; the interval is this divided by `rate`. */
+	private const val TICKS_AT_1_ML_PER_S = ML_PER_ACTION * 20
 
 	override fun Ra.register() {
 		pack.define(Drain.drainAbove) {
@@ -112,7 +122,6 @@ object Drain : PackPart {
 			scoreboard.players.set(literal("#dr.took"), "ra.wires.tmp", 1)
 			raw("data modify entity @s data.status.drain_state set value \"emptied_container\"")
 			raw("\$function ${Fluid.drip.asId()} {medium:\"\$(medium)\"}")
-			raw("playsound minecraft:item.bucket_empty block ${soundListenersSel(8)} ~ ~ ~ 0.7 1.2")
 		}
 
 		pack.define(Drain.drainTick) {
@@ -121,7 +130,9 @@ object Drain : PackPart {
 			//
 			// WHAT IT DOES, IN ORDER
 			// 1. Powered by redstone: pour out -- spend network contents putting the medium
-			//    back into the world (a source block, orbs, or a potion over nearby players).
+			//    back into the world (a source block in the air in front of it, orbs, or a potion
+			//    over nearby players). No water body or container is needed. See
+			//    ra_wires:fluid/drain_pour.
 			// 2. Stood on end (facing up or down): be a loading point first -- empty a sneaking
 			//    player's held container, a container on top, or dropped containers into the
 			//    network, or take a sneaking player's experience. See ra_wires:fluid/drain_items.
@@ -138,12 +149,13 @@ object Drain : PackPart {
 			// see and change, and a vertical drain still drains the world when it has nothing
 			// to load.
 
-			// Throughput: one action every 100 / speed ticks, so speed is litres per second at
-			// 5 L a source block (5 = one block a second, the old default of 20 ticks).
-			// Compared as a score rather than baked into the selector, so a change applies at once.
+			// Throughput: `rate` is mL per second, and one action moves ML_PER_ACTION (a 5000 mL
+			// source block), so an action comes every 100000 / rate ticks: 5000 = one block a
+			// second, 10000 = two, 100000 = one every tick. Compared as a score rather than baked
+			// into the selector, so a change applies at once.
 			scoreboard.players.add(self(), Obj.COOLDOWN, 1)
-			function(RaLib.Util.property, nbt { this["name"] = "speed"; this["default"] = DEFAULT_SPEED; this["min"] = 1 })
-			scoreboard.players.set(literal("#dr.ticks"), "ra.wires.tmp", TICKS_AT_SPEED_1)
+			function(RaLib.Util.property, nbt { this["name"] = "rate"; this["default"] = DEFAULT_RATE; this["min"] = MIN_RATE })
+			scoreboard.players.set(literal("#dr.ticks"), "ra.wires.tmp", TICKS_AT_1_ML_PER_S)
 			scoreboard.players.operation(literal("#dr.ticks"), "ra.wires.tmp", Operation.DIVIDE, literal("#prop"), "ra.temp")
 			raw("execute if score @s ${Obj.COOLDOWN} < #dr.ticks ra.wires.tmp run return 0")
 			scoreboard.players.set(self(), Obj.COOLDOWN, 0)
@@ -154,7 +166,7 @@ object Drain : PackPart {
 			raw("execute unless score @s ra.tr.net matches 1.. run return run data modify entity @s data.status.drain_state set value \"no_network\"")
 
 			// 1. Redstone pours out.
-			executeReturnRun("if function ${RaLib.Redstone.any.asId()}", DrainExperience.drainPlace)
+			executeReturnRun("if function ${RaLib.Redstone.any.asId()}", DrainPour.pour)
 
 			// 2. A vertical drain loads containers and experience first. Anything other than
 			// "nothing_to_empty" means it acted, or has something to say (network full, wrong
@@ -187,7 +199,6 @@ object Drain : PackPart {
 			function(Pump.pumpExtract, Storage.WIRES, "found")
 			data(self()) { modify("data.status.drain_state", self(), "data.status.pump_state") }
 			executeRun("if data entity @s data.status{pump_state:\"pumping\"}", Fluid.drip, "with storage ra:wires found")
-			raw("execute if data entity @s data.status{pump_state:\"pumping\"} run playsound minecraft:item.bucket_fill block ${soundListenersSel(8)} ~ ~ ~ 0.5 1.2")
 			data(Storage.WIRES) { remove("found") }
 		}
 	}

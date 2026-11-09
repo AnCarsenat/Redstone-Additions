@@ -31,6 +31,7 @@ import ra.modules.wires.blocks.Placement
 import ra.modules.wires.blocks.creative_fluid.CreativeFluid
 import ra.modules.wires.blocks.electric_consumer.ElectricConsumer
 import ra.modules.wires.blocks.electric_furnace.ElectricFurnaceSettings
+import ra.modules.wires.fluid.Drain
 
 /**
  * Every Wires item, described once: its egg, recipe, unlock advancement and place in the bundle.
@@ -180,10 +181,13 @@ object WiresBlocks : PackPart {
 			number("rate", min = 1, max = 1000000, readonly = true)
 			text("filter_medium")
 		}
-		// Litres per second: one 5 L source block every 100 / speed ticks (5 = one a second).
-		// An admin knob, kept off the Goggles; the role (take in / pour out) is redstone.
+		// Rate (mL/s), for taking in and pouring out alike: one 5000 mL action every 100000 / rate
+		// ticks (5000 = one source block a second). An admin knob, kept off the Goggles; the role
+		// (take in / pour out) is redstone.
 		properties("liquid_drain") {
-			number("speed", min = 1, max = 100, adminOnly = true, goggles = false)
+			number("rate", min = Drain.MIN_RATE, max = Drain.MAX_RATE, adminOnly = true, goggles = false)
+			// Pre-6.0.2 name, removed by the 6.0.2 migration (ra_migrations:6.0.1-to-6.0.2/liquid_drain).
+			number("speed", readonly = true, visible = false)
 			// Pre-6.0.1 names, removed by the 6.0.1 migration (ra_migrations:6.0.0-to-6.0.1/liquid_drain).
 			number("cooldown", readonly = true, visible = false)
 			number("interval", readonly = true, visible = false)

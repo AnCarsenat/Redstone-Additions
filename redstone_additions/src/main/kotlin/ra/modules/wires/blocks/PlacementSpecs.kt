@@ -29,7 +29,7 @@ internal val SPECS: List<Pair<String, String>> = listOf(
 	"liquid_filter" to """{block:"minecraft:waxed_exposed_cut_copper",marker:"liquid_filter",bridge:1b,props:{rate:2000,filter_medium:"water"}}""",
 	"gas_valve" to """{block:"minecraft:smooth_basalt",marker:"gas_valve",bridge:1b,props:{rate:2000}}""",
 
-	"liquid_drain" to """{block:"minecraft:dropper",marker:"liquid_drain",dir:2,fluid:1b,net:"fluid",capacity:5000,props:{speed:5}}""",
+	"liquid_drain" to """{block:"minecraft:dropper",marker:"liquid_drain",dir:2,fluid:1b,net:"fluid",capacity:5000,props:{rate:${ra.modules.wires.fluid.Drain.DEFAULT_RATE}}}""",
 
 	// One wire. The two tiers differed only in a capacity they no longer have and a
 	// transfer rate that stopped existing when charge moved onto the grid, so an L2

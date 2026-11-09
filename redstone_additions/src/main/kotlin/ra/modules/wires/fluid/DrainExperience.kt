@@ -10,7 +10,6 @@ import ra.core.computeScore
 import ra.core.provider
 import ra.core.scoreOf
 import ra.core.storeInt
-import io.github.ayfri.kore.arguments.types.literals.literal
 import io.github.ayfri.kore.commands.data
 import io.github.ayfri.kore.commands.function
 import io.github.ayfri.kore.commands.returnValue
@@ -26,7 +25,6 @@ import ra.core.Storage
 import ra.core.block.soundListenersSel
 import ra.core.define
 import ra.core.executeReturnRun
-import ra.core.executeRun
 import ra.core.raw
 import ra.core.ref
 
@@ -34,16 +32,16 @@ object DrainExperience : PackPart {
 	/** What one experience point is worth in the network, both ways. */
 	private const val ML_PER_POINT = 100
 
+	/** Points moved per drain action, in either direction: one action's worth of mL. */
+	private const val POINTS_PER_ACTION = Drain.ML_PER_ACTION / ML_PER_POINT
+
 	val drainExp = ref(Ns.WIRES, "fluid/drain_exp")
 	val drainExpClear = ref(Ns.WIRES, "fluid/drain_exp_clear")
 	val drainExpOffer = ref(Ns.WIRES, "fluid/drain_exp_offer")
 	val drainExpPull = ref(Ns.WIRES, "fluid/drain_exp_pull")
 	val drainExpTake = ref(Ns.WIRES, "fluid/drain_exp_take")
-	val drainPlace = ref(Ns.WIRES, "fluid/drain_place")
 	val drainPlaceExp = ref(Ns.WIRES, "fluid/drain_place_exp")
 	val drainPlaceOrb = ref(Ns.WIRES, "fluid/drain_place_orb")
-	val drainPlaceRun = ref(Ns.WIRES, "fluid/drain_place_run")
-	val drainPlaceTry = ref(Ns.WIRES, "fluid/drain_place_try")
 
 	override fun Ra.register() {
 		pack.define(DrainExperience.drainExp) {
@@ -72,14 +70,15 @@ object DrainExperience : PackPart {
 			raw("execute if score #net_amount ra.tr.tmp matches 1.. if score #dx.have ra.wires.tmp matches ..0 run data modify entity @s data.status.drain_state set value \"wrong_medium\"")
 			executeReturnRun("if score #net_amount ra.tr.tmp matches 1.. if score #dx.have ra.wires.tmp matches ..0", DrainExperience.drainExpClear)
 
-			// Ten points a cycle, or as much of that as the player has and the grid will hold:
-			// pts = min(pts, 10, (capacity - amount) / 100), at 100 mL a point.
+			// One action's worth of points (Drain.ML_PER_ACTION / 100 = 50), or as much of that as
+			// the player has and the grid will hold: pts = min(pts, 50, (capacity - amount) / 100),
+			// at 100 mL a point. The same figure as pouring out, so `rate` means one thing.
 			computeScore(
 				"#dr.pts", "ra.wires.tmp",
 				provider {
 					min(
 						scoreOf("#dr.pts", "ra.wires.tmp"),
-						constant(10),
+						constant(POINTS_PER_ACTION),
 						floorDiv(sub(scoreOf("#net_capacity", "ra.tr.tmp"), scoreOf("#net_amount", "ra.tr.tmp")), constant(ML_PER_POINT)),
 					)
 				},
@@ -129,35 +128,24 @@ object DrainExperience : PackPart {
 			raw("\$xp add @a[tag=ra.wires.xp_giver,limit=1] -\$(points) points")
 		}
 
-		pack.define(DrainExperience.drainPlace) {
-			// Spend network contents placing the medium into the world.
-			// Context: as a redstone-powered drain marker, at the drain position.
-
-			function(RaLib.Transport.Net.read)
-
-			raw("execute unless data storage ra:transport cur.medium run data modify entity @s data.status.drain_state set value \"network_empty\"")
-			raw("execute unless data storage ra:transport cur.medium run return 0")
-
-			raw("execute if score #net_amount ra.tr.tmp matches ..4999 run data modify entity @s data.status.drain_state set value \"not_enough\"")
-			raw("execute if score #net_amount ra.tr.tmp matches ..4999 run return 0")
-
-			function(DrainExperience.drainPlaceRun, Storage.TRANSPORT, "cur")
-		}
-
 		pack.define(DrainExperience.drainPlaceExp) {
 			// Give experience back to the world as orbs.
-			// Context: as a redstone-powered drain marker, at the drain position.
+			//
+			// Context: as the drain marker, at the block in front of it (ra_wires:fluid/drain_pour).
 			//
 			// The same 100 mL a point that drain_exp charges, so a network filled by standing
-			// on one drain empties at exactly the rate it filled — ten points a cycle. What
+			// on one drain empties at exactly the rate it filled -- 50 points an action. What
 			// went in comes back out; the network is not a lossy converter.
 
 			function(RaLib.Transport.Net.read)
 
-			// Ten points, in whole points only, and never more than the network holds:
-			// pts = min(10, amount / 100).
-			computeScore("#dr.pts", "ra.wires.tmp", provider { min(constant(10), floorDiv(scoreOf("#net_amount", "ra.tr.tmp"), constant(ML_PER_POINT))) })
-			raw("execute if score #dr.pts ra.wires.tmp matches ..0 run return run data modify entity @s data.status.drain_state set value \"not_enough\"")
+			// 50 points, in whole points only, and never more than the network holds OF
+			// EXPERIENCE: pts = min(50, experience / 100). The network's total is the wrong
+			// figure on a mixed run -- 300 mL of experience beside 5000 mL of water would have
+			// minted ten points' worth of orbs while the take below removed only three.
+			raw("execute store result score #dx.have ra.wires.tmp run data get storage ra:transport cur.amounts.experience")
+			computeScore("#dr.pts", "ra.wires.tmp", provider { min(constant(POINTS_PER_ACTION), floorDiv(scoreOf("#dx.have", "ra.wires.tmp"), constant(ML_PER_POINT))) })
+			raw("execute if score #dr.pts ra.wires.tmp matches ..0 run return run data modify entity @s data.status.drain_state set value \"network_empty\"")
 
 			computeInto(storeInt(Storage.WIRES, "xp.amount"), provider { mul(scoreOf("#dr.pts", "ra.wires.tmp"), constant(ML_PER_POINT)) })
 			function(DrainExperience.drainExpPull, Storage.WIRES, "xp")
@@ -165,59 +153,18 @@ object DrainExperience : PackPart {
 			raw("execute store result storage ra:wires xp.points int 1 run scoreboard players get #dr.pts ra.wires.tmp")
 			function(DrainExperience.drainPlaceOrb, Storage.WIRES, "xp")
 
-			raw("data modify entity @s data.status.drain_state set value \"placing\"")
+			raw("data modify entity @s data.status.drain_state set value \"pouring\"")
 			function(Fluid.particles, nbt { this["medium"] = "experience" })
 		}
 
 		pack.define(DrainExperience.drainPlaceOrb) {
 			// Internal: drop one orb carrying the whole cycle's worth.
-			// Context: as the drain marker, at the drain position.
+			// Context: as the drain marker, at the block in front of it.
 			//
 			// One orb rather than one per point: a stack of single-point orbs is the same
 			// experience but a great deal more entity, and vanilla merges them anyway.
 
-			raw("\$summon minecraft:experience_orb ~ ~1 ~ {Value:\$(points)s}")
-		}
-
-		pack.define(DrainExperience.drainPlaceRun) {
-			// Internal: find a free adjacent block and put one source block of the medium in
-			// it. Media with no world block (steam, smoke) cannot be placed and say so.
-
-			// A medium flagged `effect` is applied to whoever is standing there rather than
-			// placed as a block -- see ra_wires:fluid/drain_potion.
-			raw("\$execute if data storage ra:wires media.\$(medium).effect run return run function ${DrainPotion.drainPotion.asId()}")
-
-			// Experience has no world block; it comes back as orbs instead.
-			raw("\$execute if data storage ra:wires media.\$(medium).orb run return run function ${DrainExperience.drainPlaceExp.asId()}")
-
-			raw("\$execute unless data storage ra:wires media.\$(medium).block run data modify entity @s data.status.drain_state set value \"not_placeable\"")
-			raw("\$execute unless data storage ra:wires media.\$(medium).block run return 0")
-
-			data(Storage.WIRES) { remove("place") }
-			raw("\$data modify storage ra:wires place.block set from storage ra:wires media.\$(medium).block")
-
-			scoreboard.players.set(literal("#placed"), "ra.wires.tmp", 0)
-			executeRun("positioned ~1 ~ ~ if block ~ ~ ~ #ra_lib:passable", DrainExperience.drainPlaceTry, "with storage ra:wires place")
-			executeRun("positioned ~-1 ~ ~ if block ~ ~ ~ #ra_lib:passable", DrainExperience.drainPlaceTry, "with storage ra:wires place")
-			executeRun("positioned ~ ~ ~1 if block ~ ~ ~ #ra_lib:passable", DrainExperience.drainPlaceTry, "with storage ra:wires place")
-			executeRun("positioned ~ ~ ~-1 if block ~ ~ ~ #ra_lib:passable", DrainExperience.drainPlaceTry, "with storage ra:wires place")
-			executeRun("positioned ~ ~-1 ~ if block ~ ~ ~ #ra_lib:passable", DrainExperience.drainPlaceTry, "with storage ra:wires place")
-
-			raw("execute if score #placed ra.wires.tmp matches 0 run data modify entity @s data.status.drain_state set value \"no_room\"")
-			raw("execute if score #placed ra.wires.tmp matches 0 run return 0")
-
-			raw("\$execute store result score #spent ra.wires.tmp run function ${RaLib.Transport.Net.take.asId()} {amount:5000,medium:\"\$(medium)\"}")
-			raw("\$execute run function ${Fluid.particles.asId()} {medium:\"\$(medium)\"}")
-			raw("data modify entity @s data.status.drain_state set value \"placing\"")
-		}
-
-		pack.define(DrainExperience.drainPlaceTry) {
-			// Internal: place into the first free side only.
-
-			raw("execute if score #placed ra.wires.tmp matches 1 run return 0")
-
-			raw("\$setblock ~ ~ ~ \$(block)")
-			scoreboard.players.set(literal("#placed"), "ra.wires.tmp", 1)
+			raw("\$summon minecraft:experience_orb ~ ~ ~ {Value:\$(points)s}")
 		}
 	}
 }

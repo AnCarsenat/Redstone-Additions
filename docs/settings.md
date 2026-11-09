@@ -76,7 +76,7 @@ Every setting is also a command, so you can tab-complete your way through them:
 | Ender Links | default Power Vault EU/tick (80), Fluid Vault transfer (200); Anchor Tablet ender pearls per trip (1, 0 to 16) and recharge (10 seconds, 0 to 600) |
 | Infinite Generators | default interval of each generator (100) |
 | Jetpacks | Thruster Kit thrust (80%), speed cap (350), dead zone (25) |
-| Enchant Crafting | enchant crafting on/off |
+| Enchant Crafting | enchant crafting on/off; Disenchanter experience per enchantment moved (1000 mL, 0 to 100000); Book Upgrader base price (500 mL, 1 to 1000, doubled per level) and highest level (10, 1 to 20) |
 | Sensors | *Players may edit entity selectors and tags* (off): when on, players without server-settings access may change the selectors and tags of the Entity Detector, Tag Adder, Tag Remover and Message Block |
 | every module | which of its blocks may be placed |
 

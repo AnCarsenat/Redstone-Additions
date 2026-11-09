@@ -149,6 +149,31 @@ This page mirrors key datapack milestones from the main project changelog.
   server settings on the Ender Links page (`ender_tablet_pearls`, 0 to 16, and
   `ender_tablet_cooldown`, 0 to 600 seconds). Crafted from an eye of ender, three gold ingots and a
   compass.
+- **Disenchanter** (Enchant Crafting). Moves an item's enchantments onto a book. Throw an
+  enchanted item and a book on top: it makes an enchanted book holding the item's enchantments and
+  leaves the item without them, its repair cost reset as at a grindstone. Curses stay on the item.
+  The price is 1000 mL of liquid experience (10 points) per enchantment moved, taken all at once
+  from a fluid network touching the block (a pipe, tank or drain on a side or below); the server
+  setting `disenchanter_xp` (0 to 100000, 0 = free, no network needed) changes it. Looks like
+  crying obsidian; crafted from two books, a grindstone, a diamond and five obsidian. The Goggles
+  show what it is doing and the last price. It only works while something lies on it.
+- **Book Upgrader** (Enchant Crafting). Raises one enchantment of a book by one level. Throw an
+  enchanted book on top: it raises the enchantment named by its *enchantment* property (set with
+  the Data Handler, `sharpness` or `minecraft:sharpness`), or with none set the first one in
+  alphabetical order that is below the highest level. Going from level L to L+1 costs 500 × 2^L mL
+  of liquid experience (Sharpness V to VI: 16000 mL), all at once, from a fluid network touching
+  the block. The highest level it makes is 10. Server settings `book_upgrader_base` (1 to 1000)
+  and `book_upgrader_max` (1 to 20). The raised book stays on the block: throw it again for the
+  next level. Looks like a lapis block; crafted from four lapis blocks, four books and an
+  enchanting table. The Goggles show the chosen enchantment, what it is doing and the last price.
+- **Goggles Lens** (Tools). An expensive upgrade that gives any helmet the Goggles' view: hold it,
+  wear a helmet (leather, copper, chainmail, iron, gold, diamond, netherite or a turtle shell) and
+  right-click; the lens is used up and the helmet keeps its material, enchantments, trims and
+  durability. A lensed helmet shows every block's label exactly like the Goggles, worn or held.
+  `/trigger ra.goggles` opens a small menu to switch the lens off and on (the helmet's lore says
+  which) or remove it and get the lens back. Crafted from four tinted glass, two diamonds, two gold
+  ingots and a netherite ingot; unlocked by picking up a netherite ingot. A helmet that already
+  carries data or a description of its own (another pack's item, the Goggles) is refused.
 
 ### Changed
 
@@ -218,6 +243,13 @@ This page mirrors key datapack milestones from the main project changelog.
 
 ### For contributors
 
+- **Goggles Lens** (`ra/tools/goggles/lens/GogglesLens.kt`). A switched-on lensed helmet carries
+  `{ra:{goggles:1b,lensed:1b}}`, so goggles/tick finds it with its existing
+  `custom_data~{ra:{goggles:1b}}` check and nothing per tick was added for detection; off is
+  `{ra:{lensed:1b}}`. Unlike a jetpack kit's switch, "off" is on the item, not a player tag, so the
+  Goggles check stays one predicate. The `ra.goggles` trigger is polled with one score selector
+  per tick and handed to lensed-helmet wearers once per Goggles redraw. The helmet's state is
+  written with inline `set_components` item modifiers.
 - **Channel items share one prompt** (`ra/modules/wireless/tools/ChannelPrompt.kt`). The Redstone
   Remote's Sneak+right-click book prompt is now a class with one instance per item (its own
   pending, slot and request objectives), used by the Remote and the Pager; the Remote's functions

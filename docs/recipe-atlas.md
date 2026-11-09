@@ -1,6 +1,6 @@
 # Recipe Atlas
 
-Every recipe in the pack, in one place: 89 of them.
+Every recipe in the pack, in one place: 92 of them.
 
 !!! tip "Finding one"
     Use the search box with the item's name — every recipe below is indexed by
@@ -23,6 +23,7 @@ what the pack actually contains rather than what someone remembered to add.
 | [Block Breaker](#interactive-machines) | [Interactive Machines](interactive-machines.md) | Crafting table |
 | [Block Placer](#interactive-machines) | [Interactive Machines](interactive-machines.md) | Crafting table |
 | [Boiler](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
+| [Book Upgrader](#enchant-crafting) | [Enchant Crafting](enchant-crafting.md) | Crafting table |
 | [Boxer](#storage) | [Storage](storage.md) | Crafting table |
 | [Breeder](#interactive-machines) | [Interactive Machines](interactive-machines.md) | Crafting table |
 | [Chunk Loader](#chunk-loader) | [Chunk Loader](chunk-loader.md) | Crafting table |
@@ -34,6 +35,7 @@ what the pack actually contains rather than what someone remembered to add.
 | [Data Handler](#tools) | [Tools](tools.md) | Crafting table |
 | [Delayer](#logic-gates) | [Logic Gates](logic-gates.md) | Crafting table |
 | [Diamond Multiblock Base](#multiblocks) | [Multiblocks](multiblocks.md) | Crafting table |
+| [Disenchanter](#enchant-crafting) | [Enchant Crafting](enchant-crafting.md) | Crafting table |
 | [Edge Detector](#logic-gates) | [Logic Gates](logic-gates.md) | Crafting table |
 | [Electric Furnace](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
 | [Elevator](#interactive-machines) | [Interactive Machines](interactive-machines.md) | Crafting table |
@@ -54,6 +56,7 @@ what the pack actually contains rather than what someone remembered to add.
 | [Gas Valve](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
 | [Generator Casing](#infinite-generators) | [Infinite Generators](infinite-generators.md) | Crafting table |
 | [Goggles](#tools) | [Tools](tools.md) | Crafting table |
+| [Goggles Lens](#tools) | [Tools](tools.md) | Crafting table |
 | [Gold Multiblock Base](#multiblocks) | [Multiblocks](multiblocks.md) | Crafting table |
 | [Held Item Detector](#sensors) | [Sensors](sensors.md) | Crafting table |
 | [Industrial Light](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
@@ -116,6 +119,15 @@ Module page: [Chunk Loader](chunk-loader.md) — give everything: `/function ra_
 | Item | Recipe | Station | Namespace id |
 | ---- | ------ | ------- | ------------ |
 | **Chunk Loader** | ![Chunk Loader recipe](images/recipes/ra_chunk_loader/chunk_loader.png){ width="220" } | Crafting table | `ra_chunk_loader:chunk_loader` |
+
+## Enchant Crafting
+
+Module page: [Enchant Crafting](enchant-crafting.md) — give everything: `/function ra_enchanting:items/give_all`
+
+| Item | Recipe | Station | Namespace id |
+| ---- | ------ | ------- | ------------ |
+| **Book Upgrader** | ![Book Upgrader recipe](images/recipes/ra_enchanting/book_upgrader.png){ width="220" } | Crafting table | `ra_enchanting:book_upgrader` |
+| **Disenchanter** | ![Disenchanter recipe](images/recipes/ra_enchanting/disenchanter.png){ width="220" } | Crafting table | `ra_enchanting:disenchanter` |
 
 ## Ender Links
 
@@ -236,6 +248,7 @@ Module page: [Tools](tools.md) — give everything: `/function ra:tools/give_all
 | **Clipboard** | ![Clipboard recipe](images/recipes/ra/clipboard.png){ width="220" } | Crafting table | `ra:clipboard` |
 | **Data Handler** | ![Data Handler recipe](images/recipes/ra/data_handler.png){ width="220" } | Crafting table | `ra:data_handler` |
 | **Goggles** | ![Goggles recipe](images/recipes/ra/goggles.png){ width="220" } | Crafting table | `ra:goggles` |
+| **Goggles Lens** | ![Goggles Lens recipe](images/recipes/ra/goggles_lens.png){ width="220" } | Crafting table | `ra:goggles_lens` |
 | **Multimeter** | ![Multimeter recipe](images/recipes/ra/multimeter.png){ width="220" } | Crafting table | `ra:multimeter` |
 | **Wrench** | ![Wrench recipe](images/recipes/ra/wrench.png){ width="220" } | Crafting table | `ra:wrench` |
 

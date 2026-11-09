@@ -10,6 +10,7 @@ detail, the **Clipboard** copies settings between blocks, and the **Multimeter**
 | --- | --- | --- |
 | Wrench | an orange rod | ![Wrench recipe](images/recipes/ra/wrench.png){ width="200" } |
 | Goggles | an orange leather helmet | ![Goggles recipe](images/recipes/ra/goggles.png){ width="200" } |
+| Goggles Lens | a spyglass | ![Goggles Lens recipe](images/recipes/ra/goggles_lens.png){ width="200" } |
 | Data Handler | a light blue rod | ![Data Handler recipe](images/recipes/ra/data_handler.png){ width="200" } |
 | Clipboard | paper | ![Clipboard recipe](images/recipes/ra/clipboard.png){ width="200" } |
 | Multimeter | a clock | ![Multimeter recipe](images/recipes/ra/multimeter.png){ width="200" } |
@@ -18,7 +19,8 @@ Tools do not stack: each sits in its own slot.
 
 Operators: `/function ra:give_all_items` gives everything in the pack; each tool also has its own
 give function (`/function ra:tools/wrench/give`, `ra:tools/goggles/give`,
-`ra:tools/data_handler/give`, `ra:tools/clipboard/give`, `ra:tools/multimeter/give`).
+`ra:tools/data_handler/give`, `ra:tools/clipboard/give`, `ra:tools/multimeter/give`,
+`ra:tools/goggles/lens/give`).
 
 ## Wrench
 
@@ -75,6 +77,31 @@ still lists them.
 
 The Goggles only read; use the Wrench or the Data Handler to change things. Server operators can
 change the range and refresh rate in [Settings](settings.md).
+
+### Goggles Lens
+
+An expensive upgrade that gives the Goggles' view to a helmet of your own, so you need not choose
+between your armour and the labels. Crafted from four tinted glass, two diamonds, two gold ingots
+and a netherite ingot.
+
+1. Wear the helmet: leather, copper, chainmail, iron, gold, diamond, netherite or a turtle shell.
+2. Hold the lens and right-click. The lens is used up.
+
+The helmet keeps its material, enchantments, trims and durability, and now shows every label the
+Goggles show, worn or held. Its lore says whether the lens is on. A helmet that already carries
+data or a description of its own (another pack's item, or the Goggles themselves) is refused, so
+nothing on it is overwritten.
+
+`/trigger ra.goggles` opens the lens menu for the helmet you are wearing:
+
+```
+── Goggles Lens ──
+  Lens  [ ON ]  [ REMOVE ]
+```
+
+- **[ ON ] / [ OFF ]**: switch the lens off without removing it, and back on. The switch is stored
+  on the helmet, so it stays off when you hand the helmet to someone else.
+- **[ REMOVE ]**: take the lens out and get it back as an item; the helmet is a plain helmet again.
 
 ## Data Handler
 
@@ -192,6 +219,10 @@ connected. See [Transport Networks](transport-networks.md).
 - The Data Handler's menu buttons work through `/trigger ra.dh.action` and `/trigger ra.edit_type`,
   the Wrench menu through `/trigger ra.wrench`; these triggers are only enabled while you hold the
   tool (and for a short while after).
+- A Goggles Lens helmet that is switched on carries `custom_data` `{ra:{goggles:1b,lensed:1b}}`,
+  the same `goggles` flag as the Goggles, so the Goggles check finds it at no extra cost; switched
+  off it carries `{ra:{lensed:1b}}`. The lens menu is `/trigger ra.goggles` (1 menu, 2 switch,
+  3 remove), enabled for anyone wearing a lensed helmet.
 - Goggles labels are `text_display` entities tagged `ra.billboard` (an item filter is an
   `item_display` with the same tag), one per block: the lines are joined into one text, drawn
   from 0.3 above the block's top face upward. During a redraw a block marker carries the tag

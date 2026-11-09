@@ -1,6 +1,7 @@
 package ra.advancements
 
 import io.github.ayfri.kore.arguments.types.resources.ItemArgument
+import io.github.ayfri.kore.features.advancements.AdvancementFrameType
 import io.github.ayfri.kore.generated.Items
 import ra.advancements.Flag.ONE
 import ra.advancements.Flag.TRUE
@@ -21,6 +22,10 @@ internal val coreTree = listOf(
 	),
 	egg("ra", "clipboard", "Clipboard", Items.PAPER, ONE, item = Items.PAPER),
 	egg("ra", "multimeter", "Multimeter", Items.CLOCK, ONE, item = Items.CLOCK),
+	Unlock(
+		"ra/get_goggles_lens", "ra", Items.SPYGLASS, "Every Helmet Sees", "Craft a Goggles Lens: any helmet it is fitted to works as Goggles.",
+		"get_goggles_lens", Items.FIREWORK_STAR, Match.Partial(raData("goggles_lens", TRUE)), frame = AdvancementFrameType.GOAL,
+	),
 )
 
 /** The example multiblock: a path rather than a fan, each step the parent of the next. */
@@ -72,6 +77,12 @@ internal val wirelessTree = listOf(
 		"ra_wireless/get_pager", "ra_wireless", Items.ECHO_SHARD, "Pager", "Obtain the Pager.", "get_pager",
 		Items.BLAZE_ROD, Match.Partial(raData("pager", TRUE)),
 	),
+)
+
+internal val enchantingTree = listOf(
+	category("ra_enchanting", Items.ENCHANTING_TABLE, "Enchant Crafting", "Move, raise and gamble enchantments.", "get_enchanting_item", Items.ENCHANTING_TABLE),
+	egg("ra_enchanting", "disenchanter", "Disenchanter", Items.CRYING_OBSIDIAN, TRUE),
+	egg("ra_enchanting", "book_upgrader", "Book Upgrader", Items.LAPIS_BLOCK, TRUE),
 )
 
 /** `criterion` is `get_sensor_item` here too: the tab was copied from Sensors and kept the name. */

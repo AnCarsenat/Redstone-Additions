@@ -110,7 +110,7 @@ internal fun DataPack.registerUninstallConfirm() {
 		// Usage Meter's pulse put-out.
 		schedules { clear(Readout.run) }
 		schedules { clear(UsageMeter.pulseOff) }
-		// The machine clock (Tesla Coil, Spout, Gas Vent...), scheduled only while one of them is loaded.
+		// The machine clock (Tesla Coil, Spout, Gas Vent, Water Wheel), scheduled only while one of them is loaded.
 		schedules { clear(MachineClock.run) }
 
 		PLAYER_TAGS.forEach { t -> tag(allPlayers()) { remove(t) } }

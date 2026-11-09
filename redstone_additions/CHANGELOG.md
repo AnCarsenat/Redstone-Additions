@@ -97,6 +97,14 @@
   from four iron ingots, four iron bars, a copper grate and redstone. Oxygen and Toxic Gas have no
   source in survival yet (the Chemistry module will make them); the Creative Fluid Source now
   cycles through both.
+- **Water Wheel** (Transport Networks). An EU generator turned by flowing water. Its wheel turns
+  facing you as you place it, and the eight blocks around the hub in the wheel's plane are where
+  its paddles dip: each one holding flowing or falling water (not a source block) adds
+  *eu_per_block* EU per tick (default 5, so 5 to 40 EU/t; admin only, default on the settings
+  page), day and night. The wheel is drawn with block displays and turns smoothly while water
+  flows, faster with three or more flowing blocks, and stops where it is when the water does.
+  The Goggles show what it is doing, the flowing water it finds, what it makes and the grid's EU.
+  It holds 1000 EU. Crafted from four spruce slabs, four sticks, a copper block and redstone.
 
 - **Elevator** (Interactive Machines). Stand on it and jump to go up, or sneak to go down, to the
   next Elevator straight above or below in the same column, at most *range* blocks away (2 to 64,

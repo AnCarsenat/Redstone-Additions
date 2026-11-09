@@ -17,6 +17,7 @@ import ra.core.ref
 import ra.core.registeredLine
 import ra.modules.wires.blocks.electric_furnace.ElectricFurnace
 import ra.modules.wires.blocks.electric_generator.ElectricGenerator
+import ra.modules.wires.blocks.water_wheel.WaterWheel
 import ra.modules.wires.common.Common
 import ra.modules.wires.machine.MachineClock
 import ra.modules.wires.readout.Readout
@@ -105,6 +106,7 @@ object Placement : PackPart {
 
 			executeRun("""if data storage ra:wires spec{marker:"electric_generator"}""", ElectricGenerator.refreshDisplay)
 			executeRun("""if data storage ra:wires spec{marker:"electric_furnace"}""", ElectricFurnace.refreshDisplay)
+			executeRun("""if data storage ra:wires spec{marker:"water_wheel"}""", WaterWheel.setup)
 
 			function(Common.updateModelLocalAndNeighbors)
 		}
@@ -156,6 +158,7 @@ object Placement : PackPart {
 				"Tesla Coil",
 				"Spout",
 				"Gas Vent",
+				"Water Wheel",
 			)) registeredLine(name)
 		}
 	}

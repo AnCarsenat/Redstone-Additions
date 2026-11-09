@@ -110,4 +110,5 @@ internal val wiresTree = listOf(
 	egg("ra_wires", "spout", "Spout", Items.WAXED_EXPOSED_COPPER_GRATE, ONE),
 	egg("ra_wires", "tesla_coil", "Tesla Coil", Items.LIGHTNING_ROD, ONE),
 	egg("ra_wires", "usage_meter", "Usage Meter", Items.CLOCK, TRUE),
+	egg("ra_wires", "water_wheel", "Water Wheel", Items.STRIPPED_SPRUCE_LOG, TRUE),
 )

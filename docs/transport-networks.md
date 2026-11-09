@@ -1,7 +1,7 @@
 # Transport Networks
 
 Pipes for liquids and gases, wires for electricity (EU), and the machines that fill, store and use
-them: pumps, tanks, spouts, gas vents, boilers, generators, solar panels, batteries, an electric furnace, lights
+them: pumps, tanks, spouts, gas vents, boilers, generators, solar panels, water wheels, batteries, an electric furnace, lights
 and a tesla coil.
 
 ![An EU grid running](images/screenshots/Electricity.png)
@@ -36,6 +36,7 @@ and a tesla coil.
 | Tesla Coil | ![Tesla Coil recipe](images/recipes/ra_wires/tesla_coil.png){ width="220" } |
 | Spout | ![Spout recipe](images/recipes/ra_wires/spout.png){ width="220" } |
 | Gas Vent | ![Gas Vent recipe](images/recipes/ra_wires/gas_vent.png){ width="220" } |
+| Water Wheel | ![Water Wheel recipe](images/recipes/ra_wires/water_wheel.png){ width="220" } |
 
 Operators: the **Wires Bundle** (`/function ra:items/bundles/give_wires_bundle`) has everything;
 `/function ra_wires:items/give_creative` gives the two creative sources.
@@ -58,6 +59,7 @@ capacity:
 | Liquid Tank, Gas Tank | 100000 mL (20 buckets) |
 | Wire, EU Switch, EU Breaker, Industrial Light, Tesla Coil | 0 EU |
 | EU Generator, EU Consumer, Solar Panel, Electric Furnace | 50 EU |
+| Water Wheel | 1000 EU |
 | **Battery** | 10000 EU |
 
 Fluids are measured in millilitres: **a bucket is 5000 mL**.
@@ -218,6 +220,7 @@ proportional share — 250 mL of a 3-minute Strength potion is 45 seconds. The l
 | --- | --- |
 | **EU Generator** | 60 EU per tick. Burns **steam** from a network, or solid fuel (coal etc.) put into it — it opens like a chest |
 | **Solar Panel** | 10–50 EU per tick from sky light: most at noon, less at night, in rain, under a roof or snow |
+| **Water Wheel** | 5 EU per tick for each block of flowing water around its paddles, up to 40, day and night ([Water Wheel](#water-wheel)) |
 | **Boiler** | Not power itself: turns 1000 mL of water into 1000 mL of steam every second |
 
 **Steam power chain:**
@@ -229,6 +232,26 @@ water network → Boiler (over a heat source) → steam network → EU Generator
 The Boiler needs one of these under it: lava, fire, soul fire, magma block, campfire, soul
 campfire, lava cauldron. It sits **between** the water pipe and the steam pipe and is not part of
 either.
+
+### Water Wheel
+
+A **Water Wheel** makes EU from flowing water. Its wheel turns **facing you** as you place it
+(its axle points the way you look), so put it where a current runs across your view.
+
+- The eight blocks around the hub in the wheel's plane (above, below, either side and the four
+  corners) are where its paddles dip. Each one holding **flowing or falling water** adds
+  *eu_per_block* EU per tick (default 5): one block makes 5 EU/t, all eight 40 EU/t. A still
+  source block turns nothing: the wheel needs a current, such as water running off a source or a
+  waterfall onto the paddles.
+- It works day and night, and puts each second's EU on the grid at once.
+- The wheel turns smoothly while water flows, faster with three or more flowing blocks, and stops
+  where it is when the water does. It keeps turning when the grid is full (the Goggles then say
+  `Grid full`).
+- *eu_per_block* is for admins only (1 to 1000); the default for new wheels is in the
+  [Server Settings](settings.md).
+- The Goggles show `Turning`, `No flowing water` or `Grid full`, how many flowing water blocks it
+  found, what it makes and the grid's EU. The splash at its foot follows each player's particle
+  setting.
 
 ### Using power
 
@@ -410,13 +433,23 @@ you extend it.
   with a new epoch, and a meter seeing a different epoch counts from 0. A count reaching
   1000000000 is lowered by that much by the meter reading it, and the others add it back.
   Properties: `mode` (`consumed` / `produced`), `every` (1–100000000), `total` (read only).
-- **Machine clock** (`ra_wires:machine/*`): the Tesla Coil, the Spout and the Gas Vent act once a second, on a
+- **Machine clock** (`ra_wires:machine/*`): the Tesla Coil, the Spout, the Gas Vent and the Water Wheel act once a second, on a
   clock scheduled every 20 ticks only while a marker tagged `ra.wires.clocked` is loaded; their only
   per-tick work is the break check. Tesla Coil properties: `radius` (1–16, admin 32), `damage`
   (1–40) and `eu_per_zap` (1–100000), both admin only. Status `data.status.coil`, `last_hits`.
   Targets are the entity type tag `#ra_wires:tesla_targets`; another pack adds a mob to it to make
   it a target. Spout status `data.status.spout_state`. Gas Vent properties: `radius` (1–8,
   admin 16) and `rate` (100–100000 mL/s, admin only); status `data.status.vent_state`, `vented`.
+- **Water Wheel** (`ra_wires:blocks/water_wheel/*`): property `eu_per_block` (1–1000, admin
+  only); status `data.status.wheel`, `water`, `output` (EU/t), `accepted`. The marker's facing
+  (placed with dir 3) is the axle: north or south turns the wheel in the X-Y plane, anything else
+  in the Y-Z plane, and the hub log's `axis` is set to match. The wheel is sixteen block displays
+  at the marker (`ra.wires.water_wheel`, `ra.wires.water_wheel.arm<0-7>`: a spoke and a slab
+  paddle per arm). Turning is one `data merge` of `transformation.left_rotation` per arm each
+  second, by 22.5 or 45 degrees, with `interpolation_duration` 20 so the client spreads it over
+  the second; the translation only runs along the axle, so every point of an arm moves on a
+  circle. `data.data.spin` (0–15) is the wheel's position, `data.data.axis` the axle vector. A
+  wheel found without its displays rebuilds them on its next run; breaking it removes them.
 - **Gas effects** (`storage ra:wires gas_effects`): what a Gas Vent does with each gas, keyed by
   medium, each entry `{effect, seconds, amplifier}` (all three required; amplifier 0 is level I),
   given with `effect give` to every living entity within the vent's radius each second it vents.

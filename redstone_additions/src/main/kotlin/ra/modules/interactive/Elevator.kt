@@ -1,5 +1,6 @@
 package ra.modules.interactive
 
+import io.github.ayfri.kore.commands.function
 import io.github.ayfri.kore.functions.Function
 import io.github.ayfri.kore.generated.Blocks
 import io.github.ayfri.kore.generated.Items
@@ -10,13 +11,11 @@ import ra.core.Ns
 import ra.core.Obj
 import ra.core.Ra
 import ra.core.block.CustomBlock
-import ra.core.block.STONE_BREAK_SOUND
 import ra.core.block.Unlock
 import ra.core.block.blockOnBreak
 import ra.core.block.breakCheck
 import ra.core.block.dropItem
 import ra.core.block.finishPlacement
-import ra.core.block.forEachMarker
 import ra.core.block.gogglesHeader
 import ra.core.block.particleViewersSel
 import ra.core.block.placeBlock
@@ -27,9 +26,7 @@ import ra.core.block.shapedRecipe
 import ra.core.block.soundListenersSel
 import ra.core.block.stackedPropLine
 import ra.core.blockRegisterMessage
-import ra.core.callWith
 import ra.core.define
-import ra.core.executeReturnRun
 import ra.core.executeRun
 import ra.core.item.loreItem
 import ra.core.item.loreLine
@@ -40,25 +37,24 @@ import ra.core.raw
  * Elevator: stand on it and jump to go up, sneak to go down, to the next Elevator straight above
  * or below in the same column, at most `range` blocks away.
  *
- * WHAT IT COSTS WHILE NOBODY RIDES IT. One `@a` box test per Elevator per tick (the block above
- * it). Everything else -- the range, the game time, the column search -- runs only for a player
- * standing in that box. Nothing walks every player of the server: a player is only ever looked at
- * from the Elevator they stand on.
+ * DRIVEN FROM THE PLAYER, NOT FROM THE BLOCK. The idle cost is two `@a` score filters per tick,
+ * however many Elevators a world holds: the players who jumped since the last tick
+ * (`minecraft.jump` statistic) and the players who sneaked during it (`minecraft.sneak_time`, which
+ * counts every tick spent sneaking). Both scores are zeroed as they are read. Only for those players
+ * is an Elevator looked for, as a marker right under their feet.
  *
- * HOW A JUMP AND A SNEAK ARE SEEN. The jump is the `minecraft.custom:minecraft.jump` statistic,
- * zeroed every tick the rider is seen, so any value above 0 is a jump since the last tick. The
- * sneak is the `ra:is_sneaking` predicate against the rider's flag from the last tick, so only
- * pressing sneak moves you, not holding it. A player who was not on an Elevator the tick before
- * (`ra.elev.t`, the game time they were last seen on one) is only synced: a jump taken elsewhere,
- * or arriving while sneaking, never fires.
+ * A SNEAK RIDES ON THE PRESS, NOT WHILE HELD. A held sneak shows up every tick; the game time of
+ * the last tick a player was seen sneaking (`ra.elev.sn`) tells a press (not seen the tick before)
+ * from a hold. Walking onto an Elevator while sneaking is a hold, so it does not ride either.
  */
 object Elevator {
 	val block = CustomBlock(Ns.INTERACTIVE, "elevator", "Elevator", model = "minecraft:white_wool")
 	val item = block.loreItem { lore(loreLine("Jump to go up, sneak to go down", "gray")) }
 	val registerBlock = block.fn("register_block")
-	private val check = block.fn("check")
-	private val rider = block.fn("rider")
-	private val fresh = block.fn("fresh")
+	private val jumped = block.fn("jumped")
+	private val sneaked = block.fn("sneaked")
+	private val ride = block.fn("ride")
+	private val fromMarker = block.fn("from_marker")
 	private val goUp = block.fn("go_up")
 	private val goDown = block.fn("go_down")
 	private val arrive = block.fn("arrive")
@@ -77,22 +73,22 @@ object Elevator {
 	/** The jump statistic. */
 	private const val JUMP = "ra.elev.jump"
 
-	/** The game time the player was last seen on an Elevator. */
-	private const val SEEN = "ra.elev.t"
+	/** The sneak-time statistic: ticks spent sneaking. */
+	private const val SNEAK_TIME = "ra.elev.sneak"
 
-	/** 1 when the player was sneaking the last time they were seen on an Elevator. */
+	/** The game time the player was last seen sneaking. */
 	private const val SNEAK = "ra.elev.sn"
 
 	/** The game time before which the player may not ride again. */
 	private const val READY = "ra.elev.cd"
 
-	/** On the Elevator whose riders are being handled, for the riders' own column test. */
-	private const val HERE = "ra.elevator.here"
+	/** On the player being carried, while the Elevator under them reads its range. */
+	private const val RIDER = "ra.elev.rider"
 
 	/** The objectives, added by the module's load. */
 	val objectives = listOf(
 		"$JUMP minecraft.custom:minecraft.jump",
-		"$SEEN dummy",
+		"$SNEAK_TIME minecraft.custom:minecraft.sneak_time",
 		"$SNEAK dummy",
 		"$READY dummy",
 	)
@@ -123,9 +119,10 @@ object Elevator {
 			gogglesHeader(block, nameY = 1.0)
 			stackedPropLine("range", "Range: ", "aqua", " blocks")
 		}
-		pack.define(check) { check() }
-		pack.define(rider) { rider() }
-		pack.define(fresh) { fresh() }
+		pack.define(jumped) { jumped() }
+		pack.define(sneaked) { sneaked() }
+		pack.define(ride) { ride() }
+		pack.define(fromMarker) { fromMarker() }
 		pack.define(goUp) { search("~-0.5 ~0.5 ~-0.5", "up") }
 		pack.define(goDown) { search("~-0.5 ~-1.5 ~-0.5", "down") }
 		pack.define(arrive) { arrive() }
@@ -134,61 +131,61 @@ object Elevator {
 
 		pack.define(block.tick) {
 			breakCheck(block, Blocks.WHITE_WOOL, onBreak)
-			forEachMarker(block, check)
+			// The whole idle cost of riding: two score filters, independent of the Elevator count.
+			executeRun("as @a[scores={$JUMP=1..}] at @s", jumped)
+			executeRun("as @a[scores={$SNEAK_TIME=1..}] at @s", sneaked)
 		}
 	}
 
-	/** One Elevator. As its marker, at its block. */
-	private fun Function.check() {
-		// The block above it, the only place a rider stands. The idle cost of the whole block.
-		raw("execute positioned ~-0.5 ~0.5 ~-0.5 unless entity @a[dx=0,dy=0,dz=0,gamemode=!spectator,limit=1] run return 0")
+	/** A player jumped since the last tick. As the player, at them. */
+	private fun Function.jumped() {
+		raw("scoreboard players set @s $JUMP 0")
+		raw("scoreboard players set #dir $T 1")
+		function(ride)
+	}
 
+	/** A player sneaked during the last tick. As the player, at them. Rides on a press only. */
+	private fun Function.sneaked() {
+		raw("scoreboard players set @s $SNEAK_TIME 0")
+		raw("execute store result score #now $T run time query gametime")
+		raw("scoreboard players operation #prev $T = #now $T")
+		raw("scoreboard players remove #prev $T 1")
+		raw("scoreboard players set #held $T 0")
+		raw("execute if score @s $SNEAK = #prev $T run scoreboard players set #held $T 1")
+		raw("scoreboard players operation @s $SNEAK = #now $T")
+		raw("execute if score #held $T matches 1 run return 0")
+		raw("scoreboard players set #dir $T -1")
+		function(ride)
+	}
+
+	/**
+	 * `#dir` 1 up, -1 down: ride from the Elevator under the player, if there is one. As the player,
+	 * at them.
+	 *
+	 * UNDER THE FEET, IN THIS COLUMN. From the centre of the player's block column, 0.9 below their
+	 * feet, an Elevator marker within 0.5 is the block they stand on: feet from its top (y+1) up to
+	 * 0.9 above it, which covers the tick or two of a jump before it is seen. The marker of the
+	 * column next door is at least 1 away, and an Elevator one block lower at least 0.6.
+	 */
+	private fun Function.ride() {
+		raw("execute if entity @s[gamemode=spectator] run return 0")
+		raw("execute store result score #now $T run time query gametime")
+		raw("execute if score @s $READY > #now $T run return 0")
+		raw("tag @s add $RIDER")
+		executeRun("align xz positioned ~0.5 ~-0.9 ~0.5 as @e[type=marker,tag=${block.tag},distance=..0.5,limit=1] at @s", fromMarker)
+		raw("tag @s remove $RIDER")
+	}
+
+	/** The Elevator under a rider: hand its range to the search. As its marker, at its block. */
+	private fun Function.fromMarker() {
 		// The column search's box heights: blocks y+1..y+range above, y-range..y-1 below.
 		readCappedProperty("range", default = DEFAULT_RANGE, min = 2, adminMax = ADMIN_MAX_RANGE)
 		raw("execute store result storage ra:interactive elev.up int 1 run scoreboard players remove #prop $T 1")
 		raw("execute store result storage ra:interactive elev.down int -1 run scoreboard players get #prop $T")
-
-		raw("tag @s add $HERE")
-		executeRun("positioned ~-0.5 ~0.5 ~-0.5 as @a[dx=0,dy=0,dz=0,gamemode=!spectator] positioned ~0.5 ~-0.5 ~0.5", rider)
-		raw("tag @s remove $HERE")
+		raw("execute if score #dir $T matches 1 as @a[tag=$RIDER,distance=..3,limit=1] run return run ${macroCall(goUp)} with storage ra:interactive elev")
+		raw("execute as @a[tag=$RIDER,distance=..3,limit=1] run ${macroCall(goDown)} with storage ra:interactive elev")
 	}
 
-	/** A player in the box above an Elevator. As the player, at the Elevator's block. */
-	private fun Function.rider() {
-		// THE BOX IS NOT THE COLUMN. A player's hitbox reaches 0.3 past their feet, so a player
-		// standing on the block next door is in this box too. Their own block column must hold
-		// this Elevator: from the block their feet are in, two blocks down (feet at y+1 standing,
-		// up to y+2 at the top of a jump).
-		raw("execute at @s align xyz positioned ~ ~-2 ~ unless entity @e[type=marker,tag=$HERE,dx=0,dy=1,dz=0,limit=1] run return 0")
-
-		raw("execute store result score #now $T run time query gametime")
-		// Handled already this tick (two Elevators side by side both see a player on the seam).
-		raw("execute if score @s $SEEN = #now $T run return 0")
-		raw("scoreboard players operation #prev $T = #now $T")
-		raw("scoreboard players remove #prev $T 1")
-		executeReturnRun("unless score @s $SEEN = #prev $T", fresh)
-		raw("scoreboard players operation @s $SEEN = #now $T")
-
-		// What the player asks for: a sneak pressed since the last tick goes down, a jump goes up.
-		raw("scoreboard players set #dir $T 0")
-		raw("execute store success score #sn $T if predicate ra:is_sneaking")
-		raw("execute if score #sn $T matches 1 unless score @s $SNEAK matches 1 run scoreboard players set #dir $T -1")
-		raw("scoreboard players operation @s $SNEAK = #sn $T")
-		raw("execute if score @s $JUMP matches 1.. run scoreboard players set #dir $T 1")
-		raw("scoreboard players set @s $JUMP 0")
-
-		raw("execute if score #dir $T matches 0 run return 0")
-		raw("execute if score @s $READY > #now $T run return 0")
-		raw("execute if score #dir $T matches 1 run return run ${macroCall(goUp)} with storage ra:interactive elev")
-		callWith(goDown, "storage ra:interactive elev")
-	}
-
-	/** First tick on an Elevator: remember, do not act. As the player. */
-	private fun Function.fresh() {
-		raw("scoreboard players operation @s $SEEN = #now $T")
-		raw("scoreboard players set @s $JUMP 0")
-		raw("execute store success score @s $SNEAK if predicate ra:is_sneaking")
-	}
 
 	/**
 	 * Macro `{up}` or `{down}`: the nearest Elevator marker in this column, above or below. As the

@@ -56,7 +56,7 @@ This page mirrors key datapack milestones from the main project changelog.
   default 16; admins up to 384). You land on top of it facing the same way, if the two blocks above
   it are free. Pressing sneak rides once, holding it does not keep going down. Teleport sound and
   particles follow each player's settings. Crafted from eight white wool around an ender pearl,
-  two per craft. An Elevator only checks the block above itself for a player.
+  two per craft. Only players who jump or sneak are checked, so idle Elevators cost nothing.
 
 - **Trash Can** (Interactive Machines). A barrel that destroys whatever enters it: items put in by
   hand, pushed in by a hopper, an Item Pipe or an Item Mover, and dropped items landing on top of

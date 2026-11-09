@@ -214,12 +214,13 @@ then change the row. The [Goggles](tools.md) show the current values.
 - **Magic Crate.** Skips items with a permanent pickup delay. The radius is capped at 64 (the
   admin ceiling) when used, since an unlimited radius would be a world-wide entity scan; the
   players' 20 is checked when the radius is written, so an admin's larger radius stays.
-- **Elevator.** Each Elevator tests only the block above it for a player, once a tick. A jump is
-  the `minecraft.jump` statistic (`ra.elev.jump`), a sneak the `ra:is_sneaking` predicate against
-  last tick's state (`ra.elev.sn`); a player who was not on an Elevator the tick before
-  (`ra.elev.t`, game time) is only synced, so a jump taken elsewhere never fires. The next floor is
-  the nearest Elevator marker in a `dx=0,dz=0` box above or below, not a block scan. 6 ticks
-  between rides (`ra.elev.cd`).
+- **Elevator.** Driven from the player, not the block: each tick only the players who jumped
+  (`minecraft.jump` statistic, `ra.elev.jump`) or sneaked (`minecraft.sneak_time`, `ra.elev.sneak`)
+  since the last one are looked at, and both scores are zeroed as they are read, so the cost does
+  not grow with the number of Elevators. For those players, an Elevator is the marker right under
+  their feet in their own block column. A sneak rides only when the player was not sneaking the
+  tick before (`ra.elev.sn`, game time). The next floor is the nearest Elevator marker in a
+  `dx=0,dz=0` box above or below, not a block scan. 6 ticks between rides (`ra.elev.cd`).
 - **Trash Can.** A barrel, emptied every tick it has a first item (`data remove block ~ ~ ~ Items`),
   and it kills the item entities in the one block above it (`dx=0`), except items with a permanent
   pickup delay (display items). It ticks after the Item Pipe and the Item Mover, so what they push

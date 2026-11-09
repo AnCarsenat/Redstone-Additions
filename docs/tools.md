@@ -86,7 +86,7 @@ Shift + right-click a block to open its settings in chat.
 | **[Clear]** | On a list whose positions matter (a Teleport Anchor's strengths): empty that entry, the others stay put |
 | **[Add]** | Add an entry at the end of a list, also an empty one: you write it in the book, and it is checked like the others. Greyed out once the list is full ("Maximum N entries" on hover) |
 | **[Choose]** | Pick an entry from a list of known values (a Teleport Anchor's destinations: every anchor named so far) |
-| **[Edit whole list]** | Write the whole list at once, like `["A","B","C"]` |
+| **[List]** | Write the whole list at once, like `["A","B","C"]` |
 | **[Set from hand]** | For item settings (an Item Pipe filter): use the item you are holding |
 | **[Clear]** | On item settings: set no item (removes an Item Pipe filter) |
 | **[Cancel Input]** | Abandon an edit you started |
@@ -103,7 +103,7 @@ entry must be of the list's type. A refused value leaves the block unchanged and
 A list looks like this (a Teleport Anchor):
 
 ```
-  targets: list (15/15)  [Edit whole list]
+  targets: list (15/15)  [List]
     Strength 1: Mine  [Choose] [Edit] [Clear]
     Strength 2: (empty)  [Choose] [Edit]
 ```
@@ -111,7 +111,7 @@ A list looks like this (a Teleport Anchor):
 and like this for a list that grows (a Tag Adder's tags, at most 16), with its count in the header:
 
 ```
-  tags: list (2/16) [Add] [Edit whole list]
+  tags: list (2/16) [Add] [List]
     Tag 1: custom_tag  [Edit] [Remove]
     Tag 2: red_team  [Edit] [Remove]
 ```

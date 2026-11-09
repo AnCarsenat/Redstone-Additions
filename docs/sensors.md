@@ -49,7 +49,7 @@ The Tag Adder and Tag Remover each take a list of up to 16 tags, `tags`; a new b
 one, `custom_tag`. In the [Data Handler](tools.md) it is shown one entry per line under a header
 that counts them, `tags: list (1/16)`: **[Edit]** changes an entry, **[Remove]** deletes it,
 **[Add]** asks for a new one and puts it at the end (also on an empty list; greyed out, with
-"Maximum 16 entries" on hover, once the list is full), and **[Edit whole list]** takes the whole
+"Maximum 16 entries" on hover, once the list is full), and **[List]** takes the whole
 list at once, written like `["red_team","in_zone"]`. A new entry is checked like the others
 before it is added. Like the selector, the list is changed
 by admins only unless *Players may edit entity selectors and tags* is on.

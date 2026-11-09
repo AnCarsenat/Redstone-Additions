@@ -36,7 +36,7 @@ internal object PropRows {
 	fun Ra.registerPropRows() {
 		row(rowNumber, head(), """{text:"number",color:"aqua"}""", """{text:" "}""", button("[Modify]", "Type a new number"))
 		row(rowBool, head(), """{text:"bool",color:"aqua"}""", """{text:" "}""", button("[Toggle]", "Flip this flag"))
-		row(rowList, head(), """{text:"list",color:"aqua"}""", """{text:" "}""", button("[Edit list]", "Write the whole list, e.g. [\\\"A\\\",\\\"B\\\"]"))
+		row(rowList, head(), """{text:"list",color:"aqua"}""", """{text:" "}""", button("[List]", "Write the whole list, e.g. [\\\"A\\\",\\\"B\\\"]"))
 		// (The quotes are escaped for the SNBT string they sit in. Unescaped, they ended the hover
 		// text early, the game refused the whole tellraw, and no list row was ever shown.)
 		row(rowString, head(), """{text:"string",color:"aqua"}""", """{text:" "}""", button("[Modify]", "Write new text in the input book"))

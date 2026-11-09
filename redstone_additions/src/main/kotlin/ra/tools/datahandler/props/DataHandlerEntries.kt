@@ -23,11 +23,11 @@ import ra.tools.tool
  * THE LIST EDITOR: one sub-row per entry of a declared list, each with its own buttons.
  *
  * ```
- *   targets: list (15/15)  [Edit whole list]
+ *   targets: list (15/15)  [List]
  *     Strength 1: B   [Choose] [Edit] [Clear]
  *     Strength 2: (empty)   [Choose] [Edit]
  *
- *   tags: list (1/16) [Add] [Edit whole list]
+ *   tags: list (1/16) [Add] [List]
  *     Tag 1: custom_tag   [Edit] [Remove]
  * ```
  *
@@ -109,7 +109,7 @@ object DataHandlerEntries {
 		"""{text:"$label",color:"$color",click_event:{action:"run_command",command:"/trigger ra.dh.action set $($action)"},hover_event:{action:"show_text",value:"$hover"}}"""
 
 	private const val HEAD = """{text:"  "},{text:"$(name)",color:"white"},{text:"$(note)",color:"dark_gray",italic:true},{text:": ",color:"white"},{text:"list",color:"aqua"},{text:" ($(count)) ",color:"gray"}"""
-	private val WHOLE = btn("[Edit whole list]", "yellow", "whole", "Write the whole list at once, in the input book")
+	private val WHOLE = btn("[List]", "yellow", "whole", "Write the whole list at once, in the input book")
 
 	private const val ENTRY = """{text:"    "},{text:"$(label)$(n)",color:"gray"},{text:": ",color:"dark_gray"}"""
 	private const val VALUE = """{nbt:"lw[0]",storage:"ra:dh",color:"green"},{text:"  "}"""
@@ -210,7 +210,7 @@ object DataHandlerEntries {
 		}
 		pack.define(entriesNext) {
 			raw("execute unless data storage ra:dh lw[0] run return 0")
-			raw("""execute if score #dh.j $T matches $MAX_ENTRIES.. run return run tellraw @s [{text:"    … more entries: use [Edit whole list].",color:"gray",italic:true}]""")
+			raw("""execute if score #dh.j $T matches $MAX_ENTRIES.. run return run tellraw @s [{text:"    … more entries: use [List].",color:"gray",italic:true}]""")
 			raw("data modify storage ra:dh ee set from storage ra:dh eq")
 			raw("scoreboard players operation #dh.n $T = #dh.j $T")
 			raw("scoreboard players add #dh.n $T 1")
@@ -344,8 +344,8 @@ object DataHandlerEntries {
 				for (w in words) raw("""execute if score #dh.et $T matches 2 if data storage ra:dh q{text:"$w"} run scoreboard players set #dh.bool $T $v""")
 			raw("execute if score #dh.et $T matches 2 if score #dh.bool $T matches 1 run data modify storage ra:dh elem set value 1b")
 			raw("execute if score #dh.et $T matches 2 if score #dh.bool $T matches 0 run data modify storage ra:dh elem set value 0b")
-			fail("if score #dh.et $T matches 3", """[$PREFIX,{text:"This entry is itself a list or a compound: use [Edit whole list].",color:"red"}]""")
-			fail("if score #dh.et $T matches 5", """[$PREFIX,{text:"This entry is itself a list or a compound: use [Edit whole list].",color:"red"}]""")
+			fail("if score #dh.et $T matches 3", """[$PREFIX,{text:"This entry is itself a list or a compound: use [List].",color:"red"}]""")
+			fail("if score #dh.et $T matches 5", """[$PREFIX,{text:"This entry is itself a list or a compound: use [List].",color:"red"}]""")
 			executeReturnRun("", commit, "with storage ra:dh q")
 		}
 

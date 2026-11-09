@@ -66,7 +66,7 @@ A pad that sends you to another anchor. Each anchor has a **name** (`anchor_id`)
 2. On `Home`, the Data Handler lists the fifteen strengths:
 
     ```
-    targets: list (15/15)  [Edit whole list]
+    targets: list (15/15)  [List]
       Strength 1: (empty)  [Choose] [Edit]
       Strength 2: (empty)  [Choose] [Edit]
       …

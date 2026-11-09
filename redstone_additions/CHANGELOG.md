@@ -102,6 +102,9 @@
 
 ### Changed
 
+- **List buttons read [Add] [List].** [Add] types one new entry; [List] (was "[Edit whole list]")
+  writes the whole list at once in the input book.
+
 - **Tag Adders and Tag Removers placed from now on start with `tags: ["custom_tag"]`**, a list
   of one tag, instead of `tag: "custom_tag"`. Blocks you already placed are converted when the
   world loads: their tag becomes the list's one entry (`tag: "red_team"` becomes
@@ -133,7 +136,7 @@ predicates built when the pack is generated. Worlds on v6.0.0 carry on without a
 - **Lists are edited one entry at a time.** In the Data Handler a list shows each entry on its
   own line with **[Edit]** (type a new value for that entry) and **[Remove]**, and the list
   itself has **[Append]** (greyed out once the list is at its maximum length) next to
-  **[Edit whole list]**. On a list whose positions mean something, such as a Teleport Anchor's
+  **[List]**. On a list whose positions mean something, such as a Teleport Anchor's
   fifteen strengths, **[Remove]** is **[Clear]**: the slot is emptied and the others stay where
   they are. Every entry is checked against the list's type before it is written.
 - **Pick a Teleport Anchor's destination by name.** Every anchor remembers its name in a shared
@@ -397,7 +400,7 @@ predicates built when the pack is generated. Worlds on v6.0.0 carry on without a
   edit. The value is written to the block it was asked about, it is refused if you selected a
   different block since, and the read-only check runs again just before the write.
 
-- **[Edit list] checks what you typed.** Anything that parsed was stored as is, so typing
+- **[List] checks what you typed.** Anything that parsed was stored as is, so typing
   `{a:1}` into a Teleport Anchor's targets replaced its table with something the anchor could
   not read. The text must now be a list, every entry must be text when the property holds text,
   and a Teleport Anchor's targets take at most 15 entries, padded with empty rows as
@@ -466,7 +469,7 @@ predicates built when the pack is generated. Worlds on v6.0.0 carry on without a
   own selected block (the same one the Data Handler uses), and the `/data` commands its buttons
   suggest name that block by number, so they still reach it when typed later.
 
-- **Teleport Anchor targets show in the Data Handler.** The [Edit list] row's hover text broke
+- **Teleport Anchor targets show in the Data Handler.** The [List] row's hover text broke
   the chat message, so no list setting was ever shown and the anchor's table could not be
   edited from the menu.
 

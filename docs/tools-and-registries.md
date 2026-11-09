@@ -125,7 +125,7 @@ declares for you). `ra/core/Properties.kt` holds the builder.
 | `text(name)` | string | the book; stored as typed, never parsed |
 | `item(name)` | string (item id) | the book, or **[Set from hand]** |
 | `text(name, TextFormat.SELECTOR)` | string in a [format](#text-formats) | the book, checked against the format |
-| `list(name, of = PropType.TEXT, max = 15, pad = true)` | list | one row per entry ([Edit], [Remove]/[Clear]), **[Add]** until `max` entries, and **[Edit whole list]** |
+| `list(name, of = PropType.TEXT, max = 15, pad = true)` | list | one row per entry ([Edit], [Remove]/[Clear]), **[Add]** until `max` entries, and **[List]** |
 | `textList(name, max, pad, format, choices = "ra:ender" to "anchor_ids", entryLabel = "Strength ")` | list of text | the same, with **[Choose]** from `storage <choices>` and entries labelled *Strength 1…* |
 | `dynamic(name)` | read from the block instance | — (see below) |
 

@@ -5,7 +5,7 @@
 <h1 align="center">Redstone Additions</h1>
 
 <p align="center">
-  <strong>70 custom blocks. 7 tools. 80 recipes. 2 jetpacks and 3 upgrade kits. Vanilla datapack for Minecraft 26.3.</strong>
+  <strong>72 custom blocks. 7 tools. 82 recipes. 2 jetpacks and 3 upgrade kits. Vanilla datapack for Minecraft 26.3.</strong>
 </p>
 
 <p align="center">
@@ -16,9 +16,9 @@
 <p align="center">
   <img src="https://img.shields.io/badge/Minecraft-26.3-2EA44F" alt="Minecraft 26.3">
   <img src="https://img.shields.io/badge/Version-v6.0.3-blue" alt="Version v6.0.3">
-  <img src="https://img.shields.io/badge/Blocks-70-red" alt="70 blocks">
+  <img src="https://img.shields.io/badge/Blocks-72-red" alt="72 blocks">
   <img src="https://img.shields.io/badge/Tools-7-lightgrey" alt="7 tools">
-  <img src="https://img.shields.io/badge/Recipes-80-8A2BE2" alt="80 recipes">
+  <img src="https://img.shields.io/badge/Recipes-82-8A2BE2" alt="82 recipes">
 </p>
 
 <p align="center">
@@ -134,7 +134,7 @@ listed A to Z and grouped by module.
 - Wireless Emitter
 - Wireless Receiver
 
-### Transport Networks (21)
+### Transport Networks (23)
 
 Fluids, in millilitres:
 
@@ -160,6 +160,11 @@ Electricity, in EU:
 - Solar Panel
 - Industrial Light — redstone plus EU, a 10 block beam of real light
 - Electric Furnace — smelts on EU with no fuel, four power modes
+
+Reading a network with redstone:
+
+- Network Gauge — redstone 0-15 from how full the network behind it is
+- Usage Meter — a pulse every N mL or EU used or made, and a running total
 
 Creative, for building and testing:
 

@@ -27,7 +27,9 @@ import ra.modules.wires.blocks.liquid_pipe.LiquidPipe
 import ra.modules.wires.blocks.liquid_pump.LiquidPump
 import ra.modules.wires.blocks.liquid_tank.LiquidTank
 import ra.modules.wires.blocks.liquid_valve.LiquidValve
+import ra.modules.wires.blocks.network_gauge.NetworkGauge
 import ra.modules.wires.blocks.solar_panel.SolarPanel
+import ra.modules.wires.blocks.usage_meter.UsageMeter
 import ra.modules.wires.bridge.Bridge
 import ra.modules.wires.common.Common
 import ra.modules.wires.debug.Debug
@@ -48,6 +50,7 @@ import ra.modules.wires.fluid.Source
 import ra.modules.wires.liquid.Liquid
 import ra.modules.wires.liquid.LiquidBreak
 import ra.modules.wires.media.Media
+import ra.modules.wires.readout.Readout
 
 /**
  * Transport Networks (`ra_wires`): fluid pipes and tanks, electric wires and machines, and the
@@ -55,7 +58,8 @@ import ra.modules.wires.media.Media
  * them. The networks themselves are `ra_lib:transport`; this module is the blocks on top.
  *
  * Layout mirrors the generated paths: `blocks/<block>/` per block, `fluid/`, `electric/`,
- * `liquid/` (break handling), `bridge/`, `media/`, `common/` (display models), `debug/`.
+ * `liquid/` (break handling), `bridge/`, `media/`, `common/` (display models), `debug/`,
+ * `readout/` (the slow clock of the gauge and meter).
  * Items, recipes and the give bundle are one data table in [WiresBlocks].
  */
 object WiresModule : GameplayModule {
@@ -72,6 +76,7 @@ object WiresModule : GameplayModule {
 		ElectricFurnace, ElectricFurnaceSettings, ElectricFurnaceSmelting, ElectricGenerator,
 		ElectricSwitch, ElectricWire, GasPump, GasTank, GasValve, IndustrialLight, LiquidDrain,
 		LiquidFilter, LiquidPipe, LiquidPump, LiquidTank, LiquidValve, SolarPanel,
+		Readout, NetworkGauge, UsageMeter,
 	)
 
 	override fun Ra.register() {

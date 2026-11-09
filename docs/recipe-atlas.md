@@ -1,6 +1,6 @@
 # Recipe Atlas
 
-Every recipe in the pack, in one place: 80 of them.
+Every recipe in the pack, in one place: 82 of them.
 
 !!! tip "Finding one"
     Use the search box with the item's name — every recipe below is indexed by
@@ -76,6 +76,7 @@ what the pack actually contains rather than what someone remembered to add.
 | [Nether Core](#not-crafted-won-on-an-enchanting-table) | [Infinite Generators](infinite-generators.md) | Enchanting table |
 | [Nether Generator](#infinite-generators) | [Infinite Generators](infinite-generators.md) | Crafting table, shapeless |
 | [Netherite Multiblock Base](#multiblocks) | [Multiblocks](multiblocks.md) | Crafting table |
+| [Network Gauge](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
 | [Player Detector](#sensors) | [Sensors](sensors.md) | Crafting table |
 | [Poppy Core](#not-crafted-won-on-an-enchanting-table) | [Infinite Generators](infinite-generators.md) | Enchanting table |
 | [Poppy Generator](#infinite-generators) | [Infinite Generators](infinite-generators.md) | Crafting table, shapeless |
@@ -94,6 +95,7 @@ what the pack actually contains rather than what someone remembered to add.
 | [Trash Can](#interactive-machines) | [Interactive Machines](interactive-machines.md) | Crafting table |
 | [Unboxer](#storage) | [Storage](storage.md) | Crafting table |
 | [UNI Gate](#logic-gates) | [Logic Gates](logic-gates.md) | Crafting table |
+| [Usage Meter](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
 | [Weather Sensor](#sensors) | [Sensors](sensors.md) | Crafting table |
 | [Wire](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
 | [Wireless Emitter](#wireless-redstone) | [Wireless Redstone](wireless-redstone.md) | Crafting table |
@@ -251,7 +253,9 @@ Module page: [Transport Networks](transport-networks.md) — give everything: `/
 | **Liquid Pump** | ![Liquid Pump recipe](images/recipes/ra_wires/liquid_pump.png){ width="220" } | Crafting table | `ra_wires:liquid_pump` |
 | **Liquid Tank** | ![Liquid Tank recipe](images/recipes/ra_wires/liquid_tank.png){ width="220" } | Crafting table | `ra_wires:liquid_tank` |
 | **Liquid Valve** | ![Liquid Valve recipe](images/recipes/ra_wires/liquid_valve.png){ width="220" } | Crafting table | `ra_wires:liquid_valve` |
+| **Network Gauge** | ![Network Gauge recipe](images/recipes/ra_wires/network_gauge.png){ width="220" } | Crafting table | `ra_wires:network_gauge` |
 | **Solar Panel** | ![Solar Panel recipe](images/recipes/ra_wires/solar_panel.png){ width="220" } | Crafting table | `ra_wires:solar_panel` |
+| **Usage Meter** | ![Usage Meter recipe](images/recipes/ra_wires/usage_meter.png){ width="220" } | Crafting table | `ra_wires:usage_meter` |
 | **Wire** | ![Wire recipe](images/recipes/ra_wires/electric_wire_copper.png){ width="220" } | Crafting table | `ra_wires:electric_wire_copper` |
 
 ## Wireless Redstone

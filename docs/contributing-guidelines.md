@@ -24,8 +24,9 @@
 6. [New block checklist](#new-block-checklist)
 7. [Multiblock checklist](#multiblock-checklist)
 8. [Migrations](#migrations)
-9. [Before opening a pull request](#before-opening-a-pull-request)
-10. [Block template](#block-template)
+9. [Branches, issues and pull requests](#branches-issues-and-pull-requests)
+10. [Before opening a pull request](#before-opening-a-pull-request)
+11. [Block template](#block-template)
 
 ---
 
@@ -344,6 +345,58 @@ once per world, at load. Both must be safe to run twice. See [Architecture](arch
 
 A default a block legitimately needs at read time (a property a player can clear, a value read
 with a fallback) is not a migration and stays where it is read.
+
+## Branches, issues and pull requests
+
+The project follows a GitHub flow with one release branch per version.
+
+**Branches**
+
+| Branch | What it holds | Who merges into it |
+| --- | --- | --- |
+| `main` | the last released version, always releasable | only the release PR |
+| `release/X.Y.Z` | everything planned for the next version (`planning/vX.Y.Z-*.md`) | feature and fix PRs |
+| `feat/<issue>-<slug>`, `fix/<issue>-<slug>`, `docs/<slug>`, `chore/<slug>` | one issue's work | — |
+
+- Start every piece of work from an **issue**: one issue per planned item or bug, labelled
+  (`enhancement`, `bug`, `documentation`, …) and put in the version's **milestone** (`vX.Y.Z`).
+- Branch from the release branch: `git switch -c feat/123-counter-gate origin/release/6.0.3`.
+- Keep a branch to one issue. Small, focused PRs review and merge faster and conflict less.
+- Never rewrite pushed history (`rebase`, `push --force`) on a shared branch. To catch up with the
+  release branch, merge it into yours: `git merge origin/release/X.Y.Z`.
+- Changelog entries go under the release's `## [vX.Y.Z] - Unreleased` heading; conflicts there
+  are resolved by keeping both sides under one heading.
+
+**Pull requests**
+
+1. Open a PR from the work branch **into the release branch** (not `main`). Title in
+   conventional-commit form (`feat(gates): counter gate`), body with `Closes #<issue>`, what
+   changed, how it was checked, and the checklist below.
+2. A review pass before merging: read the diff for bugs, run `./gradlew koreBuild` (strict, with
+   every build check). Fix what the review finds on the same branch.
+3. Merge with a **merge commit** (`gh pr merge <n> --merge --delete-branch`), so the history keeps
+   every commit and the issue closes when the release reaches `main`.
+4. After merging, build into a test world (`./gradlew koreRun -Pworld`) and play it.
+
+**Releasing** (see [Release and Versioning](release.md) for the version bump)
+
+1. On the release branch: bump `version`, date the changelog heading
+   (`## [vX.Y.Z] - <date> - <title>`), update the version in the prose docs.
+2. A final review of the whole release diff (`git diff origin/main...release/X.Y.Z`); blockers are
+   fixed on the release branch, anything else goes into the next version's plan.
+3. Open the release PR `release/X.Y.Z` → `main`, merge it with a merge commit.
+4. Tag the merge commit `vX.Y.Z` and push the tag: the publish workflow builds and uploads to
+   Modrinth. Then create the GitHub Release from the changelog section, which posts the Discord
+   announcement.
+5. Delete the release branch. Open `release/X.Y.(Z+1)` from `main` when the next version starts.
+
+**Work in progress across sessions**
+
+Long plans are tracked in `planning/vX.Y.Z-progress.md`: one line per item with its issue, branch,
+PR and state (`todo`, `in progress`, `in review`, `merged`). Update it whenever a PR merges, so
+the work can stop at any point and resume from the file alone.
+
+---
 
 ## Before opening a pull request
 

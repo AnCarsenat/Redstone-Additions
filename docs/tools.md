@@ -48,6 +48,7 @@ What Shift + right-click does depends on the block:
 | Creative Fluid Source | fluid |
 | Ender Item / Fluid / Power Vault | mode |
 | Weather Sensor | mode (rain / thunder / day / night) |
+| Held Item Detector | slot (mainhand / offhand / either / inventory) |
 
 ## Goggles
 

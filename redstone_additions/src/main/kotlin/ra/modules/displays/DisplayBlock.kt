@@ -35,6 +35,10 @@ interface DisplayBlock {
  * LIT FROM THE INSIDE. A display takes its light from the block it stands in, and these stand
  * inside a solid block: without `brightness` they render black. Every display here is fully lit.
  *
+ * `block_state:{id:"..."}`. Since 26.3 a block display's state is `{id, properties}` (or a bare
+ * id string); the old `{Name:"..."}` fails to decode, the game only logs "Serialization errors"
+ * and the display shows air. Replace the whole `block_state`, never one key of it.
+ *
  * TAGS. `ra` (the uninstall and purge), `ra.display`, and one tag per part, so a block reaches
  * its own displays with `distance=..0.01` and a neighbour's (a block away) are never touched.
  */

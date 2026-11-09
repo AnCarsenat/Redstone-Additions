@@ -207,7 +207,7 @@ object TextScreen : DisplayBlock {
 	private fun Function.summon() {
 		raw("kill @e[tag=$TAG,distance=..0.01]")
 		summonDisplay("block_display", listOf(TAG, PANEL_TAG),
-			"""block_state:{Name:"minecraft:black_concrete"},transformation:{$ROT,translation:[-0.4375f,-0.4375f,0.5f],scale:[0.875f,0.875f,0.03125f]}""", rotated = true)
+			"""block_state:{id:"minecraft:black_concrete"},transformation:{$ROT,translation:[-0.4375f,-0.4375f,0.5f],scale:[0.875f,0.875f,0.03125f]}""", rotated = true)
 		summonDisplay("text_display", listOf(TAG, TEXT_TAG),
 			"""text:"",background:0,shadow:1b,line_width:75,alignment:"center",transformation:{$ROT,translation:[0f,-0.056f,0.54f],scale:[0.45f,0.45f,0.45f]}""", rotated = true)
 		raw("data remove entity @s data.data.shown")

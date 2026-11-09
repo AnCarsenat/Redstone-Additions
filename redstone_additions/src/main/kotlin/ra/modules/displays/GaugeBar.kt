@@ -186,9 +186,9 @@ object GaugeBar : DisplayBlock {
 		executeRun("unless entity $FILL", summon)
 		raw("data modify entity @s data.data.style set from entity @s data.properties")
 
-		raw("""data modify entity $FILL block_state.Name set value "minecraft:${COLORS.first()}_concrete"""")
+		raw("""data modify entity $FILL block_state set value {id:"minecraft:${COLORS.first()}_concrete"}""")
 		for (c in COLORS.drop(1)) {
-			raw("""execute if data entity @s data.properties{color:"$c"} run data modify entity $FILL block_state.Name set value "minecraft:${c}_concrete"""")
+			raw("""execute if data entity @s data.properties{color:"$c"} run data modify entity $FILL block_state set value {id:"minecraft:${c}_concrete"}""")
 		}
 
 		// The fill's length along the bar is left at 0 here and set by show.
@@ -207,9 +207,9 @@ object GaugeBar : DisplayBlock {
 		raw("kill @e[tag=$TAG,distance=..0.01]")
 		val rot = "left_rotation:[0f,0f,0f,1f],right_rotation:[0f,0f,0f,1f]"
 		summonDisplay("block_display", listOf(TAG, TRACK_TAG),
-			"""block_state:{Name:"minecraft:gray_concrete"},transformation:{$rot,translation:[-0.4375f,-0.125f,0.5f],scale:[0.875f,0.25f,0.03125f]}""", rotated = true)
+			"""block_state:{id:"minecraft:gray_concrete"},transformation:{$rot,translation:[-0.4375f,-0.125f,0.5f],scale:[0.875f,0.25f,0.03125f]}""", rotated = true)
 		summonDisplay("block_display", listOf(TAG, FILL_TAG),
-			"""block_state:{Name:"minecraft:${COLORS.first()}_concrete"},interpolation_duration:$GROW,transformation:{$rot,translation:[-0.40625f,-0.09375f,0.5f],scale:[0f,0.1875f,0.0625f]}""", rotated = true)
+			"""block_state:{id:"minecraft:${COLORS.first()}_concrete"},interpolation_duration:$GROW,transformation:{$rot,translation:[-0.40625f,-0.09375f,0.5f],scale:[0f,0.1875f,0.0625f]}""", rotated = true)
 	}
 
 	/** Once a second, as the marker at its block: redraw if a display is gone or the properties changed. */

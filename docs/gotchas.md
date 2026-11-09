@@ -216,3 +216,17 @@ The reverse trap: `interpret:true` on an `nbt` text component does **not** parse
 1.21.5 it decodes the stored tag as a component directly, so the string `{text:'x',click_event:…}`
 shows as exactly those characters. Only a stored compound is rich text. A player who can only
 write strings cannot add a click event through it.
+
+## A block display's `block_state` is `{id:…}` since 26.3
+
+**Symptom:** a `block_display` is summoned (the selector finds it, its transformation is right)
+but nothing is drawn. The game log has `[EntityType] Serialization errors: Failed to decode value
+'{Name:"minecraft:gray_concrete"}' from field 'block_state' … No key id`.
+
+**Cause:** 26.3 reads `block_state` as a block id string or `{id:"…",properties:{…}}`. The
+pre-26.3 `{Name:"…",Properties:{…}}` no longer decodes, the field falls back to air, and the
+command still succeeds. The emulator accepts the old shape too, so only the game log shows it
+(the Gauge Bar and the Text Screen's panel shipped invisible in an early 6.0.3 build this way).
+
+**Fix:** write `block_state:{id:"minecraft:…"}`, and change it by replacing the whole field
+(`data modify entity … block_state set value {id:"…"}`) rather than one key inside it.

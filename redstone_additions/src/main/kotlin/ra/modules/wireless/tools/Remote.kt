@@ -2,9 +2,6 @@ package ra.modules.wireless.tools
 
 import io.github.ayfri.kore.arguments.components.matchers.customData
 import io.github.ayfri.kore.arguments.types.literals.self
-import io.github.ayfri.kore.commands.function
-import io.github.ayfri.kore.commands.returnValue
-import io.github.ayfri.kore.commands.scoreboard.scoreboard
 import io.github.ayfri.kore.commands.tag
 import io.github.ayfri.kore.features.advancements.advancement
 import io.github.ayfri.kore.features.advancements.criteria
@@ -20,7 +17,6 @@ import io.github.ayfri.kore.features.recipes.types.pattern
 import io.github.ayfri.kore.generated.Items
 import io.github.ayfri.kore.utils.nbt
 import io.github.ayfri.kore.utils.set
-import ra.api.RaLib
 import ra.core.Ns
 import ra.core.Obj
 import ra.core.Ra
@@ -39,7 +35,6 @@ import ra.core.block.shapedRecipe
 import ra.core.block.recipeResult
 import ra.core.block.Unlock
 import ra.core.executeRun
-import ra.core.executeStoreRun
 import ra.core.block.markerSel
 
 /**
@@ -54,11 +49,8 @@ object Remote {
 
 	val give = fn("give")
 	val onUse = fn("on_use")
-	private val changeChannel = fn("change_channel")
 	private val toggleReceivers = fn("toggle_receivers")
 	private val checkReceiverChannel = fn("check_receiver_channel")
-	val applyPending = fn("apply_pending")
-	private val applyToSlot = fn("apply_to_slot")
 
 	/** Marks a player waiting on a book to name a remote's channel. */
 	const val PENDING = "ra.remote.pending"
@@ -68,6 +60,10 @@ object Remote {
 
 	/** The ra_lib:input request this player opened FOR THE REMOTE, so it never consumes another tool's answer. */
 	const val REQ = "ra.remote.req"
+
+	private val prompt = ChannelPrompt("tools/remote", "Remote", "red", "remote", PENDING, SLOT, REQ)
+	private val changeChannel = prompt.changeChannel
+	val applyPending = prompt.applyPending
 
 	private val buttons = listOf(
 		Items.OAK_BUTTON, Items.SPRUCE_BUTTON, Items.BIRCH_BUTTON, Items.JUNGLE_BUTTON, Items.ACACIA_BUTTON,
@@ -180,105 +176,9 @@ object Remote {
 		registerChannelInput()
 	}
 
-	/**
-	 * Shift+RMB: ask the player for a channel name, then stamp it on the remote.
-	 *
-	 * This used to print a [Set Channel] button that suggested
-	 * `/function ra_wireless:tools/remote/set_channel {channel:"..."}`, which only works for a
-	 * player who can run commands. On a survival server without cheats the remote could never be
-	 * retuned from its default channel at all. It now goes through the shared book input, the same
-	 * way the Data Handler asks for text, so it needs no permissions.
-	 */
+	/** Sneak+RMB: see [ChannelPrompt]. */
 	private fun Ra.registerChannelInput() {
-		pack.define(changeChannel) {
-			raw("data modify storage ra:temp current_channel set from entity @s SelectedItem.components.\"minecraft:custom_data\".ra.channel")
-
-			raw("tellraw @s \"\"")
-			raw("""tellraw @s [{text:"══════ ",color:"dark_gray"},{text:"Set Channel",color:"red",bold:true},{text:" ══════",color:"dark_gray"}]""")
-			raw("""tellraw @s [{text:"Current: ",color:"gray"},{nbt:"current_channel",storage:"ra:temp",color:"yellow"}]""")
-
-			// Remember which hotbar slot the remote is in. The player is holding it right now, which
-			// is the only moment that is reliably true -- once the Input Form book is in hand,
-			// SelectedItem is the book.
-			raw("execute store result score @s $SLOT run data get entity @s SelectedItemSlot")
-
-			// Drop any half-finished request before starting a new one.
-			function(RaLib.Input.cancel)
-
-			scoreboard.players.set(self(), PENDING, 1)
-			function(RaLib.Input.openText)
-			// Which request is ours: the settings menu and the Data Handler share the library.
-			raw("scoreboard players operation @s $REQ = @s ra.input.req")
-
-			raw("playsound minecraft:block.note_block.bell block @s[scores={${Obj.USER_SOUND}=1..}] ~ ~ ~ 0.5 1.2")
-		}
-
-		// Write a finished book input onto the player's remote. As a player with ra.remote.pending set.
-		//
-		// This must NOT require the remote to still be the selected item. Writing in the Input Form
-		// means selecting the book, so a guard on SelectedItem fires the moment the player picks the
-		// book up -- and cancelling the session runs clear_book_req, which deletes the book out of
-		// their hand. That was exactly the "book disappears when I switch to it" behaviour.
-		//
-		// The remote's hotbar slot is recorded when the prompt opens instead, since the player is
-		// necessarily holding it at that point. The session TTL still collects a request the player
-		// abandons.
-		pack.define(applyPending) {
-			// A cancelled session (the player dropped the form) never becomes ready, so stop waiting
-			// for it. `submit` clears ra.input.active but leaves state at 2, hence the second
-			// condition -- without it a finished input would be discarded here on the very tick it
-			// became available.
-			raw("execute unless entity @s[tag=ra.input.active] unless score @s ra.input.state matches 2 run scoreboard players set @s $PENDING 0")
-			raw("execute unless entity @s[tag=ra.input.active] unless score @s ra.input.state matches 2 run return 0")
-
-			// Not our answer. Consuming another tool's session would hand it an empty result; and ours
-			// was cancelled when that one opened, so it is never coming back -- stop waiting for it.
-			raw("execute unless score @s $REQ = @s ra.input.req run scoreboard players set @s $PENDING 0")
-			raw("execute unless score @s $REQ = @s ra.input.req run return 0")
-
-			executeStoreRun("", "#remote_state", RaLib.Input.poll)
-			raw("execute unless score #remote_state ${Obj.TEMP} matches 2 run return 0")
-
-			executeStoreRun("", "#remote_state", RaLib.Input.consume)
-			raw("execute unless score #remote_state ${Obj.TEMP} matches 1 run return 0")
-
-			scoreboard.players.set(self(), PENDING, 0)
-
-			// An empty book leaves the channel alone rather than blanking it.
-			raw("""execute if data storage ra:input consume{text:""} run tellraw @s [{text:"[Remote] ",color:"red"},{text:"No channel entered; left unchanged.",color:"gray"}]""")
-			raw("execute if data storage ra:input consume{text:\"\"} run return 0")
-
-			// The player's text goes into the item via an item modifier reading from storage.
-			// Substituting it into an `item replace ... with blaze_rod[...]` literal instead would let
-			// a book containing a quote character append arbitrary components.
-			raw("data modify storage ra_wireless:remote channel set from storage ra:input consume.text")
-
-			raw("execute store result storage ra_wireless:remote slot int 1 run scoreboard players get @s $SLOT")
-			executeStoreRun("", "#remote_state", applyToSlot, "with storage ra_wireless:remote")
-
-			raw("""execute if score #remote_state ${Obj.TEMP} matches 0 run tellraw @s [{text:"[Remote] ",color:"red"},{text:"Remote moved out of its slot; channel not applied.",color:"gray"}]""")
-			raw("execute if score #remote_state ${Obj.TEMP} matches 0 run return 0")
-
-			raw("data modify storage ra:temp current_channel set from storage ra_wireless:remote channel")
-			raw("""tellraw @s [{text:"[Remote] ",color:"red"},{text:"Channel set to ",color:"gray"},{nbt:"current_channel",storage:"ra:temp",color:"yellow"}]""")
-			raw("playsound minecraft:block.note_block.pling block @s[scores={${Obj.USER_SOUND}=1..}] ~ ~ ~ 0.5 1.5")
-		}
-
-		// Macro {slot}: stamp the channel onto the remote in hotbar slot N. Returns 1 when applied,
-		// 0 when that slot no longer holds a remote.
-		//
-		// The slot is checked rather than trusted: the player had a whole book-writing session in
-		// which to move the item, and stamping the wrong slot would rewrite whatever else ended up
-		// there.
-		pack.define(applyToSlot) {
-			// Matched on the custom_data alone. Adding max_stack_size here would narrow the test to
-			// remotes made since they became unstackable, and one from an older world would silently
-			// fail to take a channel.
-			raw("\$execute unless data entity @s Inventory[{Slot:\$(slot)b,components:{\"minecraft:custom_data\":{ra:{remote:1b}}}}] run return 0")
-
-			raw("\$item modify entity @s hotbar.\$(slot) ra_wireless:set_channel")
-			returnValue(1)
-		}
+		with(prompt) { register() }
 
 		// kept: beet contract. Macro {slot}: stamp the channel onto a remote sitting in hotbar
 		// slot N, unchecked. Nothing in the pack calls it any more.

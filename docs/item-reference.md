@@ -44,6 +44,8 @@ one page, A to Z and by module.
 | ra_sensors:player_detector           | Player Detector           | ![Player Detector recipe](images/recipes/ra_sensors/player_detector.png){ width="220" } |
 | ra_wireless:emitter                  | Wireless Emitter          | ![Wireless Emitter recipe](images/recipes/ra_wireless/emitter.png){ width="220" } |
 | ra_wireless:receiver                 | Wireless Receiver         | ![Wireless Receiver recipe](images/recipes/ra_wireless/receiver.png){ width="220" } |
+| ra_wireless:analog_emitter           | Analog Emitter            | ![Analog Emitter recipe](images/recipes/ra_wireless/analog_emitter.png){ width="220" } |
+| ra_wireless:analog_receiver          | Analog Receiver           | ![Analog Receiver recipe](images/recipes/ra_wireless/analog_receiver.png){ width="220" } |
 | ra_wires:liquid_pipe                 | Copper Pipe               | ![Copper Pipe recipe](images/recipes/ra_wires/liquid_pipe_copper.png){ width="220" } |
 | ra_wires:liquid_tank                 | Liquid Tank               | ![Liquid Tank recipe](images/recipes/ra_wires/liquid_tank.png){ width="220" } |
 | ra_wires:liquid_pump                 | Liquid Pump               | ![Liquid Pump recipe](images/recipes/ra_wires/liquid_pump.png){ width="220" } |
@@ -110,5 +112,6 @@ The Generator Casing and the Cores cannot be placed as blocks.
 | ra     | Clipboard             | `ra:tools/clipboard/give`             | ![Clipboard recipe](images/recipes/ra/clipboard.png){ width="220" } |
 | ra     | Multimeter            | `ra:tools/multimeter/give`            | ![Multimeter recipe](images/recipes/ra/multimeter.png){ width="220" } |
 | ra_wireless | Redstone Remote  | `ra_wireless:tools/remote/give`       | ![Redstone Remote recipe](images/recipes/ra_wireless/remote.png){ width="220" } |
+| ra_wireless | Pager            | `ra_wireless:tools/pager/give`        | ![Pager recipe](images/recipes/ra_wireless/pager.png){ width="220" } |
 | ra_ender    | Anchor Tablet    | `ra_ender:tablet/give`                | ![Anchor Tablet recipe](images/recipes/ra_ender/anchor_tablet.png){ width="220" } |
 

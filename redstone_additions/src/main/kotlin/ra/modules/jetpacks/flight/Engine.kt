@@ -80,7 +80,7 @@ object Engine {
 		tag(self()) { remove(Jp.HOVER_ON) }
 		tag(self()) { remove(Jp.SPEED_ON) }
 		tag(self()) { remove(Jp.ON) }
-		for (obj in listOf(Jp.Y, Jp.X, Jp.Z, Jp.VX, Jp.VZ)) scoreboard.players.reset(self(), obj)
+		for (obj in listOf(Jp.Y, Jp.X, Jp.Z, Jp.VX, Jp.VZ, Jp.RAMP)) scoreboard.players.reset(self(), obj)
 		tag(self()) { remove(Jp.THRUSTING) }
 		for (obj in listOf(Jp.GRAV, Jp.SND, Jp.AIR)) scoreboard.players.reset(self(), obj)
 
@@ -125,6 +125,7 @@ object Engine {
 		tag(self()) { add(Jp.DRY) }
 
 		raw("""title @s actionbar [{text:"Jetpack out of fuel",color:"red"},{text:" — carry coal",color:"gray"}]""")
+		raw(Jp.HOLD_GAUGE)
 		raw("playsound minecraft:block.fire.extinguish player $SELF_IF_SOUND ~ ~ ~ 0.8 0.6")
 	}
 }

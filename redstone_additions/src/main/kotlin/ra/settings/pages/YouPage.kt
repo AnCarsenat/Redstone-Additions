@@ -18,5 +18,10 @@ val YouPage = Page(
 				"you still see one drawn for a nearby player who wants it. " +
 				"The server can also turn previews off for everyone.",
 		),
+		BoolRow(
+			"jpfuel", "Jetpack fuel gauge", Scope.USER, default = 1, obj = Obj.USER_JETPACK_GAUGE,
+			hint = "A fuel bar on the actionbar while you fly a coal-burning jetpack: " +
+				"how much of the burning piece is left, and how much coal you carry.",
+		),
 	),
 )

@@ -80,6 +80,27 @@
   it. Smoke and a hiss follow each player's particle and sound settings. Crafted from six iron
   ingots, a cactus and a barrel. An empty can costs two quick tests a tick.
 
+- **Analog Emitter and Analog Receiver** (Wireless Redstone). Carry a signal strength, 0 to 15,
+  over a channel instead of only on or off. The Analog Emitter sends the strongest signal reaching
+  it; every Analog Receiver on the same channel outputs the strongest level the emitters on it
+  send, on the **target blocks** around it (dust or a comparator next to a target picks it up),
+  and iron blocks around it turn into redstone blocks while the level is above 0. A Wireless
+  Emitter on the channel counts as 15, and a Wireless Receiver turns on while an Analog Emitter on
+  its channel sends 1 or more. The level only travels when an emitter's signal changes, so a still
+  channel costs nothing; receivers check their channel again every two seconds, which picks up a
+  channel changed with the Data Handler. The Goggles show the channel and the level. Crafted like
+  the Wireless Emitter and Receiver, with a comparator (end stone) or a target (amethyst blocks) in
+  the middle.
+
+- **Pager** (Wireless Redstone). Carried anywhere in the inventory or in the offhand, it alerts you
+  when its channel turns on: a title, a chat line and a chime (the chime follows your *Machine
+  sounds* setting). A channel turns on when its first emitter starts sending, a Wireless Emitter
+  being powered or an Analog Emitter going above 0. Right-click shows the channel; Sneak+right-click
+  sets it with an Input Form book, like the Redstone Remote (letters, digits, spaces and
+  `_ . + - : / #`). Nothing runs while channels stay as they are: players are only checked on the
+  tick a channel turns on. Crafted from an amethyst shard, two iron ingots, a note block and
+  redstone.
+
 - **Fan** (Interactive Machines). While powered, pushes dropped items, mobs and players along its
   face through the *range* blocks in front of it (1 to 16, default 8; admins up to 64), at a speed
   set by *strength* (1 to 5, default 2, one block a second per step; admins up to 10). It faces
@@ -87,6 +108,11 @@
   lifts them with Levitation, and spectators and flying creative players are left alone. A wind
   puff follows each player's particle setting. Crafted from four cobblestone, three feathers, a
   dropper and redstone. An unpowered Fan only checks its own block every other tick.
+- **Jetpack fuel gauge.** While an Iron jetpack is in the air, the action bar shows the fuel left
+  in the burning piece as a coloured bar and a percentage, and the coal you carry
+  (`Fuel ▮▮▮▮▮▮▯▯▯▯ 63% · 12 coal`). Green while there is coal to come, then yellow, red under a
+  quarter of the last piece. It waits for the jetpack's other action bar messages instead of
+  overwriting them. Turn it off for yourself with *Jetpack fuel gauge* in Your Preferences.
 - **Anchor Terminal** (Ender Links). A block to choose where to go: stand on it and sneak, and a
   menu opens in chat with its *favourites* (up to 8 anchor names, set with the Data Handler) as
   **[Go]** buttons, and **[Type a destination]**, which asks for any anchor name in the Input Form
@@ -157,6 +183,9 @@
   the characters no longer allowed (`Main base` becomes `Mainbase`); where several anchors shared
   a name (every anchor was `A` until now), the first one loaded keeps it and the others become
   `A_2`, `A_3`, …, each announced in chat, and targets that named it lead to the one that kept it.
+- **Smoother Thruster.** The Thruster Kit's push now builds up over about half a second when you
+  start sprinting in the air and fades the same way when you stop, instead of arriving and
+  vanishing in one tick.
 
 ### Removed
 
@@ -183,6 +212,11 @@
   default water-bottle blue. The colour is now read first.
 
 ### For contributors
+
+- **Channel items share one prompt** (`ra/modules/wireless/tools/ChannelPrompt.kt`). The Redstone
+  Remote's Sneak+right-click book prompt is now a class with one instance per item (its own
+  pending, slot and request objectives), used by the Remote and the Pager; the Remote's functions
+  are generated unchanged. An optional text format refuses a channel the item could not use.
 
 - **A core sanitiser for player input** (`ra_lib:safe/clean`, `ra_lib:safe/number`,
   `ra/lib/safe/SafeClean.kt`). `clean` turns a value into one that is safe to paste in a given

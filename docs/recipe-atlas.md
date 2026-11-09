@@ -1,6 +1,6 @@
 # Recipe Atlas
 
-Every recipe in the pack, in one place: 86 of them.
+Every recipe in the pack, in one place: 89 of them.
 
 !!! tip "Finding one"
     Use the search box with the item's name — every recipe below is indexed by
@@ -14,6 +14,8 @@ what the pack actually contains rather than what someone remembered to add.
 
 | Item | Module | Station |
 | ---- | ------ | ------- |
+| [Analog Emitter](#wireless-redstone) | [Wireless Redstone](wireless-redstone.md) | Crafting table |
+| [Analog Receiver](#wireless-redstone) | [Wireless Redstone](wireless-redstone.md) | Crafting table |
 | [Anchor Tablet](#ender-links) | [Ender Links](ender-links.md) | Crafting table |
 | [Anchor Terminal](#ender-links) | [Ender Links](ender-links.md) | Crafting table |
 | [Battery](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
@@ -81,6 +83,7 @@ what the pack actually contains rather than what someone remembered to add.
 | [Nether Generator](#infinite-generators) | [Infinite Generators](infinite-generators.md) | Crafting table, shapeless |
 | [Netherite Multiblock Base](#multiblocks) | [Multiblocks](multiblocks.md) | Crafting table |
 | [Network Gauge](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
+| [Pager](#wireless-redstone) | [Wireless Redstone](wireless-redstone.md) | Crafting table |
 | [Player Detector](#sensors) | [Sensors](sensors.md) | Crafting table |
 | [Poppy Core](#not-crafted-won-on-an-enchanting-table) | [Infinite Generators](infinite-generators.md) | Enchanting table |
 | [Poppy Generator](#infinite-generators) | [Infinite Generators](infinite-generators.md) | Crafting table, shapeless |
@@ -279,6 +282,9 @@ Module page: [Wireless Redstone](wireless-redstone.md) — give everything: `/fu
 
 | Item | Recipe | Station | Namespace id |
 | ---- | ------ | ------- | ------------ |
+| **Analog Emitter** | ![Analog Emitter recipe](images/recipes/ra_wireless/analog_emitter.png){ width="220" } | Crafting table | `ra_wireless:analog_emitter` |
+| **Analog Receiver** | ![Analog Receiver recipe](images/recipes/ra_wireless/analog_receiver.png){ width="220" } | Crafting table | `ra_wireless:analog_receiver` |
+| **Pager** | ![Pager recipe](images/recipes/ra_wireless/pager.png){ width="220" } | Crafting table | `ra_wireless:pager` |
 | **Redstone Remote** | ![Redstone Remote recipe](images/recipes/ra_wireless/remote.png){ width="220" } | Crafting table | `ra_wireless:remote` |
 | **Wireless Emitter** | ![Wireless Emitter recipe](images/recipes/ra_wireless/emitter.png){ width="220" } | Crafting table | `ra_wireless:emitter` |
 | **Wireless Receiver** | ![Wireless Receiver recipe](images/recipes/ra_wireless/receiver.png){ width="220" } | Crafting table | `ra_wireless:receiver` |

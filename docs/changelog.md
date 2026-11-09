@@ -26,6 +26,15 @@ This page mirrors key datapack milestones from the main project changelog.
 
 ### Added
 
+- **A powered Liquid Drain pours into thin air.** Nothing has to be there already: it pours out
+  of its front, the side it faces, like a dispenser, into air or anything a bucket would
+  wash away (grass, flowers, a snow layer). Water, lava and powder snow come out as one source
+  block for every 5000 mL, the same amount a drain takes in for one. Experience comes out as orbs,
+  potions as a cloud in the potion's own colour, and milk, steam, smoke and oxygen are poured away
+  as white drops, a cloud, smoke or blue mist. In the Nether water evaporates, as from a bucket:
+  each block's worth hisses away and the Goggles say `evaporates`. The Goggles say `pouring`, or why not: `blocked`,
+  `not_enough` (less than a whole block of that fluid), `network_empty`.
+
 - **Show filter previews** (your own settings, `/trigger ra.settings.open`, on by default):
   whether the Goggles draw the item an Item Pipe filters for above its label. A Goggles label is
   one entity that everyone nearby sees, so it cannot be hidden from one player: a pipe draws its
@@ -42,6 +51,14 @@ This page mirrors key datapack milestones from the main project changelog.
   still appears, since it is a warning rather than a greeting.
 - On/off server settings read **on** / **off** in the settings pages and in the confirmation
   message, instead of `1b` / `0b`.
+
+### Changed
+
+- **Liquid Drain `speed` is now `rate`, in mL per second** (5000 by default, one block a second;
+  100 to 100000), and it sets how fast a drain takes in and pours out alike. Existing drains and
+  the server default are converted when the world loads: a speed of 5 becomes a rate of 5000.
+- **Liquid Drains are silent.** They no longer play a bucket sound each time they take in, pour
+  out or empty a container.
 
 ## v6.0.1 (2026-11-08) — Leaner ticks
 

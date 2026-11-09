@@ -125,25 +125,42 @@ The Schematic is a map-like sheet whose tooltip lists the book's enchantments an
 cannot be crafted, and it is not an enchanted book: an anvil, a grindstone or the Disenchanter
 ignores it.
 
+### Setting the Schematic
+
+**Right-click** the printer while holding a Schematic: one Schematic is taken from your hand and
+kept in the printer, which now prints that book. If it already held one, that one comes back to
+you, dropped at your feet. Right-clicking anything else with a Schematic shows a hint.
+
+| To get the Schematic back | |
+| --- | --- |
+| Wrench | A plain right-click with the [Wrench](tools.md) takes it out, on top of the block |
+| Break the printer | It drops with the printer |
+
+A Schematic thrown on the printer is ignored: it only goes in with a right-click.
+
 ### Printing
 
 1. Put a pipe, tank or [Fluid Drain](transport-networks.md#getting-fluid-in-and-out) holding
    **experience** against a side of the printer or under it, as for the Disenchanter.
-2. Drop the **Schematic** and a stack of plain **books** on top.
+2. Set a Schematic (above), then drop a stack of plain **books** on top.
 
 Twice a second, while there are books and experience, one book becomes an enchanted book with the
-Schematic's enchantments. The Schematic stays on the block: pick it up when you have enough copies.
+Schematic's enchantments. The Schematic stays in the printer: print as many copies as you have
+books and experience.
 
 | | |
 | --- | --- |
 | Price | 1000 mL of experience (10 points) per enchantment level of the copy, all at once: Sharpness V costs 5000 mL, Efficiency V + Unbreaking III 8000 mL. Server setting `book_printer_xp` (0 to 100000; 0 makes it free and needs no network) |
 | Not enough | With less than the price in the network nothing is taken, and the book waits |
+| No Schematic | Books wait on the block until one is set |
 | One thing at a time | An enchanted book lying on the printer is drawn before anything is printed, so do not drop books you want to keep while it prints |
 
-Copies and Schematics come out tagged as done: they are not drawn again or printed from until
-someone picks them up and throws them back. The Goggles show what it is doing (`needs a book`,
-`needs liquid experience`, `printed`, `the book crumbled`, `Schematic drawn!`, …) and the last
-price.
+Copies and Schematics come out tagged as done: they are not drawn again or printed on until
+someone picks them up and throws them back. The Goggles show what it is doing
+(`no Schematic: right-click it with one`, `needs liquid experience`, `printed`,
+`the book crumbled`, `Schematic drawn!`, …), the last price, and the stored Schematic's
+enchantments (or `Schematic: none`). The Data Handler shows `schematic` (read-only): whether one is
+set.
 
 ---
 
@@ -195,18 +212,26 @@ level is written by one macro (`book_upgrader/apply`) whose id comes from that s
 
 ### The Book Printer
 
-No properties. Settings `book_printer_chance` (percent, rolled with `random value 1..100`) and
-`book_printer_xp`. A Schematic is `minecraft:paper` with `custom_data`
-`{ra:{schematic:1b,enchantments:{...}}}`: the book's `stored_enchantments`, copied compound to
-compound with `data modify`. They are kept in custom data rather than in an enchantment component
-so that no vanilla block (anvil, grindstone) treats the Schematic as a book. Its lore is written
-when it is drawn, one translated line per enchantment, by `book_printer/lore`, a list of the
-game's enchantment ids written from Kore at build time; the two macros (`lore_one`, `lore_add`)
-receive only those ids and the level as an int. A data pack's own enchantment is printed but shows
-as `+ other enchantments`. The price is one `/compute`, `mul(cost, levels)`, where `levels` adds
-up the levels from the same list (`book_printer/levels`); a data pack's own enchantment counts as
-one level. Experience is paid as for the other blocks (`ra_enchanting:xp/pay`). Status in
-`data.status.state` and `data.status.price`.
+One read-only property, `schematic` (bool: whether one is set). Settings `book_printer_chance`
+(percent, rolled with `random value 1..100`) and `book_printer_xp`. A Schematic is
+`minecraft:paper` with `custom_data` `{ra:{schematic:1b,enchantments:{...}}}`: the book's
+`stored_enchantments`, copied compound to compound with `data modify`. They are kept in custom data
+rather than in an enchantment component so that no vanilla block (anvil, grindstone) treats the
+Schematic as a book. Its lore is written when it is drawn, one translated line per enchantment, by
+`book_printer/lore`, a list of the game's enchantment ids written from Kore at build time; the two
+macros (`lore_one`, `lore_add`) receive only those ids and the level as an int. A data pack's own
+enchantment is printed but shows as `+ other enchantments`.
+
+The Schematic is an endless `consumable` like the [Pattern](automation.md#pattern-data): a
+right-click fires the `using_item` advancement `ra_enchanting:schematic/use`, which walks the
+player's look (`schematic/ray`) and runs `book_printer/insert` as the first Book Printer it enters.
+The whole item is kept in `data.data.item` (count 1) and given back by the wrench
+(`book_printer/eject`) or on break; `data.data.summary` holds the same lore lines, written at
+insert, for the goggles. Printing reads the enchantments from `data.data.item`. The price is one
+`/compute`, `mul(cost, levels)`, where `levels` adds up the levels from the same list
+(`book_printer/levels`); a data pack's own enchantment counts as one level. Experience is paid as
+for the other blocks (`ra_enchanting:xp/pay`). Status in `data.status.state` and
+`data.status.price`.
 
 ### Cost
 

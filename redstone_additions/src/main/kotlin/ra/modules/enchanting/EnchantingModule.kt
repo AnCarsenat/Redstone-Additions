@@ -34,6 +34,7 @@ import ra.modules.enchanting.Disenchanter.registerDisenchanter
 import ra.modules.enchanting.BookUpgrader.registerBookUpgrader
 import ra.modules.enchanting.BookPrinter.registerBookPrinter
 import ra.modules.enchanting.xp.XpPay.registerXpPay
+import ra.modules.enchanting.schematic.Schematic
 
 /**
  * Enchant Crafting (`ra_enchanting`): sacrifice crafting on a vanilla enchanting table.
@@ -114,6 +115,7 @@ object EnchantingModule : GameplayModule {
 		pack.define(load) {
 			scoreboard.objectives.add(CD)
 			scoreboard.objectives.add(SCAN)
+			raw("scoreboard objectives add ${Schematic.USED} dummy")
 			scoreboard.players.set(literal("#scan"), SCAN, 0)
 
 			data(Storage.ENCHANT) { merge(nbt { this["input"] = nbt {}; this["chance"] = 0 }) }

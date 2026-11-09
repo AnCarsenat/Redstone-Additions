@@ -36,9 +36,8 @@ with `pack.hook`.
 
 Structures written in Kotlin describe themselves with a `MultiblockSpec` (`ra/api/MultiblockSpec.kt`)
 and are **compiled when the pack is generated**. Every structure the pack ships is one: the Rock
-Metallic Drill (`modules/multiblock/drills/RockMetallicDrill.kt`) is the small worked example, the
-Blast Forge (`modules/multiblock/blastforge/BlastForge.kt`) a 26-block one, and the Upgrade
-Platform (`modules/multiblock/upgradeplatform/UpgradePlatform.kt`) a non-rotating one.
+Metallic Drill (`modules/multiblock/drills/RockMetallicDrill.kt`) is the small worked example, and
+the Blast Forge (`modules/multiblock/blastforge/BlastForge.kt`) a 26-block one.
 
 **1. The spec**, written once for a structure facing **north**, offsets relative to the base:
 
@@ -178,11 +177,10 @@ compiled-spec dispatchers are queued the same way, just before them.
 
 A shape a block list cannot express can still hook its own `validate`, `setup_type` and
 `check_structure` into the tags with `pack.hook`; such hooks run before the library's `spec/*`
-dispatchers and `generic/*`. None of the pack's structures needs one any more: the Blast Forge
-and the Upgrade Platform, which used to carry hand-written per-facing tables and validators,
-are compiled specs. Their markers kept the same data (`facing`, `inputs`, `outputs`,
-`controls`; `facing:"none"` for the platform), so structures assembled before the change keep
-running and validating.
+dispatchers and `generic/*`. None of the pack's structures needs one any more: the Blast Forge,
+which used to carry hand-written per-facing tables and validators, is a compiled spec. Its
+markers kept the same data (`facing`, `inputs`, `outputs`, `controls`), so forges assembled
+before the change keep running and validating.
 
 ## Bases
 

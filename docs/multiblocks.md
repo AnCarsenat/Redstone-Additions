@@ -33,7 +33,6 @@ each machine below).
 | --- | --- | --- |
 | [Blast Forge](#blast-forge) | Copper | Smelts and recycles using fuel and heat |
 | [Rock Metallic Drill](#rock-metallic-drill) | Copper | Produces Rock in a barrel |
-| [Upgrade Platform](#upgrade-platform) | Netherite | Gambles materials into the next tier |
 
 Wear the [Goggles](tools.md) to see an assembled machine's inputs, outputs and status.
 
@@ -89,28 +88,6 @@ A small copper-tier machine. Side view, drill facing away from you:
 It puts one **Rock** in the barrel every 2 seconds (40 ticks). A redstone block on the side of the
 base opposite the barrel stops it.
 
-## Upgrade Platform
-
-A Netherite Base surrounded by eight **smooth stone** blocks (a flat 3×3).
-
-Drop items on top of it. Every 2 seconds it takes one dropped item and rolls: **10%** chance it
-becomes the next tier, otherwise it is destroyed.
-
-| Input | Becomes |
-| --- | --- |
-| Copper ingot | Iron ingot |
-| Iron ingot | Gold ingot |
-| Gold ingot | Diamond |
-| Diamond | Netherite scrap |
-| Raw copper | Raw iron |
-| Raw iron | Raw gold |
-| Coal | Lapis lazuli |
-| Lapis lazuli | Redstone |
-| Redstone | Emerald |
-| Emerald | Amethyst shard |
-
-A redstone block directly under the Netherite Base locks the platform.
-
 ---
 
 ## Advanced
@@ -125,11 +102,10 @@ A redstone block directly under the Netherite Base locks the platform.
 - Blast Forge heat is the `ra.heat` score on its marker; `ra.mb_timer` paces machines.
 - The structure registry and each type's rotated block and IO lists live in
   `storage ra:multiblock types.<id>`; the checks themselves are predicates,
-  `ra_lib_multiblock:structure/<id>/<facing>` (`structure/upgrade_platform` for the platform).
+  `ra_lib_multiblock:structure/<id>/<facing>`.
 - Bricks are the block tag `#ra_multiblock:blast_forge_bricks`.
 - If a machine will not assemble: check there is exactly one base in the middle, the structure
   matches block for block, and nothing else is assembled at the same spot. To see which block is
   wrong, run `/tag @s add ra.debug`, then
   `/execute positioned <base x y z> run function ra_lib_multiblock:spec/<id>/debug/<facing>`
-  (`<id>` is `blast_forge`, `rock_metallic_drill` or `upgrade_platform`; the platform's facing is
-  `none`). While you have the `ra.debug` tag, a machine that falls apart reports the same way.
+  (`<id>` is `blast_forge` or `rock_metallic_drill`). While you have the `ra.debug` tag, a machine that falls apart reports the same way.

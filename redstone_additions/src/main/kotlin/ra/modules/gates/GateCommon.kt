@@ -17,9 +17,12 @@ import ra.core.block.forEachMarker
 import ra.core.block.gogglesHeader
 import ra.core.block.outputShell
 import ra.core.block.propLine
+import ra.core.block.targetPowerFill
+import ra.core.Ns
 import ra.core.Obj
 import ra.core.define
 import ra.core.raw
+import ra.core.ref
 
 /**
  * Pieces every `ra_gates` block shares: the redstone read that ignores the output shell
@@ -72,6 +75,43 @@ internal fun Function.pulseCancel() {
 	raw("tag @s remove $PULSING")
 	raw("tag @s remove $PULSE_ENDING")
 }
+
+/*
+ * ANALOG OUTPUT (Signal Calculator, Sequencer): the target blocks of the 3x3x3 cube carry the
+ * level as their `power` state, the same mechanism as the Light Sensor (see [targetPowerFill]).
+ */
+
+/** `ra_gates:analog_output {level}`: every target block in the cube gets `power=level`. As the marker, at it. */
+internal val analogOutput = ref(Ns.GATES, "analog_output")
+
+/** Where [analogShell] passes the level to [analogOutput]. */
+private const val ANALOG_ARGS = "gate_out"
+
+internal fun DataPack.defineAnalogOutput() = define(analogOutput) {
+	// Macro {level}: only ever the integer [analogShell] stored from a score.
+	raw("\$" + targetPowerFill(1, "\$(level)"))
+}
+
+/** Set the target shell to the score `<holder> ra.temp` (0-15). As the marker, at it. */
+internal fun Function.analogShell(holder: String) {
+	raw("execute store result storage ra:temp $ANALOG_ARGS.level int 1 run scoreboard players get $holder ${Obj.TEMP}")
+	raw("function ${analogOutput.asId()} with storage ra:temp $ANALOG_ARGS")
+}
+
+/**
+ * `blocks/<id>/on_break` of the analog gates: [timingOnBreak], and the target shell back to 0 so
+ * a broken gate does not leave a level standing.
+ */
+internal fun DataPack.analogOnBreak(block: CustomBlock, breakSound: String): FunctionArgument = blockOnBreak(
+	block,
+	drop = { dropBlockItem(block, tagged = false) },
+	sound = breakSound,
+	cloud = true,
+	afterVanillaKill = {
+		outputShell(on = false)
+		raw(targetPowerFill(1, "0"))
+	},
+)
 
 /** `ra_lib:redstone/detect_switch` with the shell ignored. Sets `ra.powered` on @s. */
 internal fun Function.detectSwitchIgnoringShell() {

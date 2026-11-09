@@ -10,6 +10,8 @@ import ra.core.ref
 import ra.modules.sensors.EntityDetector.registerEntityDetector
 import ra.modules.sensors.LightSensor.registerLightSensor
 import ra.modules.sensors.WeatherSensor.registerWeatherSensor
+import ra.modules.sensors.HeldItemDetector.registerHeldItemDetector
+import ra.modules.sensors.PlayerDetector.registerPlayerDetector
 import ra.modules.sensors.SensorPoll.registerSensorPoll
 import ra.modules.sensors.SensorPoll.resetFlag
 import ra.modules.sensors.TagAdder.registerTagAdder
@@ -18,7 +20,7 @@ import ra.modules.sensors.SensorTags.registerSensorTags
 import ra.core.moduleLoaded
 import ra.core.raMessage
 
-/** Sensors (`ra_sensors`): entity detection, tag manipulation and world (light, weather) sensing blocks. */
+/** Sensors (`ra_sensors`): entity detection, tag manipulation and world (light, weather) and player (held item, names) sensing blocks. */
 object SensorsModule : GameplayModule {
 	override val ns = Ns.SENSORS
 	override val title = "Sensors"
@@ -37,10 +39,19 @@ object SensorsModule : GameplayModule {
 		registerTagRemover()
 		registerLightSensor()
 		registerWeatherSensor()
+		registerHeldItemDetector()
+		registerPlayerDetector()
 		// After every polled block: one slow clock for all of them.
-		registerSensorPoll(listOf(LightSensor.block to LightSensor.update, WeatherSensor.block to WeatherSensor.update))
+		registerSensorPoll(
+			listOf(
+				LightSensor.block to LightSensor.update, WeatherSensor.block to WeatherSensor.update,
+				HeldItemDetector.block to HeldItemDetector.update, PlayerDetector.block to PlayerDetector.update,
+			),
+		)
 
-		val blocks = listOf(EntityDetector.block, TagAdder.block, TagRemover.block, LightSensor.block, WeatherSensor.block)
+		val blocks = listOf(EntityDetector.block, TagAdder.block, TagRemover.block, LightSensor.block, WeatherSensor.block,
+			HeldItemDetector.block, PlayerDetector.block,
+		)
 
 		pack.define(load) {
 			for (b in blocks) function(b.fn("register_block"))
@@ -58,8 +69,8 @@ object SensorsModule : GameplayModule {
 		}
 
 		bundles += GiveBundle(
-			"sensors", "Sensors Bundle", "Entity detector, tag, light and weather sensor blocks", ns,
-			listOf(EntityDetector.item, TagAdder.item, TagRemover.item, LightSensor.item, WeatherSensor.item).map { it.stackNbt() },
+			"sensors", "Sensors Bundle", "Entity, tag, light, weather, held item and player sensor blocks", ns,
+			listOf(EntityDetector.item, TagAdder.item, TagRemover.item, LightSensor.item, WeatherSensor.item, HeldItemDetector.item, PlayerDetector.item).map { it.stackNbt() },
 		)
 	}
 }

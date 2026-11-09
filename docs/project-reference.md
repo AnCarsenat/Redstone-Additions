@@ -148,7 +148,7 @@ Each module has `<Name>Module.kt` (the `GameplayModule` object: registration ord
 
 | Package | Notable files |
 | --- | --- |
-| `modules/gates` | `Clock.kt` (the reference block), `UniGate.kt`, `Delayer.kt`, `Extender.kt`, `Randomizer.kt`, `Shortener.kt`, `Counter.kt`, `EdgeDetector.kt`, `GateCommon.kt` (`timingOnBreak`, `timingTick`, `gateGoggles`, the output pulse helpers), `debug/` |
+| `modules/gates` | `Clock.kt` (the reference block), `UniGate.kt`, `Delayer.kt`, `Extender.kt`, `Randomizer.kt`, `Shortener.kt`, `Counter.kt`, `EdgeDetector.kt`, `SignalCalculator.kt`, `Sequencer.kt`, `GateCommon.kt` (`timingOnBreak`, `timingTick`, `gateGoggles`, the output pulse helpers, the analog output: `analogShell`, `analogOnBreak`), `debug/` |
 | `modules/wires` | `WiresBlocks.kt` (every item, recipe, bundle, wrench rows, read-only), `blocks/Placement.kt` + `PlacementSpecs.kt` (one shared handler), `blocks/<block>/`, `electric/`, `fluid/`, `liquid/`, `bridge/`, `media/`, `common/` (`Line.kt`, `ConduitModel.kt`), `Lifecycle.kt` |
 | `modules/multiblock` | `blocks/Bases.kt` + `BaseTier.kt`, `blastforge/`, `drills/RockMetallicDrill.kt`, `goggles/ShowIoLabel.kt` |
 | `modules/jetpacks` | `Jp.kt` (identifiers), `Kits.kt`, `kit/` (`FitModifiers.kt` generates `fit_<tier>_<n>`), `flight/`, `mode/` |
@@ -157,7 +157,7 @@ Each module has `<Name>Module.kt` (the `GameplayModule` object: registration ord
 | `modules/chunkloader` | `ChunkLoader.kt` |
 | `modules/interactive` | one file per block (`BlockBreaker.kt`, `BlockPlacer.kt`, `Breeder.kt` + `BreederBreeds.kt`, `ItemPipe.kt` + `ItemPipeTransfer.kt`, `ItemMover.kt` + `ItemMoverIo.kt`, `BigTorch.kt` + `BigTorchSweep.kt`, `Cauldrons.kt`, `MagicCrate.kt`, `MessageBlock.kt`, `Spitter.kt`), `EnchantedCoal.kt`, `InteractiveCommon.kt` |
 | `modules/storage` | `Boxer.kt`, `Unboxer.kt`, `StorageBox.kt` |
-| `modules/sensors` | `EntityDetector.kt`, `TagAdder.kt`, `TagRemover.kt`, `EdgeTrigger.kt`, `LightSensor.kt`, `WeatherSensor.kt`, `SensorPoll.kt` |
+| `modules/sensors` | `EntityDetector.kt`, `TagAdder.kt`, `TagRemover.kt`, `EdgeTrigger.kt`, `LightSensor.kt`, `WeatherSensor.kt`, `HeldItemDetector.kt`, `PlayerDetector.kt`, `SensorPoll.kt` |
 | `modules/wireless` | `Emitter.kt`, `Receiver.kt`, `WirelessCommon.kt`, `tools/Remote.kt` |
 | `modules/ender` | `ItemVault.kt`, `FluidVault.kt`, `PowerVault.kt`, `TeleportAnchor.kt`, `EnderCommon.kt`, `link/Link.kt`, `tools/Anchor.kt`, `debug/` |
 

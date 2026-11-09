@@ -45,6 +45,8 @@ internal val gatesTree = listOf(
 	egg("ra_gates", "shortener", "Shortener", Items.MOSSY_STONE_BRICKS, TRUE),
 	egg("ra_gates", "counter", "Counter", Items.CHISELED_QUARTZ_BLOCK, TRUE),
 	egg("ra_gates", "edge_detector", "Edge Detector", Items.QUARTZ_PILLAR, TRUE),
+	egg("ra_gates", "signal_calculator", "Signal Calculator", Items.QUARTZ_BRICKS, TRUE),
+	egg("ra_gates", "sequencer", "Sequencer", Items.SMOOTH_QUARTZ, TRUE),
 )
 
 internal val sensorsTree = listOf(
@@ -54,6 +56,8 @@ internal val sensorsTree = listOf(
 	egg("ra_sensors", "tag_remover", "Tag Remover", Items.RED_GLAZED_TERRACOTTA, ONE, "Obtain the Tag Remover item."),
 	egg("ra_sensors", "light_sensor", "Light Sensor", Items.DAYLIGHT_DETECTOR, TRUE),
 	egg("ra_sensors", "weather_sensor", "Weather Sensor", Items.LIGHTNING_ROD, TRUE),
+	egg("ra_sensors", "held_item_detector", "Held Item Detector", Items.ITEM_FRAME, TRUE),
+	egg("ra_sensors", "player_detector", "Player Detector", Items.WRITABLE_BOOK, TRUE),
 )
 
 internal val wirelessTree = listOf(

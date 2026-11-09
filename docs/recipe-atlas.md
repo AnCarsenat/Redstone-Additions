@@ -1,6 +1,6 @@
 # Recipe Atlas
 
-Every recipe in the pack, in one place: 73 of them.
+Every recipe in the pack, in one place: 77 of them.
 
 !!! tip "Finding one"
     Use the search box with the item's name — every recipe below is indexed by
@@ -49,6 +49,7 @@ what the pack actually contains rather than what someone remembered to add.
 | [Generator Casing](#infinite-generators) | [Infinite Generators](infinite-generators.md) | Crafting table |
 | [Goggles](#tools) | [Tools](tools.md) | Crafting table |
 | [Gold Multiblock Base](#multiblocks) | [Multiblocks](multiblocks.md) | Crafting table |
+| [Held Item Detector](#sensors) | [Sensors](sensors.md) | Crafting table |
 | [Industrial Light](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
 | [Infinite Iron Jetpack Kit](#not-crafted-won-on-an-enchanting-table) | [Jetpacks](jetpacks.md) | Enchanting table |
 | [Infinite Lava Cauldron](#interactive-machines) | [Interactive Machines](interactive-machines.md) | Crafting table |
@@ -73,12 +74,15 @@ what the pack actually contains rather than what someone remembered to add.
 | [Nether Core](#not-crafted-won-on-an-enchanting-table) | [Infinite Generators](infinite-generators.md) | Enchanting table |
 | [Nether Generator](#infinite-generators) | [Infinite Generators](infinite-generators.md) | Crafting table, shapeless |
 | [Netherite Multiblock Base](#multiblocks) | [Multiblocks](multiblocks.md) | Crafting table |
+| [Player Detector](#sensors) | [Sensors](sensors.md) | Crafting table |
 | [Poppy Core](#not-crafted-won-on-an-enchanting-table) | [Infinite Generators](infinite-generators.md) | Enchanting table |
 | [Poppy Generator](#infinite-generators) | [Infinite Generators](infinite-generators.md) | Crafting table, shapeless |
 | [Randomizer](#logic-gates) | [Logic Gates](logic-gates.md) | Crafting table |
 | [Redstone Remote](#wireless-redstone) | [Wireless Redstone](wireless-redstone.md) | Crafting table |
 | [Scorch Kit](#jetpacks) | [Jetpacks](jetpacks.md) | Crafting table |
+| [Sequencer](#logic-gates) | [Logic Gates](logic-gates.md) | Crafting table |
 | [Shortener](#logic-gates) | [Logic Gates](logic-gates.md) | Crafting table |
+| [Signal Calculator](#logic-gates) | [Logic Gates](logic-gates.md) | Crafting table |
 | [Solar Panel](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
 | [Spitter](#interactive-machines) | [Interactive Machines](interactive-machines.md) | Crafting table |
 | [Tag Adder](#sensors) | [Sensors](sensors.md) | Crafting table |
@@ -166,7 +170,9 @@ Module page: [Logic Gates](logic-gates.md) — give everything: `/function ra_ga
 | **Edge Detector** | ![Edge Detector recipe](images/recipes/ra_gates/edge_detector.png){ width="220" } | Crafting table | `ra_gates:edge_detector` |
 | **Extender** | ![Extender recipe](images/recipes/ra_gates/extender.png){ width="220" } | Crafting table | `ra_gates:extender` |
 | **Randomizer** | ![Randomizer recipe](images/recipes/ra_gates/randomizer.png){ width="220" } | Crafting table | `ra_gates:randomizer` |
+| **Sequencer** | ![Sequencer recipe](images/recipes/ra_gates/sequencer.png){ width="220" } | Crafting table | `ra_gates:sequencer` |
 | **Shortener** | ![Shortener recipe](images/recipes/ra_gates/shortener.png){ width="220" } | Crafting table | `ra_gates:shortener` |
+| **Signal Calculator** | ![Signal Calculator recipe](images/recipes/ra_gates/signal_calculator.png){ width="220" } | Crafting table | `ra_gates:signal_calculator` |
 | **UNI Gate** | ![UNI Gate recipe](images/recipes/ra_gates/uni_gate.png){ width="220" } | Crafting table | `ra_gates:uni_gate` |
 
 ## Multiblocks
@@ -188,7 +194,9 @@ Module page: [Sensors](sensors.md) — give everything: `/function ra_sensors:it
 | Item | Recipe | Station | Namespace id |
 | ---- | ------ | ------- | ------------ |
 | **Entity Detector** | ![Entity Detector recipe](images/recipes/ra_sensors/entity_detector.png){ width="220" } | Crafting table | `ra_sensors:entity_detector` |
+| **Held Item Detector** | ![Held Item Detector recipe](images/recipes/ra_sensors/held_item_detector.png){ width="220" } | Crafting table | `ra_sensors:held_item_detector` |
 | **Light Sensor** | ![Light Sensor recipe](images/recipes/ra_sensors/light_sensor.png){ width="220" } | Crafting table | `ra_sensors:light_sensor` |
+| **Player Detector** | ![Player Detector recipe](images/recipes/ra_sensors/player_detector.png){ width="220" } | Crafting table | `ra_sensors:player_detector` |
 | **Tag Adder** | ![Tag Adder recipe](images/recipes/ra_sensors/tag_adder.png){ width="220" } | Crafting table | `ra_sensors:tag_adder` |
 | **Tag Remover** | ![Tag Remover recipe](images/recipes/ra_sensors/tag_remover.png){ width="220" } | Crafting table | `ra_sensors:tag_remover` |
 | **Weather Sensor** | ![Weather Sensor recipe](images/recipes/ra_sensors/weather_sensor.png){ width="220" } | Crafting table | `ra_sensors:weather_sensor` |

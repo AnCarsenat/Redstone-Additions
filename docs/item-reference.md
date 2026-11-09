@@ -16,6 +16,8 @@ one page, A to Z and by module.
 | ra_gates:shortener                   | Shortener                 | ![Shortener recipe](images/recipes/ra_gates/shortener.png){ width="220" } |
 | ra_gates:counter                     | Counter                   | ![Counter recipe](images/recipes/ra_gates/counter.png){ width="220" } |
 | ra_gates:edge_detector               | Edge Detector             | ![Edge Detector recipe](images/recipes/ra_gates/edge_detector.png){ width="220" } |
+| ra_gates:signal_calculator           | Signal Calculator         | ![Signal Calculator recipe](images/recipes/ra_gates/signal_calculator.png){ width="220" } |
+| ra_gates:sequencer                   | Sequencer                 | ![Sequencer recipe](images/recipes/ra_gates/sequencer.png){ width="220" } |
 | ra_interactive:block_breaker         | Block Breaker             | ![Block Breaker recipe](images/recipes/ra_interactive/block_breaker.png){ width="220" } |
 | ra_interactive:block_placer          | Block Placer              | ![Block Placer recipe](images/recipes/ra_interactive/block_placer.png){ width="220" } |
 | ra_interactive:item_pipe             | Item Pipe                 | ![Item Pipe recipe](images/recipes/ra_interactive/item_pipe.png){ width="220" } |
@@ -35,6 +37,8 @@ one page, A to Z and by module.
 | ra_sensors:tag_remover               | Tag Remover               | ![Tag Remover recipe](images/recipes/ra_sensors/tag_remover.png){ width="220" } |
 | ra_sensors:light_sensor              | Light Sensor              | ![Light Sensor recipe](images/recipes/ra_sensors/light_sensor.png){ width="220" } |
 | ra_sensors:weather_sensor            | Weather Sensor            | ![Weather Sensor recipe](images/recipes/ra_sensors/weather_sensor.png){ width="220" } |
+| ra_sensors:held_item_detector        | Held Item Detector        | ![Held Item Detector recipe](images/recipes/ra_sensors/held_item_detector.png){ width="220" } |
+| ra_sensors:player_detector           | Player Detector           | ![Player Detector recipe](images/recipes/ra_sensors/player_detector.png){ width="220" } |
 | ra_wireless:emitter                  | Wireless Emitter          | ![Wireless Emitter recipe](images/recipes/ra_wireless/emitter.png){ width="220" } |
 | ra_wireless:receiver                 | Wireless Receiver         | ![Wireless Receiver recipe](images/recipes/ra_wireless/receiver.png){ width="220" } |
 | ra_wires:liquid_pipe                 | Copper Pipe               | ![Copper Pipe recipe](images/recipes/ra_wires/liquid_pipe_copper.png){ width="220" } |

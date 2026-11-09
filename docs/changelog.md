@@ -13,6 +13,17 @@ This page mirrors key datapack milestones from the main project changelog.
   to 0; any other side counts. The Goggles show the count and the target.
 - **Edge Detector** (Logic Gates). Gives a pulse of *pulse* ticks (default 2) when its input turns
   on (*rising*), turns off (*falling*), or both. Shift+RMB with the Wrench cycles the mode.
+- **Signal Calculator** (Logic Gates). Maths on signal strengths: A is the strongest signal on
+  the bottom or sides, B the signal on the top, and the result (0 to 15) is the output. Operations,
+  stepped through with Shift+RMB with the Wrench: *add* (at most 15), *subtract* (at least 0),
+  *max*, *min*, *greater* / *equal* / *less* (15 or 0), *invert* (15 − A). Place **target blocks**
+  around it for the analog output; iron blocks around it turn into redstone blocks while the result
+  is above 0. The Goggles show the operation, A, B and the output.
+- **Sequencer** (Logic Gates). Each input pulse moves it on one step, 1 to *steps* (up to 15,
+  default 4) and round again; redstone on the top resets it. The step number is its output level on
+  the target blocks around it, so one dust line carries the step and a Signal Calculator set to
+  *equal* or a comparator picks one out. Iron blocks around it light on the last step, to chain
+  Sequencers. Shift+RMB with the Wrench adds a step.
 - **Light Sensor** (Sensors). Outputs the light level of the block in front of it as a redstone
   signal of the same strength, 0 to 15, read once a second. It faces the way it was placed, like a
   dispenser, and is itself the source: dust, a repeater or a comparator next to it picks up the
@@ -24,6 +35,21 @@ This page mirrors key datapack milestones from the main project changelog.
   Goggles show the mode and the output. Output as the Entity Detector's: iron blocks around it turn
   into redstone blocks. Read once a second on the same clock as the Light Sensor. Crafted from
   three glass, two redstone, a lightning rod and three copper ingots.
+- **Held Item Detector** (Sensors). Turns on while a player within its *radius* (1 to 16, default
+  5) carries its *item* in the main hand, the offhand, either hand or anywhere in the inventory
+  (*slot*; Shift+right-click with the Wrench steps through them). The item is an id or an item tag
+  (`minecraft:diamond`, `#minecraft:logs`), set with the Data Handler, [Set from hand] included; an
+  id the game does not know detects nothing. Spectators are never counted. Output as the Entity
+  Detector's: iron blocks around it turn into redstone blocks. Read once a second on the world
+  sensors' clock. The Goggles show the item, the slot, the radius and the output. Crafted from five
+  copper ingots, an item frame, an observer and two redstone.
+- **Player Detector** (Sensors). Turns on while a player from its list of names is within its
+  *radius* (1 to 16, default 5). The list holds up to 16 names, edited in the Data Handler like the
+  Tag Adder's tags ([Add], [Edit all], [List]); names are matched exactly, capitals included, and a
+  new detector starts with an empty list. Spectators are never counted. Output as the Entity
+  Detector's. Read once a second on the world sensors' clock. The Goggles show how many names are
+  listed, the radius and the output. Crafted from five copper ingots, a book and quill, an observer
+  and two redstone.
 
 ### Changed
 

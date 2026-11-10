@@ -127,6 +127,9 @@ object Inventory {
 		scoreboard.players.set(len, Obj.TEMP, 0)
 		scoreboard.players.set(max, Obj.TEMP, 27)
 
+		// A shulker box never fits in a shulker box: no room, whatever the slots say.
+		raw("execute if block ~ ~ ~ #minecraft:shulker_boxes if function ${InsertOrDrop.isShulkerProbe.asId()} run return 0")
+
 		// Capacity by container type.
 		for ((block, size) in listOf(Blocks.HOPPER to 5, Blocks.DROPPER to 9, Blocks.DISPENSER to 9)) execute {
 			ifCondition { block(here, block) }

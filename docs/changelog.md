@@ -360,6 +360,23 @@ This page mirrors key datapack milestones from the main project changelog.
   and pumpkin stems, torchflower crops and sweet berry bushes. Redstone locks it. The Goggles show
   its state, the watering, the experience boost and the radius. Crafted from a copper grate, four
   copper ingots and a bucket.
+- **Recipe Pattern** (Automation). A Pattern that makes the Crafter Controller fill the crafter
+  itself: put a container on the Controller's other side, opposite the crafter, and every half
+  second the Controller moves one ingredient from it into each empty slot the Pattern names, then
+  fires the crafter once every slot is right. Only plain items are taken (never a renamed,
+  enchanted or damaged one); a slot holding something else is left alone, and a slot disabled in
+  the crafter is never filled (the Goggles say so when the Pattern needs one). Recorded, cleared and
+  read like a Pattern, and every block that takes Patterns takes it; its data is the Pattern's
+  with `recipe:1b` added. Crafted from three paper and a hopper (makes three).
+- **Item Pipe Splitter** (Automation). Takes the items out of the container above it (a chest, a
+  hopper pointing into it, the end of an Item Pipe) and shares them out between the containers on
+  its four sides and under it, one item at a time and each side in turn. Each side has a share
+  (0 to 16, default 1) in the Data Handler: a side gets that many items in a row before the next
+  side's turn, so 2 and 1 splits two thirds and one third, and 0 switches a side off. A side with
+  no container or no room is skipped (and a shulker box is never sent into a shulker box); items
+  only leave the input once there is room, so none are dropped. 8 items a second by default (Shift+RMB with the Wrench: 2, 4, 8, 16; admins up to 64),
+  on the automation clock; redstone stops it. The Goggles show its state, speed and the items
+  moved. Crafted from a hopper, a comparator and four iron ingots.
 
 ### Changed
 
@@ -476,6 +493,10 @@ This page mirrors key datapack milestones from the main project changelog.
 
 ### Fixed
 
+- **No shulker box into a shulker box.** `ra_lib:inventory/insert_or_drop` drops a shulker box
+  instead of putting it into a shulker box, and `can_accept_one` reports no room for it, as the
+  game itself refuses it. The Uncrafter leaves a shulker box in its input when the container below
+  is a shulker box, instead of passing it on.
 - **The Goggles Lens fits a helmet that has a description of its own.** A helmet with lore (or
   another pack's data) was refused with "That helmet carries a description of its own". The lens
   now fits any helmet, whatever its lore, name, enchantments, trim, damage, dye or other data. The

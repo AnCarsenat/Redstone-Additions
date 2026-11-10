@@ -99,6 +99,7 @@ one page, A to Z and by module.
 | ra_automation:crafter_controller     | Crafter Controller        | ![Crafter Controller recipe](images/recipes/ra_automation/crafter_controller.png){ width="220" } |
 | ra_automation:uncrafter              | Uncrafter                 | ![Uncrafter recipe](images/recipes/ra_automation/uncrafter.png){ width="220" } |
 | ra_automation:experience_absorber    | Experience Absorber       | ![Experience Absorber recipe](images/recipes/ra_automation/experience_absorber.png){ width="220" } |
+| ra_automation:item_pipe_splitter     | Item Pipe Splitter        | ![Item Pipe Splitter recipe](images/recipes/ra_automation/item_pipe_splitter.png){ width="220" } |
 | ra_security:keypad                   | Keypad                    | ![Keypad recipe](images/recipes/ra_security/keypad.png){ width="220" } |
 | ra_farming:sprinkler                 | Sprinkler                 | ![Sprinkler recipe](images/recipes/ra_farming/sprinkler.png){ width="220" } |
 | ra_railworks:route_rail              | Route Rail                | ![Route Rail recipe](images/recipes/ra_railworks/route_rail.png){ width="220" } |
@@ -118,8 +119,9 @@ one page, A to Z and by module.
 | ra_interactive:enchanted_coal_block | Enchanted Coal Block | Nine Enchanted Coal |
 | ra_enchanting:schematic | Schematic | Throw an enchanted book on a Book Printer (2%); not craftable |
 | ra_automation:pattern | Pattern | ![Pattern recipe](images/recipes/ra_automation/pattern.png){ width="220" } |
+| ra_automation:recipe_pattern | Recipe Pattern | ![Recipe Pattern recipe](images/recipes/ra_automation/recipe_pattern.png){ width="220" } |
 
-The Generator Casing and the Cores cannot be placed as blocks. A Schematic is paper carrying a book's enchantments in `custom_data` (`{ra:{schematic:1b,enchantments:{...}}}`), right-clicked into a [Book Printer](enchant-crafting.md#setting-the-schematic) to set what it prints. A Pattern is paper carrying a 3×3 grid of item ids (`{ra:{pattern:{slots:[<9 ids or "">]}}}`, see [Automation](automation.md#pattern-data)).
+The Generator Casing and the Cores cannot be placed as blocks. A Schematic is paper carrying a book's enchantments in `custom_data` (`{ra:{schematic:1b,enchantments:{...}}}`), right-clicked into a [Book Printer](enchant-crafting.md#setting-the-schematic) to set what it prints. A Pattern is paper carrying a 3×3 grid of item ids (`{ra:{pattern:{slots:[<9 ids or "">]}}}`, see [Automation](automation.md#pattern-data)); a Recipe Pattern is the same with `recipe:1b` beside `slots`.
 | ra_jetpacks:iron_jetpack_kit | Iron Jetpack Kit | Four iron ingots around a blaze rod and a redstone block, two fire charges below |
 | ra_jetpacks:infinite_jetpack_kit | Infinite Iron Jetpack Kit | Sacrifice an Iron Jetpack Kit on an enchanting table (1%) |
 

@@ -57,7 +57,7 @@ is the shortcut: one sample per module, and where to read about it.
 | [Infinite Generators](infinite-generators.md) | 3 self-growing blocks + casing | ![Mineral Generator recipe](images/recipes/ra_infinite/mineral_generator.png){ width="220" } |
 | [Ender Links](ender-links.md) | 3 remote vaults, teleport anchor, Anchor Terminal and Anchor Tablet | ![Teleport Anchor recipe](images/recipes/ra_ender/teleport_anchor.png){ width="220" } |
 | [Displays](displays.md) | Gauge Bar, Item Hologram and Text Screen | ![Gauge Bar recipe](images/recipes/ra_displays/gauge_bar.png){ width="220" } |
-| [Automation](automation.md) | Crafter Controller and the Pattern item | ![Crafter Controller recipe](images/recipes/ra_automation/crafter_controller.png){ width="220" } |
+| [Automation](automation.md) | Crafter Controller, the Pattern item, Uncrafter and Experience Absorber | ![Crafter Controller recipe](images/recipes/ra_automation/crafter_controller.png){ width="220" } |
 | [Security](security.md) | Keypad Controller, a crafter whose slots are the code | ![Keypad Controller recipe](images/recipes/ra_security/keypad.png){ width="220" } |
 
 Current pack totals:
@@ -84,7 +84,7 @@ Current pack totals:
 | `/function ra_jetpacks:items/give_all` | Jetpack kits |
 | `/function ra_ender:items/give_all` | Ender vaults and Teleport Anchors |
 | `/function ra_displays:items/give_all` | Display blocks |
-| `/function ra_automation:items/give_all` | Crafter Controller and a Pattern |
+| `/function ra_automation:items/give_all` | Crafter Controller, a Pattern, Uncrafter and Experience Absorber |
 | `/function ra_security:items/give_all` | Keypad Controller |
 | `/function ra:uninstall` | Opens uninstall confirmation dialog |
 

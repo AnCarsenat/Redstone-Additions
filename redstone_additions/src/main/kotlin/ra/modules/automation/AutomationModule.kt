@@ -15,6 +15,15 @@ import ra.modules.automation.crafter.CrafterControllerRun.resetFlag
 import ra.modules.automation.pattern.Pattern
 import ra.modules.automation.pattern.Pattern.registerPattern
 import ra.modules.automation.pattern.PatternUse
+import ra.modules.automation.AutomationClock.registerAutomationClock
+import ra.modules.automation.AutomationClock.resetClock
+import ra.modules.automation.AutomationClock.startIfIdle
+import ra.modules.automation.absorber.XpAbsorber
+import ra.modules.automation.absorber.XpAbsorber.registerXpAbsorber
+import ra.modules.automation.uncrafter.UncraftTable
+import ra.modules.automation.uncrafter.Uncrafter
+import ra.modules.automation.uncrafter.Uncrafter.registerUncrafter
+import ra.modules.automation.uncrafter.UncrafterRun
 
 /**
  * Automation (`ra_automation`): blocks and items that run vanilla machines for you.
@@ -25,6 +34,9 @@ import ra.modules.automation.pattern.PatternUse
  * Outside this package: a row on the settings page (`ra/settings/pages/AutomationPage.kt`) and an
  * entry in the advancement tree (`automationTree`, `ra/advancements/AutomationTree.kt`).
  *
+ * The Uncrafter and the Experience Absorber run on [AutomationClock]: a block of theirs tags its
+ * marker [AutomationClock.TAG] at placement and adds itself to the clock's run.
+ *
  * The [Pattern] item is shared: a block that takes Patterns adds itself to [Pattern.targets].
  */
 object AutomationModule : GameplayModule {
@@ -34,24 +46,36 @@ object AutomationModule : GameplayModule {
 	override fun Ra.register() {
 		registerPattern()
 		registerCrafterController()
+		registerUncrafter()
+		registerXpAbsorber()
+		registerAutomationClock()
 
 		pack.define(ref(ns, "items/give_all")) {
 			function(CrafterController.block.give)
 			function(Pattern.give)
+			function(Uncrafter.block.give)
+			function(XpAbsorber.block.give)
 		}
 		bundles += GiveBundle(
 			"automation", "Automation Bundle", "Machines that run vanilla blocks for you", ns,
-			listOf(CrafterController.item.stackNbt(), Pattern.item.stackNbt()),
+			listOf(CrafterController.item.stackNbt(), Pattern.item.stackNbt(), Uncrafter.item.stackNbt(), XpAbsorber.item.stackNbt()),
 		)
 
 		pack.define(load) {
 			raw("scoreboard objectives add ${PatternUse.USED} dummy")
 			resetFlag()
+			resetClock()
+			raw("data modify storage ${UncrafterRun.TABLE} map set value ${UncraftTable.snbt()}")
 			function(CrafterController.registerBlock)
+			function(Uncrafter.registerBlock)
+			function(XpAbsorber.registerBlock)
 			moduleLoaded("Automation loaded!", "gold")
 		}
 		pack.define(tick!!) {
 			function(CrafterController.block.tick)
+			function(Uncrafter.block.tick)
+			function(XpAbsorber.block.tick)
+			startIfIdle()
 		}
 	}
 }

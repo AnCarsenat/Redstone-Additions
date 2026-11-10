@@ -305,6 +305,19 @@
   owns the Keypad and its state, and the Data Handler and Clipboard never see it.
   Shift+RMB with the Wrench steps the pulse through 2, 10, 20 and 40 ticks. Crafted from three
   stone buttons, four iron ingots, a crafter and a redstone dust.
+- **Railworks**, a new module (`ra_railworks`, `/function ra_railworks:items/give_all`), with its
+  page in the docs, an advancement branch and a settings page.
+- **Route Rail** (Railworks). A block placed under a rail junction. When a minecart on one of the
+  junction's lines comes within 2 blocks, the rail on top is set to *on_match* if the cart carries
+  the *route*, or to *on_miss* if it does not; carts on a parallel track beside it are ignored, and
+  a slope on top is never changed. What the route is read from is *source*: the cart's name (a name tag),
+  an entity tag on the cart (from a Tag Adder, say), an item in a chest or hopper minecart (its id,
+  like `minecraft:coal`), or *rider* (anyone riding it). The shapes are rail shapes
+  (`north_south`, `east_west`, `north_east`, `north_west`, `south_east`, `south_west`) or `none` to
+  leave the rail alone. Shift+RMB with the Wrench steps through the source, the match shape and
+  the other shape; the Data Handler edits all four, and the Goggles also show the last cart's
+  result. The route is compared with the cart's data, never put into a command, so any text is
+  safe. Carts are looked for every other tick, with two small boxes per Route Rail. Crafted from six copper ingots, a rail, a name tag and a redstone dust.
 
 - **Farming**, a new module (`ra_farming`): blocks that tend crops and animals. Its
   settings page lists its blocks and the Sprinkler's radius, and it has its own branch in the

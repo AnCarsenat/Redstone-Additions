@@ -1,6 +1,6 @@
 # Recipe Atlas
 
-Every recipe in the pack, in one place: 109 of them.
+Every recipe in the pack, in one place: 110 of them.
 
 !!! tip "Finding one"
     Use the search box with the item's name — every recipe below is indexed by
@@ -103,6 +103,7 @@ what the pack actually contains rather than what someone remembered to add.
 | [Randomizer](#logic-gates) | [Logic Gates](logic-gates.md) | Crafting table |
 | [Recipe Pattern](#automation) | [Automation](automation.md) | Crafting table |
 | [Redstone Remote](#wireless-redstone) | [Wireless Redstone](wireless-redstone.md) | Crafting table |
+| [Route Rail](#railworks) | [Railworks](railworks.md) | Crafting table |
 | [Scorch Kit](#jetpacks) | [Jetpacks](jetpacks.md) | Crafting table |
 | [Sequencer](#logic-gates) | [Logic Gates](logic-gates.md) | Crafting table |
 | [Shortener](#logic-gates) | [Logic Gates](logic-gates.md) | Crafting table |
@@ -265,6 +266,14 @@ Module page: [Multiblocks](multiblocks.md) — give everything: `/function ra_mu
 | **Iron Multiblock Base** | ![Iron Multiblock Base recipe](images/recipes/ra_multiblock/iron_base.png){ width="220" } | Crafting table | `ra_multiblock:iron_base` |
 | **Netherite Multiblock Base** | ![Netherite Multiblock Base recipe](images/recipes/ra_multiblock/netherite_base.png){ width="220" } | Crafting table | `ra_multiblock:netherite_base` |
 
+## Railworks
+
+Module page: [Railworks](railworks.md) — give everything: `/function ra_railworks:items/give_all`
+
+| Item | Recipe | Station | Namespace id |
+| ---- | ------ | ------- | ------------ |
+| **Route Rail** | ![Route Rail recipe](images/recipes/ra_railworks/route_rail.png){ width="220" } | Crafting table | `ra_railworks:route_rail` |
+
 ## Security
 
 Module page: [Security](security.md) — give everything: `/function ra_security:items/give_all`
@@ -279,7 +288,7 @@ Module page: [Sensors](sensors.md) — give everything: `/function ra_sensors:it
 
 | Item | Recipe | Station | Namespace id |
 | ---- | ------ | ------- | ------------ |
-| **Block Detector** | _no picture yet_ | Crafting table | `ra_sensors:block_detector` |
+| **Block Detector** | ![Block Detector recipe](images/recipes/ra_sensors/block_detector.png){ width="220" } | Crafting table | `ra_sensors:block_detector` |
 | **Entity Detector** | ![Entity Detector recipe](images/recipes/ra_sensors/entity_detector.png){ width="220" } | Crafting table | `ra_sensors:entity_detector` |
 | **Held Item Detector** | ![Held Item Detector recipe](images/recipes/ra_sensors/held_item_detector.png){ width="220" } | Crafting table | `ra_sensors:held_item_detector` |
 | **Light Sensor** | ![Light Sensor recipe](images/recipes/ra_sensors/light_sensor.png){ width="220" } | Crafting table | `ra_sensors:light_sensor` |

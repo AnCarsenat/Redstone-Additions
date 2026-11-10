@@ -1,15 +1,10 @@
 package ra.core.item
 
 import ra.core.block.CustomBlock
+import ra.core.block.PlacementBat
 
 /** The bat the egg spawns, as [CustomBlock.entityDataNbt] spells it. */
-fun CustomBlock.entityDataSnbt() = comp(
-	"id" to SStr("minecraft:bat"),
-	"Tags" to SList(listOf(SStr("ra"), SStr("ra.spawned"), SStr(placeTag))),
-	"Silent" to SByte(true),
-	"NoAI" to SByte(true),
-	"Invulnerable" to SByte(true),
-)
+fun CustomBlock.entityDataSnbt() = PlacementBat.snbt(listOf("ra", "ra.spawned", placeTag))
 
 /**
  * A placeable block's egg with extra components. Same identity as [CustomBlock.item]; the extra

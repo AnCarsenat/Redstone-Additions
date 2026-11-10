@@ -599,16 +599,16 @@ leaves and the commands that consume them:
 | `computeScore(holder, obj, value, vararg alsoStore)` | `execute store result score … [<more stores>] run compute default integer <value>`; pass `storeInt(storage, path)` in `alsoStore` to land the same result in storage too |
 | `computeInto(store, value)` | the same with only the store you give it (`storeInt`, `storeDouble`) |
 | `computeStorage(storage, path, value)` | `data modify storage … <path> set compute default integer <value>` |
+| `namedProvider(ns, path)`, `pack.defineProvider(ref, value)` | a reference to `ns:path` and the `context_int_provider` file behind it, see *Named providers* below |
 | `floatProvider { … }`, `computeScoreScaled(holder, obj, value, scale)` | `compute default float <value> <scale>` into a score: the float result times `scale`, as an integer |
 
 `computeScore`, `computeInto` and `computeScoreScaled` take `chain` (execute subcommands placed
-before the stores, such as `if score #cap x matches 1..`) and `source` (`COMPUTE_DEFAULT` or
-`COMPUTE_SELF`).
+before the stores, such as `if score #cap x matches 1..`) and `source` (`COMPUTE_DEFAULT`,
+`COMPUTE_SELF`, or `COMPUTE_BLOCK_HERE` for a provider that tests the block here).
 
 ```kotlin
-// Bridge: how much moves, written to a score in one line
-computeScore("#br.dst_free", "ra.wires.tmp",
-    provider { sub(scoreOf("#net_capacity", "ra.tr.tmp"), scoreOf("#net_amount", "ra.tr.tmp")) })
+// Usage meter: a difference, written to a score in one line
+computeScore("#mt.d", t, provider { sub(scoreOf("#mt.cur", t), scoreOf("#mt.last", t)) })
 
 // Transport: add to a per-medium total in storage and keep a copy in a score (macro path)
 computeScore("#net_med", Obj.TR_TMP,
@@ -620,7 +620,8 @@ Rules that matter:
 - **Rendered inline.** Providers are turned into SNBT text in the command, not through Kore's
   `compute { }`, which may move a provider into a registry file. A provider whose storage path
   holds `$(id)` must stay in the macro line that substitutes it. The `$` prefix is added
-  automatically to any line containing `$(`.
+  automatically to any line containing `$(`. A formula shared by several commands is the
+  exception: it becomes a named provider file on purpose (see *Named providers* below).
 - **Scoreboard `/=` is `floor_div`**, and `%=` is `floor_mod`: both round towards negative
   infinity. `div` and `mod` truncate and give different answers for negative values.
 - **A missing value reads as 0.** An unset score, an absent storage path or a non-number reads
@@ -633,6 +634,47 @@ Rules that matter:
   that can leave 32 bits — a ratio scaled up before dividing, like a fill level in
   ten-thousandths — goes through `computeScoreScaled` so the division happens in floats (the
   bridge fill ratio, see the v6.0.1 fix).
+
+#### Named providers: a formula used in several places
+
+A formula that more than one command uses, or that is a rule of the pack worth naming (a curve,
+the levelling rule), is written once as a 26.3 `context_int_provider` file,
+`data/<ns>/context_int_provider/<path>.json`, and the commands name it by id:
+
+```
+execute store result score #dr.free ra.wires.tmp run compute default integer ra_lib:transport/net/free
+```
+
+```kotlin
+// Declare the reference where callers can reach it (an object val), write the file once
+// in the owning part's register(), and pass the reference wherever a provider goes.
+val free = namedProvider(Ns.LIB, "transport/net/free")
+pack.defineProvider(free, provider { sub(scoreOf("#net_capacity", Obj.TR_TMP), scoreOf("#net_amount", Obj.TR_TMP)) })
+
+computeScore("#dr.free", "ra.wires.tmp", RaLib.Transport.Net.free)
+computeScore("#dr.pts", "ra.wires.tmp", provider { min(…, floorDiv(RaLib.Transport.Net.free, constant(100))) })
+```
+
+At the top of a command the reference is written as the bare id; nested inside an inline provider
+it is the quoted id (`left:"ra_lib:transport/net/free"`), which the game reads the same way. The
+build fails if a reference made with `namedProvider` has no `defineProvider` file
+(`PackValidator.undefinedProviders`): an unknown id would fail to parse and take its whole
+function down. A named provider cannot hold a macro argument, so a provider whose storage path
+holds `$(id)` stays inline. Its scores are fake players or `this`, the same as inline.
+
+| Id | Value | Used by |
+| --- | --- | --- |
+| `ra_lib:transport/net/free` | `#net_capacity - #net_amount` (ra.tr.tmp), after `ra_lib:transport/net/read` | Pump, Drain (three paths), Experience drain, Boiler, Bridge, Creative EU, Creative Fluid |
+| `ra_wires:blocks/solar_panel/eu` | the solar curve: a `number_dispatcher` of `match_block` tests on the daylight detector's `power` (5→10 … 15→50, otherwise 0) | Solar Panel tick, with `compute block ~ ~ ~` (`COMPUTE_BLOCK_HERE`) |
+| `ra_wires:bridge/move` | `min(rate, src_amount, dst_free, floor((src_amount - dst_amount) / 2))` | Bridge transfer |
+| `ra_wires:diving/air_minutes`, `air_seconds` | `#at.air` floor-divided and floor-modded by 60 | Air Tank lore and gauge |
+| `ra_wires:fluid/experience_ml` | `#dr.pts * 100` | Experience drain, both directions |
+| `ra_jetpacks:flight/smooth_x`, `smooth_z` | `floor((v * 3 + (pos - last)) / 4)`, per axis, for `compute entity @s` | Thruster |
+| `ra_jetpacks:flight/ramp_up`, `ramp_down` | `ThrustRamp.up` / `down` of the player's `ra.jp.ramp` | Thruster |
+
+Provider files are registry entries, like the pack's enchantments: they are read when the world
+loads. After adding or changing one, reopen the world (or restart the server) rather than relying
+on `/reload` alone.
 
 ### Minecraft versions
 

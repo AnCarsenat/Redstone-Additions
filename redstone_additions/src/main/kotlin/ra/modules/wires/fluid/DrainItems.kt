@@ -1,9 +1,6 @@
 package ra.modules.wires.fluid
 
-import io.github.ayfri.kore.features.predicates.providers.sub
 import ra.core.computeScore
-import ra.core.provider
-import ra.core.scoreOf
 import io.github.ayfri.kore.arguments.types.literals.literal
 import io.github.ayfri.kore.commands.data
 import io.github.ayfri.kore.commands.function
@@ -64,7 +61,7 @@ object DrainItems : PackPart {
 			// Room for the whole container, or nothing happens.
 			function(RaLib.Transport.Net.read)
 			raw("\$scoreboard players set #dr.need ra.wires.tmp \$(volume)")
-			computeScore("#dr.free", "ra.wires.tmp", provider { sub(scoreOf("#net_capacity", "ra.tr.tmp"), scoreOf("#net_amount", "ra.tr.tmp")) })
+			computeScore("#dr.free", "ra.wires.tmp", RaLib.Transport.Net.free)
 			raw("execute if score #dr.free ra.wires.tmp < #dr.need ra.wires.tmp run data modify entity @s data.status.drain_state set value \"network_full\"")
 			raw("execute if score #dr.free ra.wires.tmp < #dr.need ra.wires.tmp run return run tag @a[tag=ra.wires.emptying] remove ra.wires.emptying")
 
@@ -189,7 +186,7 @@ object DrainItems : PackPart {
 
 			function(RaLib.Transport.Net.read)
 			raw("\$scoreboard players set #dr.need ra.wires.tmp \$(volume)")
-			computeScore("#dr.free", "ra.wires.tmp", provider { sub(scoreOf("#net_capacity", "ra.tr.tmp"), scoreOf("#net_amount", "ra.tr.tmp")) })
+			computeScore("#dr.free", "ra.wires.tmp", RaLib.Transport.Net.free)
 			raw("execute if score #dr.free ra.wires.tmp < #dr.need ra.wires.tmp run data modify entity @s data.status.drain_state set value \"network_full\"")
 			raw("execute if score #dr.free ra.wires.tmp < #dr.need ra.wires.tmp run return run tag @e[type=item,tag=ra.wires.draining_item] remove ra.wires.draining_item")
 

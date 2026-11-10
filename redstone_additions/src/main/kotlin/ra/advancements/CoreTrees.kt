@@ -99,7 +99,6 @@ internal val interactiveTree = listOf(
 	egg("ra_interactive", "big_torch", "Big Torch", Items.TORCH, ONE, "Obtain the Big Torch item."),
 	egg("ra_interactive", "block_breaker", "Block Breaker", Items.IRON_PICKAXE, ONE, "Obtain the Block Breaker item."),
 	egg("ra_interactive", "block_placer", "Block Placer", Items.DISPENSER, ONE, "Obtain the Block Placer item."),
-	egg("ra_interactive", "breeder", "Breeder", Items.DISPENSER, ONE, "Obtain the Breeder item."),
 	egg("ra_interactive", "elevator", "Elevator", Items.WHITE_WOOL, TRUE),
 	egg("ra_interactive", "fan", "Fan", Items.FEATHER, TRUE),
 	egg("ra_interactive", "infinite_lava_cauldron", "Infinite Lava Cauldron", Items.CAULDRON, TRUE),

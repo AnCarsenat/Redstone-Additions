@@ -25,7 +25,6 @@ val InteractivePage = Page(
 		"item_mover" to "Item Mover",
 		"magic_crate" to "Magic Crate",
 		"message_block" to "Message Block",
-		"breeder" to "Breeder",
 		"spitter" to "Spitter",
 		"infinite_water_cauldron" to "Infinite Water Cauldron",
 		"infinite_lava_cauldron" to "Infinite Lava Cauldron",

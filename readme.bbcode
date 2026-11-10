@@ -2,11 +2,11 @@
 
 [center][size=24][b]Redstone Additions[/b][/size][/center]
 
-[center][b]87 custom blocks. 9 tools. 103 recipes. 2 jetpacks and 3 upgrade kits. Vanilla datapack for Minecraft 26.3.[/b][/center]
+[center][b]90 custom blocks. 9 tools. 107 recipes. 2 jetpacks and 3 upgrade kits. Vanilla datapack for Minecraft 26.3.[/b][/center]
 
 [center][url=https://modrinth.com/datapack/redstone-additions][img]https://img.shields.io/badge/Download-Modrinth-00AF5C?style=for-the-badge&logo=modrinth&logoColor=white[/img][/url] [url=https://github.com/AnCarsenat/Redstone-Additions][img]https://img.shields.io/badge/Source-GitHub-181717?style=for-the-badge&logo=github&logoColor=white[/img][/url][/center]
 
-[center][img]https://img.shields.io/badge/Minecraft-26.3-2EA44F[/img] [img]https://img.shields.io/badge/Version-v6.0.3-blue[/img] [img]https://img.shields.io/badge/Blocks-90-red[/img] [img]https://img.shields.io/badge/Tools-9-lightgrey[/img] [img]https://img.shields.io/badge/Recipes-107-8A2BE2[/img][/center]
+[center][img]https://img.shields.io/badge/Minecraft-26.3-2EA44F[/img] [img]https://img.shields.io/badge/Version-v6.0.3-blue[/img] [img]https://img.shields.io/badge/Blocks-93-red[/img] [img]https://img.shields.io/badge/Tools-9-lightgrey[/img] [img]https://img.shields.io/badge/Recipes-110-8A2BE2[/img][/center]
 
 [center][url=https://github.com/AnCarsenat/Redstone-Additions/raw/main/docs/images/gallery/with-shader-2026-08-20_19.23.57.png][img width=900 height=506]https://github.com/AnCarsenat/Redstone-Additions/raw/main/docs/images/gallery/with-shader-2026-08-20_19.23.57.png[/img][/url][/center]
 
@@ -94,6 +94,9 @@ One banner per module. Modules without a screenshot yet show a placeholder — [
 [b]Security[/b]
 [img width=320 height=147]https://github.com/AnCarsenat/Redstone-Additions/raw/main/docs/images/banners/media-missing.png[/img]
 
+[b]Farming[/b]
+[img width=320 height=147]https://github.com/AnCarsenat/Redstone-Additions/raw/main/docs/images/banners/media-missing.png[/img]
+
 [b]Audio[/b]
 [img width=320 height=147]https://github.com/AnCarsenat/Redstone-Additions/raw/main/docs/images/banners/media-missing.png[/img]
 
@@ -119,7 +122,7 @@ One banner per module. Modules without a screenshot yet show a placeholder — [
 [*]Sequencer
 [/list]
 
-[size=14][b]Interactive Machines (15)[/b][/size]
+[size=14][b]Interactive Machines (14)[/b][/size]
 
 [list]
 [*]Block Breaker
@@ -127,7 +130,6 @@ One banner per module. Modules without a screenshot yet show a placeholder — [
 [*]Item Pipe — filters by an item id set from your hand, no item frame
 [*]Item Mover
 [*]Spitter
-[*]Breeder
 [*]Magic Crate — pulls dropped items in from 5-20 blocks
 [*]Big Torch — drops mobs that spawn within 1-100 blocks into the void
 [*]Elevator — jump to go up, sneak to go down, to the next one in the column
@@ -267,16 +269,25 @@ Built from a crafted Generator Casing plus a Core won by sacrificing stone, neth
 [*]Text Screen — glowing nixie-style text: the redstone level picks which item's name it shows
 [/list]
 
-[size=14][b]Automation (1)[/b][/size]
+[size=14][b]Automation (3)[/b][/size]
 
 [list]
 [*]Crafter Controller — fires the crafter next to it once it holds what its Pattern says
+[*]Uncrafter — takes items back apart into their ingredients, for EU
+[*]Experience Absorber — collects experience orbs into a fluid network
 [/list]
 
 [size=14][b]Security (1)[/b][/size]
 
 [list]
 [*]Keypad — a crafter whose slots are the code; the right code gives a redstone pulse
+[/list]
+
+[size=14][b]Farming (2)[/b][/size]
+
+[list]
+[*]Sprinkler — waters the farmland around it; with liquid experience, crops grow 4x as fast
+[*]Breeder
 [/list]
 
 [size=14][b]Audio (3)[/b][/size]
@@ -414,6 +425,7 @@ Starter command:
 [*][b]Displays[/b] — https://ancarsenat.github.io/Redstone-Additions/displays/
 [*][b]Automation[/b] — https://ancarsenat.github.io/Redstone-Additions/automation/
 [*][b]Security[/b] — https://ancarsenat.github.io/Redstone-Additions/security/
+[*][b]Farming[/b] — https://ancarsenat.github.io/Redstone-Additions/farming/
 [*][b]Audio[/b] — https://ancarsenat.github.io/Redstone-Additions/audio/
 [*][b]Item Reference[/b] — https://ancarsenat.github.io/Redstone-Additions/item-reference/
 [*][b]Recipe Atlas[/b] — https://ancarsenat.github.io/Redstone-Additions/recipe-atlas/
@@ -439,8 +451,9 @@ Starter command:
 [*][b]/function ra_enchanting:items/give_all[/b] — Disenchanter, Book Upgrader and Book Printer
 [*][b]/function ra_ender:items/give_all[/b] — Ender vaults, Teleport Anchor, Anchor Terminal and Anchor Tablet
 [*][b]/function ra_displays:items/give_all[/b] — Display blocks
-[*][b]/function ra_automation:items/give_all[/b] — Crafter Controller and a Pattern
+[*][b]/function ra_automation:items/give_all[/b] — Crafter Controller, a Pattern, Uncrafter and Experience Absorber
 [*][b]/function ra_security:items/give_all[/b] — Keypad
+[*][b]/function ra_farming:items/give_all[/b] — Sprinkler, Breeder
 [*][b]/function ra_audio:items/give_all[/b] — Alarm, Doorbell and Jukebox Controller
 [*][b]/function ra:tools/wrench/give[/b] — Wrench
 [*][b]/function ra:tools/data_handler/give[/b] — Data Handler

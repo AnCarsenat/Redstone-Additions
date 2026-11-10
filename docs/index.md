@@ -45,7 +45,7 @@ is the shortcut: one sample per module, and where to read about it.
 | Module | What you get | Sample recipe |
 |---|---|---|
 | [Logic Gates](logic-gates.md) | 10 timing/logic blocks | ![Clock recipe](images/recipes/ra_gates/clock.png){ width="220" } |
-| [Interactive Machines](interactive-machines.md) | 15 automation and utility blocks | ![Block Placer recipe](images/recipes/ra_interactive/block_placer.png){ width="220" } |
+| [Interactive Machines](interactive-machines.md) | 14 automation and utility blocks | ![Block Placer recipe](images/recipes/ra_interactive/block_placer.png){ width="220" } |
 | [Storage](storage.md) | Boxer + Unboxer workflow | ![Boxer recipe](images/recipes/ra_storage/boxer.png){ width="220" } |
 | [Sensors](sensors.md) | Entity detector, tag operators, light and weather sensors, held item and player detectors | ![Entity Detector recipe](images/recipes/ra_sensors/entity_detector.png){ width="220" } |
 | [Wireless Redstone](wireless-redstone.md) | Emitters and Receivers (on/off and analog), Remote and Pager | ![Wireless Emitter recipe](images/recipes/ra_wireless/emitter.png){ width="220" } |
@@ -57,14 +57,15 @@ is the shortcut: one sample per module, and where to read about it.
 | [Infinite Generators](infinite-generators.md) | 3 self-growing blocks + casing | ![Mineral Generator recipe](images/recipes/ra_infinite/mineral_generator.png){ width="220" } |
 | [Ender Links](ender-links.md) | 3 remote vaults, teleport anchor, Anchor Terminal and Anchor Tablet | ![Teleport Anchor recipe](images/recipes/ra_ender/teleport_anchor.png){ width="220" } |
 | [Displays](displays.md) | Gauge Bar, Item Hologram and Text Screen | ![Gauge Bar recipe](images/recipes/ra_displays/gauge_bar.png){ width="220" } |
-| [Automation](automation.md) | Crafter Controller and the Pattern item | ![Crafter Controller recipe](images/recipes/ra_automation/crafter_controller.png){ width="220" } |
+| [Automation](automation.md) | Crafter Controller, the Pattern item, Uncrafter and Experience Absorber | ![Crafter Controller recipe](images/recipes/ra_automation/crafter_controller.png){ width="220" } |
 | [Security](security.md) | Keypad, a crafter whose slots are the code | ![Keypad recipe](images/recipes/ra_security/keypad.png){ width="220" } |
+| [Farming](farming.md) | Sprinkler and Breeder: water and grow crops, breed animals | ![Sprinkler recipe](images/recipes/ra_farming/sprinkler.png){ width="220" } |
 | [Audio](audio.md) | Alarm, Doorbell and Jukebox Controller | ![Alarm recipe](images/recipes/ra_audio/alarm.png){ width="220" } |
 
 Current pack totals:
 
-- 90 placeable custom blocks
-- 107 recipes, all of them in the [Recipe Atlas](recipe-atlas.md)
+- 93 placeable custom blocks
+- 110 recipes, all of them in the [Recipe Atlas](recipe-atlas.md)
 - 9 tools (Wrench, Goggles, Data Handler, Creative Data Handler, Clipboard,
   Multimeter, Redstone Remote, Pager, Anchor Tablet)
 
@@ -85,8 +86,9 @@ Current pack totals:
 | `/function ra_jetpacks:items/give_all` | Jetpack kits |
 | `/function ra_ender:items/give_all` | Ender vaults and Teleport Anchors |
 | `/function ra_displays:items/give_all` | Display blocks |
-| `/function ra_automation:items/give_all` | Crafter Controller and a Pattern |
+| `/function ra_automation:items/give_all` | Crafter Controller, a Pattern, Uncrafter and Experience Absorber |
 | `/function ra_security:items/give_all` | Keypad |
+| `/function ra_farming:items/give_all` | Sprinkler, Breeder |
 | `/function ra_audio:items/give_all` | Alarm, Doorbell and Jukebox Controller |
 | `/function ra:uninstall` | Opens uninstall confirmation dialog |
 

@@ -23,7 +23,7 @@ one page, A to Z and by module.
 | ra_interactive:item_pipe             | Item Pipe                 | ![Item Pipe recipe](images/recipes/ra_interactive/item_pipe.png){ width="220" } |
 | ra_interactive:item_mover            | Item Mover                | ![Item Mover recipe](images/recipes/ra_interactive/item_mover.png){ width="220" } |
 | ra_interactive:spitter               | Spitter                   | ![Spitter recipe](images/recipes/ra_interactive/spitter.png){ width="220" } |
-| ra_interactive:breeder               | Breeder                   | ![Breeder recipe](images/recipes/ra_interactive/breeder.png){ width="220" } |
+| ra_interactive:breeder               | Breeder (Farming)         | ![Breeder recipe](images/recipes/ra_interactive/breeder.png){ width="220" } |
 | ra_interactive:infinite_water_cauldron | Infinite Water Cauldron | ![Infinite Water Cauldron recipe](images/recipes/ra_interactive/infinite_water_cauldron.png){ width="220" } |
 | ra_interactive:infinite_lava_cauldron | Infinite Lava Cauldron   | ![Infinite Lava Cauldron recipe](images/recipes/ra_interactive/infinite_lava_cauldron.png){ width="220" } |
 | ra_interactive:infinite_snow_cauldron | Infinite Snow Cauldron   | ![Infinite Snow Cauldron recipe](images/recipes/ra_interactive/infinite_snow_cauldron.png){ width="220" } |
@@ -99,6 +99,7 @@ one page, A to Z and by module.
 | ra_automation:uncrafter              | Uncrafter                 | ![Uncrafter recipe](images/recipes/ra_automation/uncrafter.png){ width="220" } |
 | ra_automation:experience_absorber    | Experience Absorber       | ![Experience Absorber recipe](images/recipes/ra_automation/experience_absorber.png){ width="220" } |
 | ra_security:keypad                   | Keypad                    | ![Keypad recipe](images/recipes/ra_security/keypad.png){ width="220" } |
+| ra_farming:sprinkler                 | Sprinkler                 | ![Sprinkler recipe](images/recipes/ra_farming/sprinkler.png){ width="220" } |
 
 ## Crafting Items
 

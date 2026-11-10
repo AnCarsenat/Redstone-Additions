@@ -1,6 +1,6 @@
 # Recipe Atlas
 
-Every recipe in the pack, in one place: 103 of them.
+Every recipe in the pack, in one place: 105 of them.
 
 !!! tip "Finding one"
     Use the search box with the item's name — every recipe below is indexed by
@@ -23,12 +23,13 @@ what the pack actually contains rather than what someone remembered to add.
 | [Battery](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
 | [Big Torch](#interactive-machines) | [Interactive Machines](interactive-machines.md) | Crafting table |
 | [Block Breaker](#interactive-machines) | [Interactive Machines](interactive-machines.md) | Crafting table |
+| [Block Detector](#sensors) | [Sensors](sensors.md) | Crafting table |
 | [Block Placer](#interactive-machines) | [Interactive Machines](interactive-machines.md) | Crafting table |
 | [Boiler](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
 | [Book Printer](#enchant-crafting) | [Enchant Crafting](enchant-crafting.md) | Crafting table |
 | [Book Upgrader](#enchant-crafting) | [Enchant Crafting](enchant-crafting.md) | Crafting table |
 | [Boxer](#storage) | [Storage](storage.md) | Crafting table |
-| [Breeder](#interactive-machines) | [Interactive Machines](interactive-machines.md) | Crafting table |
+| [Breeder](#farming) | [Farming](farming.md) | Crafting table |
 | [Chunk Loader](#chunk-loader) | [Chunk Loader](chunk-loader.md) | Crafting table |
 | [Clipboard](#tools) | [Tools](tools.md) | Crafting table |
 | [Clock](#logic-gates) | [Logic Gates](logic-gates.md) | Crafting table |
@@ -106,6 +107,7 @@ what the pack actually contains rather than what someone remembered to add.
 | [Solar Panel](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
 | [Spitter](#interactive-machines) | [Interactive Machines](interactive-machines.md) | Crafting table |
 | [Spout](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
+| [Sprinkler](#farming) | [Farming](farming.md) | Crafting table |
 | [Tag Adder](#sensors) | [Sensors](sensors.md) | Crafting table |
 | [Tag Remover](#sensors) | [Sensors](sensors.md) | Crafting table |
 | [Teleport Anchor](#ender-links) | [Ender Links](ender-links.md) | Crafting table |
@@ -173,6 +175,15 @@ Module page: [Ender Links](ender-links.md) — give everything: `/function ra_en
 | **Ender Power Vault** | ![Ender Power Vault recipe](images/recipes/ra_ender/ender_power_vault.png){ width="220" } | Crafting table | `ra_ender:ender_power_vault` |
 | **Teleport Anchor** | ![Teleport Anchor recipe](images/recipes/ra_ender/teleport_anchor.png){ width="220" } | Crafting table | `ra_ender:teleport_anchor` |
 
+## Farming
+
+Module page: [Farming](farming.md) — give everything: `/function ra_farming:items/give_all`
+
+| Item | Recipe | Station | Namespace id |
+| ---- | ------ | ------- | ------------ |
+| **Breeder** | ![Breeder recipe](images/recipes/ra_interactive/breeder.png){ width="220" } | Crafting table | `ra_interactive:breeder` |
+| **Sprinkler** | ![Sprinkler recipe](images/recipes/ra_farming/sprinkler.png){ width="220" } | Crafting table | `ra_farming:sprinkler` |
+
 ## Infinite Generators
 
 Module page: [Infinite Generators](infinite-generators.md) — give everything: `/function ra_infinite:items/give_all`
@@ -193,7 +204,6 @@ Module page: [Interactive Machines](interactive-machines.md) — give everything
 | **Big Torch** | ![Big Torch recipe](images/recipes/ra_interactive/big_torch.png){ width="220" } | Crafting table | `ra_interactive:big_torch` |
 | **Block Breaker** | ![Block Breaker recipe](images/recipes/ra_interactive/block_breaker.png){ width="220" } | Crafting table | `ra_interactive:block_breaker` |
 | **Block Placer** | ![Block Placer recipe](images/recipes/ra_interactive/block_placer.png){ width="220" } | Crafting table | `ra_interactive:block_placer` |
-| **Breeder** | ![Breeder recipe](images/recipes/ra_interactive/breeder.png){ width="220" } | Crafting table | `ra_interactive:breeder` |
 | **Elevator** | ![Elevator recipe](images/recipes/ra_interactive/elevator.png){ width="220" } | Crafting table | `ra_interactive:elevator` |
 | **Enchanted Coal Block** | ![Enchanted Coal Block recipe](images/recipes/ra_interactive/enchanted_coal_block.png){ width="220" } | Crafting table | `ra_interactive:enchanted_coal_block` |
 | **Fan** | ![Fan recipe](images/recipes/ra_interactive/fan.png){ width="220" } | Crafting table | `ra_interactive:fan` |
@@ -261,6 +271,7 @@ Module page: [Sensors](sensors.md) — give everything: `/function ra_sensors:it
 
 | Item | Recipe | Station | Namespace id |
 | ---- | ------ | ------- | ------------ |
+| **Block Detector** | _no picture yet_ | Crafting table | `ra_sensors:block_detector` |
 | **Entity Detector** | ![Entity Detector recipe](images/recipes/ra_sensors/entity_detector.png){ width="220" } | Crafting table | `ra_sensors:entity_detector` |
 | **Held Item Detector** | ![Held Item Detector recipe](images/recipes/ra_sensors/held_item_detector.png){ width="220" } | Crafting table | `ra_sensors:held_item_detector` |
 | **Light Sensor** | ![Light Sensor recipe](images/recipes/ra_sensors/light_sensor.png){ width="220" } | Crafting table | `ra_sensors:light_sensor` |

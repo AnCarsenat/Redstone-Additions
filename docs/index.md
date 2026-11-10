@@ -45,7 +45,7 @@ is the shortcut: one sample per module, and where to read about it.
 | Module | What you get | Sample recipe |
 |---|---|---|
 | [Logic Gates](logic-gates.md) | 10 timing/logic blocks | ![Clock recipe](images/recipes/ra_gates/clock.png){ width="220" } |
-| [Interactive Machines](interactive-machines.md) | 15 automation and utility blocks | ![Block Placer recipe](images/recipes/ra_interactive/block_placer.png){ width="220" } |
+| [Interactive Machines](interactive-machines.md) | 14 automation and utility blocks | ![Block Placer recipe](images/recipes/ra_interactive/block_placer.png){ width="220" } |
 | [Storage](storage.md) | Boxer + Unboxer workflow | ![Boxer recipe](images/recipes/ra_storage/boxer.png){ width="220" } |
 | [Sensors](sensors.md) | Entity detector, tag operators, light and weather sensors, held item and player detectors | ![Entity Detector recipe](images/recipes/ra_sensors/entity_detector.png){ width="220" } |
 | [Wireless Redstone](wireless-redstone.md) | Emitters and Receivers (on/off and analog), Remote and Pager | ![Wireless Emitter recipe](images/recipes/ra_wireless/emitter.png){ width="220" } |
@@ -59,6 +59,7 @@ is the shortcut: one sample per module, and where to read about it.
 | [Displays](displays.md) | Gauge Bar, Item Hologram and Text Screen | ![Gauge Bar recipe](images/recipes/ra_displays/gauge_bar.png){ width="220" } |
 | [Automation](automation.md) | Crafter Controller and the Pattern item | ![Crafter Controller recipe](images/recipes/ra_automation/crafter_controller.png){ width="220" } |
 | [Security](security.md) | Keypad Controller, a crafter whose slots are the code | ![Keypad Controller recipe](images/recipes/ra_security/keypad.png){ width="220" } |
+| [Farming](farming.md) | Sprinkler and Breeder: water and grow crops, breed animals | ![Sprinkler recipe](images/recipes/ra_farming/sprinkler.png){ width="220" } |
 
 Current pack totals:
 
@@ -86,6 +87,7 @@ Current pack totals:
 | `/function ra_displays:items/give_all` | Display blocks |
 | `/function ra_automation:items/give_all` | Crafter Controller and a Pattern |
 | `/function ra_security:items/give_all` | Keypad Controller |
+| `/function ra_farming:items/give_all` | Sprinkler, Breeder |
 | `/function ra:uninstall` | Opens uninstall confirmation dialog |
 
 ## Tools At A Glance

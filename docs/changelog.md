@@ -290,6 +290,21 @@ This page mirrors key datapack milestones from the main project changelog.
   Shift+RMB with the Wrench steps the pulse through 2, 10, 20 and 40 ticks. Crafted from three
   stone buttons, four iron ingots, a crafter and a redstone dust.
 
+- **Farming**, a new module (`ra_farming`, [Farming](farming.md)): blocks that tend crops and animals. Its
+  settings page lists its blocks and the Sprinkler's radius, and it has its own branch in the
+  advancement tab.
+- **Sprinkler** (Farming). Waters the farmland around it from a fluid network: put a pipe, tank or
+  drain against any face and fill it with water, and every 5 seconds all the farmland in its
+  square (`radius` blocks each way, 1 to 8, default 4; admins up to 32) becomes fully moist, for 4
+  mL of water per block of the square. With liquid experience in the network, the crops in the
+  square also grow about 4 times as fast: once a second it grows crops at random spots, at three
+  times the game's own rate, for 10 mL (a tenth of a point) per stage that actually grew. It
+  reaches crops level with it, one block above or one below, so it works in place of a farm's
+  water hole or standing among the crops. Wheat, carrots, potatoes, beetroots, nether wart, melon
+  and pumpkin stems, torchflower crops and sweet berry bushes. Redstone locks it. The Goggles show
+  its state, the watering, the experience boost and the radius. Crafted from a copper grate, four
+  copper ingots and a bucket.
+
 ### Changed
 
 - **Recipes rebalanced.** Every recipe now asks for things you can get in survival at the point
@@ -384,6 +399,11 @@ This page mirrors key datapack milestones from the main project changelog.
   start sprinting in the air and fades the same way when you stop, instead of arriving and
   vanishing in one tick.
 
+- **The Breeder is part of Farming** (was Interactive Machines). It is listed, handed out
+  (`/function ra_farming:items/give_all`, the Farming Bundle), switched off and documented with the
+  Farming module now, and its advancement is in the Farming branch. Its recipe and ids are the
+  same, so Breeders already placed keep working.
+
 ### Removed
 
 - **The Upgrade Platform.** The netherite-tier multiblock that gambled dropped materials into the
@@ -414,6 +434,9 @@ This page mirrors key datapack milestones from the main project changelog.
 - **A Liquid Drain pouring water in the Nether makes it evaporate.** The check for dimensions
   where water evaporates used the predicate key from before 26.3, so it never ran, and its sizzle
   sound had a pitch the game refuses. Both are fixed.
+
+- **The Breeder's advancement unlocks.** It looked for the item's marker as a number rather
+  than the flag the item carries, so picking up a Breeder never granted it.
 
 ### For contributors
 

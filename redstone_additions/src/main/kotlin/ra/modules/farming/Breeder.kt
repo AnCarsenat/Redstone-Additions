@@ -1,4 +1,4 @@
-package ra.modules.interactive
+package ra.modules.farming
 
 import io.github.ayfri.kore.arguments.maths.vec3
 import io.github.ayfri.kore.arguments.types.literals.self
@@ -23,8 +23,9 @@ import ra.core.block.placeBlock
 import ra.core.define
 import ra.core.raw
 import ra.core.item.loreItem
-import ra.modules.interactive.BreederBreeds.registerBreederBreeds
-import ra.modules.interactive.BreederBreeds.tryBreed
+import ra.modules.farming.BreederBreeds.registerBreederBreeds
+import ra.modules.interactive.specGive
+import ra.modules.farming.BreederBreeds.tryBreed
 import io.github.ayfri.kore.commands.scoreboard.scoreboard
 import ra.core.block.breakCheck
 import ra.core.block.finishPlacement

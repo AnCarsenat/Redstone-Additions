@@ -32,13 +32,16 @@ import ra.core.block.stackedPropLine
 import ra.core.block.stackedStatusLine
 import ra.core.define
 import ra.core.ensureScore
-import ra.core.executeRun
 import ra.core.item.loreItem
 import ra.core.item.loreLine
 import ra.core.raw
 import ra.core.ref
 import ra.modules.interactive.specGive
 import ra.modules.wires.machine.MachineClock
+import ra.modules.farming.SprinklerPay.pay
+import ra.modules.farming.SprinklerPay.refund
+import ra.modules.farming.SprinklerPay.registerSprinklerPay
+import ra.modules.farming.SprinklerPay.release
 
 /**
  * Sprinkler: waters the farmland around it from a fluid network, and with liquid experience makes
@@ -46,7 +49,7 @@ import ra.modules.wires.machine.MachineClock
  *
  * NOT A NETWORK NODE. Like the Book Upgrader, it reaches into the network of a pipe, tank or drain
  * touching any of its six faces, so placing or breaking one never splits or joins a network. The
- * first neighbour whose network holds the whole price pays it.
+ * first neighbour whose network holds the whole price pays it ([SprinklerPay]).
  *
  * THE AREA. A square of `radius` blocks each way (1 to [MAX_RADIUS], admins up to
  * [ADMIN_MAX_RADIUS]), from one block below the sprinkler to one block above it. That covers a
@@ -58,12 +61,14 @@ import ra.modules.wires.machine.MachineClock
  * their best rate. One `fill`, which changes nothing (and costs next to nothing) on farmland that
  * is already wet.
  *
- * EXPERIENCE. Once a second, extra growth at three times the vanilla random tick rate (3 random
- * ticks per 4096 blocks per game tick), so with vanilla's own growth a crop grows about 4x as fast.
- * Each extra growth picks a random column of the area, like a random tick, and moves the crop there
- * up one age; the rate is `area x 15 / 1024` picks a second, the remainder rolled. Only a crop
- * that actually grew is paid for, [XP_ML_PER_GROWTH] mL each: a pick that lands on dirt or on a
- * ripe crop costs nothing. The network must hold enough for every pick before any is made.
+ * EXPERIENCE. Once a second, three times vanilla's own growth, so a crop grows about 4x as fast.
+ * Vanilla gives a block 3 random ticks per 4096 per game tick (60/4096 a second), and a random tick
+ * grows a crop in a full, moist field (the water keeps it moist) 1 time in 6. Three times that is
+ * `area x 30 / 4096 = area x 15 / 2048` growths a second, the remainder rolled: each picks a random
+ * column of the area and moves the crop there up one age. On dry farmland vanilla is slower (1 in
+ * 13), so the boost is larger there. The second's price ([XP_ML_PER_GROWTH] mL a pick) is TAKEN
+ * FIRST and only the picks paid for are made; what a pick on dirt or a ripe crop did not use is
+ * offered back to the same network.
  *
  * CHEAP WHEN IDLE. Per tick only the break check every block has. The rest runs on the network
  * machines' once-a-second clock ([MachineClock]): a locked sprinkler stops at the redstone read,
@@ -77,7 +82,7 @@ object Sprinkler {
 	val item = block.loreItem {
 		lore(
 			loreLine("Waters the farmland around it", "gray"),
-			loreLine("Liquid experience: crops grow 4x as fast", "gray"),
+			loreLine("Liquid experience: crops grow about 4x as fast", "gray"),
 			loreLine("Feed it from a pipe, tank or drain beside it", "dark_gray"),
 		)
 	}
@@ -98,8 +103,8 @@ object Sprinkler {
 	const val DEFAULT_RADIUS = 4
 	/** A player's largest radius: a 17x17 field. */
 	const val MAX_RADIUS = 8
-	/** An admin's (ra.core.Admin). The water `fill` covers (2r+1)^2 x 3 blocks, well under 32768. */
-	const val ADMIN_MAX_RADIUS = 32
+	/** An admin's, and the Farming settings default's ceiling: a 3267-block `fill` every 5 s, ~8 picks a second. */
+	const val ADMIN_MAX_RADIUS = 16
 
 	/** Seconds between two waterings. Farmland takes minutes to dry out. */
 	const val WATER_EVERY = 5
@@ -116,10 +121,6 @@ object Sprinkler {
 
 	private const val T = Obj.TEMP
 	private const val S = "storage ra:farming spr"
-	/** On the neighbouring fluid node that pays, for one payment. */
-	private const val SRC = "ra.farm.src"
-	private val SIDES = listOf("~1 ~ ~", "~-1 ~ ~", "~ ~ ~1", "~ ~ ~-1", "~ ~-1 ~", "~ ~1 ~")
-	private const val MEDIA = "water experience"
 
 	fun Ra.registerSprinkler() {
 		block(block)
@@ -175,49 +176,26 @@ object Sprinkler {
 			raw("\$execute positioned ~\$(x) ~ ~\$(z) run function ${column.asId()}")
 		}
 		pack.define(column) { column() }
+		// One test per crop type, then only that crop's ages. Returns 1 when it grew.
 		pack.define(growHere) {
-			for ((id, last) in CROPS) for (age in 0 until last) {
+			for ((id, _) in CROPS) raw("execute if block ~ ~ ~ minecraft:$id run return run function ${growCrop(id).asId()}")
+			raw("return 0")
+		}
+		for ((id, last) in CROPS) pack.define(growCrop(id)) {
+			for (age in 0 until last) {
 				raw("execute if block ~ ~ ~ minecraft:$id[age=$age] run return run setblock ~ ~ ~ minecraft:$id[age=${age + 1}]")
 			}
 			raw("return 0")
 		}
 
-		for (medium in MEDIA.split(' ')) {
-			val scan = ref(Ns.FARMING, "blocks/sprinkler/scan_$medium")
-			pack.define(find(medium)) {
-				raw("scoreboard players set #spr.found $T 0")
-				for (side in SIDES) executeRun("if score #spr.found $T matches 0 positioned $side as @e[type=marker,tag=ra.wires.fluid_node,distance=..0.75,limit=1]", scan)
-				raw("return run scoreboard players get #spr.found $T")
-			}
-			// As a neighbouring fluid node: claim it when its network holds the whole price.
-			pack.define(scan) {
-				raw("function ${RaLib.Transport.Net.read.asId()}")
-				raw("execute store result score #spr.have $T run data get storage ra:transport cur.amounts.$medium")
-				raw("execute unless score #spr.have $T >= #spr.need $T run return 0")
-				raw("scoreboard players set #spr.found $T 1")
-				raw("tag @s add $SRC")
-			}
-			// As the claimed node. Macro {amount}: a price this pack computed.
-			pack.define(take(medium)) {
-				raw("\$return run function ${RaLib.Transport.Net.take.asId()} {amount:\$(amount),medium:\"$medium\"}")
-			}
-		}
+		registerSprinklerPay()
 
 		val onBreak = pack.blockOnBreak(block, drop = { dropItem(item) }, sound = "minecraft:block.copper_grate.break", cloud = true)
 		pack.blockTick(block, onBreak, BreakTest.NotBlock(Blocks.WAXED_OXIDIZED_COPPER_GRATE)) {}
 	}
 
 	private val column = block.fn("column")
-	private fun find(medium: String) = ref(Ns.FARMING, "blocks/sprinkler/find_$medium")
-	private fun take(medium: String) = ref(Ns.FARMING, "blocks/sprinkler/take_$medium")
-
-	/** Pay `#spr.need` of [medium] to the node [find] claimed, and release it. */
-	private fun Function.payClaimed(medium: String, cond: String = "execute") {
-		raw("$cond store result $S.amount int 1 run scoreboard players get #spr.need $T")
-		raw("$cond as @e[type=marker,tag=$SRC,distance=..2,limit=1] run function ${take(medium).asId()} with $S")
-	}
-
-	private fun Function.release() = raw("tag @e[type=marker,tag=$SRC,distance=..2] remove $SRC")
+	private fun growCrop(id: String) = ref(Ns.FARMING, "blocks/sprinkler/grow/$id")
 
 	/** As the marker, at it. */
 	private fun Function.run() {
@@ -244,10 +222,15 @@ object Sprinkler {
 		raw("scoreboard players set @s ${Obj.COOLDOWN} $WATER_EVERY")
 		raw("scoreboard players set #spr.need $T $WATER_ML_PER_BLOCK")
 		raw("scoreboard players operation #spr.need $T *= #spr.area $T")
-		raw("execute store result score #spr.ok $T run function ${find("water").asId()}")
+		raw("execute store result score #spr.ok $T run function ${SprinklerPay.find("water").asId()}")
 		raw("execute if score #spr.ok $T matches 0 run return run data modify entity @s data.status.water set value \"needs water\"")
-		payClaimed("water")
+		pay("water")
+		// A short take (the network changed since the read) waters nothing and goes back.
+		raw("scoreboard players set #spr.back $T 0")
+		raw("execute if score #spr.paid $T < #spr.need $T run scoreboard players operation #spr.back $T = #spr.paid $T")
+		refund("water")
 		release()
+		raw("execute if score #spr.paid $T < #spr.need $T run return run data modify entity @s data.status.water set value \"needs water\"")
 		raw("function ${waterFill.asId()} with $S")
 		raw("data modify entity @s data.status.water set value \"watering\"")
 		raw("particle minecraft:splash ~ ~1 ~ 1.5 0.3 1.5 0 40 normal ${particleViewersSel()}")
@@ -256,33 +239,38 @@ object Sprinkler {
 
 	/** As the marker, at it: the extra growth, paid in liquid experience. */
 	private fun Function.grow() {
-		// Picks this second: area x 15 / 1024, the remainder rolled.
+		// Picks this second: area x 15 / 2048, the remainder rolled.
 		raw("scoreboard players operation #spr.k $T = #spr.area $T")
 		raw("scoreboard players set #spr.c $T 15")
 		raw("scoreboard players operation #spr.k $T *= #spr.c $T")
 		raw("scoreboard players operation #spr.rem $T = #spr.k $T")
-		raw("scoreboard players set #spr.c $T 1024")
+		raw("scoreboard players set #spr.c $T 2048")
 		raw("scoreboard players operation #spr.rem $T %= #spr.c $T")
 		raw("scoreboard players operation #spr.k $T /= #spr.c $T")
-		raw("execute store result score #spr.roll $T run random value 0..1023")
+		raw("execute store result score #spr.roll $T run random value 0..2047")
 		raw("execute if score #spr.roll $T < #spr.rem $T run scoreboard players add #spr.k $T 1")
 		raw("execute if score #spr.k $T matches ..0 run return 0")
 
-		// The most this second can cost: every pick a growth.
-		raw("scoreboard players set #spr.need $T $XP_ML_PER_GROWTH")
-		raw("scoreboard players operation #spr.need $T *= #spr.k $T")
-		raw("execute store result score #spr.ok $T run function ${find("experience").asId()}")
+		// Every pick is paid for before it is made.
+		raw("scoreboard players set #spr.c $T $XP_ML_PER_GROWTH")
+		raw("scoreboard players operation #spr.need $T = #spr.k $T")
+		raw("scoreboard players operation #spr.need $T *= #spr.c $T")
+		raw("execute store result score #spr.ok $T run function ${SprinklerPay.find("experience").asId()}")
 		raw("execute if score #spr.ok $T matches 0 run return run data modify entity @s data.status.growth set value \"off: no liquid experience\"")
-
+		pay("experience")
+		// Only as many picks as the take paid for; what paid for nothing goes back.
+		raw("scoreboard players operation #spr.k $T = #spr.paid $T")
+		raw("scoreboard players operation #spr.k $T /= #spr.c $T")
 		raw("scoreboard players set #spr.grown $T 0")
-		raw("function ${pick.asId()} with $S")
-		raw("data modify entity @s data.status.growth set value \"4x\"")
-		// Only what grew is paid for; the network was checked for every pick, so this is there.
-		val grew = "execute if score #spr.grown $T matches 1.."
-		raw("$grew run scoreboard players set #spr.need $T $XP_ML_PER_GROWTH")
-		raw("$grew run scoreboard players operation #spr.need $T *= #spr.grown $T")
-		payClaimed("experience", grew)
+		raw("execute if score #spr.k $T matches 1.. run function ${pick.asId()} with $S")
+		raw("scoreboard players operation #spr.used $T = #spr.grown $T")
+		raw("scoreboard players operation #spr.used $T *= #spr.c $T")
+		raw("scoreboard players operation #spr.back $T = #spr.paid $T")
+		raw("scoreboard players operation #spr.back $T -= #spr.used $T")
+		refund("experience")
 		release()
+		raw("execute if score #spr.paid $T < #spr.c $T run return run data modify entity @s data.status.growth set value \"off: no liquid experience\"")
+		raw("data modify entity @s data.status.growth set value \"about 4x\"")
 	}
 
 	/** At one random column: the crop one above, level with or one below the sprinkler, first found. */

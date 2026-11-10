@@ -43,12 +43,12 @@ or one below are all reached.
 | Fluid | What it does | Price |
 | --- | --- | --- |
 | Water | Every 5 seconds, all the farmland in the area becomes fully moist, so the crops grow at their best vanilla rate and the farmland never dries out | 4 mL per block of the area each time (324 mL at radius 4, about a bucket every 75 seconds) |
-| Liquid experience | Once a second, extra growth: crops in the area grow about **4x** as fast as on their own | 10 mL (a tenth of an experience point) per crop stage it grows |
+| Liquid experience | Once a second, extra growth: crops in a moist field grow about **4x** as fast as on their own | 10 mL (a tenth of an experience point) per crop stage it grows |
 
-With both in the network it does both. Experience is only paid for a crop that actually grew:
-the extra growth picks random spots in the area, as the game's own random ticks do, and a spot
-with nothing to grow (dirt, a ripe crop) costs nothing. The network must hold enough for a full
-second of growth before any of it happens.
+With both in the network it does both. The extra growth picks random spots in the area, as the
+game's own random ticks do. A second's experience is taken from the network before anything
+grows, and what a spot with nothing to grow (dirt, a ripe crop) did not use is put back, so in
+the end only crops that grew are paid for.
 
 **Crops it grows:** wheat, carrots, potatoes, beetroots, nether wart, melon and pumpkin stems,
 torchflower crops and sweet berry bushes. A ripe stem still needs the game's own growth to set a
@@ -56,11 +56,13 @@ melon or pumpkin, and a torchflower crop stops one stage short of the flower.
 
 | Setting | Default | Range | Meaning |
 | --- | --- | --- | --- |
-| `radius` | 4 | 1 to 8 (admins up to 32) | How many blocks each way the square reaches |
+| `radius` | 4 | 1 to 8 (admins up to 16) | How many blocks each way the square reaches |
 
 Change it with the [Data Handler](tools.md) (Shift + right-click the Sprinkler). Server admins
-set the radius new Sprinklers start with on the **Farming** settings page, and can switch the
-Sprinkler or the Breeder off for the world there.
+set the radius new Sprinklers start with on the **Farming** settings page, 1 to 16, the same
+ceiling as their own. A default above 8 gives every new Sprinkler that radius whoever places it;
+a player can then only set it within 1 to 8. The page can also switch the Sprinkler or the
+Breeder off for the world.
 
 The [Goggles](tools.md) show its state (running or locked), whether it is watering, whether the
 experience boost is on, and its radius.
@@ -103,11 +105,16 @@ experience boost is on, and its radius.
   second on the network machines' clock (the one the Spout and the Tesla Coil use), which only runs
   while one of them is loaded. Watering is a single `fill` of the farmland in the area, which
   changes nothing on farmland that is already wet.
-- **Growth rate.** The vanilla rate is 3 random ticks per 4096 blocks per game tick. The Sprinkler
-  adds three times that: `area x 15 / 1024` picks a second (1.2 at radius 4), the remainder
-  rolled, each pick growing the crop at a random spot by one stage. A random tick does not always
-  grow a crop and a pick does, so the boost is a little stronger than 4x on dry farmland and close
-  to 4x on wet farmland.
+- **Growth rate.** The game gives each block 3 random ticks per 4096 per game tick, and a random
+  tick grows a crop in a full, moist field 1 time in 6 (1 in 13 on dry farmland). The Sprinkler
+  adds three times the moist-field figure: `area x 15 / 2048` growths a second (0.6 at radius 4,
+  4 at radius 12), the remainder rolled, each growing the crop at a random spot by one stage. With
+  the game's own growth that is about 4x on moist farmland, which its water keeps; on dry
+  farmland the game is slower, so the Sprinkler's share is larger.
+- **Paid first.** The second's experience is taken before any crop grows, and only as many growths
+  as were really taken are made; what a spot with nothing to grow did not use is put back into
+  the same network. A short take of water (the network changed since it was read) is put back and
+  waters nothing.
 - **Physical blocks.** The Sprinkler is a waxed oxidized copper grate. The Breeder is a barrel
   wearing a dispenser skin, so redstone never makes it throw its food.
 - **Ids.** The Breeder keeps the `ra_interactive` namespace it was created in: its functions

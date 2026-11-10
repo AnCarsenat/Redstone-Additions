@@ -293,10 +293,11 @@
   advancement tab.
 - **Sprinkler** (Farming). Waters the farmland around it from a fluid network: put a pipe, tank or
   drain against any face and fill it with water, and every 5 seconds all the farmland in its
-  square (`radius` blocks each way, 1 to 8, default 4; admins up to 32) becomes fully moist, for 4
+  square (`radius` blocks each way, 1 to 8, default 4; admins up to 16) becomes fully moist, for 4
   mL of water per block of the square. With liquid experience in the network, the crops in the
-  square also grow about 4 times as fast: once a second it grows crops at random spots, at three
-  times the game's own rate, for 10 mL (a tenth of a point) per stage that actually grew. It
+  square also grow about 4 times as fast on moist farmland: once a second it grows crops at
+  random spots, three times as often as the game itself would, for 10 mL (a tenth of a point) per
+  stage. The experience is taken first and what did not grow anything goes back to the network. It
   reaches crops level with it, one block above or one below, so it works in place of a farm's
   water hole or standing among the crops. Wheat, carrots, potatoes, beetroots, nether wart, melon
   and pumpkin stems, torchflower crops and sweet berry bushes. Redstone locks it. The Goggles show

@@ -58,7 +58,7 @@ is the shortcut: one sample per module, and where to read about it.
 | [Ender Links](ender-links.md) | 3 remote vaults, teleport anchor, Anchor Terminal and Anchor Tablet | ![Teleport Anchor recipe](images/recipes/ra_ender/teleport_anchor.png){ width="220" } |
 | [Displays](displays.md) | Gauge Bar, Item Hologram and Text Screen | ![Gauge Bar recipe](images/recipes/ra_displays/gauge_bar.png){ width="220" } |
 | [Automation](automation.md) | Crafter Controller and the Pattern item | ![Crafter Controller recipe](images/recipes/ra_automation/crafter_controller.png){ width="220" } |
-| [Security](security.md) | Keypad Controller, opened by a Pattern | ![Keypad Controller recipe](images/recipes/ra_security/keypad.png){ width="220" } |
+| [Security](security.md) | Keypad Controller, a crafter whose slots are the code | ![Keypad Controller recipe](images/recipes/ra_security/keypad.png){ width="220" } |
 
 Current pack totals:
 

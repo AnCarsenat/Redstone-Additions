@@ -321,6 +321,24 @@
   and pumpkin stems, torchflower crops and sweet berry bushes. Redstone locks it. The Goggles show
   its state, the watering, the experience boost and the radius. Crafted from a copper grate, four
   copper ingots and a bucket.
+- **Tree Farm** (Farming). Plants a sapling on the first free block beside it that stands on dirt
+  or grass, and fells the tree once it has grown: the logs of that wood connected to the trunk (and
+  never below its base), then the tree's own leaves that were not placed by hand, within 12 blocks
+  of the tree and at most 96 logs and 384 leaves. The drops, as if cut with an axe (logs,
+  saplings, sticks, apples), go into the container below it, or fall on the spot when it has fewer
+  than three free slots; saplings and bone meal come from the container above. With its
+  *bone_meal* property on (the default) it uses one bone meal a second on the sapling, as a player
+  would. Grows oak, spruce, birch, jungle, acacia, cherry and poplar from single saplings. Redstone
+  locks it. Runs once a second on the network machines' clock. The Goggles show what it is doing
+  and how many trees it has felled. Crafted from six logs, an iron axe, a hopper and redstone.
+- **Capture Net** and **Master Capture Net** (Farming). Right-click a mob to catch it into the net
+  and carry it; right-click a block to let it out there. The mob keeps its name, health, equipment,
+  owner and, for a villager, its trades; the net shows what it holds. The Capture Net catches farm
+  animals and other small peaceful mobs; the Master Capture Net, a Capture Net upgraded with a
+  nether star, catches any mob but the wither, the ender dragon and players. Neither catches a
+  leashed mob, one with a rider, or a pet tamed by another player. The mob is only removed once the
+  net holds it, and the net is only emptied once the mob is back. The Capture Net is crafted from
+  three string and two sticks; the upgrade keeps whatever the net holds.
 
 ### Changed
 

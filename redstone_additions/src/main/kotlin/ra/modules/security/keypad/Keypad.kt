@@ -16,7 +16,6 @@ import ra.core.block.blockOnBreak
 import ra.core.block.dropItem
 import ra.core.block.finishPlacement
 import ra.core.block.gogglesHeader
-import ra.core.block.killVanillaDrop
 import ra.core.block.markerSel
 import ra.core.block.newMarkerSel
 import ra.core.block.placeBlock
@@ -37,10 +36,10 @@ import ra.modules.security.keypad.KeypadUse.registerKeypadUse
 import ra.modules.security.keypad.KeypadUse.startIfIdle
 
 /**
- * Keypad Controller: a vanilla crafter whose slot toggles are the keypad. Players open its grid
- * and click empty slots to switch them off and on; the code is the set of switched-off slots.
+ * Keypad: a vanilla crafter whose slot toggles are the keypad. Players open its grid and click
+ * empty slots to switch them off and on; the code is the set of switched-off slots.
  *
- * - A combination is entered once the grid has stopped changing for 4 seconds (see [KeypadUse]).
+ * - A combination is entered once the grid has stopped changing for 1 second (see [KeypadUse]).
  *   The grid is then switched back on, whatever happened.
  * - No code yet: the first combination entered (at least one slot off) becomes the code.
  * - Code set: the right combination gives a redstone pulse of `pulse` ticks and a chime; a wrong
@@ -51,10 +50,11 @@ import ra.modules.security.keypad.KeypadUse.startIfIdle
  * - Items put into the crafter are thrown out of its front face the tick they are seen: it never
  *   crafts.
  *
- * THE PULSE. A crafter is no power source, so for the pulse the crafter is swapped for a powered
- * target block (`target[power=15]`, a source that powers dust and components around it, as the
- * Keypad always was), drawn as a lit crafter by a block display. When the pulse ends the crafter
- * comes back, facing the same way, empty and with every slot on.
+ * THE PULSE. The pack's standard output, as the sensors give it: for `pulse` ticks every iron
+ * block in the 3x3x3 around the keypad is a redstone block, then iron again. The crafter itself
+ * stays a crafter. A pulse cut short still ends in iron: a break reverts the blocks before the
+ * marker goes, and a keypad still tagged pulsing after a reload or an unload is finished by the
+ * clock ([KeypadUse.startIfIdle]).
  *
  * SECRECY. The code lives in `data.data.code`, never in `data.properties`: the Data Handler, the
  * Clipboard and the Goggles only ever read properties and status, so none of them can show or
@@ -65,12 +65,12 @@ import ra.modules.security.keypad.KeypadUse.startIfIdle
  * takes no items. `data.data.due`: the game time the current entry
  * counts as entered. `data.data.owner`: the placer's UUID. `data.data.fails`: wrong tries since
  * the last right one or lockout. `data.data.locked_until` / `data.data.until`: game times, the end
- * of the lockout and of the pulse. `data.data.orient`: the crafter's orientation during a pulse.
+ * of the lockout and of the pulse.
  * `data.properties.owner` (read-only) and `data.status.owner`: the placer's name, read from a
  * player head filled with their profile.
  */
 object Keypad {
-	val block = CustomBlock(Ns.SECURITY, "keypad", "Keypad Controller", model = "minecraft:crafter", dirType = 3)
+	val block = CustomBlock(Ns.SECURITY, "keypad", "Keypad", model = "minecraft:crafter", dirType = 3)
 	val item = block.loreItem {
 		lore(
 			loreLine("Gives a redstone pulse for the right code", "gray"),
@@ -83,8 +83,6 @@ object Keypad {
 	/** Wrench, plain RMB: the owner or an admin clears the code. As the marker. */
 	private val wrenchClear = block.fn("wrench_clear")
 	private val cyclePulse = block.fn("cycle_pulse")
-	/** As a marker broken mid-pulse: the target's drop and the crafter display go. */
-	private val pulseBreak = block.fn("pulse_break")
 	/** As each marker, at it, every tick: broken, items to throw out, a grid to watch. */
 	private val look = block.fn("look")
 	/** The item display that holds a player head for one command, while the placer's profile is read from it. */
@@ -168,23 +166,17 @@ object Keypad {
 		}
 
 		val onBreak = pack.blockOnBreak(block, drop = { dropItem(item) }, sound = STONE_BREAK_SOUND, cloud = true) {
-			// Broken mid-pulse: the block was the target standing in for the crafter.
-			raw("execute if entity @s[tag=${KeypadUse.PULSE}] run function ${pulseBreak.asId()}")
+			// Broken mid-pulse: the redstone blocks go back to iron before the marker goes.
+			raw("execute if entity @s[tag=${KeypadUse.PULSE}] run ${KeypadUse.PULSE_OFF_FILL}")
 		}
-		pack.define(pulseBreak) {
-			killVanillaDrop("minecraft:target")
-			raw("execute align xyz positioned ~0.5 ~0.5 ~0.5 run kill @e[type=minecraft:block_display,tag=${KeypadUse.SKIN},distance=..0.4]")
-		}
-		// A keypad is broken when its block is no crafter, or, while it pulses, no target either.
-		// Every tick: two block tests and an `if items` test (the container's slots, no NBT read).
+		// A keypad is broken when its block is no crafter.
+		// Every tick: one block test and an `if items` test (the container's slots, no NBT read).
 		// Items are thrown out every tick because a crafter crafts in a scheduled block tick, which
 		// runs after the data pack's tick, so the craft never sees them. The grid is read (an NBT
 		// read) only every 4 ticks (`#kp.ph` 0), only with a player within 10 blocks, and only when
-		// a slot is off or an entry is under way.
+		// a slot is off or an entry is under way (which is also when a settled entry is entered).
 		pack.define(look) {
-			raw("execute unless block ~ ~ ~ minecraft:crafter unless block ~ ~ ~ minecraft:target run return run function ${onBreak.asId()}")
-			raw("execute unless block ~ ~ ~ minecraft:crafter unless entity @s[tag=${KeypadUse.PULSE}] run return run function ${onBreak.asId()}")
-			raw("execute unless block ~ ~ ~ minecraft:crafter run return 0")
+			raw("execute unless block ~ ~ ~ minecraft:crafter run return run function ${onBreak.asId()}")
 			raw("execute if items block ~ ~ ~ container.* * run function ${KeypadUse.eject.asId()}")
 			raw("execute unless score #kp.ph $T matches 0 run return 0")
 			raw("execute unless entity @a[distance=..10,limit=1] run return 0")

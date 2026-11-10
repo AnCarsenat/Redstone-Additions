@@ -318,7 +318,7 @@
   the other shape; the Data Handler edits all four, and the Goggles also show the last cart's
   result. The route is compared with the cart's data, never put into a command, so any text is
   safe. Carts are looked for every other tick, with two small boxes per Route Rail. Crafted from six copper ingots, a rail, a name tag and a redstone dust.
-- **Audio**, a new module (`ra_audio`, [Audio](audio.md)): blocks that make sound on a redstone
+- **Audio**, a new module (`ra_audio`, [Audio](https://ancarsenat.github.io/Redstone-Additions/audio/)): blocks that make sound on a redstone
   signal. Sounds come from a fixed list in the pack, picked by number, and are heard by every
   player within the block's *range* (1 to 64 blocks; admins up to 256) at its *volume* (10 to
   100 %).

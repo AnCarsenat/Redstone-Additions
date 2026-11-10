@@ -1,9 +1,6 @@
 package ra.modules.wires.blocks.creative_fluid
 
-import io.github.ayfri.kore.features.predicates.providers.sub
 import ra.core.computeScore
-import ra.core.provider
-import ra.core.scoreOf
 import io.github.ayfri.kore.arguments.types.literals.literal
 import io.github.ayfri.kore.arguments.types.literals.self
 import io.github.ayfri.kore.commands.data
@@ -138,7 +135,7 @@ object CreativeFluid : PackPart {
 			raw("execute if score #cr.known ra.wires.tmp matches ..0 run return run data modify entity @s data.status.state set value \"Unknown medium\"")
 
 			function(RaLib.Transport.Net.read)
-			computeScore("#cr.fill", "ra.wires.tmp", provider { sub(scoreOf("#net_capacity", "ra.tr.tmp"), scoreOf("#net_amount", "ra.tr.tmp")) })
+			computeScore("#cr.fill", "ra.wires.tmp", RaLib.Transport.Net.free)
 
 			raw("execute if score #cr.fill ra.wires.tmp matches ..0 run return run data modify entity @s data.status.state set value \"Network full\"")
 

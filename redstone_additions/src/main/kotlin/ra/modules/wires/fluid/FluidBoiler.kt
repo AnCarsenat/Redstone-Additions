@@ -1,9 +1,6 @@
 package ra.modules.wires.fluid
 
-import io.github.ayfri.kore.features.predicates.providers.sub
 import ra.core.computeScore
-import ra.core.provider
-import ra.core.scoreOf
 import io.github.ayfri.kore.arguments.types.literals.literal
 import io.github.ayfri.kore.arguments.types.literals.self
 import io.github.ayfri.kore.commands.data
@@ -52,7 +49,7 @@ object FluidBoiler : PackPart {
 			// more -- steam has its own entry alongside whatever is already in there, and the
 			// only thing that can turn the boiler away is having no room for 1000 mL.
 
-			computeScore("#boil_free", "ra.wires.tmp", provider { sub(scoreOf("#net_capacity", "ra.tr.tmp"), scoreOf("#net_amount", "ra.tr.tmp")) })
+			computeScore("#boil_free", "ra.wires.tmp", RaLib.Transport.Net.free)
 			raw("execute unless score #boil_free ra.wires.tmp matches 1000.. run return 0")
 
 			scoreboard.players.set(literal("#boil_dst"), "ra.wires.tmp", 1)

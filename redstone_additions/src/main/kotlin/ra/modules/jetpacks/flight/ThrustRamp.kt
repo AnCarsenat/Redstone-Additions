@@ -8,6 +8,8 @@ import io.github.ayfri.kore.features.predicates.providers.minus
 import io.github.ayfri.kore.features.predicates.providers.plus
 import io.github.ayfri.kore.features.predicates.providers.times
 import io.github.ayfri.kore.features.predicates.providers.unaryMinus
+import ra.core.Ns
+import ra.core.namedProvider
 import ra.core.provider
 
 /**
@@ -24,10 +26,16 @@ import ra.core.provider
  *     down: 100 -> 75 -> 57 -> 43 -> 33 -> 25 -> 19 -> 13 -> 7 -> 1 -> 0
  *
  * Fast at first and gentle at the end on both ways: the push is felt at once but never lands as a
- * step. These providers are the whole formula -- a candidate for a shared `number_provider` file
- * (the "shared formulas" plan item) without touching the callers.
+ * step. [up] and [down] are the whole formula; applied to the player's own throttle they are the
+ * named providers [UP] and [DOWN], which is what the Thruster runs.
  */
 object ThrustRamp {
+	/** Named provider `ra_jetpacks:flight/ramp_up`: [up] of the player's own `ra.jp.ramp` (`compute entity @s`). */
+	val UP = namedProvider(Ns.JETPACKS, "flight/ramp_up")
+
+	/** Named provider `ra_jetpacks:flight/ramp_down`: [down] of the player's own `ra.jp.ramp`. */
+	val DOWN = namedProvider(Ns.JETPACKS, "flight/ramp_down")
+
 	/** Full throttle. */
 	const val FULL = 100
 

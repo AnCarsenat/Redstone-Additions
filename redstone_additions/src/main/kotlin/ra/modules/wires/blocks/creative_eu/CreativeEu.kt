@@ -1,9 +1,6 @@
 package ra.modules.wires.blocks.creative_eu
 
-import io.github.ayfri.kore.features.predicates.providers.sub
 import ra.core.computeScore
-import ra.core.provider
-import ra.core.scoreOf
 import io.github.ayfri.kore.commands.data
 import io.github.ayfri.kore.commands.function
 import ra.api.Goggles
@@ -60,7 +57,7 @@ object CreativeEu : PackPart {
 			// here.
 
 			function(RaLib.Transport.Net.read)
-			computeScore("#cr.fill", "ra.wires.tmp", provider { sub(scoreOf("#net_capacity", "ra.tr.tmp"), scoreOf("#net_amount", "ra.tr.tmp")) })
+			computeScore("#cr.fill", "ra.wires.tmp", RaLib.Transport.Net.free)
 
 			raw("execute if score #cr.fill ra.wires.tmp matches ..0 run return run data modify entity @s data.status.state set value \"Grid full\"")
 

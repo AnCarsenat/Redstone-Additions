@@ -157,6 +157,8 @@ object DataHandler {
 			raw("scoreboard players add #dh.stamp $mid 1")
 			raw("execute unless score #dh.stamp $mid matches 1..${DataHandlerRegistry.STAMP_MAX} run scoreboard players set #dh.stamp $mid 1")
 			raw("scoreboard players operation @s ${DataHandlerRegistry.MENU} = #dh.stamp $mid")
+			// The block this menu shows: buttons that change it at once (a vec3 nudge) check it.
+			raw("scoreboard players operation @s ${DataHandlerRegistry.MENU_SEL} = @s ${DataHandlerSelection.SEL}")
 			raw("tellraw @s \"\"")
 			raw("""tellraw @s [{text:"══════ ",color:"dark_gray"},{text:"Data Handler",color:"aqua",bold:true},{text:" ══════",color:"dark_gray"}]""")
 			raw("""tellraw @s [{text:"Block: ",color:"gray"},{nbt:"block_type",storage:"ra:dh",color:"gold"}]""")

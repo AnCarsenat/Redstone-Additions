@@ -3,7 +3,19 @@
 > A simple way to enter relative, look-relative (`^`) and absolute coordinates for blocks that
 > need a position. (planning/v6.0.3-ideas.md, Rules and UI)
 
-Status: proposal. Nothing here is built yet; implementation waits for the maintainer's choice.
+Status: built in v6.0.3 (#155) as the `vec3` property type (`ra/core/Vec3Props.kt`): S2 storage
+and E2 + E4 entry, with these deviations:
+
+- The frame (block's face, relative `~`, absolute) is fixed per property, not a mode byte per
+  value; `^` is not offered (no current user needs it).
+- No dialog (E3). Instead of sliders, the editor has per-axis **[Type]** (E2, one axis per prompt)
+  and **[-X]**/**[+X]** nudges with a step chosen per property (1/4/16 blocks, 1/16..1 for display
+  offsets).
+- **[Pick]** takes the block under the crosshair when the chat button is clicked (no 30-second
+  arming), up to 24 blocks.
+- The point is shown with a glowing block display outline for 10 seconds, not particles.
+- The Clipboard does not paste an absolute position (its range is measured from the block).
+- Boxer / Unboxer stay on `COORDS` text, as recommended.
 
 ## The problem
 

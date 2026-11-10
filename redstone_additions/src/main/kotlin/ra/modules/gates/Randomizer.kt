@@ -43,10 +43,11 @@ object Randomizer {
 			number("chance", min = 0, max = 100)
 		}
 		pack.blockGive(block)
-		pack.blockRecipe(block, unlockedBy = Items.BOOKSHELF) {
-			pattern(" R ", "RBR", " R ")
-			key("B", Items.BOOKSHELF)
+		pack.blockRecipe(block, unlockedBy = Items.DROPPER) {
+			pattern("RDR", "SSS")
 			key("R", Items.REPEATER)
+			key("D", Items.DROPPER)
+			key("S", Items.STONE)
 		}
 		pack.blockRegisterMessage(block)
 		pack.define(block.handlePlacement) { handlePlacement() }

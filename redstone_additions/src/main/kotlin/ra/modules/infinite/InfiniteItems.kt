@@ -71,11 +71,11 @@ object InfiniteItems {
 
 		pack.shapedRecipe(
 			Ns.INFINITE, "generator_casing", casing.recipeResult(Items.REPEATING_COMMAND_BLOCK),
-			Unlock(Items.NETHERITE_SCRAP), RecipeCategory.MISC,
+			Unlock(Items.NETHERITE_INGOT), RecipeCategory.MISC,
 		) {
 			pattern("GGG", "GNG", "GGG")
 			key("G", Items.COPPER_GRATE)
-			key("N", Items.NETHERITE_SCRAP)
+			key("N", Items.NETHERITE_INGOT)
 		}
 
 		// Sacrifice recipes for the cores, listed in #ra_enchanting:recipes. Input: storage

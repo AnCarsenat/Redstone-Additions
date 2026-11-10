@@ -106,10 +106,10 @@ object SignalCalculator {
 		wrenchCycle(block.id, WrenchCycle("Operation", "operation", cycleOperation))
 		pack.blockGive(block)
 		pack.blockRecipe(block, unlockedBy = Items.COMPARATOR) {
-			pattern(" T ", "CQC")
-			key("T", Items.TARGET)
+			pattern("CQC", "SSS")
 			key("C", Items.COMPARATOR)
-			key("Q", Items.QUARTZ_BRICKS)
+			key("Q", Items.QUARTZ)
+			key("S", Items.STONE)
 		}
 		pack.blockRegisterMessage(block)
 		pack.define(block.handlePlacement) { handlePlacement() }

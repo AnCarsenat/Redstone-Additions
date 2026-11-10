@@ -50,6 +50,20 @@ This page mirrors key datapack milestones from the main project changelog.
   Detector's. Read once a second on the world sensors' clock. The Goggles show how many names are
   listed, the radius and the output. Crafted from five copper ingots, a book and quill, an observer
   and two redstone.
+- **Block Detector** (Sensors). Turns on while the block at its *target* is its *block*: a block
+  id or a block tag (`#minecraft:logs`), set from the hand in the Data Handler; empty means any
+  block but air. The target is a position from the detector, 16 blocks each way (admins 64); a new
+  detector watches the block in front of it. Output as the Entity Detector's, read once a second
+  on the world sensors' clock. The Goggles show the block, the target and the output. Crafted from
+  five copper ingots, an eye of ender, an observer and two redstone.
+- **Positions in the Data Handler.** A setting that is a position or an offset (the Block
+  Detector's target, a display's offset) is three whole numbers with an editor of its own:
+  **[Edit]** opens one row per axis with **[Type]** (the number prompt, showing the range) and
+  **[-X]**/**[+X]** buttons that move it by a chosen step (1, 4 or 16 blocks; 1/16, 1/4 or 1 block
+  for an offset), **[Pick]** to take the block you are looking at, and **[Reset]**. The block a
+  position points at is outlined in green while you edit. Each block sets the range, and admins
+  get a wider one where the block has one, marked **(admin)**. Nothing typed is ever pasted into a
+  command.
 - **Network Gauge** (Transport Networks). A redstone signal, 0 to 15, from how full a network
   is: `ceil(15 × stored / capacity)`, so any contents give at least 1 and only a full network gives
   15, as a comparator reads a chest. One block for every network: place it against a pipe, tank,
@@ -210,17 +224,25 @@ This page mirrors key datapack milestones from the main project changelog.
   carries data or a description of its own (another pack's item, the Goggles) is refused.
 - **Displays** (new module, `ra_displays`). Blocks that show something with display entities;
   `/function ra_displays:items/give_all` gives them, and the settings have a Displays page to turn
-  each one off.
+  each one off and to set the scale new ones get. Every display can be configured after it is
+  placed, with the Data Handler (and the Wrench for the choices): **facing** (the face it is
+  drawn on or floats from, all six), **direction** (how it is turned on that face), **colour**,
+  **position** (`offset`, x, y and z each -16 to 16 sixteenths of a block) and **scale** (25 % to 400 %,
+  admins up to 1600 %). A Data Handler change shows within a second.
 - **Gauge Bar** (Displays). A bar on its front face, filled to the redstone level feeding it, 0 to
   15, from any side; a repeater or comparator pointing in fills it. It faces the way it was placed,
-  up and down included. Shift+right-click with the Wrench changes the colour (twelve) or turns the
-  bar vertical; the Goggles show the level. The fill is only redrawn when the level changes, and
-  slides to the new length. Crafted from three glass panes, two redstone, a comparator and three
-  polished blackstone.
+  up and down included. It is drawn as text, like the Text Screen: fifteen segments, one per
+  level, lit in the fill colour and the rest in the track colour, crisp at any scale. *direction*
+  is which way it fills (from the left, the right, the bottom or the top); *color* and
+  *track_color* take a colour name or `#RRGGBB`; *background* puts a dark plate behind it. The
+  Goggles show the level. The bar is only redrawn when the level changes. Crafted from three
+  glass panes, two redstone, a comparator and three polished blackstone.
 - **Item Hologram** (Displays). A barrel that shows the first item inside it floating above its
   lid, turning slowly, with the item's name (its anvil name, or its usual name in your language)
   over it. Fill it by hand or with a hopper or an Item Pipe; the hologram follows within a second.
-  Shift+right-click with the Wrench turns the spin or the name off. Nothing runs per tick: one
+  It can float out of any face; *direction* is where a still item faces, *color* the name's colour
+  (a colour name or `#RRGGBB`). Shift+right-click with the Wrench turns the spin or the name off,
+  or changes the rest. Nothing runs per tick: one
   check a second, and the turning is done by the client. Crafted from a glass block, two amethyst
   shards, an ender pearl and a barrel.
 - **Text Screen** (Displays). A barrel with a dark screen on its lid that shows one line of
@@ -229,7 +251,8 @@ This page mirrors key datapack milestones from the main project changelog.
   (an anvil name, or the usual name in your language); 0 or an empty slot leaves the tube dark,
   and an empty barrel shows the level itself in large digits. The text is only rewritten when what
   it shows changes; new contents show within a second. It faces the way it was placed, up and
-  down included, and breaking it spills the barrel. Crafted from three glass panes, two glowstone
+  down included (the lid follows a new facing, contents kept); *direction* turns the text a
+  quarter at a time and *color* takes a colour name or `#RRGGBB`. Breaking it spills the barrel. Crafted from three glass panes, two glowstone
   dust, a comparator and a barrel.
 - **Automation**, a new module (`ra_automation`, [Automation](automation.md)): blocks and items
   that run vanilla machines for you. Its settings page lists its blocks, and it has its own branch
@@ -250,21 +273,67 @@ This page mirrors key datapack milestones from the main project changelog.
   the Pattern. The Goggles show its state and how many times it has fired. Crafted from five iron
   ingots, a redstone dust, two target blocks and a crafter.
 - **Security**, a new module (`ra_security`, [Security](security.md)): blocks that open only for the right code. Its
-  settings page lists its blocks and the Keypad's defaults, and it has its own branch in the
+  settings page lists its blocks and the Keypad Controller's defaults, and it has its own branch in the
   advancement tab.
-- **Keypad** (Security). A target block locked by a Pattern. Its owner (whoever placed it)
-  sneak + right-clicks it with a recorded Pattern to set the code; anyone then right-clicks it with
-  a Pattern to enter one, and the Pattern stays in their hand. The right one makes the Keypad give a
-  redstone pulse (`pulse`, 20 ticks by default) and chime; a wrong one buzzes, and after three
-  wrong tries in a row it refuses every try for 30 seconds (`max_attempts` and `lockout`, which only
-  admins can change). Only the owner or an admin can change the code once it is set; a blank
-  Pattern clears it, and so does a plain Wrench click. The code is never shown: the Goggles say only
-  whether one is set, who owns the Keypad and its state, and the Data Handler and Clipboard never
-  see it. Shift+RMB with the Wrench steps the pulse through 2, 10, 20 and 40 ticks. Nothing runs
-  while nobody uses it. Crafted from three stone buttons, four iron ingots, a target block and a
-  redstone dust.
+- **Keypad Controller** (Security). A crafter, placed facing you like a vanilla one, whose slots are the keypad: open it and click its
+  empty slots to switch them off and on, and the set of slots switched off is the code. A
+  combination is entered once the grid has stopped changing for 4 seconds, and every slot is then
+  switched back on. The first combination entered becomes the code ("code set"); after that the
+  right one gives a redstone pulse (`pulse`, 20 ticks by default) and a chime, and a wrong one
+  buzzes; after three wrong tries in a row it refuses every try for 30 seconds (`max_attempts` and
+  `lockout`, which only admins can change). For the pulse it turns into a powered target block,
+  drawn as a lit crafter, so dust, repeaters and components next to it pick it up; then it is a
+  crafter again. Its owner (whoever placed it) or an admin clears the code with a plain Wrench
+  click, and the next combination entered sets a new one. It never crafts: items put into it are
+  thrown back out at once. The code is never shown: the Goggles say only whether one is set, who
+  owns the Keypad Controller and its state, and the Data Handler and Clipboard never see it.
+  Shift+RMB with the Wrench steps the pulse through 2, 10, 20 and 40 ticks. Crafted from three
+  stone buttons, four iron ingots, a crafter and a redstone dust.
 
 ### Changed
+
+- **Recipes rebalanced.** Every recipe now asks for things you can get in survival at the point
+  in the game where the block is worth having, is laid out like a vanilla recipe, and uses
+  ingredients that match what the block does. No two recipes share a grid, with each other or
+  with vanilla. Items you already have are not touched; only new crafts cost the new price. The
+  [Recipe Atlas](recipe-atlas.md) shows every new grid. Notable changes:
+  - **Logic Gates** are all built like a repeater: a row of three stone under the part that does
+    the work. Delayer: three repeaters. Extender: repeaters and a slime ball. Shortener: repeaters
+    and shears. Randomizer: repeaters and a dropper. Edge Detector: repeaters and an observer.
+    UNI Gate: redstone torches and a repeater. Counter: a comparator over repeaters and a hopper.
+    Signal Calculator: comparators and quartz. Sequencer: repeaters and a comparator. The simple
+    gates no longer need quartz from the Nether.
+  - **Wireless Emitter, Receiver and the Analog pair** no longer need End stone or purpur: a
+    lightning rod as the antenna, amethyst shards (or comparators for the analog ones) and a row
+    of smooth stone slabs. The Emitter has a redstone torch in the middle, the Receiver a repeater.
+  - **Block Breaker, Block Placer, Breeder and Fan** are crafted like a dispenser, with the part
+    that does the job in the middle: an iron pickaxe, a piston, a hay bale, a breeze rod (the Fan
+    no longer uses feathers). Cobblestone, blackstone and cobbled deepslate all work.
+  - **Boxer** (piston and barrel) and **Unboxer** (sticky piston and barrel) in a cobblestone frame.
+  - **Item Pipe**: six iron ingots and a hopper make 8.
+  - **Infinite Lava Cauldron** needs magma blocks and blaze rods: endless lava is Nether-tier, like
+    a blaze farm.
+  - **Tag Adder** gains a redstone; the **Tag Remover** is a name tag and a water bucket.
+  - **Multiblock Bases**: Copper, Gold and Diamond now take eight ingots or diamonds around a
+    redstone, like the Iron Base, instead of eight blocks (the Diamond Base cost 72 diamonds).
+  - **Generator Casing** takes a netherite ingot instead of a scrap, so a Nether Generator no
+    longer pays for itself in ten minutes.
+  - **Book Upgrader** needs a nether star: raising books past their vanilla maximum is a
+    post-Wither upgrade.
+  - **Ender Item Vault** is built around an ender chest with purpur, like the other two vaults;
+    the **Teleport Anchor** takes ender eyes instead of pearls.
+  - **Iron Jetpack Kit**: four iron ingots, a blaze rod, a redstone block and two fire charges as
+    the exhaust. **Thruster Kit**: firework rockets and wind charges.
+  - **Solar Panel** is built around a daylight detector; the **Gas Valve** is the iron twin of the
+    Liquid Valve.
+  - **Prices**: the Disenchanter costs 3000 mL of experience per enchantment (was 1000), the Book
+    Printer 2500 mL per level (was 1000), and the Book Upgrader's base price is 1000 mL (was 500).
+    A server that already saved its own value in the settings keeps it.
+  - **Recipe book**: recipes unlock on an item they actually use (the Wrench on iron, the Data
+    Handler on a redstone torch, the Entity Detector on an observer, the Clock on a clock...). The
+    Big Torch and the Enchanted Coal Block now appear in the recipe book once you hold Enchanted
+    Coal or an Enchanted Coal Block. The Wrench and the Data Handler moved to the Equipment tab.
+  - The Creative EU Source and Creative Fluid Source stay creative only, with no recipe.
 
 - **The Liquid Drain is now the Fluid Drain, and also vents gases** (Transport Networks). Powered
   by redstone on a gas network, it lets the gas out of its front with the gas's effect, renewed
@@ -342,6 +411,9 @@ This page mirrors key datapack milestones from the main project changelog.
   (`profile:"BoxMan01234"`), which the game has to look up, and the crate showed a broken head
   when it could not. The skin itself is now written into the crate. Crates made before keep the old
   head until the Boxer next adds a stack to them, which gives them the skin.
+- **A Liquid Drain pouring water in the Nether makes it evaporate.** The check for dimensions
+  where water evaporates used the predicate key from before 26.3, so it never ran, and its sizzle
+  sound had a pitch the game refuses. Both are fixed.
 
 ### For contributors
 

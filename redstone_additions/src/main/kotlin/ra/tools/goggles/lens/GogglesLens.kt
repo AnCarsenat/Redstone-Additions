@@ -64,10 +64,10 @@ object GogglesLens {
 			line("Goggles Lens - off", "dark_gray"),
 			line("/trigger $TRIGGER switches it on", "dark_gray"),
 		)
-		return """{function:"minecraft:set_components",components:{"minecraft:custom_data":$data,"minecraft:lore":${lore.joinToString(",", "[", "]")}}}"""
+		return """{type:"minecraft:set_components",components:{"minecraft:custom_data":$data,"minecraft:lore":${lore.joinToString(",", "[", "]")}}}"""
 	}
 
-	private const val STRIP = """{function:"minecraft:set_components",components:{"!minecraft:custom_data":{},"!minecraft:lore":{}}}"""
+	private const val STRIP = """{type:"minecraft:set_components",components:{"!minecraft:custom_data":{},"!minecraft:lore":{}}}"""
 
 	fun Ra.registerGogglesLens() {
 		pack.define(give) {

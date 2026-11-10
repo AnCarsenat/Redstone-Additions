@@ -138,7 +138,7 @@ object DataHandlerProps {
 		}
 
 		// {name}: what is this property, and what may this player do with it?
-		//   #dh.type  0 text  1 number  2 bool  3 list  4 item id  5 compound (guessed only)
+		//   #dh.type  0 text  1 number  2 bool  3 list  4 item id  5 compound (guessed only)  6 vec3
 		//   #dh.decl  1 declared (the block type's schema, or the instance for a dynamic one),
 		//             0 guessed from the value
 		//   #dh.lock  0 editable  1 read-only  2 admin only, and this player is not an admin
@@ -329,6 +329,7 @@ object DataHandlerProps {
 		registerDataHandlerTypes()
 		registerPropRows()
 		registerDataHandlerUnique()
+		with(DataHandlerVec3) { registerDataHandlerVec3() }
 	}
 
 	/** On a player: server-settings access. */
@@ -395,6 +396,8 @@ object DataHandlerProps {
 		executeReturnRun("if score #dh.lock $T matches 1..2 if score #dh.type $T matches 3 if score #dh.decl $T matches 1", DataHandlerEntries.renderLocked, "with storage ra:dh q")
 		raw("execute if score #dh.lock $T matches 1..2 run return run function ${PropRows.rowLocked.asId()} with storage ra:dh q")
 
+		// A declared vec3 gets its editor (DataHandlerVec3).
+		executeReturnRun("if score #dh.type $T matches 6 if score #dh.decl $T matches 1", DataHandlerVec3.render, "with storage ra:dh q")
 		// A declared list gets the per-entry editor (DataHandlerEntries); a guessed one the whole-list row.
 		executeReturnRun("if score #dh.type $T matches 3 if score #dh.decl $T matches 1", DataHandlerEntries.render, "with storage ra:dh q")
 		val rows = listOf(1 to PropRows.rowNumber, 2 to PropRows.rowBool, 3 to PropRows.rowList, 0 to PropRows.rowString, 4 to PropRows.rowItem, 5 to PropRows.rowCompound)

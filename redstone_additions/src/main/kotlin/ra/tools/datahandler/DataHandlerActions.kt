@@ -31,6 +31,7 @@ import ra.tools.datahandler.props.DataHandlerProps
 import ra.tools.datahandler.DataHandlerRegistry
 import ra.tools.datahandler.props.DataHandlerTypes
 import ra.tools.datahandler.props.DataHandlerUnique
+import ra.tools.datahandler.props.DataHandlerVec3
 import ra.tools.tool
 
 /**
@@ -173,6 +174,9 @@ object DataHandlerActions {
 			executeRun("if score #dh.type ${Obj.TEMP} matches 2", refresh)
 			raw("execute if score #dh.type ${Obj.TEMP} matches 2 run return 0")
 
+			// A vec3: its editor (DataHandlerVec3), opened or closed. #dh.code is the row.
+			executeReturnRun("if score #dh.type ${Obj.TEMP} matches 6 if score #dh.decl ${Obj.TEMP} matches 1", DataHandlerVec3.openRow)
+
 			// A compound has no editor: there is nothing safe to type one in with.
 			raw("""execute if score #dh.type ${Obj.TEMP} matches 5 run tellraw @s [$PREFIX,{text:"A compound cannot be edited here. Use the Creative Data Handler.",color:"red"}]""")
 			raw("execute if score #dh.type ${Obj.TEMP} matches 5 run return 0")
@@ -217,6 +221,8 @@ object DataHandlerActions {
 			raw("execute store success score #dh.den ${Obj.TEMP} run data remove storage ra:dh denied")
 			raw("execute if score #dh.den ${Obj.TEMP} matches 1 run return 0")
 
+			// One axis of a vec3 (DataHandlerVec3), checked against its range as it is now.
+			executeReturnRun("if data storage ra:dh cur{kind:\"vec3\"}", DataHandlerVec3.applyTyped)
 			// The number form's answer, checked against the bounds probe just read.
 			executeReturnRun("if data storage ra:dh cur{kind:\"number\"}", DataHandlerProps.writeNumber, "with storage ra:dh q")
 

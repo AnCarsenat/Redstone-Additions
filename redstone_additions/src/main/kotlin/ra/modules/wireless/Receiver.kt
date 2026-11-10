@@ -71,11 +71,12 @@ object Receiver {
 		}
 		pack.blockRegisterMessage(block)
 		pack.blockGive(block)
-		pack.shapedRecipe(block.ns, block.id, item.recipeResult(), Unlock(Items.PURPUR_BLOCK)) {
-			pattern("GPG", "PRP", "GPG")
-			key("G", Items.GOLD_INGOT)
-			key("P", Items.PURPUR_BLOCK)
-			key("R", Items.REDSTONE)
+		pack.shapedRecipe(block.ns, block.id, item.recipeResult(), Unlock(Items.AMETHYST_SHARD)) {
+			pattern(" L ", "APA", "SSS")
+			key("L", Items.LIGHTNING_ROD)
+			key("A", Items.AMETHYST_SHARD)
+			key("P", Items.REPEATER)
+			key("S", Items.SMOOTH_STONE_SLAB)
 		}
 
 		// As bat, at bat position.

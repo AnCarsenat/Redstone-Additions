@@ -13,23 +13,42 @@ floating above its block, a name or a number in glowing tube-style text.
 
 Operators: `/function ra_displays:items/give_all`.
 
+## Configuring a display
+
+Every display block has the same settings, changed with the Data Handler; the Wrench
+(Shift+right-click) cycles the ones that are a choice. A Wrench change shows at once, a Data
+Handler change within a second.
+
+| Property | Values | Default |
+| --- | --- | --- |
+| `facing` | `down`, `up`, `north`, `south`, `west`, `east`: the face the display is drawn on (or, for the Item Hologram, floats out of). A barrel's lid turns with it, contents kept | the face looking at you when placed (Item Hologram: `up`) |
+| `direction` | how the display is turned on that face; see each block below | |
+| `color` | see each block below; anything else draws the default | |
+| `offset` | a position (x, y, z), each -16 to 16 in sixteenths of a block: right, up, and out of the face, as you look at it. In the Data Handler, **[Edit]** nudges it by 1/16, 1/4 or a whole block, or types an axis | 0, 0, 0 |
+| `scale` | 25 to 400 (percent), about the middle of the face; admins up to 1600 | 100 |
+
+The scale a new display gets is on the Displays settings page (*Gauge Bar scale* and the others).
+
 ## Gauge Bar
 
 A bar on the front of the block, filled to the redstone level feeding it: empty at 0, full at 15.
+It is fifteen glowing segments, one per level, drawn as text like the Text Screen: the lit ones in
+the fill colour, the others in the track colour, on a dark plate.
 
 1. Place it: the bar is drawn on the face looking at you (it can face up or down too).
 2. Feed it redstone from any side. The strongest level wins; a repeater or comparator pointing
    into it fills it completely. Dust carries its real level: to show how full a chest is, put one
    dust between the comparator reading it and the Gauge Bar.
-3. Shift+right-click with the Wrench to change the colour or turn the bar vertical.
+3. Shift+right-click with the Wrench to change the facing, the direction or a colour.
 
 | Property | Values | Default |
 | --- | --- | --- |
-| `color` | red, orange, yellow, lime, green, cyan, light_blue, blue, purple, magenta, pink, white (anything else draws red) | red |
-| `vertical` | on: the bar fills bottom to top; off: left to right | off |
+| `direction` | which way it fills: `right` (from the left edge), `left`, `up` (from the bottom), `down` | right |
+| `color` | the lit segments: a colour name (`red`, `gold`, `green`, `aqua`... the sixteen chat colours) or `#RRGGBB` | red |
+| `track_color` | the unlit segments, the same colours | dark_gray |
+| `background` | a dark plate behind the bar | on |
 
-The Goggles show the level, the colour, the orientation and the facing. A colour typed with the
-Data Handler shows within a second.
+The Goggles show the level, the facing, the direction and the colour.
 
 Crafted from three glass panes, two redstone, a comparator and three polished blackstone.
 
@@ -47,8 +66,13 @@ the item's name over it.
 | --- | --- | --- |
 | `spin` | the item turns (a full turn every 4 seconds) | on |
 | `show_name` | the item's name floats above it | on |
+| `direction` | where a still item (`spin` off) faces: `front` (out of the face), `right`, `back`, `left` | front |
+| `color` | the name's colour: a colour name (`white`, `gold`, `aqua`, `light_purple`... the sixteen chat colours) or `#RRGGBB`. A renamed item's own colour wins | white |
 
-Shift+right-click with the Wrench to turn either off. The display is the same for everyone looking
+Floating out of a side, the item is a block out from that face with its name above it, and the
+name faces out; over the top or under the bottom, the name turns to whoever looks.
+
+Shift+right-click with the Wrench to turn the spin or the name off, or change the rest. The display is the same for everyone looking
 at it, so these belong to the block, not to each player. Breaking it spills the barrel's contents
 as any barrel does.
 
@@ -76,8 +100,13 @@ The redstone level feeding it picks what it shows:
    it into a small message board.
 
 The screen changes as soon as the level does; a change to the barrel's contents shows within a
-second. Breaking it spills the barrel's contents as any barrel does. The Goggles show the level
-and the facing. It has no properties.
+second. Breaking it spills the barrel's contents as any barrel does. The Goggles show the level,
+the facing, the direction and the colour.
+
+| Property | Values | Default |
+| --- | --- | --- |
+| `direction` | where the top of the text points: `up`, `left`, `down`, `right` | up |
+| `color` | a colour name (`gold`, `aqua`, `white`... the sixteen chat colours) or `#RRGGBB`. A renamed item's own colour wins | `#FF8C1A` (amber) |
 
 Crafted from three glass panes, two glowstone dust, a comparator and a barrel.
 
@@ -89,11 +118,22 @@ Crafted from three glass panes, two glowstone dust, a comparator and a barrel.
   marker, tagged `ra` and `ra.display`, and moved where it is drawn by its transformation. Breaking
   the block removes them; so do the uninstall and the admin purge.
 - Displays are fully lit (`brightness` 15): they stand inside the block, where the light is 0.
+- Configuration (`ra/modules/displays/DisplayConfig.kt`): the facing is each display's entity
+  Rotation; direction, offset and scale are its transformation, computed by one generated helper
+  (`<block>/form/<part>`) in fixed point with scoreboard operations, no macro. A block redraws
+  (`<block>/restyle`) on placement, from the Wrench, and from the slow clock when
+  `data.properties` differs from `data.data.style`. Missing properties (a block placed by an
+  earlier build) get their defaults then. Text colours are checked
+  (`ra_displays:text_color/check`) and copied, never pasted into a command.
 - One slow clock, `ra_displays:poll/run`, runs once a second while a display block that needs it is
   loaded, and stops when none is. It puts back a display killed by hand.
-- Gauge Bar: marker tag `ra.custom_block.gauge_bar`, displays `ra.displays.gauge_track` and
-  `ra.displays.gauge_fill`. The input is read every tick (each side asked `any_side` first, as the
-  gates do); the fill is redrawn only when the level changes, and the client eases it over 3 ticks.
+- Gauge Bar: marker tag `ra.custom_block.gauge_bar`, one `text_display` tagged
+  `ra.displays.gauge_bar`: fifteen `█` glyphs, the first L coloured `color`, the rest
+  `track_color` (both checked by `ra_displays:text_color/check`), one of sixteen fixed texts picked
+  by score, no macro. The input is read every tick (each side asked `any_side` first, as the gates
+  do); the text is rewritten only when the level changes. A Gauge Bar drawn by an earlier 6.0.3
+  build (two block displays, `ra.displays.gauge_track` / `ra.displays.gauge_fill`) has no text
+  display, so the slow clock redraws it and the old parts are removed.
   The last level drawn is the marker's `ra.power` score; `data.status.level` holds it for the Goggles.
 - Item Hologram: marker tag `ra.custom_block.item_hologram`, displays `ra.displays.holo_item` and
   `ra.displays.holo_name`. Nothing runs per tick: once a second it compares `Items[0]` (without

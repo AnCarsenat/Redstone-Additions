@@ -119,7 +119,7 @@ object AnchorTablet {
 			raw("give @s ${item.giveArg()}")
 			raw("""tellraw @s [{text:"[RA] ",color:"gold"},{text:"Received ",color:"gray"},{text:"Anchor Tablet",color:"light_purple"},{text:" — right-click it to choose where to go",color:"gray"}]""")
 		}
-		pack.shapedRecipe(Ns.ENDER, "anchor_tablet", item.recipeResult(Items.BLAZE_ROD), Unlock(Items.ENDER_PEARL, "has_pearl"), RecipeCategory.MISC) {
+		pack.shapedRecipe(Ns.ENDER, "anchor_tablet", item.recipeResult(Items.BLAZE_ROD), Unlock(Items.ENDER_EYE), RecipeCategory.MISC) {
 			pattern(" E ", "GCG", " G ")
 			key("E", Items.ENDER_EYE)
 			key("G", Items.GOLD_INGOT)

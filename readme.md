@@ -220,7 +220,7 @@ netherrack or poppies on an enchanting table.
 - Crafter Controller — fires the crafter next to it once it holds what its Pattern says
 
 ### Security (1)
-- Keypad — gives a redstone pulse when shown the Pattern it was locked with
+- Keypad Controller — gives a redstone pulse when shown the Pattern it was locked with
 
 ### Multiblock Bases (5)
 - Copper Multiblock Base
@@ -370,7 +370,7 @@ Starter command:
 | `/function ra_ender:items/give_all` | Ender vaults, Teleport Anchor, Anchor Terminal and Anchor Tablet |
 | `/function ra_displays:items/give_all` | Display blocks |
 | `/function ra_automation:items/give_all` | Crafter Controller and a Pattern |
-| `/function ra_security:items/give_all` | Keypad |
+| `/function ra_security:items/give_all` | Keypad Controller |
 | `/function ra:tools/wrench/give` | Wrench |
 | `/function ra:tools/data_handler/give` | Data Handler |
 | `/function ra:tools/creative_data_handler/give` | Creative Data Handler |

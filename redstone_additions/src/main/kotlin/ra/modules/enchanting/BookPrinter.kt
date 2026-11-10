@@ -85,7 +85,7 @@ object BookPrinter {
 	const val CHANCE_KEY = "book_printer_chance"
 	const val DEFAULT_CHANCE = 2
 	const val COST_KEY = "book_printer_xp"
-	const val DEFAULT_COST = 1000
+	const val DEFAULT_COST = 2500
 
 	/** Item entities this block just spawned, before their stack is filled in. */
 	private const val OUT = "ra.ench.pr_out"
@@ -169,7 +169,7 @@ object BookPrinter {
 		raw("data modify entity @e[type=minecraft:item,tag=$OUT,limit=1] PickupDelay set value 0s")
 		raw(untagOut)
 		// One off the stack: Schematics of the same book stack.
-		raw("""item modify entity $USER weapon.mainhand {function:"minecraft:set_count",count:-1,add:true}""")
+		raw("""item modify entity $USER weapon.mainhand {type:"minecraft:set_count",count:-1,add:true}""")
 
 		raw("data modify entity @s data.data.item set from storage ra:enchant pr.new")
 		raw("data modify entity @s data.data.item.count set value 1")

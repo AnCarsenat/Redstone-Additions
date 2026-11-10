@@ -51,7 +51,7 @@ import ra.modules.enchanting.xp.XpPay
  * item's repair cost is reset too, again as a grindstone does.
  *
  * THE PRICE. [COST_KEY] mL of liquid experience per enchantment moved (server setting, default
- * [DEFAULT_COST] = 10 points), taken from a fluid network touching the block (see [XpPay]). At 0
+ * [DEFAULT_COST] = 30 points), taken from a fluid network touching the block (see [XpPay]). At 0
  * it is free and needs no network.
  *
  * NO IDLE COST. The module's item scan runs it every ten ticks, and only for a Disenchanter with
@@ -76,7 +76,7 @@ object Disenchanter {
 
 	/** Global setting: mL of experience per enchantment moved. */
 	const val COST_KEY = "disenchanter_xp"
-	const val DEFAULT_COST = 1000
+	const val DEFAULT_COST = 3000
 
 	private const val IN = "ra.ench.dis_in"
 	private const val BOOK = "ra.ench.dis_book"

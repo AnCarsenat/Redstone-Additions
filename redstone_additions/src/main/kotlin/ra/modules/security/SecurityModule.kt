@@ -20,8 +20,6 @@ import ra.modules.security.keypad.KeypadUse.resetFlag
  * `tick` go into the module's `items/give_all`, `load` and `tick` below, its item into the bundle.
  * Outside this package: a row on the settings page (`ra/settings/pages/SecurityPage.kt`) and an
  * entry in the advancement tree (`securityTree`, `ra/advancements/SecurityTree.kt`).
- *
- * Codes are Automation's Pattern items (`ra.modules.automation.pattern.Pattern`).
  */
 object SecurityModule : GameplayModule {
 	override val ns = Ns.SECURITY

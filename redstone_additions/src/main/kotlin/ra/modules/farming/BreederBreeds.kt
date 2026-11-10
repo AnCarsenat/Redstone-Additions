@@ -1,4 +1,4 @@
-package ra.modules.interactive
+package ra.modules.farming
 
 import io.github.ayfri.kore.arguments.types.resources.FunctionArgument
 import io.github.ayfri.kore.commands.function

@@ -29,6 +29,7 @@ MODULES = {
     "ra_displays": ("Displays", "displays.md"),
     "ra_automation": ("Automation", "automation.md"),
     "ra_security": ("Security", "security.md"),
+    "ra_farming": ("Farming", "farming.md"),
     "ra_railworks": ("Railworks", "railworks.md"),
 }
 
@@ -49,7 +50,14 @@ GIVE = {
     "ra_displays": "/function ra_displays:items/give_all",
     "ra_automation": "/function ra_automation:items/give_all",
     "ra_security": "/function ra_security:items/give_all",
+    "ra_farming": "/function ra_farming:items/give_all",
     "ra_railworks": "/function ra_railworks:items/give_all",
+}
+
+# Recipes listed under another module than their namespace: a block that moved module
+# keeps its ids (worlds and recipe books know it by them), only its section moves.
+MOVED = {
+    "ra_interactive:breeder": "ra_farming",
 }
 
 TYPE_NAMES = {
@@ -67,7 +75,7 @@ TYPE_NAMES = {
 
 
 def collect(pack_src, images_root, docs_root):
-    """Every recipe as (namespace, name, display name, station, image path)."""
+    """Every recipe as (module namespace, name, display name, station, image path, recipe namespace)."""
     out = []
     for namespace in sorted(os.listdir(pack_src)):
         folder = os.path.join(pack_src, namespace, "recipe")
@@ -85,7 +93,8 @@ def collect(pack_src, images_root, docs_root):
             image = os.path.join("images", "recipes", namespace, name + ".png")
             if not os.path.isfile(os.path.join(docs_root, image)):
                 image = None
-            out.append((namespace, name, display, TYPE_NAMES.get(data.get("type"), "Special"), image))
+            module = MOVED.get(namespace + ":" + name, namespace)
+            out.append((module, name, display, TYPE_NAMES.get(data.get("type"), "Special"), image, namespace))
     return out
 
 
@@ -179,9 +188,9 @@ def write(rows, target, docs_root, enchant=()):
             lines.append("Module page: [%s](%s) — give everything: `%s`" % (title, page, GIVE.get(namespace, "n/a")))
             lines.append("")
         lines += ["| Item | Recipe | Station | Namespace id |", "| ---- | ------ | ------- | ------------ |"]
-        for _, name, display, station, image in sorted(by_module[namespace], key=lambda r: r[2].lower()):
+        for _, name, display, station, image, real in sorted(by_module[namespace], key=lambda r: r[2].lower()):
             picture = "![%s recipe](%s){ width=\"220\" }" % (display, image) if image else "_no picture yet_"
-            lines.append("| **%s** | %s | %s | `%s:%s` |" % (display, picture, station, namespace, name))
+            lines.append("| **%s** | %s | %s | `%s:%s` |" % (display, picture, station, real, name))
 
     if enchant:
         lines += [

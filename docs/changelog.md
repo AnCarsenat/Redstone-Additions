@@ -272,6 +272,24 @@ This page mirrors key datapack milestones from the main project changelog.
   switches it off and on, a plain wrench click takes the Pattern back out, and breaking it drops
   the Pattern. The Goggles show its state and how many times it has fired. Crafted from five iron
   ingots, a redstone dust, two target blocks and a crafter.
+- **Uncrafter** (Automation). Takes items back apart into the ingredients of their vanilla crafting
+  recipe: a container on top is its input, a container underneath receives the ingredients, and a
+  wire or Battery beside it pays 2000 EU per item (`eu_per_uncraft`, admin only, default on the
+  Automation settings page). It knows storage blocks, iron, gold and diamond tools and armour,
+  hoppers, observers, dispensers, repeaters, comparators, anvils, beacons, enchanting tables and
+  more, and waits for a full recipe's worth (three iron doors, sixteen iron bars). It never gives
+  back more than went in: only exact recipes, none a stonecutter makes more cheaply, none taking
+  "any planks", none returning buckets or bottles. Damaged, enchanted, renamed or unknown items
+  are passed to the output unchanged. Nothing moves until the output has room and the grid holds
+  the whole price; a redstone signal stops it. One item a second. Crafted from six iron ingots, a
+  grindstone, a crafter and a redstone block.
+- **Experience Absorber** (Automation). Collects the experience orbs within its *radius* (default
+  4, up to 8, admins up to 16; Shift+RMB with the Wrench cycles 2, 4, 6, 8) once a second and sends
+  them into a pipe, tank or drain touching it as liquid experience, at 100 mL a point like the Fluid
+  Drain, so it pays for the Disenchanter, Book Upgrader and Book Printer. It takes only what the
+  network has room for, leaving the rest of a large orb on the ground, and leaves a network holding
+  another fluid alone. The Goggles show its state, radius and the points absorbed. Crafted from six
+  copper ingots, a lapis block, a hopper and a bucket.
 - **Security**, a new module (`ra_security`, [Security](security.md)): blocks that open only for the right code. Its
   settings page lists its blocks and the Keypad's defaults, and it has its own branch in the
   advancement tab.
@@ -302,6 +320,22 @@ This page mirrors key datapack milestones from the main project changelog.
   result. The route is compared with the cart's data, never put into a command, so any text is
   safe. Carts are looked for every other tick, and only around Route Rails while a minecart is
   loaded somewhere. Crafted from six copper ingots, a rail, a name tag and a redstone dust.
+
+- **Farming**, a new module (`ra_farming`, [Farming](farming.md)): blocks that tend crops and animals. Its
+  settings page lists its blocks and the Sprinkler's radius, and it has its own branch in the
+  advancement tab.
+- **Sprinkler** (Farming). Waters the farmland around it from a fluid network: put a pipe, tank or
+  drain against any face and fill it with water, and every 5 seconds all the farmland in its
+  square (`radius` blocks each way, 1 to 8, default 4; admins up to 16) becomes fully moist, for 4
+  mL of water per block of the square. With liquid experience in the network, the crops in the
+  square also grow about 4 times as fast on moist farmland: once a second it grows crops at
+  random spots, three times as often as the game itself would, for 10 mL (a tenth of a point) per
+  stage. The experience is taken first and what did not grow anything goes back to the network. It
+  reaches crops level with it, one block above or one below, so it works in place of a farm's
+  water hole or standing among the crops. Wheat, carrots, potatoes, beetroots, nether wart, melon
+  and pumpkin stems, torchflower crops and sweet berry bushes. Redstone locks it. The Goggles show
+  its state, the watering, the experience boost and the radius. Crafted from a copper grate, four
+  copper ingots and a bucket.
 
 ### Changed
 
@@ -397,6 +431,11 @@ This page mirrors key datapack milestones from the main project changelog.
   start sprinting in the air and fades the same way when you stop, instead of arriving and
   vanishing in one tick.
 
+- **The Breeder is part of Farming** (was Interactive Machines). It is listed, handed out
+  (`/function ra_farming:items/give_all`, the Farming Bundle), switched off and documented with the
+  Farming module now, and its advancement is in the Farming branch. Its recipe and ids are the
+  same, so Breeders already placed keep working.
+
 ### Removed
 
 - **The Upgrade Platform.** The netherite-tier multiblock that gambled dropped materials into the
@@ -427,6 +466,9 @@ This page mirrors key datapack milestones from the main project changelog.
 - **A Liquid Drain pouring water in the Nether makes it evaporate.** The check for dimensions
   where water evaporates used the predicate key from before 26.3, so it never ran, and its sizzle
   sound had a pitch the game refuses. Both are fixed.
+
+- **The Breeder's advancement unlocks.** It looked for the item's marker as a number rather
+  than the flag the item carries, so picking up a Breeder never granted it.
 
 ### For contributors
 
@@ -469,6 +511,12 @@ This page mirrors key datapack milestones from the main project changelog.
   is loaded. The Controller only runs while one with a valid Pattern is loaded (tag
   `ra.auto.cc_armed`, a 10-tick schedule), and skips the slot comparison while the crafter's
   `Items` are unchanged since its last look.
+- **Uncrafter table** (`ra/modules/automation/uncrafter/UncraftTable.kt`): a curated list of
+  vanilla recipes, written at load into `storage ra_automation:uncraft map` as
+  `{"<id>":{n:<made per craft>,out:[{id,count},...]}}`. The Uncrafter and the Experience Absorber
+  share one 20-tick schedule (`AutomationClock`, markers tagged `ra.auto.clocked`) started at
+  load, with no per-tick test, and neither is a network node: they reach into the network of a node beside
+  them, as the Boiler does.
 - **Shared formulas are named providers** (`ra/core/Compute.kt`: `namedProvider`,
   `defineProvider`). A formula used in more than one place is a 26.3 `context_int_provider` file
   that `/compute` names by id: `ra_lib:transport/net/free` (the room on a network, used by pumps,

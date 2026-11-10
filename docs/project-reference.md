@@ -156,7 +156,7 @@ Each module has `<Name>Module.kt` (the `GameplayModule` object: registration ord
 | `modules/enchanting` | `EnchantingModule.kt`, `RecipesTag.kt` (`#ra_enchanting:recipes`), `SacrificeRecipe.kt`, `sacrifice/` |
 | `modules/chunkloader` | `ChunkLoader.kt` |
 | `modules/displays` | `DisplaysModule.kt` (the `members` list), `DisplayBlock.kt` (the member interface and the display-entity rules), `DisplayPoll.kt` (the slow clock), `ItemName.kt` (an item stack's name as a component), `GaugeBar.kt`, `ItemHologram.kt`, `TextScreen.kt` |
-| `modules/interactive` | one file per block (`BlockBreaker.kt`, `BlockPlacer.kt`, `Breeder.kt` + `BreederBreeds.kt`, `ItemPipe.kt` + `ItemPipeTransfer.kt`, `ItemMover.kt` + `ItemMoverIo.kt`, `BigTorch.kt` + `BigTorchSweep.kt`, `Cauldrons.kt`, `MagicCrate.kt`, `MessageBlock.kt`, `Spitter.kt`), `EnchantedCoal.kt`, `InteractiveCommon.kt` |
+| `modules/interactive` | one file per block (`BlockBreaker.kt`, `BlockPlacer.kt`, `ItemPipe.kt` + `ItemPipeTransfer.kt`, `ItemMover.kt` + `ItemMoverIo.kt`, `BigTorch.kt` + `BigTorchSweep.kt`, `Cauldrons.kt`, `MagicCrate.kt`, `MessageBlock.kt`, `Spitter.kt`), `EnchantedCoal.kt`, `InteractiveCommon.kt` |
 | `modules/storage` | `Boxer.kt`, `Unboxer.kt`, `StorageBox.kt` |
 | `modules/sensors` | `EntityDetector.kt`, `TagAdder.kt`, `TagRemover.kt`, `EdgeTrigger.kt`, `LightSensor.kt`, `WeatherSensor.kt`, `HeldItemDetector.kt`, `PlayerDetector.kt`, `SensorPoll.kt` |
 | `modules/wireless` | `Emitter.kt`, `Receiver.kt`, `WirelessCommon.kt`, `tools/Remote.kt` |
@@ -164,6 +164,7 @@ Each module has `<Name>Module.kt` (the `GameplayModule` object: registration ord
 | `modules/automation` | `AutomationModule.kt`, `pattern/Pattern.kt` (the item and its data format, `Pattern.targets`) + `PatternUse.kt` (recording, the lore), `crafter/CrafterController.kt` + `CrafterControllerRun.kt` (the schedule, the match) |
 | `modules/railworks` | `RailworksModule.kt`, `RouteRail.kt` (placement, properties, wrench, goggles) + `RouteRailScan.kt` (finding carts near a junction, the route match, setting the rail) |
 | `modules/security` | `SecurityModule.kt`, `keypad/Keypad.kt` (placement, owner, wrench, goggles) + `KeypadUse.kt` (watching the crafter grid, setting and entering the code, the lockout, the pulse, the clock) |
+| `modules/farming` | `FarmingModule.kt`, `Sprinkler.kt` (the watering and the growth, on `ra_wires:machine/run`), `Breeder.kt` + `BreederBreeds.kt` (moved from `modules/interactive`, still `Ns.INTERACTIVE` so its ids stay) |
 
 ## Others
 

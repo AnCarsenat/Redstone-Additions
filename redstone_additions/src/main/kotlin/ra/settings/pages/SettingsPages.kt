@@ -26,6 +26,7 @@ object SettingsPages {
 		DisplaysPage,
 		AutomationPage,
 		SecurityPage,
+		FarmingPage,
 		RailworksPage,
 	)
 }

@@ -1,7 +1,9 @@
 # Automation
 
 Blocks and items that run vanilla machines for you. The **Crafter Controller** fires a vanilla
-crafter on its own once the crafter holds the ingredients its **Pattern** asks for.
+crafter on its own once the crafter holds the ingredients its **Pattern** asks for. The
+**Uncrafter** takes items back apart into their ingredients for EU, and the **Experience
+Absorber** collects experience orbs into a fluid network as liquid experience.
 
 ## Getting them
 
@@ -9,8 +11,11 @@ crafter on its own once the crafter holds the ingredients its **Pattern** asks f
 | --- | --- | --- |
 | Crafter Controller | target block | ![Crafter Controller recipe](images/recipes/ra_automation/crafter_controller.png){ width="220" } |
 | Pattern | flow banner pattern | ![Pattern recipe](images/recipes/ra_automation/pattern.png){ width="220" } |
+| Uncrafter | chiseled tuff bricks | ![Uncrafter recipe](images/recipes/ra_automation/uncrafter.png){ width="220" } |
+| Experience Absorber | verdant froglight | ![Experience Absorber recipe](images/recipes/ra_automation/experience_absorber.png){ width="220" } |
 
-Operators: `/function ra_automation:items/give_all` (a Crafter Controller and a blank Pattern),
+Operators: `/function ra_automation:items/give_all` (a Crafter Controller, a blank Pattern, an
+Uncrafter and an Experience Absorber),
 `/function ra_automation:pattern/give` (one blank Pattern).
 
 ## Pattern
@@ -68,6 +73,81 @@ full) is not fired over and over.
 
 Breaking the Controller drops it and the Pattern it held.
 
+## Uncrafter
+
+Takes items back apart into the ingredients of their vanilla crafting recipe: an iron block
+into nine iron ingots, a hopper into five iron ingots and a chest, three iron doors into six
+iron ingots. Each item taken apart costs a lot of EU.
+
+1. Put a container **on top** of the Uncrafter (a hopper, chest or barrel): that is its input.
+2. Put a container **under** it: that is where the ingredients go.
+3. Touch one of its four sides with an EU wire or a Battery on a grid holding enough EU.
+
+Once a second it looks at the input, slot by slot, and acts on the first stack it can:
+
+| The stack is | What happens |
+| --- | --- |
+| an item it knows, with at least as many as the recipe makes | that many are taken apart; the ingredients go into the container below, for *eu_per_uncraft* EU (default 2000) |
+| an item it knows, with fewer than the recipe makes (two of the three iron doors) | it waits for more |
+| damaged, enchanted, renamed, dyed or changed in any other way | passed to the container below unchanged, for free |
+| an item it does not know | passed to the container below unchanged, for free |
+
+- It never gives back more than went in: only the exact vanilla recipe, and only recipes where
+  taking apart cannot beat crafting (no stairs, which a stonecutter makes more cheaply; no
+  recipes taking "any planks"; nothing that hands back buckets or bottles).
+- It checks everything before it moves anything: the container below needs one empty slot per
+  ingredient, and the grid must hold the whole price. If either is missing, nothing is taken and
+  nothing is paid.
+- The EU comes from the first wire or battery beside it whose grid holds the whole price. A grid
+  with no Battery holds almost nothing, so put a Battery on it.
+- A redstone signal stops it.
+
+What it takes apart:
+
+| Group | Items |
+| --- | --- |
+| Storage blocks | iron, gold, diamond, emerald, lapis, redstone, coal, copper, netherite, raw iron, raw gold, raw copper, quartz, bone, slime, hay, dried kelp, snow, glowstone, clay, bricks; and the netherite ingot (four scrap, four gold) |
+| Tools and armour | iron, golden and diamond swords, pickaxes, axes, shovels, hoes, helmets, chestplates, leggings and boots; leather armour; turtle shell; bow; crossbow; shears; compass; clock; spyglass |
+| Redstone and machines | hopper, observer, dispenser, dropper, repeater, comparator, crafter, target, weighted pressure plates, iron door (3), iron trapdoor, iron bars (16), minecart, bucket, cauldron, anvil, lantern |
+| Late game | enchanting table, ender chest, eye of ender, beacon, conduit, lodestone, respawn anchor |
+
+The number in brackets is how many of the item one recipe makes, and so how many it waits for.
+
+### Wrench and tools
+
+| Tool | Does |
+| --- | --- |
+| Goggles | State (waiting for items, uncrafting, passing items on, waiting for a full recipe, not enough EU, output full, no container above / below, stopped by redstone), the number of items taken apart and the EU per item |
+| Data Handler | `eu_per_uncraft` (admins only) |
+
+The default *eu_per_uncraft* for new Uncrafters is on the Automation page of the server
+settings.
+
+## Experience Absorber
+
+Collects the experience orbs around it and sends them, as liquid experience, into a fluid network
+touching it. One point is 100 mL, the same rate the Fluid Drain uses and the Disenchanter, Book
+Upgrader and Book Printer charge in, so the experience it collects pays for those directly.
+
+1. Place it where the orbs fall: beside a mob farm's kill spot, a furnace array, a breeding pen.
+2. Touch one of its faces with a pipe, tank or drain.
+
+- Once a second it takes the orbs within *radius* blocks (default 4, up to 8; admins up to 16),
+  nearest first.
+- It only takes what the network has room for. An orb bigger than the room left is taken in part
+  and the rest stays on the ground.
+- A network that holds something else and no experience is left alone, as with the Fluid Drain.
+  It uses the first network beside it with room.
+- Players near the orbs still pick them up first.
+
+### Wrench and tools
+
+| Tool | Does |
+| --- | --- |
+| Wrench, Shift+RMB | Cycles the radius: 2, 4, 6, 8 |
+| Goggles | State (absorbing, no experience around, no room in a network beside it), the radius and the points absorbed so far |
+| Data Handler | `radius` (1 to 8; admins up to 16) |
+
 ## Troubleshooting
 
 | Goggles say | Check |
@@ -78,6 +158,10 @@ Breaking the Controller drops it and the Pattern it held.
 | crafter powered | Something else keeps the crafter powered; it needs to be unpowered to be fired |
 | crafting, but nothing comes out | The ingredients are not a real recipe, or the crafter's output is blocked |
 | pattern unreadable | The Pattern was edited by hand; record a new one |
+| Uncrafter: not enough EU | No wire or battery beside it, or its grid holds less than the price: add a Battery |
+| Uncrafter: output full | The container below needs one empty slot per ingredient |
+| Uncrafter: waiting for a full recipe | The stack is smaller than what the recipe makes (3 iron doors, 16 iron bars) |
+| Absorber: no room in a network beside it | No pipe, tank or drain touching it, the network is full, or it holds another fluid |
 
 ---
 
@@ -129,3 +213,29 @@ Only Controllers with a valid Pattern (tag `ra.auto.cc_armed`) are looked at, on
 schedule that stops when none is loaded. A look stops at the first of: switched off, no
 crafter, an empty crafter, a powered crafter, contents unchanged since the last look. The fire
 is `setblock ~ ~ ~ minecraft:target[power=15]`, back to `power=0` two ticks later.
+
+### Uncrafter data
+
+| Where | What |
+| --- | --- |
+| `data.properties.eu_per_uncraft` | EU per item taken apart (admin only) |
+| `data.status.state`, `data.status.uncrafted` | what the Goggles show |
+| `storage ra_automation:uncraft map` | the reverse recipes, written at load: `{"minecraft:iron_door":{n:3,out:[{id:"minecraft:iron_ingot",count:6}]}}` |
+
+The table is built in Kotlin (`ra/modules/automation/uncrafter/UncraftTable.kt`) from a curated
+list checked against the vanilla recipe files; the comment there says what is left out and why.
+An add-on can add a row to the storage after load, in the same shape; `n` is how many one recipe
+makes, and each ingredient's count must fit in one stack.
+
+### Experience Absorber data
+
+| Where | What |
+| --- | --- |
+| `data.properties.radius` | reach in blocks, 1 to 8 (16 for an admin) |
+| `data.status.state`, `data.status.absorbed` | what the Goggles show; `absorbed` is in points |
+
+Both blocks run on one 20-tick schedule, started at load (markers tagged `ra.auto.clocked`);
+nothing of theirs runs per tick but the break checks, and with neither loaded a run is two
+selectors a second. Neither is a network node: like the Boiler, they reach into the network of a
+node touching them, so placing or breaking one never splits or joins a network. An Absorber with
+no orb within 16 blocks costs one selector a second.

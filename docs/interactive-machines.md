@@ -1,8 +1,8 @@
 # Interactive Machines
 
-Machines for everyday automation: break and place blocks, move and sort items, breed animals,
-endless water, lava and powder snow, item magnets, mob-proof torches, message blocks,
-elevators, a trash can and a fan.
+Machines for everyday automation: break and place blocks, move and sort items, endless water,
+lava and powder snow, item magnets, mob-proof torches, message blocks, elevators, a trash can
+and a fan.
 
 ## Getting them
 
@@ -13,7 +13,6 @@ elevators, a trash can and a fan.
 | Item Pipe | dispenser | ![Item Pipe recipe](images/recipes/ra_interactive/item_pipe.png){ width="220" } |
 | Item Mover | observer | ![Item Mover recipe](images/recipes/ra_interactive/item_mover.png){ width="220" } |
 | Spitter | dropper | ![Spitter recipe](images/recipes/ra_interactive/spitter.png){ width="220" } |
-| Breeder | dispenser | ![Breeder recipe](images/recipes/ra_interactive/breeder.png){ width="220" } |
 | Infinite Water Cauldron | cauldron | ![Infinite Water Cauldron recipe](images/recipes/ra_interactive/infinite_water_cauldron.png){ width="220" } |
 | Infinite Lava Cauldron | cauldron | ![Infinite Lava Cauldron recipe](images/recipes/ra_interactive/infinite_lava_cauldron.png){ width="220" } |
 | Infinite Snow Cauldron | cauldron | ![Infinite Snow Cauldron recipe](images/recipes/ra_interactive/infinite_snow_cauldron.png){ width="220" } |
@@ -26,6 +25,10 @@ elevators, a trash can and a fan.
 
 Operators: `/function ra_interactive:items/give_all`.
 
+!!! note "The Breeder moved"
+    The Breeder is now part of [Farming](farming.md). Breeders already placed keep working, and
+    its recipe and ids are unchanged.
+
 ## At a glance
 
 | Block | Needs redstone? | Does |
@@ -35,7 +38,6 @@ Operators: `/function ra_interactive:items/give_all`.
 | Item Pipe | no | Carries items forward from container to container, and can sort them |
 | Item Mover | no | Moves items from the container behind it to the container in front |
 | Spitter | no | Throws its items out of its face as dropped items |
-| Breeder | while powered | Feeds the animals in front of it from its inventory |
 | Infinite Cauldrons | no | Always full of water, lava or powder snow |
 | Magic Crate | no | Pulls dropped items within range into itself |
 | Big Torch | no | Lights the area and removes hostile mobs that spawn nearby |
@@ -91,36 +93,6 @@ moves items across continuously, checking the destination has room first.
 
 Put items in it; every 4 ticks it throws the first stack out of its face as a dropped item. No
 redstone needed.
-
-## Breeder
-
-1. Put the right food in the Breeder itself (it has a chest-like inventory and never throws its
-   items). It feeds only from its own inventory, not from a container next to it.
-2. Keep two adult animals of the same kind in front of it (within two blocks of the block it
-   faces).
-3. Power it. It uses one food per pair it feeds.
-
-| Animal | Food |
-|---|---|
-| Cow, Mooshroom, Sheep, Goat | wheat |
-| Pig | carrot, potato, beetroot |
-| Chicken | wheat seeds, melon seeds, pumpkin seeds, beetroot seeds, torchflower seeds, pitcher pod |
-| Rabbit | carrot, golden carrot, dandelion |
-| Horse | golden apple, golden carrot, enchanted golden apple |
-| Llama | hay block |
-| Turtle | seagrass |
-| Panda | bamboo |
-| Fox | sweet berries, glow berries |
-| Bee | any flower |
-| Wolf | any raw or cooked meat, rotten flesh |
-| Cat | cod, salmon |
-| Axolotl | bucket of tropical fish |
-| Strider | warped fungus |
-| Hoglin | crimson fungus |
-| Camel | cactus |
-| Sniffer | torchflower seeds |
-| Frog | slime ball |
-| Armadillo | spider eye |
 
 ## Infinite Cauldrons
 
@@ -228,8 +200,7 @@ then change the row. The [Goggles](tools.md) show the current values.
 
 ## Advanced
 
-- **Physical blocks.** The Breeder is a barrel wearing a dispenser skin, so redstone never makes it
-  throw its food. The Block Breaker and Block Placer are real dispensers and react to
+- **Physical blocks.** The Block Breaker and Block Placer are real dispensers and react to
   `dispenser[triggered=true]`. The Big Torch is an end rod (the light source) wearing an
   enlarged torch display; the Magic Crate and the Trash Can are plain barrels.
 - **Big Torch.** Sweeps every 10 ticks. It remembers every hostile mob in a band reaching 16

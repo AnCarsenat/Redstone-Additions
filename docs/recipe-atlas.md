@@ -1,6 +1,6 @@
 # Recipe Atlas
 
-Every recipe in the pack, in one place: 105 of them.
+Every recipe in the pack, in one place: 108 of them.
 
 !!! tip "Finding one"
     Use the search box with the item's name — every recipe below is indexed by
@@ -29,7 +29,7 @@ what the pack actually contains rather than what someone remembered to add.
 | [Book Printer](#enchant-crafting) | [Enchant Crafting](enchant-crafting.md) | Crafting table |
 | [Book Upgrader](#enchant-crafting) | [Enchant Crafting](enchant-crafting.md) | Crafting table |
 | [Boxer](#storage) | [Storage](storage.md) | Crafting table |
-| [Breeder](#interactive-machines) | [Interactive Machines](interactive-machines.md) | Crafting table |
+| [Breeder](#farming) | [Farming](farming.md) | Crafting table |
 | [Chunk Loader](#chunk-loader) | [Chunk Loader](chunk-loader.md) | Crafting table |
 | [Clipboard](#tools) | [Tools](tools.md) | Crafting table |
 | [Clock](#logic-gates) | [Logic Gates](logic-gates.md) | Crafting table |
@@ -54,6 +54,7 @@ what the pack actually contains rather than what someone remembered to add.
 | [EU Consumer](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
 | [EU Generator](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
 | [EU Switch](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
+| [Experience Absorber](#automation) | [Automation](automation.md) | Crafting table |
 | [Extender](#logic-gates) | [Logic Gates](logic-gates.md) | Crafting table |
 | [Fan](#interactive-machines) | [Interactive Machines](interactive-machines.md) | Crafting table |
 | [Fluid Drain](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
@@ -108,6 +109,7 @@ what the pack actually contains rather than what someone remembered to add.
 | [Solar Panel](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
 | [Spitter](#interactive-machines) | [Interactive Machines](interactive-machines.md) | Crafting table |
 | [Spout](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
+| [Sprinkler](#farming) | [Farming](farming.md) | Crafting table |
 | [Tag Adder](#sensors) | [Sensors](sensors.md) | Crafting table |
 | [Tag Remover](#sensors) | [Sensors](sensors.md) | Crafting table |
 | [Teleport Anchor](#ender-links) | [Ender Links](ender-links.md) | Crafting table |
@@ -116,6 +118,7 @@ what the pack actually contains rather than what someone remembered to add.
 | [Thruster Kit](#jetpacks) | [Jetpacks](jetpacks.md) | Crafting table |
 | [Trash Can](#interactive-machines) | [Interactive Machines](interactive-machines.md) | Crafting table |
 | [Unboxer](#storage) | [Storage](storage.md) | Crafting table |
+| [Uncrafter](#automation) | [Automation](automation.md) | Crafting table |
 | [UNI Gate](#logic-gates) | [Logic Gates](logic-gates.md) | Crafting table |
 | [Usage Meter](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
 | [Water Wheel](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
@@ -132,7 +135,9 @@ Module page: [Automation](automation.md) — give everything: `/function ra_auto
 | Item | Recipe | Station | Namespace id |
 | ---- | ------ | ------- | ------------ |
 | **Crafter Controller** | ![Crafter Controller recipe](images/recipes/ra_automation/crafter_controller.png){ width="220" } | Crafting table | `ra_automation:crafter_controller` |
+| **Experience Absorber** | ![Experience Absorber recipe](images/recipes/ra_automation/experience_absorber.png){ width="220" } | Crafting table | `ra_automation:experience_absorber` |
 | **Pattern** | ![Pattern recipe](images/recipes/ra_automation/pattern.png){ width="220" } | Crafting table | `ra_automation:pattern` |
+| **Uncrafter** | ![Uncrafter recipe](images/recipes/ra_automation/uncrafter.png){ width="220" } | Crafting table | `ra_automation:uncrafter` |
 
 ## Chunk Loader
 
@@ -175,6 +180,15 @@ Module page: [Ender Links](ender-links.md) — give everything: `/function ra_en
 | **Ender Power Vault** | ![Ender Power Vault recipe](images/recipes/ra_ender/ender_power_vault.png){ width="220" } | Crafting table | `ra_ender:ender_power_vault` |
 | **Teleport Anchor** | ![Teleport Anchor recipe](images/recipes/ra_ender/teleport_anchor.png){ width="220" } | Crafting table | `ra_ender:teleport_anchor` |
 
+## Farming
+
+Module page: [Farming](farming.md) — give everything: `/function ra_farming:items/give_all`
+
+| Item | Recipe | Station | Namespace id |
+| ---- | ------ | ------- | ------------ |
+| **Breeder** | ![Breeder recipe](images/recipes/ra_interactive/breeder.png){ width="220" } | Crafting table | `ra_interactive:breeder` |
+| **Sprinkler** | ![Sprinkler recipe](images/recipes/ra_farming/sprinkler.png){ width="220" } | Crafting table | `ra_farming:sprinkler` |
+
 ## Infinite Generators
 
 Module page: [Infinite Generators](infinite-generators.md) — give everything: `/function ra_infinite:items/give_all`
@@ -195,7 +209,6 @@ Module page: [Interactive Machines](interactive-machines.md) — give everything
 | **Big Torch** | ![Big Torch recipe](images/recipes/ra_interactive/big_torch.png){ width="220" } | Crafting table | `ra_interactive:big_torch` |
 | **Block Breaker** | ![Block Breaker recipe](images/recipes/ra_interactive/block_breaker.png){ width="220" } | Crafting table | `ra_interactive:block_breaker` |
 | **Block Placer** | ![Block Placer recipe](images/recipes/ra_interactive/block_placer.png){ width="220" } | Crafting table | `ra_interactive:block_placer` |
-| **Breeder** | ![Breeder recipe](images/recipes/ra_interactive/breeder.png){ width="220" } | Crafting table | `ra_interactive:breeder` |
 | **Elevator** | ![Elevator recipe](images/recipes/ra_interactive/elevator.png){ width="220" } | Crafting table | `ra_interactive:elevator` |
 | **Enchanted Coal Block** | ![Enchanted Coal Block recipe](images/recipes/ra_interactive/enchanted_coal_block.png){ width="220" } | Crafting table | `ra_interactive:enchanted_coal_block` |
 | **Fan** | ![Fan recipe](images/recipes/ra_interactive/fan.png){ width="220" } | Crafting table | `ra_interactive:fan` |

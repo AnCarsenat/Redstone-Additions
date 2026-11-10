@@ -45,6 +45,7 @@ import ra.modules.displays.DisplayEntities.sel
 import ra.modules.displays.DisplayEntities.summonDisplay
 import ra.modules.displays.DisplayPoll.startIfIdle
 import ra.modules.displays.DisplayStyle.Companion.defineForms
+import ra.modules.displays.TextColor.applyColor
 
 /**
  * Gauge Bar: a bar on one face, filled to the redstone level feeding it (0-15).
@@ -53,17 +54,24 @@ import ra.modules.displays.DisplayStyle.Companion.defineForms
  * as 15. Each side is first asked `any_side` (stops at the first source) and only a powered side
  * has its level resolved, so an unpowered gauge costs six `any_side` reads a tick, like a gate.
  *
- * DRAWING. Two block displays standing on the marker: a track and a coloured fill in front of
- * it. Only the fill's length changes, and only when the level does: the last level drawn is the
- * marker's `ra.power` score (this block uses it for nothing else), and a new one is one
- * `store result` into `transformation.scale[0]`, interpolated over [GROW] ticks by the client.
+ * DRAWING. One text display, like the Text Screen: fifteen full-block glyphs ([SEGMENT], 8 px
+ * wide with a 1 px gap), the first L in the fill colour and the rest in the track colour, so each
+ * level lights one segment of an LED bar. Text stays crisp at any scale. The text changes only
+ * when the level does: the last level drawn is the marker's `ra.power` score (this block uses it
+ * for nothing else), and a new one picks one of sixteen fixed texts by score test, no macro.
  *
  * CONFIGURATION ([DisplayStyle]): `facing` (the face), `direction` (which way the bar fills:
- * `right` from the left edge, `left`, `up` from the bottom, `down`; the bar is rolled on its
- * face, so the fill always grows along its own x), `color` and `track_color` (a dye, see [DYES];
- * anything else draws the default), offsets and scale. The wrench and placement redraw at once;
- * a Data Handler edit, or a display killed by hand, is picked up by [poll] within a second: it
- * compares `data.properties` with the copy last drawn (`data.data.style`).
+ * `right` from the left edge, `left`, `up` from the bottom, `down`; the text is rolled on its
+ * face), `color` and `track_color` (a text colour name or `#RRGGBB`, checked by [TextColor];
+ * anything else draws the default), `background` (a dark plate behind the bar), offsets and
+ * scale. The wrench and placement redraw at once; a Data Handler edit, or a display killed by
+ * hand, is picked up by [poll] within a second: it compares `data.properties` with the copy last
+ * drawn (`data.data.style`).
+ *
+ * DRAWN BY AN EARLIER DEV BUILD. 6.0.3 dev builds drew the bar as two block displays (tags
+ * `ra.displays.gauge_track`, `ra.displays.gauge_fill`, both also [TAG]). [BAR] selects a text
+ * display, so [poll] finds none on such a block and restyles it; [summon] kills every display
+ * carrying the block's [TAG] first, so the old parts go and the text display takes their place.
  */
 object GaugeBar : DisplayBlock {
 	override val block = CustomBlock(Ns.DISPLAYS, "gauge_bar", "Gauge Bar", model = "minecraft:polished_blackstone", dirType = 3)
@@ -75,33 +83,39 @@ object GaugeBar : DisplayBlock {
 	private val summon = block.fn("summon")
 	override val poll = block.fn("poll")
 
-	/** The colours a bar may take: the sixteen dyes, as concrete. */
-	val DYES = listOf(
-		"white", "light_gray", "gray", "black", "brown", "red", "orange", "yellow",
-		"lime", "green", "cyan", "light_blue", "blue", "purple", "magenta", "pink",
-	)
-
 	private const val TAG = "ra.displays.gauge"
-	private const val TRACK_TAG = "ra.displays.gauge_track"
-	private const val FILL_TAG = "ra.displays.gauge_fill"
-	private val TRACK = sel("block_display", TRACK_TAG)
-	private val FILL = sel("block_display", FILL_TAG)
+	private const val BAR_TAG = "ra.displays.gauge_bar"
+	private val BAR = sel("text_display", BAR_TAG)
+
+	/** One segment per level: U+2588 FULL BLOCK, an 8x8 glyph of the default font. */
+	private const val SEGMENT = "█"
+	private const val LEVELS = 15
+
+	private const val FILL_DEFAULT = "red"
+	private const val TRACK_DEFAULT = "dark_gray"
 
 	private val style = DisplayStyle(
 		block, defaultFacing = "south", directions = listOf("right", "left", "up", "down"),
-		colors = listOf(ColorProp("color", "Colour", "red", DYES), ColorProp("track_color", "Track colour", "gray", DYES)),
-		displays = listOf(TRACK, FILL),
+		colors = listOf(
+			ColorProp("color", "Colour", FILL_DEFAULT, listOf("red", "gold", "yellow", "green", "aqua", "blue", "light_purple", "white")),
+			ColorProp("track_color", "Track colour", TRACK_DEFAULT, listOf("dark_gray", "gray", "black", "white")),
+		),
+		displays = listOf(BAR), background = true,
 	)
 
 	/** The bar's roll for each direction, counter-clockwise: the fill grows along the rolled x. */
 	private val ROLLS = mapOf("right" to 0, "left" to 180, "up" to 90, "down" to 270)
 	private val FACE = Vec(0.0, 0.0, 0.5)
 
-	/** Ticks the fill takes to grow or shrink to a new level. */
-	private const val GROW = 3
-
-	/** Fill length per level at 100 %: 13/16 of a block at 15. */
-	private const val PER_LEVEL = 0.0541667
+	/**
+	 * The text's size at 100 %. Fifteen glyphs advance 9 px each, 135 px, and a text display
+	 * draws 1/40 block per pixel at scale 1: [SX] makes the bar 13/16 block long. The glyph is
+	 * 8 px tall: [SY] makes it 3/16 block. A text grows up from its origin and its line is 10 px,
+	 * so the origin is moved down half a line to centre the bar on the face.
+	 */
+	private const val SX = 0.2407
+	private const val SY = 0.9375
+	private val BAR_T = Vec(0.0, -5 * 0.025 * SY, 0.51)
 
 	private const val T = Obj.TEMP
 	private const val LEVEL = "#gauge.l"
@@ -146,13 +160,11 @@ object GaugeBar : DisplayBlock {
 			}
 		}
 		with(style) { registerStyle(restyle) }
-		val track = defineForms(block, "track", TRACK, ROLLS.mapValues { (_, r) -> Form(Vec(-0.4375, -0.125, 0.5), Vec(0.875, 0.25, 0.03125), FACE, r) })
-		// The fill's length (its x) is show's.
-		val fill = defineForms(block, "fill", FILL, ROLLS.mapValues { (_, r) -> Form(Vec(-0.40625, -0.09375, 0.5), Vec(0.0, 0.1875, 0.0625), FACE, r) })
+		val barForm = defineForms(block, "bar", BAR, ROLLS.mapValues { (_, r) -> Form(BAR_T, Vec(SX, SY, 1.0), FACE, r) })
 
 		pack.define(process) { process() }
 		pack.define(show) { show() }
-		pack.define(restyle) { restyle(track, fill) }
+		pack.define(restyle) { restyle(barForm) }
 		pack.define(summon) { summon() }
 		pack.define(poll) { poll() }
 
@@ -183,52 +195,47 @@ object GaugeBar : DisplayBlock {
 		function(show)
 	}
 
-	/** The fill's length from the last level, times the scale. As the marker, at it. */
+	/**
+	 * The bar's text for the last level: L segments in the fill colour, 15 - L in the track
+	 * colour, the colours the ones restyle checked (`data.data.color`, `data.data.track`). As the
+	 * marker, at it.
+	 */
 	private fun Function.show() {
-		function(style.read)
-		raw("scoreboard players operation #gauge.v $T = @s $LAST")
-		raw("scoreboard players operation #gauge.v $T *= #dsp.k $T")
-		raw("execute store result entity $FILL transformation.scale[0] float ${"%.9f".format(java.util.Locale.ROOT, PER_LEVEL / 100)} run scoreboard players get #gauge.v $T")
-		// The client eases from the old length to the new one over `interpolation_duration`.
-		raw("data modify entity $FILL start_interpolation set value 0")
+		raw("""data modify storage ra:temp dsp.bar set value {text:"",extra:[{text:""},{text:"${SEGMENT.repeat(LEVELS)}"}]}""")
+		for (l in 1..LEVELS) {
+			raw("""execute if score @s $LAST matches $l run data modify storage ra:temp dsp.bar.extra set value [{text:"${SEGMENT.repeat(l)}"},{text:"${SEGMENT.repeat(LEVELS - l)}"}]""")
+		}
+		raw("data modify storage ra:temp dsp.bar.extra[0].color set from entity @s data.data.color")
+		raw("data modify storage ra:temp dsp.bar.extra[1].color set from entity @s data.data.track")
+		raw("data modify entity $BAR text set from storage ra:temp dsp.bar")
 	}
 
-	/** Everything from the properties, both displays put back if one is missing. As the marker, at it. */
-	private fun Function.restyle(track: FunctionArgument, fill: FunctionArgument) {
+	/** Everything from the properties, the display put back if it is missing. As the marker, at it. */
+	private fun Function.restyle(barForm: FunctionArgument) {
 		function(style.defaults)
-		executeRun("unless entity $TRACK", summon)
-		executeRun("unless entity $FILL", summon)
+		executeRun("unless entity $BAR", summon)
 		raw("data modify entity @s data.data.style set from entity @s data.properties")
 
-		concrete(FILL, "color", "red")
-		concrete(TRACK, "track_color", "gray")
+		applyColor("color", FILL_DEFAULT)
+		applyColor("track_color", TRACK_DEFAULT, into = "track")
+		raw("data modify entity $BAR background set value 0")
+		raw("execute if data entity @s data.properties{background:1b} run data modify entity $BAR background set value ${DisplayStyle.BACKGROUND}")
 		function(style.turn)
 		function(style.read)
-		function(track)
-		function(fill)
+		function(barForm)
 		function(show)
 	}
 
-	/** [target]'s block from the dye named by [prop]; [default] for anything else. */
-	private fun Function.concrete(target: String, prop: String, default: String) {
-		raw("""data modify entity $target block_state set value {id:"minecraft:${default}_concrete"}""")
-		for (c in DYES) if (c != default) {
-			raw("""execute if data entity @s data.properties{$prop:"$c"} run data modify entity $target block_state set value {id:"minecraft:${c}_concrete"}""")
-		}
-	}
-
-	/** Both displays, new and empty; restyle shapes them. As the marker, at it. */
+	/** The display, new and empty, every older part of this block gone first; restyle shapes it. As the marker, at it. */
 	private fun Function.summon() {
 		raw("kill @e[tag=$TAG,distance=..0.01]")
 		val zero = "transformation:{left_rotation:[0f,0f,0f,1f],right_rotation:[0f,0f,0f,1f],translation:[0f,0f,0f],scale:[0f,0f,0f]}"
-		summonDisplay("block_display", listOf(TAG, TRACK_TAG), """block_state:{id:"minecraft:gray_concrete"},$zero""")
-		summonDisplay("block_display", listOf(TAG, FILL_TAG), """block_state:{id:"minecraft:red_concrete"},interpolation_duration:$GROW,$zero""")
+		summonDisplay("text_display", listOf(TAG, BAR_TAG), """text:"",background:0,shadow:0b,line_width:200,alignment:"center",$zero""")
 	}
 
-	/** Once a second, as the marker at its block: redraw if a display is gone or the properties changed. */
+	/** Once a second, as the marker at its block: redraw if the display is gone or the properties changed. */
 	private fun Function.poll() {
-		executeReturnRun("unless entity $TRACK", restyle)
-		executeReturnRun("unless entity $FILL", restyle)
+		executeReturnRun("unless entity $BAR", restyle)
 		// Placed before the display settings existed: restyle fills the defaults (scale, colours).
 		executeReturnRun("unless data entity @s data.properties.scale", restyle)
 		raw("execute store success score #gauge.ch $T run data modify entity @s data.data.style set from entity @s data.properties")

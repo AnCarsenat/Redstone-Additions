@@ -23,6 +23,7 @@ import ra.core.raw
  *   offset_x/y/z  a shift from the default spot, in 1/16 block, -16..16, in the display's own
  *              frame: x to the viewer's right, y up, z out of the face.
  *   scale      size in percent, 25..400 (admins up to [ADMIN_MAX_SCALE]), about the face centre.
+ *   background (a block built with `background = true`) a dark plate behind its text display.
  *
  * WHEN IT IS APPLIED. A block's `restyle` function runs [defaults] (a property missing from a
  * block placed by an earlier build gets its default), [turn] (the facing as each display's
@@ -51,6 +52,8 @@ internal class DisplayStyle(
 	val yawOnly: Boolean = false,
 	/** The block is a barrel whose lid follows `facing`. */
 	val barrel: Boolean = false,
+	/** A `background` flag (on by default): a dark plate behind a text display ([BACKGROUND]). */
+	val background: Boolean = false,
 ) {
 	val defaults = block.fn("config/defaults")
 	val turn = block.fn("config/turn")
@@ -64,7 +67,7 @@ internal class DisplayStyle(
 	/** `{facing:"...",direction:"...",...,scale:100}` without braces: what placement writes. */
 	fun placementSnbt(): String = (listOf("facing:\"$defaultFacing\"", "direction:\"${directions.first()}\"") +
 		colors.map { "${it.prop}:\"${it.default}\"" } +
-		AXES.map { "offset_$it:0" } + "scale:100").joinToString(",")
+		AXES.map { "offset_$it:0" } + "scale:100" + (if (background) listOf("background:1b") else emptyList())).joinToString(",")
 
 	/** In the block's `properties { }`, after its own. */
 	fun PropertiesBuilder.declare() {
@@ -73,6 +76,7 @@ internal class DisplayStyle(
 		for (c in colors) text(c.prop, default = c.default)
 		for (a in AXES) number("offset_$a", min = -MAX_OFFSET, max = MAX_OFFSET, default = 0, goggles = false)
 		number("scale", min = MIN_SCALE, max = MAX_SCALE, adminMax = ADMIN_MAX_SCALE, default = 100)
+		if (background) bool("background", default = true, goggles = false)
 	}
 
 	/** Wrench rows: facing, direction, then each colour. */
@@ -85,7 +89,8 @@ internal class DisplayStyle(
 			// The facing an earlier build kept in data.status, else the default.
 			raw("execute unless data entity @s data.properties.facing if data entity @s data.status.facing run data modify entity @s data.properties.facing set from entity @s data.status.facing")
 			val all = listOf("facing" to "\"$defaultFacing\"", "direction" to "\"${directions.first()}\"") +
-				colors.map { it.prop to "\"${it.default}\"" } + AXES.map { "offset_$it" to "0" } + ("scale" to "100")
+				colors.map { it.prop to "\"${it.default}\"" } + AXES.map { "offset_$it" to "0" } + ("scale" to "100") +
+				(if (background) listOf("background" to "1b") else emptyList())
 			for ((p, v) in all) raw("execute unless data entity @s data.properties.$p run data modify entity @s data.properties.$p set value $v")
 		}
 
@@ -153,6 +158,9 @@ internal class DisplayStyle(
 		const val MIN_SCALE = 25
 		const val MAX_SCALE = 400
 		const val ADMIN_MAX_SCALE = 1600
+
+		/** A text display's `background` with `background:1b`: near-black, 80 % opaque (ARGB 0xCC101010). */
+		const val BACKGROUND = -871362544
 
 		private const val T = Obj.TEMP
 		private const val K = "#dsp.k"

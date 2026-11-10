@@ -54,14 +54,14 @@ internal object TextColor {
 	}
 
 	/**
-	 * As the marker: `data.data.color` = `data.properties.<prop>` when it is a colour, else
+	 * As the marker: `data.data.<into>` = `data.properties.<prop>` when it is a colour, else
 	 * [default] (a constant). A string the property is not is read as nothing.
 	 */
-	fun Function.applyColor(prop: String, default: String) {
-		raw("""data modify entity @s data.data.color set value "$default"""")
+	fun Function.applyColor(prop: String, default: String, into: String = "color") {
+		raw("""data modify entity @s data.data.$into set value "$default"""")
 		raw("data remove storage ra:temp dsp.c")
 		raw("data modify storage ra:temp dsp.c set from entity @s data.properties.$prop")
 		raw("execute store result score #dsp.cok $T run function ${check.asId()}")
-		raw("execute if score #dsp.cok $T matches 1 run data modify entity @s data.data.color set from storage ra:temp dsp.c")
+		raw("execute if score #dsp.cok $T matches 1 run data modify entity @s data.data.$into set from storage ra:temp dsp.c")
 	}
 }

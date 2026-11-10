@@ -454,6 +454,15 @@
   is loaded. The Controller only runs while one with a valid Pattern is loaded (tag
   `ra.auto.cc_armed`, a 10-tick schedule), and skips the slot comparison while the crafter's
   `Items` are unchanged since its last look.
+- **Shared formulas are named providers** (`ra/core/Compute.kt`: `namedProvider`,
+  `defineProvider`). A formula used in more than one place is a 26.3 `context_int_provider` file
+  that `/compute` names by id: `ra_lib:transport/net/free` (the room on a network, used by pumps,
+  drains, boilers, bridges and the creative sources), `ra_wires:blocks/solar_panel/eu` (the solar
+  curve), `ra_wires:bridge/move` (bridge levelling), `ra_jetpacks:flight/smooth_x`/`smooth_z` and
+  `ramp_up`/`ramp_down` (Thruster smoothing and easing), `ra_wires:diving/air_minutes`/`air_seconds`
+  and `ra_wires:fluid/experience_ml`. Same values, same rounding. A Solar Panel now reads its
+  curve in one `compute block ~ ~ ~` instead of eleven `execute if block` lines a tick. The build
+  fails on a reference with no file. See *Arithmetic with `/compute`* in the developer guide.
 
 ## [v6.0.2] - 2026-11-09 - Drains, lists and fixes
 

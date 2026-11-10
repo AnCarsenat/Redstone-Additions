@@ -220,8 +220,9 @@ This page mirrors key datapack milestones from the main project changelog.
   durability. A lensed helmet shows every block's label exactly like the Goggles, worn or held.
   `/trigger ra.goggles` opens a small menu to switch the lens off and on (the helmet's lore says
   which) or remove it and get the lens back. Crafted from four tinted glass, two diamonds, two gold
-  ingots and a netherite ingot; unlocked by picking up a netherite ingot. A helmet that already
-  carries data or a description of its own (another pack's item, the Goggles) is refused.
+  ingots and a netherite ingot; unlocked by picking up a netherite ingot. Any helmet takes it,
+  whatever lore, name or data it already has; only the Goggles and an already-lensed helmet are
+  refused.
 - **Displays** (new module, `ra_displays`). Blocks that show something with display entities;
   `/function ra_displays:items/give_all` gives them, and the settings have a Displays page to turn
   each one off and to set the scale new ones get. Every display can be configured after it is
@@ -307,6 +308,42 @@ This page mirrors key datapack milestones from the main project changelog.
   owns the Keypad and its state, and the Data Handler and Clipboard never see it.
   Shift+RMB with the Wrench steps the pulse through 2, 10, 20 and 40 ticks. Crafted from three
   stone buttons, four iron ingots, a crafter and a redstone dust.
+- **Railworks**, a new module (`ra_railworks`, `/function ra_railworks:items/give_all`), with its
+  page in the docs, an advancement branch and a settings page.
+- **Route Rail** (Railworks). A block placed under a rail junction. When a minecart on one of the
+  junction's lines comes within 2 blocks, the rail on top is set to *on_match* if the cart carries
+  the *route*, or to *on_miss* if it does not; carts on a parallel track beside it are ignored, and
+  a slope on top is never changed. What the route is read from is *source*: the cart's name (a name tag),
+  an entity tag on the cart (from a Tag Adder, say), an item in a chest or hopper minecart (its id,
+  like `minecraft:coal`), or *rider* (anyone riding it). The shapes are rail shapes
+  (`north_south`, `east_west`, `north_east`, `north_west`, `south_east`, `south_west`) or `none` to
+  leave the rail alone. Shift+RMB with the Wrench steps through the source, the match shape and
+  the other shape; the Data Handler edits all four, and the Goggles also show the last cart's
+  result. The route is compared with the cart's data, never put into a command, so any text is
+  safe. Carts are looked for every other tick, with two small boxes per Route Rail. Crafted from six copper ingots, a rail, a name tag and a redstone dust.
+- **Audio**, a new module (`ra_audio`, [Audio](audio.md)): blocks that make sound on a redstone
+  signal. Sounds come from a fixed list in the pack, picked by number, and are heard by every
+  player within the block's *range* (1 to 64 blocks; admins up to 256) at its *volume* (10 to
+  100 %).
+  - **Alarm**: a redstone lamp that, while powered, plays its sound every *interval* ticks (20 by
+    default, 10 to 1200). Seven sounds: bell, siren, klaxon, beeper, alarm clock, toll and buzzer.
+    Shift+RMB with the Wrench steps to the next sound and plays it. Crafted from five iron ingots,
+    a note block, two redstone and a redstone lamp.
+  - **Doorbell**: a polished blackstone button that plays its chime once per press, and gives the
+    usual button pulse. Six chimes: ding-dong, Westminster, chime, bell, buzzer and knock. It is
+    placed on the face of the block you click, like a button, and refused (item given back) where
+    there is no full face to hold it. Crafted from a polished blackstone
+    button, a gold ingot and a note block, stacked.
+  - **Jukebox Controller**: a waxed copper bulb that runs the jukebox next to it. A pulse of
+    strength 15 (a button or lever against it) plays or stops, 8 to 14 plays the next disc, 1 to 7
+    stops. A chest, barrel or shulker box of music discs next to it is the playlist, played in slot
+    order, each disc going back to its slot; with *continuous* on (the default, Shift+RMB with the
+    Wrench) the next disc plays when one ends. Without a chest it stops and restarts the disc in
+    the jukebox. The bulb is lit while it plays. Crafted from five copper ingots, a comparator, two
+    redstone and a hopper.
+  - Idle, each costs one block test per tick: the vanilla block (a lit lamp, a pressed button, a
+    powered bulb) carries the input. The Audio settings page holds the Alarm's interval and range
+    and the Doorbell's range for new blocks.
 
 - **Farming**, a new module (`ra_farming`, [Farming](farming.md)): blocks that tend crops and animals. Its
   settings page lists its blocks and the Sprinkler's radius, and it has its own branch in the
@@ -341,6 +378,23 @@ This page mirrors key datapack milestones from the main project changelog.
   leashed mob, one with a rider, or a pet tamed by another player. The mob is only removed once the
   net holds it, and the net is only emptied once the mob is back. The Capture Net is crafted from
   three string and two sticks; the upgrade keeps whatever the net holds.
+- **Recipe Pattern** (Automation). A Pattern that makes the Crafter Controller fill the crafter
+  itself: put a container on the Controller's other side, opposite the crafter, and every half
+  second the Controller moves one ingredient from it into each empty slot the Pattern names, then
+  fires the crafter once every slot is right. Only plain items are taken (never a renamed,
+  enchanted or damaged one); a slot holding something else is left alone, and a slot disabled in
+  the crafter is never filled (the Goggles say so when the Pattern needs one). Recorded, cleared and
+  read like a Pattern, and every block that takes Patterns takes it; its data is the Pattern's
+  with `recipe:1b` added. Crafted from three paper and a hopper (makes three).
+- **Item Pipe Splitter** (Automation). Takes the items out of the container above it (a chest, a
+  hopper pointing into it, the end of an Item Pipe) and shares them out between the containers on
+  its four sides and under it, one item at a time and each side in turn. Each side has a share
+  (0 to 16, default 1) in the Data Handler: a side gets that many items in a row before the next
+  side's turn, so 2 and 1 splits two thirds and one third, and 0 switches a side off. A side with
+  no container or no room is skipped (and a shulker box is never sent into a shulker box); items
+  only leave the input once there is room, so none are dropped. 8 items a second by default (Shift+RMB with the Wrench: 2, 4, 8, 16; admins up to 64),
+  on the automation clock; redstone stops it. The Goggles show its state, speed and the items
+  moved. Crafted from a hopper, a comparator and four iron ingots.
 
 ### Changed
 
@@ -457,6 +511,17 @@ This page mirrors key datapack milestones from the main project changelog.
 
 ### Fixed
 
+- **No shulker box into a shulker box.** `ra_lib:inventory/insert_or_drop` drops a shulker box
+  instead of putting it into a shulker box, and `can_accept_one` reports no room for it, as the
+  game itself refuses it. The Uncrafter leaves a shulker box in its input when the container below
+  is a shulker box, instead of passing it on.
+- **The Goggles Lens fits a helmet that has a description of its own.** A helmet with lore (or
+  another pack's data) was refused with "That helmet carries a description of its own". The lens
+  now fits any helmet, whatever its lore, name, enchantments, trim, damage, dye or other data. The
+  helmet keeps its own lore: the lens adds its lines above it, switching changes only those lines,
+  and removing the lens takes away only its own lines and data. Goggles and a helmet that already
+  has a lens are still refused.
+
 - **A Message Block's range reaches as far as it says.** A block without a selector sent to the
   players within its `range`, but the range was rounded to 8, 16, 32 or 64 blocks, so a range of
   10 reached 16 and a range of 128 stopped at 64. It now reaches the exact range.
@@ -482,8 +547,12 @@ This page mirrors key datapack milestones from the main project changelog.
   `custom_data~{ra:{goggles:1b}}` check and nothing per tick was added for detection; off is
   `{ra:{lensed:1b}}`. Unlike a jetpack kit's switch, "off" is on the item, not a player tag, so the
   Goggles check stays one predicate. The `ra.goggles` trigger is polled with one score selector
-  per tick and handed to lensed-helmet wearers once per Goggles redraw. The helmet's state is
-  written with inline `set_components` item modifiers.
+  per tick and handed to lensed-helmet wearers once per Goggles redraw. Fitting merges the keys
+  with `set_custom_data` and inserts the lens lines at the top of the lore with `set_lore`; a
+  switch or a removal replaces only those top lines, and takes keys out of `custom_data.ra` by
+  copying it through `storage ra:temp lens` and back with `copy_custom_data`, in the same modifier
+  list as the lore change so the lines and keys cannot drift apart. The lens is used up only once
+  the helmet reads lensed, and given back only once it no longer does.
 - **Channel items share one prompt** (`ra/modules/wireless/tools/ChannelPrompt.kt`). The Redstone
   Remote's Sneak+right-click book prompt is now a class with one instance per item (its own
   pending, slot and request objectives), used by the Remote and the Pager; the Remote's functions

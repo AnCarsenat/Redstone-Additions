@@ -80,6 +80,7 @@ Every setting is also a command, so you can tab-complete your way through them:
 | Jetpacks | Thruster Kit thrust (80%), speed cap (350), dead zone (25) |
 | Enchant Crafting | enchant crafting on/off; Disenchanter experience per enchantment moved (3000 mL, 0 to 100000); Book Upgrader base price (1000 mL, 1 to 1000, doubled per level) and highest level (10, 1 to 20); Book Printer chance of a Schematic (2%, 0 to 100) and experience per level printed (2500 mL, 0 to 100000) |
 | Sensors | *Players may edit entity selectors and tags* (off): when on, players without server-settings access may change the selectors and tags of the Entity Detector, Tag Adder, Tag Remover and Message Block |
+| Audio | default Alarm interval (20 ticks, 10 to 1200) and range (32), Doorbell range (24) |
 | every module | which of its blocks may be placed |
 
 A few block settings are kept for players with server-settings access, whatever the pages say:

@@ -30,6 +30,8 @@ MODULES = {
     "ra_automation": ("Automation", "automation.md"),
     "ra_security": ("Security", "security.md"),
     "ra_farming": ("Farming", "farming.md"),
+    "ra_railworks": ("Railworks", "railworks.md"),
+    "ra_audio": ("Audio", "audio.md"),
 }
 
 GIVE = {
@@ -50,6 +52,8 @@ GIVE = {
     "ra_automation": "/function ra_automation:items/give_all",
     "ra_security": "/function ra_security:items/give_all",
     "ra_farming": "/function ra_farming:items/give_all",
+    "ra_railworks": "/function ra_railworks:items/give_all",
+    "ra_audio": "/function ra_audio:items/give_all",
 }
 
 # Recipes listed under another module than their namespace: a block that moved module

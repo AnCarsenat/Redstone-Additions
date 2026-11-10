@@ -18,6 +18,8 @@ object AdvancementsPart : PackPart {
 		automationTree,
 		securityTree,
 		farmingTree,
+		railworksTree,
+		audioTree,
 	)
 
 	override fun Ra.register() {

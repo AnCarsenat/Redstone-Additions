@@ -32,7 +32,9 @@ enum class Ns(val id: String) {
 	WIRES("ra_wires"),
 	AUTOMATION("ra_automation"),
 	SECURITY("ra_security"),
-	FARMING("ra_farming");
+	FARMING("ra_farming"),
+	RAILWORKS("ra_railworks"),
+	AUDIO("ra_audio");
 
 	override fun toString() = id
 }

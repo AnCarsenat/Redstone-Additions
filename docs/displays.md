@@ -32,6 +32,8 @@ The scale a new display gets is on the Displays settings page (*Gauge Bar scale*
 ## Gauge Bar
 
 A bar on the front of the block, filled to the redstone level feeding it: empty at 0, full at 15.
+It is fifteen glowing segments, one per level, drawn as text like the Text Screen: the lit ones in
+the fill colour, the others in the track colour, on a dark plate.
 
 1. Place it: the bar is drawn on the face looking at you (it can face up or down too).
 2. Feed it redstone from any side. The strongest level wins; a repeater or comparator pointing
@@ -42,8 +44,9 @@ A bar on the front of the block, filled to the redstone level feeding it: empty 
 | Property | Values | Default |
 | --- | --- | --- |
 | `direction` | which way it fills: `right` (from the left edge), `left`, `up` (from the bottom), `down` | right |
-| `color` | the fill: a dye colour, `white`, `light_gray`, `gray`, `black`, `brown`, `red`, `orange`, `yellow`, `lime`, `green`, `cyan`, `light_blue`, `blue`, `purple`, `magenta`, `pink` | red |
-| `track_color` | the track behind it, the same colours | gray |
+| `color` | the lit segments: a colour name (`red`, `gold`, `green`, `aqua`... the sixteen chat colours) or `#RRGGBB` | red |
+| `track_color` | the unlit segments, the same colours | dark_gray |
+| `background` | a dark plate behind the bar | on |
 
 The Goggles show the level, the facing, the direction and the colour.
 
@@ -124,9 +127,13 @@ Crafted from three glass panes, two glowstone dust, a comparator and a barrel.
   (`ra_displays:text_color/check`) and copied, never pasted into a command.
 - One slow clock, `ra_displays:poll/run`, runs once a second while a display block that needs it is
   loaded, and stops when none is. It puts back a display killed by hand.
-- Gauge Bar: marker tag `ra.custom_block.gauge_bar`, displays `ra.displays.gauge_track` and
-  `ra.displays.gauge_fill`. The input is read every tick (each side asked `any_side` first, as the
-  gates do); the fill is redrawn only when the level changes, and the client eases it over 3 ticks.
+- Gauge Bar: marker tag `ra.custom_block.gauge_bar`, one `text_display` tagged
+  `ra.displays.gauge_bar`: fifteen `█` glyphs, the first L coloured `color`, the rest
+  `track_color` (both checked by `ra_displays:text_color/check`), one of sixteen fixed texts picked
+  by score, no macro. The input is read every tick (each side asked `any_side` first, as the gates
+  do); the text is rewritten only when the level changes. A Gauge Bar drawn by an earlier 6.0.3
+  build (two block displays, `ra.displays.gauge_track` / `ra.displays.gauge_fill`) has no text
+  display, so the slow clock redraws it and the old parts are removed.
   The last level drawn is the marker's `ra.power` score; `data.status.level` holds it for the Goggles.
 - Item Hologram: marker tag `ra.custom_block.item_hologram`, displays `ra.displays.holo_item` and
   `ra.displays.holo_name`. Nothing runs per tick: once a second it compares `Items[0]` (without

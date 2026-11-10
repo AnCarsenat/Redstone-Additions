@@ -217,10 +217,12 @@ This page mirrors key datapack milestones from the main project changelog.
   admins up to 1600 %). A Data Handler change shows within a second.
 - **Gauge Bar** (Displays). A bar on its front face, filled to the redstone level feeding it, 0 to
   15, from any side; a repeater or comparator pointing in fills it. It faces the way it was placed,
-  up and down included. *direction* is which way it fills (from the left, the right, the bottom
-  or the top); *color* and *track_color* take any of the sixteen dye colours. The Goggles show the
-  level. The fill is only redrawn when the level changes, and slides to the new length. Crafted from three glass panes, two redstone, a comparator and three
-  polished blackstone.
+  up and down included. It is drawn as text, like the Text Screen: fifteen segments, one per
+  level, lit in the fill colour and the rest in the track colour, crisp at any scale. *direction*
+  is which way it fills (from the left, the right, the bottom or the top); *color* and
+  *track_color* take a colour name or `#RRGGBB`; *background* puts a dark plate behind it. The
+  Goggles show the level. The bar is only redrawn when the level changes. Crafted from three
+  glass panes, two redstone, a comparator and three polished blackstone.
 - **Item Hologram** (Displays). A barrel that shows the first item inside it floating above its
   lid, turning slowly, with the item's name (its anvil name, or its usual name in your language)
   over it. Fill it by hand or with a hopper or an Item Pipe; the hologram follows within a second.

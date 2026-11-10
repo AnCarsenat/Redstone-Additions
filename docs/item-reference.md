@@ -42,6 +42,7 @@ one page, A to Z and by module.
 | ra_sensors:weather_sensor            | Weather Sensor            | ![Weather Sensor recipe](images/recipes/ra_sensors/weather_sensor.png){ width="220" } |
 | ra_sensors:held_item_detector        | Held Item Detector        | ![Held Item Detector recipe](images/recipes/ra_sensors/held_item_detector.png){ width="220" } |
 | ra_sensors:player_detector           | Player Detector           | ![Player Detector recipe](images/recipes/ra_sensors/player_detector.png){ width="220" } |
+| ra_sensors:block_detector            | Block Detector            | ![Block Detector recipe](images/recipes/ra_sensors/block_detector.png){ width="220" } |
 | ra_wireless:emitter                  | Wireless Emitter          | ![Wireless Emitter recipe](images/recipes/ra_wireless/emitter.png){ width="220" } |
 | ra_wireless:receiver                 | Wireless Receiver         | ![Wireless Receiver recipe](images/recipes/ra_wireless/receiver.png){ width="220" } |
 | ra_wireless:analog_emitter           | Analog Emitter            | ![Analog Emitter recipe](images/recipes/ra_wireless/analog_emitter.png){ width="220" } |

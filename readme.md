@@ -5,7 +5,7 @@
 <h1 align="center">Redstone Additions</h1>
 
 <p align="center">
-  <strong>91 custom blocks. 9 tools. 108 recipes. 2 jetpacks and 3 upgrade kits. Vanilla datapack for Minecraft 26.3.</strong>
+  <strong>95 custom blocks. 9 tools. 111 recipes. 2 jetpacks and 3 upgrade kits. Vanilla datapack for Minecraft 26.3.</strong>
 </p>
 
 <p align="center">
@@ -16,7 +16,7 @@
 <p align="center">
   <img src="https://img.shields.io/badge/Minecraft-26.3-2EA44F" alt="Minecraft 26.3">
   <img src="https://img.shields.io/badge/Version-v6.0.3-blue" alt="Version v6.0.3">
-  <img src="https://img.shields.io/badge/Blocks-94-red" alt="94 blocks">
+  <img src="https://img.shields.io/badge/Blocks-95-red" alt="95 blocks">
   <img src="https://img.shields.io/badge/Tools-9-lightgrey" alt="9 tools">
   <img src="https://img.shields.io/badge/Recipes-111-8A2BE2" alt="111 recipes">
 </p>
@@ -126,7 +126,7 @@ listed A to Z and grouped by module.
 - Boxer
 - Unboxer
 
-### Sensors (7)
+### Sensors (8)
 - Entity Detector
 - Tag Adder
 - Tag Remover
@@ -134,6 +134,7 @@ listed A to Z and grouped by module.
 - Weather Sensor — on during rain, thunder, day or night
 - Held Item Detector — on while a nearby player carries an item
 - Player Detector — on while a listed player is near
+- Block Detector — on while the block at its target is the chosen block
 
 ### Wireless (4)
 - Wireless Emitter

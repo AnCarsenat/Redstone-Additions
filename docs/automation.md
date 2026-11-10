@@ -74,6 +74,9 @@ crafts one at a time, at most twice a second.
 - An ingredient missing from the chest is simply waited for; what is already in the crafter
   stays there.
 - The container can be a chest, barrel, hopper, dropper, dispenser or shulker box.
+- A slot disabled in the crafter (clicked shut in its grid) is never filled. If the Pattern needs
+  one, the Goggles say "a Pattern slot is disabled in the crafter" and nothing is fired until the
+  slot is enabled again or the Pattern is recorded anew (a recording leaves disabled slots empty).
 
 ## Crafter Controller
 
@@ -128,6 +131,7 @@ Once a second it looks at the input, slot by slot, and acts on the first stack i
 | an item it knows, with at least as many as the recipe makes | that many are taken apart; the ingredients go into the container below, for *eu_per_uncraft* EU (default 2000) |
 | an item it knows, with fewer than the recipe makes (two of the three iron doors) | it waits for more |
 | damaged, enchanted, renamed, dyed or changed in any other way | passed to the container below unchanged, for free |
+| a shulker box, with a shulker box below | left in the input (a shulker box cannot hold one) |
 | an item it does not know | passed to the container below unchanged, for free |
 
 - It never gives back more than went in: only the exact vanilla recipe, and only recipes where
@@ -208,6 +212,8 @@ side off.
   ever dropped or lost; when every side is full, the items wait in the input.
 - It takes the input's first stack first. If no side has room for that item, it waits.
 - It never sends items back up: the input is above, the outputs are the other five faces.
+- A shulker box item is never sent into a shulker box (the game does not allow it either); it goes
+  to the next side that can take it.
 - A redstone signal stops it.
 
 ### Wrench and tools
@@ -232,6 +238,8 @@ side off.
 | Uncrafter: output full | The container below needs one empty slot per ingredient |
 | Uncrafter: waiting for a full recipe | The stack is smaller than what the recipe makes (3 iron doors, 16 iron bars) |
 | Absorber: no room in a network beside it | No pipe, tank or drain touching it, the network is full, or it holds another fluid |
+| a Pattern slot is disabled in the crafter | The Pattern names a slot that is now disabled in the crafter: enable it, or record the Pattern again |
+| Uncrafter: no shulker box into a shulker box | The container below is a shulker box and the input holds shulker boxes; use a chest or barrel below |
 | Recipe Pattern: the crafter never fills | The container must be on the Controller's other side, opposite the crafter, and hold plain (unrenamed, undamaged) ingredients |
 | Splitter: outputs full | Every side with a share above 0 is full, has no container, or cannot take the input's first item |
 | Splitter: every side's share is 0 | Give at least one side a share with the Data Handler |

@@ -77,9 +77,11 @@ internal object UncrafterRun {
 			raw("data remove storage $S d")
 			raw("data modify storage $S d.scan set from block ~ ~1 ~ Items")
 			raw("scoreboard players set #un.act $T 0")
+			raw("scoreboard players set #un.shk $T 0")
 			raw("function ${find.asId()}")
 			raw("data remove storage $S d.scan")
-			raw("execute if score #un.act $T matches 0 run ${state("waiting for a full recipe")}")
+			raw("execute if score #un.act $T matches 0 if score #un.shk $T matches 0 run ${state("waiting for a full recipe")}")
+			raw("execute if score #un.act $T matches 0 if score #un.shk $T matches 1 run ${state("no shulker box into a shulker box")}")
 			raw("execute if score #un.act $T matches 1 run function ${pass.asId()} with storage $S d.q")
 			raw("execute if score #un.act $T matches 2 run function ${uncraft.asId()} with storage $S d.q")
 			raw("data remove storage $S d")
@@ -96,8 +98,14 @@ internal object UncrafterRun {
 			raw("data modify storage $S d.item set from storage $S d.scan[0]")
 			// Any component at all: not the plain vanilla item, so passed on as it is.
 			raw("execute if data storage $S d.scan[0].components run scoreboard players set #un.act $T 1")
+			// A shulker box cannot go into a shulker box below (the game refuses it): skipped.
+			raw("data modify storage $S d.tail set string storage $S d.scan[0].id -11")
+			raw("execute if block ~ ~-1 ~ #minecraft:shulker_boxes if data storage $S d{tail:\"shulker_box\"} run scoreboard players set #un.act $T 3")
 			raw("execute if score #un.act $T matches 0 run function ${tryEntry.asId()} with storage $S d.q")
 			raw("execute if score #un.act $T matches 0 run data remove storage $S d.scan[0]")
+			raw("execute if score #un.act $T matches 3 run scoreboard players set #un.shk $T 1")
+			raw("execute if score #un.act $T matches 3 run data remove storage $S d.scan[0]")
+			raw("execute if score #un.act $T matches 3 run scoreboard players set #un.act $T 0")
 			raw("function ${find.asId()}")
 		}
 

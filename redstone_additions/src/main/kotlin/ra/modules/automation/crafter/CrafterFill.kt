@@ -51,6 +51,14 @@ internal object CrafterFill {
 	private val find = fn("find")
 	private val take = fn("take")
 	private val atCrafter = fn("at_crafter")
+	private val disRead = fn("disabled/read")
+	private val disNext = fn("disabled/next")
+	private val disMark = fn("disabled/mark")
+	/** At the crafter, with `storage d` the controller's data: 1 when the Pattern names a slot the crafter has disabled. */
+	val namesDisabled = fn("disabled/check")
+
+	/** The state shown when the Pattern names a disabled slot. */
+	const val DISABLED_STATE = "a Pattern slot is disabled in the crafter"
 
 	/** Each crafter position of [CrafterControllerRun.directions], with the source across from it. */
 	private val pairs = CrafterControllerRun.directions.map { d ->
@@ -71,6 +79,9 @@ internal object CrafterFill {
 			raw("data modify storage $CC f set from storage $CC d.data.match")
 			raw("\$data modify storage $CC f.c set value \"\$(c)\"")
 			raw("\$data modify storage $CC f.s set value \"\$(s)\"")
+			raw("\$execute positioned \$(c) run function ${disRead.asId()}")
+			raw("execute if score #cc.dis $T matches 1 run data remove storage $CC f")
+			raw("execute if score #cc.dis $T matches 1 run return run ${state(DISABLED_STATE)}")
 			raw("\$execute if block \$(s) #ra_lib:containers if items block \$(s) container.* * run function ${slots.asId()} with storage $CC f")
 			raw("data remove storage $CC f")
 			raw("\$execute positioned \$(c) run function ${atCrafter.asId()}")
@@ -79,7 +90,7 @@ internal object CrafterFill {
 		// {c, s, s0..s8}: an empty crafter slot the Pattern names gets one, when the source has it.
 		pack.define(slots) {
 			for (n in 0 until 9) {
-				raw("\$execute unless data storage $CC f{s$n:\"$EMPTY\"} unless items block \$(c) container.$n * if data block \$(s) Items[{id:\"\$(s$n)\"}] run function ${one.asId()} {n:$n,id:\"\$(s$n)\",c:\"\$(c)\",s:\"\$(s)\"}")
+				raw("\$execute unless data storage $CC f{s$n:\"$EMPTY\"} unless data storage $CC f.d$n unless items block \$(c) container.$n * if data block \$(s) Items[{id:\"\$(s$n)\"}] run function ${one.asId()} {n:$n,id:\"\$(s$n)\",c:\"\$(c)\",s:\"\$(s)\"}")
 			}
 		}
 
@@ -120,6 +131,35 @@ internal object CrafterFill {
 			raw("scoreboard players remove #cc.c $T 1")
 			raw("\$execute if score #cc.c $T matches ..0 run data remove block \$(s) Items[{Slot:\$(slot)b}]")
 			raw("\$execute if score #cc.c $T matches 1.. store result block \$(s) Items[{Slot:\$(slot)b}].count int 1 run scoreboard players get #cc.c $T")
+		}
+
+		// At the crafter, with storage f the Pattern's ids: every slot in its disabled_slots marked in
+		// f as d<n>:1b (never filled), #cc.dis 1 when the Pattern names one of them.
+		pack.define(disRead) {
+			raw("scoreboard players set #cc.dis $T 0")
+			raw("data remove storage $CC dl")
+			raw("data modify storage $CC dl set from block ~ ~ ~ disabled_slots")
+			raw("function ${disNext.asId()}")
+			raw("data remove storage $CC dl")
+			raw("data remove storage $CC da")
+		}
+		pack.define(disNext) {
+			raw("execute unless data storage $CC dl[0] run return 0")
+			raw("execute store result storage $CC da.v int 1 run data get storage $CC dl[0]")
+			raw("function ${disMark.asId()} with storage $CC da")
+			raw("data remove storage $CC dl[0]")
+			raw("function ${disNext.asId()}")
+		}
+		// {v}: a slot number the game wrote (an int, 0 to 8).
+		pack.define(disMark) {
+			raw("\$data modify storage $CC f.d\$(v) set value 1b")
+			raw("\$execute unless data storage $CC f{s\$(v):\"$EMPTY\"} run scoreboard players set #cc.dis $T 1")
+		}
+		pack.define(namesDisabled) {
+			raw("data modify storage $CC f set from storage $CC d.data.match")
+			raw("function ${disRead.asId()}")
+			raw("data remove storage $CC f")
+			raw("return run scoreboard players get #cc.dis $T")
 		}
 
 		// As the controller, at the crafter.

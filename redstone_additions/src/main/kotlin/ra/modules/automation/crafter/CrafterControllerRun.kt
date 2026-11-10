@@ -129,6 +129,8 @@ object CrafterControllerRun {
 			raw("data modify storage $STORE m set from storage $STORE d.data.match")
 			raw("execute store result score #cc.ok $T run function ${match.asId()} with storage $STORE m")
 			raw("data remove storage $STORE m")
+			// A Pattern naming a slot the crafter has disabled can never match: said so.
+			raw("execute unless score #cc.ok $T matches 1 if function ${CrafterFill.namesDisabled.asId()} run return run data modify entity @s data.status.state set value \"${CrafterFill.DISABLED_STATE}\"")
 			raw("execute unless score #cc.ok $T matches 1 run return run data modify entity @s data.status.state set value \"waiting for the ingredients\"")
 			// The edge: the controller powers itself, and the crafter beside it crafts.
 			raw("execute at @s if block ~ ~ ~ minecraft:target run setblock ~ ~ ~ minecraft:target[power=15]")

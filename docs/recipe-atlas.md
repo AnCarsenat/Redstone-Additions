@@ -1,6 +1,6 @@
 # Recipe Atlas
 
-Every recipe in the pack, in one place: 105 of them.
+Every recipe in the pack, in one place: 107 of them.
 
 !!! tip "Finding one"
     Use the search box with the item's name — every recipe below is indexed by
@@ -54,6 +54,7 @@ what the pack actually contains rather than what someone remembered to add.
 | [EU Consumer](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
 | [EU Generator](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
 | [EU Switch](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
+| [Experience Absorber](#automation) | [Automation](automation.md) | Crafting table |
 | [Extender](#logic-gates) | [Logic Gates](logic-gates.md) | Crafting table |
 | [Fan](#interactive-machines) | [Interactive Machines](interactive-machines.md) | Crafting table |
 | [Fluid Drain](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
@@ -116,6 +117,7 @@ what the pack actually contains rather than what someone remembered to add.
 | [Thruster Kit](#jetpacks) | [Jetpacks](jetpacks.md) | Crafting table |
 | [Trash Can](#interactive-machines) | [Interactive Machines](interactive-machines.md) | Crafting table |
 | [Unboxer](#storage) | [Storage](storage.md) | Crafting table |
+| [Uncrafter](#automation) | [Automation](automation.md) | Crafting table |
 | [UNI Gate](#logic-gates) | [Logic Gates](logic-gates.md) | Crafting table |
 | [Usage Meter](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
 | [Water Wheel](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
@@ -132,7 +134,9 @@ Module page: [Automation](automation.md) — give everything: `/function ra_auto
 | Item | Recipe | Station | Namespace id |
 | ---- | ------ | ------- | ------------ |
 | **Crafter Controller** | ![Crafter Controller recipe](images/recipes/ra_automation/crafter_controller.png){ width="220" } | Crafting table | `ra_automation:crafter_controller` |
+| **Experience Absorber** | ![Experience Absorber recipe](images/recipes/ra_automation/experience_absorber.png){ width="220" } | Crafting table | `ra_automation:experience_absorber` |
 | **Pattern** | ![Pattern recipe](images/recipes/ra_automation/pattern.png){ width="220" } | Crafting table | `ra_automation:pattern` |
+| **Uncrafter** | ![Uncrafter recipe](images/recipes/ra_automation/uncrafter.png){ width="220" } | Crafting table | `ra_automation:uncrafter` |
 
 ## Chunk Loader
 

@@ -119,6 +119,17 @@ object PackValidator {
 		return bad
 	}
 
+	/**
+	 * Every named provider a command references ([namedProvider]) must have its file
+	 * ([defineProvider]). An unknown id fails to parse, and Minecraft drops the WHOLE function
+	 * that names it. Always fatal.
+	 */
+	fun undefinedProviders(pack: DataPack): List<String> {
+		val defined = pack.contextIntProviders.map { "${it.namespace ?: pack.name}:${it.fileName}" }.toSet()
+		return declaredProviders.filter { it !in defined }.sorted()
+			.map { "$it: referenced by a /compute but never defined (DataPack.defineProvider)" }
+	}
+
 	/** Fails generation listing every unresolved call. */
 	fun validate(pack: DataPack) {
 		val problems = problems(pack)

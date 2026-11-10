@@ -139,6 +139,9 @@ object RedstoneAdditions {
 		PackValidator.ungatedLoadMessages(this).let { bad ->
 			check(bad.isEmpty()) { "Load-time chat lines that ignore \"Show the load message\" (use loadMessage, or loadNotice for a warning):\n" + bad.joinToString("\n") { "  - $it" } }
 		}
+		PackValidator.undefinedProviders(this).let { bad ->
+			check(bad.isEmpty()) { "Named providers with no file (every function naming one fails to load):\n" + bad.joinToString("\n") { "  - $it" } }
+		}
 		if (strict) PackValidator.validate(this) else PackValidator.report(this)
 	}
 }

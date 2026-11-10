@@ -26,6 +26,8 @@ import ra.core.PackPart
 import ra.core.Ra
 import ra.core.Storage
 import ra.core.define
+import ra.core.defineProvider
+import ra.core.namedProvider
 import ra.core.executeReturnRun
 import ra.core.executeRun
 import ra.core.raw
@@ -44,7 +46,24 @@ object Bridge : PackPart {
 	val tick = ref(Ns.WIRES, "bridge/tick")
 	val transfer = ref(Ns.WIRES, "bridge/transfer")
 
+	/**
+	 * Named provider `ra_wires:bridge/move`, the levelling rule (see [readDst]):
+	 * `min(#prop ra.temp, #br.src_amount, #br.dst_free, floor((#br.src_amount - #br.dst_amount) / 2))`,
+	 * the scores in ra.wires.tmp unless named. Never more than the rate, what the source holds,
+	 * the room on the far side, or half the gap.
+	 */
+	private val MOVE = namedProvider(Ns.WIRES, "bridge/move")
+
 	override fun Ra.register() {
+		pack.defineProvider(MOVE, provider {
+			min(
+				scoreOf("#prop", "ra.temp"),
+				scoreOf("#br.src_amount", "ra.wires.tmp"),
+				scoreOf("#br.dst_free", "ra.wires.tmp"),
+				floorDiv(sub(scoreOf("#br.src_amount", "ra.wires.tmp"), scoreOf("#br.dst_amount", "ra.wires.tmp")), constant(2)),
+			)
+		})
+
 		pack.define(Bridge.balanced) {
 			// Internal: the two sides already hold the same amount. Context: as the bridge.
 
@@ -127,7 +146,7 @@ object Bridge : PackPart {
 
 			function(RaLib.Transport.Net.read)
 
-			computeScore("#br.dst_free", "ra.wires.tmp", provider { sub(scoreOf("#net_capacity", "ra.tr.tmp"), scoreOf("#net_amount", "ra.tr.tmp")) })
+			computeScore("#br.dst_free", "ra.wires.tmp", RaLib.Transport.Net.free)
 			raw("execute if score #br.dst_free ra.wires.tmp matches ..0 run return 0")
 
 			// Compared per medium, so the half-the-gap convergence in bridge/transfer levels
@@ -298,18 +317,7 @@ object Bridge : PackPart {
 			//
 			// Stored into bridge.amount in the same command. A blocked transfer leaves it there
 			// unused: nothing reads it on that path, and the next transfer clears `bridge` first.
-			computeScore(
-				"#br.move", "ra.wires.tmp",
-				provider {
-					min(
-						scoreOf("#prop", "ra.temp"),
-						scoreOf("#br.src_amount", "ra.wires.tmp"),
-						scoreOf("#br.dst_free", "ra.wires.tmp"),
-						floorDiv(sub(scoreOf("#br.src_amount", "ra.wires.tmp"), scoreOf("#br.dst_amount", "ra.wires.tmp")), constant(2)),
-					)
-				},
-				chain = "store result storage ra:wires bridge.amount int 1",
-			)
+			computeScore("#br.move", "ra.wires.tmp", MOVE, chain = "store result storage ra:wires bridge.amount int 1")
 
 			raw("execute if score #br.move ra.wires.tmp matches ..0 run return run data modify entity @s data.status.bridge_state set value \"blocked\"")
 

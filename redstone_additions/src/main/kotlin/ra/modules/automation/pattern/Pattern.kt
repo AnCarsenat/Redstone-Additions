@@ -42,8 +42,7 @@ import ra.modules.automation.pattern.PatternUse.registerPatternUse
  * [HELD]). Readers must treat the ids as player data: an edited item can hold anything, so a
  * value is checked (`ra_lib:safe/check`, format ID) before it is ever pasted into a command.
  *
- * Who reads it: the Crafter Controller (what to wait for), and the Keypad (`ra_security`, a
- * Pattern as a code: two patterns are equal when their `slots` lists are).
+ * Who reads it: the Crafter Controller (what to wait for).
  *
  * HOW IT IS SET. Sneak + right-click a vanilla crafter: its nine slots are copied in (see
  * [PatternUse]). Sneak + right-click anything else clears it. Right-click a block that takes
@@ -107,7 +106,7 @@ object Pattern {
 
 	/** The hint lines under a recorded grid. */
 	fun hintLore() = listOf(
-		loreLine("Right-click a Crafter Controller or a Keypad Controller to use it", "dark_gray"),
+		loreLine("Right-click a Crafter Controller to load it", "dark_gray"),
 		loreLine("Sneak + right-click air to clear", "dark_gray"),
 	)
 

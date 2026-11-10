@@ -162,7 +162,7 @@ Each module has `<Name>Module.kt` (the `GameplayModule` object: registration ord
 | `modules/wireless` | `Emitter.kt`, `Receiver.kt`, `WirelessCommon.kt`, `tools/Remote.kt` |
 | `modules/ender` | `ItemVault.kt`, `FluidVault.kt`, `PowerVault.kt`, `TeleportAnchor.kt`, `AnchorTerminal.kt`, `EnderCommon.kt`, `anchors/AnchorTable.kt`, `chooser/` (the destination menu: `Chooser.kt`, `ChooserInput.kt`), `tablet/AnchorTablet.kt`, `link/Link.kt`, `tools/Anchor.kt`, `debug/` |
 | `modules/automation` | `AutomationModule.kt`, `pattern/Pattern.kt` (the item and its data format, `Pattern.targets`) + `PatternUse.kt` (recording, the lore), `crafter/CrafterController.kt` + `CrafterControllerRun.kt` (the schedule, the match) |
-| `modules/security` | `SecurityModule.kt`, `keypad/Keypad.kt` (placement, owner, wrench, goggles) + `KeypadUse.kt` (setting and entering the code, the lockout, the pulse clock) |
+| `modules/security` | `SecurityModule.kt`, `keypad/Keypad.kt` (placement, owner, wrench, goggles) + `KeypadUse.kt` (watching the crafter grid, setting and entering the code, the lockout, the pulse, the clock) |
 
 ## Others
 

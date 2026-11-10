@@ -59,11 +59,12 @@ is the shortcut: one sample per module, and where to read about it.
 | [Displays](displays.md) | Gauge Bar, Item Hologram and Text Screen | ![Gauge Bar recipe](images/recipes/ra_displays/gauge_bar.png){ width="220" } |
 | [Automation](automation.md) | Crafter Controller and the Pattern item | ![Crafter Controller recipe](images/recipes/ra_automation/crafter_controller.png){ width="220" } |
 | [Security](security.md) | Keypad, a crafter whose slots are the code | ![Keypad recipe](images/recipes/ra_security/keypad.png){ width="220" } |
+| [Audio](audio.md) | Alarm, Doorbell and Jukebox Controller | ![Alarm recipe](images/recipes/ra_audio/alarm.png){ width="220" } |
 
 Current pack totals:
 
-- 87 placeable custom blocks
-- 103 recipes, all of them in the [Recipe Atlas](recipe-atlas.md)
+- 90 placeable custom blocks
+- 107 recipes, all of them in the [Recipe Atlas](recipe-atlas.md)
 - 9 tools (Wrench, Goggles, Data Handler, Creative Data Handler, Clipboard,
   Multimeter, Redstone Remote, Pager, Anchor Tablet)
 
@@ -86,6 +87,7 @@ Current pack totals:
 | `/function ra_displays:items/give_all` | Display blocks |
 | `/function ra_automation:items/give_all` | Crafter Controller and a Pattern |
 | `/function ra_security:items/give_all` | Keypad |
+| `/function ra_audio:items/give_all` | Alarm, Doorbell and Jukebox Controller |
 | `/function ra:uninstall` | Opens uninstall confirmation dialog |
 
 ## Tools At A Glance

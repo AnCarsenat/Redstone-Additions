@@ -19,6 +19,7 @@ import ra.hub.uninstall.uninstallGaps
 import ra.settings.purge.Purge
 import ra.lib.RaLibPart
 import ra.migrations.MigrationsPart
+import ra.modules.audio.AudioModule
 import ra.modules.automation.AutomationModule
 import ra.modules.chunkloader.ChunkLoaderModule
 import ra.modules.displays.DisplaysModule
@@ -72,6 +73,7 @@ object RedstoneAdditions {
 		DisplaysModule,
 		AutomationModule,
 		SecurityModule,
+		AudioModule,
 	)
 
 	/**

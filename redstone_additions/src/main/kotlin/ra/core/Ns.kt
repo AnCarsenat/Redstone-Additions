@@ -31,7 +31,8 @@ enum class Ns(val id: String) {
 	WIRELESS("ra_wireless"),
 	WIRES("ra_wires"),
 	AUTOMATION("ra_automation"),
-	SECURITY("ra_security");
+	SECURITY("ra_security"),
+	AUDIO("ra_audio");
 
 	override fun toString() = id
 }

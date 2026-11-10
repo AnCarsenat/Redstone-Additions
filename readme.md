@@ -16,9 +16,9 @@
 <p align="center">
   <img src="https://img.shields.io/badge/Minecraft-26.3-2EA44F" alt="Minecraft 26.3">
   <img src="https://img.shields.io/badge/Version-v6.0.3-blue" alt="Version v6.0.3">
-  <img src="https://img.shields.io/badge/Blocks-87-red" alt="87 blocks">
+  <img src="https://img.shields.io/badge/Blocks-90-red" alt="90 blocks">
   <img src="https://img.shields.io/badge/Tools-9-lightgrey" alt="9 tools">
-  <img src="https://img.shields.io/badge/Recipes-103-8A2BE2" alt="103 recipes">
+  <img src="https://img.shields.io/badge/Recipes-107-8A2BE2" alt="107 recipes">
 </p>
 
 <p align="center">
@@ -85,6 +85,7 @@ listed A to Z and grouped by module.
 | Displays | <img src="https://github.com/AnCarsenat/Redstone-Additions/raw/main/docs/images/banners/media-missing.png" alt="No screenshot yet" width="320"> |
 | Automation | <img src="https://github.com/AnCarsenat/Redstone-Additions/raw/main/docs/images/banners/media-missing.png" alt="No screenshot yet" width="320"> |
 | Security | <img src="https://github.com/AnCarsenat/Redstone-Additions/raw/main/docs/images/banners/media-missing.png" alt="No screenshot yet" width="320"> |
+| Audio | <img src="https://github.com/AnCarsenat/Redstone-Additions/raw/main/docs/images/banners/media-missing.png" alt="No screenshot yet" width="320"> |
 | Tools | <img src="https://github.com/AnCarsenat/Redstone-Additions/raw/main/docs/images/banners/media-missing.png" alt="No screenshot yet" width="320"> |
 
 ---
@@ -221,6 +222,11 @@ netherrack or poppies on an enchanting table.
 ### Security (1)
 - Keypad — a crafter whose slots are the code; the right code gives a redstone pulse
 
+### Audio (3)
+- Alarm — sounds one of seven alarms while powered, heard within its range
+- Doorbell — a button that plays one of six chimes when pressed
+- Jukebox Controller — redstone plays, stops and skips the jukebox next to it; a chest of discs is the playlist
+
 ### Multiblock Bases (5)
 - Copper Multiblock Base
 - Iron Multiblock Base
@@ -343,6 +349,7 @@ Starter command:
 | Displays | https://ancarsenat.github.io/Redstone-Additions/displays/ |
 | Automation | https://ancarsenat.github.io/Redstone-Additions/automation/ |
 | Security | https://ancarsenat.github.io/Redstone-Additions/security/ |
+| Audio | https://ancarsenat.github.io/Redstone-Additions/audio/ |
 | Item Reference | https://ancarsenat.github.io/Redstone-Additions/item-reference/ |
 | Recipe Atlas | https://ancarsenat.github.io/Redstone-Additions/recipe-atlas/ |
 | Changelog | https://ancarsenat.github.io/Redstone-Additions/changelog/ |
@@ -369,6 +376,7 @@ Starter command:
 | `/function ra_displays:items/give_all` | Display blocks |
 | `/function ra_automation:items/give_all` | Crafter Controller and a Pattern |
 | `/function ra_security:items/give_all` | Keypad |
+| `/function ra_audio:items/give_all` | Alarm, Doorbell and Jukebox Controller |
 | `/function ra:tools/wrench/give` | Wrench |
 | `/function ra:tools/data_handler/give` | Data Handler |
 | `/function ra:tools/creative_data_handler/give` | Creative Data Handler |

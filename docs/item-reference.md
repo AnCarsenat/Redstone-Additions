@@ -97,6 +97,9 @@ one page, A to Z and by module.
 | ra_infinite:poppy_generator          | Poppy Generator           | Generator Casing + Poppy Core |
 | ra_automation:crafter_controller     | Crafter Controller        | ![Crafter Controller recipe](images/recipes/ra_automation/crafter_controller.png){ width="220" } |
 | ra_security:keypad                   | Keypad                    | ![Keypad recipe](images/recipes/ra_security/keypad.png){ width="220" } |
+| ra_audio:alarm                       | Alarm                     | ![Alarm recipe](images/recipes/ra_audio/alarm.png){ width="220" } |
+| ra_audio:doorbell                    | Doorbell                  | ![Doorbell recipe](images/recipes/ra_audio/doorbell.png){ width="220" } |
+| ra_audio:jukebox_controller          | Jukebox Controller        | ![Jukebox Controller recipe](images/recipes/ra_audio/jukebox_controller.png){ width="220" } |
 
 ## Crafting Items
 

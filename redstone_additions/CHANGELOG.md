@@ -287,6 +287,28 @@
   owns the Keypad and its state, and the Data Handler and Clipboard never see it.
   Shift+RMB with the Wrench steps the pulse through 2, 10, 20 and 40 ticks. Crafted from three
   stone buttons, four iron ingots, a crafter and a redstone dust.
+- **Audio**, a new module (`ra_audio`, [Audio](audio.md)): blocks that make sound on a redstone
+  signal. Sounds come from a fixed list in the pack, picked by number, and are heard by every
+  player within the block's *range* (1 to 64 blocks; admins up to 256) at its *volume* (10 to
+  100 %).
+  - **Alarm**: a redstone lamp that, while powered, plays its sound every *interval* ticks (20 by
+    default, 10 to 1200). Seven sounds: bell, siren, klaxon, beeper, alarm clock, toll and buzzer.
+    Shift+RMB with the Wrench steps to the next sound and plays it. Crafted from five iron ingots,
+    a note block, two redstone and a redstone lamp.
+  - **Doorbell**: a polished blackstone button that plays its chime once per press, and gives the
+    usual button pulse. Six chimes: ding-dong, Westminster, chime, bell, buzzer and knock. It is
+    placed on the face of the block you click, like a button. Crafted from a polished blackstone
+    button, a gold ingot and a note block, stacked.
+  - **Jukebox Controller**: a waxed copper bulb that runs the jukebox next to it. A pulse of
+    strength 15 (a button or lever against it) plays or stops, 8 to 14 plays the next disc, 1 to 7
+    stops. A chest, barrel or shulker box of music discs next to it is the playlist, played in slot
+    order, each disc going back to its slot; with *continuous* on (the default, Shift+RMB with the
+    Wrench) the next disc plays when one ends. Without a chest it stops and restarts the disc in
+    the jukebox. The bulb is lit while it plays. Crafted from five copper ingots, a comparator, two
+    redstone and a hopper.
+  - Idle, each costs one block test per tick: the vanilla block (a lit lamp, a pressed button, a
+    powered bulb) carries the input. The Audio settings page holds the Alarm's interval and range
+    and the Doorbell's range for new blocks.
 
 ### Changed
 

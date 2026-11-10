@@ -31,6 +31,7 @@ import ra.modules.infinite.InfiniteModule
 import ra.modules.interactive.InteractiveModule
 import ra.modules.jetpacks.JetpacksModule
 import ra.modules.multiblock.MultiblockModule
+import ra.modules.railworks.RailworksModule
 import ra.modules.security.SecurityModule
 import ra.modules.sensors.SensorsModule
 import ra.modules.storage.StorageModule
@@ -75,6 +76,7 @@ object RedstoneAdditions {
 		AutomationModule,
 		SecurityModule,
 		FarmingModule,
+		RailworksModule,
 		AudioModule,
 	)
 

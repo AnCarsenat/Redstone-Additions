@@ -18,6 +18,7 @@ object AdvancementsPart : PackPart {
 		automationTree,
 		securityTree,
 		farmingTree,
+		railworksTree,
 		audioTree,
 	)
 

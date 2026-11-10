@@ -5,7 +5,7 @@
 <h1 align="center">Redstone Additions</h1>
 
 <p align="center">
-  <strong>90 custom blocks. 9 tools. 107 recipes. 2 jetpacks and 3 upgrade kits. Vanilla datapack for Minecraft 26.3.</strong>
+  <strong>91 custom blocks. 9 tools. 108 recipes. 2 jetpacks and 3 upgrade kits. Vanilla datapack for Minecraft 26.3.</strong>
 </p>
 
 <p align="center">
@@ -16,9 +16,9 @@
 <p align="center">
   <img src="https://img.shields.io/badge/Minecraft-26.3-2EA44F" alt="Minecraft 26.3">
   <img src="https://img.shields.io/badge/Version-v6.0.3-blue" alt="Version v6.0.3">
-  <img src="https://img.shields.io/badge/Blocks-93-red" alt="93 blocks">
+  <img src="https://img.shields.io/badge/Blocks-94-red" alt="94 blocks">
   <img src="https://img.shields.io/badge/Tools-9-lightgrey" alt="9 tools">
-  <img src="https://img.shields.io/badge/Recipes-110-8A2BE2" alt="110 recipes">
+  <img src="https://img.shields.io/badge/Recipes-111-8A2BE2" alt="111 recipes">
 </p>
 
 <p align="center">
@@ -86,6 +86,7 @@ listed A to Z and grouped by module.
 | Automation | <img src="https://github.com/AnCarsenat/Redstone-Additions/raw/main/docs/images/banners/media-missing.png" alt="No screenshot yet" width="320"> |
 | Security | <img src="https://github.com/AnCarsenat/Redstone-Additions/raw/main/docs/images/banners/media-missing.png" alt="No screenshot yet" width="320"> |
 | Farming | <img src="https://github.com/AnCarsenat/Redstone-Additions/raw/main/docs/images/banners/media-missing.png" alt="No screenshot yet" width="320"> |
+| Railworks | <img src="https://github.com/AnCarsenat/Redstone-Additions/raw/main/docs/images/banners/media-missing.png" alt="No screenshot yet" width="320"> |
 | Audio | <img src="https://github.com/AnCarsenat/Redstone-Additions/raw/main/docs/images/banners/media-missing.png" alt="No screenshot yet" width="320"> |
 | Tools | <img src="https://github.com/AnCarsenat/Redstone-Additions/raw/main/docs/images/banners/media-missing.png" alt="No screenshot yet" width="320"> |
 
@@ -227,6 +228,8 @@ netherrack or poppies on an enchanting table.
 ### Farming (2)
 - Sprinkler — waters the farmland around it; with liquid experience, crops grow 4x as fast
 - Breeder
+### Railworks (1)
+- Route Rail — under a rail junction: switches it for each cart by its name, tag, cargo or rider
 
 ### Audio (3)
 - Alarm — sounds one of seven alarms while powered, heard within its range
@@ -356,6 +359,7 @@ Starter command:
 | Automation | https://ancarsenat.github.io/Redstone-Additions/automation/ |
 | Security | https://ancarsenat.github.io/Redstone-Additions/security/ |
 | Farming | https://ancarsenat.github.io/Redstone-Additions/farming/ |
+| Railworks | https://ancarsenat.github.io/Redstone-Additions/railworks/ |
 | Audio | https://ancarsenat.github.io/Redstone-Additions/audio/ |
 | Item Reference | https://ancarsenat.github.io/Redstone-Additions/item-reference/ |
 | Recipe Atlas | https://ancarsenat.github.io/Redstone-Additions/recipe-atlas/ |
@@ -384,6 +388,7 @@ Starter command:
 | `/function ra_automation:items/give_all` | Crafter Controller, a Pattern, Uncrafter and Experience Absorber |
 | `/function ra_security:items/give_all` | Keypad |
 | `/function ra_farming:items/give_all` | Sprinkler, Breeder |
+| `/function ra_railworks:items/give_all` | Route Rail |
 | `/function ra_audio:items/give_all` | Alarm, Doorbell and Jukebox Controller |
 | `/function ra:tools/wrench/give` | Wrench |
 | `/function ra:tools/data_handler/give` | Data Handler |

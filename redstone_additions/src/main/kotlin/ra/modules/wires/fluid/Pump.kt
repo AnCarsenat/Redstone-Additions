@@ -1,9 +1,6 @@
 package ra.modules.wires.fluid
 
-import io.github.ayfri.kore.features.predicates.providers.sub
 import ra.core.computeScore
-import ra.core.provider
-import ra.core.scoreOf
 import io.github.ayfri.kore.arguments.types.literals.self
 import io.github.ayfri.kore.commands.data
 import io.github.ayfri.kore.commands.function
@@ -38,7 +35,7 @@ object Pump : PackPart {
 			// the block anyway is how a nearly full network would quietly delete a lake.
 			function(RaLib.Transport.Net.read)
 			raw("\$scoreboard players set #need ra.wires.tmp \$(volume)")
-			computeScore("#free", "ra.wires.tmp", provider { sub(scoreOf("#net_capacity", "ra.tr.tmp"), scoreOf("#net_amount", "ra.tr.tmp")) })
+			computeScore("#free", "ra.wires.tmp", RaLib.Transport.Net.free)
 
 			// A network smaller than one source block can never take one, however long you
 			// wait. That is a different problem from a network that happens to be full, and

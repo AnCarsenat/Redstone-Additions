@@ -14,6 +14,8 @@ import ra.core.Ra
 import ra.core.Storage
 import ra.core.computeScore
 import ra.core.define
+import ra.core.defineProvider
+import ra.core.namedProvider
 import ra.core.executeRun
 import ra.core.provider
 import ra.core.raw
@@ -71,7 +73,17 @@ object AirTank : PackPart {
 	private fun Function.readAir() =
 		raw("""execute store result score #at.air $T run data get entity @s equipment.chest.components."minecraft:custom_data".ra.air""")
 
+	/**
+	 * Named providers `ra_wires:diving/air_minutes` and `air_seconds`: `#at.air` (ra.wires.tmp,
+	 * seconds of air) split into whole minutes and the seconds left over. The tank's lore and the
+	 * actionbar gauge both show `7m 48s`, from the same two files.
+	 */
+	private val AIR_MINUTES = namedProvider(Ns.WIRES, "diving/air_minutes")
+	private val AIR_SECONDS = namedProvider(Ns.WIRES, "diving/air_seconds")
+
 	override fun Ra.register() {
+		pack.defineProvider(AIR_MINUTES, provider { scoreOf("#at.air", T).floorDiv(60) })
+		pack.defineProvider(AIR_SECONDS, provider { scoreOf("#at.air", T).floorMod(60) })
 		pack.define(read) { readAir() }
 
 		pack.define(second) {
@@ -97,8 +109,8 @@ object AirTank : PackPart {
 			raw("execute if score #at.air $T matches ${AIR_MAX + 1}.. run scoreboard players set #at.air $T $AIR_MAX")
 			raw("data remove $S")
 			raw("execute store result $S.air int 1 run scoreboard players get #at.air $T")
-			computeScore("#at.m", T, provider { scoreOf("#at.air", T).floorDiv(60) })
-			computeScore("#at.s", T, provider { scoreOf("#at.air", T).floorMod(60) })
+			computeScore("#at.m", T, AIR_MINUTES)
+			computeScore("#at.s", T, AIR_SECONDS)
 			raw("execute store result $S.m int 1 run scoreboard players get #at.m $T")
 			raw("execute store result $S.s int 1 run scoreboard players get #at.s $T")
 			function(writeRun, Storage.WIRES, "at")
@@ -127,8 +139,8 @@ object AirTank : PackPart {
 		raw("""execute if score #at.air $T matches ..0 run return run title @s actionbar [{text:"Air tank empty",color:"red"}]""")
 		computeScore("#at.pct", T, provider { (scoreOf("#at.air", T) + (AIR_MAX / 100 - 1)).floorDiv(AIR_MAX / 100) })
 		computeScore("#at.seg", T, provider { (scoreOf("#at.pct", T) + (100 / SEGMENTS - 1)).floorDiv(100 / SEGMENTS) })
-		computeScore("#at.m", T, provider { scoreOf("#at.air", T).floorDiv(60) })
-		computeScore("#at.s", T, provider { scoreOf("#at.air", T).floorMod(60) })
+		computeScore("#at.m", T, AIR_MINUTES)
+		computeScore("#at.s", T, AIR_SECONDS)
 		val g = "$S.gauge"
 		for (n in 0..SEGMENTS) {
 			raw("""execute if score #at.seg $T matches $n run data modify $g set value {on:"${"▮".repeat(n)}",off:"${"▯".repeat(SEGMENTS - n)}",c:"aqua"}""")

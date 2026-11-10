@@ -1,14 +1,18 @@
 package ra.core
 
+import io.github.ayfri.kore.DataPack
 import io.github.ayfri.kore.arguments.Argument
+import io.github.ayfri.kore.features.contextproviders.ContextIntProviderFile
 import io.github.ayfri.kore.features.predicates.providers.ContextFloatProvider
 import io.github.ayfri.kore.features.predicates.providers.ContextIntProvider
+import io.github.ayfri.kore.features.predicates.providers.ContextIntProviderReference
 import io.github.ayfri.kore.features.predicates.providers.NumberProviderScope
 import io.github.ayfri.kore.features.predicates.providers.fixedScore
 import io.github.ayfri.kore.features.predicates.providers.intStorage
 import io.github.ayfri.kore.features.predicates.providers.score
 import io.github.ayfri.kore.features.predicates.types.EntityTarget
 import io.github.ayfri.kore.functions.Function
+import io.github.ayfri.kore.generated.arguments.types.ContextIntProviderArgument
 import io.github.ayfri.kore.utils.encodeToDataPackSnbt
 
 /**
@@ -40,6 +44,14 @@ import io.github.ayfri.kore.utils.encodeToDataPackSnbt
  *
  * A product that can leave 32 bits (a ratio scaled up before dividing) belongs in a float
  * provider instead: [floatProvider] and [computeScoreScaled].
+ *
+ * NAMED PROVIDERS
+ * A formula used in more than one place is written once, as a `context_int_provider` file
+ * (`data/<ns>/context_int_provider/<path>.json`), and every command names it by id:
+ * `compute default integer ra_lib:transport/net_free`. [namedProvider] gives the reference (a
+ * [ContextIntProvider] like any other, so it also nests inside an inline provider) and
+ * [defineProvider] writes the file. A named provider cannot hold a macro argument: a formula
+ * whose storage path holds `$(id)` stays inline.
  */
 
 /** Kore's own scope object is internal; the provider functions only need a receiver. */
@@ -76,16 +88,42 @@ fun storageOf(storage: Argument, path: String): ContextIntProvider = Scope.intSt
  * `compute { }`, which may hoist an inline provider into a registry file -- and a provider whose
  * path holds `$(id)` must stay inline in the macro line that substitutes it.
  */
-fun ContextIntProvider.snbt(): String = encodeToDataPackSnbt(ContextIntProvider.serializer(), this)
+fun ContextIntProvider.snbt(): String =
+	if (this is ContextIntProviderReference) (id as ContextIntProviderArgument).asId() else encodeToDataPackSnbt(ContextIntProvider.serializer(), this)
+
+/** Every id [namedProvider] handed out; [PackValidator.undefinedProviders] checks each one has its file. */
+internal val declaredProviders = mutableSetOf<String>()
+
+/**
+ * A reference to the named provider `<ns>:<path>`. Pass it wherever a provider goes; at the top
+ * of a command it is written as the bare id, inside an inline provider as the quoted id.
+ * The file itself is written by [defineProvider], once, by the part that owns the formula.
+ */
+fun namedProvider(ns: Ns, path: String): ContextIntProvider {
+	declaredProviders += "${ns.id}:$path"
+	return ContextIntProviderReference(ContextIntProviderArgument(path, ns.id))
+}
+
+/** Writes `data/<ns>/context_int_provider/<path>.json` holding [value], for a reference made by [namedProvider]. */
+fun DataPack.defineProvider(named: ContextIntProvider, value: ContextIntProvider) {
+	val id = (named as ContextIntProviderReference).id as ContextIntProviderArgument
+	val file = ContextIntProviderFile(id.name, value)
+	file.namespace = id.namespace
+	contextIntProviders += file
+}
 
 /** The float provider as SNBT, see [ContextIntProvider.snbt]. */
 fun ContextFloatProvider.snbt(): String = encodeToDataPackSnbt(ContextFloatProvider.serializer(), this)
 
 private fun Function.line(text: String) = raw(if ("\$(" in text) "\$$text" else text)
 
-/** What the compute evaluates for: `default` (no entity), or `entity @s` for [thisScoreOf]. */
+/**
+ * What the compute evaluates for: `default` (no entity), `entity @s` for [thisScoreOf], or
+ * `block ~ ~ ~` for a provider that tests the block here (a `match_block` condition).
+ */
 const val COMPUTE_DEFAULT = "default"
 const val COMPUTE_SELF = "entity @s"
+const val COMPUTE_BLOCK_HERE = "block ~ ~ ~"
 
 /**
  * `execute [<chain> ]<stores> run compute <source> integer <value>`. [chain] is whatever goes
@@ -108,7 +146,7 @@ fun storeDouble(storage: Argument, path: String, scale: Double) = "store result 
 /**
  * `execute [<chain> ]store result score <holder> <objective> [<more stores> ]run compute <source> integer <value>`.
  * [alsoStore] adds further `store ...` clauses ([storeInt]), so one evaluation can land in a
- * score and in storage at once. [source] is [COMPUTE_DEFAULT] or [COMPUTE_SELF].
+ * score and in storage at once. [source] is [COMPUTE_DEFAULT], [COMPUTE_SELF] or [COMPUTE_BLOCK_HERE].
  */
 fun Function.computeScore(
 	holder: String,

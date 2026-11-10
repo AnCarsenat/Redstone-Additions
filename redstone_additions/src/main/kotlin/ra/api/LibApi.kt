@@ -1,6 +1,7 @@
 package ra.api
 
 import ra.core.Ns
+import ra.core.namedProvider
 import ra.core.ref
 
 /**
@@ -72,6 +73,13 @@ object RaLib {
 			val take = ref(Ns.LIB, "transport/net/take")
 			val takeAny = ref(Ns.LIB, "transport/net/take_any")
 			val read = ref(Ns.LIB, "transport/net/read")
+
+			/**
+			 * Named provider `ra_lib:transport/net/free`: `#net_capacity - #net_amount` (ra.tr.tmp),
+			 * the room left on the network [read] just loaded. Negative while an overfull network
+			 * waits for its clamp, exactly as the subtraction it replaces.
+			 */
+			val free = namedProvider(Ns.LIB, "transport/net/free")
 		}
 	}
 

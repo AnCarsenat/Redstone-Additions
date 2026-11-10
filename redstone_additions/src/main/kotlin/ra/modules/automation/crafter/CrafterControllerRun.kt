@@ -1,6 +1,7 @@
 package ra.modules.automation.crafter
 
 import io.github.ayfri.kore.arguments.numbers.ticks
+import io.github.ayfri.kore.commands.function
 import io.github.ayfri.kore.commands.schedule
 import io.github.ayfri.kore.functions.Function
 import ra.api.RaLib
@@ -12,6 +13,7 @@ import ra.core.define
 import ra.core.executeRun
 import ra.core.raw
 import ra.core.ref
+import ra.modules.automation.crafter.CrafterFill.registerCrafterFill
 
 /**
  * When and how a [CrafterController] looks at its crafter.
@@ -54,6 +56,8 @@ object CrafterControllerRun {
 	private val run = fn("poll/run")
 	private val check = fn("check")
 	private val atCrafter = fn("at_crafter")
+	/** As the controller, at its crafter: compare with the last look, match, fire. Shared with [CrafterFill]. */
+	val compareAndFire = fn("compare_and_fire")
 	private val match = fn("match")
 	private val unpulse = fn("unpulse")
 	private val armSlot = fn("arm_slot")
@@ -67,7 +71,7 @@ object CrafterControllerRun {
 	fun Function.resetFlag() = raw("scoreboard players set $FLAG $T 0")
 
 	/** Up first (a controller under its crafter), then the sides, then down. */
-	private val directions = listOf("~ ~1 ~", "~ ~ ~-1", "~ ~ ~1", "~1 ~ ~", "~-1 ~ ~", "~ ~-1 ~")
+	val directions = listOf("~ ~1 ~", "~ ~ ~-1", "~ ~ ~1", "~1 ~ ~", "~-1 ~ ~", "~ ~-1 ~")
 
 	fun Ra.registerCrafterControllerRun() {
 		pack.define(start) {
@@ -94,6 +98,7 @@ object CrafterControllerRun {
 		}
 
 		pack.define(arm) { arm() }
+		registerCrafterFill()
 		pack.define(armSlot) { armSlot() }
 
 		// As an armed controller, at it.
@@ -103,6 +108,7 @@ object CrafterControllerRun {
 			raw("execute if data storage $STORE d.properties{enabled:0b} run return run data modify entity @s data.status.state set value \"switched off\"")
 			raw("execute store success score #cc.chg $T run data modify storage $STORE d.data.checked set from storage $STORE d.properties.pattern")
 			raw("execute if score #cc.chg $T matches 1 run return run function ${arm.asId()}")
+			raw("execute if entity @s[tag=${CrafterFill.FILL}] run return run function ${CrafterFill.check.asId()}")
 			for (d in directions) raw("execute if block $d minecraft:crafter positioned $d run return run function ${atCrafter.asId()}")
 			raw("data modify entity @s data.status.state set value \"no crafter next to it\"")
 		}
@@ -112,6 +118,11 @@ object CrafterControllerRun {
 			raw("execute unless items block ~ ~ ~ container.* * run data remove entity @s data.data.last")
 			raw("execute unless items block ~ ~ ~ container.* * run return run data modify entity @s data.status.state set value \"crafter empty\"")
 			raw("execute if block ~ ~ ~ minecraft:crafter[triggered=true] run return run data modify entity @s data.status.state set value \"crafter powered\"")
+			function(compareAndFire)
+		}
+
+		// As the controller, at the crafter, which is not empty and not powered.
+		pack.define(compareAndFire) {
 			raw("execute store success score #cc.chg $T run data modify storage $STORE d.data.last set from block ~ ~ ~ Items")
 			raw("execute if score #cc.chg $T matches 0 run return 0")
 			raw("data modify entity @s data.data.last set from storage $STORE d.data.last")
@@ -147,6 +158,7 @@ object CrafterControllerRun {
 
 	private fun Function.arm() {
 		raw("tag @s remove $ARMED")
+		raw("tag @s remove ${CrafterFill.FILL}")
 		raw("data remove entity @s data.data.match")
 		raw("data remove entity @s data.data.last")
 		raw("data modify entity @s data.data.checked set from entity @s data.properties.pattern")
@@ -170,6 +182,10 @@ object CrafterControllerRun {
 		raw("data modify entity @s data.data.match set from storage $STORE m")
 		raw("data remove storage $STORE m")
 		raw("tag @s add $ARMED")
+		// A Recipe Pattern (the flag on the item it holds): it fills the crafter itself.
+		raw("scoreboard players set #cc.rcp $T 0")
+		raw("execute store result score #cc.rcp $T run data get entity @s data.data.item.components.\"minecraft:custom_data\".ra.pattern.recipe")
+		raw("execute if score #cc.rcp $T matches 1 run tag @s add ${CrafterFill.FILL}")
 		raw("data modify entity @s data.status.state set value \"waiting for the ingredients\"")
 	}
 

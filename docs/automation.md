@@ -1,9 +1,11 @@
 # Automation
 
 Blocks and items that run vanilla machines for you. The **Crafter Controller** fires a vanilla
-crafter on its own once the crafter holds the ingredients its **Pattern** asks for. The
-**Uncrafter** takes items back apart into their ingredients for EU, and the **Experience
-Absorber** collects experience orbs into a fluid network as liquid experience.
+crafter on its own once the crafter holds the ingredients its **Pattern** asks for; given a
+**Recipe Pattern** it also fills the crafter itself from a chest. The **Uncrafter** takes items
+back apart into their ingredients for EU, the **Experience Absorber** collects experience orbs
+into a fluid network as liquid experience, and the **Item Pipe Splitter** shares a stream of items
+out between several containers.
 
 ## Getting them
 
@@ -13,10 +15,13 @@ Absorber** collects experience orbs into a fluid network as liquid experience.
 | Pattern | flow banner pattern | ![Pattern recipe](images/recipes/ra_automation/pattern.png){ width="220" } |
 | Uncrafter | chiseled tuff bricks | ![Uncrafter recipe](images/recipes/ra_automation/uncrafter.png){ width="220" } |
 | Experience Absorber | verdant froglight | ![Experience Absorber recipe](images/recipes/ra_automation/experience_absorber.png){ width="220" } |
+| Recipe Pattern | globe banner pattern | ![Recipe Pattern recipe](images/recipes/ra_automation/recipe_pattern.png){ width="220" } |
+| Item Pipe Splitter | chiseled tuff | ![Item Pipe Splitter recipe](images/recipes/ra_automation/item_pipe_splitter.png){ width="220" } |
 
-Operators: `/function ra_automation:items/give_all` (a Crafter Controller, a blank Pattern, an
-Uncrafter and an Experience Absorber),
-`/function ra_automation:pattern/give` (one blank Pattern).
+Operators: `/function ra_automation:items/give_all` (a Crafter Controller, a blank Pattern, a
+blank Recipe Pattern, an Uncrafter, an Experience Absorber and an Item Pipe Splitter),
+`/function ra_automation:pattern/give` (one blank Pattern),
+`/function ra_automation:pattern/give_recipe` (one blank Recipe Pattern).
 
 ## Pattern
 
@@ -38,6 +43,37 @@ ones. The recipe makes three. Holding a stack, recording or clearing acts on one
 one is taken from the stack and the new one goes into your inventory (or lands at your feet when
 it is full), so the rest of the stack keeps its grid. A Crafter Controller takes one Pattern from
 a held stack.
+
+## Recipe Pattern
+
+A Recipe Pattern is a Pattern that also tells the Crafter Controller to **fill the crafter
+itself**. It is recorded, cleared, read and stacked exactly like a Pattern (the table above), and
+its lore shows the grid the same way. Recipe Patterns stack with each other, not with Patterns.
+The recipe makes three, from three paper and a hopper.
+
+It stores the grid, which is the recipe: the crafter works the result out from it, as it always
+does.
+
+1. Record the recipe: fill a crafter's grid by hand (one of each ingredient), sneak + right-click
+   it with the Recipe Pattern, then take the ingredients back out.
+2. Place the **Crafter Controller** against the crafter, and a **container on the Controller's
+   other side**: crafter, Controller and chest in a line (crafter on top, chest underneath; or
+   crafter to the north, chest to the south).
+3. Right-click the Controller with the Recipe Pattern.
+4. Fill the chest (by hand, with hoppers, pipes or an Item Pipe Splitter). Leave the crafter
+   empty; nothing needs to feed it.
+
+Every half second the Controller puts one ingredient from the chest into each crafter slot the
+Pattern names that is empty, then fires the crafter as soon as every slot is right. The crafter
+crafts one at a time, at most twice a second.
+
+- Only plain items are used: a renamed, enchanted or damaged item in the chest is never taken as
+  an ingredient.
+- Nothing is put in a slot the Pattern leaves empty, and a slot holding something else is left
+  alone (the Controller then waits, "waiting for the ingredients").
+- An ingredient missing from the chest is simply waited for; what is already in the crafter
+  stays there.
+- The container can be a chest, barrel, hopper, dropper, dispenser or shulker box.
 
 ## Crafter Controller
 
@@ -61,6 +97,8 @@ full) is not fired over and over.
   east, west, then below.
 - The Controller is a target block and gives off a short redstone pulse when it fires: dust or
   other machines touching it see that pulse too.
+- With a [Recipe Pattern](#recipe-pattern) it also fills the crafter from the container on its
+  other side.
 
 ### Wrench and tools
 
@@ -148,6 +186,38 @@ Upgrader and Book Printer charge in, so the experience it collects pays for thos
 | Goggles | State (absorbing, no experience around, no room in a network beside it), the radius and the points absorbed so far |
 | Data Handler | `radius` (1 to 8; admins up to 16) |
 
+## Item Pipe Splitter
+
+Takes the items out of the container **above** it and shares them out between the containers on
+its **four sides and under it**, one item at a time, each side in turn. It is not a container
+itself: put a chest, a hopper pointing down into it, or the end of an Item Pipe on top, and
+chests, hoppers, barrels or Item Pipes around it.
+
+1. Place the Splitter with its input container on top.
+2. Put a container against each side (and under it) that should get a share.
+3. Optional: give each side its share with the Data Handler.
+
+Each side has a **share**, `north`, `east`, `south`, `west` and `down` (0 to 16, default 1). The
+Splitter sends that many items in a row to one side before it moves on to the next: 1 everywhere
+splits evenly, `north` 2 and `south` 1 sends two thirds north and one third south, 0 switches a
+side off.
+
+- It moves *per_second* items a second (default 8, 1 to 16; admins up to 64).
+- A side with no container, or a full one, is skipped and its turn passes on: the others keep
+  getting items. Items are only taken out of the input once there is room for them, so nothing is
+  ever dropped or lost; when every side is full, the items wait in the input.
+- It takes the input's first stack first. If no side has room for that item, it waits.
+- It never sends items back up: the input is above, the outputs are the other five faces.
+- A redstone signal stops it.
+
+### Wrench and tools
+
+| Tool | Does |
+| --- | --- |
+| Wrench, Shift+RMB | Cycles the speed: 2, 4, 8, 16 items a second |
+| Goggles | State (splitting, waiting for items, outputs full, no container above, stopped by redstone), the speed and the items moved so far |
+| Data Handler | the five shares, and `per_second` (1 to 16; admins up to 64) |
+
 ## Troubleshooting
 
 | Goggles say | Check |
@@ -162,6 +232,9 @@ Upgrader and Book Printer charge in, so the experience it collects pays for thos
 | Uncrafter: output full | The container below needs one empty slot per ingredient |
 | Uncrafter: waiting for a full recipe | The stack is smaller than what the recipe makes (3 iron doors, 16 iron bars) |
 | Absorber: no room in a network beside it | No pipe, tank or drain touching it, the network is full, or it holds another fluid |
+| Recipe Pattern: the crafter never fills | The container must be on the Controller's other side, opposite the crafter, and hold plain (unrenamed, undamaged) ingredients |
+| Splitter: outputs full | Every side with a share above 0 is full, has no container, or cannot take the input's first item |
+| Splitter: every side's share is 0 | Give at least one side a share with the Data Handler |
 
 ---
 
@@ -182,6 +255,9 @@ grid:
 - A blank Pattern has nine `""`.
 - An item is a Pattern when its `custom_data` contains `ra.pattern`:
   `*[minecraft:custom_data~{ra:{pattern:{}}}]`.
+- A **Recipe Pattern** is the same item with one more key, `recipe:1b`, beside `slots`
+  (`{ra:{pattern:{slots:[...],recipe:1b}}}`, test `*[minecraft:custom_data~{ra:{pattern:{recipe:1b}}}]`).
+  It is a Pattern to every reader; recording rewrites only `slots`, so the flag stays.
 - Patterns stack (`max_stack_size` 64). The item carries nothing per-item: two Patterns are the
   same stack exactly when their `slots` are equal (the lore is built from `slots`). The use is
   detected through an endless `consumable` (a `using_item` advancement), which works on a stack
@@ -209,6 +285,12 @@ modifier), a block that only compares it leaves the stack alone.
 | `data.data.last` | the crafter's `Items` at the last look |
 | `data.status.state`, `data.status.crafts` | what the Goggles show |
 
+A Controller holding a Recipe Pattern is tagged `ra.auto.cc_fill` (set when the Pattern is
+loaded). Its look first fills the empty slots: for each slot the Pattern names, one test that the
+source holds that id at all, then the first plain stack of it gives one item. The crafter slot is
+written (`item replace`) and read back before one item is taken off the source stack, in the same
+function, so an item is never made or lost.
+
 Only Controllers with a valid Pattern (tag `ra.auto.cc_armed`) are looked at, on a 10-tick
 schedule that stops when none is loaded. A look stops at the first of: switched off, no
 crafter, an empty crafter, a powered crafter, contents unchanged since the last look. The fire
@@ -234,8 +316,21 @@ makes, and each ingredient's count must fit in one stack.
 | `data.properties.radius` | reach in blocks, 1 to 8 (16 for an admin) |
 | `data.status.state`, `data.status.absorbed` | what the Goggles show; `absorbed` is in points |
 
-Both blocks run on one 20-tick schedule, started at load (markers tagged `ra.auto.clocked`);
-nothing of theirs runs per tick but the break checks, and with neither loaded a run is two
-selectors a second. Neither is a network node: like the Boiler, they reach into the network of a
+### Item Pipe Splitter data
+
+| Where | What |
+| --- | --- |
+| `data.properties.north`, `east`, `south`, `west`, `down` | each side's share, 0 to 16 |
+| `data.properties.per_second` | items moved a second, 1 to 16 (64 for an admin) |
+| `data.data.face`, `data.data.sent` | whose turn it is (0 north, 1 east, 2 south, 3 west, 4 down) and how many it has had this turn |
+| `data.status.state`, `data.status.split` | what the Goggles show; `split` is the items moved so far |
+
+Each item is checked with `ra_lib:inventory/can_accept_one` before it moves and goes in with
+`ra_lib:inventory/insert_or_drop`; only then is it taken off the input.
+
+The Uncrafter, the Absorber and the Splitter run on one 20-tick schedule, started at load (markers
+tagged `ra.auto.clocked`); nothing of theirs runs per tick but the break checks, and with none
+loaded a run is three selectors a second. A Splitter with an empty input costs two tests a
+second. The Uncrafter and the Absorber are not network nodes: like the Boiler, they reach into the network of a
 node touching them, so placing or breaking one never splits or joins a network. An Absorber with
 no orb within 16 blocks costs one selector a second.

@@ -1,6 +1,6 @@
 # Recipe Atlas
 
-Every recipe in the pack, in one place: 107 of them.
+Every recipe in the pack, in one place: 109 of them.
 
 !!! tip "Finding one"
     Use the search box with the item's name — every recipe below is indexed by
@@ -78,6 +78,7 @@ what the pack actually contains rather than what someone remembered to add.
 | [Item Hologram](#displays) | [Displays](displays.md) | Crafting table |
 | [Item Mover](#interactive-machines) | [Interactive Machines](interactive-machines.md) | Crafting table |
 | [Item Pipe](#interactive-machines) | [Interactive Machines](interactive-machines.md) | Crafting table |
+| [Item Pipe Splitter](#automation) | [Automation](automation.md) | Crafting table |
 | [Keypad](#security) | [Security](security.md) | Crafting table |
 | [Lift Kit](#jetpacks) | [Jetpacks](jetpacks.md) | Crafting table |
 | [Light Sensor](#sensors) | [Sensors](sensors.md) | Crafting table |
@@ -100,6 +101,7 @@ what the pack actually contains rather than what someone remembered to add.
 | [Poppy Core](#not-crafted-won-on-an-enchanting-table) | [Infinite Generators](infinite-generators.md) | Enchanting table |
 | [Poppy Generator](#infinite-generators) | [Infinite Generators](infinite-generators.md) | Crafting table, shapeless |
 | [Randomizer](#logic-gates) | [Logic Gates](logic-gates.md) | Crafting table |
+| [Recipe Pattern](#automation) | [Automation](automation.md) | Crafting table |
 | [Redstone Remote](#wireless-redstone) | [Wireless Redstone](wireless-redstone.md) | Crafting table |
 | [Scorch Kit](#jetpacks) | [Jetpacks](jetpacks.md) | Crafting table |
 | [Sequencer](#logic-gates) | [Logic Gates](logic-gates.md) | Crafting table |
@@ -135,7 +137,9 @@ Module page: [Automation](automation.md) — give everything: `/function ra_auto
 | ---- | ------ | ------- | ------------ |
 | **Crafter Controller** | ![Crafter Controller recipe](images/recipes/ra_automation/crafter_controller.png){ width="220" } | Crafting table | `ra_automation:crafter_controller` |
 | **Experience Absorber** | ![Experience Absorber recipe](images/recipes/ra_automation/experience_absorber.png){ width="220" } | Crafting table | `ra_automation:experience_absorber` |
+| **Item Pipe Splitter** | ![Item Pipe Splitter recipe](images/recipes/ra_automation/item_pipe_splitter.png){ width="220" } | Crafting table | `ra_automation:item_pipe_splitter` |
 | **Pattern** | ![Pattern recipe](images/recipes/ra_automation/pattern.png){ width="220" } | Crafting table | `ra_automation:pattern` |
+| **Recipe Pattern** | ![Recipe Pattern recipe](images/recipes/ra_automation/recipe_pattern.png){ width="220" } | Crafting table | `ra_automation:recipe_pattern` |
 | **Uncrafter** | ![Uncrafter recipe](images/recipes/ra_automation/uncrafter.png){ width="220" } | Crafting table | `ra_automation:uncrafter` |
 
 ## Chunk Loader

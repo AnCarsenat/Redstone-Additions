@@ -271,20 +271,20 @@
   the Pattern. The Goggles show its state and how many times it has fired. Crafted from five iron
   ingots, a redstone dust, two target blocks and a crafter.
 - **Security**, a new module (`ra_security`): blocks that open only for the right code. Its
-  settings page lists its blocks and the Keypad Controller's defaults, and it has its own branch in the
+  settings page lists its blocks and the Keypad's defaults, and it has its own branch in the
   advancement tab.
-- **Keypad Controller** (Security). A crafter, placed facing you like a vanilla one, whose slots are the keypad: open it and click its
+- **Keypad** (Security). A crafter, placed facing you like a vanilla one, whose slots are the keypad: open it and click its
   empty slots to switch them off and on, and the set of slots switched off is the code. A
-  combination is entered once the grid has stopped changing for 4 seconds, and every slot is then
+  combination is entered once the grid has stopped changing for 1 second, and every slot is then
   switched back on. The first combination entered becomes the code ("code set"); after that the
   right one gives a redstone pulse (`pulse`, 20 ticks by default) and a chime, and a wrong one
   buzzes; after three wrong tries in a row it refuses every try for 30 seconds (`max_attempts` and
-  `lockout`, which only admins can change). For the pulse it turns into a powered target block,
-  drawn as a lit crafter, so dust, repeaters and components next to it pick it up; then it is a
-  crafter again. Its owner (whoever placed it) or an admin clears the code with a plain Wrench
-  click, and the next combination entered sets a new one. It never crafts: items put into it are
-  thrown back out at once. The code is never shown: the Goggles say only whether one is set, who
-  owns the Keypad Controller and its state, and the Data Handler and Clipboard never see it.
+  `lockout`, which only admins can change). The pulse is the pack's standard output: the iron
+  blocks around it (the 3x3x3, corners included) become redstone blocks for the pulse, then iron
+  again, even when the pulse is cut by breaking it, an unload or a /reload. Its owner
+  (whoever placed it) or an admin clears the code with a plain Wrench click, and the next combination entered sets a new one. It
+  never crafts: items put into it are thrown back out at once. The code is never shown: the Goggles say only whether one is set, who
+  owns the Keypad and its state, and the Data Handler and Clipboard never see it.
   Shift+RMB with the Wrench steps the pulse through 2, 10, 20 and 40 ticks. Crafted from three
   stone buttons, four iron ingots, a crafter and a redstone dust.
 

@@ -77,7 +77,7 @@ what the pack actually contains rather than what someone remembered to add.
 | [Item Hologram](#displays) | [Displays](displays.md) | Crafting table |
 | [Item Mover](#interactive-machines) | [Interactive Machines](interactive-machines.md) | Crafting table |
 | [Item Pipe](#interactive-machines) | [Interactive Machines](interactive-machines.md) | Crafting table |
-| [Keypad Controller](#security) | [Security](security.md) | Crafting table |
+| [Keypad](#security) | [Security](security.md) | Crafting table |
 | [Lift Kit](#jetpacks) | [Jetpacks](jetpacks.md) | Crafting table |
 | [Light Sensor](#sensors) | [Sensors](sensors.md) | Crafting table |
 | [Liquid Filter](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
@@ -263,7 +263,7 @@ Module page: [Security](security.md) — give everything: `/function ra_security
 
 | Item | Recipe | Station | Namespace id |
 | ---- | ------ | ------- | ------------ |
-| **Keypad Controller** | ![Keypad Controller recipe](images/recipes/ra_security/keypad.png){ width="220" } | Crafting table | `ra_security:keypad` |
+| **Keypad** | ![Keypad recipe](images/recipes/ra_security/keypad.png){ width="220" } | Crafting table | `ra_security:keypad` |
 
 ## Sensors
 

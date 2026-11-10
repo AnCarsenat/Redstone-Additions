@@ -48,7 +48,8 @@ import ra.modules.security.keypad.KeypadUse.startIfIdle
  *   seconds.
  * - Wrench, plain RMB: the owner (the player who placed it) or an admin (`ra.admin`) clears the
  *   code; the next combination entered becomes the new one. Shift+RMB cycles the pulse length.
- * - Items put into the crafter are thrown back out the next tick: it never crafts.
+ * - Items put into the crafter are thrown out of its front face the tick they are seen: it never
+ *   crafts.
  *
  * THE PULSE. A crafter is no power source, so for the pulse the crafter is swapped for a powered
  * target block (`target[power=15]`, a source that powers dust and components around it, as the
@@ -59,8 +60,9 @@ import ra.modules.security.keypad.KeypadUse.startIfIdle
  * Clipboard and the Goggles only ever read properties and status, so none of them can show or
  * copy it. Players see whether a code is set (`data.status.code`) and who owns the keypad.
  *
- * DATA. `data.data.code`: the code, `disabled_slots` as the crafter stores it (an int array).
- * `data.data.seen`: the grid at the last look. `data.data.due`: the game time the current entry
+ * DATA. `data.data.code`: the code, as a 9-bit mask of the switched-off slots (sum of 2^slot).
+ * `data.data.seen`: the grid's mask at the last look. `data.data.said`: when it last said it
+ * takes no items. `data.data.due`: the game time the current entry
  * counts as entered. `data.data.owner`: the placer's UUID. `data.data.fails`: wrong tries since
  * the last right one or lockout. `data.data.locked_until` / `data.data.until`: game times, the end
  * of the lockout and of the pulse. `data.data.orient`: the crafter's orientation during a pulse.
@@ -120,7 +122,7 @@ object Keypad {
 			val m = block.newMarkerSel()
 			setOnNew(block, "data.properties", "{pulse:$DEFAULT_PULSE,max_attempts:$DEFAULT_ATTEMPTS,lockout:$DEFAULT_LOCKOUT,owner:\"?\"}")
 			setOnNew(block, "data.status", """{code:"not set",state:"ready",owner:"?"}""")
-			setOnNew(block, "data.data", "{fails:0,seen:[I;]}")
+			setOnNew(block, "data.data", "{fails:0,seen:0}")
 			raw("data modify entity $m data.data.owner set from entity @a[tag=${Tag.PLACER},limit=1] UUID")
 			// The placer's name: a player head given their profile, read back, thrown away.
 			raw("""summon minecraft:item_display ~ ~ ~ {Tags:["ra","$nameTag"],item:{id:"minecraft:player_head",count:1}}""")
@@ -173,18 +175,25 @@ object Keypad {
 			raw("execute align xyz positioned ~0.5 ~0.5 ~0.5 run kill @e[type=minecraft:block_display,tag=${KeypadUse.SKIN},distance=..0.4]")
 		}
 		// A keypad is broken when its block is no crafter, or, while it pulses, no target either.
-		// Every slot on and nothing inside is idle: a block test and two NBT tests, nothing else.
-		// Items are thrown out every tick: a crafter crafts in a scheduled block tick, which runs
-		// after the data pack's tick, so the craft never sees them.
+		// Every tick: two block tests and an `if items` test (the container's slots, no NBT read).
+		// Items are thrown out every tick because a crafter crafts in a scheduled block tick, which
+		// runs after the data pack's tick, so the craft never sees them. The grid is read (an NBT
+		// read) only every 4 ticks (`#kp.ph` 0), only with a player within 10 blocks, and only when
+		// a slot is off or an entry is under way.
 		pack.define(look) {
 			raw("execute unless block ~ ~ ~ minecraft:crafter unless block ~ ~ ~ minecraft:target run return run function ${onBreak.asId()}")
 			raw("execute unless block ~ ~ ~ minecraft:crafter unless entity @s[tag=${KeypadUse.PULSE}] run return run function ${onBreak.asId()}")
 			raw("execute unless block ~ ~ ~ minecraft:crafter run return 0")
-			raw("execute if data block ~ ~ ~ Items[0] run function ${KeypadUse.eject.asId()}")
+			raw("execute if items block ~ ~ ~ container.* * run function ${KeypadUse.eject.asId()}")
+			raw("execute unless score #kp.ph $T matches 0 run return 0")
+			raw("execute unless entity @a[distance=..10,limit=1] run return 0")
 			raw("execute if entity @s[tag=${KeypadUse.ENTRY}] run return run function ${KeypadUse.watch.asId()}")
 			raw("execute if data block ~ ~ ~ disabled_slots[0] run function ${KeypadUse.watch.asId()}")
 		}
 		pack.define(block.tick) {
+			raw("execute store result score #kp.ph $T run time query gametime")
+			raw("scoreboard players set #kp.4 $T 4")
+			raw("scoreboard players operation #kp.ph $T %= #kp.4 $T")
 			raw("execute as ${block.markerSel()} at @s run function ${look.asId()}")
 			startIfIdle()
 		}

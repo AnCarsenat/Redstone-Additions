@@ -40,12 +40,14 @@ back on before the 4 seconds are up enters nothing.
 Keypad Controller becomes a powered target block, drawn as a lit crafter. Its grid cannot be
 opened during the pulse. Afterwards it is a crafter again, facing the same way.
 
-**Lockout.** After `max_attempts` wrong tries in a row (3 by default) the Keypad Controller refuses every
+**Lockout.** A combination entered during a lockout is refused, even when the code was cleared
+meanwhile, so the lockout cannot be skipped by setting a new code. After `max_attempts` wrong tries in a row (3 by default) the Keypad Controller refuses every
 try for `lockout` seconds (30 by default), and says how long is left. A right code resets the
 count. Only admins can change these two, so nobody can turn the lockout off to guess the code.
 
-**No items.** Anything put into its grid, by hand or by a hopper, is thrown back out at once, so
-a redstone signal on it never crafts anything.
+**No items.** Anything put into its grid, by hand or by a hopper, is thrown back out of its front
+face at once (at most one chat line a minute says so), so a redstone signal on it never crafts
+anything.
 
 **Secrecy.** The code is never shown to anyone. The Goggles say only whether a code is set, who
 owns the Keypad Controller and its state (ready, open, locked); the Data Handler lists its
@@ -94,8 +96,9 @@ Breaking the Keypad Controller drops it; the code is lost with it.
 | `data.properties.pulse` | pulse length in ticks |
 | `data.properties.max_attempts`, `data.properties.lockout` | wrong tries before a lockout, its length in seconds (admin-only) |
 | `data.properties.owner` | the owner's name (read-only) |
-| `data.data.code` | the code: the crafter's `disabled_slots` as entered (an int array, ascending) |
-| `data.data.seen` | the crafter's `disabled_slots` at the last look |
+| `data.data.code` | the code: a 9-bit mask of the switched-off slots (sum of 2^slot) |
+| `data.data.seen` | the grid's mask at the last look |
+| `data.data.said` | game time it last said it takes no items |
 | `data.data.due` | game time the current entry counts as entered |
 | `data.data.owner` | the owner's UUID |
 | `data.data.fails` | wrong tries since the last right one or lockout |
@@ -104,16 +107,19 @@ Breaking the Keypad Controller drops it; the code is lost with it.
 | `data.status.code`, `data.status.owner`, `data.status.state` | what the Goggles show |
 
 The code is kept in `data.data`, never in `data.properties`, which is all the Data Handler, the
-Clipboard and the Goggles read. Entering compares whole arrays: the stored code is copied into
-storage and overwritten with the entry (`execute store success … data modify … set from`); no
-change means the codes are equal. Nothing the player does is pasted into a command.
+Clipboard and the Goggles read. The crafter's `disabled_slots` is read as a mask
+(`ra_security:blocks/keypad/mask`): the array is copied into a list one entry at a time and each
+slot is tested with an NBT pattern, so the order of the array does not matter and a missing or
+empty array is 0. Entering compares the entry's mask with the code's. Nothing the player does is
+pasted into a command.
 
-**What runs.** The block's tick looks at each Keypad Controller: an idle one (every slot on,
-nothing inside) costs a block test and two NBT tests. One with a slot switched off copies
-`disabled_slots` into `data.data.seen` with `store success`; a change tags it `ra.sec.kp_entry`
-and sets `data.data.due` 80 ticks ahead. Items are thrown out the tick they are seen; the
-crafter's own craft is a scheduled block tick 4 ticks after its redstone edge, which runs after
-the data pack's tick, so it never sees them.
+**What runs.** Every tick, the block's tick gives each Keypad Controller two block tests and an
+`if items` test (the container's slots, no NBT read). Items are thrown out the tick they are
+seen; the crafter's own craft is a scheduled block tick 4 ticks after its redstone edge, which
+runs after the data pack's tick, so it never sees them. The grid is read only every 4 ticks, only
+with a player within 10 blocks (nobody else can click it), and only when a slot is off or an
+entry is under way: a mask other than `data.data.seen` (every slot back on included) tags it
+`ra.sec.kp_entry` and sets `data.data.due` 80 ticks ahead.
 
 A pulsing Keypad Controller carries `ra.sec.kp_pulse`, a locked one `ra.sec.kp_locked`, one
 waiting for its grid to settle `ra.sec.kp_entry`, and any of them `ra.sec.kp_timed`; a schedule
@@ -121,5 +127,6 @@ waiting for its grid to settle `ra.sec.kp_entry`, and any of them `ra.sec.kp_tim
 only locked or waiting ones are left, and stops with none. For the pulse the crafter is replaced
 by `target[power=15]` (a power source, like the redstone block) and a block display tagged
 `ra.sec.kp_skin` draws a lit crafter over it; at the end the crafter is set back with the
-orientation it had. The owner's name is read at placement from a player head given the placer's
+orientation it had. A marker removed by hand mid-pulse (`/kill`) leaves the powered target
+block behind. The owner's name is read at placement from a player head given the placer's
 profile (`fill_player_head`).

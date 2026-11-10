@@ -475,8 +475,8 @@
 - **Uncrafter table** (`ra/modules/automation/uncrafter/UncraftTable.kt`): a curated list of
   vanilla recipes, written at load into `storage ra_automation:uncraft map` as
   `{"<id>":{n:<made per craft>,out:[{id,count},...]}}`. The Uncrafter and the Experience Absorber
-  share one 20-tick schedule (`AutomationClock`, markers tagged `ra.auto.clocked`) that stops when
-  neither is loaded, and neither is a network node: they reach into the network of a node beside
+  share one 20-tick schedule (`AutomationClock`, markers tagged `ra.auto.clocked`) started at
+  load, with no per-tick test, and neither is a network node: they reach into the network of a node beside
   them, as the Boiler does.
 
 ## [v6.0.2] - 2026-11-09 - Drains, lists and fixes

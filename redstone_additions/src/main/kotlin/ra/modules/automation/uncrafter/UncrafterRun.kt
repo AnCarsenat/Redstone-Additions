@@ -68,6 +68,7 @@ internal object UncrafterRun {
 
 			// Empty slots below: the container's size less the stacks it holds.
 			raw("execute positioned ~ ~-1 ~ run function ${RaLib.Inventory.containerSize.asId()}")
+			raw("scoreboard players set #un.used $T 0")
 			raw("execute store result score #un.used $T run data get block ~ ~-1 ~ Items")
 			raw("scoreboard players operation #un.free $T = #inv_max $T")
 			raw("scoreboard players operation #un.free $T -= #un.used $T")
@@ -90,7 +91,8 @@ internal object UncrafterRun {
 			raw("execute unless data storage $S d.scan[0] run return 0")
 			raw("data modify storage $S d.q set value {}")
 			raw("data modify storage $S d.q.id set from storage $S d.scan[0].id")
-			raw("data modify storage $S d.q.slot set from storage $S d.scan[0].Slot")
+			// As an int: pasted as `Slot:$(slot)b`, so it must come out as a bare number.
+			raw("execute store result storage $S d.q.slot int 1 run data get storage $S d.scan[0].Slot")
 			raw("data modify storage $S d.item set from storage $S d.scan[0]")
 			// Any component at all: not the plain vanilla item, so passed on as it is.
 			raw("execute if data storage $S d.scan[0].components run scoreboard players set #un.act $T 1")
@@ -149,7 +151,11 @@ internal object UncrafterRun {
 		pack.define(scanEu) {
 			raw("execute if score #un.found $T matches 1 run return 0")
 			raw("function ${RaLib.Transport.Net.read.asId()}")
-			raw("execute unless score #net_amount ${Obj.TR_TMP} >= #un.cost $T run return 0")
+			// The EU entry, not the total: net/take is capped by it, so a grid passing this test
+			// always pays the whole price and nothing after the take can come up short.
+			raw("scoreboard players set #un.have $T 0")
+			raw("execute store result score #un.have $T run data get storage ra:transport cur.amounts.eu")
+			raw("execute unless score #un.have $T >= #un.cost $T run return 0")
 			raw("scoreboard players set #un.found $T 1")
 			raw("tag @s add $SRC")
 		}

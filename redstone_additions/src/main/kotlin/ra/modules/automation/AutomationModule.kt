@@ -16,8 +16,7 @@ import ra.modules.automation.pattern.Pattern
 import ra.modules.automation.pattern.Pattern.registerPattern
 import ra.modules.automation.pattern.PatternUse
 import ra.modules.automation.AutomationClock.registerAutomationClock
-import ra.modules.automation.AutomationClock.resetClock
-import ra.modules.automation.AutomationClock.startIfIdle
+import ra.modules.automation.AutomationClock.startClock
 import ra.modules.automation.absorber.XpAbsorber
 import ra.modules.automation.absorber.XpAbsorber.registerXpAbsorber
 import ra.modules.automation.uncrafter.UncraftTable
@@ -64,7 +63,7 @@ object AutomationModule : GameplayModule {
 		pack.define(load) {
 			raw("scoreboard objectives add ${PatternUse.USED} dummy")
 			resetFlag()
-			resetClock()
+			startClock()
 			raw("data modify storage ${UncrafterRun.TABLE} map set value ${UncraftTable.snbt()}")
 			function(CrafterController.registerBlock)
 			function(Uncrafter.registerBlock)
@@ -75,7 +74,6 @@ object AutomationModule : GameplayModule {
 			function(CrafterController.block.tick)
 			function(Uncrafter.block.tick)
 			function(XpAbsorber.block.tick)
-			startIfIdle()
 		}
 	}
 }

@@ -96,6 +96,7 @@ internal object XpAbsorberRun {
 		pack.define(findDst) {
 			raw("execute if score #xa.found $T matches 1 run return 0")
 			raw("function ${RaLib.Transport.Net.read.asId()}")
+			raw("scoreboard players set #xa.have $T 0")
 			raw("execute store result score #xa.have $T run data get storage ra:transport cur.amounts.experience")
 			raw("execute if score #net_amount $TR matches 1.. if score #xa.have $T matches ..0 run return 0")
 			raw("scoreboard players operation #xa.fit $T = #net_capacity $TR")
@@ -109,8 +110,10 @@ internal object XpAbsorberRun {
 		// As an orb (not at it). #xa.fit: points the network still has room for.
 		pack.define(absorb) {
 			raw("execute if score #xa.fit $T matches ..0 run return 0")
+			raw("scoreboard players set #xa.v $T 0")
+			raw("scoreboard players set #xa.c $T 1")
 			raw("execute store result score #xa.v $T run data get entity @s Value")
-			raw("execute store result score #xa.c $T run data get entity @s Count")
+			raw("execute if data entity @s Count store result score #xa.c $T run data get entity @s Count")
 			raw("execute if score #xa.c $T matches ..0 run scoreboard players set #xa.c $T 1")
 			raw("execute if score #xa.v $T matches ..0 run return 0")
 			raw("scoreboard players operation #xa.all $T = #xa.v $T")

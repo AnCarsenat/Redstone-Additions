@@ -234,7 +234,8 @@ makes, and each ingredient's count must fit in one stack.
 | `data.properties.radius` | reach in blocks, 1 to 8 (16 for an admin) |
 | `data.status.state`, `data.status.absorbed` | what the Goggles show; `absorbed` is in points |
 
-Both blocks run on one 20-tick schedule that stops when neither is loaded (markers tagged
-`ra.auto.clocked`). Neither is a network node: like the Boiler, they reach into the network of a
+Both blocks run on one 20-tick schedule, started at load (markers tagged `ra.auto.clocked`);
+nothing of theirs runs per tick but the break checks, and with neither loaded a run is two
+selectors a second. Neither is a network node: like the Boiler, they reach into the network of a
 node touching them, so placing or breaking one never splits or joins a network. An Absorber with
 no orb within 16 blocks costs one selector a second.

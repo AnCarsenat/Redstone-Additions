@@ -273,7 +273,7 @@
 - **Security**, a new module (`ra_security`): blocks that open only for the right code. Its
   settings page lists its blocks and the Keypad Controller's defaults, and it has its own branch in the
   advancement tab.
-- **Keypad Controller** (Security). A crafter whose slots are the keypad: open it and click its
+- **Keypad Controller** (Security). A crafter, placed facing you like a vanilla one, whose slots are the keypad: open it and click its
   empty slots to switch them off and on, and the set of slots switched off is the code. A
   combination is entered once the grid has stopped changing for 4 seconds, and every slot is then
   switched back on. The first combination entered becomes the code ("code set"); after that the

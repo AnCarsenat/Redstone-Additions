@@ -70,7 +70,7 @@ import ra.modules.security.keypad.KeypadUse.startIfIdle
  * player head filled with their profile.
  */
 object Keypad {
-	val block = CustomBlock(Ns.SECURITY, "keypad", "Keypad Controller", model = "minecraft:crafter")
+	val block = CustomBlock(Ns.SECURITY, "keypad", "Keypad Controller", model = "minecraft:crafter", dirType = 3)
 	val item = block.loreItem {
 		lore(
 			loreLine("Gives a redstone pulse for the right code", "gray"),
@@ -119,6 +119,7 @@ object Keypad {
 		pack.define(block.handlePlacement) {
 			placementGuard(block, checkExisting = false)
 			placeBlock(block)
+			orientCrafter()
 			val m = block.newMarkerSel()
 			setOnNew(block, "data.properties", "{pulse:$DEFAULT_PULSE,max_attempts:$DEFAULT_ATTEMPTS,lockout:$DEFAULT_LOCKOUT,owner:\"?\"}")
 			setOnNew(block, "data.status", """{code:"not set",state:"ready",owner:"?"}""")
@@ -199,5 +200,22 @@ object Keypad {
 		}
 
 		registerKeypadUse()
+	}
+
+	/**
+	 * Faces the crafter like a vanilla one placed by the same player: its front toward them
+	 * (`ra.facing` from the placement: 0 down, 1 up, 2 north, 3 south, 4 west, 5 east), its top
+	 * up, or -- front up or down -- toward where they look. Right after placeBlock, so the
+	 * setblock replaces an empty crafter.
+	 */
+	private fun io.github.ayfri.kore.functions.Function.orientCrafter() {
+		val placer = "@a[tag=${Tag.PLACER},limit=1]"
+		for ((f, dir) in listOf(2 to "north", 3 to "south", 4 to "west", 5 to "east"))
+			raw("execute if score $placer ${ra.core.Obj.FACING} matches $f run setblock ~ ~ ~ minecraft:crafter[orientation=${dir}_up] replace")
+		// Front up or down: the top points the way the player looks (yaw: 0 south, 90 west, -90 east, 180 north).
+		for ((f, front) in listOf(1 to "up", 0 to "down")) for ((yaw, top) in listOf("-45..45" to "south", "46..135" to "west", "-135..-46" to "east"))
+			raw("execute if score $placer ${ra.core.Obj.FACING} matches $f if score $placer ${ra.core.Obj.YAW} matches $yaw run setblock ~ ~ ~ minecraft:crafter[orientation=${front}_$top] replace")
+		for ((f, front) in listOf(1 to "up", 0 to "down"))
+			raw("execute if score $placer ${ra.core.Obj.FACING} matches $f unless score $placer ${ra.core.Obj.YAW} matches -135..135 run setblock ~ ~ ~ minecraft:crafter[orientation=${front}_north] replace")
 	}
 }

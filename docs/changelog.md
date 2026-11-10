@@ -272,6 +272,24 @@ This page mirrors key datapack milestones from the main project changelog.
   switches it off and on, a plain wrench click takes the Pattern back out, and breaking it drops
   the Pattern. The Goggles show its state and how many times it has fired. Crafted from five iron
   ingots, a redstone dust, two target blocks and a crafter.
+- **Uncrafter** (Automation). Takes items back apart into the ingredients of their vanilla crafting
+  recipe: a container on top is its input, a container underneath receives the ingredients, and a
+  wire or Battery beside it pays 2000 EU per item (`eu_per_uncraft`, admin only, default on the
+  Automation settings page). It knows storage blocks, iron, gold and diamond tools and armour,
+  hoppers, observers, dispensers, repeaters, comparators, anvils, beacons, enchanting tables and
+  more, and waits for a full recipe's worth (three iron doors, sixteen iron bars). It never gives
+  back more than went in: only exact recipes, none a stonecutter makes more cheaply, none taking
+  "any planks", none returning buckets or bottles. Damaged, enchanted, renamed or unknown items
+  are passed to the output unchanged. Nothing moves until the output has room and the grid holds
+  the whole price; a redstone signal stops it. One item a second. Crafted from six iron ingots, a
+  grindstone, a crafter and a redstone block.
+- **Experience Absorber** (Automation). Collects the experience orbs within its *radius* (default
+  4, up to 8, admins up to 16; Shift+RMB with the Wrench cycles 2, 4, 6, 8) once a second and sends
+  them into a pipe, tank or drain touching it as liquid experience, at 100 mL a point like the Fluid
+  Drain, so it pays for the Disenchanter, Book Upgrader and Book Printer. It takes only what the
+  network has room for, leaving the rest of a large orb on the ground, and leaves a network holding
+  another fluid alone. The Goggles show its state, radius and the points absorbed. Crafted from six
+  copper ingots, a lapis block, a hopper and a bucket.
 - **Security**, a new module (`ra_security`, [Security](security.md)): blocks that open only for the right code. Its
   settings page lists its blocks and the Keypad's defaults, and it has its own branch in the
   advancement tab.
@@ -456,6 +474,12 @@ This page mirrors key datapack milestones from the main project changelog.
   is loaded. The Controller only runs while one with a valid Pattern is loaded (tag
   `ra.auto.cc_armed`, a 10-tick schedule), and skips the slot comparison while the crafter's
   `Items` are unchanged since its last look.
+- **Uncrafter table** (`ra/modules/automation/uncrafter/UncraftTable.kt`): a curated list of
+  vanilla recipes, written at load into `storage ra_automation:uncraft map` as
+  `{"<id>":{n:<made per craft>,out:[{id,count},...]}}`. The Uncrafter and the Experience Absorber
+  share one 20-tick schedule (`AutomationClock`, markers tagged `ra.auto.clocked`) started at
+  load, with no per-tick test, and neither is a network node: they reach into the network of a node beside
+  them, as the Boiler does.
 - **Shared formulas are named providers** (`ra/core/Compute.kt`: `namedProvider`,
   `defineProvider`). A formula used in more than one place is a 26.3 `context_int_provider` file
   that `/compute` names by id: `ra_lib:transport/net/free` (the room on a network, used by pumps,

@@ -215,8 +215,10 @@ netherrack or poppies on an enchanting table.
 - Item Hologram — shows the item inside it, turning above the block, with its name
 - Text Screen — glowing nixie-style text: the redstone level picks which item's name it shows
 
-### Automation (1)
+### Automation (3)
 - Crafter Controller — fires the crafter next to it once it holds what its Pattern says
+- Uncrafter — takes items back apart into their ingredients, for EU
+- Experience Absorber — collects experience orbs into a fluid network
 
 ### Security (1)
 - Keypad — a crafter whose slots are the code; the right code gives a redstone pulse
@@ -367,7 +369,7 @@ Starter command:
 | `/function ra_enchanting:items/give_all` | Disenchanter, Book Upgrader and Book Printer |
 | `/function ra_ender:items/give_all` | Ender vaults, Teleport Anchor, Anchor Terminal and Anchor Tablet |
 | `/function ra_displays:items/give_all` | Display blocks |
-| `/function ra_automation:items/give_all` | Crafter Controller and a Pattern |
+| `/function ra_automation:items/give_all` | Crafter Controller, a Pattern, Uncrafter and Experience Absorber |
 | `/function ra_security:items/give_all` | Keypad |
 | `/function ra:tools/wrench/give` | Wrench |
 | `/function ra:tools/data_handler/give` | Data Handler |

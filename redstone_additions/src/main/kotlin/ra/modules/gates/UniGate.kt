@@ -76,11 +76,11 @@ object UniGate {
 	 * saved under the old name.
 	 */
 	private fun Ra.recipe() {
-		pack.shapedRecipe(block.ns, block.id, block.recipeResult(), Unlock(Items.SMOOTH_STONE_SLAB, "has_slab")) {
-			pattern(" S ", "TRT", " S ")
-			key("S", Items.SMOOTH_STONE_SLAB)
-			key("R", Items.REPEATER)
+		pack.shapedRecipe(block.ns, block.id, block.recipeResult(), Unlock(Items.REPEATER)) {
+			pattern("TRT", "SSS")
 			key("T", Items.REDSTONE_TORCH)
+			key("R", Items.REPEATER)
+			key("S", Items.STONE)
 		}
 	}
 

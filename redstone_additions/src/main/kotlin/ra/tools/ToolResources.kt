@@ -37,11 +37,11 @@ import ra.tools.wrench.Wrench
  * advancements that turn a right-click into a function call, and the two player predicates.
  */
 internal fun DataPack.registerToolResources() {
-	toolRecipe(ToolItems.wrench, Items.BLAZE_ROD, RecipeCategory.REDSTONE, Items.BLAZE_ROD) {
+	toolRecipe(ToolItems.wrench, Items.BLAZE_ROD, RecipeCategory.EQUIPMENT, Items.IRON_INGOT) {
 		pattern("I I", " S ", " S ")
 		key("S", Items.STICK); key("I", Items.IRON_INGOT)
 	}
-	toolRecipe(ToolItems.dataHandler, Items.BLAZE_ROD, RecipeCategory.REDSTONE, Items.BLAZE_ROD) {
+	toolRecipe(ToolItems.dataHandler, Items.BLAZE_ROD, RecipeCategory.EQUIPMENT, Items.REDSTONE_TORCH) {
 		pattern("T T", "ISI", "ISI")
 		key("T", Items.REDSTONE_TORCH); key("I", Items.IRON_INGOT); key("S", Items.STICK)
 	}

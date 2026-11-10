@@ -261,19 +261,65 @@ This page mirrors key datapack milestones from the main project changelog.
 - **Security**, a new module (`ra_security`, [Security](security.md)): blocks that open only for the right code. Its
   settings page lists its blocks and the Keypad Controller's defaults, and it has its own branch in the
   advancement tab.
-- **Keypad Controller** (Security). A target block locked by a Pattern. Its owner (whoever placed it)
-  sneak + right-clicks it with a recorded Pattern to set the code; anyone then right-clicks it with
-  a Pattern to enter one, and the Pattern stays in their hand. The right one makes the Keypad Controller give a
-  redstone pulse (`pulse`, 20 ticks by default) and chime; a wrong one buzzes, and after three
-  wrong tries in a row it refuses every try for 30 seconds (`max_attempts` and `lockout`, which only
-  admins can change). Only the owner or an admin can change the code once it is set; a blank
-  Pattern clears it, and so does a plain Wrench click. The code is never shown: the Goggles say only
-  whether one is set, who owns the Keypad Controller and its state, and the Data Handler and Clipboard never
-  see it. Shift+RMB with the Wrench steps the pulse through 2, 10, 20 and 40 ticks. Nothing runs
-  while nobody uses it. Crafted from three stone buttons, four iron ingots, a target block and a
-  redstone dust.
+- **Keypad Controller** (Security). A crafter whose slots are the keypad: open it and click its
+  empty slots to switch them off and on, and the set of slots switched off is the code. A
+  combination is entered once the grid has stopped changing for 4 seconds, and every slot is then
+  switched back on. The first combination entered becomes the code ("code set"); after that the
+  right one gives a redstone pulse (`pulse`, 20 ticks by default) and a chime, and a wrong one
+  buzzes; after three wrong tries in a row it refuses every try for 30 seconds (`max_attempts` and
+  `lockout`, which only admins can change). For the pulse it turns into a powered target block,
+  drawn as a lit crafter, so dust, repeaters and components next to it pick it up; then it is a
+  crafter again. Its owner (whoever placed it) or an admin clears the code with a plain Wrench
+  click, and the next combination entered sets a new one. It never crafts: items put into it are
+  thrown back out at once. The code is never shown: the Goggles say only whether one is set, who
+  owns the Keypad Controller and its state, and the Data Handler and Clipboard never see it.
+  Shift+RMB with the Wrench steps the pulse through 2, 10, 20 and 40 ticks. Crafted from three
+  stone buttons, four iron ingots, a crafter and a redstone dust.
 
 ### Changed
+
+- **Recipes rebalanced.** Every recipe now asks for things you can get in survival at the point
+  in the game where the block is worth having, is laid out like a vanilla recipe, and uses
+  ingredients that match what the block does. No two recipes share a grid, with each other or
+  with vanilla. Items you already have are not touched; only new crafts cost the new price. The
+  [Recipe Atlas](recipe-atlas.md) shows every new grid. Notable changes:
+  - **Logic Gates** are all built like a repeater: a row of three stone under the part that does
+    the work. Delayer: three repeaters. Extender: repeaters and a slime ball. Shortener: repeaters
+    and shears. Randomizer: repeaters and a dropper. Edge Detector: repeaters and an observer.
+    UNI Gate: redstone torches and a repeater. Counter: a comparator over repeaters and a hopper.
+    Signal Calculator: comparators and quartz. Sequencer: repeaters and a comparator. The simple
+    gates no longer need quartz from the Nether.
+  - **Wireless Emitter, Receiver and the Analog pair** no longer need End stone or purpur: a
+    lightning rod as the antenna, amethyst shards (or comparators for the analog ones) and a row
+    of smooth stone slabs. The Emitter has a redstone torch in the middle, the Receiver a repeater.
+  - **Block Breaker, Block Placer, Breeder and Fan** are crafted like a dispenser, with the part
+    that does the job in the middle: an iron pickaxe, a piston, a hay bale, a breeze rod (the Fan
+    no longer uses feathers). Cobblestone, blackstone and cobbled deepslate all work.
+  - **Boxer** (piston and barrel) and **Unboxer** (sticky piston and barrel) in a cobblestone frame.
+  - **Item Pipe**: six iron ingots and a hopper make 8.
+  - **Infinite Lava Cauldron** needs magma blocks and blaze rods: endless lava is Nether-tier, like
+    a blaze farm.
+  - **Tag Adder** gains a redstone; the **Tag Remover** is a name tag and a water bucket.
+  - **Multiblock Bases**: Copper, Gold and Diamond now take eight ingots or diamonds around a
+    redstone, like the Iron Base, instead of eight blocks (the Diamond Base cost 72 diamonds).
+  - **Generator Casing** takes a netherite ingot instead of a scrap, so a Nether Generator no
+    longer pays for itself in ten minutes.
+  - **Book Upgrader** needs a nether star: raising books past their vanilla maximum is a
+    post-Wither upgrade.
+  - **Ender Item Vault** is built around an ender chest with purpur, like the other two vaults;
+    the **Teleport Anchor** takes ender eyes instead of pearls.
+  - **Iron Jetpack Kit**: four iron ingots, a blaze rod, a redstone block and two fire charges as
+    the exhaust. **Thruster Kit**: firework rockets and wind charges.
+  - **Solar Panel** is built around a daylight detector; the **Gas Valve** is the iron twin of the
+    Liquid Valve.
+  - **Prices**: the Disenchanter costs 3000 mL of experience per enchantment (was 1000), the Book
+    Printer 2500 mL per level (was 1000), and the Book Upgrader's base price is 1000 mL (was 500).
+    A server that already saved its own value in the settings keeps it.
+  - **Recipe book**: recipes unlock on an item they actually use (the Wrench on iron, the Data
+    Handler on a redstone torch, the Entity Detector on an observer, the Clock on a clock...). The
+    Big Torch and the Enchanted Coal Block now appear in the recipe book once you hold Enchanted
+    Coal or an Enchanted Coal Block. The Wrench and the Data Handler moved to the Equipment tab.
+  - The Creative EU Source and Creative Fluid Source stay creative only, with no recipe.
 
 - **The Liquid Drain is now the Fluid Drain, and also vents gases** (Transport Networks). Powered
   by redstone on a gas network, it lets the gas out of its front with the gas's effect, renewed

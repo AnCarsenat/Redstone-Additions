@@ -72,12 +72,11 @@ object Breeder {
 		properties(block) {}
 		pack.blockRegisterMessage(block)
 		pack.specGive(block, item)
-		pack.shapedRecipe(block.ns, block.id, item.recipeResult(), Unlock(Items.DISPENSER), count = null) {
-			pattern("CCC", "ADK", "CCC")
-			key("C", listOf(Items.COBBLESTONE))
-			key("A", listOf(Items.APPLE))
-			key("D", listOf(Items.DISPENSER))
-			key("K", listOf(Items.COPPER_INGOT))
+		pack.shapedRecipe(block.ns, block.id, item.recipeResult(), Unlock(Items.HAY_BLOCK), count = null) {
+			pattern("CCC", "CHC", "CRC")
+			key("C", listOf(Items.COBBLESTONE, Items.BLACKSTONE, Items.COBBLED_DEEPSLATE))
+			key("H", listOf(Items.HAY_BLOCK))
+			key("R", listOf(Items.REDSTONE))
 		}
 
 		pack.entityTypeTag("breedable", Ns.INTERACTIVE.id) {

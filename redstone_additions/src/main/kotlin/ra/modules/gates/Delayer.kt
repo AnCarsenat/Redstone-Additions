@@ -44,10 +44,10 @@ object Delayer {
 			number("delay", min = 1, max = 1200)
 		}
 		pack.blockGive(block)
-		pack.blockRecipe(block, unlockedBy = Items.QUARTZ_BLOCK) {
-			pattern("   ", " CR", "   ")
-			key("C", Items.QUARTZ_BLOCK)
+		pack.blockRecipe(block, unlockedBy = Items.REPEATER) {
+			pattern("RRR", "SSS")
 			key("R", Items.REPEATER)
+			key("S", Items.STONE)
 		}
 		pack.blockRegisterMessage(block)
 		pack.define(block.handlePlacement) { handlePlacement() }

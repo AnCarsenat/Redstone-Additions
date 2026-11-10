@@ -67,9 +67,10 @@ object TagAdder {
 		pack.blockRegisterMessage(block)
 		pack.blockGive(block)
 		pack.shapedRecipe(block.ns, block.id, item.recipeResult(), Unlock(Items.NAME_TAG), count = null) {
-			pattern("CCC", "CNC", "CCC")
+			pattern("CCC", "CNC", "CRC")
 			key("C", Items.COBBLESTONE)
 			key("N", Items.NAME_TAG)
+			key("R", Items.REDSTONE)
 		}
 
 		// As bat, at bat position.

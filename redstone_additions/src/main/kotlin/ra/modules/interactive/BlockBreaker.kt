@@ -53,11 +53,11 @@ object BlockBreaker {
 		}
 		pack.blockRegisterMessage(block)
 		pack.specGive(block, item)
-		pack.shapedRecipe(block.ns, block.id, item.recipeResult(), Unlock(Items.DISPENSER), count = null) {
-			pattern("CCC", "CDP", "CCC")
-			key("C", listOf(Items.COBBLESTONE, Items.BLACKSTONE))
-			key("P", listOf(Items.STONE_PICKAXE))
-			key("D", listOf(Items.DISPENSER))
+		pack.shapedRecipe(block.ns, block.id, item.recipeResult(), Unlock(Items.IRON_PICKAXE), count = null) {
+			pattern("CCC", "CPC", "CRC")
+			key("C", listOf(Items.COBBLESTONE, Items.BLACKSTONE, Items.COBBLED_DEEPSLATE))
+			key("P", listOf(Items.IRON_PICKAXE))
+			key("R", listOf(Items.REDSTONE))
 		}
 
 		pack.define(block.handlePlacement) {

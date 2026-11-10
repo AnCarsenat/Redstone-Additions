@@ -55,7 +55,7 @@ them. The book stack loses one book.
 
 | | |
 | --- | --- |
-| Price | 1000 mL of experience (10 points) per enchantment moved, all at once. Server setting `disenchanter_xp` (0 to 100000; 0 makes it free and needs no network) |
+| Price | 3000 mL of experience (30 points) per enchantment moved, all at once. Server setting `disenchanter_xp` (0 to 100000; 0 makes it free and needs no network) |
 | Curses | Curse of Binding and Curse of Vanishing stay on the item, as at a grindstone. An item with only curses is left alone |
 | Repair cost | Reset, as at a grindstone, so the item is cheap to repair again |
 | One at a time | One enchanted item per book: a stack of several enchanted items is left alone |
@@ -83,12 +83,12 @@ Which enchantment it raises:
 - with the property empty (the default), the first enchantment of the book in alphabetical
   order of its id that is below the highest level.
 
-| Level | Price (default base 500 mL) |
+| Level | Price (default base 1000 mL) |
 | --- | --- |
-| I → II | 1000 mL (10 points) |
-| III → IV | 4000 mL (40 points) |
-| V → VI | 16000 mL (160 points) |
-| IX → X | 256000 mL (2560 points) |
+| I → II | 2000 mL (20 points) |
+| III → IV | 8000 mL (80 points) |
+| V → VI | 32000 mL (320 points) |
+| IX → X | 512000 mL (5120 points) |
 
 The price is `base × 2^level` mL, taken all at once; with less than that in the network nothing is
 taken and the book waits on the block. The highest level it makes is **10**. Server settings:
@@ -150,7 +150,7 @@ books and experience.
 
 | | |
 | --- | --- |
-| Price | 1000 mL of experience (10 points) per enchantment level of the copy, all at once: Sharpness V costs 5000 mL, Efficiency V + Unbreaking III 8000 mL. Server setting `book_printer_xp` (0 to 100000; 0 makes it free and needs no network) |
+| Price | 2500 mL of experience (25 points) per enchantment level of the copy, all at once: Sharpness V costs 12500 mL, Efficiency V + Unbreaking III 20000 mL. Server setting `book_printer_xp` (0 to 100000; 0 makes it free and needs no network) |
 | Not enough | With less than the price in the network nothing is taken, and the book waits |
 | No Schematic | Books wait on the block until one is set |
 | One thing at a time | An enchanted book lying on the printer is drawn before anything is printed, so do not drop books you want to keep while it prints |

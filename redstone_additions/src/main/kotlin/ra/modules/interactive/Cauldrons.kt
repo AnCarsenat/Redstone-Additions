@@ -64,8 +64,8 @@ object Cauldrons {
 	val lava = Cauldron(
 		"infinite_lava_cauldron", "Infinite Lava Cauldron",
 		full = "lava_cauldron", partial = emptyList(),
-		pattern = listOf("OOO", "LCL", "OOO"),
-		keys = listOf("O" to listOf(Items.OBSIDIAN), "L" to listOf(Items.LAVA_BUCKET), "C" to listOf(Items.CAULDRON)),
+		pattern = listOf("MLM", "BCB", "MLM"),
+		keys = listOf("M" to listOf(Items.MAGMA_BLOCK), "L" to listOf(Items.LAVA_BUCKET), "B" to listOf(Items.BLAZE_ROD), "C" to listOf(Items.CAULDRON)),
 		unlock = Unlock(Items.LAVA_BUCKET, "has_lava"),
 	)
 	val snow = Cauldron(

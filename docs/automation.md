@@ -24,7 +24,6 @@ type counts.
 | **Sneak + right-click a crafter** | Records the crafter's grid as it is now. Fill the grid by hand first, one of each ingredient is enough. |
 | **Sneak + right-click air** (or any other block) | Clears the Pattern back to blank. |
 | **Right-click a Crafter Controller** | Loads the Pattern into it (see below). |
-| **Right-click a [Keypad Controller](security.md#keypad-controller)** | Enters the Pattern as its code; sneaking sets the code. |
 
 Hover over a recorded Pattern to see its grid, row by row, as item names; `-` is an empty
 slot. A crafter's disabled slots are recorded as empty.
@@ -104,8 +103,7 @@ grid:
   detected through an endless `consumable` (a `using_item` advancement), which works on a stack
   as on a single item.
 
-The format is generic on purpose: other blocks read Patterns too (the [Keypad Controller](security.md#keypad-controller)
-uses one as a code: two Patterns are equal when their `slots` lists are). Treat the ids as player data: an
+The format is generic on purpose, so other blocks and add-ons can read Patterns too. Treat the ids as player data: an
 edited item can hold anything, so check a value with `ra_lib:safe/check` (format ID) before
 pasting it into a command, as the Crafter Controller does.
 

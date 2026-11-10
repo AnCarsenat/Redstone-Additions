@@ -113,7 +113,7 @@ object TeleportAnchor {
 		pack.enderRecipe(block, item, RecipeCategory.MISC) {
 			pattern("OEO", "ECE", "OEO")
 			key("O", Items.OBSIDIAN)
-			key("E", Items.ENDER_PEARL)
+			key("E", Items.ENDER_EYE)
 			key("C", Items.CRYING_OBSIDIAN)
 		}
 

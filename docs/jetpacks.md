@@ -8,7 +8,7 @@ flamethrower underneath you.
 
 | Kit | How to get it | Fuel |
 | --- | --- | --- |
-| Iron Jetpack Kit | Crafted: blaze rod, iron ingots, a redstone block and a coal block | 1 coal (or charcoal) per 2 minutes of flight |
+| Iron Jetpack Kit | Crafted: four iron ingots, a blaze rod, a redstone block and two fire charges | 1 coal (or charcoal) per 2 minutes of flight |
 | Infinite Iron Jetpack Kit | Sacrifice an Iron Jetpack Kit on an enchanting table, 1% per kit — see [Enchant Crafting](enchant-crafting.md) | none |
 
 ![Iron Jetpack Kit recipe](images/recipes/ra_jetpacks/iron_jetpack_kit.png){ width="260" }

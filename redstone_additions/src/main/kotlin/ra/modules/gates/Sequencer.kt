@@ -93,11 +93,11 @@ object Sequencer {
 		}
 		wrenchCycle(block.id, WrenchCycle("Steps", "steps", cycleSteps))
 		pack.blockGive(block)
-		pack.blockRecipe(block, unlockedBy = Items.REPEATER) {
-			pattern(" T ", "RQR")
-			key("T", Items.TARGET)
+		pack.blockRecipe(block, unlockedBy = Items.COMPARATOR) {
+			pattern("RCR", "SSS")
 			key("R", Items.REPEATER)
-			key("Q", Items.SMOOTH_QUARTZ)
+			key("C", Items.COMPARATOR)
+			key("S", Items.STONE)
 		}
 		pack.blockRegisterMessage(block)
 		pack.define(block.handlePlacement) { handlePlacement() }

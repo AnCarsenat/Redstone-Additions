@@ -221,7 +221,7 @@ netherrack or poppies on an enchanting table.
 - Experience Absorber — collects experience orbs into a fluid network
 
 ### Security (1)
-- Keypad Controller — gives a redstone pulse when shown the Pattern it was locked with
+- Keypad — a crafter whose slots are the code; the right code gives a redstone pulse
 
 ### Multiblock Bases (5)
 - Copper Multiblock Base
@@ -370,7 +370,7 @@ Starter command:
 | `/function ra_ender:items/give_all` | Ender vaults, Teleport Anchor, Anchor Terminal and Anchor Tablet |
 | `/function ra_displays:items/give_all` | Display blocks |
 | `/function ra_automation:items/give_all` | Crafter Controller, a Pattern, Uncrafter and Experience Absorber |
-| `/function ra_security:items/give_all` | Keypad Controller |
+| `/function ra_security:items/give_all` | Keypad |
 | `/function ra:tools/wrench/give` | Wrench |
 | `/function ra:tools/data_handler/give` | Data Handler |
 | `/function ra:tools/creative_data_handler/give` | Creative Data Handler |

@@ -60,7 +60,7 @@ object Clock {
 			number("delay", readonly = true, visible = false)
 		}
 		pack.blockGive(block)
-		pack.blockRecipe(block, unlockedBy = Items.DAYLIGHT_DETECTOR) {
+		pack.blockRecipe(block, unlockedBy = Items.CLOCK) {
 			pattern("RCR", "SSS")
 			key("R", Items.REPEATER)
 			key("C", Items.CLOCK)

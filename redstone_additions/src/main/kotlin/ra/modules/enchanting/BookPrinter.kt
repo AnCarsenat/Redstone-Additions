@@ -85,7 +85,7 @@ object BookPrinter {
 	const val CHANCE_KEY = "book_printer_chance"
 	const val DEFAULT_CHANCE = 2
 	const val COST_KEY = "book_printer_xp"
-	const val DEFAULT_COST = 1000
+	const val DEFAULT_COST = 2500
 
 	/** Item entities this block just spawned, before their stack is filled in. */
 	private const val OUT = "ra.ench.pr_out"

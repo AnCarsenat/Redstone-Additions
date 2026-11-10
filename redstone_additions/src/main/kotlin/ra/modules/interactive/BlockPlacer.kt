@@ -52,12 +52,11 @@ object BlockPlacer {
 		}
 		pack.blockRegisterMessage(block)
 		pack.specGive(block, item)
-		pack.shapedRecipe(block.ns, block.id, item.recipeResult(), Unlock(Items.DISPENSER), count = null) {
-			pattern("CCC", "BDR", "CCC")
-			key("C", listOf(Items.COBBLESTONE, Items.BLACKSTONE))
-			key("B", listOf(Items.BOW))
-			key("D", listOf(Items.DISPENSER))
-			key("R", listOf(Items.REDSTONE_BLOCK))
+		pack.shapedRecipe(block.ns, block.id, item.recipeResult(), Unlock(Items.PISTON), count = null) {
+			pattern("CCC", "CPC", "CRC")
+			key("C", listOf(Items.COBBLESTONE, Items.BLACKSTONE, Items.COBBLED_DEEPSLATE))
+			key("P", listOf(Items.PISTON))
+			key("R", listOf(Items.REDSTONE))
 		}
 
 		pack.define(block.handlePlacement) {

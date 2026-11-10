@@ -8,7 +8,7 @@ flowers. Point a [Block Breaker](interactive-machines.md) at one and you have a 
 A generator is made of two halves: a crafted **Generator Casing** and a **Core** won on an
 enchanting table.
 
-1. Craft a Generator Casing: eight copper grates around one netherite scrap.
+1. Craft a Generator Casing: eight copper grates around one netherite ingot.
 2. Throw stone, netherrack or poppies on an enchanting table. Each one has a **1%** chance of
    coming back as a Core; the rest are used up. See [Enchant Crafting](enchant-crafting.md).
 3. Put the Casing and the Core together in a crafting grid (any two slots).

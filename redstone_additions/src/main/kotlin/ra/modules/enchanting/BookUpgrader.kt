@@ -86,7 +86,7 @@ object BookUpgrader {
 	private val cleanup = block.fn("cleanup")
 
 	const val BASE_KEY = "book_upgrader_base"
-	const val DEFAULT_BASE = 500
+	const val DEFAULT_BASE = 1000
 	const val CAP_KEY = "book_upgrader_max"
 	const val DEFAULT_CAP = 10
 	/** base (at most 1000) x 2^19 still fits in an int. */
@@ -110,8 +110,9 @@ object BookUpgrader {
 		pack.blockRegisterMessage(block)
 		pack.define(block.give) { raw("give @s ${item.giveArg()}") }
 		pack.shapedRecipe(block.ns, block.id, item.recipeResult(), Unlock(Items.ENCHANTING_TABLE)) {
-			pattern("LBL", "BEB", "LBL")
+			pattern("LSL", "BEB", "LBL")
 			key("L", Items.LAPIS_BLOCK)
+			key("S", Items.NETHER_STAR)
 			key("B", Items.BOOK)
 			key("E", Items.ENCHANTING_TABLE)
 		}

@@ -72,10 +72,11 @@ object AnalogEmitter {
 		pack.blockRegisterMessage(block)
 		pack.blockGive(block)
 		pack.shapedRecipe(block.ns, block.id, item.recipeResult(), Unlock(Items.COMPARATOR)) {
-			pattern("GEG", "ECE", "GEG")
-			key("G", Items.GOLD_INGOT)
-			key("E", Items.END_STONE)
+			pattern(" L ", "ACA", "SSS")
+			key("L", Items.LIGHTNING_ROD)
+			key("A", Items.AMETHYST_SHARD)
 			key("C", Items.COMPARATOR)
+			key("S", Items.SMOOTH_STONE_SLAB)
 		}
 
 		// As bat, at bat position.

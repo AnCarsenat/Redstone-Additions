@@ -274,6 +274,49 @@
 
 ### Changed
 
+- **Recipes rebalanced.** Every recipe now asks for things you can get in survival at the point
+  in the game where the block is worth having, is laid out like a vanilla recipe, and uses
+  ingredients that match what the block does. No two recipes share a grid, with each other or
+  with vanilla. Items you already have are not touched; only new crafts cost the new price. The
+  [Recipe Atlas](https://ancarsenat.github.io/Redstone-Additions/recipe-atlas/) shows every new grid. Notable changes:
+  - **Logic Gates** are all built like a repeater: a row of three stone under the part that does
+    the work. Delayer: three repeaters. Extender: repeaters and a slime ball. Shortener: repeaters
+    and shears. Randomizer: repeaters and a dropper. Edge Detector: repeaters and an observer.
+    UNI Gate: redstone torches and a repeater. Counter: a comparator over repeaters and a hopper.
+    Signal Calculator: comparators and quartz. Sequencer: repeaters and a comparator. The simple
+    gates no longer need quartz from the Nether.
+  - **Wireless Emitter, Receiver and the Analog pair** no longer need End stone or purpur: a
+    lightning rod as the antenna, amethyst shards (or comparators for the analog ones) and a row
+    of smooth stone slabs. The Emitter has a redstone torch in the middle, the Receiver a repeater.
+  - **Block Breaker, Block Placer, Breeder and Fan** are crafted like a dispenser, with the part
+    that does the job in the middle: an iron pickaxe, a piston, a hay bale, a breeze rod (the Fan
+    no longer uses feathers). Cobblestone, blackstone and cobbled deepslate all work.
+  - **Boxer** (piston and barrel) and **Unboxer** (sticky piston and barrel) in a cobblestone frame.
+  - **Item Pipe**: six iron ingots and a hopper make 8.
+  - **Infinite Lava Cauldron** needs magma blocks and blaze rods: endless lava is Nether-tier, like
+    a blaze farm.
+  - **Tag Adder** gains a redstone; the **Tag Remover** is a name tag and a water bucket.
+  - **Multiblock Bases**: Copper, Gold and Diamond now take eight ingots or diamonds around a
+    redstone, like the Iron Base, instead of eight blocks (the Diamond Base cost 72 diamonds).
+  - **Generator Casing** takes a netherite ingot instead of a scrap, so a Nether Generator no
+    longer pays for itself in ten minutes.
+  - **Book Upgrader** needs a nether star: raising books past their vanilla maximum is a
+    post-Wither upgrade.
+  - **Ender Item Vault** is built around an ender chest with purpur, like the other two vaults;
+    the **Teleport Anchor** takes ender eyes instead of pearls.
+  - **Iron Jetpack Kit**: four iron ingots, a blaze rod, a redstone block and two fire charges as
+    the exhaust. **Thruster Kit**: firework rockets and wind charges.
+  - **Solar Panel** is built around a daylight detector; the **Gas Valve** is the iron twin of the
+    Liquid Valve.
+  - **Prices**: the Disenchanter costs 3000 mL of experience per enchantment (was 1000), the Book
+    Printer 2500 mL per level (was 1000), and the Book Upgrader's base price is 1000 mL (was 500).
+    A server that already saved its own value in the settings keeps it.
+  - **Recipe book**: recipes unlock on an item they actually use (the Wrench on iron, the Data
+    Handler on a redstone torch, the Entity Detector on an observer, the Clock on a clock...). The
+    Big Torch and the Enchanted Coal Block now appear in the recipe book once you hold Enchanted
+    Coal or an Enchanted Coal Block. The Wrench and the Data Handler moved to the Equipment tab.
+  - The Creative EU Source and Creative Fluid Source stay creative only, with no recipe.
+
 - **The Liquid Drain is now the Fluid Drain, and also vents gases** (Transport Networks). Powered
   by redstone on a gas network, it lets the gas out of its front with the gas's effect, renewed
   at each action (once a second at the default rate): **Oxygen** bubbles up the water straight

@@ -54,10 +54,10 @@ object EdgeDetector {
 		wrenchCycle(block.id, WrenchCycle("Mode", "mode", cycleMode))
 		pack.blockGive(block)
 		pack.blockRecipe(block, unlockedBy = Items.OBSERVER) {
-			pattern(" O ", "RQR")
-			key("O", Items.OBSERVER)
-			key("Q", Items.QUARTZ_PILLAR)
+			pattern("ROR", "SSS")
 			key("R", Items.REPEATER)
+			key("O", Items.OBSERVER)
+			key("S", Items.STONE)
 		}
 		pack.blockRegisterMessage(block)
 		pack.define(block.handlePlacement) { handlePlacement() }

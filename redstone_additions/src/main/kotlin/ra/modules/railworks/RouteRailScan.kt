@@ -16,12 +16,17 @@ import ra.core.raw
 /**
  * When a [RouteRail] looks at carts, and how it decides.
  *
- * COST. Every other tick, one test: is there a minecart anywhere loaded ([CARTS])? With none,
- * that is all. With some, each Route Rail runs one box-bounded selector for a cart within
- * [RADIUS] blocks of its rail; only a rail with a cart that close reads its properties, checks the
- * nearest cart and sets the rail. A cart at the game's top speed (8 blocks a second, 0.4 per
- * tick) crosses the [RADIUS] in more than 4 ticks, so it is always seen before it reaches the
- * junction.
+ * WHICH CARTS. Only carts on the junction's own lines: two boxes, one block wide, along the rail's
+ * row and column, [REACH] blocks each way of the rail and one block up and down (for a slope
+ * leading in). A cart on a parallel track one block over is in neither box, and one passing right
+ * beside the junction (in the row box, on a north-south rail, say) is on a rail running across the
+ * box and is left out, so neither switches this junction. Of the carts left, the nearest decides.
+ *
+ * COST. Every other tick, each Route Rail runs its two box selectors ([probe]). A box selector
+ * looks only at the entity sections it covers, so the cost does not grow with the number of
+ * entities loaded elsewhere. Only a rail with a cart in its boxes reads its properties, checks
+ * the cart and sets the rail. A cart at the game's top speed (8 blocks a second, 0.4 per tick)
+ * needs 5 ticks to cover the [REACH] blocks to the junction, so it is always seen in time.
  *
  * THE MATCH. As the cart, with the rail's properties in `storage ra:temp rr.p`: `route` is copied
  * into `rr.c`, then the cart's value is copied over it; `store success` is 0 when nothing changed,
@@ -33,14 +38,18 @@ internal object RouteRailScan {
 	const val CARTS_TAG = "minecarts"
 	private val CARTS = "#${Ns.RAILWORKS.id}:$CARTS_TAG"
 
-	/** Distance from the rail's centre at which a cart is looked at. */
-	const val RADIUS = 2.5
+	/** How many blocks each way along the rail's row and column a cart is looked for. */
+	const val REACH = 2
+
+	/** On the carts in a Route Rail's boxes, for the one test that picks the nearest. Removed the same tick. */
+	private const val NEAR = "ra.rr.near"
 
 	private const val T = Obj.TEMP
 	private const val S = "storage ra:temp rr"
 	private const val PHASE = "#rr.phase"
 
 	val run = RouteRail.block.fn("scan")
+	private val probe = RouteRail.block.fn("probe")
 	private val one = RouteRail.block.fn("scan_one")
 	private val match = RouteRail.block.fn("match")
 	private val matchName = RouteRail.block.fn("match_name")
@@ -48,7 +57,20 @@ internal object RouteRailScan {
 	private val walkItems = RouteRail.block.fn("walk_items")
 	private val setShape = RouteRail.block.fn("set_shape")
 
-	private fun cartNear(extra: String = "") = "@e[type=$CARTS,distance=..$RADIUS$extra]"
+	/**
+	 * One line through the junction, from the rail block's low corner: where the box starts, its
+	 * size, and the rail shape that runs [across] it. A cart in the box on a rail running across is
+	 * on a parallel track passing beside the junction, not on the line.
+	 */
+	private class Line(val at: String, val box: String, val across: String)
+
+	private val boxes = listOf(
+		Line("positioned ~ ~-1 ~-$REACH", "dx=0,dy=2,dz=${2 * REACH}", "east_west"),
+		Line("positioned ~-$REACH ~-1 ~", "dx=${2 * REACH},dy=2,dz=0", "north_south"),
+	)
+
+	/** Every cart in the boxes is within this distance of the rail block's centre. */
+	private const val TAGGED_WITHIN = 4
 
 	/** [into] = 0 when `rr.c` (a copy of `route`) equals the value at [source], else 1. */
 	private fun Function.differs(source: String, into: String = "#rr.d") {
@@ -70,17 +92,28 @@ internal object RouteRailScan {
 			raw("scoreboard players add $PHASE $T 1")
 			raw("execute if score $PHASE $T matches 2.. run scoreboard players set $PHASE $T 0")
 			raw("execute unless score $PHASE $T matches 0 run return 0")
-			raw("execute unless entity @e[type=$CARTS,limit=1] run return 0")
-			executeRun("as ${RouteRail.block.markerSel()} at @s positioned ~ ~1 ~ if entity ${cartNear(",limit=1")}", one)
+			executeRun("as ${RouteRail.block.markerSel()} at @s align xyz positioned ~ ~1 ~", probe)
+		}
+
+		// As the marker, at the low corner of the rail block on top. Tags the carts in the two boxes.
+		pack.define(probe) {
+			for (b in boxes)
+				raw("execute ${b.at} as @e[type=$CARTS,${b.box}] at @s unless block ~ ~ ~ #minecraft:rails[shape=${b.across}] run tag @s add $NEAR")
+			raw("execute positioned ~0.5 ~0.5 ~0.5 unless entity @e[type=$CARTS,tag=$NEAR,distance=..$TAGGED_WITHIN,limit=1] run return 0")
+			executeRun("positioned ~0.5 ~0.5 ~0.5", one)
+			raw("execute positioned ~0.5 ~0.5 ~0.5 run tag @e[type=$CARTS,tag=$NEAR,distance=..$TAGGED_WITHIN] remove $NEAR")
 		}
 
 		// As the marker, positioned at the centre of the rail block on top.
 		pack.define(one) {
 			raw("execute unless block ~ ~ ~ minecraft:rail run return 0")
+			// A slope is never a junction: leave it as it is.
+			for (d in listOf("east", "west", "north", "south"))
+				raw("execute if block ~ ~ ~ minecraft:rail[shape=ascending_$d] run return 0")
 			raw("data remove $S")
 			raw("data modify $S.p set from entity @s data.properties")
 			raw("scoreboard players set #rr.m $T 0")
-			executeRun("as @n[type=$CARTS,distance=..$RADIUS]", match)
+			executeRun("as @n[type=$CARTS,tag=$NEAR,distance=..$TAGGED_WITHIN]", match)
 			raw("data modify $S.want set from $S.p.on_miss")
 			raw("execute if score #rr.m $T matches 1 run data modify $S.want set from $S.p.on_match")
 			function(setShape)

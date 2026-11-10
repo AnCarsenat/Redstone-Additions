@@ -20,9 +20,12 @@ Six copper ingots around a rail, a name tag and a redstone dust. Operators:
    top of it.
 3. Set the **route** and the two shapes with the Data Handler, and the source with the Wrench.
 
-When a minecart comes within 2.5 blocks of the junction, the Route Rail looks at the nearest
+When a minecart comes within 2 blocks of the junction along one of its lines (the rail's own
+row or column, a block up or down for a slope leading in), the Route Rail looks at the nearest such
 cart and sets the rail on top to `on_match` if that cart carries the route, or to `on_miss` if it
-does not. The rail is set before the cart gets there, even at the game's top speed.
+does not. The rail is set before the cart gets there, even at the game's top speed. A cart on a
+parallel track beside the junction is not on its lines and never switches it. A slope on top
+(`ascending_*`) is never changed.
 
 ### What a cart carries
 
@@ -83,6 +86,7 @@ Breaking it drops it; the rail on top stays where it is.
 | The rail never changes | It must be a plain rail directly on top of the Route Rail |
 | Every cart goes the same way | The route is compared exactly: check the case, and the full item id for `item` |
 | A cart takes the wrong branch | Two carts close together: the nearest one decides. Space carts a few blocks apart |
+| The rail on top is a slope and never changes | A slope cannot be a junction; put the junction on flat track |
 | The curve points the wrong way | Pick the shape joining the side the cart comes from and the side it should leave by |
 | A named cart does not match | The name must be the whole route; `local 2` is not `local` |
 
@@ -107,8 +111,11 @@ its `text` is compared as well. The sources and shapes are matched against fixed
 player text reaches a selector or a command, so `route` takes any text.
 
 **What runs.** Each tick the Route Rail tick does the break check every block has. Every other
-tick, one test: is a minecart loaded anywhere (`#ra_railworks:minecarts`)? With none, that is all.
-With some, each Route Rail runs one selector bounded to 2.5 blocks around its rail, and only a
-Route Rail with a cart that close reads its properties, checks the nearest cart and sets the rail.
-A cart at 8 blocks a second needs more than 4 ticks to cross 2.5 blocks, so it is always seen in
+tick, each Route Rail runs two box selectors for `#ra_railworks:minecarts`, one block wide, along
+its rail's row and column (2 blocks each way, a block up and down). A box selector only looks at the
+entity sections it covers, so the cost does not grow with the entities loaded elsewhere. A cart in
+a box standing on a rail that runs across that box (a north-south rail in the east-west row) is on a
+parallel track passing beside the junction and is left out. The other carts found are tagged `ra.rr.near` for the moment it takes to pick the nearest, and only a Route Rail
+with a cart in its boxes reads its properties, checks that cart and sets the rail. A cart at 8
+blocks a second needs 5 ticks to cover the 2 blocks to the junction, so it is always seen in
 time.

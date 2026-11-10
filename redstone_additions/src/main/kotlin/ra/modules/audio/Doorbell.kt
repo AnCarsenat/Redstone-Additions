@@ -29,6 +29,7 @@ import ra.core.item.loreItem
 import ra.core.item.loreLine
 import ra.core.raw
 import ra.core.ref
+import io.github.ayfri.kore.features.tags.blockTag
 import ra.modules.audio.AudioPlayer.patternId
 import ra.modules.audio.AudioPlayer.statusName
 import ra.modules.audio.AudioPlayer.storeArgs
@@ -41,7 +42,8 @@ import ra.modules.audio.AudioPlayer.storeArgs
  * marker is tagged [RANG] for as long as the button stays down, so a press rings once.
  *
  * PLACEMENT. Like a vanilla button, on the face of the block it was placed against: the block the
- * player looked at (from the placement facing), or else the first solid neighbour, floor first.
+ * player looked at (from the placement facing), or else the first neighbour with a full face,
+ * floor first. With none, the placement is refused and the item given back.
  * A button whose support goes pops off as in vanilla, which breaks the Doorbell: the custom item
  * drops instead of the plain button.
  */
@@ -98,8 +100,11 @@ object Doorbell {
 		// As the bat, at the block.
 		pack.define(block.handlePlacement) {
 			placementGuard(block, checkExisting = false)
+			// No full face to hang on: refused, and the item comes back (ra:placement/refuse).
+			findSupport()
+			raw("execute if score #db.f $T matches -1 run return run function ${ra.hub.placement.refuse.asId()} {why:\"A Doorbell needs the full face of a block to sit on.\"}")
 			placeBlock(block)
-			orientButton()
+			for ((f, _, _) in faces) raw("execute if score #db.f $T matches $f run function ${orientFn(f).asId()}")
 			setOnNew(block, "data.properties", "{chime:0,range:$DEFAULT_RANGE,volume:100}")
 			setOnNew(block, "data.status", """{chime:"${chimes[0].name}"}""")
 			finishPlacement(block)
@@ -114,7 +119,22 @@ object Doorbell {
 				for ((yaw, dir) in listOf("-45..45" to "south", "45..135" to "west", "-135..-45" to "east"))
 					raw("execute if score $placer ${Obj.YAW} matches $yaw run setblock ~ ~ ~ $PHYSICAL[face=$attach,facing=$dir] replace")
 			}
-			raw("scoreboard players set #db.ok $T 1")
+		}
+		pack.blockTag("not_sturdy", Ns.AUDIO.id) {
+			// The blocks a button falls off: no full face. Not exact (a slab's bottom, a stair's back
+			// are full), but a button is never placed where it would pop off the next tick.
+			add("#ra_lib:ray_passable")
+			for (t in listOf("fences", "fence_gates", "walls", "bars", "slabs", "stairs", "trapdoors", "doors", "beds",
+				"campfires", "candle_cakes", "lanterns", "chains", "anvil", "copper_chests", "cauldrons"))
+				add("#minecraft:$t")
+			add("minecraft:glass_pane")
+			for (c in listOf("white", "orange", "magenta", "light_blue", "yellow", "lime", "pink", "gray",
+				"light_gray", "cyan", "purple", "blue", "brown", "green", "red", "black")) add("minecraft:${c}_stained_glass_pane")
+			for (b in listOf("chest", "trapped_chest", "ender_chest", "cake", "hopper", "bell", "brewing_stand",
+				"enchanting_table", "lectern", "grindstone", "stonecutter", "daylight_detector", "scaffolding", "cactus",
+				"bamboo", "farmland", "dirt_path", "conduit", "dragon_egg", "pointed_dripstone", "decorated_pot",
+				"end_portal_frame", "azalea", "flowering_azalea", "big_dripleaf", "sniffer_egg", "turtle_egg"))
+				add("minecraft:$b")
 		}
 
 		pack.define(ring) {
@@ -162,18 +182,18 @@ object Doorbell {
 	}
 
 	/**
-	 * Attach the button, right after placeBlock (which left a plain one). The support the player
-	 * aimed at first (opposite the placement facing), then any solid neighbour: below, above, then
-	 * the four sides. A block counts as solid when it is neither air nor replaceable.
+	 * `#db.f ra.temp`: the facing the button gets (ra.facing order), -1 when there is no support.
+	 * The support the player aimed at first (opposite the placement facing), then any other
+	 * neighbour with a full face: below, above, then the four sides. A face counts as full when the
+	 * block is neither air nor in `#ra_audio:not_sturdy`.
 	 */
-	private fun Function.orientButton() {
+	private fun Function.findSupport() {
 		val placer = "@a[tag=${Tag.PLACER},limit=1]"
-		raw("scoreboard players set #db.ok $T 0")
+		fun sturdy(off: String) = "unless block $off #minecraft:air unless block $off #ra_audio:not_sturdy"
+		raw("scoreboard players set #db.f $T -1")
 		for ((f, off, _) in faces)
-			raw("execute if score $placer ${Obj.FACING} matches $f unless block $off #minecraft:air unless block $off #minecraft:replaceable run function ${orientFn(f).asId()}")
-		for (f in listOf(1, 0, 2, 3, 4, 5)) {
-			val off = faces[f].second
-			raw("execute if score #db.ok $T matches 0 unless block $off #minecraft:air unless block $off #minecraft:replaceable run function ${orientFn(f).asId()}")
-		}
+			raw("execute if score $placer ${Obj.FACING} matches $f ${sturdy(off)} run scoreboard players set #db.f $T $f")
+		for (f in listOf(1, 0, 2, 3, 4, 5))
+			raw("execute if score #db.f $T matches -1 ${sturdy(faces[f].second)} run scoreboard players set #db.f $T $f")
 	}
 }

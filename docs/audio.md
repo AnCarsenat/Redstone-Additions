@@ -41,7 +41,8 @@ than its interval rings at once when it is switched on.
 | 6 | Buzzer | a low buzz, five pulses |
 
 Every sound is shorter than the default interval of 20 ticks, so at 20 they follow each other
-without a gap. A shorter interval cuts the sound off and starts it again.
+without a gap. A sound is never cut off: with a shorter interval, the next ring waits for the
+sound to end.
 
 | Tool | Does |
 | --- | --- |
@@ -59,8 +60,10 @@ once more in that time.
 A polished blackstone button that plays its chime **once per press**. It is a real button: it
 also gives the usual redstone pulse, so it can ring a bell and open a door at the same time.
 
-Place it like a button, on the face of the block you click (top, bottom or side). A Doorbell whose
-block is removed pops off as a button would, and drops as a Doorbell.
+Place it like a button, on the face of the block you click (top, bottom or side). It needs a full
+block face: next to nothing but glass panes, fences, slabs, torches and the like, the placement is
+refused and you get the item back. A Doorbell whose block is removed pops off as a button would,
+and drops as a Doorbell.
 
 | Index | Chime | What it is |
 | --- | --- | --- |
@@ -97,7 +100,8 @@ A button on the controller is play/stop; a button with 2 to 8 dust between it an
 
 Put a **chest** (or a trapped chest, a barrel or a shulker box) next to the controller, filled
 with music discs: that is the playlist. The controller plays them in slot order, and round again
-from the first after the last.
+from the first after the last. A double chest counts as the half touching the controller: its
+27 slots.
 
 - **Play** takes the next disc from the chest into the jukebox.
 - **Next** puts the playing disc back into the slot it came from, then plays the next one.
@@ -132,6 +136,7 @@ Server admins set the Alarm's interval and range and the Doorbell's range for ne
 | The Alarm is lit but silent | Are you within its `range`? It rings once per `interval` |
 | The Alarm never stops | It sounds while powered: take the power away |
 | The Doorbell does not chime | It chimes once per press; a press while it is still down does nothing |
+| "A Doorbell needs the full face of a block to sit on" | Place it against a full block, not a pane, fence, slab or torch |
 | The controller only buzzes | No jukebox next to it (it must touch the controller), or no disc to play |
 | "Next" plays the same disc | The chest holds only one disc, or the chest is full so the disc could not go back |
 | A pulse does the wrong thing | The signal strength picks the action: 15 play/stop, 8–14 next, 1–7 stop |
@@ -153,8 +158,8 @@ tagged `ra.au.playing` and its `ra.au.step` score is `pattern * 64 + tick`; the 
 the notes due that tick, and the tag comes off after the last one. An Alarm's `ra.cooldown` score
 is the game time of its next ring.
 
-A Jukebox Controller that started a disc is tagged `ra.au.on`. While any is, a clock runs once a
-second (`ra_audio:poll/run`) and checks each one: a jukebox that still holds the disc but no
+A Jukebox Controller that started a disc is tagged `ra.au.on`. Starting one also starts a clock,
+once a second (`ra_audio:poll/run`), which runs while any is tagged and checks each one: a jukebox that still holds the disc but no
 longer has `ticks_since_song_started` has finished it, and continuous plays the next. With none
 playing, nothing is scheduled.
 

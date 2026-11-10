@@ -315,7 +315,8 @@
     a note block, two redstone and a redstone lamp.
   - **Doorbell**: a polished blackstone button that plays its chime once per press, and gives the
     usual button pulse. Six chimes: ding-dong, Westminster, chime, bell, buzzer and knock. It is
-    placed on the face of the block you click, like a button. Crafted from a polished blackstone
+    placed on the face of the block you click, like a button, and refused (item given back) where
+    there is no full face to hold it. Crafted from a polished blackstone
     button, a gold ingot and a note block, stacked.
   - **Jukebox Controller**: a waxed copper bulb that runs the jukebox next to it. A pulse of
     strength 15 (a button or lever against it) plays or stops, 8 to 14 plays the next disc, 1 to 7

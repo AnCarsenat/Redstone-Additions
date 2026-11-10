@@ -160,7 +160,6 @@ object JukeboxController {
 		}
 		pack.define(block.tick) {
 			raw("execute as ${block.markerSel()} at @s run function ${look.asId()}")
-			with(JukeboxOps) { startIfIdle() }
 		}
 
 		registerJukeboxOps()

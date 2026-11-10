@@ -85,12 +85,15 @@ internal object JukeboxOps {
 		Triple(1, 0, 0), Triple(-1, 0, 0), Triple(0, 1, 0), Triple(0, -1, 0), Triple(0, 0, 1), Triple(0, 0, -1),
 	)
 
-	/** In the block's tick: start the check of playing controllers when it is not running. */
-	fun Function.startIfIdle() =
-		raw("execute unless score $POLL_FLAG $T matches 1 if entity ${block.markerSel("tag=$ON", "limit=1")} run function ${pollStart.asId()}")
-
-	/** In the module's load: a schedule that did not survive is started again by the tick. */
-	fun Function.resetPoll() = raw("scoreboard players set $POLL_FLAG $T 0")
+	/**
+	 * In the module's load: the flag is reset, and the check started again for any playing
+	 * controller loaded now (`replace` makes a second start harmless). Otherwise it is started by
+	 * [show], the moment a controller starts playing: nothing runs per tick for it.
+	 */
+	fun Function.resetPoll() {
+		raw("scoreboard players set $POLL_FLAG $T 0")
+		raw("execute if entity ${block.markerSel("tag=$ON", "limit=1")} run function ${pollStart.asId()}")
+	}
 
 	fun Ra.registerJukeboxOps() {
 		pack.define(prep) {
@@ -249,6 +252,7 @@ internal object JukeboxOps {
 			raw("execute if score #au.j $T matches 1 if score #au.has $T matches 0 run tag @s remove $ON")
 			raw("""data modify entity @s data.status.state set value "stopped"""")
 			raw("""execute if entity @s[tag=$ON] run data modify entity @s data.status.state set value "playing"""")
+			raw("execute if entity @s[tag=$ON] unless score $POLL_FLAG $T matches 1 run function ${pollStart.asId()}")
 			raw("""execute if score #au.j $T matches 0 run data modify entity @s data.status.state set value "no jukebox"""")
 			raw("""data modify entity @s data.status.disc set value "none"""")
 			raw("""execute if data entity @s data.data.held run data modify entity @s data.status.disc set from entity @s data.data.held.id""")

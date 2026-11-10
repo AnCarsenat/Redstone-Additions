@@ -41,7 +41,8 @@ import ra.modules.audio.AudioPlayer.storeArgs
  * vanilla, so the alarm may ring once more in that time.
  *
  * TIMING. `ra.cooldown` on the marker is the game time of the next ring. A ring sets it to now +
- * `interval`; an alarm switched on after a silence longer than that rings at once.
+ * `interval`; an alarm switched on after a silence longer than that rings at once. A ring due
+ * while the last sound still plays waits for it to end, so sounds never overlap.
  *
  * SOUNDS. `sound` is an index into [AudioSounds.alarm]; the Goggles show its name. Wrench,
  * Shift+RMB steps to the next one and plays it once.
@@ -143,7 +144,9 @@ object Alarm {
 		pack.define(look) {
 			raw("execute unless block ~ ~ ~ minecraft:redstone_lamp run return run function ${onBreak.asId()}")
 			raw("execute if entity @s[tag=${AudioPlayer.PLAYING}] run function ${AudioPlayer.step.asId()}")
-			raw("execute if block ~ ~ ~ minecraft:redstone_lamp[lit=true] unless score @s ${Obj.COOLDOWN} > $NOW $T run function ${ring.asId()}")
+			// A sound still playing is never cut off: a ring waits for it (an interval shorter than the
+			// sound acts as the sound's own length).
+			raw("execute if block ~ ~ ~ minecraft:redstone_lamp[lit=true] unless entity @s[tag=${AudioPlayer.PLAYING}] unless score @s ${Obj.COOLDOWN} > $NOW $T run function ${ring.asId()}")
 		}
 		pack.define(block.tick) {
 			raw("execute store result score $NOW $T run time query gametime")

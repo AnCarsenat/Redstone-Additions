@@ -24,7 +24,7 @@ Handler change within a second.
 | `facing` | `down`, `up`, `north`, `south`, `west`, `east`: the face the display is drawn on (or, for the Item Hologram, floats out of). A barrel's lid turns with it, contents kept | the face looking at you when placed (Item Hologram: `up`) |
 | `direction` | how the display is turned on that face; see each block below | |
 | `color` | see each block below; anything else draws the default | |
-| `offset_x`, `offset_y`, `offset_z` | -16 to 16, in sixteenths of a block: right, up, and out of the face, as you look at it | 0 |
+| `offset` | a position (x, y, z), each -16 to 16 in sixteenths of a block: right, up, and out of the face, as you look at it. In the Data Handler, **[Edit]** nudges it by 1/16, 1/4 or a whole block, or types an axis | 0, 0, 0 |
 | `scale` | 25 to 400 (percent), about the middle of the face; admins up to 1600 | 100 |
 
 The scale a new display gets is on the Displays settings page (*Gauge Bar scale* and the others).

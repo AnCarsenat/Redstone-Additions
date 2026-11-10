@@ -120,6 +120,10 @@ Shift + right-click a block to open its settings in chat.
 | **[Edit all]** | Write the whole list at once, like `["A","B","C"]` |
 | **[List]** | Show a list's entries under it, each with its own buttons; click again to hide them. One list is open at a time |
 | **[Set from hand]** | For item settings (an Item Pipe filter): use the item you are holding |
+| **[Edit]** | On a position or offset: show its editor under it; click again to hide it |
+| **[Type]** / **[-X]** **[+X]** … | In a position's editor: type one axis, or move it by the chosen step |
+| **[Pick]** | In a position's editor: set it to the block you are looking at |
+| **[Reset]** | In a position's editor: back to the block's starting value |
 | **[Clear]** | On item settings: set no item (removes an Item Pipe filter) |
 | **[Cancel Input]** | Abandon an edit you started |
 | **[Refresh]** | Redraw the menu with current values |
@@ -148,6 +152,29 @@ and like this for a list that grows (a Tag Adder's tags, at most 16), with its c
     Tag 1: custom_tag  [Edit] [Remove]
     Tag 2: red_team  [Edit] [Remove]
 ```
+
+A position or an offset (a Block Detector's `target`, a display's `offset`) is three whole
+numbers, x, y and z. It is one line until you open it with **[Edit]**:
+
+```
+  target: [x 0, y 1, z 0] vec3 (blocks, from the block) [Edit]
+    X: 0  [Type] [-X] [+X]  (-16 to 16)
+    Y: 1  [Type] [-Y] [+Y]  (-16 to 16)
+    Z: 0  [Type] [-Z] [+Z]  (-16 to 16)
+    Step: [1] [4] [16] (blocks)
+    [Pick] [Reset]
+```
+
+- **[Type]** asks for one axis with the number prompt, which shows its range.
+- **[-X]** / **[+X]** (and Y, Z) move it by the step chosen on the **Step** line (in gold). A move
+  stops at the end of the range.
+- **[Pick]** takes the block you are looking at, up to 24 blocks away: look at it, open chat, click.
+  Not offered for a display's offset, which is on the display's own face.
+- While the editor is open, and for 10 seconds after each change, the block a position points at
+  is outlined in green. A display's offset needs no outline: the display moves there within a
+  second.
+- The range is the block's. Admins get a wider one where the block has one (the Block Detector:
+  64 blocks instead of 16); a value outside the players' range is marked **(admin)**.
 
 Selecting a block with the Handler shows every list closed again. A list you may not change
 (set by the block, or admins only) keeps its locked row; its **[List]** still shows the entries,
@@ -178,7 +205,7 @@ Admins also go past the maximum of a range or radius (a Big Torch's or Magic Cra
 Message Block's `range`), up to a higher technical ceiling: the number prompt shows the admin's
 bounds. A value above the players' maximum is marked **(admin)** too (hover it), and the block
 keeps it whoever uses it later. Other players can still lower it to a value within their range.
-The Clipboard pastes a number only within the range its holder could type.
+The Clipboard pastes a number, or a position, only within the range its holder could type.
 
 A value no block declares (one added by an add-on or with the Creative Data Handler) still gets
 a row when the Handler can tell its type from its value, marked with a yellow **⚠**; hover it to

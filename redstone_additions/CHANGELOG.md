@@ -48,6 +48,20 @@
   Detector's. Read once a second on the world sensors' clock. The Goggles show how many names are
   listed, the radius and the output. Crafted from five copper ingots, a book and quill, an observer
   and two redstone.
+- **Block Detector** (Sensors). Turns on while the block at its *target* is its *block*: a block
+  id or a block tag (`#minecraft:logs`), set from the hand in the Data Handler; empty means any
+  block but air. The target is a position from the detector, 16 blocks each way (admins 64); a new
+  detector watches the block in front of it. Output as the Entity Detector's, read once a second
+  on the world sensors' clock. The Goggles show the block, the target and the output. Crafted from
+  five copper ingots, an eye of ender, an observer and two redstone.
+- **Positions in the Data Handler.** A setting that is a position or an offset (the Block
+  Detector's target, a display's offset) is three whole numbers with an editor of its own:
+  **[Edit]** opens one row per axis with **[Type]** (the number prompt, showing the range) and
+  **[-X]**/**[+X]** buttons that move it by a chosen step (1, 4 or 16 blocks; 1/16, 1/4 or 1 block
+  for an offset), **[Pick]** to take the block you are looking at, and **[Reset]**. The block a
+  position points at is outlined in green while you edit. Each block sets the range, and admins
+  get a wider one where the block has one, marked **(admin)**. Nothing typed is ever pasted into a
+  command.
 - **Network Gauge** (Transport Networks). A redstone signal, 0 to 15, from how full a network
   is: `ceil(15 × stored / capacity)`, so any contents give at least 1 and only a full network gives
   15, as a comparator reads a chest. One block for every network: place it against a pipe, tank,
@@ -211,7 +225,7 @@
   each one off and to set the scale new ones get. Every display can be configured after it is
   placed, with the Data Handler (and the Wrench for the choices): **facing** (the face it is
   drawn on or floats from, all six), **direction** (how it is turned on that face), **colour**,
-  **position** (`offset_x/y/z`, -16 to 16 sixteenths of a block) and **scale** (25 % to 400 %,
+  **position** (`offset`, x, y and z each -16 to 16 sixteenths of a block) and **scale** (25 % to 400 %,
   admins up to 1600 %). A Data Handler change shows within a second.
 - **Gauge Bar** (Displays). A bar on its front face, filled to the redstone level feeding it, 0 to
   15, from any side; a repeater or comparator pointing in fills it. It faces the way it was placed,

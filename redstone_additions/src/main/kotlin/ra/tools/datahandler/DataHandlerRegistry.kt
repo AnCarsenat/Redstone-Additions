@@ -67,6 +67,9 @@ object DataHandlerRegistry {
 			// Menus drawn before this load may name rows of a schema that changed: void them all.
 			raw("scoreboard objectives add $MENU dummy")
 			raw("scoreboard objectives add $EXPAND dummy")
+			raw("scoreboard objectives add ${ra.tools.datahandler.props.DataHandlerVec3.STEP} dummy")
+			// Vec3 points left by an editor when the world was saved: their clock did not survive.
+			raw("function ${ra.tools.datahandler.props.Vec3Ops.expire.asId()}")
 			raw("scoreboard players reset * $MENU")
 			// Row indexes of a schema that may have changed.
 			raw("scoreboard players reset * $EXPAND")

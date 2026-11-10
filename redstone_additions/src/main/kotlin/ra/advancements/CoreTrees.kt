@@ -63,6 +63,7 @@ internal val sensorsTree = listOf(
 	egg("ra_sensors", "weather_sensor", "Weather Sensor", Items.LIGHTNING_ROD, TRUE),
 	egg("ra_sensors", "held_item_detector", "Held Item Detector", Items.ITEM_FRAME, TRUE),
 	egg("ra_sensors", "player_detector", "Player Detector", Items.WRITABLE_BOOK, TRUE),
+	egg("ra_sensors", "block_detector", "Block Detector", Items.ENDER_EYE, TRUE),
 )
 
 internal val wirelessTree = listOf(

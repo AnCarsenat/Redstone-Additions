@@ -28,5 +28,6 @@ object SettingsPages {
 		SecurityPage,
 		FarmingPage,
 		RailworksPage,
+		AudioPage,
 	)
 }

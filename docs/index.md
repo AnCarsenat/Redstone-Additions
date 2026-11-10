@@ -61,11 +61,12 @@ is the shortcut: one sample per module, and where to read about it.
 | [Security](security.md) | Keypad, a crafter whose slots are the code | ![Keypad recipe](images/recipes/ra_security/keypad.png){ width="220" } |
 | [Farming](farming.md) | Sprinkler and Breeder: water and grow crops, breed animals | ![Sprinkler recipe](images/recipes/ra_farming/sprinkler.png){ width="220" } |
 | [Railworks](railworks.md) | Route Rail, a junction that sends each cart its own way | ![Route Rail recipe](images/recipes/ra_railworks/route_rail.png){ width="220" } |
+| [Audio](audio.md) | Alarm, Doorbell and Jukebox Controller | ![Alarm recipe](images/recipes/ra_audio/alarm.png){ width="220" } |
 
 Current pack totals:
 
-- 91 placeable custom blocks
-- 108 recipes, all of them in the [Recipe Atlas](recipe-atlas.md)
+- 94 placeable custom blocks
+- 111 recipes, all of them in the [Recipe Atlas](recipe-atlas.md)
 - 9 tools (Wrench, Goggles, Data Handler, Creative Data Handler, Clipboard,
   Multimeter, Redstone Remote, Pager, Anchor Tablet)
 
@@ -90,6 +91,7 @@ Current pack totals:
 | `/function ra_security:items/give_all` | Keypad |
 | `/function ra_farming:items/give_all` | Sprinkler, Breeder |
 | `/function ra_railworks:items/give_all` | Route Rail |
+| `/function ra_audio:items/give_all` | Alarm, Doorbell and Jukebox Controller |
 | `/function ra:uninstall` | Opens uninstall confirmation dialog |
 
 ## Tools At A Glance

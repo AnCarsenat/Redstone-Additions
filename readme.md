@@ -16,9 +16,9 @@
 <p align="center">
   <img src="https://img.shields.io/badge/Minecraft-26.3-2EA44F" alt="Minecraft 26.3">
   <img src="https://img.shields.io/badge/Version-v6.0.3-blue" alt="Version v6.0.3">
-  <img src="https://img.shields.io/badge/Blocks-91-red" alt="91 blocks">
+  <img src="https://img.shields.io/badge/Blocks-94-red" alt="94 blocks">
   <img src="https://img.shields.io/badge/Tools-9-lightgrey" alt="9 tools">
-  <img src="https://img.shields.io/badge/Recipes-108-8A2BE2" alt="108 recipes">
+  <img src="https://img.shields.io/badge/Recipes-111-8A2BE2" alt="111 recipes">
 </p>
 
 <p align="center">
@@ -87,6 +87,7 @@ listed A to Z and grouped by module.
 | Security | <img src="https://github.com/AnCarsenat/Redstone-Additions/raw/main/docs/images/banners/media-missing.png" alt="No screenshot yet" width="320"> |
 | Farming | <img src="https://github.com/AnCarsenat/Redstone-Additions/raw/main/docs/images/banners/media-missing.png" alt="No screenshot yet" width="320"> |
 | Railworks | <img src="https://github.com/AnCarsenat/Redstone-Additions/raw/main/docs/images/banners/media-missing.png" alt="No screenshot yet" width="320"> |
+| Audio | <img src="https://github.com/AnCarsenat/Redstone-Additions/raw/main/docs/images/banners/media-missing.png" alt="No screenshot yet" width="320"> |
 | Tools | <img src="https://github.com/AnCarsenat/Redstone-Additions/raw/main/docs/images/banners/media-missing.png" alt="No screenshot yet" width="320"> |
 
 ---
@@ -230,6 +231,11 @@ netherrack or poppies on an enchanting table.
 ### Railworks (1)
 - Route Rail — under a rail junction: switches it for each cart by its name, tag, cargo or rider
 
+### Audio (3)
+- Alarm — sounds one of seven alarms while powered, heard within its range
+- Doorbell — a button that plays one of six chimes when pressed
+- Jukebox Controller — redstone plays, stops and skips the jukebox next to it; a chest of discs is the playlist
+
 ### Multiblock Bases (5)
 - Copper Multiblock Base
 - Iron Multiblock Base
@@ -354,6 +360,7 @@ Starter command:
 | Security | https://ancarsenat.github.io/Redstone-Additions/security/ |
 | Farming | https://ancarsenat.github.io/Redstone-Additions/farming/ |
 | Railworks | https://ancarsenat.github.io/Redstone-Additions/railworks/ |
+| Audio | https://ancarsenat.github.io/Redstone-Additions/audio/ |
 | Item Reference | https://ancarsenat.github.io/Redstone-Additions/item-reference/ |
 | Recipe Atlas | https://ancarsenat.github.io/Redstone-Additions/recipe-atlas/ |
 | Changelog | https://ancarsenat.github.io/Redstone-Additions/changelog/ |
@@ -382,6 +389,7 @@ Starter command:
 | `/function ra_security:items/give_all` | Keypad |
 | `/function ra_farming:items/give_all` | Sprinkler, Breeder |
 | `/function ra_railworks:items/give_all` | Route Rail |
+| `/function ra_audio:items/give_all` | Alarm, Doorbell and Jukebox Controller |
 | `/function ra:tools/wrench/give` | Wrench |
 | `/function ra:tools/data_handler/give` | Data Handler |
 | `/function ra:tools/creative_data_handler/give` | Creative Data Handler |

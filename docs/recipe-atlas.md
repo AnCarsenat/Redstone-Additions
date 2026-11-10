@@ -1,6 +1,6 @@
 # Recipe Atlas
 
-Every recipe in the pack, in one place: 108 of them.
+Every recipe in the pack, in one place: 111 of them.
 
 !!! tip "Finding one"
     Use the search box with the item's name — every recipe below is indexed by
@@ -16,6 +16,7 @@ what the pack actually contains rather than what someone remembered to add.
 | ---- | ------ | ------- |
 | [Air Charger](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
 | [Air Tank](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
+| [Alarm](#audio) | [Audio](audio.md) | Crafting table |
 | [Analog Emitter](#wireless-redstone) | [Wireless Redstone](wireless-redstone.md) | Crafting table |
 | [Analog Receiver](#wireless-redstone) | [Wireless Redstone](wireless-redstone.md) | Crafting table |
 | [Anchor Tablet](#ender-links) | [Ender Links](ender-links.md) | Crafting table |
@@ -41,6 +42,7 @@ what the pack actually contains rather than what someone remembered to add.
 | [Delayer](#logic-gates) | [Logic Gates](logic-gates.md) | Crafting table |
 | [Diamond Multiblock Base](#multiblocks) | [Multiblocks](multiblocks.md) | Crafting table |
 | [Disenchanter](#enchant-crafting) | [Enchant Crafting](enchant-crafting.md) | Crafting table |
+| [Doorbell](#audio) | [Audio](audio.md) | Crafting table |
 | [Edge Detector](#logic-gates) | [Logic Gates](logic-gates.md) | Crafting table |
 | [Electric Furnace](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
 | [Elevator](#interactive-machines) | [Interactive Machines](interactive-machines.md) | Crafting table |
@@ -78,6 +80,7 @@ what the pack actually contains rather than what someone remembered to add.
 | [Item Hologram](#displays) | [Displays](displays.md) | Crafting table |
 | [Item Mover](#interactive-machines) | [Interactive Machines](interactive-machines.md) | Crafting table |
 | [Item Pipe](#interactive-machines) | [Interactive Machines](interactive-machines.md) | Crafting table |
+| [Jukebox Controller](#audio) | [Audio](audio.md) | Crafting table |
 | [Keypad](#security) | [Security](security.md) | Crafting table |
 | [Lift Kit](#jetpacks) | [Jetpacks](jetpacks.md) | Crafting table |
 | [Light Sensor](#sensors) | [Sensors](sensors.md) | Crafting table |
@@ -127,6 +130,16 @@ what the pack actually contains rather than what someone remembered to add.
 | [Wireless Emitter](#wireless-redstone) | [Wireless Redstone](wireless-redstone.md) | Crafting table |
 | [Wireless Receiver](#wireless-redstone) | [Wireless Redstone](wireless-redstone.md) | Crafting table |
 | [Wrench](#tools) | [Tools](tools.md) | Crafting table |
+
+## Audio
+
+Module page: [Audio](audio.md) — give everything: `/function ra_audio:items/give_all`
+
+| Item | Recipe | Station | Namespace id |
+| ---- | ------ | ------- | ------------ |
+| **Alarm** | ![Alarm recipe](images/recipes/ra_audio/alarm.png){ width="220" } | Crafting table | `ra_audio:alarm` |
+| **Doorbell** | ![Doorbell recipe](images/recipes/ra_audio/doorbell.png){ width="220" } | Crafting table | `ra_audio:doorbell` |
+| **Jukebox Controller** | ![Jukebox Controller recipe](images/recipes/ra_audio/jukebox_controller.png){ width="220" } | Crafting table | `ra_audio:jukebox_controller` |
 
 ## Automation
 

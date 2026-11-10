@@ -37,7 +37,9 @@ import ra.tools.tool
  * they are always lines 0..2 (on) or 0..1 (off), whatever the helmet's own lore holds, so a
  * switch or a removal replaces exactly those lines and nothing else. Taking a key out of
  * `custom_data` goes through storage: the `ra` compound is copied out, the lens keys removed, and
- * the rest copied back with `copy_custom_data`. A component left empty by the removal is dropped,
+ * the rest copied back with `copy_custom_data`, in the same modifier list as the lore change so
+ * the lines and the keys never disagree. The lens is used up only once the helmet reads lensed,
+ * and given back only once it no longer does. A component left empty by the removal is dropped,
  * so a helmet that was plain is plain again.
  */
 object GogglesLens {
@@ -84,14 +86,19 @@ object GogglesLens {
 	/** Write storage ra:temp lens back as the helmet's `custom_data.ra`, the other keys untouched. */
 	private const val WRITE_RA = """{type:"minecraft:copy_custom_data",source:{type:"minecraft:storage",source:"ra:temp"},ops:[{source:"lens",target:"ra",op:"replace"}]}"""
 
-	/** Remove the listed keys from the worn helmet's `custom_data.ra`, keeping every other key. */
-	private fun Function.dropRaKeys(vararg keys: String) {
+	/**
+	 * Copy the worn helmet's `custom_data.ra` to storage ra:temp lens without the listed keys, for
+	 * [WRITE_RA] to write back. Leaves storage empty when the helmet's data cannot be read; the
+	 * caller must then change nothing, so the helmet's lore and keys cannot drift apart.
+	 */
+	private fun Function.readRaWithout(vararg keys: String) {
 		raw("data remove storage ra:temp lens")
 		raw("data modify storage ra:temp lens set from entity @s $RA_DATA")
 		for (k in keys) raw("data remove storage ra:temp lens.$k")
-		raw("item modify entity @s armor.head $WRITE_RA")
-		raw("data remove storage ra:temp lens")
 	}
+
+	/** The lore change and the key change in ONE modifier list: the item gets both or neither. */
+	private fun rewrite(from: Boolean, to: Boolean?) = "[${relore(from, to)},$WRITE_RA]"
 
 	fun Ra.registerGogglesLens() {
 		pack.define(give) {
@@ -103,7 +110,7 @@ object GogglesLens {
 		pack.define(menu) { menu() }
 		pack.define(toggle) { toggle() }
 		pack.define(remove) { remove() }
-		pack.define(toggleOff) { dropRaKeys("goggles") }
+		pack.define(toggleOff) { toggleOff() }
 	}
 
 	private fun Function.refuse(condition: String, message: String) {
@@ -125,6 +132,8 @@ object GogglesLens {
 		refuse("unless $HEAD #minecraft:head_armor", "Wear a helmet to fit the lens to")
 
 		raw("item modify entity @s armor.head $FIT")
+		// The lens is used up only once the helmet really carries it.
+		refuse("unless $LENSED", "The lens did not fit that helmet")
 		raw("clear @s *[minecraft:custom_data~{ra:{goggles_lens:1b}}] 1")
 		raw("scoreboard players enable @s $TRIGGER")
 
@@ -164,25 +173,37 @@ object GogglesLens {
 	private fun Function.toggle() {
 		raw("execute unless $LENSED run return 0")
 		raw("execute store success score #lens.was ${Obj.TEMP} if $LENS_ON")
-		// On to off: the lines first, while they still read "on", then drop ra.goggles.
-		raw("execute if score #lens.was ${Obj.TEMP} matches 1 run item modify entity @s armor.head ${relore(from = true, to = false)}")
+		// Each way, the lines and the keys change in one modifier list, so they always agree.
 		raw("execute if score #lens.was ${Obj.TEMP} matches 1 run function ${toggleOff.asId()}")
 		raw("""execute if score #lens.was ${Obj.TEMP} matches 0 run item modify entity @s armor.head [${relore(from = false, to = true)},{type:"minecraft:set_custom_data",tag:{ra:{goggles:1b}}}]""")
-		raw("""execute if score #lens.was ${Obj.TEMP} matches 1 run title @s actionbar [{text:"Goggles Lens switched off",color:"gray"}]""")
-		raw("""execute if score #lens.was ${Obj.TEMP} matches 0 run title @s actionbar [{text:"Goggles Lens switched on",color:"green"}]""")
+		// Said from the helmet as it now is, so a switch that did not happen is not reported as one.
+		raw("""execute unless $LENS_ON run title @s actionbar [{text:"Goggles Lens switched off",color:"gray"}]""")
+		raw("""execute if $LENS_ON run title @s actionbar [{text:"Goggles Lens switched on",color:"green"}]""")
 		raw("playsound minecraft:block.lever.click player $SELF_IF_SOUND ~ ~ ~ 0.7 1.4")
+	}
+
+	/** On to off: drop ra.goggles and swap the three "on" lines for the two "off" ones, together. */
+	private fun Function.toggleOff() {
+		readRaWithout("goggles")
+		raw("execute unless data storage ra:temp lens run return fail")
+		raw("item modify entity @s armor.head ${rewrite(from = true, to = false)}")
+		raw("data remove storage ra:temp lens")
 	}
 
 	/** Take the lens out of the worn helmet and hand it back. Only the lens's own lines and keys go. */
 	private fun Function.remove() {
 		refuse("unless $LENSED", "Wear a helmet with a Goggles Lens first")
 		raw("execute store success score #lens.was ${Obj.TEMP} if $LENS_ON")
-		raw("execute if score #lens.was ${Obj.TEMP} matches 1 run item modify entity @s armor.head ${relore(from = true, to = null)}")
-		raw("execute if score #lens.was ${Obj.TEMP} matches 0 run item modify entity @s armor.head ${relore(from = false, to = null)}")
-		dropRaKeys("goggles", "lensed")
+		readRaWithout("goggles", "lensed")
+		refuse("unless data storage ra:temp lens", "Could not read that helmet's lens")
+		raw("execute if score #lens.was ${Obj.TEMP} matches 1 run item modify entity @s armor.head ${rewrite(from = true, to = null)}")
+		raw("execute if score #lens.was ${Obj.TEMP} matches 0 run item modify entity @s armor.head ${rewrite(from = false, to = null)}")
+		raw("data remove storage ra:temp lens")
 		// Drop what the lens alone filled, so a helmet that was plain is plain again.
 		raw("""execute if $HEAD *[minecraft:custom_data={ra:{}}] run item modify entity @s armor.head {type:"minecraft:set_components",components:{"!minecraft:custom_data":{}}}""")
 		raw("""execute if $HEAD *[minecraft:lore=[]] run item modify entity @s armor.head {type:"minecraft:set_components",components:{"!minecraft:lore":{}}}""")
+		// The lens comes back only once the helmet no longer carries it, so it can never be doubled.
+		refuse("if $LENSED", "The lens would not come out of that helmet")
 		raw("give @s ${ToolItems.gogglesLens.spec.giveArg()}")
 		raw("""title @s actionbar [{text:"Goggles Lens removed",color:"yellow"}]""")
 		raw("particle minecraft:enchant ~ ~1.8 ~ 0.3 0.3 0.3 0.4 25 normal ${particleViewersSel()}")

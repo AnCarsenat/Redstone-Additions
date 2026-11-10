@@ -488,7 +488,9 @@ This page mirrors key datapack milestones from the main project changelog.
   per tick and handed to lensed-helmet wearers once per Goggles redraw. Fitting merges the keys
   with `set_custom_data` and inserts the lens lines at the top of the lore with `set_lore`; a
   switch or a removal replaces only those top lines, and takes keys out of `custom_data.ra` by
-  copying it through `storage ra:temp lens` and back with `copy_custom_data`.
+  copying it through `storage ra:temp lens` and back with `copy_custom_data`, in the same modifier
+  list as the lore change so the lines and keys cannot drift apart. The lens is used up only once
+  the helmet reads lensed, and given back only once it no longer does.
 - **Channel items share one prompt** (`ra/modules/wireless/tools/ChannelPrompt.kt`). The Redstone
   Remote's Sneak+right-click book prompt is now a class with one instance per item (its own
   pending, slot and request objectives), used by the Remote and the Pager; the Remote's functions

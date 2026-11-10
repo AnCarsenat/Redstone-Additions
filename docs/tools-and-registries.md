@@ -130,6 +130,9 @@ declares for you). `ra/core/Properties.kt` holds the builder.
 | `textList(name, max, pad, format, entryLabel = "Strength ")` | list of text | the same, each entry checked against the format, entries labelled *Strength 1…* |
 | `text(name, TextFormat.ID, unique = "ra:ender" to "anchors")` | string, one per world | the book; refused when it is already a key of the compound `storage ra:ender anchors` (unless it is this block's own value). The format must be `ID` or `TAG`, since the value is pasted as a path key |
 | `vec3(name, Vec3Spec(...))` | compound `{x:<int>,y:<int>,z:<int>}` | **[Edit]** opens per-axis **[Type]** (number prompt, bounded) and **[-X]**/**[+X]** nudges, a step choice, **[Pick]** and **[Reset]** (see [Vec3 properties](#vec3-properties)) |
+| `direction(name, default = "south")` | string, one of `down` `up` `north` `south` `west` `east` | six buttons on the row, the current one in gold (see [Direction, facing and colour](#direction-facing-and-colour)) |
+| `facing(name, FacingSpec(...))` | compound `{yaw:<int>,pitch:<int>}`, degrees | **[Edit]** opens yaw and pitch **[Type]** (number prompt, bounded) and **[-]**/**[+]** nudges, a step choice, compass buttons for a `WORLD` facing, **[Reset]** |
+| `color(name, ColorSpec(...))` | int, RGB or ARGB | **[Edit]** opens the sixteen chat colours, an opacity row (ARGB), **[Type]** (the book, parsed), **[None]** when allowed, **[Reset]** |
 | `dynamic(name)` | read from the block instance | — (see below) |
 
 Each also takes these flags:
@@ -175,6 +178,50 @@ properties(block) { vec3("target", TARGET) }
 - **Clipboard**: pasted only inside the holder's range and on the grid, rewritten as three
   integers; an `ABSOLUTE` value is not pasted.
 - Schema entry: `v3:{min,max,amin,amax,unit,grid,frame,steps,labels,def,unit_label,frame_label}`.
+
+### Direction, facing and colour
+
+Three more types that are never typed text by the time they are stored
+(`ra/core/DirectionProps.kt`, `ra/core/ColorProps.kt`; editors in
+`tools/datahandler/props/DataHandlerDirection.kt`, `DataHandlerFacing.kt`, `DataHandlerColor.kt`).
+
+```kotlin
+properties(block) {
+	direction("facing", default = "south")
+	facing("rotation", FacingSpec(frame = FacingFrame.LOCAL, steps = listOf(1, 15, 45)))
+	color("background", ColorSpec(alpha = true, none = true, default = 0, presetAlpha = 204))
+}
+```
+
+- **direction**: one of the six faces, stored as the block-state word. The Data Handler writes one
+  of six constants; a block reads it with NBT matches against the same six, anything else being
+  its default. Schema entry: the type alone.
+- **facing**: a yaw and a pitch in whole degrees, in Minecraft's sense (yaw 0 south, 90 west, 180
+  north, -90 east, clockwise seen from above; a positive pitch tips the front down). This is the
+  yaw/pitch choice for #166: a horizontal facing is the yaw with pitch 0, and a `WORLD` facing's
+  editor has **[North] [East] [South] [West]** buttons that set exactly that. `FacingSpec` takes the
+  yaw and pitch ranges (yaw wraps round when the range is a full turn), `grid`, up to four nudge
+  `steps`, the `frame` (`LOCAL`: from the block's front, no compass; `WORLD`) and the default.
+  Use time: `readFacing("rotation", spec)` leaves two clamped integers in `#fc.yaw` / `#fc.pitch`.
+  Schema entry: `fc:{min:[I;yaw,pitch],max:[I;yaw,pitch],grid,wrap,frame,steps,labels,def,frame_label}`.
+- **color**: one int. RGB (`alpha = false`) is 0..0xFFFFFF, and -1 is "none" when `none = true`.
+  ARGB (`alpha = true`) is the signed int a text display's `background` takes, and 0 (alpha 0) is
+  "none". The editor offers the sixteen chat colours (an ARGB value keeps its alpha, or gets
+  `presetAlpha` when it was none), 100/75/50/25 % opacity (ARGB), **[None]** and **[Reset]**.
+  **[Type]** takes a chat colour's name, `none`, `#RRGGBB`, `#AARRGGBB` (ARGB) or a decimal int:
+  the text is read one character at a time and turned into a number with score arithmetic
+  (`ColorParse.kt`), so no typed character is ever part of a command. Use time:
+  `readColor("background", spec)` leaves an int in `#col.v`, then
+  `execute store result entity <display> background int 1 run scoreboard players get #col.v ra.temp`.
+  Schema entry: `col:{alpha,none,def,pa,nv}`.
+- **Clipboard**: a direction is pasted only when it is one of the six faces; a facing only with both
+  parts in range and on the grid, rewritten as two integers; a colour only when it is a number (an
+  RGB one in range or its none), rewritten as an int.
+
+Every Data Handler button that changes a block at once (a toggle, a face, a nudge, a colour, an
+item from the hand) and every question it asks first checks that the menu it was drawn in showed
+the block selected now (`ra.dh.msel` against `ra.dh.sel`, in `run_action`); a click in an older
+menu changes nothing and redraws the menu for the selected block.
 
 One more flag concerns only the Goggles:
 

@@ -63,8 +63,8 @@ import ra.modules.displays.TextColor.applyColor
  * CONFIGURATION ([DisplayStyle]): `facing` (the face), `direction` (which way the bar fills:
  * `right` from the left edge, `left`, `up` from the bottom, `down`; the text is rolled on its
  * face), `color` and `track_color` (a text colour name or `#RRGGBB`, checked by [TextColor];
- * anything else draws the default), `background` (a dark plate behind the bar), offsets and
- * scale. The wrench and placement redraw at once; a Data Handler edit, or a display killed by
+ * anything else draws the default), `background` (a colour behind the bar, none by default),
+ * `rotation` (the bar's tilt), offsets and scale. The wrench and placement redraw at once; a Data Handler edit, or a display killed by
  * hand, is picked up by [poll] within a second: it compares `data.properties` with the copy last
  * drawn (`data.data.style`).
  *
@@ -100,7 +100,7 @@ object GaugeBar : DisplayBlock {
 			ColorProp("color", "Colour", FILL_DEFAULT, listOf("red", "gold", "yellow", "green", "aqua", "blue", "light_purple", "white")),
 			ColorProp("track_color", "Track colour", TRACK_DEFAULT, listOf("dark_gray", "gray", "black", "white")),
 		),
-		displays = listOf(BAR), background = true,
+		displays = listOf(BAR), backgrounds = listOf(BAR),
 	)
 
 	/** The bar's roll for each direction, counter-clockwise: the fill grows along the rolled x. */
@@ -116,6 +116,8 @@ object GaugeBar : DisplayBlock {
 	private const val SX = 0.2407
 	private const val SY = 0.9375
 	private val BAR_T = Vec(0.0, -5 * 0.025 * SY, 0.51)
+	/** Half a 10 px line, in the text's own units: where a tilt turns it about. */
+	private const val HALF_LINE = 5 * 0.025
 
 	private const val T = Obj.TEMP
 	private const val LEVEL = "#gauge.l"
@@ -160,7 +162,7 @@ object GaugeBar : DisplayBlock {
 			}
 		}
 		with(style) { registerStyle(restyle) }
-		val barForm = defineForms(block, "bar", BAR, ROLLS.mapValues { (_, r) -> Form(BAR_T, Vec(SX, SY, 1.0), FACE, r) })
+		val barForm = defineForms(block, "bar", BAR, ROLLS.mapValues { (_, r) -> Form(BAR_T, Vec(SX, SY, 1.0), FACE, r, pivot = HALF_LINE) }, tilt = true)
 
 		pack.define(process) { process() }
 		pack.define(show) { show() }
@@ -218,8 +220,6 @@ object GaugeBar : DisplayBlock {
 
 		applyColor("color", FILL_DEFAULT)
 		applyColor("track_color", TRACK_DEFAULT, into = "track")
-		raw("data modify entity $BAR background set value 0")
-		raw("execute if data entity @s data.properties{background:1b} run data modify entity $BAR background set value ${DisplayStyle.BACKGROUND}")
 		function(style.turn)
 		function(style.read)
 		function(barForm)

@@ -177,6 +177,45 @@ numbers, x, y and z. It is one line until you open it with **[Edit]**:
   64 blocks instead of 16); a value outside the players' range is marked **(admin)**, and only an
   admin can change it.
 
+A direction (a display's `facing`) is one line with a button per face; the current one is gold:
+
+```
+  facing: [south] direction [Down] [Up] [North] [South] [West] [East]
+```
+
+A facing (a display's `rotation`) is a yaw and a pitch in whole degrees. Open it with **[Edit]**:
+
+```
+  rotation: [yaw 0, pitch 0] facing (degrees, from the block's front) [Edit]
+    Yaw: 0  [Type] [-] [+]  (-180 to 180)
+    Pitch: 0  [Type] [-] [+]  (-90 to 90)
+    Step: [1°] [15°] [45°]
+    [Reset]
+```
+
+Yaw turns it clockwise seen from above and a positive pitch tips its front down, as a mob turns
+its head. Yaw goes round: past 180 it comes back at -180. A compass facing also has
+**[North] [East] [South] [West]**, which set the yaw and level the pitch.
+
+A colour shows a swatch and its value (`#RRGGBB`, or `#AARRGGBB` when it has an opacity), or
+*none*. Open it with **[Edit]**:
+
+```
+  background: [■ none] color (ARGB) [Edit]
+    ■ ■ ■ ■ ■ ■ ■ ■ ■ ■ ■ ■ ■ ■ ■ ■
+    Opacity: [100%] [75%] [50%] [25%]
+    [Type] [None] [Reset]
+```
+
+- Each **■** is one of the sixteen chat colours (its name on hover). Picked from *none*, a
+  background starts 80 % opaque; otherwise the opacity is kept.
+- **Opacity** keeps the colour and changes how much shows through.
+- **[Type]** takes a colour name (`red`, `gold`...), `none`, `#RRGGBB`, `#AARRGGBB` or a number.
+
+Every button acts on the block the menu shows. If you selected another block since (with the
+Creative Data Handler, say), a click in the old menu changes nothing and the menu is shown again
+for the block selected now.
+
 Selecting a block with the Handler shows every list closed again. A list you may not change
 (set by the block, or admins only) keeps its locked row; its **[List]** still shows the entries,
 without buttons.

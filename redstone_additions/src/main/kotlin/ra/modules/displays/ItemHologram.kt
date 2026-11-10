@@ -70,7 +70,9 @@ import kotlin.math.sin
  * follows it); the displays stay upright and only turn their yaw. `direction` is where a still
  * item (spin off) faces: `front` (out of the face), `right`, `back`, `left`. `color` is the
  * name's colour (a text colour name or `#RRGGBB`, see [TextColor]). Offsets and scale as every
- * display. `spin` and `show_name` are block properties too: a display is the same for everyone.
+ * display. `rotation` tilts the item (it spins about the vertical on top of that); `background`
+ * is the colour behind its name, none by default. `spin` and `show_name` are block properties too:
+ * a display is the same for everyone.
  */
 object ItemHologram : DisplayBlock {
 	override val block = CustomBlock(Ns.DISPLAYS, "item_hologram", "Item Hologram", model = "minecraft:barrel")
@@ -94,7 +96,7 @@ object ItemHologram : DisplayBlock {
 	private val style = DisplayStyle(
 		block, defaultFacing = "up", directions = listOf("front", "right", "back", "left"),
 		colors = listOf(ColorProp("color", "Name colour", "white", TextColor.NAMES)),
-		displays = listOf(ITEM, NAME), yawOnly = true, barrel = true,
+		displays = listOf(ITEM, NAME), yawOnly = true, barrel = true, backgrounds = listOf(NAME),
 	)
 
 	/** A still item's turn about the vertical, counter-clockwise seen from above. */
@@ -142,7 +144,7 @@ object ItemHologram : DisplayBlock {
 		}
 
 		with(style) { registerStyle(restyle) }
-		val itemForm = defineForms(block, "item", ITEM, SPOTS.mapValues { (_, s) -> Form(s.item, Vec(0.6, 0.6, 0.6), s.face) }, prop = "facing", keepLeft = true)
+		val itemForm = defineForms(block, "item", ITEM, SPOTS.mapValues { (_, s) -> Form(s.item, Vec(0.6, 0.6, 0.6), s.face) }, prop = "facing", keepLeft = true, tilt = true)
 		val nameForm = defineForms(block, "name", NAME, SPOTS.mapValues { (_, s) -> Form(s.name, Vec(0.75, 0.75, 0.75), s.face) }, prop = "facing")
 
 		pack.define(poll) { poll() }

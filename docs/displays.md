@@ -21,11 +21,13 @@ Handler change within a second.
 
 | Property | Values | Default |
 | --- | --- | --- |
-| `facing` | `down`, `up`, `north`, `south`, `west`, `east`: the face the display is drawn on (or, for the Item Hologram, floats out of). A barrel's lid turns with it, contents kept | the face looking at you when placed (Item Hologram: `up`) |
+| `facing` | `down`, `up`, `north`, `south`, `west`, `east`: the face the display is drawn on (or, for the Item Hologram, floats out of). A barrel's lid turns with it, contents kept. In the Data Handler, one button per face | the face looking at you when placed (Item Hologram: `up`) |
 | `direction` | how the display is turned on that face; see each block below | |
 | `color` | see each block below; anything else draws the default | |
 | `offset` | a position (x, y, z), each -16 to 16 in sixteenths of a block: right, up, and out of the face, as you look at it. In the Data Handler, **[Edit]** nudges it by 1/16, 1/4 or a whole block, or types an axis | 0, 0, 0 |
 | `scale` | 25 to 400 (percent), about the middle of the face; admins up to 1600 | 100 |
+| `rotation` | a tilt, yaw -180 to 180 and pitch -90 to 90 degrees, from straight out of the face: yaw turns it clockwise seen from its top, a positive pitch tips its front down. The text (the Text Screen's screen stays flat on the block) or the hologram's item turns about its own middle. In the Data Handler, **[Edit]** nudges it by 1, 15 or 45 degrees, or types an angle | 0, 0 |
+| `background` | the colour behind the text (Text Screen, Gauge Bar, the hologram's name): *none*, one of the sixteen chat colours with an opacity, or typed as `#AARRGGBB`. None shows only the block's face behind the text | none |
 
 The scale a new display gets is on the Displays settings page (*Gauge Bar scale* and the others).
 
@@ -33,7 +35,7 @@ The scale a new display gets is on the Displays settings page (*Gauge Bar scale*
 
 A bar on the front of the block, filled to the redstone level feeding it: empty at 0, full at 15.
 It is fifteen glowing segments, one per level, drawn as text like the Text Screen: the lit ones in
-the fill colour, the others in the track colour, on a dark plate.
+the fill colour, the others in the track colour, with nothing behind them unless you give it a `background`.
 
 1. Place it: the bar is drawn on the face looking at you (it can face up or down too).
 2. Feed it redstone from any side. The strongest level wins; a repeater or comparator pointing
@@ -46,7 +48,6 @@ the fill colour, the others in the track colour, on a dark plate.
 | `direction` | which way it fills: `right` (from the left edge), `left`, `up` (from the bottom), `down` | right |
 | `color` | the lit segments: a colour name (`red`, `gold`, `green`, `aqua`... the sixteen chat colours) or `#RRGGBB` | red |
 | `track_color` | the unlit segments, the same colours | dark_gray |
-| `background` | a dark plate behind the bar | on |
 
 The Goggles show the level, the facing, the direction and the colour.
 
@@ -118,12 +119,20 @@ Crafted from three glass panes, two glowstone dust, a comparator and a barrel.
   marker, tagged `ra` and `ra.display`, and moved where it is drawn by its transformation. Breaking
   the block removes them; so do the uninstall and the admin purge.
 - Displays are fully lit (`brightness` 15): they stand inside the block, where the light is 0.
-- Configuration (`ra/modules/displays/DisplayConfig.kt`): the facing is each display's entity
-  Rotation; direction, offset and scale are its transformation, computed by one generated helper
-  (`<block>/form/<part>`) in fixed point with scoreboard operations, no macro. A block redraws
+- Configuration (`ra/modules/displays/DisplayConfig.kt`): the facing (a `direction` property) is
+  each display's entity Rotation; direction, offset and scale are its transformation, computed by
+  one generated helper (`<block>/form/<part>`) in fixed point with scoreboard operations, no macro.
+  The rotation (a `facing` property, yaw and pitch) is the tilted parts' `right_rotation`: a
+  quaternion built from a sine table written at load (`storage ra:displays trig`, one entry per
+  degree, `DisplayTilt.kt`), read by one macro whose arguments are the two clamped integer angles.
+  A text turns about the middle of its line: its translation is corrected by the same table. The
+  background (a `color` property, ARGB) is copied into the text display's `background` through a
+  score. A block redraws
   (`<block>/restyle`) on placement, from the Wrench, and from the slow clock when
   `data.properties` differs from `data.data.style`. Missing properties (a block placed by an
-  earlier build) get their defaults then. Text colours are checked
+  earlier build) get their defaults then; until then a missing `rotation` reads as no tilt and a
+  missing `background` as none. A Gauge Bar placed by an earlier 6.0.3 build with the old
+  `background:1b` flag reads it as the colour 1, which is transparent: none. Text colours are checked
   (`ra_displays:text_color/check`) and copied, never pasted into a command.
 - One slow clock, `ra_displays:poll/run`, runs once a second while a display block that needs it is
   loaded, and stops when none is. It puts back a display killed by hand.

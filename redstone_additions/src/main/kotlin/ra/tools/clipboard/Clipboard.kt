@@ -126,6 +126,7 @@ object Clipboard {
 
 		registerCopyPaste()
 		with(ClipboardVec3) { registerClipboardVec3() }
+		with(ClipboardTypes) { registerClipboardTypes() }
 	}
 
 	private fun Ra.registerCopyPaste() {
@@ -223,6 +224,9 @@ object Clipboard {
 			// player onto theirs.
 			raw("\$execute if data storage ra:dh schema.\$(name){code:1} run function ${stripNumber.asId()} {name:\"\$(name)\"}")
 			raw("\$execute if data storage ra:dh schema.\$(name){code:6} run function ${ClipboardVec3.strip.asId()} {name:\"\$(name)\"}")
+			raw("\$execute if data storage ra:dh schema.\$(name){code:7} run function ${ClipboardTypes.stripDirection.asId()} {name:\"\$(name)\"}")
+			raw("\$execute if data storage ra:dh schema.\$(name){code:8} run function ${ClipboardTypes.stripFacing.asId()} {name:\"\$(name)\"}")
+			raw("\$execute if data storage ra:dh schema.\$(name){code:9} run function ${ClipboardTypes.stripColor.asId()} {name:\"\$(name)\"}")
 			raw("execute if score #clip.adm ${Obj.TEMP} matches 1 run return 0")
 			raw("\$execute if score #clip.ao ${Obj.TEMP} matches 1 run return run data remove storage ra:temp clip.props.\$(name)")
 			raw("\$execute if score #clip.vis ${Obj.TEMP} matches 0 run return run data remove storage ra:temp clip.props.\$(name)")

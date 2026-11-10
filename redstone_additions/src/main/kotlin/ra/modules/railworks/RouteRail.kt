@@ -61,7 +61,7 @@ object RouteRail {
 	val SHAPES = listOf("north_south", "east_west", "north_east", "north_west", "south_east", "south_west", "none")
 
 	const val DEFAULT_ROUTE = "express"
-	const val DEFAULT_MATCH = "north_east"
+	const val DEFAULT_MATCH = "south_east"
 	const val DEFAULT_MISS = "north_south"
 
 	private val cycleSource = block.fn("cycle_source")

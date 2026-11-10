@@ -29,6 +29,7 @@ MODULES = {
     "ra_displays": ("Displays", "displays.md"),
     "ra_automation": ("Automation", "automation.md"),
     "ra_security": ("Security", "security.md"),
+    "ra_railworks": ("Railworks", "railworks.md"),
 }
 
 GIVE = {
@@ -48,6 +49,7 @@ GIVE = {
     "ra_displays": "/function ra_displays:items/give_all",
     "ra_automation": "/function ra_automation:items/give_all",
     "ra_security": "/function ra_security:items/give_all",
+    "ra_railworks": "/function ra_railworks:items/give_all",
 }
 
 TYPE_NAMES = {

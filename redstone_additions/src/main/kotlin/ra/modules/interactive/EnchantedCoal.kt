@@ -14,6 +14,11 @@ import ra.core.item.flag
 import ra.core.item.itemSpec
 import ra.core.item.loreLine
 import ra.core.item.raData
+import io.github.ayfri.kore.arguments.components.matchers.customData
+import io.github.ayfri.kore.features.predicates.sub.predicates
+import io.github.ayfri.kore.utils.nbt
+import io.github.ayfri.kore.utils.set
+import ra.core.block.Unlock
 import ra.core.block.recipeResult
 import ra.core.block.shapedRecipe
 import io.github.ayfri.kore.features.recipes.types.pattern
@@ -62,7 +67,11 @@ object EnchantedCoal {
 		pack.hook(Ns.ENCHANTING, EnchantingModule.recipesTag.name, enchantRecipes)
 
 		pack.shapedRecipe(
-			Ns.INTERACTIVE, "enchanted_coal_block", coalBlock.recipeResult(Items.BARRIER), unlock = null,
+			Ns.INTERACTIVE, "enchanted_coal_block", coalBlock.recipeResult(Items.BARRIER),
+			// Holding Enchanted Coal, matched on its custom data: a bare structure void is a creative item.
+			Unlock(Items.STRUCTURE_VOID, "has_enchanted_coal") {
+				predicates { customData { this["ra"] = nbt { this["enchanted_coal"] = true } } }
+			},
 			RecipeCategory.BUILDING, notify = false,
 		) {
 			pattern("CCC", "CCC", "CCC")

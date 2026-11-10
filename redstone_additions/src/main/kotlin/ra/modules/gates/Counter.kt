@@ -85,10 +85,11 @@ object Counter {
 		wrenchCycle(block.id, WrenchCycle("Hold", "hold", toggleHold))
 		pack.blockGive(block)
 		pack.blockRecipe(block, unlockedBy = Items.COMPARATOR) {
-			pattern(" C ", "RQR")
+			pattern(" C ", "RHR", "SSS")
 			key("C", Items.COMPARATOR)
-			key("Q", Items.CHISELED_QUARTZ_BLOCK)
+			key("H", Items.HOPPER)
 			key("R", Items.REPEATER)
+			key("S", Items.STONE)
 		}
 		pack.blockRegisterMessage(block)
 		pack.define(block.handlePlacement) { handlePlacement() }

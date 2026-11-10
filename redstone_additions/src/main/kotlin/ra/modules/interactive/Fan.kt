@@ -84,11 +84,10 @@ object Fan {
 		}
 		pack.blockRegisterMessage(block)
 		pack.specGive(block, item)
-		pack.shapedRecipe(block.ns, block.id, item.recipeResult(), Unlock(Items.FEATHER), count = null) {
-			pattern("CFC", "FDF", "CRC")
-			key("C", listOf(Items.COBBLESTONE, Items.BLACKSTONE))
-			key("F", listOf(Items.FEATHER))
-			key("D", listOf(Items.DROPPER))
+		pack.shapedRecipe(block.ns, block.id, item.recipeResult(), Unlock(Items.BREEZE_ROD), count = null) {
+			pattern("CCC", "CBC", "CRC")
+			key("C", listOf(Items.COBBLESTONE, Items.BLACKSTONE, Items.COBBLED_DEEPSLATE))
+			key("B", listOf(Items.BREEZE_ROD))
 			key("R", listOf(Items.REDSTONE))
 		}
 

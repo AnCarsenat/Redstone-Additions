@@ -61,7 +61,7 @@ object EntityDetector {
 		}
 		pack.blockRegisterMessage(block)
 		pack.blockGive(block)
-		pack.shapedRecipe(block.ns, block.id, item.recipeResult(), Unlock(Items.SCULK_SENSOR), count = null) {
+		pack.shapedRecipe(block.ns, block.id, item.recipeResult(), Unlock(Items.OBSERVER), count = null) {
 			pattern("CCC", "ROR", "CCC")
 			key("C", Items.COBBLESTONE)
 			key("R", Items.REDSTONE)

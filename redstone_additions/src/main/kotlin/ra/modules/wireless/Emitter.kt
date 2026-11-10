@@ -66,11 +66,12 @@ object Emitter {
 		}
 		pack.blockRegisterMessage(block)
 		pack.blockGive(block)
-		pack.shapedRecipe(block.ns, block.id, item.recipeResult(), Unlock(Items.END_STONE_BRICKS)) {
-			pattern("GEG", "ERE", "GEG")
-			key("G", Items.GOLD_INGOT)
-			key("E", Items.END_STONE_BRICKS)
-			key("R", Items.REDSTONE)
+		pack.shapedRecipe(block.ns, block.id, item.recipeResult(), Unlock(Items.AMETHYST_SHARD)) {
+			pattern(" L ", "ARA", "SSS")
+			key("L", Items.LIGHTNING_ROD)
+			key("A", Items.AMETHYST_SHARD)
+			key("R", Items.REDSTONE_TORCH)
+			key("S", Items.SMOOTH_STONE_SLAB)
 		}
 
 		// As bat, at bat position.

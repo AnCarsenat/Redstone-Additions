@@ -125,6 +125,7 @@ object Clipboard {
 
 
 		registerCopyPaste()
+		with(ClipboardVec3) { registerClipboardVec3() }
 	}
 
 	private fun Ra.registerCopyPaste() {
@@ -221,6 +222,7 @@ object Clipboard {
 			// or an admin's admin_max (ra.core.Admin). An admin's 200-block torch is not copied by a
 			// player onto theirs.
 			raw("\$execute if data storage ra:dh schema.\$(name){code:1} run function ${stripNumber.asId()} {name:\"\$(name)\"}")
+			raw("\$execute if data storage ra:dh schema.\$(name){code:6} run function ${ClipboardVec3.strip.asId()} {name:\"\$(name)\"}")
 			raw("execute if score #clip.adm ${Obj.TEMP} matches 1 run return 0")
 			raw("\$execute if score #clip.ao ${Obj.TEMP} matches 1 run return run data remove storage ra:temp clip.props.\$(name)")
 			raw("\$execute if score #clip.vis ${Obj.TEMP} matches 0 run return run data remove storage ra:temp clip.props.\$(name)")

@@ -129,6 +129,7 @@ declares for you). `ra/core/Properties.kt` holds the builder.
 | `list(name, of = PropType.TEXT, max = 15, pad = true)` | list | a header with **[Add]** (until `max` entries), **[Edit all]** and **[List]**, which shows one row per entry ([Edit], [Remove]/[Clear]) |
 | `textList(name, max, pad, format, entryLabel = "Strength ")` | list of text | the same, each entry checked against the format, entries labelled *Strength 1…* |
 | `text(name, TextFormat.ID, unique = "ra:ender" to "anchors")` | string, one per world | the book; refused when it is already a key of the compound `storage ra:ender anchors` (unless it is this block's own value). The format must be `ID` or `TAG`, since the value is pasted as a path key |
+| `vec3(name, Vec3Spec(...))` | compound `{x:<int>,y:<int>,z:<int>}` | **[Edit]** opens per-axis **[Type]** (number prompt, bounded) and **[-X]**/**[+X]** nudges, a step choice, **[Pick]** and **[Reset]** (see [Vec3 properties](#vec3-properties)) |
 | `dynamic(name)` | read from the block instance | — (see below) |
 
 Each also takes these flags:
@@ -141,6 +142,39 @@ Each also takes these flags:
 | `adminOnly = true, adminSetting = "<key>"` | as `adminOnly`, unless the GLOBAL bool setting `<key>` is on (then everyone may edit it) | as `adminOnly` | as the Data Handler |
 | `visible = false` | not shown at all to non-admins (nor in the Properties summary); admins see it marked *(hidden from players)* and can edit it | not offered to non-admins | not pasted by non-admins |
 | `default = …` (`20`, `false`, `"@e"`, `listOf("custom_tag")` for `textList`, SNBT for `list`) | on a block that lacks the property, the row shows this value marked *(default)*; the first edit writes it to the block (an entry edit or **[Toggle]** starts from it). Without a default such a row says *(not set)* and the first edit writes what is typed. Generated as `storage ra:dh defaults."<type>"` | — | — |
+
+### Vec3 properties
+
+A position or an offset is three integers, never text (`ra/core/Vec3Props.kt`; the design is
+`planning/design/coordinates-input.md`, option S2). Everything about it is declared once:
+
+```kotlin
+val TARGET = Vec3Spec(
+	min = Vec3i(-16), max = Vec3i(16),            // per axis, what a player may set
+	adminMin = Vec3i(-64), adminMax = Vec3i(64),  // what an admin may set; also the use-time cap
+	unit = 1,                                     // steps per block: 1, or 16 for sixteenths
+	grid = 1,                                     // values must be multiples of it
+	frame = Vec3Frame.RELATIVE,                   // LOCAL (on the block's face), RELATIVE (~), ABSOLUTE
+	steps = listOf(1, 4, 16),                     // the nudge sizes offered, in the unit (at most 4)
+	default = Vec3i(0, 1, 0),
+)
+properties(block) { vec3("target", TARGET) }
+```
+
+- **Ranges** are per axis. For an `ABSOLUTE` frame they bound the distance from the block, and the
+  Data Handler shows them as world coordinates.
+- **Admins** get `adminMin`/`adminMax` when declared (the existing admin rule); a value outside
+  the players' range is marked *(admin)*.
+- **Use time**: `readVec3("target", TARGET, "storage ra:temp x.pos")` as the marker writes
+  `{x,y,z}` as three integers, each copied through a score and clamped to the admin range, then
+  `$execute positioned ~$(x) ~$(y) ~$(z) …`. No `guardProperty` is needed: nothing a player typed
+  can reach the command as text.
+- **Editing** is by the number prompt per axis (`ra_lib:input`, bounded), nudges, or **[Pick]** (a
+  look ray up to 24 blocks; `RELATIVE` stores the offset from the block, `ABSOLUTE` the block's
+  coordinates; `LOCAL` has none). Every write is checked again against the range and the grid.
+- **Clipboard**: pasted only inside the holder's range and on the grid, rewritten as three
+  integers; an `ABSOLUTE` value is not pasted.
+- Schema entry: `v3:{min,max,amin,amax,unit,grid,frame,steps,labels,def,unit_label,frame_label}`.
 
 One more flag concerns only the Goggles:
 

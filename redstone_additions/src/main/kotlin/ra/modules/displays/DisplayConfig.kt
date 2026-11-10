@@ -6,7 +6,11 @@ import io.github.ayfri.kore.functions.Function
 import ra.core.Obj
 import ra.core.PropertiesBuilder
 import ra.core.Ra
+import ra.core.Vec3Frame
+import ra.core.Vec3Spec
+import ra.core.Vec3i
 import ra.core.WrenchCycle
+import ra.core.vec3
 import ra.core.block.CustomBlock
 import ra.core.block.soundListenersSel
 import ra.core.define
@@ -20,7 +24,8 @@ import ra.core.raw
  *              east. Placement writes the facing the block was placed with.
  *   direction  how the display is turned on that face; each block says what its values mean.
  *   <colours>  each block's own colour properties ([ColorProp]).
- *   offset_x/y/z  a shift from the default spot, in 1/16 block, -16..16, in the display's own
+ *   offset     a vec3 ([OFFSET], ra.core.Vec3Props): a shift from the default spot, in 1/16
+ *              block, -16..16 per axis, in the display's own
  *              frame: x to the viewer's right, y up, z out of the face.
  *   scale      size in percent, 25..400 (admins up to [ADMIN_MAX_SCALE]), about the face centre.
  *   background (a block built with `background = true`) a dark plate behind its text display.
@@ -59,6 +64,8 @@ internal class DisplayStyle(
 	val turn = block.fn("config/turn")
 	val read = block.fn("config/read")
 	private val turnBarrel = block.fn("config/barrel")
+	/** In the migrations namespace, which the property scan leaves out: it names retired keys. */
+	private val dropOldOffsets = ra.core.ref(ra.core.Ns.MIGRATIONS, "dev-6.0.3/${block.id}_offsets")
 	private fun barrelTo(f: String) = block.fn("config/barrel_$f")
 	val cycleFacing = block.fn("config/cycle_facing")
 	val cycleDirection = block.fn("config/cycle_direction")
@@ -67,14 +74,14 @@ internal class DisplayStyle(
 	/** `{facing:"...",direction:"...",...,scale:100}` without braces: what placement writes. */
 	fun placementSnbt(): String = (listOf("facing:\"$defaultFacing\"", "direction:\"${directions.first()}\"") +
 		colors.map { "${it.prop}:\"${it.default}\"" } +
-		AXES.map { "offset_$it:0" } + "scale:100" + (if (background) listOf("background:1b") else emptyList())).joinToString(",")
+		"offset:${OFFSET.default.snbt()}" + "scale:100" + (if (background) listOf("background:1b") else emptyList())).joinToString(",")
 
 	/** In the block's `properties { }`, after its own. */
 	fun PropertiesBuilder.declare() {
 		text("facing", default = defaultFacing)
 		text("direction", default = directions.first())
 		for (c in colors) text(c.prop, default = c.default)
-		for (a in AXES) number("offset_$a", min = -MAX_OFFSET, max = MAX_OFFSET, default = 0, goggles = false)
+		vec3("offset", OFFSET, goggles = false)
 		number("scale", min = MIN_SCALE, max = MAX_SCALE, adminMax = ADMIN_MAX_SCALE, default = 100)
 		if (background) bool("background", default = true, goggles = false)
 	}
@@ -89,9 +96,16 @@ internal class DisplayStyle(
 			// The facing an earlier build kept in data.status, else the default.
 			raw("execute unless data entity @s data.properties.facing if data entity @s data.status.facing run data modify entity @s data.properties.facing set from entity @s data.status.facing")
 			val all = listOf("facing" to "\"$defaultFacing\"", "direction" to "\"${directions.first()}\"") +
-				colors.map { it.prop to "\"${it.default}\"" } + AXES.map { "offset_$it" to "0" } + ("scale" to "100") +
+				colors.map { it.prop to "\"${it.default}\"" } + ("offset" to OFFSET.default.snbt()) + ("scale" to "100") +
 				(if (background) listOf("background" to "1b") else emptyList())
 			for ((p, v) in all) raw("execute unless data entity @s data.properties.$p run data modify entity @s data.properties.$p set value $v")
+			// Placed by a 6.0.3 dev build, before `offset` was one vec3: the three old keys are read
+			// by nothing and would only be listed as undeclared. Runs on a restyle, not per tick.
+			// Displays are unreleased, so no versioned migration step can reach these markers.
+			function(dropOldOffsets)
+		}
+		pack.define(dropOldOffsets) {
+			for (a in AXES) raw("data remove entity @s data.properties.offset_$a")
 		}
 
 		pack.define(turn) {
@@ -122,8 +136,9 @@ internal class DisplayStyle(
 			raw("execute unless score $K $T matches $MIN_SCALE.. run scoreboard players set $K $T $MIN_SCALE")
 			raw("execute if score $K $T matches ${ADMIN_MAX_SCALE + 1}.. run scoreboard players set $K $T $ADMIN_MAX_SCALE")
 			AXES.forEachIndexed { i, a ->
-				// 1/16 block is 625000 units of 1e-7.
-				raw("execute store result score #dsp.o$i $T run data get entity @s data.properties.offset_$a 625000")
+				// 1/16 block is 625000 units of 1e-7. A part that is missing or not a number reads 0.
+				raw("scoreboard players set #dsp.o$i $T 0")
+				raw("execute store result score #dsp.o$i $T run data get entity @s data.properties.offset.$a 625000")
 				raw("execute if score #dsp.o$i $T matches ..${-MAX_OFFSET * 625000 - 1} run scoreboard players set #dsp.o$i $T ${-MAX_OFFSET * 625000}")
 				raw("execute if score #dsp.o$i $T matches ${MAX_OFFSET * 625000 + 1}.. run scoreboard players set #dsp.o$i $T ${MAX_OFFSET * 625000}")
 			}
@@ -155,6 +170,12 @@ internal class DisplayStyle(
 		val FACINGS = listOf("down", "up", "north", "south", "west", "east")
 		val AXES = listOf("x", "y", "z")
 		const val MAX_OFFSET = 16
+
+		/** `offset`: right, up and out of the face, in 1/16 block, nudged by 1/16, 1/4 or a block. */
+		val OFFSET = Vec3Spec(
+			min = Vec3i(-MAX_OFFSET), max = Vec3i(MAX_OFFSET), unit = 16, frame = Vec3Frame.LOCAL,
+			steps = listOf(1, 4, 16), default = Vec3i(0),
+		)
 		const val MIN_SCALE = 25
 		const val MAX_SCALE = 400
 		const val ADMIN_MAX_SCALE = 1600

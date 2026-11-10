@@ -1,8 +1,8 @@
 # Sensors
 
 Blocks that react to entities and to the world: one detects entities, two add or remove scoreboard
-tags on them, one reads the light level, one the weather and time of day, one looks for an item
-players carry and one for players by name. Handy for adventure
+tags on them, one reads the light level, one the weather and time of day, one watches a block, one looks
+for an item players carry and one for players by name. Handy for adventure
 maps, mob farms, trigger zones and automatic lighting.
 
 ## Getting them
@@ -16,6 +16,7 @@ maps, mob farms, trigger zones and automatic lighting.
 | Weather Sensor | waxed weathered copper | ![Weather Sensor recipe](images/recipes/ra_sensors/weather_sensor.png){ width="220" } |
 | Held Item Detector | waxed exposed chiseled copper | ![Held Item Detector recipe](images/recipes/ra_sensors/held_item_detector.png){ width="220" } |
 | Player Detector | waxed oxidized chiseled copper | ![Player Detector recipe](images/recipes/ra_sensors/player_detector.png){ width="220" } |
+| Block Detector | waxed weathered chiseled copper | copper ingot, eye of ender, copper ingot / redstone, observer, redstone / three copper ingots |
 
 Operators: `/function ra_sensors:items/give_all`.
 
@@ -129,6 +130,26 @@ Nether and the End.
 **Output:** like the Entity Detector, put **iron blocks** next to it (anywhere in the 3×3×3 cube);
 they turn into **redstone blocks** while it is on.
 
+### Block Detector
+
+Turns on while the block at its **target** is its **block**.
+
+- **target** is a position, counted in blocks from the detector. A new one watches the block in
+  front of it (the face that looked at you when you placed it). Change it with the
+  [Data Handler](tools.md): **[Edit]** on the `target` row, then move it with **[-X]**/**[+X]**,
+  **[-Y]**/**[+Y]**, **[-Z]**/**[+Z]** by 1, 4 or 16 blocks, type an axis, or look at the block
+  you want and press **[Pick]**. The block it points at is outlined while you edit. Players can
+  reach 16 blocks each way, server admins 64.
+- **block** is a block id such as `minecraft:oak_door` (or just `oak_door`), or a block tag such
+  as `#minecraft:logs`. Hold the block and use **[Set from hand]**, or type it. Empty (the default,
+  or **[Clear]**) means any block that is not air.
+
+It looks once a second, on the world sensors' clock. A target in an unloaded chunk, or a block id
+the game does not know, reads as off. The Goggles show the block, the target and the output.
+
+**Output:** like the Entity Detector, put **iron blocks** next to it (anywhere in the 3×3×3 cube);
+they turn into **redstone blocks** while it is on.
+
 ## Player sensors
 
 These look for players near them, up to their **radius** (1 to 16 blocks, default 5; a server
@@ -182,6 +203,9 @@ radius and the output.
 - A Held Item Detector on `#minecraft:pickaxes` opens the mine door for anyone carrying a pickaxe;
   one on `mainhand` with a torch lights a cave while you hold it up.
 - A Player Detector at a base door opens it for its owners only.
+- A Block Detector on `minecraft:cobblestone`, pointed at a cobblestone generator's output, fires
+  the piston that pushes the new block away; one on empty (any block) pointed at a doorway closes
+  a gate when something is placed in it.
 
 ---
 
@@ -231,6 +255,15 @@ radius and the output.
   `data.data.valid_item` or `data.data.invalid_item`, so a value is probed once per change, not
   every read. The radius is read clamped to 1..64 (`readCappedProperty`). The result is
   `data.status.output` ("on" / "off"). The wrench row `Slot` runs `…/cycle_slot`.
+- Block Detector: `data.properties.block` (an item-type property) and `target`, a vec3
+  (`{x,y,z}`, see [Vec3 properties](tools-and-registries.md#vec3-properties)). `target` is read
+  with `readVec3`: three integers, clamped to ±64, pasted into
+  `ra_sensors:blocks/block_detector/detect` (`execute positioned ~$(x) ~$(y) ~$(z) if block ~ ~ ~
+  $(block) run return 1`, then `return 2`). `block` is checked by `ra_lib:safe/guard` (format `ID`).
+  An unknown id or tag fails that line (result 0) and is kept in `data.data.invalid_block`, which
+  is compared before the next read, so it is not tried again until it changes. Empty: `detect_any`,
+  anything but `#minecraft:air` in a loaded chunk. Placement aims `target` at the block in front
+  (from `facing_name`, kept in `data.status.facing`).
 - Player Detector: `data.properties.players` (a list) and `radius`. When the list differs from
   `data.data.players_src` (the list last seen, compared with one `data modify`, not walked), each
   entry is checked once with `ra_lib:safe/check` (format `ID`) and those that pass are kept in

@@ -11,6 +11,7 @@ import ra.modules.sensors.EntityDetector.registerEntityDetector
 import ra.modules.sensors.LightSensor.registerLightSensor
 import ra.modules.sensors.WeatherSensor.registerWeatherSensor
 import ra.modules.sensors.HeldItemDetector.registerHeldItemDetector
+import ra.modules.sensors.BlockDetector.registerBlockDetector
 import ra.modules.sensors.PlayerDetector.registerPlayerDetector
 import ra.modules.sensors.SensorPoll.registerSensorPoll
 import ra.modules.sensors.SensorPoll.resetFlag
@@ -41,16 +42,18 @@ object SensorsModule : GameplayModule {
 		registerWeatherSensor()
 		registerHeldItemDetector()
 		registerPlayerDetector()
+		registerBlockDetector()
 		// After every polled block: one slow clock for all of them.
 		registerSensorPoll(
 			listOf(
 				LightSensor.block to LightSensor.update, WeatherSensor.block to WeatherSensor.update,
 				HeldItemDetector.block to HeldItemDetector.update, PlayerDetector.block to PlayerDetector.update,
+				BlockDetector.block to BlockDetector.update,
 			),
 		)
 
 		val blocks = listOf(EntityDetector.block, TagAdder.block, TagRemover.block, LightSensor.block, WeatherSensor.block,
-			HeldItemDetector.block, PlayerDetector.block,
+			HeldItemDetector.block, PlayerDetector.block, BlockDetector.block,
 		)
 
 		pack.define(load) {
@@ -69,8 +72,8 @@ object SensorsModule : GameplayModule {
 		}
 
 		bundles += GiveBundle(
-			"sensors", "Sensors Bundle", "Entity, tag, light, weather, held item and player sensor blocks", ns,
-			listOf(EntityDetector.item, TagAdder.item, TagRemover.item, LightSensor.item, WeatherSensor.item, HeldItemDetector.item, PlayerDetector.item).map { it.stackNbt() },
+			"sensors", "Sensors Bundle", "Entity, tag, light, weather, held item, player and block sensor blocks", ns,
+			listOf(EntityDetector.item, TagAdder.item, TagRemover.item, LightSensor.item, WeatherSensor.item, HeldItemDetector.item, PlayerDetector.item, BlockDetector.item).map { it.stackNbt() },
 		)
 	}
 }

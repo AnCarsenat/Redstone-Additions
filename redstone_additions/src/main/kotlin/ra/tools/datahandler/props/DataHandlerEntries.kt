@@ -326,6 +326,8 @@ object DataHandlerEntries {
 			callWith(DataHandlerActions.propertyGone, "storage ra:dh q")
 			raw("execute if score #dh.gone $T matches 1 run return 0")
 			callWith(DataHandlerProps.probe, "storage ra:dh q")
+			// A vec3's editor shares this action space (DataHandlerVec3).
+			executeReturnRun("if score #dh.type $T matches 6 if score #dh.decl $T matches 1", DataHandlerVec3.action)
 			// [List] only shows: a locked list may be opened too.
 			executeReturnRun("if score #dh.r $T matches $LIST", toggle)
 			callWith(DataHandlerProps.refuse, "storage ra:dh q")

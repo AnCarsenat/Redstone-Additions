@@ -220,8 +220,9 @@ This page mirrors key datapack milestones from the main project changelog.
   durability. A lensed helmet shows every block's label exactly like the Goggles, worn or held.
   `/trigger ra.goggles` opens a small menu to switch the lens off and on (the helmet's lore says
   which) or remove it and get the lens back. Crafted from four tinted glass, two diamonds, two gold
-  ingots and a netherite ingot; unlocked by picking up a netherite ingot. A helmet that already
-  carries data or a description of its own (another pack's item, the Goggles) is refused.
+  ingots and a netherite ingot; unlocked by picking up a netherite ingot. Any helmet takes it,
+  whatever lore, name or data it already has; only the Goggles and an already-lensed helmet are
+  refused.
 - **Displays** (new module, `ra_displays`). Blocks that show something with display entities;
   `/function ra_displays:items/give_all` gives them, and the settings have a Displays page to turn
   each one off and to set the scale new ones get. Every display can be configured after it is
@@ -475,6 +476,13 @@ This page mirrors key datapack milestones from the main project changelog.
 
 ### Fixed
 
+- **The Goggles Lens fits a helmet that has a description of its own.** A helmet with lore (or
+  another pack's data) was refused with "That helmet carries a description of its own". The lens
+  now fits any helmet, whatever its lore, name, enchantments, trim, damage, dye or other data. The
+  helmet keeps its own lore: the lens adds its lines above it, switching changes only those lines,
+  and removing the lens takes away only its own lines and data. Goggles and a helmet that already
+  has a lens are still refused.
+
 - **A Message Block's range reaches as far as it says.** A block without a selector sent to the
   players within its `range`, but the range was rounded to 8, 16, 32 or 64 blocks, so a range of
   10 reached 16 and a range of 128 stopped at 64. It now reaches the exact range.
@@ -500,8 +508,12 @@ This page mirrors key datapack milestones from the main project changelog.
   `custom_data~{ra:{goggles:1b}}` check and nothing per tick was added for detection; off is
   `{ra:{lensed:1b}}`. Unlike a jetpack kit's switch, "off" is on the item, not a player tag, so the
   Goggles check stays one predicate. The `ra.goggles` trigger is polled with one score selector
-  per tick and handed to lensed-helmet wearers once per Goggles redraw. The helmet's state is
-  written with inline `set_components` item modifiers.
+  per tick and handed to lensed-helmet wearers once per Goggles redraw. Fitting merges the keys
+  with `set_custom_data` and inserts the lens lines at the top of the lore with `set_lore`; a
+  switch or a removal replaces only those top lines, and takes keys out of `custom_data.ra` by
+  copying it through `storage ra:temp lens` and back with `copy_custom_data`, in the same modifier
+  list as the lore change so the lines and keys cannot drift apart. The lens is used up only once
+  the helmet reads lensed, and given back only once it no longer does.
 - **Channel items share one prompt** (`ra/modules/wireless/tools/ChannelPrompt.kt`). The Redstone
   Remote's Sneak+right-click book prompt is now a class with one instance per item (its own
   pending, slot and request objectives), used by the Remote and the Pager; the Remote's functions

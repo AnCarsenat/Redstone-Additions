@@ -24,6 +24,7 @@ import ra.modules.chunkloader.ChunkLoaderModule
 import ra.modules.displays.DisplaysModule
 import ra.modules.enchanting.EnchantingModule
 import ra.modules.ender.EnderModule
+import ra.modules.farming.FarmingModule
 import ra.modules.gates.GatesModule
 import ra.modules.infinite.InfiniteModule
 import ra.modules.interactive.InteractiveModule
@@ -72,6 +73,7 @@ object RedstoneAdditions {
 		DisplaysModule,
 		AutomationModule,
 		SecurityModule,
+		FarmingModule,
 	)
 
 	/**

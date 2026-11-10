@@ -100,6 +100,7 @@ one page, A to Z and by module.
 | ra_automation:experience_absorber    | Experience Absorber       | ![Experience Absorber recipe](images/recipes/ra_automation/experience_absorber.png){ width="220" } |
 | ra_security:keypad                   | Keypad                    | ![Keypad recipe](images/recipes/ra_security/keypad.png){ width="220" } |
 | ra_farming:sprinkler                 | Sprinkler                 | ![Sprinkler recipe](images/recipes/ra_farming/sprinkler.png){ width="220" } |
+| ra_railworks:route_rail              | Route Rail                | ![Route Rail recipe](images/recipes/ra_railworks/route_rail.png){ width="220" } |
 
 ## Crafting Items
 

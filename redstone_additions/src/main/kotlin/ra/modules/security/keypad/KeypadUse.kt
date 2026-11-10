@@ -23,28 +23,40 @@ import ra.core.raw
  * has not changed for [SETTLE_TICKS] ticks. Every 4 ticks, keypads with a player within 10 blocks
  * (nobody else can click the grid) and a switched-off slot, or mid-entry ([ENTRY]), run [watch]: a
  * mask other than `seen` (all slots back on included) is a change, which (re)starts the wait
- * (`data.data.due`) and tags the keypad [ENTRY]. The clock then runs [entryDue] once the wait is
- * over: the grid is read, switched back on, and checked against the lockout and the code.
+ * (`data.data.due`) and tags the keypad [ENTRY]; an unchanged mask on an [ENTRY] keypad whose wait
+ * is over runs [entryDue]: the grid is read, switched back on, and checked against the lockout and
+ * the code. Changes are seen on the 4-tick grid, so an entry lands 20 to 23 ticks after the last
+ * click. The clock's once-a-second pass over [ENTRY] keypads is only the fallback for one whose
+ * players walked away before the wait was over.
  *
  * NO CRAFTING. Every tick an `if items` test (no NBT read) finds items put into the crafter (by a
  * player or a hopper), and [eject] throws them out of the front face, before the crafter's own
  * scheduled craft could run, so a redstone signal on it only plays the "nothing to craft" sound.
  *
+ * THE PULSE. [PULSE_ON_FILL] turns the iron blocks in the 3x3x3 around the keypad into redstone
+ * blocks, [PULSE_OFF_FILL] turns them back, as the sensors do. A right code during a pulse starts
+ * it again from that tick; a wrong one counts as a wrong try.
+ *
  * THE CLOCK. A keypad that is pulsing carries [PULSE], one that is locked out [LOCKED], one waiting
  * for its grid to settle [ENTRY], and any of them [TIMED]. While one is [PULSE], [run] runs every
  * tick (pulse lengths are exact); while only [LOCKED] or [ENTRY] ones are left, once a second;
  * with none, nothing is scheduled. A keypad whose chunk unloaded mid-pulse is found by the block's
- * tick ([startIfIdle], one score test while the clock runs), which starts the clock again.
+ * tick ([startIfIdle], one score test while the clock runs), which starts the clock again, and its
+ * pulse ends (back to iron) on the clock's next tick; the same after a /reload.
  */
 object KeypadUse {
 	/** `storage ra_security:keypad`: scratch. */
 	private const val STORE = "ra_security:keypad"
 	private const val T = Obj.TEMP
 
-	/** How long the grid must stay unchanged before it counts as entered: 4 seconds. */
-	const val SETTLE_TICKS = 80
+	/** How long the grid must stay unchanged before it counts as entered: 1 second. */
+	const val SETTLE_TICKS = 20
 
-	/** On a keypad powering itself (its crafter swapped for a powered target block, see [Keypad]). */
+	/** At the keypad: the iron blocks around it become redstone blocks, and back. */
+	const val PULSE_ON_FILL = "fill ~-1 ~-1 ~-1 ~1 ~1 ~1 minecraft:redstone_block replace minecraft:iron_block"
+	const val PULSE_OFF_FILL = "fill ~-1 ~-1 ~-1 ~1 ~1 ~1 minecraft:iron_block replace minecraft:redstone_block"
+
+	/** On a keypad whose iron blocks around it are redstone blocks until `data.data.until`. */
 	const val PULSE = "ra.sec.kp_pulse"
 	/** On a keypad refusing every try until `data.data.locked_until`. */
 	private const val LOCKED = "ra.sec.kp_locked"
@@ -54,14 +66,12 @@ object KeypadUse {
 	private const val TIMED = "ra.sec.kp_timed"
 	/** 1 while [run] is scheduled. */
 	private const val FLAG = "#sec.kp_clock"
-	/** The block display that draws the crafter over the target block while it pulses. */
-	const val SKIN = "ra.sec.kp_skin"
 	/** Item entities [eject] just spawned, before their stack is filled in. */
 	private const val OUT = "ra.sec.kp_out"
 	/** On the player [isOwner] asks about. */
 	const val USER = "ra.sec.kp_user"
 
-	/** The crafter's twelve orientations; `data.data.orient` is an index into this list. */
+	/** The crafter's twelve orientations, the index [orient] gives. */
 	val ORIENTATIONS = listOf(
 		"north_up", "south_up", "east_up", "west_up",
 		"up_north", "up_south", "up_east", "up_west",
@@ -81,6 +91,8 @@ object KeypadUse {
 	private val ejectNext = fn("eject_next")
 	/** As the marker, at the block: the grid's mask, also left in `#kp.m`. */
 	private val mask = fn("mask")
+	/** As a keypad [watch] found unchanged, at it: enter its combination once the wait is over. */
+	private val settled = fn("settled")
 	/** At the block: the crafter's [ORIENTATIONS] index into `#kp.o`. */
 	private val orient = fn("orient")
 	/** The clock; cleared by the uninstall. */
@@ -94,8 +106,6 @@ object KeypadUse {
 	private val accept = fn("accept")
 	private val reject = fn("reject")
 	private val locked = fn("locked")
-	private val pulseOn = fn("pulse_on")
-	private val pulseOff = fn("pulse_off")
 
 	/** In the block's tick: one score test while the clock runs. */
 	fun Function.startIfIdle() = executeRun("unless score $FLAG $T matches 1 if entity @e[type=minecraft:marker,tag=$TIMED,limit=1]", startFast)
@@ -149,7 +159,7 @@ object KeypadUse {
 		pack.define(watch) {
 			raw("execute store result score #kp.m $T run function ${mask.asId()}")
 			raw("execute store result score #kp.s $T run data get entity @s data.data.seen")
-			raw("execute if score #kp.m $T = #kp.s $T run return 0")
+			raw("execute if score #kp.m $T = #kp.s $T run return run function ${settled.asId()}")
 			raw("execute store result entity @s data.data.seen int 1 run scoreboard players get #kp.m $T")
 			raw("execute store result score #kp.due $T run time query gametime")
 			raw("scoreboard players add #kp.due $T $SETTLE_TICKS")
@@ -157,6 +167,13 @@ object KeypadUse {
 			raw("tag @s add $ENTRY")
 			raw("tag @s add $TIMED")
 			raw("execute unless score $FLAG $T matches 1 run function ${startSlow.asId()}")
+		}
+
+		// Unchanged since the last look: an entry under way whose wait is over is entered now.
+		pack.define(settled) {
+			raw("execute unless entity @s[tag=$ENTRY] run return 0")
+			raw("execute store result score #kp.now $T run time query gametime")
+			raw("function ${entryDue.asId()}")
 		}
 
 		// Out of the front face, where the crafter would put a result: a hopper above (the usual
@@ -178,7 +195,7 @@ object KeypadUse {
 			raw("scoreboard players add #kp.said $T 1200")
 			raw("execute if score #kp.now $T < #kp.said $T run return 0")
 			raw("execute store result entity @s data.data.said int 1 run scoreboard players get #kp.now $T")
-			raw(say("The Keypad Controller takes no items: switch its slots off and on to enter a code.", "gray"))
+			raw(say("The Keypad takes no items: switch its slots off and on to enter a code.", "gray"))
 		}
 		// [ORIENTATIONS] index of the crafter here -> #kp.o (0 when it is no crafter).
 		pack.define(orient) {
@@ -222,7 +239,7 @@ object KeypadUse {
 			raw("execute store result entity @s data.data.code int 1 run scoreboard players get #kp.in $T")
 			raw("data modify entity @s data.status.code set value \"set\"")
 			raw("data modify entity @s data.data.fails set value 0")
-			raw(say("Keypad Controller code set. Switch the same slots off to open it.", "green"))
+			raw(say("Keypad code set. Switch the same slots off to open it.", "green"))
 			raw(sound("minecraft:ui.cartography_table.take_result", "1.2"))
 		}
 
@@ -233,42 +250,13 @@ object KeypadUse {
 			raw("execute if score #kp.p $T matches ..0 run scoreboard players set #kp.p $T 1")
 			raw("scoreboard players operation #kp.p $T += #kp.now $T")
 			raw("execute store result entity @s data.data.until int 1 run scoreboard players get #kp.p $T")
-			raw("execute unless entity @s[tag=$PULSE] run function ${pulseOn.asId()}")
+			raw(PULSE_ON_FILL)
 			raw("tag @s add $PULSE")
 			raw("tag @s add $TIMED")
 			raw("data modify entity @s data.status.state set value \"open\"")
 			raw("function ${startFast.asId()}")
 			raw(say("Code accepted.", "green"))
 			raw(sound("minecraft:block.note_block.chime", "1.4"))
-		}
-
-		// The crafter becomes a powered target block, as the Keypad used to be, drawn as a crafter.
-		pack.define(pulseOn) {
-			raw("execute unless block ~ ~ ~ minecraft:crafter run return 0")
-			raw("execute if items block ~ ~ ~ container.* * run function ${eject.asId()}")
-			raw("function ${orient.asId()}")
-			raw("execute store result entity @s data.data.orient int 1 run scoreboard players get #kp.o $T")
-			raw("setblock ~ ~ ~ minecraft:target[power=15] replace")
-			ORIENTATIONS.forEachIndexed { i, o ->
-				raw(
-					"execute if score #kp.o $T matches $i align xyz positioned ~0.5 ~0.5 ~0.5 run summon minecraft:block_display ~ ~ ~ " +
-						"{Tags:[\"ra\",\"ra.display\",\"$SKIN\"],brightness:{sky:15,block:15}," +
-						// The key quoted: the build reads `properties:{` as a block's own properties.
-						"block_state:{id:\"minecraft:crafter\",\"properties\":{orientation:\"$o\",crafting:\"true\"}}," +
-						"transformation:{left_rotation:[0f,0f,0f,1f],right_rotation:[0f,0f,0f,1f],translation:[-0.51f,-0.51f,-0.51f],scale:[1.02f,1.02f,1.02f]}}"
-				)
-			}
-		}
-
-		// The crafter comes back, facing as it did, every slot on and nothing inside.
-		pack.define(pulseOff) {
-			raw("execute store result score #kp.o $T run data get entity @s data.data.orient")
-			raw("data remove entity @s data.data.orient")
-			ORIENTATIONS.forEachIndexed { i, o ->
-				raw("execute if score #kp.o $T matches $i if block ~ ~ ~ minecraft:target run setblock ~ ~ ~ minecraft:crafter[orientation=$o] replace")
-			}
-			raw("execute align xyz positioned ~0.5 ~0.5 ~0.5 run kill @e[type=minecraft:block_display,tag=$SKIN,distance=..0.4]")
-			raw("data modify entity @s data.data.seen set value 0")
 		}
 
 		pack.define(reject) {
@@ -293,7 +281,7 @@ object KeypadUse {
 			raw("tag @s add $TIMED")
 			raw("data modify entity @s data.status.state set value \"locked\"")
 			raw("execute unless score $FLAG $T matches 1 run function ${startSlow.asId()}")
-			raw("""tellraw $NEAR [$RA_CHAT_PREFIX,{text:"Wrong code. The Keypad Controller is locked for ",color:"red"},{score:{name:"#kp.l",objective:"$T"},color:"yellow"},{text:" seconds.",color:"red"}]""")
+			raw("""tellraw $NEAR [$RA_CHAT_PREFIX,{text:"Wrong code. The Keypad is locked for ",color:"red"},{score:{name:"#kp.l",objective:"$T"},color:"yellow"},{text:" seconds.",color:"red"}]""")
 		}
 
 		// `#kp.now` before `#kp.lock`: how long is left, in seconds rounded up.
@@ -303,7 +291,7 @@ object KeypadUse {
 			raw("scoreboard players add #kp.lock $T 19")
 			raw("scoreboard players set #kp.20 $T 20")
 			raw("scoreboard players operation #kp.lock $T /= #kp.20 $T")
-			raw("""tellraw $NEAR [$RA_CHAT_PREFIX,{text:"This Keypad Controller is locked: try again in ",color:"red"},{score:{name:"#kp.lock",objective:"$T"},color:"yellow"},{text:" s.",color:"red"}]""")
+			raw("""tellraw $NEAR [$RA_CHAT_PREFIX,{text:"This Keypad is locked: try again in ",color:"red"},{score:{name:"#kp.lock",objective:"$T"},color:"yellow"},{text:" s.",color:"red"}]""")
 			raw(sound(FAIL_SOUND, "0.5"))
 		}
 
@@ -328,11 +316,11 @@ object KeypadUse {
 			raw("execute if entity @e[type=minecraft:marker,tag=$PULSE,limit=1] run return run function ${startFast.asId()}")
 			raw("execute if entity @e[type=minecraft:marker,tag=$TIMED,limit=1] run function ${startSlow.asId()}")
 		}
-		// As a pulsing keypad, at it.
+		// As a pulsing keypad, at it. Also ends, late, a pulse cut by an unload or a /reload.
 		pack.define(pulseDue) {
 			raw("execute store result score #kp.u $T run data get entity @s data.data.until")
 			raw("execute if score #kp.u $T > #kp.now $T run return 0")
-			raw("function ${pulseOff.asId()}")
+			raw(PULSE_OFF_FILL)
 			raw("tag @s remove $PULSE")
 			raw("data remove entity @s data.data.until")
 			raw("execute unless entity @s[tag=$LOCKED] run data modify entity @s data.status.state set value \"ready\"")

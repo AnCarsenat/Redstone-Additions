@@ -19,6 +19,11 @@ import ra.modules.automation.AutomationClock.registerAutomationClock
 import ra.modules.automation.AutomationClock.startClock
 import ra.modules.automation.absorber.XpAbsorber
 import ra.modules.automation.absorber.XpAbsorber.registerXpAbsorber
+import ra.modules.automation.conveyor.Conveyor
+import ra.modules.automation.conveyor.Conveyor.registerConveyor
+import ra.modules.automation.fakeplayer.FakePlayer
+import ra.modules.automation.fakeplayer.FakePlayer.registerFakePlayer
+import ra.modules.automation.fakeplayer.FakePlayerSpawner
 import ra.modules.automation.uncrafter.UncraftTable
 import ra.modules.automation.uncrafter.Uncrafter
 import ra.modules.automation.uncrafter.Uncrafter.registerUncrafter
@@ -47,6 +52,8 @@ object AutomationModule : GameplayModule {
 		registerCrafterController()
 		registerUncrafter()
 		registerXpAbsorber()
+		registerFakePlayer()
+		registerConveyor()
 		registerAutomationClock()
 
 		pack.define(ref(ns, "items/give_all")) {
@@ -54,26 +61,35 @@ object AutomationModule : GameplayModule {
 			function(Pattern.give)
 			function(Uncrafter.block.give)
 			function(XpAbsorber.block.give)
+			function(FakePlayer.block.give)
+			function(Conveyor.block.give)
 		}
 		bundles += GiveBundle(
 			"automation", "Automation Bundle", "Machines that run vanilla blocks for you", ns,
-			listOf(CrafterController.item.stackNbt(), Pattern.item.stackNbt(), Uncrafter.item.stackNbt(), XpAbsorber.item.stackNbt()),
+			listOf(CrafterController.item.stackNbt(), Pattern.item.stackNbt(), Uncrafter.item.stackNbt(), XpAbsorber.item.stackNbt(),
+				FakePlayer.item.stackNbt(), Conveyor.item.stackNbt()),
 		)
 
 		pack.define(load) {
 			raw("scoreboard objectives add ${PatternUse.USED} dummy")
+			raw("scoreboard objectives add ${FakePlayer.SEEN} dummy")
+			function(FakePlayerSpawner.load)
 			resetFlag()
 			startClock()
 			raw("data modify storage ${UncrafterRun.TABLE} map set value ${UncraftTable.snbt()}")
 			function(CrafterController.registerBlock)
 			function(Uncrafter.registerBlock)
 			function(XpAbsorber.registerBlock)
+			function(FakePlayer.registerBlock)
+			function(Conveyor.registerBlock)
 			moduleLoaded("Automation loaded!", "gold")
 		}
 		pack.define(tick!!) {
 			function(CrafterController.block.tick)
 			function(Uncrafter.block.tick)
 			function(XpAbsorber.block.tick)
+			function(FakePlayer.block.tick)
+			function(Conveyor.block.tick)
 		}
 	}
 }

@@ -122,6 +122,11 @@ internal fun DataPack.registerUninstallConfirm() {
 		// The Keypad clock (pulse ends, lockouts), scheduled only while a keypad is pulsing or locked.
 		schedules { clear(KeypadUse.run) }
 
+		// Mobs a Fake Player holds are ordinary mobs, not the pack's: they stay, but lose the
+		// persistence it gave them (a named one keeps its own) and the tag.
+		raw("execute as @e[tag=ra.auto.fp_mob] unless data entity @s CustomName run data modify entity @s PersistenceRequired set value 0b")
+		raw("tag @e[tag=ra.auto.fp_mob] remove ra.auto.fp_mob")
+
 		PLAYER_TAGS.forEach { t -> tag(allPlayers()) { remove(t) } }
 		untagMarkers("ra.dh_target")
 		untagMarkers("ra.dh_selected")

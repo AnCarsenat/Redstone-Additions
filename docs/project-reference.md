@@ -165,6 +165,7 @@ Each module has `<Name>Module.kt` (the `GameplayModule` object: registration ord
 | `modules/railworks` | `RailworksModule.kt`, `RouteRail.kt` (placement, properties, wrench, goggles) + `RouteRailScan.kt` (finding carts near a junction, the route match, setting the rail) |
 | `modules/security` | `SecurityModule.kt`, `keypad/Keypad.kt` (placement, owner, wrench, goggles) + `KeypadUse.kt` (watching the crafter grid, setting and entering the code, the lockout, the pulse, the clock) |
 | `modules/farming` | `FarmingModule.kt`, `Sprinkler.kt` (the watering and the growth, on `ra_wires:machine/run`), `Breeder.kt` + `BreederBreeds.kt` (moved from `modules/interactive`, still `Ns.INTERACTIVE` so its ids stay) |
+| `modules/audio` | `AudioModule.kt`, `AudioSounds.kt` (the fixed sound lists), `AudioPlayer.kt` (playing a pattern at a block), `Alarm.kt`, `Doorbell.kt`, `jukebox/JukeboxController.kt` (placement, the pulse, goggles) + `JukeboxOps.kt` (moving discs, the playlist, the once-a-second check) |
 
 ## Others
 

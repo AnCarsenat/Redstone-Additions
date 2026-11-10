@@ -1,6 +1,6 @@
 # Recipe Atlas
 
-Every recipe in the pack, in one place: 108 of them.
+Every recipe in the pack, in one place: 113 of them.
 
 !!! tip "Finding one"
     Use the search box with the item's name — every recipe below is indexed by
@@ -16,6 +16,7 @@ what the pack actually contains rather than what someone remembered to add.
 | ---- | ------ | ------- |
 | [Air Charger](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
 | [Air Tank](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
+| [Alarm](#audio) | [Audio](audio.md) | Crafting table |
 | [Analog Emitter](#wireless-redstone) | [Wireless Redstone](wireless-redstone.md) | Crafting table |
 | [Analog Receiver](#wireless-redstone) | [Wireless Redstone](wireless-redstone.md) | Crafting table |
 | [Anchor Tablet](#ender-links) | [Ender Links](ender-links.md) | Crafting table |
@@ -41,6 +42,7 @@ what the pack actually contains rather than what someone remembered to add.
 | [Delayer](#logic-gates) | [Logic Gates](logic-gates.md) | Crafting table |
 | [Diamond Multiblock Base](#multiblocks) | [Multiblocks](multiblocks.md) | Crafting table |
 | [Disenchanter](#enchant-crafting) | [Enchant Crafting](enchant-crafting.md) | Crafting table |
+| [Doorbell](#audio) | [Audio](audio.md) | Crafting table |
 | [Edge Detector](#logic-gates) | [Logic Gates](logic-gates.md) | Crafting table |
 | [Electric Furnace](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
 | [Elevator](#interactive-machines) | [Interactive Machines](interactive-machines.md) | Crafting table |
@@ -78,6 +80,8 @@ what the pack actually contains rather than what someone remembered to add.
 | [Item Hologram](#displays) | [Displays](displays.md) | Crafting table |
 | [Item Mover](#interactive-machines) | [Interactive Machines](interactive-machines.md) | Crafting table |
 | [Item Pipe](#interactive-machines) | [Interactive Machines](interactive-machines.md) | Crafting table |
+| [Item Pipe Splitter](#automation) | [Automation](automation.md) | Crafting table |
+| [Jukebox Controller](#audio) | [Audio](audio.md) | Crafting table |
 | [Keypad](#security) | [Security](security.md) | Crafting table |
 | [Lift Kit](#jetpacks) | [Jetpacks](jetpacks.md) | Crafting table |
 | [Light Sensor](#sensors) | [Sensors](sensors.md) | Crafting table |
@@ -100,6 +104,7 @@ what the pack actually contains rather than what someone remembered to add.
 | [Poppy Core](#not-crafted-won-on-an-enchanting-table) | [Infinite Generators](infinite-generators.md) | Enchanting table |
 | [Poppy Generator](#infinite-generators) | [Infinite Generators](infinite-generators.md) | Crafting table, shapeless |
 | [Randomizer](#logic-gates) | [Logic Gates](logic-gates.md) | Crafting table |
+| [Recipe Pattern](#automation) | [Automation](automation.md) | Crafting table |
 | [Redstone Remote](#wireless-redstone) | [Wireless Redstone](wireless-redstone.md) | Crafting table |
 | [Route Rail](#railworks) | [Railworks](railworks.md) | Crafting table |
 | [Scorch Kit](#jetpacks) | [Jetpacks](jetpacks.md) | Crafting table |
@@ -128,6 +133,16 @@ what the pack actually contains rather than what someone remembered to add.
 | [Wireless Receiver](#wireless-redstone) | [Wireless Redstone](wireless-redstone.md) | Crafting table |
 | [Wrench](#tools) | [Tools](tools.md) | Crafting table |
 
+## Audio
+
+Module page: [Audio](audio.md) — give everything: `/function ra_audio:items/give_all`
+
+| Item | Recipe | Station | Namespace id |
+| ---- | ------ | ------- | ------------ |
+| **Alarm** | ![Alarm recipe](images/recipes/ra_audio/alarm.png){ width="220" } | Crafting table | `ra_audio:alarm` |
+| **Doorbell** | ![Doorbell recipe](images/recipes/ra_audio/doorbell.png){ width="220" } | Crafting table | `ra_audio:doorbell` |
+| **Jukebox Controller** | ![Jukebox Controller recipe](images/recipes/ra_audio/jukebox_controller.png){ width="220" } | Crafting table | `ra_audio:jukebox_controller` |
+
 ## Automation
 
 Module page: [Automation](automation.md) — give everything: `/function ra_automation:items/give_all`
@@ -136,7 +151,9 @@ Module page: [Automation](automation.md) — give everything: `/function ra_auto
 | ---- | ------ | ------- | ------------ |
 | **Crafter Controller** | ![Crafter Controller recipe](images/recipes/ra_automation/crafter_controller.png){ width="220" } | Crafting table | `ra_automation:crafter_controller` |
 | **Experience Absorber** | ![Experience Absorber recipe](images/recipes/ra_automation/experience_absorber.png){ width="220" } | Crafting table | `ra_automation:experience_absorber` |
+| **Item Pipe Splitter** | ![Item Pipe Splitter recipe](images/recipes/ra_automation/item_pipe_splitter.png){ width="220" } | Crafting table | `ra_automation:item_pipe_splitter` |
 | **Pattern** | ![Pattern recipe](images/recipes/ra_automation/pattern.png){ width="220" } | Crafting table | `ra_automation:pattern` |
+| **Recipe Pattern** | ![Recipe Pattern recipe](images/recipes/ra_automation/recipe_pattern.png){ width="220" } | Crafting table | `ra_automation:recipe_pattern` |
 | **Uncrafter** | ![Uncrafter recipe](images/recipes/ra_automation/uncrafter.png){ width="220" } | Crafting table | `ra_automation:uncrafter` |
 
 ## Chunk Loader

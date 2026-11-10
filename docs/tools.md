@@ -91,9 +91,10 @@ and a netherite ingot.
 2. Hold the lens and right-click. The lens is used up.
 
 The helmet keeps its material, enchantments, trims and durability, and now shows every label the
-Goggles show, worn or held. Its lore says whether the lens is on. A helmet that already carries
-data or a description of its own (another pack's item, or the Goggles themselves) is refused, so
-nothing on it is overwritten.
+Goggles show, worn or held. Any helmet takes the lens, including one with a name, a description
+(lore) or another pack's data; all of it is kept. The lens adds its own lines at the top of the
+lore, saying whether it is on. The Goggles themselves, and a helmet that already has a lens, are
+refused.
 
 `/trigger ra.goggles` opens the lens menu for the helmet you are wearing:
 
@@ -104,7 +105,8 @@ nothing on it is overwritten.
 
 - **[ ON ] / [ OFF ]**: switch the lens off without removing it, and back on. The switch is stored
   on the helmet, so it stays off when you hand the helmet to someone else.
-- **[ REMOVE ]**: take the lens out and get it back as an item; the helmet is a plain helmet again.
+- **[ REMOVE ]**: take the lens out and get it back as an item; only the lens's lines and data
+  are taken off, so the helmet is as it was before.
 
 ## Data Handler
 
@@ -291,7 +293,8 @@ connected. See [Transport Networks](transport-networks.md).
   tool (and for a short while after).
 - A Goggles Lens helmet that is switched on carries `custom_data` `{ra:{goggles:1b,lensed:1b}}`,
   the same `goggles` flag as the Goggles, so the Goggles check finds it at no extra cost; switched
-  off it carries `{ra:{lensed:1b}}`. The lens menu is `/trigger ra.goggles` (1 menu, 2 switch,
+  off it carries `{ra:{lensed:1b}}`. These keys are merged into any `custom_data` the helmet
+  already has, and the lens lore lines sit at the top of the helmet's lore. The lens menu is `/trigger ra.goggles` (1 menu, 2 switch,
   3 remove), enabled for anyone wearing a lensed helmet.
 - Goggles labels are `text_display` entities tagged `ra.billboard` (an item filter is an
   `item_display` with the same tag), one per block: the lines are joined into one text, drawn

@@ -110,21 +110,20 @@ object Kits {
 		for (u in upgrades) pack.define(u.give) { giveKit(u.item, "${u.name} Kit", "aqua") }
 
 		kitRecipe("iron_jetpack_kit", ironKit, Items.BLAZE_ROD, count = 1) {
-			pattern(" B ", "IRI", "ICI")
-			key("B", Items.BLAZE_ROD)
+			pattern("IBI", "IRI", "F F")
 			key("I", Items.IRON_INGOT)
+			key("B", Items.BLAZE_ROD)
 			key("R", Items.REDSTONE_BLOCK)
-			key("C", Items.COAL_BLOCK)
+			key("F", Items.FIRE_CHARGE)
 		}
 		// The upgrade kits' recipes produce the kit without its lore, as the beet pack did.
-		kitRecipe("speed_kit", speed.item.without("lore"), Items.BLAZE_POWDER) {
-			pattern("SFS", "BRB", "SFS")
-			key("S", Items.SUGAR)
-			key("F", Items.FEATHER)
-			key("B", Items.BLAZE_POWDER)
+		kitRecipe("speed_kit", speed.item.without("lore"), Items.WIND_CHARGE) {
+			pattern("FWF", "WRW", "FWF")
+			key("F", Items.FIREWORK_ROCKET)
+			key("W", Items.WIND_CHARGE)
 			key("R", Items.REDSTONE_BLOCK)
 		}
-		kitRecipe("lift_kit", lift.item.without("lore"), Items.BLAZE_POWDER) {
+		kitRecipe("lift_kit", lift.item.without("lore"), Items.PHANTOM_MEMBRANE) {
 			pattern("PMP", "MRM", "PMP")
 			key("P", Items.PHANTOM_MEMBRANE)
 			key("M", Items.SHULKER_SHELL)

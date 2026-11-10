@@ -73,8 +73,8 @@ one page, A to Z and by module.
 | ra_wires:air_tank                    | Air Tank                  | ![Air Tank recipe](images/recipes/ra_wires/air_tank.png){ width="220" } |
 | ra_wires:heavy_boots                 | Heavy Boots               | ![Heavy Boots recipe](images/recipes/ra_wires/heavy_boots.png){ width="220" } |
 | ra_wires:water_wheel                 | Water Wheel               | ![Water Wheel recipe](images/recipes/ra_wires/water_wheel.png){ width="220" } |
-| ra_wires:creative_eu                 | Creative EU Source        | No recipe — `ra_wires:items/give_creative` |
-| ra_wires:creative_fluid              | Creative Fluid Source     | No recipe — `ra_wires:items/give_creative` |
+| ra_wires:creative_eu                 | Creative EU Source        | Creative only, no recipe — `ra_wires:items/give_creative` |
+| ra_wires:creative_fluid              | Creative Fluid Source     | Creative only, no recipe — `ra_wires:items/give_creative` |
 | ra_ender:ender_item_vault            | Ender Item Vault          | ![Ender Item Vault recipe](images/recipes/ra_ender/ender_item_vault.png){ width="220" } |
 | ra_ender:ender_fluid_vault           | Ender Fluid Vault         | ![Ender Fluid Vault recipe](images/recipes/ra_ender/ender_fluid_vault.png){ width="220" } |
 | ra_ender:ender_power_vault           | Ender Power Vault         | ![Ender Power Vault recipe](images/recipes/ra_ender/ender_power_vault.png){ width="220" } |
@@ -102,7 +102,7 @@ one page, A to Z and by module.
 
 | Namespace ID | Display name | Recipe |
 | ------------ | ------------ | ------ |
-| ra_infinite:generator_casing | Generator Casing | Ring of 8 `minecraft:copper_grate` around 1 `minecraft:netherite_scrap` |
+| ra_infinite:generator_casing | Generator Casing | Ring of 8 `minecraft:copper_grate` around 1 `minecraft:netherite_ingot` |
 | ra_infinite:mineral_core | Mineral Core | Sacrifice `minecraft:stone` on an enchanting table (1%) |
 | ra_infinite:nether_core | Nether Core | Sacrifice `minecraft:netherrack` on an enchanting table (1%) |
 | ra_infinite:poppy_core | Poppy Core | Sacrifice `minecraft:poppy` on an enchanting table (1%) |
@@ -112,7 +112,7 @@ one page, A to Z and by module.
 | ra_automation:pattern | Pattern | ![Pattern recipe](images/recipes/ra_automation/pattern.png){ width="220" } |
 
 The Generator Casing and the Cores cannot be placed as blocks. A Schematic is paper carrying a book's enchantments in `custom_data` (`{ra:{schematic:1b,enchantments:{...}}}`), right-clicked into a [Book Printer](enchant-crafting.md#setting-the-schematic) to set what it prints. A Pattern is paper carrying a 3×3 grid of item ids (`{ra:{pattern:{slots:[<9 ids or "">]}}}`, see [Automation](automation.md#pattern-data)).
-| ra_jetpacks:iron_jetpack_kit | Iron Jetpack Kit | Blaze rod over iron ingots, a redstone block and a coal block |
+| ra_jetpacks:iron_jetpack_kit | Iron Jetpack Kit | Four iron ingots around a blaze rod and a redstone block, two fire charges below |
 | ra_jetpacks:infinite_jetpack_kit | Infinite Iron Jetpack Kit | Sacrifice an Iron Jetpack Kit on an enchanting table (1%) |
 
 ## Tools

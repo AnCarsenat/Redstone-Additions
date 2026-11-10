@@ -70,10 +70,11 @@ object AnalogReceiver {
 		pack.blockRegisterMessage(block)
 		pack.blockGive(block)
 		pack.shapedRecipe(block.ns, block.id, item.recipeResult(), Unlock(Items.COMPARATOR)) {
-			pattern("GAG", "ATA", "GAG")
-			key("G", Items.GOLD_INGOT)
-			key("A", Items.AMETHYST_BLOCK)
-			key("T", Items.TARGET)
+			pattern(" L ", "CAC", "SSS")
+			key("L", Items.LIGHTNING_ROD)
+			key("C", Items.COMPARATOR)
+			key("A", Items.AMETHYST_SHARD)
+			key("S", Items.SMOOTH_STONE_SLAB)
 		}
 
 		// As bat, at bat position. The first tick's resync gives it its level.

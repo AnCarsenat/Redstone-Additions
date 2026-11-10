@@ -77,8 +77,9 @@ object TagRemover {
 		pack.blockRegisterMessage(block)
 		pack.blockGive(block)
 		pack.shapedRecipe(block.ns, block.id, item.recipeResult(), Unlock(Items.NAME_TAG), count = null) {
-			pattern("CCC", "CWC", "CCC")
+			pattern("CCC", "CNC", "CWC")
 			key("C", Items.COBBLESTONE)
+			key("N", Items.NAME_TAG)
 			key("W", Items.WATER_BUCKET)
 		}
 

@@ -66,10 +66,9 @@ object ItemPipe {
 		pack.blockRegisterMessage(block)
 		pack.specGive(block, item)
 		pack.shapedRecipe(block.ns, block.id, item.recipeResult(), Unlock(Items.HOPPER), count = 8) {
-			pattern("CCC", "IHI", "CCC")
-			key("I", listOf(Items.COPPER_INGOT))
+			pattern("III", " H ", "III")
+			key("I", listOf(Items.IRON_INGOT))
 			key("H", listOf(Items.HOPPER))
-			key("C", listOf(Items.COBBLESTONE))
 		}
 
 		pack.define(block.handlePlacement) { handlePlacement() }

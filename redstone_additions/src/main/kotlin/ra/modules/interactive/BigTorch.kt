@@ -35,6 +35,9 @@ import ra.core.block.forEachMarker
 import ra.core.block.breakSound
 import ra.core.block.placementGuard
 import ra.core.block.dropItem
+import io.github.ayfri.kore.arguments.components.matchers.customData
+import io.github.ayfri.kore.features.predicates.sub.predicates
+import ra.core.block.Unlock
 import ra.core.block.recipeResult
 import ra.core.block.shapedRecipe
 import io.github.ayfri.kore.features.recipes.types.pattern
@@ -73,7 +76,13 @@ object BigTorch {
 		pack.specGive(block, item)
 		// Crafted from the Enchanted Coal Block (a barrier, see EnchantedCoal) and a stick. The beet
 		// pack gave it no unlock advancement and no recipe notification; kept that way.
-		pack.shapedRecipe(block.ns, block.id, item.recipeResult(), unlock = null, notify = false) {
+		pack.shapedRecipe(block.ns, block.id, item.recipeResult(),
+			// Holding an Enchanted Coal Block, matched on its custom data: a bare barrier is a creative item.
+			Unlock(Items.BARRIER, "has_enchanted_coal_block") {
+				predicates { customData { this["ra"] = nbt { this["enchanted_coal_block"] = true } } }
+			},
+			notify = false,
+		) {
 			pattern("B", "S")
 			key("B", listOf(Items.BARRIER))
 			key("S", listOf(Items.STICK))

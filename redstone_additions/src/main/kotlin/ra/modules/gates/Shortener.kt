@@ -43,10 +43,11 @@ object Shortener {
 			number("pulse", min = 1, max = 200)
 		}
 		pack.blockGive(block)
-		pack.blockRecipe(block, unlockedBy = Items.QUARTZ_BLOCK) {
-			pattern("   ", " C ", " R ")
-			key("C", Items.QUARTZ_BLOCK)
+		pack.blockRecipe(block, unlockedBy = Items.REPEATER) {
+			pattern("RXR", "SSS")
 			key("R", Items.REPEATER)
+			key("X", Items.SHEARS)
+			key("S", Items.STONE)
 		}
 		pack.blockRegisterMessage(block)
 		pack.define(block.handlePlacement) { handlePlacement() }

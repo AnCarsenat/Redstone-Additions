@@ -259,8 +259,9 @@ radius and the output.
   (`{x,y,z}`, see [Vec3 properties](tools-and-registries.md#vec3-properties)). `target` is read
   with `readVec3`: three integers, clamped to ±64, pasted into
   `ra_sensors:blocks/block_detector/detect` (`execute positioned ~$(x) ~$(y) ~$(z) if block ~ ~ ~
-  $(block)`). `block` is checked by `ra_lib:safe/guard` (format `ID`) and probed once per value
-  like the Held Item Detector's item (`data.data.valid_block` / `invalid_block`). Empty: `detect_any`,
+  $(block) run return 1`, then `return 2`). `block` is checked by `ra_lib:safe/guard` (format `ID`).
+  An unknown id or tag fails that line (result 0) and is kept in `data.data.invalid_block`, which
+  is compared before the next read, so it is not tried again until it changes. Empty: `detect_any`,
   anything but `#minecraft:air` in a loaded chunk. Placement aims `target` at the block in front
   (from `facing_name`, kept in `data.status.facing`).
 - Player Detector: `data.properties.players` (a list) and `radius`. When the list differs from

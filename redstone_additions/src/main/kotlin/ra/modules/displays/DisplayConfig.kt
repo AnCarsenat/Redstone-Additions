@@ -64,6 +64,8 @@ internal class DisplayStyle(
 	val turn = block.fn("config/turn")
 	val read = block.fn("config/read")
 	private val turnBarrel = block.fn("config/barrel")
+	/** In the migrations namespace, which the property scan leaves out: it names retired keys. */
+	private val dropOldOffsets = ra.core.ref(ra.core.Ns.MIGRATIONS, "dev-6.0.3/${block.id}_offsets")
 	private fun barrelTo(f: String) = block.fn("config/barrel_$f")
 	val cycleFacing = block.fn("config/cycle_facing")
 	val cycleDirection = block.fn("config/cycle_direction")
@@ -97,6 +99,13 @@ internal class DisplayStyle(
 				colors.map { it.prop to "\"${it.default}\"" } + ("offset" to OFFSET.default.snbt()) + ("scale" to "100") +
 				(if (background) listOf("background" to "1b") else emptyList())
 			for ((p, v) in all) raw("execute unless data entity @s data.properties.$p run data modify entity @s data.properties.$p set value $v")
+			// Placed by a 6.0.3 dev build, before `offset` was one vec3: the three old keys are read
+			// by nothing and would only be listed as undeclared. Runs on a restyle, not per tick.
+			// Displays are unreleased, so no versioned migration step can reach these markers.
+			function(dropOldOffsets)
+		}
+		pack.define(dropOldOffsets) {
+			for (a in AXES) raw("data remove entity @s data.properties.offset_$a")
 		}
 
 		pack.define(turn) {

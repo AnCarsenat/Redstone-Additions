@@ -119,18 +119,22 @@ fun PropertiesBuilder.vec3(
  * Use time, as the block's marker: `data.properties.<name>` into [into] (a storage path,
  * `storage ra:temp bd.pos`) as `{x:<int>,y:<int>,z:<int>}`, each part copied through a score and
  * clamped to the technical cap ([Vec3Spec.capMin]..[Vec3Spec.capMax]; for an ABSOLUTE frame the
- * value is a world coordinate and is not clamped here). A missing property reads as the default.
+ * value is a world coordinate and is not clamped here). A missing property, or one without all
+ * three parts x, y and z, reads as the default.
  * Whatever the property holds (a string from the Creative Data Handler, a list), the result is
  * three integers: safe to paste with `$(x) $(y) $(z)`.
  */
 fun Function.readVec3(name: String, spec: Vec3Spec, into: String) {
 	val t = Obj.TEMP
 	val axes = listOf("x", "y", "z")
+	val p = "data.properties.$name"
 	raw("data modify $into set value ${spec.default.snbt()}")
+	// Only a value with all three parts counts; anything else (missing, a string, a list) is the default.
+	raw("execute store success score #v3r.ok $t if data entity @s $p.x if data entity @s $p.y if data entity @s $p.z")
 	for ((i, a) in axes.withIndex()) {
 		val s = "#v3r.$a"
-		raw("execute if data entity @s data.properties.$name store result score $s $t run data get entity @s data.properties.$name.$a")
-		raw("execute unless data entity @s data.properties.$name run scoreboard players set $s $t ${spec.default[i]}")
+		raw("scoreboard players set $s $t ${spec.default[i]}")
+		raw("execute if score #v3r.ok $t matches 1 store result score $s $t run data get entity @s $p.$a")
 		if (spec.frame != Vec3Frame.ABSOLUTE) {
 			raw("execute if score $s $t matches ..${spec.capMin[i] - 1} run scoreboard players set $s $t ${spec.capMin[i]}")
 			raw("execute if score $s $t matches ${spec.capMax[i] + 1}.. run scoreboard players set $s $t ${spec.capMax[i]}")

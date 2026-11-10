@@ -174,7 +174,8 @@ numbers, x, y and z. It is one line until you open it with **[Edit]**:
   is outlined in green. A display's offset needs no outline: the display moves there within a
   second.
 - The range is the block's. Admins get a wider one where the block has one (the Block Detector:
-  64 blocks instead of 16); a value outside the players' range is marked **(admin)**.
+  64 blocks instead of 16); a value outside the players' range is marked **(admin)**, and only an
+  admin can change it.
 
 Selecting a block with the Handler shows every list closed again. A list you may not change
 (set by the block, or admins only) keeps its locked row; its **[List]** still shows the entries,

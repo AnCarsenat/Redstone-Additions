@@ -76,11 +76,13 @@ internal object Vec3Ops {
 			}
 		}
 
-		// {name}: the value shown (the block's, or the schema default) into #v3.x/y/z.
+		// {name}: the value shown (the block's, or the schema default) into #v3.x/y/z. A value
+		// without all three parts (written with a command) counts as the declared default.
 		pack.define(load) {
+			raw("\$execute store success score #v3.has $T if data storage ra:dh properties.\$(name).x if data storage ra:dh properties.\$(name).y if data storage ra:dh properties.\$(name).z")
 			for (a in AXES) {
-				raw("scoreboard players set #v3.$a $T 0")
-				raw("\$execute store result score #v3.$a $T run data get storage ra:dh properties.\$(name).$a")
+				raw("execute store result score #v3.$a $T run data get storage ra:dh spec.v3.def.$a")
+				raw("\$execute if score #v3.has $T matches 1 store result score #v3.$a $T run data get storage ra:dh properties.\$(name).$a")
 			}
 		}
 
@@ -167,8 +169,10 @@ internal object Vec3Ops {
 			raw("scoreboard players remove #v3.ray $T 1")
 			raw("execute if score #v3.ray $T matches 1.. positioned ^ ^ ^0.1 run function ${pickStep.asId()}")
 		}
+		// At the hit point. Aligned to the block corner first, so Pos holds whole numbers and
+		// `data get` (which truncates toward zero) reads -4 for a block at x = -3.4, not -3.
 		pack.define(pickHit) {
-			raw("summon minecraft:marker ~ ~ ~ {Tags:[\"$TMP_TAG\"]}")
+			raw("execute align xyz run summon minecraft:marker ~ ~ ~ {Tags:[\"$TMP_TAG\"]}")
 			for (i in 0..2) raw("execute store result score #v3.h$i $T run data get entity @e[type=minecraft:marker,tag=$TMP_TAG,limit=1] Pos[$i]")
 			raw("kill @e[type=minecraft:marker,tag=$TMP_TAG]")
 			raw("scoreboard players set #v3.hit $T 1")

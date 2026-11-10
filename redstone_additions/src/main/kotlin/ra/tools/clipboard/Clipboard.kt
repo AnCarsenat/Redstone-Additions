@@ -62,7 +62,6 @@ object Clipboard {
 	private val stripOne = tool("clipboard/strip_one")
 	private val stripText = tool("clipboard/strip_text")
 	private val stripNumber = tool("clipboard/strip_number")
-	private val stripVec3 = tool("clipboard/strip_vec3")
 
 	private const val HOLDER = "@a[tag=ra.clip_active,limit=1]"
 	private const val PREFIX = """{text:"[Clipboard] ",color:"gold"}"""
@@ -126,6 +125,7 @@ object Clipboard {
 
 
 		registerCopyPaste()
+		with(ClipboardVec3) { registerClipboardVec3() }
 	}
 
 	private fun Ra.registerCopyPaste() {
@@ -222,7 +222,7 @@ object Clipboard {
 			// or an admin's admin_max (ra.core.Admin). An admin's 200-block torch is not copied by a
 			// player onto theirs.
 			raw("\$execute if data storage ra:dh schema.\$(name){code:1} run function ${stripNumber.asId()} {name:\"\$(name)\"}")
-			raw("\$execute if data storage ra:dh schema.\$(name){code:6} run function ${stripVec3.asId()} {name:\"\$(name)\"}")
+			raw("\$execute if data storage ra:dh schema.\$(name){code:6} run function ${ClipboardVec3.strip.asId()} {name:\"\$(name)\"}")
 			raw("execute if score #clip.adm ${Obj.TEMP} matches 1 run return 0")
 			raw("\$execute if score #clip.ao ${Obj.TEMP} matches 1 run return run data remove storage ra:temp clip.props.\$(name)")
 			raw("\$execute if score #clip.vis ${Obj.TEMP} matches 0 run return run data remove storage ra:temp clip.props.\$(name)")
@@ -245,34 +245,6 @@ object Clipboard {
 			raw("\$execute store result score #clip.v ${Obj.TEMP} run data get storage ra:temp clip.props.\$(name)")
 			raw("\$execute unless score #clip.v ${Obj.TEMP} >= #clip.min ${Obj.TEMP} run data remove storage ra:temp clip.props.\$(name)")
 			raw("\$execute unless score #clip.v ${Obj.TEMP} <= #clip.max ${Obj.TEMP} run data remove storage ra:temp clip.props.\$(name)")
-		}
-		// {name}: a vec3 (ra.core.Vec3Props) kept only inside the holder's range and on its grid,
-		// and rewritten as three integers. A world position (frame 2) is not copied: its range is
-		// measured from the block, and the target block is somewhere else.
-		pack.define(stripVec3) {
-			val t = Obj.TEMP
-			raw("data remove storage ra:temp clip_spec")
-			raw("\$data modify storage ra:temp clip_spec set from storage ra:dh schema.\$(name).v3")
-			raw("\$execute if data storage ra:temp clip_spec{frame:2} run return run data remove storage ra:temp clip.props.\$(name)")
-			raw("\$execute unless data storage ra:temp clip.props.\$(name) run return 0")
-			raw("execute store result score #clip.g $t run data get storage ra:temp clip_spec.grid")
-			raw("execute unless score #clip.g $t matches 1.. run scoreboard players set #clip.g $t 1")
-			for ((i, a) in listOf("x", "y", "z").withIndex()) {
-				raw("\$execute store result score #clip.v $t run data get storage ra:temp clip.props.\$(name).$a")
-				raw("execute store result score #clip.min $t run data get storage ra:temp clip_spec.min[$i]")
-				raw("execute store result score #clip.max $t run data get storage ra:temp clip_spec.max[$i]")
-				raw("execute if score #clip.adm $t matches 1 if data storage ra:temp clip_spec.amin store result score #clip.min $t run data get storage ra:temp clip_spec.amin[$i]")
-				raw("execute if score #clip.adm $t matches 1 if data storage ra:temp clip_spec.amax store result score #clip.max $t run data get storage ra:temp clip_spec.amax[$i]")
-				raw("\$execute unless score #clip.v $t >= #clip.min $t run return run data remove storage ra:temp clip.props.\$(name)")
-				raw("\$execute unless score #clip.v $t <= #clip.max $t run return run data remove storage ra:temp clip.props.\$(name)")
-				raw("scoreboard players operation #clip.r $t = #clip.v $t")
-				raw("scoreboard players operation #clip.r $t %= #clip.g $t")
-				raw("\$execute unless score #clip.r $t matches 0 run return run data remove storage ra:temp clip.props.\$(name)")
-				raw("scoreboard players operation #clip.$a $t = #clip.v $t")
-			}
-			raw("\$data modify storage ra:temp clip.props.\$(name) set value {x:0,y:0,z:0}")
-			for (a in listOf("x", "y", "z")) raw("\$execute store result storage ra:temp clip.props.\$(name).$a int 1 run scoreboard players get #clip.$a $t")
-			raw("data remove storage ra:temp clip_spec")
 		}
 		// {name}: drop clip.props.<name> unless it is a string in its schema format.
 		pack.define(stripText) {

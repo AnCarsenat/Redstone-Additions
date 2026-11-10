@@ -14,6 +14,7 @@ import ra.core.raw
 import ra.tools.datahandler.DataHandler
 import ra.tools.datahandler.DataHandlerActions
 import ra.tools.datahandler.DataHandlerRegistry
+import ra.tools.datahandler.DataHandlerSelection
 import ra.tools.datahandler.props.Vec3Ops.commit
 import ra.tools.datahandler.props.Vec3Ops.registerVec3Ops
 import ra.tools.tool
@@ -61,6 +62,7 @@ object DataHandlerVec3 {
 	private val ask = tool("data_handler/props/vec3/ask")
 	private val nudge = tool("data_handler/props/vec3/nudge")
 	private val reset = tool("data_handler/props/vec3/reset")
+	private val adminSet = tool("data_handler/props/vec3/admin_set")
 
 	/** On a player: the index of the nudge step they chose. */
 	const val STEP = "ra.dh.v3s"
@@ -187,18 +189,22 @@ object DataHandlerVec3 {
 			executeReturnRun("if score #dh.r $T matches ${DataHandlerEntries.LIST}", toggle)
 			callWith(DataHandlerProps.refuse, "storage ra:dh q")
 			raw("execute if data storage ra:dh denied run return run data remove storage ra:dh denied")
+			// The block the menu showed, as genericApply checks a typed answer: these act at once.
+			raw("""execute unless score @s ${DataHandlerRegistry.MENU_SEL} = @s ${DataHandlerSelection.SEL} run tellraw @s [$PREFIX,{text:"You selected another block since; nothing was changed.",color:"red"}]""")
+			raw("execute unless score @s ${DataHandlerRegistry.MENU_SEL} = @s ${DataHandlerSelection.SEL} run return 0")
 			raw("scoreboard players operation #v3.adm $T = #dh.adm $T")
 			function(Vec3Ops.bounds)
-			// [Type]
-			raw("execute if score #dh.r $T matches 0..2 store result storage ra:dh q.j int 1 run scoreboard players get #dh.r $T")
-			executeReturnRun("if score #dh.r $T matches 0..2", ask, "with storage ra:dh q")
-			// A step.
+			// A step: only this player's choice, the block is not touched.
 			chosenStep()
 			raw("scoreboard players operation #v3.k $T = #dh.r $T")
 			raw("scoreboard players remove #v3.k $T 20")
 			raw("execute if score #dh.r $T matches 20..23 if score #v3.k $T < #v3.n $T run scoreboard players operation @s $STEP = #v3.k $T")
 			executeReturnRun("if score #dh.r $T matches 20..23", DataHandler.refresh)
 			callWith(Vec3Ops.load, "storage ra:dh q")
+			raw("execute if function ${adminSet.asId()} run return 0")
+			// [Type]
+			raw("execute if score #dh.r $T matches 0..2 store result storage ra:dh q.j int 1 run scoreboard players get #dh.r $T")
+			executeReturnRun("if score #dh.r $T matches 0..2", ask, "with storage ra:dh q")
 			executeRun("if score #dh.r $T matches 10..15", nudge)
 			raw("execute if score #dh.r $T matches 30 store result score #v3.ok $T run function ${Vec3Ops.pick.asId()}")
 			raw("execute if score #dh.r $T matches 30 if score #v3.ok $T matches 0 run return 0")
@@ -223,9 +229,24 @@ object DataHandlerVec3 {
 		// The row's own action (100 + i, typed by hand: the row's button is [Edit]): the same.
 		pack.define(openRow) { function(toggle) }
 
-		// [-X] .. [+Z]: #dh.r 10..15, the step #v3.st, stopping at the range's end. Only the moved
-		// axis is clamped: another one an admin set out of the players' range is refused by check,
-		// not quietly changed.
+		// After bounds and load: 1, with the reason, when this player is not an admin and the value
+		// is outside their range on any axis. Only an admin could have set it, and a player's
+		// change (a nudge clamped into range, a pick, a reset) would quietly undo it.
+		pack.define(adminSet) {
+			raw("execute if score #v3.adm $T matches 1 run return 0")
+			raw("scoreboard players set #v3.over $T 0")
+			for ((i, a) in AXES.withIndex()) {
+				raw("execute unless score #v3.$a $T >= #v3.lo$i $T run scoreboard players set #v3.over $T 1")
+				raw("execute unless score #v3.$a $T <= #v3.hi$i $T run scoreboard players set #v3.over $T 1")
+			}
+			raw("execute if score #v3.over $T matches 0 run return 0")
+			raw("""tellraw @s [$PREFIX,{nbt:"q.name",storage:"ra:dh",color:"yellow"},{text:" was set by an admin, outside your range; only an admin can change it.",color:"red"}]""")
+			raw("playsound minecraft:block.note_block.bass block @s[scores={${Obj.USER_SOUND}=1..}] ~ ~ ~ 0.7 0.7")
+			raw("return 1")
+		}
+
+		// [-X] .. [+Z]: #dh.r 10..15, the step #v3.st, stopping at the range's end (the value was
+		// inside it: adminSet refused anything else).
 		pack.define(nudge) {
 			raw("scoreboard players set #v3.st $T 1")
 			for (k in 0 until Vec3Spec.MAX_STEPS)
@@ -268,6 +289,7 @@ object DataHandlerVec3 {
 			raw("scoreboard players operation #v3.adm $T = #dh.adm $T")
 			function(Vec3Ops.bounds)
 			callWith(Vec3Ops.load, "storage ra:dh q")
+			raw("execute if function ${adminSet.asId()} run return 0")
 			raw("execute store result score #v3.j $T run data get storage ra:dh cur.j")
 			for ((i, a) in AXES.withIndex())
 				raw("execute if score #v3.j $T matches $i store result score #v3.$a $T run data get storage ra:input consume.number")

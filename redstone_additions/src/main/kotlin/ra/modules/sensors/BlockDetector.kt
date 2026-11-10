@@ -50,9 +50,10 @@ import ra.modules.sensors.SensorPoll.startIfIdle
  * BLOCK. An item-type property (the Data Handler's [Set from hand] copies a held block's id): a
  * block id or a block tag (`minecraft:oak_door`, `#minecraft:logs`). Empty: any block but air.
  * Pasted into `if block`, so, as the Held Item Detector's item, it is checked by
- * `ra_lib:safe/guard` (format ID: one bare word) and by a probe that instantiates the same test
- * against the detector's own position: an unknown id fails there, and the value probed last is
- * kept (`data.data.valid_block` / `invalid_block`) so an unchanged value is probed once.
+ * `ra_lib:safe/guard` (format ID: one bare word). The test itself, at the target, returns 1 on a
+ * match and 2 on none; an unknown id or tag fails the macro line and leaves the caller's 0. Such
+ * a value is kept in `data.data.invalid_block` and compared (an NBT match) before the next read,
+ * so an unchanged bad value is not tried, and logged, again every second.
  *
  * OUTPUT as the Entity Detector's: iron blocks in the 3x3x3 around it become redstone blocks. A
  * target in an unloaded chunk reads as no match. Read once a second by [SensorPoll].
@@ -75,7 +76,7 @@ object BlockDetector {
 	/** As the marker, at it: look at the target, switch the shell. */
 	val update = block.fn("update")
 	private val find = block.fn("find")
-	private val probe = block.fn("probe")
+	private val known = block.fn("known")
 	private val detect = block.fn("detect")
 	private val detectAny = block.fn("detect_any")
 
@@ -122,15 +123,17 @@ object BlockDetector {
 		}
 		pack.define(find) { find() }
 
-		// Macro {block}: instantiating it is the test; an unknown block id or tag fails here.
-		pack.define(probe) {
-			raw("\$execute if block ~ ~ ~ \$(block)")
-			raw("return 1")
+		// Macro {block}: 1 when it is the block last found unknown (data.data.invalid_block). An
+		// NBT match, so an unchanged bad id costs one test and no error line.
+		pack.define(known) {
+			raw("\$execute if data entity @s data.data{invalid_block:\"\$(block)\"} run return 1")
+			raw("return 0")
 		}
-		// Macro {x, y, z, block}: three integers from readVec3, and a block that passed guard and probe.
+		// Macro {x, y, z, block}: three integers from readVec3, and a block that passed the guard.
+		// 1 match, 2 no match; an unknown id or tag fails the line, and the caller keeps its 0.
 		pack.define(detect) {
 			raw("\$execute positioned ~\$(x) ~\$(y) ~\$(z) if block ~ ~ ~ \$(block) run return 1")
-			raw("return 0")
+			raw("return 2")
 		}
 		// Macro {x, y, z}: anything but air.
 		pack.define(detectAny) {
@@ -156,27 +159,17 @@ object BlockDetector {
 		raw("execute unless data entity @s data.properties.block run return run function ${detectAny.asId()} with $S.pos")
 		raw("execute if data entity @s data.properties{block:\"\"} run return run function ${detectAny.asId()} with $S.pos")
 		guardProperty("block", TextFormat.ID)
-		raw("data modify $S.block set from entity @s data.properties.block")
+		raw("data modify $S.pos.block set from entity @s data.properties.block")
 
-		// Probed already: known bad, stop; known good, skip the probe.
-		raw("data modify $S.was set from entity @s data.data.invalid_block")
-		raw("execute store success score #sn.chg $T run data modify $S.was set from $S.block")
-		raw("execute if score #sn.chg $T matches 0 run return 0")
-		raw("data remove $S.was")
-		raw("data modify $S.was set from entity @s data.data.valid_block")
-		raw("execute store success score #sn.chg $T run data modify $S.was set from $S.block")
-		raw("scoreboard players set #sn.ok $T 1")
-		// 0 first: a macro that fails to instantiate leaves it so, whatever `store` does on a failure.
-		raw("execute if score #sn.chg $T matches 1 run scoreboard players set #sn.ok $T 0")
-		raw("execute if score #sn.chg $T matches 1 store result score #sn.ok $T run function ${probe.asId()} with $S")
-		raw("execute if score #sn.chg $T matches 1 if score #sn.ok $T matches 1 run data modify entity @s data.data.valid_block set from $S.block")
-		raw("execute if score #sn.chg $T matches 1 if score #sn.ok $T matches 1 run data remove entity @s data.data.invalid_block")
-		raw("execute if score #sn.ok $T matches 0 run data modify entity @s data.data.invalid_block set from $S.block")
-		raw("execute if score #sn.ok $T matches 0 run data remove entity @s data.data.valid_block")
-		raw("execute if score #sn.ok $T matches 0 run return 0")
-		raw("data remove $S.was")
-
-		raw("data modify $S.pos.block set from $S.block")
-		raw("return run function ${detect.asId()} with $S.pos")
+		// Found unknown last time and unchanged: off, without trying it again.
+		raw("execute store result score #sn.bad $T run function ${known.asId()} with $S.pos")
+		raw("execute if score #sn.bad $T matches 1 run return 0")
+		// 0 first: a macro that fails to instantiate leaves it so (an unknown id or tag).
+		raw("scoreboard players set #sn.ok $T 0")
+		raw("execute store result score #sn.ok $T run function ${detect.asId()} with $S.pos")
+		raw("execute if score #sn.ok $T matches 0 run data modify entity @s data.data.invalid_block set from $S.pos.block")
+		raw("execute if score #sn.ok $T matches 1.. run data remove entity @s data.data.invalid_block")
+		raw("execute if score #sn.ok $T matches 1 run return 1")
+		raw("return 0")
 	}
 }

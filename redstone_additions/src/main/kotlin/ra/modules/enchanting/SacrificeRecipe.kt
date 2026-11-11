@@ -23,8 +23,20 @@ import ra.core.raw
  * [sacrificeName] names an input matched on more than its id (custom_data): it is written as a
  * `# Sacrifice: <name>` comment above the recipe, which is where tools/recipe_render/atlas.py
  * reads it for the Recipe Atlas. Inputs matched by id alone are named from the id.
+ *
+ * [won] and [lost] are optional messages for the player who threw the item (its `Thrower`, reached
+ * with `execute on origin`), sent on a hit and on a miss. Plain text without double quotes. A rare
+ * result is worth telling the player about; a 1% core rolled every second is not.
  */
-fun Function.sacrificeRecipe(inputFilter: String, resultStack: String, chance: Int, sacrificeName: String? = null) {
+fun Function.sacrificeRecipe(
+	inputFilter: String,
+	resultStack: String,
+	chance: Int,
+	sacrificeName: String? = null,
+	won: String? = null,
+	lost: String? = null,
+) {
+	require(won?.contains('"') != true && lost?.contains('"') != true) { "sacrifice messages must not contain double quotes" }
 	raw("execute if data storage ra:enchant result run return 0")
 	// Directly above the matching line: the atlas reads the comment just above it.
 	if (sacrificeName != null) comment("Sacrifice: $sacrificeName")
@@ -33,6 +45,8 @@ fun Function.sacrificeRecipe(inputFilter: String, resultStack: String, chance: I
 		ifCondition { data(Storage.ENCHANT, "result") }
 		run { data(Storage.ENCHANT) { modify("chance") { set(chance) } } }
 	}
+	if (won != null) raw("execute if data storage ra:enchant result run data modify storage ra:enchant won set value \"$won\"")
+	if (lost != null) raw("execute if data storage ra:enchant result run data modify storage ra:enchant lost set value \"$lost\"")
 	execute {
 		ifCondition { data(Storage.ENCHANT, "result") }
 		run { returnValue(1) }

@@ -37,7 +37,7 @@ described in [Contributing Guidelines](contributing-guidelines.md#installing-int
 
 ## Modules
 
-**Looking for a recipe? [The Recipe Atlas](recipe-atlas.md) has all 117 of them on one
+**Looking for a recipe? [The Recipe Atlas](recipe-atlas.md) has all 116 of them on one
 page**, listed A to Z and grouped by module — plus the five items that have no recipe
 and are instead gambled for on an [enchanting table](enchant-crafting.md). This table
 is the shortcut: one sample per module, and where to read about it.
@@ -66,7 +66,7 @@ is the shortcut: one sample per module, and where to read about it.
 Current pack totals:
 
 - 97 placeable custom blocks
-- 117 recipes, all of them in the [Recipe Atlas](recipe-atlas.md)
+- 116 recipes, all of them in the [Recipe Atlas](recipe-atlas.md)
 - 9 tools (Wrench, Goggles, Data Handler, Creative Data Handler, Clipboard,
   Multimeter, Redstone Remote, Pager, Anchor Tablet)
 
@@ -85,7 +85,7 @@ Current pack totals:
 | `/function ra_multiblock:blocks/give_all` | Multiblock bases |
 | `/function ra_infinite:items/give_all` | Generator casing and generators |
 | `/function ra_jetpacks:items/give_all` | Jetpack kits |
-| `/function ra_ender:items/give_all` | Ender vaults and Teleport Anchors |
+| `/function ra_ender:items/give_all` | Ender vaults, Teleport Anchor, Anchor Terminal, Anchor Tablet and an Overstar |
 | `/function ra_displays:items/give_all` | Display blocks |
 | `/function ra_automation:items/give_all` | Crafter Controller, a Pattern, Uncrafter, Experience Absorber, Item Pipe Splitter and Conveyor |
 | `/function ra_security:items/give_all` | Keypad |

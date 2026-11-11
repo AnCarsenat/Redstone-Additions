@@ -1,6 +1,6 @@
 # Recipe Atlas
 
-Every recipe in the pack, in one place: 117 of them.
+Every recipe in the pack, in one place: 116 of them.
 
 !!! tip "Finding one"
     Use the search box with the item's name — every recipe below is indexed by
@@ -92,7 +92,7 @@ what the pack actually contains rather than what someone remembered to add.
 | [Liquid Tank](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
 | [Liquid Valve](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
 | [Magic Crate](#interactive-machines) | [Interactive Machines](interactive-machines.md) | Crafting table |
-| [Master Capture Net](#farming) | [Farming](farming.md) | Crafting table |
+| [Master Capture Net](#not-crafted-won-on-an-enchanting-table) | [Farming](farming.md) | Enchanting table |
 | [Message Block](#interactive-machines) | [Interactive Machines](interactive-machines.md) | Crafting table |
 | [Mineral Core](#not-crafted-won-on-an-enchanting-table) | [Infinite Generators](infinite-generators.md) | Enchanting table |
 | [Mineral Generator](#infinite-generators) | [Infinite Generators](infinite-generators.md) | Crafting table, shapeless |
@@ -101,6 +101,7 @@ what the pack actually contains rather than what someone remembered to add.
 | [Nether Generator](#infinite-generators) | [Infinite Generators](infinite-generators.md) | Crafting table, shapeless |
 | [Netherite Multiblock Base](#multiblocks) | [Multiblocks](multiblocks.md) | Crafting table |
 | [Network Gauge](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
+| [Overstar](#not-crafted-won-on-an-enchanting-table) | [Ender Links](ender-links.md) | Enchanting table |
 | [Pager](#wireless-redstone) | [Wireless Redstone](wireless-redstone.md) | Crafting table |
 | [Pattern](#automation) | [Automation](automation.md) | Crafting table |
 | [Player Detector](#sensors) | [Sensors](sensors.md) | Crafting table |
@@ -209,7 +210,6 @@ Module page: [Farming](farming.md) — give everything: `/function ra_farming:it
 | ---- | ------ | ------- | ------------ |
 | **Breeder** | ![Breeder recipe](images/recipes/ra_interactive/breeder.png){ width="220" } | Crafting table | `ra_interactive:breeder` |
 | **Capture Net** | ![Capture Net recipe](images/recipes/ra_farming/capture_net.png){ width="220" } | Crafting table | `ra_farming:capture_net` |
-| **Master Capture Net** | ![Master Capture Net recipe](images/recipes/ra_farming/master_capture_net.png){ width="220" } | Crafting table | `ra_farming:master_capture_net` |
 | **Sprinkler** | ![Sprinkler recipe](images/recipes/ra_farming/sprinkler.png){ width="220" } | Crafting table | `ra_farming:sprinkler` |
 
 ## Infinite Generators
@@ -398,6 +398,8 @@ second, so a stack of 64 is 64 separate rolls. Full explanation on
 | --------- | ------- | ------ | ------ |
 | Coal | **Enchanted Coal** | 1% | [Interactive Machines](interactive-machines.md) |
 | Iron Jetpack Kit | **Infinite Iron Jetpack Kit** | 1% | [Jetpacks](jetpacks.md) |
+| Capture Net (empty) | **Master Capture Net** | 35% | [Farming](farming.md) |
 | Stone | **Mineral Core** | 1% | [Infinite Generators](infinite-generators.md) |
 | Netherrack | **Nether Core** | 1% | [Infinite Generators](infinite-generators.md) |
+| Nether Star | **Overstar** | 10% | [Ender Links](ender-links.md) |
 | Poppy | **Poppy Core** | 1% | [Infinite Generators](infinite-generators.md) |

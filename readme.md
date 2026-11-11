@@ -5,7 +5,7 @@
 <h1 align="center">Redstone Additions</h1>
 
 <p align="center">
-  <strong>97 custom blocks. 9 tools. 117 recipes. 2 jetpacks and 3 upgrade kits. Vanilla datapack for Minecraft 26.3.</strong>
+  <strong>97 custom blocks. 9 tools. 116 recipes. 2 jetpacks and 3 upgrade kits. Vanilla datapack for Minecraft 26.3.</strong>
 </p>
 
 <p align="center">
@@ -18,7 +18,7 @@
   <img src="https://img.shields.io/badge/Version-v6.0.3-blue" alt="Version v6.0.3">
   <img src="https://img.shields.io/badge/Blocks-97-red" alt="97 blocks">
   <img src="https://img.shields.io/badge/Tools-9-lightgrey" alt="9 tools">
-  <img src="https://img.shields.io/badge/Recipes-117-8A2BE2" alt="117 recipes">
+  <img src="https://img.shields.io/badge/Recipes-116-8A2BE2" alt="116 recipes">
 </p>
 
 <p align="center">
@@ -281,7 +281,7 @@ Fitted kits live on the chestplate and are listed in its lore.
 - Multimeter — reads a network's numbers into chat
 - Redstone Remote — wireless channel control
 - Pager — alerts you when its channel turns on, anywhere in your inventory
-- Anchor Tablet — teleport to any Teleport Anchor from anywhere, for ender pearls
+- Anchor Tablet — teleport to any Teleport Anchor from anywhere, for ender pearls; crafted with an Overstar
 
 See the [Tools page](https://ancarsenat.github.io/Redstone-Additions/tools/) for
 recipes and usage.
@@ -391,7 +391,7 @@ Starter command:
 | `/function ra_infinite:items/give_all` | Generator casing and generators |
 | `/function ra_jetpacks:items/give_all` | Jetpack kits |
 | `/function ra_enchanting:items/give_all` | Disenchanter, Book Upgrader and Book Printer |
-| `/function ra_ender:items/give_all` | Ender vaults, Teleport Anchor, Anchor Terminal and Anchor Tablet |
+| `/function ra_ender:items/give_all` | Ender vaults, Teleport Anchor, Anchor Terminal, Anchor Tablet and an Overstar |
 | `/function ra_displays:items/give_all` | Display blocks |
 | `/function ra_automation:items/give_all` | Crafter Controller, a Pattern, Uncrafter, Experience Absorber, Item Pipe Splitter and Conveyor |
 | `/function ra_security:items/give_all` | Keypad |

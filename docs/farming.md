@@ -15,12 +15,14 @@ somewhere else.
 | Item | Looks like | Recipe |
 | --- | --- | --- |
 | Capture Net | bundle | ![Capture Net recipe](images/recipes/ra_farming/capture_net.png){ width="220" } |
-| Master Capture Net | bundle, purple name | ![Master Capture Net recipe](images/recipes/ra_farming/master_capture_net.png){ width="220" } |
+| Master Capture Net | bundle, purple name | an empty Capture Net on an enchanting table, see below |
 
-The Master Capture Net is a Capture Net (the bundle in the picture) and a nether star, anywhere in
-the crafting grid. The upgrade keeps whatever the net holds. A plain rabbit hide works in place of
-the Capture Net too, by design: the recipe cannot tell them apart, and the result is an empty
-Master Capture Net either way.
+The Master Capture Net has no crafting recipe: throw an **empty** Capture Net onto a vanilla
+enchanting table. Once a second the table takes one net and rolls, as in
+[Enchant Crafting](enchant-crafting.md): **35%** of the time it comes back as an empty Master
+Capture Net, otherwise the net is gone. The player who threw it is told how it went. A net that
+holds a mob is left lying on the table, so a caught mob is never lost, and a Master net is not
+rolled again.
 
 Operators: `/function ra_farming:items/give_all` (every block and both nets),
 `/function ra_farming:capture_net/give`, `/function ra_farming:capture_net/give_master`.

@@ -119,11 +119,22 @@ object AnchorTablet {
 			raw("give @s ${item.giveArg()}")
 			raw("""tellraw @s [{text:"[RA] ",color:"gold"},{text:"Received ",color:"gray"},{text:"Anchor Tablet",color:"light_purple"},{text:" — right-click it to choose where to go",color:"gray"}]""")
 		}
-		pack.shapedRecipe(Ns.ENDER, "anchor_tablet", item.recipeResult(Items.BLAZE_ROD), Unlock(Items.ENDER_EYE), RecipeCategory.MISC) {
-			pattern(" E ", "GCG", " G ")
+		// End and beyond: an Overstar (a nether star that survived an enchanting table, 1 in 10),
+		// a recovery compass (echo shards, the deep dark) and ender eyes. The Overstar is a test
+		// instance block (see [Overstar]), so no other item fits its slot. Unlocked on holding one,
+		// matched on its custom data: a bare test instance block is a creative item.
+		pack.shapedRecipe(
+			Ns.ENDER, "anchor_tablet", item.recipeResult(Items.BLAZE_ROD),
+			Unlock(Items.TEST_INSTANCE_BLOCK, "has_overstar") {
+				predicates { customData { this["ra"] = nbt { this["overstar"] = true } } }
+			},
+			RecipeCategory.MISC,
+		) {
+			pattern("EGE", "GOG", "ERE")
 			key("E", Items.ENDER_EYE)
 			key("G", Items.GOLD_INGOT)
-			key("C", Items.COMPASS)
+			key("O", listOf(Items.TEST_INSTANCE_BLOCK))
+			key("R", Items.RECOVERY_COMPASS)
 		}
 
 		val useAdvancement = pack.advancement("tablet/use") {

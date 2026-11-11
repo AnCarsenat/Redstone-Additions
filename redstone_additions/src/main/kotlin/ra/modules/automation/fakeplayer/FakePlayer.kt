@@ -50,8 +50,17 @@ import ra.modules.automation.fakeplayer.FakePlayerRun.registerFakePlayerRun
  * that many hostile mobs are within the radius, 1 to [MAX_MOBS], vanilla's monster cap),
  * `data.properties.eu_per_mob` (admin only). `data.data.delay`: the spawner countdown.
  * `data.status.state`, `data.status.spawned`: what the Goggles show.
+ *
+ * DISABLED (6.0.3). The Fake Player is not a good enough stand-in for a player: its natural
+ * spawning uses simplified biome lists and spawns single mobs, not vanilla's packs. Until it is,
+ * [ENABLED] is false and the module never registers it: no recipe, no item in `give_all` or the
+ * bundle, no advancement, no settings rows, nothing on the automation clock, and none of its
+ * functions are written into the pack. The code is kept so it can come back by setting [ENABLED].
  */
 object FakePlayer {
+	/** Off: see DISABLED above. Everything that registers or runs the Fake Player checks it. */
+	const val ENABLED = false
+
 	val block = CustomBlock(Ns.AUTOMATION, "fake_player", "Fake Player", model = "minecraft:player_head")
 	val item = block.loreItem {
 		lore(

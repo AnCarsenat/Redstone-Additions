@@ -270,7 +270,13 @@
   to you). Twice a second it compares the crafter's slots with the Pattern; when every slot holds
   the Pattern's item and every slot the Pattern leaves empty is empty, it gives the crafter a
   short redstone pulse and the crafter crafts once. It then waits until the crafter's contents
-  change, so a crafter that cannot craft is not fired again and again. Shift+RMB with the Wrench
+  change, so a crafter that cannot craft is not fired again and again. With a container on the
+  Controller's other side, opposite the crafter, it also fills the crafter: every half second it
+  moves one ingredient from the container into each empty slot the Pattern names, then fires once
+  every slot is right. Only plain items are taken (never a renamed, enchanted or damaged one), an
+  item leaves the container only once it is in the crafter, a slot holding something else is left
+  alone, and a slot disabled in the crafter is never filled (the Goggles say so when the Pattern
+  needs one). With no container there it only compares and fires. Shift+RMB with the Wrench
   switches it off and on, a plain wrench click takes the Pattern back out, and breaking it drops
   the Pattern. The Goggles show its state and how many times it has fired. Crafted from five iron
   ingots, a redstone dust, two target blocks and a crafter.
@@ -283,8 +289,9 @@
   back more than went in: only exact recipes, none a stonecutter makes more cheaply, none taking
   "any planks", none returning buckets or bottles. Damaged, enchanted, renamed or unknown items
   are passed to the output unchanged. Nothing moves until the output has room and the grid holds
-  the whole price; a redstone signal stops it. One item a second. Crafted from six iron ingots, a
-  grindstone, a crafter and a redstone block.
+  the whole price; a redstone signal stops it. One item a second. It is a grindstone standing on
+  the floor, turned the way it was placed. Crafted from six iron ingots, a grindstone, a crafter
+  and a redstone block.
 - **Experience Absorber** (Automation). Collects the experience orbs within its *radius* (default
   4, up to 8, admins up to 16; Shift+RMB with the Wrench cycles 2, 4, 6, 8) once a second and sends
   them into a pipe, tank or drain touching it as liquid experience, at 100 mL a point like the Fluid
@@ -383,16 +390,10 @@
   The mob is only removed once the net holds it, and the net is only emptied once the mob is back.
   The Capture Net is crafted from three string and two sticks; the upgrade keeps whatever the net
   holds, and a plain rabbit hide with a nether star makes an empty Master Capture Net too.
-- **Recipe Pattern** (Automation). A Pattern that makes the Crafter Controller fill the crafter
-  itself: put a container on the Controller's other side, opposite the crafter, and every half
-  second the Controller moves one ingredient from it into each empty slot the Pattern names, then
-  fires the crafter once every slot is right. Only plain items are taken (never a renamed,
-  enchanted or damaged one); a slot holding something else is left alone, and a slot disabled in
-  the crafter is never filled (the Goggles say so when the Pattern needs one). Recorded, cleared and
-  read like a Pattern, and every block that takes Patterns takes it; its data is the Pattern's
-  with `recipe:1b` added. Crafted from three paper and a hopper (makes three).
-- **Item Pipe Splitter** (Automation). Takes the items out of the container above it (a chest, a
-  hopper pointing into it, the end of an Item Pipe) and shares them out between the containers on
+- **Item Pipe Splitter** (Automation). Looks like an Item Pipe (a dispenser, its opening facing
+  up) but is neither a container nor a pipe: nothing can be put into it, redstone never makes it
+  shoot anything, and Item Pipes do not push into it. Takes the items out of the container above
+  it (a chest, a hopper pointing into it, the end of an Item Pipe) and shares them out between the containers on
   its four sides and under it, one item at a time and each side in turn. Each side has a share
   (0 to 16, default 1) in the Data Handler: a side gets that many items in a row before the next
   side's turn, so 2 and 1 splits two thirds and one third, and 0 switches a side off. A side with
@@ -400,22 +401,6 @@
   only leave the input once there is room, so none are dropped. 8 items a second by default (Shift+RMB with the Wrench: 2, 4, 8, 16; admins up to 64),
   on the automation clock; redstone stops it. The Goggles show its state, speed and the items
   moved. Crafted from a hopper, a comparator and four iron ingots.
-- **Fake Player** (Automation). Keeps a mob farm or a spawner running while nobody is near: a
-  data pack cannot add a player, so it does the spawning itself, by the vanilla rules, for EU per
-  mob (*eu_per_mob*, default 250, admins only) from a wire or battery touching it. Next to a
-  vanilla spawner it runs that spawner with the spawner's own delay, count, range and nearby-mob
-  limit, light 11 or less (zombies, skeletons, spiders, cave spiders, blazes, silverfish and the
-  other common hostile spawner mobs; not slimes, magma cubes, animals or trial spawners). On its
-  own it spawns the Overworld's hostile mobs from the biome's vanilla list and weights at
-  completely dark spots with room and a solid floor in its *radius* (default 8, up to 16; admins
-  up to 32), 4 tries a second, until *max_mobs* hostile mobs (default 20, up to 70) are around.
-  Never more than vanilla: nothing in peaceful or with the spawning gamerules off, and nothing
-  while a player is in range, since vanilla is spawning then. Its mobs do not despawn while a Fake
-  Player is within 48 blocks and go back to the normal rules 30 to 60 seconds after none is. The
-  Goggles show what it is doing and how many it spawned. Crafted from four gold ingots, an eye of
-  ender, an armor stand and a redstone block. A spawner whose mob has riders is not run, and a
-  summon the game refuses gives its EU back. [Automation](https://ancarsenat.github.io/Redstone-Additions/automation/) lists exactly what it
-  does and does not do.
 - **Conveyor** (Automation). A smooth stone slab with an arrow that carries dropped items, mobs
   and players the way it points, at *speed* blocks a second (1 to 5, default 2; admins up to 10;
   Shift+RMB with the Wrench). Players ride in small steps every tick, so the ride is smooth, and
@@ -647,7 +632,8 @@
   marker, the player tagged `ra.auto.pattern_user`. The Pattern's data is
   `{ra:{pattern:{slots:[<nine item ids, "" for empty>]}}}` in crafter slot order; check an id with
   `ra_lib:safe/check` (format ID) before pasting it, as the Crafter Controller does when a Pattern
-  is loaded. The Controller only runs while one with a valid Pattern is loaded (tag
+  is loaded. A Recipe Pattern made with an earlier 6.0.3 build (`recipe:1b` beside `slots`) is a
+  plain Pattern: nothing reads the flag. The Controller only runs while one with a valid Pattern is loaded (tag
   `ra.auto.cc_armed`, a 10-tick schedule), and skips the slot comparison while the crafter's
   `Items` are unchanged since its last look.
 - **Uncrafter table** (`ra/modules/automation/uncrafter/UncraftTable.kt`): a curated list of
@@ -656,6 +642,13 @@
   share one 20-tick schedule (`AutomationClock`, markers tagged `ra.auto.clocked`) started at
   load, with no per-tick test, and neither is a network node: they reach into the network of a node beside
   them, as the Boiler does.
+- **Fake Player not included** (`ra/modules/automation/fakeplayer/`). Its natural spawning uses
+  simplified biome lists and spawns single mobs, so it is not a good enough stand-in for a player.
+  The code stays in the source, switched off by `FakePlayer.ENABLED`: no recipe, item, bundle
+  entry, advancement, settings row or clock work, and none of its functions are in the pack.
+- **`ra_lib:skin/apply_facing {real, skin, id, facing}`**: a skin turned to a fixed facing over a
+  real block that has no `facing` of its own. The Item Pipe Splitter is cobblestone wearing a
+  dispenser facing up, repaired on the automation clock when its skin goes missing.
 - **Shared formulas are named providers** (`ra/core/Compute.kt`: `namedProvider`,
   `defineProvider`). A formula used in more than one place is a 26.3 `context_int_provider` file
   that `/compute` names by id: `ra_lib:transport/net/free` (the room on a network, used by pumps,

@@ -5,7 +5,7 @@
 <h1 align="center">Redstone Additions</h1>
 
 <p align="center">
-  <strong>99 custom blocks. 9 tools. 118 recipes. 2 jetpacks and 3 upgrade kits. Vanilla datapack for Minecraft 26.3.</strong>
+  <strong>98 custom blocks. 9 tools. 116 recipes. 2 jetpacks and 3 upgrade kits. Vanilla datapack for Minecraft 26.3.</strong>
 </p>
 
 <p align="center">
@@ -16,9 +16,9 @@
 <p align="center">
   <img src="https://img.shields.io/badge/Minecraft-26.3-2EA44F" alt="Minecraft 26.3">
   <img src="https://img.shields.io/badge/Version-v6.0.3-blue" alt="Version v6.0.3">
-  <img src="https://img.shields.io/badge/Blocks-99-red" alt="99 blocks">
+  <img src="https://img.shields.io/badge/Blocks-98-red" alt="98 blocks">
   <img src="https://img.shields.io/badge/Tools-9-lightgrey" alt="9 tools">
-  <img src="https://img.shields.io/badge/Recipes-118-8A2BE2" alt="118 recipes">
+  <img src="https://img.shields.io/badge/Recipes-116-8A2BE2" alt="116 recipes">
 </p>
 
 <p align="center">
@@ -219,11 +219,10 @@ netherrack or poppies on an enchanting table.
 - Text Screen — glowing nixie-style text: the redstone level picks which item's name it shows
 
 ### Automation (6)
-- Crafter Controller — fires the crafter next to it once it holds what its Pattern says; with a Recipe Pattern it fills the crafter itself from a container
+- Crafter Controller — fires the crafter next to it once it holds what its Pattern says; with a container on its other side it fills the crafter itself
 - Uncrafter — takes items back apart into their ingredients, for EU
 - Experience Absorber — collects experience orbs into a fluid network
 - Item Pipe Splitter — shares the items of the container above it between the containers around it
-- Fake Player — keeps a mob farm or a spawner beside it running with no player around, for EU per mob
 - Conveyor — a slab that carries items, mobs and players the way its arrow points
 
 ### Security (1)
@@ -265,7 +264,6 @@ Items: Capture Net (carries an animal) and Master Capture Net (carries any mob b
 - Enchanted Coal Block — nine Enchanted Coal make one; one block plus a stick makes a Big Torch
 - Item Crate — what the Boxer packs a chest into, and the Unboxer unpacks
 - Pattern — sneak + right-click a crafter to record its grid, for the Crafter Controller
-- Recipe Pattern — a Pattern the Crafter Controller fills the crafter from
 - Goggles Lens — fits into any helmet and gives it the Goggles' view;
   `/trigger ra.goggles` switches it off or takes it back out
 
@@ -394,7 +392,7 @@ Starter command:
 | `/function ra_enchanting:items/give_all` | Disenchanter, Book Upgrader and Book Printer |
 | `/function ra_ender:items/give_all` | Ender vaults, Teleport Anchor, Anchor Terminal and Anchor Tablet |
 | `/function ra_displays:items/give_all` | Display blocks |
-| `/function ra_automation:items/give_all` | Crafter Controller, a Pattern, a Recipe Pattern, Uncrafter, Experience Absorber, Item Pipe Splitter, Fake Player and Conveyor |
+| `/function ra_automation:items/give_all` | Crafter Controller, a Pattern, Uncrafter, Experience Absorber, Item Pipe Splitter and Conveyor |
 | `/function ra_security:items/give_all` | Keypad |
 | `/function ra_farming:items/give_all` | Sprinkler, Breeder, Tree Farm, a Capture Net and a Master Capture Net |
 | `/function ra_railworks:items/give_all` | Route Rail |

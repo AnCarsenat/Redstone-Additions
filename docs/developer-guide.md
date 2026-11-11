@@ -774,7 +774,10 @@ function ra_lib:skin/apply {real:"minecraft:barrel",skin:"minecraft:dispenser",i
 function ra_lib:skin/clear {id:"unboxer"}
 ```
 
-Use `ra_lib:skin/apply_static` when the skin block has no `facing` property.
+Use `ra_lib:skin/apply_static` when the skin block has no `facing` property, and
+`ra_lib:skin/apply_facing {real, skin, id, facing}` for a skin with a fixed facing over a real
+block that has none (the Item Pipe Splitter: a dispenser facing up over cobblestone, so it is
+neither a container nor something a redstone edge can fire).
 
 Then repair a skin that went missing, once per tick, only for the blocks
 actually lacking one:

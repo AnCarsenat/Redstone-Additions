@@ -6,14 +6,16 @@ import ra.core.define
 import ra.core.raw
 
 /**
- * A [CrafterController] holding a Recipe Pattern: it fills the crafter itself.
+ * Every look of an armed [CrafterController]: finds the crafter and, when a container stands on
+ * the controller's other side, fills the crafter from it. Without one it only compares and fires.
  *
  * WHERE FROM. The source is the container on the controller's other side, opposite the crafter
  * (crafter above, chest below; crafter to the north, chest to the south). Any block of
- * `#ra_lib:containers`: a chest, barrel, hopper, dropper, a shulker box.
+ * `#ra_lib:containers` but a crafter: a chest, barrel, hopper, dropper, a shulker box. Another
+ * crafter is never emptied into this one.
  *
  * ONE LOOK (every [CrafterControllerRun.PERIOD] ticks, with the rest of the controllers):
- *  1. A powered crafter is left alone.
+ *  1. A powered crafter is left alone, and so is one that has disabled a slot the Pattern names.
  *  2. Every slot the Pattern names that is empty in the crafter gets ONE item of that id from the
  *     source: the first stack of it, in the source's order, with no components at all (a renamed,
  *     enchanted or damaged item is never used up as an ingredient). One per slot: the crafter
@@ -34,16 +36,13 @@ import ra.core.raw
  * is missing from the source is one NBT filter test on the source.
  */
 internal object CrafterFill {
-	/** On a controller with a Recipe Pattern loaded (and [CrafterControllerRun.ARMED]). */
-	const val FILL = "ra.auto.cc_fill"
-
 	private const val CC = CrafterControllerRun.STORE
 	private const val T = Obj.TEMP
 	private const val EMPTY = "minecraft:air"
 
 	private fun fn(path: String) = CrafterController.block.fn("fill/$path")
 
-	/** As an armed filling controller, at it, with `storage d` its data. */
+	/** As an armed controller, at it, with `storage d` its data. */
 	val check = fn("check")
 	private val at = fn("at")
 	private val slots = fn("slots")
@@ -82,7 +81,7 @@ internal object CrafterFill {
 			raw("\$execute positioned \$(c) run function ${disRead.asId()}")
 			raw("execute if score #cc.dis $T matches 1 run data remove storage $CC f")
 			raw("execute if score #cc.dis $T matches 1 run return run ${state(DISABLED_STATE)}")
-			raw("\$execute if block \$(s) #ra_lib:containers if items block \$(s) container.* * run function ${slots.asId()} with storage $CC f")
+			raw("\$execute unless block \$(s) minecraft:crafter if block \$(s) #ra_lib:containers if items block \$(s) container.* * run function ${slots.asId()} with storage $CC f")
 			raw("data remove storage $CC f")
 			raw("\$execute positioned \$(c) run function ${atCrafter.asId()}")
 		}
@@ -165,7 +164,7 @@ internal object CrafterFill {
 		// As the controller, at the crafter.
 		pack.define(atCrafter) {
 			raw("execute unless items block ~ ~ ~ container.* * run data remove entity @s data.data.last")
-			raw("execute unless items block ~ ~ ~ container.* * run return run ${state("waiting for the ingredients")}")
+			raw("execute unless items block ~ ~ ~ container.* * run return run ${state("crafter empty")}")
 			raw("function ${CrafterControllerRun.compareAndFire.asId()}")
 		}
 	}

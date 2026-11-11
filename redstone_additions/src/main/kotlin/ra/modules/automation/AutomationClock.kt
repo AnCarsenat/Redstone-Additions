@@ -14,7 +14,8 @@ import ra.modules.automation.splitter.ItemSplitter
 import ra.modules.automation.uncrafter.Uncrafter
 
 /**
- * The once-a-second clock of the Uncrafter, the Experience Absorber, the Item Pipe Splitter and the Fake Player.
+ * The once-a-second clock of the Uncrafter, the Experience Absorber, the Item Pipe Splitter and the
+ * Fake Player (disabled: [FakePlayer.ENABLED], its lines are not written).
  *
  * NOTHING PER TICK. [run] is scheduled every [PERIOD] ticks from the module load ([startClock])
  * and always reschedules itself, so there is no per-tick test for "is one loaded" (a world-wide
@@ -40,9 +41,11 @@ object AutomationClock {
 			raw("execute as @e[type=minecraft:marker,tag=${Uncrafter.block.tag}] at @s run function ${Uncrafter.run.asId()}")
 			raw("execute as @e[type=minecraft:marker,tag=${XpAbsorber.block.tag}] at @s run function ${XpAbsorber.run.asId()}")
 			raw("execute as @e[type=minecraft:marker,tag=${ItemSplitter.block.tag}] at @s run function ${ItemSplitter.run.asId()}")
-			raw("execute as @e[type=minecraft:marker,tag=${FakePlayer.block.tag}] at @s run function ${FakePlayer.run.asId()}")
-			// Mobs a Fake Player spawned that none has held for a while go back to the vanilla rules.
-			raw("execute if entity @e[tag=${FakePlayer.MOB},limit=1] run function ${FakePlayer.sweep.asId()}")
+			if (FakePlayer.ENABLED) {
+				raw("execute as @e[type=minecraft:marker,tag=${FakePlayer.block.tag}] at @s run function ${FakePlayer.run.asId()}")
+				// Mobs a Fake Player spawned that none has held for a while go back to the vanilla rules.
+				raw("execute if entity @e[tag=${FakePlayer.MOB},limit=1] run function ${FakePlayer.sweep.asId()}")
+			}
 			schedule(run).replace(PERIOD.ticks)
 		}
 	}

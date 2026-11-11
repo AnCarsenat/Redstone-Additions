@@ -15,8 +15,6 @@ import ra.modules.automation.crafter.CrafterControllerRun.resetFlag
 import ra.modules.automation.pattern.Pattern
 import ra.modules.automation.pattern.Pattern.registerPattern
 import ra.modules.automation.pattern.PatternUse
-import ra.modules.automation.pattern.RecipePattern
-import ra.modules.automation.pattern.RecipePattern.registerRecipePattern
 import ra.modules.automation.splitter.ItemSplitter
 import ra.modules.automation.splitter.ItemSplitter.registerItemSplitter
 import ra.modules.automation.AutomationClock.registerAutomationClock
@@ -45,8 +43,10 @@ import ra.modules.automation.uncrafter.UncrafterRun
  * The Uncrafter, the Experience Absorber and the Item Pipe Splitter run on [AutomationClock]: a block of theirs tags its
  * marker [AutomationClock.TAG] at placement and adds itself to the clock's run.
  *
- * The [Pattern] item is shared: a block that takes Patterns adds itself to [Pattern.targets]. A
- * [RecipePattern] is a Pattern with one more flag, so it reaches the same targets.
+ * The [Pattern] item is shared: a block that takes Patterns adds itself to [Pattern.targets].
+ *
+ * The Fake Player is disabled ([FakePlayer.ENABLED]): its code is kept but nothing registers or
+ * runs it.
  */
 object AutomationModule : GameplayModule {
 	override val ns = Ns.AUTOMATION
@@ -54,37 +54,36 @@ object AutomationModule : GameplayModule {
 
 	override fun Ra.register() {
 		registerPattern()
-		registerRecipePattern()
 		registerCrafterController()
 		registerUncrafter()
 		registerXpAbsorber()
 		registerItemSplitter()
-		registerFakePlayer()
+		// Disabled: see FakePlayer.ENABLED.
+		if (FakePlayer.ENABLED) registerFakePlayer()
 		registerConveyor()
 		registerAutomationClock()
 
 		pack.define(ref(ns, "items/give_all")) {
 			function(CrafterController.block.give)
 			function(Pattern.give)
-			function(RecipePattern.give)
 			function(Uncrafter.block.give)
 			function(XpAbsorber.block.give)
 			function(ItemSplitter.block.give)
-			function(FakePlayer.block.give)
+			if (FakePlayer.ENABLED) function(FakePlayer.block.give)
 			function(Conveyor.block.give)
 		}
 		bundles += GiveBundle(
 			"automation", "Automation Bundle", "Machines that run vanilla blocks for you", ns,
-			listOf(
-				CrafterController.item.stackNbt(), Pattern.item.stackNbt(), RecipePattern.item.stackNbt(),
+			listOfNotNull(
+				CrafterController.item.stackNbt(), Pattern.item.stackNbt(),
 				Uncrafter.item.stackNbt(), XpAbsorber.item.stackNbt(), ItemSplitter.item.stackNbt(),
-				FakePlayer.item.stackNbt(), Conveyor.item.stackNbt(),
+				FakePlayer.item.stackNbt().takeIf { FakePlayer.ENABLED }, Conveyor.item.stackNbt(),
 			),
 		)
 
 		pack.define(load) {
 			raw("scoreboard objectives add ${PatternUse.USED} dummy")
-			function(FakePlayerSpawner.load)
+			if (FakePlayer.ENABLED) function(FakePlayerSpawner.load)
 			resetFlag()
 			startClock()
 			raw("data modify storage ${UncrafterRun.TABLE} map set value ${UncraftTable.snbt()}")
@@ -92,7 +91,7 @@ object AutomationModule : GameplayModule {
 			function(Uncrafter.registerBlock)
 			function(XpAbsorber.registerBlock)
 			function(ItemSplitter.registerBlock)
-			function(FakePlayer.registerBlock)
+			if (FakePlayer.ENABLED) function(FakePlayer.registerBlock)
 			function(Conveyor.registerBlock)
 			moduleLoaded("Automation loaded!", "gold")
 		}
@@ -101,7 +100,7 @@ object AutomationModule : GameplayModule {
 			function(Uncrafter.block.tick)
 			function(XpAbsorber.block.tick)
 			function(ItemSplitter.block.tick)
-			function(FakePlayer.block.tick)
+			if (FakePlayer.ENABLED) function(FakePlayer.block.tick)
 			function(Conveyor.block.tick)
 		}
 	}

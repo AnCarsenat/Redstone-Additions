@@ -4,6 +4,10 @@ import io.github.ayfri.kore.features.recipes.types.key
 import io.github.ayfri.kore.features.recipes.types.pattern
 import io.github.ayfri.kore.generated.Blocks
 import io.github.ayfri.kore.generated.Items
+import io.github.ayfri.kore.commands.function
+import io.github.ayfri.kore.utils.nbt
+import io.github.ayfri.kore.utils.set
+import ra.api.RaLib
 import ra.core.Admin.readCappedProperty
 import ra.core.Ns
 import ra.core.Ra
@@ -39,10 +43,17 @@ import ra.modules.automation.splitter.ItemSplitterRun.registerItemSplitterRun
  * Item Pipe Splitter: takes items out of the container above it and shares them out between the
  * containers on its four sides and under it, one item at a time, round the sides in turn.
  *
- * Not a container itself (chiseled tuff), so nothing is ever pushed into it: a hopper or an Item
- * Pipe pointing into it from above holds its items, and the splitter takes them out. That also
- * means it can never send an item back where it came from: the input is above, the outputs are
- * the other five faces.
+ * Not a container itself, so nothing is ever pushed into it: a hopper or an Item Pipe pointing
+ * into it from above holds its items, and the splitter takes them out. That also means it can
+ * never send an item back where it came from: the input is above, the outputs are the other five
+ * faces.
+ *
+ * THE LOOK. It looks like an Item Pipe: a dispenser, facing up, drawn as a skin
+ * (`ra_lib:skin/apply_facing`) over cobblestone. A real dispenser would be a container (hoppers
+ * would fill it, pipes would push into it) and would fire whatever it held on a redstone edge;
+ * cobblestone does neither, has no inventory and is not in `#ra_lib:containers`, so the Item
+ * Pipe's code never treats it as a pipe or a destination. The skin is repaired on the automation
+ * clock when it goes missing.
  *
  * SHARES. Each output face has a weight, `north`, `east`, `south`, `west`, `down` (0 to
  * [MAX_SHARE], default 1): the splitter sends that many items in a row to one face before it moves
@@ -57,7 +68,7 @@ import ra.modules.automation.splitter.ItemSplitterRun.registerItemSplitterRun
  * to it this turn): where the round robin is. `data.status.state`, `data.status.split`: Goggles.
  */
 object ItemSplitter {
-	val block = CustomBlock(Ns.AUTOMATION, "item_pipe_splitter", "Item Pipe Splitter", model = "minecraft:chiseled_tuff")
+	val block = CustomBlock(Ns.AUTOMATION, "item_pipe_splitter", "Item Pipe Splitter", model = "minecraft:dispenser", physical = "minecraft:cobblestone")
 	val item = block.loreItem {
 		lore(
 			loreLine("Shares out the items of the container above it", "gray"),
@@ -77,6 +88,11 @@ object ItemSplitter {
 	val registerBlock = block.fn("register_block")
 	val run get() = ItemSplitterRun.run
 	private val cycleRate = block.fn("cycle_rate")
+	/** Draw the dispenser skin. At the block. */
+	val refreshSkin = block.fn("refresh_skin")
+
+	/** The skin's tag, `ra.skin.<id>`. */
+	const val SKIN_TAG = "ra.skin.item_pipe_splitter"
 
 	fun Ra.registerItemSplitter() {
 		block(block)
@@ -104,7 +120,12 @@ object ItemSplitter {
 			setOnNew(block, "data.data", "{face:0,sent:0}")
 			setOnNew(block, "data.status", """{state:"waiting for items",split:0}""")
 			raw("tag ${block.newMarkerSel()} add ${AutomationClock.TAG}")
+			function(refreshSkin)
 			finishPlacement(block)
+		}
+
+		pack.define(refreshSkin) {
+			function(RaLib.Skin.applyFacing, nbt { this["real"] = block.physical; this["skin"] = block.model; this["id"] = block.id; this["facing"] = "up" })
 		}
 
 		// Shift+RMB with the Wrench: 2, 4, 8, 16 items a second and round; anything else goes back
@@ -126,8 +147,10 @@ object ItemSplitter {
 			stackedTextLine("", "Input above; sides and below share", "gray")
 		}
 
-		val onBreak = pack.blockOnBreak(block, drop = { dropItem(item) }, sound = STONE_BREAK_SOUND, cloud = true)
-		pack.blockTick(block, onBreak, BreakTest.NotBlock(Blocks.CHISELED_TUFF)) {}
+		val onBreak = pack.blockOnBreak(block, drop = { dropItem(item) }, sound = STONE_BREAK_SOUND, cloud = true) {
+			function(RaLib.Skin.clear, nbt { this["id"] = block.id })
+		}
+		pack.blockTick(block, onBreak, BreakTest.NotBlock(Blocks.COBBLESTONE)) {}
 
 		registerItemSplitterRun()
 	}

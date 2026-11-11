@@ -19,6 +19,8 @@ import ra.modules.ender.chooser.Chooser.registerChooser
 import ra.modules.ender.chooser.ChooserInput
 import ra.modules.ender.tablet.AnchorTablet
 import ra.modules.ender.tablet.AnchorTablet.registerAnchorTablet
+import ra.modules.ender.tablet.Overstar
+import ra.modules.ender.tablet.Overstar.registerOverstar
 import io.github.ayfri.kore.arguments.scores.ScoreboardCriteria
 import ra.modules.ender.anchors.AnchorTable.registerAnchorTable
 import ra.modules.ender.debug.EnderDebug.registerEnderDebug
@@ -45,6 +47,7 @@ object EnderModule : GameplayModule {
 		registerAnchorTable()
 		registerAnchorTerminal()
 		registerAnchorTablet()
+		registerOverstar()
 		registerChooser()
 		registerLink()
 		registerAnchorTools()
@@ -96,11 +99,12 @@ object EnderModule : GameplayModule {
 		pack.define(ref(ns, "items/give_all")) {
 			for (b in blocks) function(b.give)
 			function(AnchorTablet.give)
+			function(Overstar.give)
 		}
 
 		bundles += GiveBundle(
-			"ender", "Ender Bundle", "Remote vaults, teleport anchors, terminal and tablet", ns,
-			listOf(ItemVault.item, FluidVault.item, PowerVault.item, TeleportAnchor.item, AnchorTerminal.item, AnchorTablet.item).map { it.stackNbt() },
+			"ender", "Ender Bundle", "Remote vaults, teleport anchors, terminal, tablet and an Overstar", ns,
+			listOf(ItemVault.item, FluidVault.item, PowerVault.item, TeleportAnchor.item, AnchorTerminal.item, AnchorTablet.item, Overstar.item).map { it.stackNbt() },
 		)
 	}
 }

@@ -3,20 +3,14 @@ package ra.modules.farming.net
 import io.github.ayfri.kore.features.itemmodifiers.functions.copyCustomData
 import io.github.ayfri.kore.features.itemmodifiers.functions.replace
 import io.github.ayfri.kore.features.itemmodifiers.itemModifier
-import io.github.ayfri.kore.features.recipes.recipesBuilder
 import io.github.ayfri.kore.features.recipes.types.RecipeCategory
-import io.github.ayfri.kore.features.recipes.types.craftingTransmute
-import io.github.ayfri.kore.features.recipes.types.input
 import io.github.ayfri.kore.features.recipes.types.key
-import io.github.ayfri.kore.features.recipes.types.material
 import io.github.ayfri.kore.features.recipes.types.pattern
-import io.github.ayfri.kore.features.recipes.types.result
 import io.github.ayfri.kore.generated.Items
 import ra.core.Ns
 import ra.core.Ra
 import ra.core.block.Unlock
 import ra.core.block.recipeResult
-import ra.core.block.recipeUnlock
 import ra.core.block.shapedRecipe
 import ra.core.define
 import ra.core.item.ItemSpec
@@ -30,21 +24,19 @@ import ra.core.item.raData
 import ra.core.raw
 import ra.core.ref
 import ra.modules.farming.net.CaptureNetMobs.registerCaptureNetMobs
+import ra.modules.farming.net.CaptureNetSacrifice.registerCaptureNetSacrifice
 import ra.modules.farming.net.CaptureNetUse.registerCaptureNetUse
 
 /**
  * Capture Net: an item that catches a mob into itself, to carry it, and lets it out again on a block.
  *
  * TWO NETS. The Capture Net catches the animals in [CaptureNetMobs.SMALL]; the Master Capture Net
- * (a Capture Net upgraded with a nether star) catches any mob in [CaptureNetMobs.ANY], which is
- * every mob but the wither, the ender dragon and players.
+ * (an empty Capture Net that survived an enchanting table, see [CaptureNetSacrifice]) catches any
+ * mob in [CaptureNetMobs.ANY], which is every mob but the wither, the ender dragon and players.
  *
  * WHAT IDENTIFIES ONE. Both are a rabbit hide wearing the cobweb model ([NET]): the item model is
- * on every net, whichever way it was made. The tier is its rarity ([MASTER], epic). The upgrade is
- * a `crafting_transmute` recipe, the vanilla recipe that keeps an item's components while changing
- * a few (it dyes shulker boxes without emptying them), so a full net keeps its mob through it. Its
- * result patch sets the name, the rarity and the item model, never `custom_data`, which holds the
- * mob.
+ * on every net, whichever way it was made. The tier is its rarity ([MASTER], epic). Nets upgraded
+ * by the old nether star recipe (before v6.0.3) are Master nets the same way.
  *
  * DATA FORMAT (saved items keep it):
  *
@@ -112,17 +104,8 @@ object CaptureNet {
 		for ((k, v) in useComponents) add(k, v)
 	}
 
-	/** A fresh Master Capture Net, for `give`. The upgrade recipe writes only [masterPatch]. */
+	/** A fresh Master Capture Net, for `give` and the enchanting table ([CaptureNetSacrifice]). */
 	val masterItem: ItemSpec = item.replace("item_name", SStr("Master Capture Net")).replace("rarity", SStr("epic"))
-
-	/** What the upgrade changes: name, rarity, and what makes it a net at all (so any rabbit hide upgrades). */
-	private val masterPatch = itemSpec(BASE) {
-		model(MODEL)
-		name("Master Capture Net")
-		rarity("epic")
-		add("max_stack_size", SInt(1))
-		for ((k, v) in useComponents) add(k, v)
-	}
 
 	/** `ra_farming:capture_net/fill`: copies `storage ra:farming net.mob` into the held net. */
 	const val FILL_MODIFIER = "ra_farming:capture_net/fill"
@@ -138,22 +121,12 @@ object CaptureNet {
 			key("T", Items.STICK)
 		}
 
-		// End: the upgrade, a net plus a nether star. Transmute keeps the net's components, so a
-		// full net keeps its mob; the patch never touches custom_data.
-		val upgrade = pack.recipesBuilder.craftingTransmute("master_capture_net", Ns.FARMING.id) {
-			category = RecipeCategory.EQUIPMENT
-			showNotification = true
-			input(Items.RABBIT_HIDE)
-			material(Items.NETHER_STAR)
-			result(Items.RABBIT_HIDE, null) { masterPatch.applyTo(this) }
-		}
-		pack.recipeUnlock("master_capture_net", Ns.FARMING, upgrade, Unlock(Items.NETHER_STAR))
-
 		pack.itemModifier("capture_net/fill") {
 			namespace = Ns.FARMING.id
 			copyCustomData(STORE) { replace("net.mob", "ra.capture_net.mob") }
 		}
 
+		registerCaptureNetSacrifice()
 		registerCaptureNetMobs()
 		registerCaptureNetUse()
 	}

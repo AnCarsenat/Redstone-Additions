@@ -14,8 +14,13 @@ endpoints by channel — items, fluids or power — and the **Teleport Anchor** 
 | Teleport Anchor | crying obsidian | players | ![Teleport Anchor recipe](images/recipes/ra_ender/teleport_anchor.png){ width="220" } |
 | Anchor Terminal | lodestone | players, to the anchor you choose | ![Anchor Terminal recipe](images/recipes/ra_ender/anchor_terminal.png){ width="220" } |
 | Anchor Tablet (item) | recovery compass | you, from anywhere | ![Anchor Tablet recipe](images/recipes/ra_ender/anchor_tablet.png){ width="220" } |
+| Overstar (item) | nether star, purple name | crafts the Anchor Tablet | from a nether star on an enchanting table, see [Overstar](#overstar) |
 
-Operators: `/function ra_ender:items/give_all` (the tablet alone: `/function ra_ender:tablet/give`).
+The Anchor Tablet is the hardest item in the module: its recipe needs an **Overstar** in the
+middle, a recovery compass below it, three gold ingots and four eyes of ender.
+
+Operators: `/function ra_ender:items/give_all` (the tablet alone: `/function ra_ender:tablet/give`,
+an Overstar: `/function ra_ender:items/give_overstar`).
 
 ## Vaults
 
@@ -168,6 +173,23 @@ seconds**. Server operators set both on the Ender Links settings page:
 | --- | --- | --- |
 | `ender_tablet_pearls` — ender pearls per trip | 1 | 0 to 16 |
 | `ender_tablet_cooldown` — recharge, in seconds | 10 | 0 to 600 |
+
+## Overstar
+
+An Overstar is a nether star that survived an enchanting table. Throw nether stars onto a vanilla
+enchanting table: once a second the table takes **one star** off the stack and rolls.
+
+- **1 time in 10** the star comes back as an Overstar, with enchanting particles and a level-up
+  sound.
+- **The other 9 times** the star is gone, with smoke and a fizz.
+
+A whole stack burns down one star a second, so throw only as many as you want to spend. The player
+who threw the stars is told how each one went. Only plain nether stars are taken: an Overstar, or
+any other Redstone Additions item, is left lying on the table. The Overstar's only use is the
+Anchor Tablet recipe. It cannot be placed.
+
+This is the same table sacrifice as [Enchant Crafting](enchant-crafting.md), so it stops working if
+an operator switches the enchanting module off.
 
 ---
 

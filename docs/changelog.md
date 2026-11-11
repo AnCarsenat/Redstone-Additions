@@ -180,8 +180,9 @@ This page mirrors key datapack milestones from the main project changelog.
   to 8) and its last trip: **[Save]** keeps the last trip, **[Forget]** removes a favourite. A trip
   costs 1 ender pearl (none in creative) and the tablet then recharges for 10 seconds; both are
   server settings on the Ender Links page (`ender_tablet_pearls`, 0 to 16, and
-  `ender_tablet_cooldown`, 0 to 600 seconds). Crafted from an eye of ender, three gold ingots and a
-  compass.
+  `ender_tablet_cooldown`, 0 to 600 seconds). Hard to craft on purpose: an Overstar in the middle,
+  a recovery compass below, three gold ingots and four eyes of ender; the recipe unlocks when you
+  hold an Overstar.
 - **Disenchanter** (Enchant Crafting). Moves an item's enchantments onto a book. Throw an
   enchanted item and a book on top: it makes an enchanted book holding the item's enchantments and
   leaves the item without them, its repair cost reset as at a grindstone. Curses stay on the item.
@@ -377,14 +378,15 @@ This page mirrors key datapack milestones from the main project changelog.
 - **Capture Net** and **Master Capture Net** (Farming). Right-click a mob to catch it into the net
   and carry it; right-click a block to let it out there. The mob keeps its name, health, equipment,
   owner and, for a villager, its trades; the net shows what it holds. The Capture Net catches farm
-  animals and other small peaceful mobs; the Master Capture Net, a Capture Net upgraded with a
-  nether star, catches any mob but the wither, the ender dragon and players. Neither catches a mob
+  animals and other small peaceful mobs; the Master Capture Net catches any mob but the wither, the ender dragon and players. Neither catches a mob
   with a rider or a pet tamed by another player. A mob on a lead is let off it first: the lead drops
   where it is tied, and a mob it was holding on a lead drops that lead too, one lead per leash, as
   when a leash breaks; no leash goes into the net. Only the types on the net's list come back out.
   The mob is only removed once the net holds it, and the net is only emptied once the mob is back.
-  The Capture Net is crafted from three string and two sticks; the upgrade keeps whatever the net
-  holds, and a plain rabbit hide with a nether star makes an empty Master Capture Net too.
+  The Capture Net is crafted from three string and two sticks. The Master Capture Net is not
+  crafted: throw an **empty** Capture Net onto an enchanting table, and 35% of the time it comes
+  back as an empty Master Capture Net; otherwise the net is used up. A net holding a mob is left
+  alone on the table.
 - **Recipe Pattern** (Automation). A Pattern that makes the Crafter Controller fill the crafter
   itself: put a container on the Controller's other side, opposite the crafter, and every half
   second the Controller moves one ingredient from it into each empty slot the Pattern names, then
@@ -433,6 +435,13 @@ This page mirrors key datapack milestones from the main project changelog.
   (100, 75, 50, 25 %), **[None]**, **[Reset]**, or **[Type]** a name, `#RRGGBB`, `#AARRGGBB` or a
   number. What is typed is read as a number, never pasted into a command. The Clipboard pastes
   these settings only when the Data Handler would have taken them.
+- **Overstar** (Ender Links). A nether star thrown onto an enchanting table is used up, one star a
+  second, and 1 time in 10 it comes back as an Overstar (epic, glinting, the nether star look).
+  Particles and a sound show each hit and miss, and the player who threw the stars is told how each
+  one went. Only plain nether stars are taken: an Overstar or any other RA item is left alone. Its
+  only use is the Anchor Tablet recipe. Advancement: *Overstar* (Ender Links tab).
+- **Ender Links advancements**: a new Ender Links branch in the Redstone Additions tab, with
+  *Overstar* and *Anchor Tablet*.
 
 ### Changed
 
@@ -667,6 +676,9 @@ This page mirrors key datapack milestones from the main project changelog.
   and `ra_wires:fluid/experience_ml`. Same values, same rounding. A Solar Panel now reads its
   curve in one `compute block ~ ~ ~` instead of eleven `execute if block` lines a tick. The build
   fails on a reference with no file. See *Arithmetic with `/compute`* in the developer guide.
+- **Sacrifice messages**: `sacrificeRecipe(..., won = "...", lost = "...")` (and
+  `storage ra:enchant won` / `lost` for addons) sends a message to the player who threw the item,
+  through `execute on origin`, on a hit and on a miss.
 
 ## v6.0.2 (2026-11-09) — Drains, lists and fixes
 

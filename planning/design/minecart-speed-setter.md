@@ -1,5 +1,8 @@
 # Design note: Minecart Speed Setter feasibility (#97)
 
+> **Dropped (2026-11-11).** The maintainer decided not to build this: 26.3 caps every minecart
+> at 8 blocks per second, so it could not make a cart faster than vanilla. Kept for reference.
+
 > **Minecart Speed Setter**: sets the speed of a minecart passing over it when triggered.
 > **(to check)**: may not be feasible. (planning/v6.0.3-ideas.md, Railworks)
 

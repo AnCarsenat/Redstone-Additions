@@ -2,7 +2,11 @@
 
 This page mirrors key datapack milestones from the main project changelog.
 
-## [v6.0.3] - Unreleased
+## [v6.0.3] - 2026-11-11 - Automation, farms, rails and sound
+
+Six new modules (Automation, Security, Railworks, Audio, Farming, Displays),
+new logic gates and sensors, more transport blocks, positions and directions in the Data Handler,
+recipes rebalanced for survival, and automatic chat notices off by default.
 
 ### Added
 
@@ -275,7 +279,7 @@ This page mirrors key datapack milestones from the main project changelog.
   or changes the rest. Nothing runs per tick: one
   check a second, and the turning is done by the client. Crafted from a glass block, two amethyst
   shards, an ender pearl and a barrel.
-- **Text Screen** (Displays). A barrel with a dark screen on its lid that shows one line of
+- **Text Screen** (Displays). A barrel whose lid shows one line of
   glowing amber text, nixie-tube style, picked by the redstone level feeding it from any side:
   15 shows the name of the item in the first slot, 14 the second, down to 1 for the fifteenth
   (an anvil name, or the usual name in your language); 0 or an empty slot leaves the tube dark,
@@ -466,8 +470,6 @@ This page mirrors key datapack milestones from the main project changelog.
   Menus, readouts you open yourself (Goggles, Multimeter, Data Handler, Pager, wrench menus),
   "Received ..." lines, load messages and the reason an action was refused always show.
 
-- **Text Screen**: no black panel behind the text any more; the text display's own background
-  setting covers that. Screens placed earlier lose theirs on their next update.
 - **Recipes rebalanced.** Every recipe now asks for things you can get in survival at the point
   in the game where the block is worth having, is laid out like a vanilla recipe, and uses
   ingredients that match what the block does. No two recipes share a grid, with each other or
@@ -581,10 +583,6 @@ This page mirrors key datapack milestones from the main project changelog.
 
 ### Fixed
 
-- **Conveyor**: breaking it left its arrow display behind; the arrow is removed with it now.
-- Items put into a container by any block (Uncrafter, Item Pipe Splitter, Storage Box, Unboxer, Spout,
-  Blast Forge output and others) were destroyed: the shared insert function failed to load in 26.3
-  because one of its lines ended in `if function`, which the game does not accept.
 - **Fan** pushed armor stands, including the armor-stand markers of custom blocks placed before
   5.1.8, and any other entity the pack itself placed: it now leaves alone everything tagged `ra`
   and every armor stand, like markers and displays. It also no longer pushes a player who is
@@ -641,7 +639,7 @@ This page mirrors key datapack milestones from the main project changelog.
   entity before the block ray (`ra:tools/wrench/entity_hooks`).
 - **Minecart speed upgrade design** (`planning/design/minecart-speed-upgrade.md`): what a data
   pack can do about minecart speed in 26.3, the options with their costs, and how it relates to the
-  Speed Setter note (#97). Not built; the maintainer decides.
+  Speed Setter note (#97). Both were dropped: 26.3 caps every cart at 8 blocks a second.
 - **Property types `direction`, `facing` and `color`** (`ra/core/DirectionProps.kt`,
   `ra/core/ColorProps.kt`), declared like `vec3`: `direction(name, default)`,
   `facing(name, FacingSpec(...))` (yaw and pitch in degrees, `LOCAL` or `WORLD` frame), and

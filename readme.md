@@ -5,7 +5,7 @@
 <h1 align="center">Redstone Additions</h1>
 
 <p align="center">
-  <strong>96 custom blocks. 9 tools. 113 recipes. 2 jetpacks and 3 upgrade kits. Vanilla datapack for Minecraft 26.3.</strong>
+  <strong>96 custom blocks. 9 tools. 115 recipes. 2 jetpacks and 3 upgrade kits. Vanilla datapack for Minecraft 26.3.</strong>
 </p>
 
 <p align="center">
@@ -18,7 +18,7 @@
   <img src="https://img.shields.io/badge/Version-v6.0.3-blue" alt="Version v6.0.3">
   <img src="https://img.shields.io/badge/Blocks-96-red" alt="96 blocks">
   <img src="https://img.shields.io/badge/Tools-9-lightgrey" alt="9 tools">
-  <img src="https://img.shields.io/badge/Recipes-113-8A2BE2" alt="113 recipes">
+  <img src="https://img.shields.io/badge/Recipes-115-8A2BE2" alt="115 recipes">
 </p>
 
 <p align="center">
@@ -233,6 +233,8 @@ netherrack or poppies on an enchanting table.
 ### Railworks (1)
 - Route Rail — under a rail junction: switches it for each cart by its name, tag, cargo or rider
 
+And two carts: the **Ram Upgrade** (a minecart that hurts what it runs into) and the **Rail Builder** (a hopper minecart that digs a tunnel and lays a straight track by itself).
+
 ### Audio (3)
 - Alarm — sounds one of seven alarms while powered, heard within its range
 - Doorbell — a button that plays one of six chimes when pressed
@@ -391,7 +393,7 @@ Starter command:
 | `/function ra_automation:items/give_all` | Crafter Controller, a Pattern, a Recipe Pattern, Uncrafter, Experience Absorber and Item Pipe Splitter |
 | `/function ra_security:items/give_all` | Keypad |
 | `/function ra_farming:items/give_all` | Sprinkler, Breeder |
-| `/function ra_railworks:items/give_all` | Route Rail |
+| `/function ra_railworks:items/give_all` | Route Rail, Ram Upgrade and Rail Builder |
 | `/function ra_audio:items/give_all` | Alarm, Doorbell and Jukebox Controller |
 | `/function ra:tools/wrench/give` | Wrench |
 | `/function ra:tools/data_handler/give` | Data Handler |

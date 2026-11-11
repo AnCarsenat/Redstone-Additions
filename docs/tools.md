@@ -27,6 +27,7 @@ give function (`/function ra:tools/wrench/give`, `ra:tools/goggles/give`,
 | Action | Does |
 | --- | --- |
 | Shift + right-click a block | Cycles its settings |
+| Shift + right-click a minecart with a Ram Upgrade | Takes the upgrade off and gives it back ([Railworks](railworks.md#ram-upgrade)) |
 | Right-click a Multiblock Base | Assembles the machine built around it ([Multiblocks](multiblocks.md)); on one already assembled it only says so |
 
 What Shift + right-click does depends on the block:

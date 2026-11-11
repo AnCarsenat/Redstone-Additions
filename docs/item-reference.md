@@ -120,8 +120,10 @@ one page, A to Z and by module.
 | ra_enchanting:schematic | Schematic | Throw an enchanted book on a Book Printer (2%); not craftable |
 | ra_automation:pattern | Pattern | ![Pattern recipe](images/recipes/ra_automation/pattern.png){ width="220" } |
 | ra_automation:recipe_pattern | Recipe Pattern | ![Recipe Pattern recipe](images/recipes/ra_automation/recipe_pattern.png){ width="220" } |
+| ra_railworks:ram_upgrade | Ram Upgrade | ![Ram Upgrade recipe](images/recipes/ra_railworks/ram_upgrade.png){ width="220" } |
+| ra_railworks:rail_builder | Rail Builder | ![Rail Builder recipe](images/recipes/ra_railworks/rail_builder.png){ width="220" } |
 
-The Generator Casing and the Cores cannot be placed as blocks. A Schematic is paper carrying a book's enchantments in `custom_data` (`{ra:{schematic:1b,enchantments:{...}}}`), right-clicked into a [Book Printer](enchant-crafting.md#setting-the-schematic) to set what it prints. A Pattern is paper carrying a 3×3 grid of item ids (`{ra:{pattern:{slots:[<9 ids or "">]}}}`, see [Automation](automation.md#pattern-data)); a Recipe Pattern is the same with `recipe:1b` beside `slots`.
+The Generator Casing and the Cores cannot be placed as blocks. A Schematic is paper carrying a book's enchantments in `custom_data` (`{ra:{schematic:1b,enchantments:{...}}}`), right-clicked into a [Book Printer](enchant-crafting.md#setting-the-schematic) to set what it prints. A Pattern is paper carrying a 3×3 grid of item ids (`{ra:{pattern:{slots:[<9 ids or "">]}}}`, see [Automation](automation.md#pattern-data)); a Recipe Pattern is the same with `recipe:1b` beside `slots`. The Ram Upgrade (`{ra:{ram_upgrade:1b}}`, a firework star) is fitted onto a minecart, and the Rail Builder (`{ra:{rail_builder:1b}}`) is a hopper minecart item whose `entity_data` tags the cart it places `ra.rw.builder`; see [Railworks](railworks.md).
 | ra_jetpacks:iron_jetpack_kit | Iron Jetpack Kit | Four iron ingots around a blaze rod and a redstone block, two fire charges below |
 | ra_jetpacks:infinite_jetpack_kit | Infinite Iron Jetpack Kit | Sacrifice an Iron Jetpack Kit on an enchanting table (1%) |
 

@@ -87,6 +87,8 @@ object RaLib {
 	object Skin {
 		val apply = ref(Ns.LIB, "skin/apply")
 		val applyStatic = ref(Ns.LIB, "skin/apply_static")
+		/** `{real, skin, id, facing}`: a skin with a fixed facing, over a real block that has none. */
+		val applyFacing = ref(Ns.LIB, "skin/apply_facing")
 		val applyLit = ref(Ns.LIB, "skin/apply_lit")
 		val setLit = ref(Ns.LIB, "skin/set_lit")
 		val clear = ref(Ns.LIB, "skin/clear")

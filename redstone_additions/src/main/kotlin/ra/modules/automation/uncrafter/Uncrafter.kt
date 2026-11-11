@@ -38,12 +38,16 @@ import ra.modules.automation.uncrafter.UncrafterRun.registerUncrafterRun
  * or battery beside it. What it can take apart is [UncraftTable]; how one look goes is
  * [UncrafterRun].
  *
+ * THE BLOCK. A grindstone standing on the floor, turned the way it was placed: the vanilla block
+ * that undoes things (it takes enchantments off), and not a container, so a hopper above it keeps
+ * its items for the Uncrafter to take. Right-clicking it still opens the vanilla grindstone.
+ *
  * DATA. `data.properties.eu_per_uncraft`: EU per item taken apart (admin only; the default for new
  * Uncrafters is on the Automation settings page). `data.status.state`, `data.status.uncrafted`:
  * what the Goggles show.
  */
 object Uncrafter {
-	val block = CustomBlock(Ns.AUTOMATION, "uncrafter", "Uncrafter", model = "minecraft:chiseled_tuff_bricks")
+	val block = CustomBlock(Ns.AUTOMATION, "uncrafter", "Uncrafter", model = "minecraft:grindstone", dirType = 1)
 	val item = block.loreItem {
 		lore(
 			loreLine("Takes items back apart into their ingredients", "gray"),
@@ -78,6 +82,10 @@ object Uncrafter {
 		pack.define(block.handlePlacement) {
 			placementGuard(block, checkExisting = false)
 			placeBlock(block)
+			// Placed with a horizontal facing on its wall face; stood on the floor, the same way round.
+			for (f in listOf("north", "south", "east", "west")) {
+				raw("execute if block ~ ~ ~ minecraft:grindstone[face=wall,facing=$f] run setblock ~ ~ ~ minecraft:grindstone[face=floor,facing=$f]")
+			}
 			setOnNew(block, "data.properties", "{eu_per_uncraft:$DEFAULT_EU}")
 			setOnNew(block, "data.status", """{state:"waiting for items",uncrafted:0}""")
 			raw("tag ${block.newMarkerSel()} add ${AutomationClock.TAG}")
@@ -93,7 +101,7 @@ object Uncrafter {
 		}
 
 		val onBreak = pack.blockOnBreak(block, drop = { dropItem(item) }, sound = STONE_BREAK_SOUND, cloud = true)
-		pack.blockTick(block, onBreak, BreakTest.NotBlock(Blocks.CHISELED_TUFF_BRICKS)) {}
+		pack.blockTick(block, onBreak, BreakTest.NotBlock(Blocks.GRINDSTONE)) {}
 
 		registerUncrafterRun()
 	}

@@ -48,6 +48,8 @@ internal object ItemSplitterRun {
 
 	fun Ra.registerItemSplitterRun() {
 		pack.define(run) {
+			// A skin gone missing (a /kill, a chunk saved without it) is drawn again.
+			raw("execute align xyz positioned ~0.5 ~0.5 ~0.5 unless entity @e[type=minecraft:block_display,tag=${ItemSplitter.SKIN_TAG},distance=..0.4,limit=1] run function ${ItemSplitter.refreshSkin.asId()}")
 			raw("execute unless block ~ ~1 ~ #ra_lib:containers run return run ${state("no container above")}")
 			raw("execute unless items block ~ ~1 ~ container.* * run return run ${state("waiting for items")}")
 			raw("execute if function ${RaLib.Redstone.any.asId()} run return run ${state("stopped by redstone")}")

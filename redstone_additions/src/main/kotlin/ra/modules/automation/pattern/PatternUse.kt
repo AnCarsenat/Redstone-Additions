@@ -80,11 +80,9 @@ object PatternUse {
 	}.joinToString(",", "[", "]")
 
 	private val patternGrid = gridLore(Pattern.hintLore())
-	private val recipeGrid = gridLore(RecipePattern.hintLore())
 
-	/** A blank Pattern's lore, and a blank Recipe Pattern's: what each item is given with. */
+	/** A blank Pattern's lore: what the item is given with. */
 	private val patternBlank = Pattern.blankLore().joinToString(",", "[", "]") { it.text() }
-	private val recipeBlank = RecipePattern.blankLore().joinToString(",", "[", "]") { it.text() }
 
 	private fun setLore(lines: String) =
 		"""{type:"minecraft:set_lore",entity:"this",mode:"replace_all",lore:$lines}"""
@@ -153,7 +151,7 @@ object PatternUse {
 			raw("execute if score #pat.any $T matches 0 run data remove storage $STORE rec")
 			raw("execute if score #pat.any $T matches 0 run return run ${say("This crafter is empty: put at least one item in its grid.", "red")}")
 			function(lore)
-			writeHeld(patternGrid, recipeGrid)
+			writeHeld(patternGrid)
 			raw("data remove storage $STORE rec")
 			raw("data remove storage $STORE lore")
 			raw(say("Pattern recorded.", "green"))
@@ -163,7 +161,7 @@ object PatternUse {
 		// As the player.
 		pack.define(clear) {
 			raw("data modify storage $STORE rec set value {slots:${Pattern.blankSlotsSnbt}}")
-			writeHeld(patternBlank, recipeBlank)
+			writeHeld(patternBlank)
 			raw("data remove storage $STORE rec")
 			raw(say("Pattern cleared.", "yellow"))
 			raw("playsound minecraft:item.book.page_turn player @s[scores={${Obj.USER_SOUND}=1..}] ~ ~ ~ 0.7 1.0")
@@ -199,23 +197,18 @@ object PatternUse {
 	}
 
 	/**
-	 * `storage rec.slots` and a lore (the Pattern's or, for a Recipe Pattern, the other set of
-	 * set_lore lines) into ONE held Pattern. A single one is
+	 * `storage rec.slots` and a set of set_lore lines into ONE held Pattern. A single one is
 	 * rewritten in the hand; from a stack, one is split off ([split]) and rewritten on its own,
 	 * the rest of the stack stays as it was.
 	 */
-	private fun Function.writeHeld(patternLore: String, recipeLore: String) {
-		// Which lore: read off the held item before anything moves (the flag survives the rewrite).
-		raw("execute store success score #pat.rcp $T if items entity @s weapon.mainhand ${RecipePattern.HELD}")
+	private fun Function.writeHeld(lore: String) {
 		raw("execute store result score #pat.cnt $T run data get entity @s SelectedItem.count")
 		raw("execute if score #pat.cnt $T matches ..1 run item modify entity @s weapon.mainhand $MODIFIER")
-		raw("execute if score #pat.cnt $T matches ..1 if score #pat.rcp $T matches 0 run item modify entity @s weapon.mainhand ${setLore(patternLore)}")
-		raw("execute if score #pat.cnt $T matches ..1 if score #pat.rcp $T matches 1 run item modify entity @s weapon.mainhand ${setLore(recipeLore)}")
+		raw("execute if score #pat.cnt $T matches ..1 run item modify entity @s weapon.mainhand ${setLore(lore)}")
 		// Not `return`: this is inlined in its caller, which still has lines to run.
 		raw("execute if score #pat.cnt $T matches 2.. at @s run function ${split.asId()}")
 		raw("execute if score #pat.cnt $T matches 2.. run item modify entity $OUT_SEL contents $MODIFIER")
-		raw("execute if score #pat.cnt $T matches 2.. if score #pat.rcp $T matches 0 run item modify entity $OUT_SEL contents ${setLore(patternLore)}")
-		raw("execute if score #pat.cnt $T matches 2.. if score #pat.rcp $T matches 1 run item modify entity $OUT_SEL contents ${setLore(recipeLore)}")
+		raw("execute if score #pat.cnt $T matches 2.. run item modify entity $OUT_SEL contents ${setLore(lore)}")
 		raw("execute if score #pat.cnt $T matches 2.. run tag @e[type=minecraft:item,tag=$OUT] remove $OUT")
 	}
 

@@ -33,6 +33,7 @@ import ra.core.item.loreLine
 import ra.core.raw
 import ra.modules.automation.AutomationClock
 import ra.modules.automation.fakeplayer.FakePlayerRun.registerFakePlayerRun
+import ra.modules.automation.fakeplayer.FakePlayerRun.registerFakePlayerSweep
 
 /**
  * Fake Player: stands in for a player so a mob farm keeps running while nobody is there.
@@ -50,8 +51,20 @@ import ra.modules.automation.fakeplayer.FakePlayerRun.registerFakePlayerRun
  * that many hostile mobs are within the radius, 1 to [MAX_MOBS], vanilla's monster cap),
  * `data.properties.eu_per_mob` (admin only). `data.data.delay`: the spawner countdown.
  * `data.status.state`, `data.status.spawned`: what the Goggles show.
+ *
+ * DISABLED (6.0.3). The Fake Player is not a good enough stand-in for a player: its natural
+ * spawning uses simplified biome lists and spawns single mobs, not vanilla's packs. Until it is,
+ * [ENABLED] is false and the module never registers it: no recipe, no item in `give_all` or the
+ * bundle, no advancement, no settings rows, nothing on the automation clock, and none of its
+ * functions are written into the pack. The code is kept so it can come back by setting [ENABLED].
+ * Only what a world that already has some needs stays on ([registerFakePlayerLeftovers]): a
+ * broken block drops its item and loses its marker, and the mobs one spawned are let go by the
+ * sweep on the automation clock.
  */
 object FakePlayer {
+	/** Off: see DISABLED above. Everything that registers or runs the Fake Player checks it. */
+	const val ENABLED = false
+
 	val block = CustomBlock(Ns.AUTOMATION, "fake_player", "Fake Player", model = "minecraft:player_head")
 	val item = block.loreItem {
 		lore(
@@ -137,9 +150,18 @@ object FakePlayer {
 			stackedStatusLine("spawned", "Spawned: ", "green")
 		}
 
+		registerBreak()
+		registerFakePlayerRun()
+	}
+
+	/** While disabled: the break check and the sweep, nothing else (see DISABLED above). */
+	fun Ra.registerFakePlayerLeftovers() {
+		registerBreak()
+		registerFakePlayerSweep()
+	}
+
+	private fun Ra.registerBreak() {
 		val onBreak = pack.blockOnBreak(block, drop = { dropItem(item) }, sound = "minecraft:block.stone.break", cloud = true)
 		pack.blockTick(block, onBreak, BreakTest.NotBlock(Blocks.PLAYER_HEAD)) {}
-
-		registerFakePlayerRun()
 	}
 }

@@ -90,18 +90,7 @@ internal object FakePlayerRun {
 			raw("function ${FakePlayerNatural.run.asId()}")
 		}
 
-		// From the clock, while some mob is tagged: every SWEEP_RUNS runs, the unheld ones go back.
-		pack.define(sweep) {
-			raw("scoreboard players add #fp.sweep $T 1")
-			raw("execute if score #fp.sweep $T matches ..${FakePlayer.SWEEP_RUNS - 1} run return 0")
-			raw("scoreboard players set #fp.sweep $T 0")
-			raw("execute as @e[tag=$MOB,tag=!$HELD] run function ${release.asId()}")
-			raw("tag @e[tag=$HELD] remove $HELD")
-		}
-		pack.define(release) {
-			raw("execute unless data entity @s CustomName run data modify entity @s PersistenceRequired set value 0b")
-			raw("tag @s remove $MOB")
-		}
+		registerFakePlayerSweep()
 
 		pack.define(counted) {
 			raw("execute store result score #fp.c $T run data get entity @s data.status.spawned")
@@ -188,5 +177,24 @@ internal object FakePlayerRun {
 
 		registerFakePlayerSpawner()
 		registerFakePlayerNatural()
+	}
+
+	/**
+	 * The sweep and the release, on their own: they also run while the Fake Player is disabled
+	 * ([FakePlayer.ENABLED]), so mobs one spawned in a world before that are let go.
+	 */
+	fun Ra.registerFakePlayerSweep() {
+		// From the clock, while some mob is tagged: every SWEEP_RUNS runs, the unheld ones go back.
+		pack.define(sweep) {
+			raw("scoreboard players add #fp.sweep $T 1")
+			raw("execute if score #fp.sweep $T matches ..${FakePlayer.SWEEP_RUNS - 1} run return 0")
+			raw("scoreboard players set #fp.sweep $T 0")
+			raw("execute as @e[tag=$MOB,tag=!$HELD] run function ${release.asId()}")
+			raw("tag @e[tag=$HELD] remove $HELD")
+		}
+		pack.define(release) {
+			raw("execute unless data entity @s CustomName run data modify entity @s PersistenceRequired set value 0b")
+			raw("tag @s remove $MOB")
+		}
 	}
 }

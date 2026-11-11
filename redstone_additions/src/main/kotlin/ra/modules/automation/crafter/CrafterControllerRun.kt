@@ -21,9 +21,11 @@ import ra.modules.automation.crafter.CrafterFill.registerCrafterFill
  * NO IDLE COST. A controller with a loaded, valid Pattern carries [ARMED]. Only armed controllers
  * are looked at, every [PERIOD] ticks, by [run], which reschedules itself while one is loaded;
  * with none, nothing is scheduled ([startIfIdle] restarts it, as the sensors' slow clock does).
- * One look ([check]) stops at the first of: switched off, no crafter next to it, an empty
- * crafter, a crafter already powered, contents unchanged since the last look (`data.data.last`,
- * one NBT comparison). Only then are the nine slots compared.
+ * One look ([check]) stops at the first of: switched off, no crafter next to it, a crafter
+ * already powered, a Pattern slot the crafter has disabled. Then the crafter is filled from the
+ * container on the other side, if there is one ([CrafterFill]), and the look stops at an empty
+ * crafter or contents unchanged since the last look (`data.data.last`, one NBT comparison).
+ * Only then are the nine slots compared.
  *
  * THE COMPARISON pastes the Pattern's ids into `execute if items block ~ ~ ~ container.<n> <id>`
  * ([match], a macro). Every id was checked by `ra_lib:safe/check` (format ID) when the Pattern was
@@ -55,7 +57,6 @@ object CrafterControllerRun {
 	private val start = fn("poll/start")
 	private val run = fn("poll/run")
 	private val check = fn("check")
-	private val atCrafter = fn("at_crafter")
 	/** As the controller, at its crafter: compare with the last look, match, fire. Shared with [CrafterFill]. */
 	val compareAndFire = fn("compare_and_fire")
 	private val match = fn("match")
@@ -108,17 +109,7 @@ object CrafterControllerRun {
 			raw("execute if data storage $STORE d.properties{enabled:0b} run return run data modify entity @s data.status.state set value \"switched off\"")
 			raw("execute store success score #cc.chg $T run data modify storage $STORE d.data.checked set from storage $STORE d.properties.pattern")
 			raw("execute if score #cc.chg $T matches 1 run return run function ${arm.asId()}")
-			raw("execute if entity @s[tag=${CrafterFill.FILL}] run return run function ${CrafterFill.check.asId()}")
-			for (d in directions) raw("execute if block $d minecraft:crafter positioned $d run return run function ${atCrafter.asId()}")
-			raw("data modify entity @s data.status.state set value \"no crafter next to it\"")
-		}
-
-		// As the controller, at the crafter.
-		pack.define(atCrafter) {
-			raw("execute unless items block ~ ~ ~ container.* * run data remove entity @s data.data.last")
-			raw("execute unless items block ~ ~ ~ container.* * run return run data modify entity @s data.status.state set value \"crafter empty\"")
-			raw("execute if block ~ ~ ~ minecraft:crafter[triggered=true] run return run data modify entity @s data.status.state set value \"crafter powered\"")
-			function(compareAndFire)
+			raw("function ${CrafterFill.check.asId()}")
 		}
 
 		// As the controller, at the crafter, which is not empty and not powered.
@@ -160,7 +151,6 @@ object CrafterControllerRun {
 
 	private fun Function.arm() {
 		raw("tag @s remove $ARMED")
-		raw("tag @s remove ${CrafterFill.FILL}")
 		raw("data remove entity @s data.data.match")
 		raw("data remove entity @s data.data.last")
 		raw("data modify entity @s data.data.checked set from entity @s data.properties.pattern")
@@ -184,10 +174,6 @@ object CrafterControllerRun {
 		raw("data modify entity @s data.data.match set from storage $STORE m")
 		raw("data remove storage $STORE m")
 		raw("tag @s add $ARMED")
-		// A Recipe Pattern (the flag on the item it holds): it fills the crafter itself.
-		raw("scoreboard players set #cc.rcp $T 0")
-		raw("execute store result score #cc.rcp $T run data get entity @s data.data.item.components.\"minecraft:custom_data\".ra.pattern.recipe")
-		raw("execute if score #cc.rcp $T matches 1 run tag @s add ${CrafterFill.FILL}")
 		raw("data modify entity @s data.status.state set value \"waiting for the ingredients\"")
 	}
 

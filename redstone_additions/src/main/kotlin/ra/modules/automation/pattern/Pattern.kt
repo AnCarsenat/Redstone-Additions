@@ -42,7 +42,12 @@ import ra.modules.automation.pattern.PatternUse.registerPatternUse
  * [HELD]). Readers must treat the ids as player data: an edited item can hold anything, so a
  * value is checked (`ra_lib:safe/check`, format ID) before it is ever pasted into a command.
  *
- * Who reads it: the Crafter Controller (what to wait for).
+ * Who reads it: the Crafter Controller (what to wait for, and what to fill the crafter with
+ * when a container stands on its other side).
+ *
+ * `recipe:1b` beside `slots` marks a Recipe Pattern, an item 6.0.3 had before it was merged into
+ * the Pattern. Nothing reads the flag: such an item is a Pattern like any other ([HELD] matches
+ * it) and keeps its own name and look. It does not stack with Patterns (its custom_data differs).
  *
  * HOW IT IS SET. Sneak + right-click a vanilla crafter: its nine slots are copied in (see
  * [PatternUse]). Sneak + right-click anything else clears it. Right-click a block that takes
@@ -107,6 +112,7 @@ object Pattern {
 	/** The hint lines under a recorded grid. */
 	fun hintLore() = listOf(
 		loreLine("Right-click a Crafter Controller to load it", "dark_gray"),
+		loreLine("A container on its other side fills the crafter", "dark_gray"),
 		loreLine("Sneak + right-click air to clear", "dark_gray"),
 	)
 

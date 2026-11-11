@@ -70,3 +70,31 @@ fun soundListenersSel(radius: Int? = 16) =
  */
 fun particleViewersSel(radius: Int? = null) =
 	"@a[${if (radius == null) "" else "distance=..$radius,"}scores={${Obj.USER_PARTICLES}=1..}]"
+
+/**
+ * Players who asked for chat notices (user setting `ra.u.msg`, off by default), as text:
+ * `@a[scores={ra.u.msg=1..}]`, or with `distance=..<radius>,` first when [radius] is given.
+ * Automatic lines (a sacrifice's result, a machine's progress, a success confirmation) go
+ * through this or [noticeOnly]; menus, readouts a player asked for and refusals do not.
+ */
+fun noticeReceiversSel(radius: Int? = null) =
+	"@a[${if (radius == null) "" else "distance=..$radius,"}scores={${Obj.USER_NOTICES}=1..}]"
+
+/**
+ * [sel] narrowed to players with chat notices on: `@s` becomes `@s[scores={ra.u.msg=1..}]`,
+ * `@a[tag=x,limit=1]` becomes `@a[tag=x,limit=1,scores={ra.u.msg=1..}]`. [sel] must not have a
+ * `scores=` argument of its own.
+ */
+fun noticeOnly(sel: String): String {
+	require("scores=" !in sel) { "noticeOnly: $sel already filters on scores" }
+	val filter = "scores={${Obj.USER_NOTICES}=1..}"
+	return if (sel.endsWith("]")) sel.dropLast(1) + ",$filter]" else "$sel[$filter]"
+}
+
+/**
+ * Who hears a wrench readout (`[Wrench] Conveyor speed: 3`): the player who swung the wrench,
+ * and the players within 10 blocks of them who turned chat notices on. The wrench tags them
+ * `ra.wrench_hear` around the cycle (ra.tools.wrench.Wrench, WrenchMenu) and clears it after.
+ */
+const val WRENCH_HEAR_TAG = "ra.wrench_hear"
+const val WRENCH_READOUT = "@a[tag=$WRENCH_HEAR_TAG]"

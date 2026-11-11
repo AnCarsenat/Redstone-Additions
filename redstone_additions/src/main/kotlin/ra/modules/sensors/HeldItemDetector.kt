@@ -37,6 +37,7 @@ import ra.core.item.loreLine
 import ra.core.raw
 import ra.lib.safe.SafeText.guardProperty
 import ra.modules.sensors.SensorPoll.startIfIdle
+import ra.core.block.WRENCH_READOUT
 
 /**
  * Held Item Detector: powers its shell while a player within `radius` carries `item` in the
@@ -206,7 +207,7 @@ object HeldItemDetector {
 		for (k in 0..SLOTS.size) {
 			raw("execute if score $M $T matches $k run data modify entity @s data.properties.slot set value \"${SLOTS[k % SLOTS.size]}\"")
 		}
-		raw("""tellraw @a[distance=..10] [{text:"[Wrench] ",color:"gold"},{text:"${block.name}: ",color:"gray"},{nbt:"data.properties.slot",entity:"@s",color:"aqua"}]""")
+		raw("""tellraw $WRENCH_READOUT [{text:"[Wrench] ",color:"gold"},{text:"${block.name}: ",color:"gray"},{nbt:"data.properties.slot",entity:"@s",color:"aqua"}]""")
 		raw("playsound minecraft:block.lever.click block ${soundListenersSel(10)} ~ ~ ~ 0.6 1.4")
 		// The output follows the new slot now, not at the next read.
 		function(update)

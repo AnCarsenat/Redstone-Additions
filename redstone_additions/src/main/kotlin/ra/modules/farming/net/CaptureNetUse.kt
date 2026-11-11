@@ -27,6 +27,7 @@ import ra.modules.farming.net.CaptureNet.MASTER
 import ra.modules.farming.net.CaptureNet.NET
 import ra.modules.farming.net.CaptureNet.net
 import ra.modules.farming.net.CaptureNet.STORE
+import ra.core.block.noticeOnly
 
 /**
  * What right-clicking a [CaptureNet] does. Two advancements fire it, so nothing runs while nobody
@@ -214,7 +215,7 @@ internal object CaptureNetUse {
 			// Read back by path: the held net is a net and holds this mob's type and data.
 			raw("execute store success score #cn.ok $T if items entity @s weapon.mainhand $NET if data entity @s SelectedItem.components.\"minecraft:custom_data\".ra.capture_net.mob.data if data entity @s SelectedItem.components.\"minecraft:custom_data\".ra.capture_net.mob.id")
 			raw("execute if score #cn.ok $T matches 0 run return run ${say("The net could not hold it.", "red")}")
-			raw("""tellraw @s [$RA_CHAT_PREFIX,{text:"Caught: ",color:"green"},{nbt:"net.mob.type",storage:"$STORE",interpret:true,color:"white"}]""")
+			raw("""tellraw ${noticeOnly("@s")} [$RA_CHAT_PREFIX,{text:"Caught: ",color:"green"},{nbt:"net.mob.type",storage:"$STORE",interpret:true,color:"white"}]""")
 			raw("playsound minecraft:entity.item.pickup player @s[scores={${Obj.USER_SOUND}=1..}] ~ ~ ~ 0.7 0.8")
 		}
 

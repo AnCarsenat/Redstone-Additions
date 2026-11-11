@@ -35,6 +35,7 @@ import ra.core.define
 import ra.core.raw
 import ra.lib.redstone.Side
 import ra.lib.redstone.SideReaders
+import ra.core.block.WRENCH_READOUT
 
 /**
  * Sequencer: steps 1, 2, ... `steps` (at most 15), one step per input pulse, then back to 1.
@@ -207,7 +208,7 @@ object Sequencer {
 		raw("execute store result score $N $T run data get entity @s data.properties.step")
 		raw("execute if score $N $T > $S $T run data modify entity @s data.properties.step set value 1")
 		function(output)
-		raw("""tellraw @a[distance=..10] [{text:"[Wrench] ",color:"gold"},{text:"${block.name}: ",color:"gray"},{score:{name:"$S",objective:"$T"},color:"aqua"},{text:" steps",color:"aqua"}]""")
+		raw("""tellraw $WRENCH_READOUT [{text:"[Wrench] ",color:"gold"},{text:"${block.name}: ",color:"gray"},{score:{name:"$S",objective:"$T"},color:"aqua"},{text:" steps",color:"aqua"}]""")
 		raw("playsound minecraft:block.lever.click block ${soundListenersSel(10)} ~ ~ ~ 0.6 1.4")
 	}
 }

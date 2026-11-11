@@ -9,6 +9,13 @@ val YouPage = Page(
 	listOf(
 		BoolRow("snd", "Machine sounds", Scope.USER, default = 1, obj = Obj.USER_SOUND),
 		BoolRow("par", "Machine particles", Scope.USER, default = 1, obj = Obj.USER_PARTICLES),
+		BoolRow(
+			"msg", "Chat notices", Scope.USER, default = 0, obj = Obj.USER_NOTICES,
+			hint = "Chat and actionbar lines nobody asked for: enchanting-table sacrifice results, " +
+				"Rail Builder progress, upgrade and Pattern confirmations, and wrench readouts from " +
+				"other players nearby. Menus, readouts you asked for and the reason an action " +
+				"was refused always show.",
+		),
 		BoolRow("dbg", "Debug messages", Scope.USER, default = 0, obj = Obj.USER_DEBUG),
 		BoolRow(
 			"fprev", "Show filter previews", Scope.USER, default = 1, obj = Obj.USER_FILTER_PREVIEW,

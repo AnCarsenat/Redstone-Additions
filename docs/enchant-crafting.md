@@ -190,7 +190,8 @@ execute if data storage ra:enchant result run return 1
 | `ra:enchant won`, `ra:enchant lost` | optional plain-text messages for the player who threw the item, on a hit and on a miss |
 
 The messages go to the item's thrower (`execute on origin`); an item dropped by a hopper, a mob or
-a player who has since left tells nobody. The Overstar and the Master Capture Net use them.
+a player who has since left tells nobody, and only a thrower with *Chat notices* on in
+[Your Preferences](settings.md) reads them. The Overstar and the Master Capture Net use them.
 
 The first recipe that matches wins: every list in the tag runs, so each must start with the
 `if data … result run return 0` line. In the pack's own Kotlin, `sacrificeRecipe(...)`

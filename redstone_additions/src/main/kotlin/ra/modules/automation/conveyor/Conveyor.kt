@@ -34,6 +34,7 @@ import ra.core.item.loreLine
 import ra.core.raw
 import ra.lib.orientation.Orientation
 import ra.modules.interactive.FanPush
+import ra.core.block.WRENCH_READOUT
 
 /**
  * Conveyor: a smooth stone slab that carries what stands on it, items, mobs and players, the way
@@ -134,7 +135,7 @@ object Conveyor {
 			raw("scoreboard players set #cv.s $T 1")
 			for (s in 1 until MAX_SPEED) raw("execute if score #prop $T matches $s run scoreboard players set #cv.s $T ${s + 1}")
 			raw("execute store result entity @s data.properties.speed int 1 run scoreboard players get #cv.s $T")
-			raw("""tellraw @a[distance=..10] [{text:"[Wrench] ",color:"gold"},{text:"${block.name} speed: ",color:"gray"},{nbt:"data.properties.speed",entity:"@s",color:"aqua"}]""")
+			raw("""tellraw $WRENCH_READOUT [{text:"[Wrench] ",color:"gold"},{text:"${block.name} speed: ",color:"gray"},{nbt:"data.properties.speed",entity:"@s",color:"aqua"}]""")
 			raw("playsound minecraft:block.lever.click block ${soundListenersSel(10)} ~ ~ ~ 0.6 1.4")
 		}
 

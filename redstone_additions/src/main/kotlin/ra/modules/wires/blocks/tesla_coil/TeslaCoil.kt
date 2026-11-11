@@ -39,6 +39,7 @@ import ra.modules.wires.common.Common
 import ra.modules.wires.common.line
 import ra.modules.wires.electric.EuApi
 import ra.modules.wires.machine.MachineClock
+import ra.core.block.WRENCH_READOUT
 
 /**
  * Tesla Coil: while powered by redstone, once a second, zaps every mob of
@@ -102,7 +103,7 @@ object TeslaCoil : PackPart {
 			raw("scoreboard players set #tc.r $T 4")
 			for (r in listOf(4, 8, 12)) raw("execute if score #prop ra.temp matches $r run scoreboard players set #tc.r $T ${r + 4}")
 			raw("execute store result entity @s data.properties.radius int 1 run scoreboard players get #tc.r $T")
-			raw("""tellraw @a[distance=..10] [{text:"[Wrench] ",color:"gold"},{text:"Tesla Coil radius: ",color:"gray"},{nbt:"data.properties.radius",entity:"@s",color:"aqua"},{text:" blocks",color:"aqua"}]""")
+			raw("""tellraw $WRENCH_READOUT [{text:"[Wrench] ",color:"gold"},{text:"Tesla Coil radius: ",color:"gray"},{nbt:"data.properties.radius",entity:"@s",color:"aqua"},{text:" blocks",color:"aqua"}]""")
 			raw("playsound minecraft:block.lever.click block ${soundListenersSel(10)} ~ ~ ~ 0.6 1.4")
 		}
 

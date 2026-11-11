@@ -25,6 +25,7 @@ import ra.core.define
 import ra.core.raw
 import ra.core.ref
 import ra.multiblocklib.spec.Compiled
+import ra.core.block.WRENCH_READOUT
 
 /** Assembly: `try_assemble`, `try_tier` and the marker it creates. */
 internal object Assembly {
@@ -136,7 +137,8 @@ internal object Assembly {
 		raw("particle minecraft:electric_spark ~ ~0.5 ~ 1 1 1 0.1 30 normal @a[scores={${Obj.USER_PARTICLES}=1..}]")
 		raw("particle minecraft:entity_effect{color:[1.0,0.85,0.0,1.0]} ~ ~0.5 ~ 0.5 0.5 0.5 0 20 normal @a[scores={${Obj.USER_PARTICLES}=1..}]")
 
-		raw("""tellraw @a[distance=..16] [{text:"[RA] ",color:"gold"},{text:"Multiblock assembled!",color:"green",bold:true}]""")
+		// The wrench assembles: its user always reads this, players near them only with chat notices on.
+		raw("""tellraw $WRENCH_READOUT [{text:"[RA] ",color:"gold"},{text:"Multiblock assembled!",color:"green",bold:true}]""")
 	}
 
 	/**

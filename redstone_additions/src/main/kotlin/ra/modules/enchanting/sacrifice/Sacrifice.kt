@@ -18,6 +18,7 @@ import ra.core.define
 import ra.core.raw
 import ra.core.ref
 import ra.modules.enchanting.EnchantingModule
+import ra.core.block.noticeOnly
 
 /** The `ra_enchanting:sacrifice` functions: one sacrificed stack, as the item entity, at it. */
 object Sacrifice {
@@ -117,6 +118,6 @@ object Sacrifice {
 	 * hopper or a mob, or thrown by a player who has left, has none and nobody is told.
 	 */
 	private fun Function.tellThrower(key: String, color: String) {
-		raw("""execute if data storage ra:enchant $key on origin run tellraw @s[type=player] [{text:"[RA] ",color:"gold"},{storage:"ra:enchant",nbt:"$key",color:"$color"}]""")
+		raw("""execute if data storage ra:enchant $key on origin run tellraw ${noticeOnly("@s[type=player]")} [{text:"[RA] ",color:"gold"},{storage:"ra:enchant",nbt:"$key",color:"$color"}]""")
 	}
 }

@@ -34,6 +34,7 @@ import ra.core.item.loreItem
 import ra.core.item.loreLine
 import ra.core.raw
 import ra.modules.sensors.SensorPoll.startIfIdle
+import ra.core.block.WRENCH_READOUT
 
 /**
  * Weather Sensor: powers its shell while the world matches its `mode`, one of [MODES]:
@@ -129,7 +130,7 @@ object WeatherSensor {
 		for (k in 0..MODES.size) {
 			raw("execute if score $ON $T matches $k run data modify entity @s data.properties.mode set value \"${MODES[k % MODES.size]}\"")
 		}
-		raw("""tellraw @a[distance=..10] [{text:"[Wrench] ",color:"gold"},{text:"${block.name}: ",color:"gray"},{nbt:"data.properties.mode",entity:"@s",color:"aqua"}]""")
+		raw("""tellraw $WRENCH_READOUT [{text:"[Wrench] ",color:"gold"},{text:"${block.name}: ",color:"gray"},{nbt:"data.properties.mode",entity:"@s",color:"aqua"}]""")
 		raw("playsound minecraft:block.lever.click block ${soundListenersSel(10)} ~ ~ ~ 0.6 1.4")
 		// The output follows the new mode now, not at the next read.
 		function(update)

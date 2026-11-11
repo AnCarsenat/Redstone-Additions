@@ -24,6 +24,7 @@ import ra.modules.displays.DisplayTilt.readTilt
 import ra.core.define
 import ra.core.executeRun
 import ra.core.raw
+import ra.core.block.WRENCH_READOUT
 
 /**
  * THE CONFIGURATION EVERY DISPLAY BLOCK SHARES: block properties, declared and handled once here.
@@ -194,7 +195,7 @@ internal class DisplayStyle(
 		for (i in -1 until values.size) {
 			val next = values[(i + 1) % values.size]
 			raw("""execute if score $m matches $i run data modify entity @s data.properties.$prop set value "$next"""")
-			raw("""execute if score $m matches $i run tellraw @a[distance=..10] [{text:"[Wrench] ",color:"gold"},{text:"${block.name} $label: ",color:"gray"},{text:"$next",color:"aqua"}]""")
+			raw("""execute if score $m matches $i run tellraw $WRENCH_READOUT [{text:"[Wrench] ",color:"gold"},{text:"${block.name} $label: ",color:"gray"},{text:"$next",color:"aqua"}]""")
 		}
 		raw("playsound minecraft:block.lever.click block ${soundListenersSel(10)} ~ ~ ~ 0.6 1.4")
 		function(after)

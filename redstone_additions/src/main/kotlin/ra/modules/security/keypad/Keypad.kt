@@ -34,6 +34,7 @@ import ra.core.item.loreLine
 import ra.core.raw
 import ra.modules.security.keypad.KeypadUse.registerKeypadUse
 import ra.modules.security.keypad.KeypadUse.startIfIdle
+import ra.core.block.WRENCH_READOUT
 
 /**
  * Keypad: a vanilla crafter whose slot toggles are the keypad. Players open its grid and click
@@ -152,7 +153,7 @@ object Keypad {
 			raw("execute if score #kp.p $T matches 10..19 run scoreboard players set #kp.n $T 20")
 			raw("execute if score #kp.p $T matches 20..39 run scoreboard players set #kp.n $T 40")
 			raw("execute store result entity @s data.properties.pulse int 1 run scoreboard players get #kp.n $T")
-			raw("""tellraw @a[distance=..10] [{text:"[Wrench] ",color:"gold"},{text:"${block.name}: ",color:"gray"},{text:"pulse ",color:"gray"},{nbt:"data.properties.pulse",entity:"@s",color:"aqua"},{text:" ticks",color:"gray"}]""")
+			raw("""tellraw $WRENCH_READOUT [{text:"[Wrench] ",color:"gold"},{text:"${block.name}: ",color:"gray"},{text:"pulse ",color:"gray"},{nbt:"data.properties.pulse",entity:"@s",color:"aqua"},{text:" ticks",color:"gray"}]""")
 			raw("playsound minecraft:block.lever.click block ${soundListenersSel(10)} ~ ~ ~ 0.6 1.4")
 		}
 

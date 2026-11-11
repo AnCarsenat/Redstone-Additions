@@ -33,6 +33,7 @@ import io.github.ayfri.kore.features.tags.blockTag
 import ra.modules.audio.AudioPlayer.patternId
 import ra.modules.audio.AudioPlayer.statusName
 import ra.modules.audio.AudioPlayer.storeArgs
+import ra.core.block.WRENCH_READOUT
 
 /**
  * Doorbell: a polished blackstone button that plays its `chime` once per press, heard by every
@@ -155,7 +156,7 @@ object Doorbell {
 			raw("execute unless score #au.c $T matches 0..${chimes.size - 1} run scoreboard players set #au.c $T 0")
 			raw("execute store result entity @s data.properties.chime int 1 run scoreboard players get #au.c $T")
 			statusName("chime", "chime", chimes)
-			raw("""tellraw @a[distance=..10] [{text:"[Wrench] ",color:"gold"},{text:"${block.name}: ",color:"gray"},{nbt:"data.status.chime",entity:"@s",color:"aqua"}]""")
+			raw("""tellraw $WRENCH_READOUT [{text:"[Wrench] ",color:"gold"},{text:"${block.name}: ",color:"gray"},{nbt:"data.status.chime",entity:"@s",color:"aqua"}]""")
 			raw("function ${ring.asId()}")
 		}
 

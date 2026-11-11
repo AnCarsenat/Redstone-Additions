@@ -34,6 +34,7 @@ import ra.core.define
 import ra.core.raw
 import ra.lib.redstone.Side
 import ra.lib.redstone.SideReaders
+import ra.core.block.WRENCH_READOUT
 
 /**
  * Counter: counts rising edges on its input and fires when the count reaches `target`.
@@ -189,8 +190,8 @@ object Counter {
 		raw("execute store success score $h if data entity @s data.properties{hold:1b}")
 		raw("execute if score $h matches 1 run data modify entity @s data.properties.hold set value 0b")
 		raw("execute if score $h matches 0 run data modify entity @s data.properties.hold set value 1b")
-		raw("""execute if score $h matches 1 run tellraw @a[distance=..10] [{text:"[Wrench] ",color:"gold"},{text:"${block.name}: ",color:"gray"},{text:"pulse on target",color:"green"}]""")
-		raw("""execute if score $h matches 0 run tellraw @a[distance=..10] [{text:"[Wrench] ",color:"gold"},{text:"${block.name}: ",color:"gray"},{text:"hold until reset",color:"gold"}]""")
+		raw("""execute if score $h matches 1 run tellraw $WRENCH_READOUT [{text:"[Wrench] ",color:"gold"},{text:"${block.name}: ",color:"gray"},{text:"pulse on target",color:"green"}]""")
+		raw("""execute if score $h matches 0 run tellraw $WRENCH_READOUT [{text:"[Wrench] ",color:"gold"},{text:"${block.name}: ",color:"gray"},{text:"hold until reset",color:"gold"}]""")
 		raw("playsound minecraft:block.lever.click block ${soundListenersSel(10)} ~ ~ ~ 0.6 1.4")
 	}
 }

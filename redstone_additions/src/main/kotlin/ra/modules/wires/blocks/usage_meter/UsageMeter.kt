@@ -40,6 +40,7 @@ import ra.modules.wires.common.Common
 import ra.modules.wires.readout.Readout
 import ra.modules.wires.readout.Readout.findNetwork
 import ra.modules.wires.readout.Readout.storeNetworkStatus
+import ra.core.block.WRENCH_READOUT
 
 /**
  * Usage Meter: a redstone pulse every `every` units consumed (taken out) or produced (put in)
@@ -121,7 +122,7 @@ object UsageMeter : PackPart {
 			raw("execute if score #mt.m ra.wires.tmp matches 1 run data modify entity @s data.properties.mode set value \"consumed\"")
 			raw("execute if score #mt.m ra.wires.tmp matches 0 run data modify entity @s data.properties.mode set value \"produced\"")
 			data(self()) { remove("data.data.epoch") }
-			raw("""tellraw @a[distance=..10] [{text:"[Wrench] ",color:"gold"},{text:"Usage Meter: ",color:"gray"},{nbt:"data.properties.mode",entity:"@s",color:"aqua"}]""")
+			raw("""tellraw $WRENCH_READOUT [{text:"[Wrench] ",color:"gold"},{text:"Usage Meter: ",color:"gray"},{nbt:"data.properties.mode",entity:"@s",color:"aqua"}]""")
 			raw("playsound minecraft:block.lever.click block ${soundListenersSel(10)} ~ ~ ~ 0.6 1.4")
 		}
 
@@ -130,7 +131,7 @@ object UsageMeter : PackPart {
 			raw("data modify entity @s data.properties.total set value 0")
 			raw("data modify entity @s data.data.progress set value 0")
 			raw("data modify entity @s data.status.progress set value 0")
-			raw("""execute at @s run tellraw @a[distance=..10] [{text:"[Wrench] ",color:"gold"},{text:"Usage Meter: ",color:"gray"},{text:"total reset to 0",color:"green"}]""")
+			raw("""execute at @s run tellraw $WRENCH_READOUT [{text:"[Wrench] ",color:"gold"},{text:"Usage Meter: ",color:"gray"},{text:"total reset to 0",color:"green"}]""")
 			raw("execute at @s run playsound minecraft:block.lever.click block ${soundListenersSel(10)} ~ ~ ~ 0.6 1.4")
 		}
 

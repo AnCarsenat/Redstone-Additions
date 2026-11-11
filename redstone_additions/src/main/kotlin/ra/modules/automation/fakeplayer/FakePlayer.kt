@@ -34,6 +34,7 @@ import ra.core.raw
 import ra.modules.automation.AutomationClock
 import ra.modules.automation.fakeplayer.FakePlayerRun.registerFakePlayerRun
 import ra.modules.automation.fakeplayer.FakePlayerRun.registerFakePlayerSweep
+import ra.core.block.WRENCH_READOUT
 
 /**
  * Fake Player: stands in for a player so a mob farm keeps running while nobody is there.
@@ -137,7 +138,7 @@ object FakePlayer {
 			raw("scoreboard players set #fp.r $T 4")
 			for (r in listOf(4, 8, 12)) raw("execute if score #prop $T matches $r run scoreboard players set #fp.r $T ${r + 4}")
 			raw("execute store result entity @s data.properties.radius int 1 run scoreboard players get #fp.r $T")
-			raw("""tellraw @a[distance=..10] [{text:"[Wrench] ",color:"gold"},{text:"${block.name} radius: ",color:"gray"},{nbt:"data.properties.radius",entity:"@s",color:"aqua"},{text:" blocks",color:"aqua"}]""")
+			raw("""tellraw $WRENCH_READOUT [{text:"[Wrench] ",color:"gold"},{text:"${block.name} radius: ",color:"gray"},{nbt:"data.properties.radius",entity:"@s",color:"aqua"},{text:" blocks",color:"aqua"}]""")
 			raw("playsound minecraft:block.lever.click block ${soundListenersSel(10)} ~ ~ ~ 0.6 1.4")
 		}
 

@@ -38,6 +38,7 @@ import ra.core.item.loreLine
 import ra.core.raw
 import ra.modules.automation.AutomationClock
 import ra.modules.automation.splitter.ItemSplitterRun.registerItemSplitterRun
+import ra.core.block.WRENCH_READOUT
 
 /**
  * Item Pipe Splitter: takes items out of the container above it and shares them out between the
@@ -135,7 +136,7 @@ object ItemSplitter {
 			raw("scoreboard players set #sp.r ra.temp 2")
 			for (r in listOf(2, 4, 8)) raw("execute if score #prop ra.temp matches $r run scoreboard players set #sp.r ra.temp ${r * 2}")
 			raw("execute store result entity @s data.properties.per_second int 1 run scoreboard players get #sp.r ra.temp")
-			raw("""tellraw @a[distance=..10] [{text:"[Wrench] ",color:"gold"},{text:"${block.name}: ",color:"gray"},{nbt:"data.properties.per_second",entity:"@s",color:"aqua"},{text:" items a second",color:"aqua"}]""")
+			raw("""tellraw $WRENCH_READOUT [{text:"[Wrench] ",color:"gold"},{text:"${block.name}: ",color:"gray"},{nbt:"data.properties.per_second",entity:"@s",color:"aqua"},{text:" items a second",color:"aqua"}]""")
 			raw("playsound minecraft:block.lever.click block ${soundListenersSel(10)} ~ ~ ~ 0.6 1.4")
 		}
 

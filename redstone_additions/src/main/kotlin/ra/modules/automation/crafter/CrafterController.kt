@@ -37,6 +37,8 @@ import ra.core.Ns
 import ra.modules.automation.crafter.CrafterControllerRun.registerCrafterControllerRun
 import ra.modules.automation.crafter.CrafterControllerRun.startIfIdle
 import ra.modules.automation.pattern.Pattern
+import ra.core.block.WRENCH_READOUT
+import ra.core.block.noticeOnly
 
 /**
  * Crafter Controller: fires the vanilla crafter next to it once the crafter holds what its
@@ -115,11 +117,11 @@ object CrafterController {
 
 		pack.define(insert) { insert() }
 		pack.define(eject) {
-			raw("""execute unless data entity @s data.data.item run return run tellraw @a[distance=..10] [{text:"[Wrench] ",color:"gold"},{text:"${block.name}: ",color:"gray"},{text:"no Pattern loaded",color:"yellow"}]""")
+			raw("""execute unless data entity @s data.data.item run return run tellraw $WRENCH_READOUT [{text:"[Wrench] ",color:"gold"},{text:"${block.name}: ",color:"gray"},{text:"no Pattern loaded",color:"yellow"}]""")
 			raw("function ${dropPattern.asId()}")
 			raw(untagOut)
 			raw("function ${CrafterControllerRun.arm.asId()}")
-			raw("""tellraw @a[distance=..10] [{text:"[Wrench] ",color:"gold"},{text:"${block.name}: ",color:"gray"},{text:"Pattern taken out",color:"aqua"}]""")
+			raw("""tellraw $WRENCH_READOUT [{text:"[Wrench] ",color:"gold"},{text:"${block.name}: ",color:"gray"},{text:"Pattern taken out",color:"aqua"}]""")
 			raw("playsound minecraft:item.book.page_turn block ${soundListenersSel(10)} ~ ~ ~ 0.7 1.0")
 		}
 		pack.define(dropPattern) {
@@ -133,7 +135,7 @@ object CrafterController {
 			raw("execute store success score #cc.on $T if data entity @s data.properties{enabled:0b}")
 			raw("execute if score #cc.on $T matches 1 run data modify entity @s data.properties.enabled set value 1b")
 			raw("execute if score #cc.on $T matches 0 run data modify entity @s data.properties.enabled set value 0b")
-			raw("""tellraw @a[distance=..10] [{text:"[Wrench] ",color:"gold"},{text:"${block.name}: ",color:"gray"},{nbt:"data.properties.enabled",entity:"@s",color:"aqua"}]""")
+			raw("""tellraw $WRENCH_READOUT [{text:"[Wrench] ",color:"gold"},{text:"${block.name}: ",color:"gray"},{nbt:"data.properties.enabled",entity:"@s",color:"aqua"}]""")
 			raw("playsound minecraft:block.lever.click block ${soundListenersSel(10)} ~ ~ ~ 0.6 1.4")
 		}
 
@@ -175,7 +177,7 @@ object CrafterController {
 		raw("data modify entity @s data.properties.pattern set from storage $CC slots")
 		raw("data remove storage $CC new")
 		raw("function ${CrafterControllerRun.arm.asId()}")
-		raw("""tellraw $USER [$RA_CHAT_PREFIX,{text:"Pattern loaded into the Crafter Controller.",color:"green"},{text:" A container on its other side fills the crafter.",color:"gray"}]""")
+		raw("""tellraw ${noticeOnly(USER)} [$RA_CHAT_PREFIX,{text:"Pattern loaded into the Crafter Controller.",color:"green"},{text:" A container on its other side fills the crafter.",color:"gray"}]""")
 		raw("playsound minecraft:ui.cartography_table.take_result block ${soundListenersSel(10)} ~ ~ ~ 0.7 1.0")
 	}
 }

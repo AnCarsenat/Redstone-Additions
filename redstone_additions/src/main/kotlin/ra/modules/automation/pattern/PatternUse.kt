@@ -26,6 +26,7 @@ import ra.lib.BlockTags
 import ra.modules.automation.pattern.Pattern.HELD
 import ra.modules.automation.pattern.Pattern.STORE
 import ra.modules.automation.pattern.Pattern.USER
+import ra.core.block.noticeOnly
 
 /**
  * What right-clicking a [Pattern] does. The Pattern is an endless `consumable`, so a right-click
@@ -154,7 +155,7 @@ object PatternUse {
 			writeHeld(patternGrid)
 			raw("data remove storage $STORE rec")
 			raw("data remove storage $STORE lore")
-			raw(say("Pattern recorded.", "green"))
+			raw(notice("Pattern recorded.", "green"))
 			raw("playsound minecraft:ui.cartography_table.take_result player @s[scores={${Obj.USER_SOUND}=1..}] ~ ~ ~ 0.7 1.2")
 		}
 
@@ -163,7 +164,7 @@ object PatternUse {
 			raw("data modify storage $STORE rec set value {slots:${Pattern.blankSlotsSnbt}}")
 			writeHeld(patternBlank)
 			raw("data remove storage $STORE rec")
-			raw(say("Pattern cleared.", "yellow"))
+			raw(notice("Pattern cleared.", "yellow"))
 			raw("playsound minecraft:item.book.page_turn player @s[scores={${Obj.USER_SOUND}=1..}] ~ ~ ~ 0.7 1.0")
 		}
 
@@ -233,6 +234,10 @@ object PatternUse {
 		raw("function ${cellName.asId()} with storage $STORE arg")
 		raw("data remove storage $STORE arg")
 	}
+
+	/** [say] for players with chat notices on: a confirmation, not a refusal. */
+	private fun notice(text: String, color: String) =
+		"""tellraw ${noticeOnly("@s")} [$RA_CHAT_PREFIX,{text:"$text",color:"$color"}]"""
 
 	private fun say(text: String, color: String) =
 		"""tellraw @s [$RA_CHAT_PREFIX,{text:"$text",color:"$color"}]"""

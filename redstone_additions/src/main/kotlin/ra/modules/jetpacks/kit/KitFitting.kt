@@ -28,6 +28,7 @@ import ra.modules.jetpacks.Jp.SELF_IF_SOUND
 import ra.modules.jetpacks.Jp.tmp
 import ra.modules.jetpacks.Kits
 import ra.modules.jetpacks.selfItem
+import ra.core.block.noticeOnly
 
 /**
  * Fitting kits onto the worn chestplate. All of these run as the player, kit in the main hand.
@@ -147,7 +148,7 @@ object KitFitting {
 		raw("item modify entity @s armor.chest ${Ns.JETPACKS}:fit_iron_0")
 		raw("""clear @s *[minecraft:custom_data~{ra:{jetpack_kit:1b,tier:"iron"}}] 1""")
 
-		raw("""title @s actionbar [{text:"Iron jetpack fitted",color:"green"},{text:" — sneak to fly",color:"gray"}]""")
+		raw("""title ${noticeOnly("@s")} actionbar [{text:"Iron jetpack fitted",color:"green"},{text:" — sneak to fly",color:"gray"}]""")
 		raw(Jp.HOLD_GAUGE)
 		raw("particle minecraft:enchant ~ ~1 ~ 0.4 0.6 0.4 0.6 40 normal ${particleViewersSel()}")
 		raw("playsound minecraft:block.anvil.use player ${soundListenersSel()} ~ ~ ~ 0.8 1.2")
@@ -173,8 +174,8 @@ object KitFitting {
 		function(applyFit, Storage.JETPACKS, "fit")
 		raw("""clear @s *[minecraft:custom_data~{ra:{jetpack_kit:1b,tier:"infinite"}}] 1""")
 
-		raw("""execute if score #jp.n ${Obj.TEMP} matches 1.. run title @s actionbar [{text:"Infinite jetpack fitted",color:"light_purple"},{text:" - fuel free, kits kept",color:"gray"}]""")
-		raw("""execute if score #jp.n ${Obj.TEMP} matches ..0 run title @s actionbar [{text:"Infinite jetpack fitted",color:"light_purple"},{text:" - no fuel needed",color:"gray"}]""")
+		raw("""execute if score #jp.n ${Obj.TEMP} matches 1.. run title ${noticeOnly("@s")} actionbar [{text:"Infinite jetpack fitted",color:"light_purple"},{text:" - fuel free, kits kept",color:"gray"}]""")
+		raw("""execute if score #jp.n ${Obj.TEMP} matches ..0 run title ${noticeOnly("@s")} actionbar [{text:"Infinite jetpack fitted",color:"light_purple"},{text:" - no fuel needed",color:"gray"}]""")
 		raw(Jp.HOLD_GAUGE)
 		raw("particle minecraft:enchant ~ ~1 ~ 0.4 0.6 0.4 0.8 60 normal ${particleViewersSel()}")
 		raw("playsound minecraft:block.beacon.activate player ${soundListenersSel()} ~ ~ ~ 0.7 1.4")
@@ -196,7 +197,7 @@ object KitFitting {
 
 		raw("\$clear @s *[minecraft:custom_data~{ra:{jetpack_kit:1b,upgrade:\"\$(kit)\"}}] 1")
 
-		raw("\$title @s actionbar [{text:\"\$(name) kit fitted\",color:\"green\"},{text:\" - \$(hint)\",color:\"gray\"}]")
+		raw("\$title ${noticeOnly("@s")} actionbar [{text:\"\$(name) kit fitted\",color:\"green\"},{text:\" - \$(hint)\",color:\"gray\"}]")
 		raw(Jp.HOLD_GAUGE)
 		raw("particle minecraft:enchant ~ ~1 ~ 0.4 0.6 0.4 0.6 40 normal ${particleViewersSel()}")
 		raw("playsound minecraft:block.anvil.use player ${soundListenersSel()} ~ ~ ~ 0.8 1.4")

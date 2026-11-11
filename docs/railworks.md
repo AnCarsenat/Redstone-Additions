@@ -158,7 +158,8 @@ really in the world.
 
 ### When it stops
 
-It stops, tells the players within 32 blocks why and how many blocks it built, and **rolls back**
+It stops, tells the players within 32 blocks who turned on *Chat notices* ([settings](settings.md))
+why and how many blocks it built, and **rolls back**
 along its track to the block it started from:
 
 | It says | Because |

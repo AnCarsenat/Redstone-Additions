@@ -32,6 +32,7 @@ import ra.core.item.loreItem
 import ra.core.item.loreLine
 import ra.core.raw
 import ra.modules.audio.jukebox.JukeboxOps.registerJukeboxOps
+import ra.core.block.WRENCH_READOUT
 
 /**
  * Jukebox Controller: a waxed copper bulb that runs the vanilla jukebox next to it from redstone
@@ -135,7 +136,7 @@ object JukeboxController {
 			raw("execute store success score #au.c $T if data entity @s data.properties{continuous:1b}")
 			raw("execute if score #au.c $T matches 1 run data modify entity @s data.properties.continuous set value 0b")
 			raw("execute if score #au.c $T matches 0 run data modify entity @s data.properties.continuous set value 1b")
-			raw("""tellraw @a[distance=..10] [{text:"[Wrench] ",color:"gold"},{text:"${block.name}: ",color:"gray"},{text:"continuous ",color:"gray"},{nbt:"data.properties.continuous",entity:"@s",color:"aqua"}]""")
+			raw("""tellraw $WRENCH_READOUT [{text:"[Wrench] ",color:"gold"},{text:"${block.name}: ",color:"gray"},{text:"continuous ",color:"gray"},{nbt:"data.properties.continuous",entity:"@s",color:"aqua"}]""")
 			raw("playsound minecraft:block.lever.click block ${soundListenersSel(10)} ~ ~ ~ 0.6 1.4")
 		}
 

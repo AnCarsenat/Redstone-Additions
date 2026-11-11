@@ -17,6 +17,7 @@ import ra.core.block.stackedStatusLine
 import ra.core.define
 import ra.core.raw
 import ra.core.ref
+import ra.core.block.WRENCH_READOUT
 
 object ElectricFurnaceSettings : PackPart {
 	val cycleMode = ref(Ns.WIRES, "blocks/electric_furnace/cycle_mode")
@@ -43,10 +44,10 @@ object ElectricFurnaceSettings : PackPart {
 			raw("execute if score #ef.m ra.wires.tmp matches 2 run data modify entity @s data.properties.mode set value \"high\"")
 			raw("execute if score #ef.m ra.wires.tmp matches 3 run data modify entity @s data.properties.mode set value \"superpowered\"")
 
-			raw("""execute if score #ef.m ra.wires.tmp matches 0 run tellraw @a[distance=..10] [{text:"[Wrench] ",color:"gold"},{text:"Furnace: ",color:"gray"},{text:"low - 100 ticks, 40 EU/item",color:"aqua"}]""")
-			raw("""execute if score #ef.m ra.wires.tmp matches 1 run tellraw @a[distance=..10] [{text:"[Wrench] ",color:"gold"},{text:"Furnace: ",color:"gray"},{text:"medium - 50 ticks, 100 EU/item",color:"green"}]""")
-			raw("""execute if score #ef.m ra.wires.tmp matches 2 run tellraw @a[distance=..10] [{text:"[Wrench] ",color:"gold"},{text:"Furnace: ",color:"gray"},{text:"high - 20 ticks, 300 EU/item",color:"yellow"}]""")
-			raw("""execute if score #ef.m ra.wires.tmp matches 3 run tellraw @a[distance=..10] [{text:"[Wrench] ",color:"gold"},{text:"Furnace: ",color:"gray"},{text:"superpowered - 5 ticks, 1000 EU/item",color:"red"}]""")
+			raw("""execute if score #ef.m ra.wires.tmp matches 0 run tellraw $WRENCH_READOUT [{text:"[Wrench] ",color:"gold"},{text:"Furnace: ",color:"gray"},{text:"low - 100 ticks, 40 EU/item",color:"aqua"}]""")
+			raw("""execute if score #ef.m ra.wires.tmp matches 1 run tellraw $WRENCH_READOUT [{text:"[Wrench] ",color:"gold"},{text:"Furnace: ",color:"gray"},{text:"medium - 50 ticks, 100 EU/item",color:"green"}]""")
+			raw("""execute if score #ef.m ra.wires.tmp matches 2 run tellraw $WRENCH_READOUT [{text:"[Wrench] ",color:"gold"},{text:"Furnace: ",color:"gray"},{text:"high - 20 ticks, 300 EU/item",color:"yellow"}]""")
+			raw("""execute if score #ef.m ra.wires.tmp matches 3 run tellraw $WRENCH_READOUT [{text:"[Wrench] ",color:"gold"},{text:"Furnace: ",color:"gray"},{text:"superpowered - 5 ticks, 1000 EU/item",color:"red"}]""")
 
 			raw("playsound minecraft:block.lever.click block ${soundListenersSel(10)} ~ ~ ~ 0.6 1.4")
 		}
@@ -74,7 +75,7 @@ object ElectricFurnaceSettings : PackPart {
 			// Wrench actions message everyone nearby. The wrench runs `as` the marker off a
 			// raycast and never touches the player, so anything addressed to a player-side
 			// tag would reach nobody -- which is exactly how this once cycled in silence.
-			raw("""tellraw @a[distance=..10] [{text:"[Wrench] ",color:"gold"},{text:"Furnace output: ",color:"gray"},{nbt:"data.properties.output",entity:"@s",color:"green"}]""")
+			raw("""tellraw $WRENCH_READOUT [{text:"[Wrench] ",color:"gold"},{text:"Furnace output: ",color:"gray"},{nbt:"data.properties.output",entity:"@s",color:"green"}]""")
 			raw("playsound minecraft:block.lever.click block ${soundListenersSel(10)} ~ ~ ~ 0.6 1.4")
 		}
 

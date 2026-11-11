@@ -446,6 +446,23 @@
 
 ### Changed
 
+- **Less chat text: automatic notices are off by default.** A new setting in Your Preferences
+  (`/trigger ra.settings.open`), **Chat notices**, off unless you turn it on, now holds the lines
+  the pack used to send without being asked:
+  - the result of an enchanting-table sacrifice (the Overstar, the Master Capture Net);
+  - the Rail Builder's progress lines ("Building east", "Stopped: ...", "Back at the start.");
+  - "Ram Upgrade fitted" and "Ram Upgrade removed", "Iron jetpack fitted", "Infinite jetpack
+    fitted", "... kit fitted" and "Goggles Lens fitted";
+  - "Pattern recorded.", "Pattern cleared.", "Pattern loaded into the Crafter Controller.",
+    "Schematic set" on the Book Printer, "Caught: ..." from the Capture Net, "Pulsed receivers on
+    channel ..." from the Remote, the Keypad's "Code accepted." and "Multiblock disassembled.";
+  - wrench readouts (`[Wrench] Conveyor speed: 3`, the Route Rail's settings and every
+    other one) and "Multiblock assembled!" for the players **near** the one holding the wrench.
+    The player who used the wrench always reads them.
+
+  Menus, readouts you open yourself (Goggles, Multimeter, Data Handler, Pager, wrench menus),
+  "Received ..." lines, load messages and the reason an action was refused always show.
+
 - **Recipes rebalanced.** Every recipe now asks for things you can get in survival at the point
   in the game where the block is worth having, is laid out like a vanilla recipe, and uses
   ingredients that match what the block does. No two recipes share a grid, with each other or

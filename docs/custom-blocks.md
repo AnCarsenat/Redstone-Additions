@@ -49,7 +49,10 @@ after its id: `ender_item_vault` lives in `ra_ender:blocks/item_vault/`.
 | Selectors | `markers(block)`, `brokenMarkers(block)`, `newMarker(block)` (`core/block/Selectors.kt`) |
 
 The item is `minecraft:bat_spawn_egg` with `item_model`, `item_name`, `custom_data` and
-`entity_data` (`{id:"minecraft:bat",Tags:["ra","ra.spawned","ra.place.<id>"],Silent:1b,NoAI:1b,Invulnerable:1b}`).
+`entity_data` (`{id:"minecraft:bat",Tags:["ra","ra.spawned","ra.place.<id>"],Silent:1b,NoAI:1b,Invulnerable:1b,active_effects:[{id:"minecraft:invisibility",duration:-1,amplifier:0b,ambient:1b,show_particles:0b,show_icon:0b}]}`):
+a silent, frozen, invulnerable bat with a hidden infinite invisibility effect, so it never shows
+while the block is placed. Its flags are spelled once, in `PlacementBat` (`core/block/PlacementBat.kt`);
+an egg written by hand puts `${PlacementBat.FLAGS}` after the bat's `Tags`.
 `item_name`, `custom_data` and `entity_data` are set as Kore `CustomComponent`s holding raw NBT,
 because Kore 2.28's typed versions cannot be written into a recipe's JSON
 ([Kore Gotchas](gotchas.md#item-components-in-json)).

@@ -17,6 +17,7 @@ import ra.core.executeRun
 import ra.core.raw
 import ra.core.ref
 import ra.modules.wires.electric.EuApi
+import ra.core.block.PlacementBat
 
 object CreativeEu : PackPart {
 	val give = ref(Ns.WIRES, "blocks/creative_eu/give")
@@ -27,7 +28,7 @@ object CreativeEu : PackPart {
 		pack.define(CreativeEu.give) {
 			// Give the Creative EU Source. Creative only -- there is no recipe for it, on purpose.
 
-			raw("""give @s bat_spawn_egg[item_model="minecraft:beacon",item_name="Creative EU Source",rarity=epic,lore=[{text:"Creative: makes something from nothing",color:"light_purple",italic:false}],custom_data={ra:{creative_eu:1b}},entity_data={id:"minecraft:bat",Tags:["ra","ra.spawned","ra.place.creative_eu"],Silent:1b,NoAI:1b,Invulnerable:1b}]""")
+			raw("""give @s bat_spawn_egg[item_model="minecraft:beacon",item_name="Creative EU Source",rarity=epic,lore=[{text:"Creative: makes something from nothing",color:"light_purple",italic:false}],custom_data={ra:{creative_eu:1b}},entity_data={id:"minecraft:bat",Tags:["ra","ra.spawned","ra.place.creative_eu"],${PlacementBat.FLAGS}}]""")
 			raw("""tellraw @s [{text:"[RA] ",color:"gold"},{text:"Received ",color:"gray"},{text:"Creative EU Source",color:"light_purple"}]""")
 		}
 

@@ -151,8 +151,8 @@ Crafted from three glass panes, two glowstone dust, a comparator and a barrel.
   each second sets the next 90-degree step with a 20-tick interpolation. The name is copied as a
   component (`custom_name`, else `item_name`), or a translation built from the item id
   (`ra_displays:item_name/build`, shared with the Text Screen).
-- Text Screen: marker tag `ra.custom_block.text_screen`, displays `ra.displays.screen_panel` (a
-  black concrete `block_display`) and `ra.displays.screen_text`. The input is read every tick like
+- Text Screen: marker tag `ra.custom_block.text_screen`, display `ra.displays.screen_text`
+  (a text display, no panel behind it). The input is read every tick like
   the Gauge Bar's, the last level in `ra.power` (`data.status.level` for the Goggles). What it
   would show (`{item:...}` without slot and count, `{level:L}`, or `{}`) is built when the level
   changes and once a second on the slow clock, and compared with `data.data.shown`: the text is

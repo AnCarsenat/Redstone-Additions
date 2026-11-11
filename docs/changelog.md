@@ -448,6 +448,8 @@ This page mirrors key datapack milestones from the main project changelog.
 
 ### Changed
 
+- **Text Screen**: no black panel behind the text any more; the text display's own background
+  setting covers that. Screens placed earlier lose theirs on their next update.
 - **Recipes rebalanced.** Every recipe now asks for things you can get in survival at the point
   in the game where the block is worth having, is laid out like a vanilla recipe, and uses
   ingredients that match what the block does. No two recipes share a grid, with each other or

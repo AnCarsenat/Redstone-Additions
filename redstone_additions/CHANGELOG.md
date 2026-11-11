@@ -295,10 +295,11 @@
   to you). Twice a second it compares the crafter's slots with the Pattern; when every slot holds
   the Pattern's item and every slot the Pattern leaves empty is empty, it gives the crafter a
   short redstone pulse and the crafter crafts once. It then waits until the crafter's contents
-  change, so a crafter that cannot craft is not fired again and again. With a container on the
-  Controller's other side, opposite the crafter, it also fills the crafter: every half second it
-  moves one ingredient from the container into each empty slot the Pattern names, then fires once
-  every slot is right. Only plain items are taken (never a renamed, enchanted or damaged one), an
+  change, so a crafter that cannot craft is not fired again and again. **A container on the
+  Controller's far side, opposite the crafter, is pulled from**: every half second the Controller
+  moves one ingredient from it into each empty slot the Pattern names, then fires once every slot
+  is right, craft after craft. Only vanilla containers count (never another crafter or a block of
+  this pack, such as a Trash Can or a Magic Crate). Only plain items are taken (never a renamed, enchanted or damaged one), an
   item leaves the container only once it is in the crafter, a slot holding something else is left
   alone, and a slot disabled in the crafter is never filled (the Goggles say so when the Pattern
   needs one). With no container there it only compares and fires. Shift+RMB with the Wrench
@@ -672,7 +673,12 @@
 - **Fake Player not included** (`ra/modules/automation/fakeplayer/`). Its natural spawning uses
   simplified biome lists and spawns single mobs, so it is not a good enough stand-in for a player.
   The code stays in the source, switched off by `FakePlayer.ENABLED`: no recipe, item, bundle
-  entry, advancement, settings row or clock work, and none of its functions are in the pack.
+  entry, advancement, settings row or spawning. Only two things stay on for worlds built with an
+  earlier 6.0.3 build: its break check (a broken one drops its item and loses its marker) and the
+  sweep on the automation clock that lets the mobs it spawned despawn again.
+- **Dev worlds from earlier 6.0.3 builds**: an Uncrafter still on chiseled tuff bricks and an Item
+  Pipe Splitter still on chiseled tuff fail their break check on the next tick, so the item comes
+  back and the marker goes; the old vanilla block stays where it was. Place the item again.
 - **`ra_lib:skin/apply_facing {real, skin, id, facing}`**: a skin turned to a fixed facing over a
   real block that has no `facing` of its own. The Item Pipe Splitter is cobblestone wearing a
   dispenser facing up, repaired on the automation clock when its skin goes missing.

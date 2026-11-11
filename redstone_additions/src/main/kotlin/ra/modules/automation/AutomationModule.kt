@@ -25,6 +25,7 @@ import ra.modules.automation.conveyor.Conveyor
 import ra.modules.automation.conveyor.Conveyor.registerConveyor
 import ra.modules.automation.fakeplayer.FakePlayer
 import ra.modules.automation.fakeplayer.FakePlayer.registerFakePlayer
+import ra.modules.automation.fakeplayer.FakePlayer.registerFakePlayerLeftovers
 import ra.modules.automation.fakeplayer.FakePlayerSpawner
 import ra.modules.automation.uncrafter.UncraftTable
 import ra.modules.automation.uncrafter.Uncrafter
@@ -45,8 +46,8 @@ import ra.modules.automation.uncrafter.UncrafterRun
  *
  * The [Pattern] item is shared: a block that takes Patterns adds itself to [Pattern.targets].
  *
- * The Fake Player is disabled ([FakePlayer.ENABLED]): its code is kept but nothing registers or
- * runs it.
+ * The Fake Player is disabled ([FakePlayer.ENABLED]): its code is kept, and only its break check
+ * and mob sweep are registered, for worlds that already have some.
  */
 object AutomationModule : GameplayModule {
 	override val ns = Ns.AUTOMATION
@@ -58,8 +59,8 @@ object AutomationModule : GameplayModule {
 		registerUncrafter()
 		registerXpAbsorber()
 		registerItemSplitter()
-		// Disabled: see FakePlayer.ENABLED.
-		if (FakePlayer.ENABLED) registerFakePlayer()
+		// Disabled: see FakePlayer.ENABLED. Only the break check and the mob sweep stay.
+		if (FakePlayer.ENABLED) registerFakePlayer() else registerFakePlayerLeftovers()
 		registerConveyor()
 		registerAutomationClock()
 
@@ -100,7 +101,7 @@ object AutomationModule : GameplayModule {
 			function(Uncrafter.block.tick)
 			function(XpAbsorber.block.tick)
 			function(ItemSplitter.block.tick)
-			if (FakePlayer.ENABLED) function(FakePlayer.block.tick)
+			function(FakePlayer.block.tick)
 			function(Conveyor.block.tick)
 		}
 	}

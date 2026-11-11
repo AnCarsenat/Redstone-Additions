@@ -73,8 +73,13 @@ full) is not fired over and over.
 
 ### Filling the crafter
 
-With a container on the Controller's other side (a chest, barrel, hopper, dropper, dispenser or
-shulker box; never another crafter), every half second the Controller puts one ingredient from
+!!! note "A container behind the Controller is pulled from"
+    Any Pattern does this: a container on the Controller's far side, opposite the crafter, is
+    emptied into the crafter, one craft at a time. Do not put a chest you want to keep as it is
+    there.
+
+With a vanilla container on the Controller's other side (a chest, barrel, hopper, dropper,
+dispenser or shulker box), every half second the Controller puts one ingredient from
 it into each crafter slot the Pattern names that is empty, then fires the crafter as soon as
 every slot is right. The crafter crafts one at a time, at most twice a second. Fill the container
 by hand, with hoppers, pipes or an Item Pipe Splitter; nothing else needs to feed the crafter.
@@ -87,6 +92,8 @@ by hand, with hoppers, pipes or an Item Pipe Splitter; nothing else needs to fee
   stays there.
 - An item is only taken from the container once it is in the crafter slot, so nothing is ever
   made or lost.
+- Never taken from: another crafter, or a block of this pack (a Trash Can, a Magic Crate, a
+  crate, an Item Pipe: anything that is a Redstone Additions block).
 - A slot disabled in the crafter (clicked shut in its grid) is never filled. If the Pattern needs
   one, the Goggles say "a Pattern slot is disabled in the crafter" and nothing is fired until the
   slot is enabled again or the Pattern is recorded anew (a recording leaves disabled slots empty).

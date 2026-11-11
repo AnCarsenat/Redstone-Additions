@@ -16,8 +16,6 @@ import ra.modules.farming.net.CaptureNet
 import ra.modules.farming.net.CaptureNet.registerCaptureNet
 import ra.modules.farming.net.CaptureNetMobs
 import ra.modules.farming.net.CaptureNetUse
-import ra.modules.farming.tree.TreeFarm
-import ra.modules.farming.tree.TreeFarm.registerTreeFarm
 
 /**
  * Farming (`ra_farming`): blocks that tend crops and animals.
@@ -41,21 +39,19 @@ object FarmingModule : GameplayModule {
 	override fun Ra.register() {
 		registerBreeder()
 		registerSprinkler()
-		registerTreeFarm()
 		registerCaptureNet()
 
-		val blocks = listOf(Breeder.block to Breeder.item, Sprinkler.block to Sprinkler.item, TreeFarm.block to TreeFarm.item)
+		val blocks = listOf(Breeder.block to Breeder.item, Sprinkler.block to Sprinkler.item)
 
 		pack.define(load) {
 			raw("scoreboard objectives add ${CaptureNetUse.USED} dummy")
 			raw("data modify storage ${CaptureNet.STORE} capture_net set value ${CaptureNetMobs.allowMapsSnbt()}")
 			function(Breeder.registerBlock)
 			function(Sprinkler.registerBlock)
-			function(TreeFarm.registerBlock)
 			moduleLoaded("Farming loaded!", "green")
 		}
-		// The Sprinkler's and the Tree Farm's work runs on the network machines' clock
-		// (ra_wires:machine/run); their tick is only the break check.
+		// The Sprinkler's work runs on the network machines' clock (ra_wires:machine/run); its tick
+		// is only the break check.
 		pack.define(tick!!) {
 			for ((b, _) in blocks) function(b.tick)
 		}
@@ -67,7 +63,7 @@ object FarmingModule : GameplayModule {
 		}
 
 		bundles += GiveBundle(
-			"farming", "Farming Bundle", "${blocks.size} blocks and the Capture Nets, for crops, trees and animals", ns,
+			"farming", "Farming Bundle", "${blocks.size} blocks and the Capture Nets, for crops and animals", ns,
 			blocks.map { it.second.stackNbt() } + listOf(CaptureNet.item.stackNbt(), CaptureNet.masterItem.stackNbt()),
 		)
 	}

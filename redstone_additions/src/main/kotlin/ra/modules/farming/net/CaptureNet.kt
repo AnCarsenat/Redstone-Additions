@@ -39,7 +39,7 @@ import ra.modules.farming.net.CaptureNetUse.registerCaptureNetUse
  * (a Capture Net upgraded with a nether star) catches any mob in [CaptureNetMobs.ANY], which is
  * every mob but the wither, the ender dragon and players.
  *
- * WHAT IDENTIFIES ONE. Both are a rabbit hide wearing the cobweb model ([NET]): the item model is
+ * WHAT IDENTIFIES ONE. Both are a rabbit hide wearing the bundle model ([NET]): the item model is
  * on every net, whichever way it was made. The tier is its rarity ([MASTER], epic). The upgrade is
  * a `crafting_transmute` recipe, the vanilla recipe that keeps an item's components while changing
  * a few (it dyes shulker boxes without emptying them), so a full net keeps its mob through it. Its
@@ -69,8 +69,9 @@ object CaptureNet {
 	val give = fn("give")
 	val giveMaster = fn("give_master")
 
+	/** A rabbit hide, not a bundle: a real bundle has its own right-click and inventory behaviour. */
 	const val BASE = "minecraft:rabbit_hide"
-	const val MODEL = "minecraft:cobweb"
+	const val MODEL = "minecraft:bundle"
 
 	/** What makes an item a Capture Net, as an item-test component: its model. */
 	private const val NET_COMPONENT = """minecraft:item_model="$MODEL""""

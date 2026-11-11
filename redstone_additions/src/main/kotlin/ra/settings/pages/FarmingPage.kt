@@ -11,6 +11,5 @@ val FarmingPage = Page(
 	) + blocks(
 		"breeder" to "Breeder",
 		"sprinkler" to "Sprinkler",
-		"tree_farm" to "Tree Farm",
 	),
 )

@@ -46,6 +46,8 @@ object PackValidator {
 	 * fails the same way, and a display's `block_state:{Name:...}`, which 26.3 cannot decode (the
 	 * command succeeds, the display shows air; only the game log says why). Always fatal.
 	 */
+	private val terminalIfFunction = Regex("""\b(if|unless) function \S+\s*$""")
+
 	fun preTwentySixThreeSyntax(pack: DataPack): List<String> =
 		(pack.functions + pack.generatedFunctions).flatMap { fn ->
 			fn.lines.withIndex().mapNotNull { (i, line) ->
@@ -54,6 +56,9 @@ object PackValidator {
 				oldDispatchKey.find(line)?.let { return@mapNotNull "$where: inline `${it.groupValues[1]}:` key, 26.3 uses `type:`: ${line.trim().take(120)}" }
 				// Not fatal to parse -- the command succeeds -- but the display decodes to air.
 				if (oldBlockState.containsMatchIn(line)) return@mapNotNull "$where: block_state {Name:...}, 26.3 reads {id:...} (the display shows air): ${line.trim().take(120)}"
+				// `execute ... if function <id>` with nothing after it does not parse: the game drops
+				// the whole function ("Unknown or incomplete command"). It needs a `run`.
+				if (terminalIfFunction.containsMatchIn(line)) return@mapNotNull "$where: `if/unless function` cannot end a command, add `run ...`: ${line.trim().take(120)}"
 				playsound.find(line)?.groupValues?.get(1)?.toDoubleOrNull()?.takeIf { it > 2.0 }
 					?.let { "$where: playsound pitch $it above 2.0: ${line.trim().take(120)}" }
 			}

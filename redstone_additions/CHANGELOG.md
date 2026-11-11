@@ -561,6 +561,7 @@
 
 ### Fixed
 
+- **Conveyor**: breaking it left its arrow display behind; the arrow is removed with it now.
 - Items put into a container by any block (Uncrafter, Item Pipe Splitter, Storage Box, Unboxer, Spout,
   Blast Forge output and others) were destroyed: the shared insert function failed to load in 26.3
   because one of its lines ended in `if function`, which the game does not accept.

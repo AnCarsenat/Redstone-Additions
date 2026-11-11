@@ -10,6 +10,7 @@ import net.benwoodworth.knbt.NbtCompound
 import net.benwoodworth.knbt.NbtList
 import net.benwoodworth.knbt.NbtString
 import ra.core.Tag
+import ra.core.block.PlacementBat
 
 /**
  * One tier of the Multiblock Base: a single block type with five tiers, which is why its give,
@@ -62,13 +63,7 @@ data class BaseTier(
 
 	fun customDataNbt() = nbt { this["ra"] = nbt { this["multiblock_base"] = tier } }
 
-	fun entityDataNbt() = nbt {
-		this["id"] = "minecraft:bat"
-		this["Tags"] = NbtList(listOf(Tag.RA, Tag.SPAWNED, Tag.place("multiblock_base"), Tag.place(blockTag)).map(::NbtString))
-		this["Silent"] = true
-		this["NoAI"] = true
-		this["Invulnerable"] = true
-	}
+	fun entityDataNbt() = PlacementBat.nbt(listOf(Tag.RA, Tag.SPAWNED, Tag.place("multiblock_base"), Tag.place(blockTag)))
 
 	/** The item as an SNBT stack, for the give bundle. */
 	fun itemStackNbt(): NbtCompound = nbt {

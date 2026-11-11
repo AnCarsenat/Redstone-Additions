@@ -17,6 +17,7 @@ import ra.core.ref
 import ra.modules.wires.WiresBlocks
 import ra.modules.wires.WiresBlocks.stackNbt
 import ra.modules.wires.common.Common
+import ra.core.block.PlacementBat
 
 object LiquidBreak : PackPart {
 	val boiler = ref(Ns.WIRES, "liquid/break/boiler")
@@ -38,7 +39,7 @@ object LiquidBreak : PackPart {
 			// The boiler is not a network node, so there is no network membership to release.
 
 			killVanillaDrop("minecraft:furnace")
-			raw("""summon item ~ ~ ~ {Item:{id:"minecraft:bat_spawn_egg",count:1,components:{"minecraft:item_model":"minecraft:furnace","minecraft:item_name":'Boiler',"minecraft:lore":[{text:"Water in, steam out, over a heat source",color:"gray",italic:false}],"minecraft:custom_data":{ra:{boiler:1b}},"minecraft:entity_data":{id:"minecraft:bat",Tags:["ra","ra.spawned","ra.place.boiler"],Silent:1b,NoAI:1b,Invulnerable:1b}}}}""")
+			raw("""summon item ~ ~ ~ {Item:{id:"minecraft:bat_spawn_egg",count:1,components:{"minecraft:item_model":"minecraft:furnace","minecraft:item_name":'Boiler',"minecraft:lore":[{text:"Water in, steam out, over a heat source",color:"gray",italic:false}],"minecraft:custom_data":{ra:{boiler:1b}},"minecraft:entity_data":{id:"minecraft:bat",Tags:["ra","ra.spawned","ra.place.boiler"],${PlacementBat.FLAGS}}}}}""")
 			kill(self())
 		}
 
@@ -72,7 +73,7 @@ object LiquidBreak : PackPart {
 			function(RaLib.Transport.Net.leave)
 			function(Common.updateModelLocalAndNeighbors)
 			killVanillaDrop("minecraft:waxed_exposed_cut_copper")
-			raw("""summon item ~ ~ ~ {Item:{id:"minecraft:bat_spawn_egg",count:1,components:{"minecraft:item_model":"minecraft:waxed_exposed_cut_copper","minecraft:item_name":'Liquid Filter',"minecraft:lore":[{text:"Passes only the medium it is set to",color:"gray",italic:false},{text:"Set filter_medium with the Data Handler",color:"dark_gray",italic:false}],"minecraft:custom_data":{ra:{liquid_filter:1b}},"minecraft:entity_data":{id:"minecraft:bat",Tags:["ra","ra.spawned","ra.place.liquid_filter"],Silent:1b,NoAI:1b,Invulnerable:1b}}}}""")
+			raw("""summon item ~ ~ ~ {Item:{id:"minecraft:bat_spawn_egg",count:1,components:{"minecraft:item_model":"minecraft:waxed_exposed_cut_copper","minecraft:item_name":'Liquid Filter',"minecraft:lore":[{text:"Passes only the medium it is set to",color:"gray",italic:false},{text:"Set filter_medium with the Data Handler",color:"dark_gray",italic:false}],"minecraft:custom_data":{ra:{liquid_filter:1b}},"minecraft:entity_data":{id:"minecraft:bat",Tags:["ra","ra.spawned","ra.place.liquid_filter"],${PlacementBat.FLAGS}}}}}""")
 			kill(self())
 		}
 
@@ -91,7 +92,7 @@ object LiquidBreak : PackPart {
 			function(RaLib.Transport.Net.leave)
 			function(Common.updateModelLocalAndNeighbors)
 			killVanillaDrop("minecraft:smoker")
-			raw("""summon item ~ ~ ~ {Item:{id:"minecraft:bat_spawn_egg",count:1,components:{"minecraft:item_model":"minecraft:smoker","minecraft:item_name":'Gas Pump',"minecraft:custom_data":{ra:{gas_pump:1b}},"minecraft:entity_data":{id:"minecraft:bat",Tags:["ra","ra.spawned","ra.place.gas_pump"],Silent:1b,NoAI:1b,Invulnerable:1b}}}}""")
+			raw("""summon item ~ ~ ~ {Item:{id:"minecraft:bat_spawn_egg",count:1,components:{"minecraft:item_model":"minecraft:smoker","minecraft:item_name":'Gas Pump',"minecraft:custom_data":{ra:{gas_pump:1b}},"minecraft:entity_data":{id:"minecraft:bat",Tags:["ra","ra.spawned","ra.place.gas_pump"],${PlacementBat.FLAGS}}}}}""")
 			kill(self())
 		}
 
@@ -110,7 +111,7 @@ object LiquidBreak : PackPart {
 			function(RaLib.Transport.Net.leave)
 			function(Common.updateModelLocalAndNeighbors)
 			killVanillaDrop("minecraft:iron_block")
-			raw("""summon item ~ ~ ~ {Item:{id:"minecraft:bat_spawn_egg",count:1,components:{"minecraft:item_model":"minecraft:iron_block","minecraft:item_name":'Gas Tank',"minecraft:custom_data":{ra:{gas_tank:1b}},"minecraft:entity_data":{id:"minecraft:bat",Tags:["ra","ra.spawned","ra.place.gas_tank"],Silent:1b,NoAI:1b,Invulnerable:1b}}}}""")
+			raw("""summon item ~ ~ ~ {Item:{id:"minecraft:bat_spawn_egg",count:1,components:{"minecraft:item_model":"minecraft:iron_block","minecraft:item_name":'Gas Tank',"minecraft:custom_data":{ra:{gas_tank:1b}},"minecraft:entity_data":{id:"minecraft:bat",Tags:["ra","ra.spawned","ra.place.gas_tank"],${PlacementBat.FLAGS}}}}}""")
 			kill(self())
 		}
 
@@ -129,7 +130,7 @@ object LiquidBreak : PackPart {
 			function(RaLib.Transport.Net.leave)
 			function(Common.updateModelLocalAndNeighbors)
 			killVanillaDrop("minecraft:smooth_basalt")
-			raw("""summon item ~ ~ ~ {Item:{id:"minecraft:bat_spawn_egg",count:1,components:{"minecraft:item_model":"minecraft:smooth_basalt","minecraft:item_name":'Gas Valve',"minecraft:custom_data":{ra:{gas_valve:1b}},"minecraft:entity_data":{id:"minecraft:bat",Tags:["ra","ra.spawned","ra.place.gas_valve"],Silent:1b,NoAI:1b,Invulnerable:1b}}}}""")
+			raw("""summon item ~ ~ ~ {Item:{id:"minecraft:bat_spawn_egg",count:1,components:{"minecraft:item_model":"minecraft:smooth_basalt","minecraft:item_name":'Gas Valve',"minecraft:custom_data":{ra:{gas_valve:1b}},"minecraft:entity_data":{id:"minecraft:bat",Tags:["ra","ra.spawned","ra.place.gas_valve"],${PlacementBat.FLAGS}}}}}""")
 			kill(self())
 		}
 
@@ -155,7 +156,7 @@ object LiquidBreak : PackPart {
 			function(Common.updateModelLocalAndNeighbors)
 			killVanillaDrop("minecraft:conduit")
 			kill(self())
-			raw("""summon item ~ ~ ~ {Item:{id:"minecraft:bat_spawn_egg",count:1,components:{"minecraft:item_model":"minecraft:copper_block","minecraft:item_name":'Copper Pipe',"minecraft:custom_data":{ra:{liquid_pipe_copper:1b}},"minecraft:entity_data":{id:"minecraft:bat",Tags:["ra","ra.spawned","ra.place.liquid_pipe_copper"],Silent:1b,NoAI:1b,Invulnerable:1b}}}}""")
+			raw("""summon item ~ ~ ~ {Item:{id:"minecraft:bat_spawn_egg",count:1,components:{"minecraft:item_model":"minecraft:copper_block","minecraft:item_name":'Copper Pipe',"minecraft:custom_data":{ra:{liquid_pipe_copper:1b}},"minecraft:entity_data":{id:"minecraft:bat",Tags:["ra","ra.spawned","ra.place.liquid_pipe_copper"],${PlacementBat.FLAGS}}}}}""")
 		}
 
 		pack.define(LiquidBreak.pump) {
@@ -173,7 +174,7 @@ object LiquidBreak : PackPart {
 			function(RaLib.Transport.Net.leave)
 			function(Common.updateModelLocalAndNeighbors)
 			killVanillaDrop("minecraft:dispenser")
-			raw("""summon item ~ ~ ~ {Item:{id:"minecraft:bat_spawn_egg",count:1,components:{"minecraft:item_model":"minecraft:dispenser","minecraft:item_name":'Liquid Pump',"minecraft:custom_data":{ra:{liquid_pump:1b}},"minecraft:entity_data":{id:"minecraft:bat",Tags:["ra","ra.spawned","ra.place.liquid_pump"],Silent:1b,NoAI:1b,Invulnerable:1b}}}}""")
+			raw("""summon item ~ ~ ~ {Item:{id:"minecraft:bat_spawn_egg",count:1,components:{"minecraft:item_model":"minecraft:dispenser","minecraft:item_name":'Liquid Pump',"minecraft:custom_data":{ra:{liquid_pump:1b}},"minecraft:entity_data":{id:"minecraft:bat",Tags:["ra","ra.spawned","ra.place.liquid_pump"],${PlacementBat.FLAGS}}}}}""")
 			kill(self())
 		}
 
@@ -192,7 +193,7 @@ object LiquidBreak : PackPart {
 			function(RaLib.Transport.Net.leave)
 			function(Common.updateModelLocalAndNeighbors)
 			killVanillaDrop("minecraft:waxed_copper_block")
-			raw("""summon item ~ ~ ~ {Item:{id:"minecraft:bat_spawn_egg",count:1,components:{"minecraft:item_model":"minecraft:waxed_copper_block","minecraft:item_name":'Liquid Tank',"minecraft:custom_data":{ra:{liquid_tank:1b}},"minecraft:entity_data":{id:"minecraft:bat",Tags:["ra","ra.spawned","ra.place.liquid_tank"],Silent:1b,NoAI:1b,Invulnerable:1b}}}}""")
+			raw("""summon item ~ ~ ~ {Item:{id:"minecraft:bat_spawn_egg",count:1,components:{"minecraft:item_model":"minecraft:waxed_copper_block","minecraft:item_name":'Liquid Tank',"minecraft:custom_data":{ra:{liquid_tank:1b}},"minecraft:entity_data":{id:"minecraft:bat",Tags:["ra","ra.spawned","ra.place.liquid_tank"],${PlacementBat.FLAGS}}}}}""")
 			kill(self())
 		}
 
@@ -211,7 +212,7 @@ object LiquidBreak : PackPart {
 			function(RaLib.Transport.Net.leave)
 			function(Common.updateModelLocalAndNeighbors)
 			killVanillaDrop("minecraft:waxed_cut_copper")
-			raw("""summon item ~ ~ ~ {Item:{id:"minecraft:bat_spawn_egg",count:1,components:{"minecraft:item_model":"minecraft:waxed_cut_copper","minecraft:item_name":'Liquid Valve',"minecraft:custom_data":{ra:{liquid_valve:1b}},"minecraft:entity_data":{id:"minecraft:bat",Tags:["ra","ra.spawned","ra.place.liquid_valve"],Silent:1b,NoAI:1b,Invulnerable:1b}}}}""")
+			raw("""summon item ~ ~ ~ {Item:{id:"minecraft:bat_spawn_egg",count:1,components:{"minecraft:item_model":"minecraft:waxed_cut_copper","minecraft:item_name":'Liquid Valve',"minecraft:custom_data":{ra:{liquid_valve:1b}},"minecraft:entity_data":{id:"minecraft:bat",Tags:["ra","ra.spawned","ra.place.liquid_valve"],${PlacementBat.FLAGS}}}}}""")
 			kill(self())
 		}
 	}

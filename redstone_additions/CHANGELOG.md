@@ -512,6 +512,11 @@
 
 ### Fixed
 
+- **The bat a block's item spawns no longer shows while the block is placed.** It now spawns with
+  an infinite, hidden invisibility effect (no particles, no icon), as well as silent, frozen and
+  invulnerable as before. Every copy of a block's item carries it: `give`, recipes, the drop when
+  the block is broken, refunds and bundles. There is no migration: items made before 6.0.3 keep a
+  visible bat until they are used up, and do not stack with new copies of the same block.
 - **No shulker box into a shulker box.** `ra_lib:inventory/insert_or_drop` drops a shulker box
   instead of putting it into a shulker box, and `can_accept_one` reports no room for it, as the
   game itself refuses it. The Uncrafter leaves a shulker box in its input when the container below

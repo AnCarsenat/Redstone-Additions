@@ -76,14 +76,8 @@ data class CustomBlock(
 	/** `bat_spawn_egg[...]`, for `give` and item tests. */
 	val item: ItemArgument get() = Items.BAT_SPAWN_EGG { blockItemComponents() }
 
-	/** The bat the egg spawns. Silent, frozen and invulnerable: it only lives for one tick. */
-	fun entityDataNbt(): NbtCompound = nbt {
-		this["id"] = "minecraft:bat"
-		this["Tags"] = NbtList(listOf(NbtString(Tag.RA), NbtString(Tag.SPAWNED), NbtString(placeTag)))
-		this["Silent"] = true
-		this["NoAI"] = true
-		this["Invulnerable"] = true
-	}
+	/** The bat the egg spawns ([PlacementBat]: silent, frozen, invulnerable and invisible). */
+	fun entityDataNbt(): NbtCompound = PlacementBat.nbt(listOf(Tag.RA, Tag.SPAWNED, placeTag))
 
 	/**
 	 * The item as an SNBT item stack (`{id, count, components}`), for `summon item`, bundle

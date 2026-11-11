@@ -262,7 +262,9 @@ internal object InsertOrDrop {
 		// A shulker box never goes into a shulker box (the game refuses it too): dropped, like
 		// anything else that does not fit.
 		raw("scoreboard players set #inv_shk_in ${Obj.TEMP} 0")
-		raw("execute if block ~ ~ ~ #minecraft:shulker_boxes store success score #inv_shk_in ${Obj.TEMP} if function ${isShulkerItem.asId()}")
+		// `if function` cannot end a command (the game refuses to load the whole function), so it
+		// sets the score through `run`.
+		raw("execute if block ~ ~ ~ #minecraft:shulker_boxes if function ${isShulkerItem.asId()} run scoreboard players set #inv_shk_in ${Obj.TEMP} 1")
 		raw("execute if score #inv_shk_in ${Obj.TEMP} matches 1 run function ${dropItem.asId()}")
 		raw("execute if score #inv_shk_in ${Obj.TEMP} matches 1 run return 0")
 

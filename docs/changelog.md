@@ -561,6 +561,9 @@ This page mirrors key datapack milestones from the main project changelog.
 
 ### Fixed
 
+- Items put into a container by any block (Uncrafter, Item Pipe Splitter, Storage Box, Unboxer, Spout,
+  Blast Forge output and others) were destroyed: the shared insert function failed to load in 26.3
+  because one of its lines ended in `if function`, which the game does not accept.
 - **Fan** pushed armor stands, including the armor-stand markers of custom blocks placed before
   5.1.8, and any other entity the pack itself placed: it now leaves alone everything tagged `ra`
   and every armor stand, like markers and displays. It also no longer pushes a player who is

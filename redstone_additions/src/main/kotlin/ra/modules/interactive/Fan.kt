@@ -96,7 +96,7 @@ object Fan {
 				EntityTypes.MARKER, EntityTypes.ITEM_DISPLAY, EntityTypes.BLOCK_DISPLAY, EntityTypes.TEXT_DISPLAY,
 				EntityTypes.INTERACTION, EntityTypes.AREA_EFFECT_CLOUD, EntityTypes.PAINTING, EntityTypes.ITEM_FRAME,
 				EntityTypes.GLOW_ITEM_FRAME, EntityTypes.LEASH_KNOT, EntityTypes.LIGHTNING_BOLT, EntityTypes.END_CRYSTAL,
-				EntityTypes.SHULKER, EntityTypes.ENDER_DRAGON,
+				EntityTypes.SHULKER, EntityTypes.ENDER_DRAGON, EntityTypes.ARMOR_STAND,
 			)) add(e)
 		}
 
@@ -133,6 +133,7 @@ object Fan {
 			// Every other tick: which Fans are powered. Only those go further than their own block state.
 			executeRun("if score $PHASE ${FanPush.T} matches 0", powerCheck)
 			// Every tick while one is: the push, in small steps.
+			raw("execute if score $ON ${FanPush.T} matches 1.. store result score ${FanPush.NOW} ${FanPush.T} run time query gametime")
 			executeRun("if score $ON ${FanPush.T} matches 1.. as @e[type=minecraft:marker,tag=$POWERED] at @s", FanPush.run)
 			// Players lifted by an upward Fan they have since left come down.
 			executeRun("if entity @a[tag=${FanPush.LIFTED},limit=1]", FanPush.liftEnd)

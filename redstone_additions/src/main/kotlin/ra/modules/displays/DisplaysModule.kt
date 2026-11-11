@@ -11,6 +11,7 @@ import ra.core.raMessage
 import ra.core.ref
 import ra.modules.displays.DisplayPoll.registerDisplayPoll
 import ra.modules.displays.DisplayPoll.resetFlag
+import ra.modules.displays.DisplayTilt.registerDisplayTilt
 import ra.modules.displays.ItemName.registerItemName
 import ra.modules.displays.TextColor.registerTextColor
 
@@ -33,11 +34,14 @@ object DisplaysModule : GameplayModule {
 		// Shared by the blocks that show an item's name.
 		registerItemName()
 		registerTextColor()
+		registerDisplayTilt()
 		for (m in members) with(m) { registerBlock() }
 		registerDisplayPoll(members.mapNotNull { m -> m.poll?.let { m.block to it } })
 
 		pack.define(load) {
 			for (m in members) function(m.block.fn("register_block"))
+			// The sine table a display's tilt reads (configuration, rewritten every load).
+			function(DisplayTilt.trigInit)
 			// A schedule that did not survive is started again by the next polled block's tick.
 			resetFlag()
 			moduleLoaded("Displays loaded!", "aqua")

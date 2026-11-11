@@ -12,6 +12,9 @@ package ra.core
  *     item("filter_item")
  *     number("generation_rate", min = 1, readonly = true)
  *     vec3("target", Vec3Spec(min = Vec3i(-16), max = Vec3i(16)))   // see Vec3Props.kt
+ *     direction("facing", default = "south")                       // see DirectionProps.kt
+ *     facing("rotation", FacingSpec())                             // yaw / pitch, DirectionProps.kt
+ *     color("background", ColorSpec(alpha = true))                // see ColorProps.kt
  * }
  * ```
  *
@@ -59,6 +62,15 @@ enum class PropType(val id: String, val code: Int) {
 
 	/** Three integers `{x,y,z}`, a position or an offset; see [Vec3Spec] (Vec3Props.kt). */
 	VEC3("vec3", 6),
+
+	/** One of the six faces, a string: `"down"`, `"up"`, `"north"`, ...; see [direction] (DirectionProps.kt). */
+	DIRECTION("direction", 7),
+
+	/** A yaw and a pitch in whole degrees, `{yaw, pitch}`; see [FacingSpec] (DirectionProps.kt). */
+	FACING("facing", 8),
+
+	/** A colour as one int, RGB or ARGB; see [ColorSpec] (ColorProps.kt). */
+	COLOR("color", 9),
 }
 
 data class PropSpec(
@@ -104,6 +116,10 @@ data class PropSpec(
 	val default: String? = null,
 	/** A vec3's range, unit, grid, frame and nudge steps. */
 	val vec3: Vec3Spec? = null,
+	/** A facing's ranges, grid, nudge steps and frame. */
+	val facing: FacingSpec? = null,
+	/** A colour's alpha, "none" and default. */
+	val color: ColorSpec? = null,
 ) {
 	init {
 		require(name.matches(Regex("[a-z_][a-z0-9_]*"))) { "property name '$name' must be [a-z_][a-z0-9_]*" }
@@ -112,6 +128,8 @@ data class PropSpec(
 		require(adminSetting == null || adminOnly) { "$name: adminSetting needs adminOnly" }
 		require(adminMax == null || (max != null && adminMax > max)) { "$name: adminMax must be above max" }
 		require((type == PropType.VEC3) == (vec3 != null)) { "$name: a vec3 needs its Vec3Spec, and only a vec3 has one" }
+		require((type == PropType.FACING) == (facing != null)) { "$name: a facing needs its FacingSpec, and only a facing has one" }
+		require((type == PropType.COLOR) == (color != null)) { "$name: a color needs its ColorSpec, and only a color has one" }
 		require(unique == null || (type == PropType.TEXT && format in listOf(TextFormat.ID, TextFormat.TAG))) { "$name: unique needs a text in format ID or TAG" }
 	}
 
@@ -135,6 +153,8 @@ data class PropSpec(
 		unique?.let { (st, path) -> add("unique:{storage:\"$st\",path:\"$path\"}") }
 		entryLabel?.let { add("entry_label:\"$it\"") }
 		vec3?.let { add(it.snbtFields()) }
+		facing?.let { add(it.snbtFields()) }
+		color?.let { add(it.snbtFields()) }
 		if (!dynamic) add("goggles:${if (goggles ?: visible) 1 else 0}b")
 		add("i:$index")
 	}.joinToString(",", "{", "}")

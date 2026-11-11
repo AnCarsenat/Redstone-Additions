@@ -70,7 +70,9 @@ import ra.modules.displays.TextColor.applyColor
  *
  * CONFIGURATION ([DisplayStyle]): `facing`, `direction` (where the top of the text points: `up`,
  * `left`, `down`, `right`, the text rolled on the screen), `color` (a text colour name or
- * `#RRGGBB`, nixie amber by default, see [TextColor]), offsets and scale.
+ * `#RRGGBB`, nixie amber by default, see [TextColor]), `background` (a colour behind the text,
+ * none by default: the dark screen shows), `rotation` (the text's tilt; the screen stays), offsets
+ * and scale.
  */
 object TextScreen : DisplayBlock {
 	override val block = CustomBlock(Ns.DISPLAYS, "text_screen", "Text Screen", model = "minecraft:barrel", dirType = 2)
@@ -95,12 +97,14 @@ object TextScreen : DisplayBlock {
 	private val style = DisplayStyle(
 		block, defaultFacing = "south", directions = listOf("up", "left", "down", "right"),
 		colors = listOf(ColorProp("color", "Colour", AMBER, listOf(AMBER, "red", "gold", "yellow", "green", "aqua", "blue", "light_purple", "white"))),
-		displays = listOf(PANEL, TEXT), barrel = true,
+		displays = listOf(PANEL, TEXT), barrel = true, backgrounds = listOf(TEXT),
 	)
 
 	/** The text's roll for each direction, counter-clockwise. */
 	private val ROLLS = mapOf("up" to 0, "left" to 90, "down" to 180, "right" to 270)
 	private val FACE = Vec(0.0, 0.0, 0.5)
+	/** Half a 10 px line, in the text's own units: where a tilt turns it about. */
+	private const val HALF_LINE = 5 * 0.025
 
 	private const val T = Obj.TEMP
 	private const val LEVEL = "#tscr.l"
@@ -148,8 +152,8 @@ object TextScreen : DisplayBlock {
 		val panelForm = defineForms(block, "panel", PANEL, mapOf("" to Form(Vec(-0.4375, -0.4375, 0.5), Vec(0.875, 0.875, 0.03125), FACE)))
 		// A text display grows up from its origin: each form is moved down by half a line (10 px *
 		// 0.025 * scale) to sit in the middle of the face; a name wraps at `line_width` (75 px).
-		val nameForm = defineForms(block, "name", TEXT, ROLLS.mapValues { (_, r) -> Form(Vec(0.0, -0.056, 0.54), Vec(0.45, 0.45, 0.45), FACE, r) })
-		val digitForm = defineForms(block, "digits", TEXT, ROLLS.mapValues { (_, r) -> Form(Vec(0.0, -0.25, 0.54), Vec(2.0, 2.0, 2.0), FACE, r) })
+		val nameForm = defineForms(block, "name", TEXT, ROLLS.mapValues { (_, r) -> Form(Vec(0.0, -0.056, 0.54), Vec(0.45, 0.45, 0.45), FACE, r, pivot = HALF_LINE) }, tilt = true)
+		val digitForm = defineForms(block, "digits", TEXT, ROLLS.mapValues { (_, r) -> Form(Vec(0.0, -0.25, 0.54), Vec(2.0, 2.0, 2.0), FACE, r, pivot = HALF_LINE) }, tilt = true)
 
 		pack.define(process) { process() }
 		pack.define(show) { show() }

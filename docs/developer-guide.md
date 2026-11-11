@@ -206,6 +206,7 @@ Every bug this system has had was that invariant breaking somewhere.
 | `media` | `[{m:"water"},{m:"lava"}]` | The same keys as a list, in arrival order. |
 | `medium` | `"water"` | A copy of `media[0].m`, because every display and every bridge already reads it. |
 | `potion` | *(optional)* | A potion network's effect list. It belongs to the network, not to any node. |
+| `meter`, `epoch`, `produced`, `consumed` | *(optional)* | Set when a Usage Meter reads the network: from then on every offer adds to `produced` and every take to `consumed`. Gone with the record at the next rebuild; see [Transport Networks](transport-networks.md). |
 
 `amounts` and `media` are the same data indexed twice, and both are needed. A
 function cannot enumerate a compound's keys, so the walk has to go over a list;
@@ -391,6 +392,51 @@ Runtime behavior:
 - Full inventory produces a red user warning and skips book give.
 - Dropped request books are cleaned through request-aware selectors.
 
+### safe: player input in commands
+
+Anything a player typed (a book page, a Data Handler value, a Clipboard paste) is text, and a
+macro pastes text into the command before the game parses it. `ra_lib:safe` is the one place
+that decides what such a value may become. All of it works on `storage ra:safe`; formats are
+the [text formats](tools-and-registries.md#text-formats) (`TextFormat` in `ra/core/PropFormats.kt`).
+
+| Function | Input | Output | Returns |
+| --- | --- | --- | --- |
+| `ra_lib:safe/check` | `s` value, `f` format code | — | 1 when `s` is a string in format `f` |
+| `ra_lib:safe/guard {p, f}` | as a block's marker: `data.properties.<p>` | cached in `data.data.safe.<p>` | 1 when the property is safe |
+| `ra_lib:safe/clean` | `s` value, `f` format code | `out`, a string | 1 when `out` is usable, 0 (no `out`) when nothing usable is left |
+| `ra_lib:safe/number` | `s` value | `n` int, and `#sf.n ra.temp` | 1 when `s` is a number of any numeric type |
+
+`check` and `guard` **refuse** a value; `clean` **makes** one, for a place that must show or paste
+something whatever it got:
+
+- **Free text** (`FREE`, 0): `"` becomes `'`, `\` becomes `/`, a line break or tab a space. The
+  result can sit inside a double-quoted string of a macro line (`{text:"$(value)"}`) and cannot
+  close it, so it cannot add a key, a component or an argument.
+- **Identifiers** (`ID`, `NAME`, `TAG`): characters the format does not accept are dropped, so a
+  tag typed as `My Tag!"} run say x` comes out `MyTagrunsayx`. A `TAG` still starting with `ra.` is
+  refused.
+- **Selectors and coordinates** (`SELECTOR`, `COORDS`): copied when valid, refused otherwise:
+  dropping a character would change what they point at.
+- A number is cleaned as its digits; a compound or a list is refused. At most 256 characters are
+  read, and the result always passes `check` in the same format: `clean` ends by calling it.
+
+`number` is the type test the Data Handler uses (a storage number provider read with two
+fallbacks, through `/compute`): `"5"` in quotes is text and returns 0. Store what it gives in a
+score or an int path and it can never be pasted as text.
+
+In Kotlin (`ra/lib/safe/SafeClean.kt`): `cleanFrom("storage ra:temp x.value", TextFormat.FREE)`
+leaves `SafeClean.OK` (`#sf.cl ra.temp`) at 1 and the result in `storage ra:safe out`;
+`isNumberAt(source, "#my.score")` sets the score to 1 or 0. `guardProperty(name, format)`
+(`SafeText.kt`) guards a property before a macro call. `clean` walks the string, so call it when a
+value is shown or written, not every tick: the Goggles' Teleport Anchor and Fluid Vault lines use
+it, once per refresh of a billboard someone is looking at.
+
+Better still, never paste a player's value: compare it with `data modify ... set from` (success 0
+means equal), or show it with an `nbt` text component. Under `interpret:true` an `nbt` component
+decodes the stored tag itself (since 1.21.5), so a string is plain text whatever it spells; only a
+compound is rich text. That is why the Message Block's text is open to players: they can only ever
+write a string.
+
 ## 2b) Settings: `ra_settings`
 
 Values that are not a property of one placed block. Per-block properties already
@@ -553,16 +599,16 @@ leaves and the commands that consume them:
 | `computeScore(holder, obj, value, vararg alsoStore)` | `execute store result score … [<more stores>] run compute default integer <value>`; pass `storeInt(storage, path)` in `alsoStore` to land the same result in storage too |
 | `computeInto(store, value)` | the same with only the store you give it (`storeInt`, `storeDouble`) |
 | `computeStorage(storage, path, value)` | `data modify storage … <path> set compute default integer <value>` |
+| `namedProvider(ns, path)`, `pack.defineProvider(ref, value)` | a reference to `ns:path` and the `context_int_provider` file behind it, see *Named providers* below |
 | `floatProvider { … }`, `computeScoreScaled(holder, obj, value, scale)` | `compute default float <value> <scale>` into a score: the float result times `scale`, as an integer |
 
 `computeScore`, `computeInto` and `computeScoreScaled` take `chain` (execute subcommands placed
-before the stores, such as `if score #cap x matches 1..`) and `source` (`COMPUTE_DEFAULT` or
-`COMPUTE_SELF`).
+before the stores, such as `if score #cap x matches 1..`) and `source` (`COMPUTE_DEFAULT`,
+`COMPUTE_SELF`, or `COMPUTE_BLOCK_HERE` for a provider that tests the block here).
 
 ```kotlin
-// Bridge: how much moves, written to a score in one line
-computeScore("#br.dst_free", "ra.wires.tmp",
-    provider { sub(scoreOf("#net_capacity", "ra.tr.tmp"), scoreOf("#net_amount", "ra.tr.tmp")) })
+// Usage meter: a difference, written to a score in one line
+computeScore("#mt.d", t, provider { sub(scoreOf("#mt.cur", t), scoreOf("#mt.last", t)) })
 
 // Transport: add to a per-medium total in storage and keep a copy in a score (macro path)
 computeScore("#net_med", Obj.TR_TMP,
@@ -574,7 +620,8 @@ Rules that matter:
 - **Rendered inline.** Providers are turned into SNBT text in the command, not through Kore's
   `compute { }`, which may move a provider into a registry file. A provider whose storage path
   holds `$(id)` must stay in the macro line that substitutes it. The `$` prefix is added
-  automatically to any line containing `$(`.
+  automatically to any line containing `$(`. A formula shared by several commands is the
+  exception: it becomes a named provider file on purpose (see *Named providers* below).
 - **Scoreboard `/=` is `floor_div`**, and `%=` is `floor_mod`: both round towards negative
   infinity. `div` and `mod` truncate and give different answers for negative values.
 - **A missing value reads as 0.** An unset score, an absent storage path or a non-number reads
@@ -587,6 +634,47 @@ Rules that matter:
   that can leave 32 bits — a ratio scaled up before dividing, like a fill level in
   ten-thousandths — goes through `computeScoreScaled` so the division happens in floats (the
   bridge fill ratio, see the v6.0.1 fix).
+
+#### Named providers: a formula used in several places
+
+A formula that more than one command uses, or that is a rule of the pack worth naming (a curve,
+the levelling rule), is written once as a 26.3 `context_int_provider` file,
+`data/<ns>/context_int_provider/<path>.json`, and the commands name it by id:
+
+```
+execute store result score #dr.free ra.wires.tmp run compute default integer ra_lib:transport/net/free
+```
+
+```kotlin
+// Declare the reference where callers can reach it (an object val), write the file once
+// in the owning part's register(), and pass the reference wherever a provider goes.
+val free = namedProvider(Ns.LIB, "transport/net/free")
+pack.defineProvider(free, provider { sub(scoreOf("#net_capacity", Obj.TR_TMP), scoreOf("#net_amount", Obj.TR_TMP)) })
+
+computeScore("#dr.free", "ra.wires.tmp", RaLib.Transport.Net.free)
+computeScore("#dr.pts", "ra.wires.tmp", provider { min(…, floorDiv(RaLib.Transport.Net.free, constant(100))) })
+```
+
+At the top of a command the reference is written as the bare id; nested inside an inline provider
+it is the quoted id (`left:"ra_lib:transport/net/free"`), which the game reads the same way. The
+build fails if a reference made with `namedProvider` has no `defineProvider` file
+(`PackValidator.undefinedProviders`): an unknown id would fail to parse and take its whole
+function down. A named provider cannot hold a macro argument, so a provider whose storage path
+holds `$(id)` stays inline. Its scores are fake players or `this`, the same as inline.
+
+| Id | Value | Used by |
+| --- | --- | --- |
+| `ra_lib:transport/net/free` | `#net_capacity - #net_amount` (ra.tr.tmp), after `ra_lib:transport/net/read` | Pump, Drain (three paths), Experience drain, Boiler, Bridge, Creative EU, Creative Fluid |
+| `ra_wires:blocks/solar_panel/eu` | the solar curve: a `number_dispatcher` of `match_block` tests on the daylight detector's `power` (5→10 … 15→50, otherwise 0) | Solar Panel tick, with `compute block ~ ~ ~` (`COMPUTE_BLOCK_HERE`) |
+| `ra_wires:bridge/move` | `min(rate, src_amount, dst_free, floor((src_amount - dst_amount) / 2))` | Bridge transfer |
+| `ra_wires:diving/air_minutes`, `air_seconds` | `#at.air` floor-divided and floor-modded by 60 | Air Tank lore and gauge |
+| `ra_wires:fluid/experience_ml` | `#dr.pts * 100` | Experience drain, both directions |
+| `ra_jetpacks:flight/smooth_x`, `smooth_z` | `floor((v * 3 + (pos - last)) / 4)`, per axis, for `compute entity @s` | Thruster |
+| `ra_jetpacks:flight/ramp_up`, `ramp_down` | `ThrustRamp.up` / `down` of the player's `ra.jp.ramp` | Thruster |
+
+Provider files are registry entries, like the pack's enchantments: they are read when the world
+loads. After adding or changing one, reopen the world (or restart the server) rather than relying
+on `/reload` alone.
 
 ### Minecraft versions
 
@@ -686,7 +774,10 @@ function ra_lib:skin/apply {real:"minecraft:barrel",skin:"minecraft:dispenser",i
 function ra_lib:skin/clear {id:"unboxer"}
 ```
 
-Use `ra_lib:skin/apply_static` when the skin block has no `facing` property.
+Use `ra_lib:skin/apply_static` when the skin block has no `facing` property, and
+`ra_lib:skin/apply_facing {real, skin, id, facing}` for a skin with a fixed facing over a real
+block that has none (the Item Pipe Splitter: a dispenser facing up over cobblestone, so it is
+neither a container nor something a redstone edge can fire).
 
 Then repair a skin that went missing, once per tick, only for the blocks
 actually lacking one:

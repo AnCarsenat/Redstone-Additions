@@ -2,6 +2,8 @@ package ra.modules.jetpacks.flight
 
 import ra.core.COMPUTE_SELF
 import ra.core.computeScore
+import ra.core.defineProvider
+import ra.core.namedProvider
 import ra.core.provider
 import ra.core.scoreOf
 import ra.core.storeDouble
@@ -52,7 +54,22 @@ object Thrust {
 
 	private val t = Obj.TEMP
 
+	/**
+	 * Named providers `ra_jetpacks:flight/smooth_x` and `smooth_z`: one axis of the smoothed speed,
+	 * `floor((smoothed * 3 + (pos - last)) / 4)`, for `compute entity @s` (see [thrust]).
+	 */
+	private val SMOOTH_X = namedProvider(Ns.JETPACKS, "flight/smooth_x")
+	private val SMOOTH_Z = namedProvider(Ns.JETPACKS, "flight/smooth_z")
+
+	/** One axis of the smoothing: [v] the smoothed speed, [last] last tick's sample, [pos] this tick's (on `ra.temp`). */
+	private fun smoothed(pos: String, last: String, v: String) =
+		provider { (thisScoreOf(v) * 3 + (temp(pos) - thisScoreOf(last, fallback = temp(pos)))).floorDiv(4) }
+
 	fun Ra.registerThrust() {
+		pack.defineProvider(SMOOTH_X, smoothed("#jp.px", Jp.X, Jp.VX))
+		pack.defineProvider(SMOOTH_Z, smoothed("#jp.pz", Jp.Z, Jp.VZ))
+		pack.defineProvider(ThrustRamp.UP, ThrustRamp.up(thisScoreOf(Jp.RAMP)))
+		pack.defineProvider(ThrustRamp.DOWN, ThrustRamp.down(thisScoreOf(Jp.RAMP)))
 		pack.define(thrust) { thrust() }
 
 		// Move the player by dx/dz, unless that would put them inside a wall.
@@ -91,16 +108,11 @@ object Thrust {
 		// It also fixes the runaway from the other direction: the smoothed value cannot jump, so
 		// the acceleration curve is smooth rather than compounding tick by tick.
 		//
-		// One /compute per axis. On the first tick after take-off both the last sample and the
+		// One /compute per axis, each a named provider (SMOOTH_X, SMOOTH_Z). On the first tick after take-off both the last sample and the
 		// smoothed speed are ABSENT scores, and the score providers' fallbacks stand in for them:
 		// the last sample falls back to this tick's (a delta of zero), the smoothed speed to 0.
-		for ((pos, last, v) in listOf(Triple("#jp.px", Jp.X, Jp.VX), Triple("#jp.pz", Jp.Z, Jp.VZ))) {
-			computeScore(
-				"@s", v,
-				provider { (thisScoreOf(v) * 3 + (temp(pos) - thisScoreOf(last, fallback = temp(pos)))).floorDiv(4) },
-				source = COMPUTE_SELF,
-			)
-		}
+		computeScore("@s", Jp.VX, SMOOTH_X, source = COMPUTE_SELF)
+		computeScore("@s", Jp.VZ, SMOOTH_Z, source = COMPUTE_SELF)
 		raw("scoreboard players operation @s ${Jp.X} = #jp.px $t")
 		raw("scoreboard players operation @s ${Jp.Z} = #jp.pz $t")
 
@@ -120,12 +132,20 @@ object Thrust {
 		// thing the player does, it means "go fast" in every other context in the game, it works
 		// identically in both flight modes, and nobody sprints while placing blocks -- which is
 		// exactly where the jitter was unwelcome.
-		raw("execute unless predicate ra:is_sprinting run tag @s remove ${Jp.THRUSTING}")
-		raw("execute unless predicate ra:is_sprinting run return 0")
+		//
+		// EASED, NOT SWITCHED
+		// Sprint sets where the throttle (ra.jp.ramp, 0..100) is heading, not the push itself: it
+		// eases up while sprinting and back down after, a quarter of the gap a tick (ThrustRamp).
+		// Starting to sprint used to hand over the full push on the next tick and stopping took it
+		// all away on the next, which is a lurch either way. The tag means "the throttle is open".
+		computeScore("@s", Jp.RAMP, ThrustRamp.UP, source = COMPUTE_SELF, chain = "if predicate ra:is_sprinting")
+		computeScore("@s", Jp.RAMP, ThrustRamp.DOWN, source = COMPUTE_SELF, chain = "unless predicate ra:is_sprinting")
+		raw("execute if score @s ${Jp.RAMP} matches ..0 run tag @s remove ${Jp.THRUSTING}")
+		raw("execute if score @s ${Jp.RAMP} matches ..0 run return 0")
 		raw("tag @s add ${Jp.THRUSTING}")
 
-		// The push is a fraction of the SMOOTHED speed, not of this tick's delta:
-		//     push = clamp(floor(smoothed * k / 100), -cap, cap)
+		// The push is a fraction of the SMOOTHED speed, not of this tick's delta, times the throttle:
+		//     push = floor(clamp(floor(smoothed * k / 100), -cap, cap) * ramp / 100)
 		// The cap (0.35 blocks a tick by default) makes amplifying our own amplification settle at
 		// a top speed instead of climbing until the player outruns the chunk loader. The negative
 		// bound is derived, not configured twice: two numbers that must stay equal and opposite are
@@ -137,7 +157,10 @@ object Thrust {
 		for ((v, m, arg) in listOf(Triple(Jp.VX, "#jp.mx", "push.dx"), Triple(Jp.VZ, "#jp.mz", "push.dz"))) {
 			computeScore(
 				m, t,
-				provider { max(min((thisScoreOf(v) * temp("#jp.cfg.k")).floorDiv(100), temp("#jp.cfg.cap")), -temp("#jp.cfg.cap")) },
+				ThrustRamp.scaled(
+					provider { max(min((thisScoreOf(v) * temp("#jp.cfg.k")).floorDiv(100), temp("#jp.cfg.cap")), -temp("#jp.cfg.cap")) },
+					thisScoreOf(Jp.RAMP),
+				),
 				storeDouble(Storage.JETPACKS, arg, 0.001),
 				source = COMPUTE_SELF,
 			)

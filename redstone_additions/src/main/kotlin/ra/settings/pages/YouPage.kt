@@ -9,6 +9,13 @@ val YouPage = Page(
 	listOf(
 		BoolRow("snd", "Machine sounds", Scope.USER, default = 1, obj = Obj.USER_SOUND),
 		BoolRow("par", "Machine particles", Scope.USER, default = 1, obj = Obj.USER_PARTICLES),
+		BoolRow(
+			"msg", "Chat notices", Scope.USER, default = 0, obj = Obj.USER_NOTICES,
+			hint = "Chat and actionbar lines nobody asked for: enchanting-table sacrifice results, " +
+				"Rail Builder progress, upgrade and Pattern confirmations, and wrench readouts from " +
+				"other players nearby. Menus, readouts you asked for and the reason an action " +
+				"was refused always show.",
+		),
 		BoolRow("dbg", "Debug messages", Scope.USER, default = 0, obj = Obj.USER_DEBUG),
 		BoolRow(
 			"fprev", "Show filter previews", Scope.USER, default = 1, obj = Obj.USER_FILTER_PREVIEW,
@@ -17,6 +24,16 @@ val YouPage = Page(
 				"wearer near it has this on -- turn it off and you stop asking for previews, but " +
 				"you still see one drawn for a nearby player who wants it. " +
 				"The server can also turn previews off for everyone.",
+		),
+		BoolRow(
+			"jpfuel", "Jetpack fuel gauge", Scope.USER, default = 1, obj = Obj.USER_JETPACK_GAUGE,
+			hint = "A fuel bar on the actionbar while you fly a coal-burning jetpack: " +
+				"how much of the burning piece is left, and how much coal you carry.",
+		),
+		BoolRow(
+			"airg", "Air tank gauge", Scope.USER, default = 1, obj = Obj.USER_AIR_GAUGE,
+			hint = "An air bar on the actionbar while you wear an Air Tank with your head under water, " +
+				"or stand on an Air Charger: how full the tank is, and the minutes of air left.",
 		),
 	),
 )

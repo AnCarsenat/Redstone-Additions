@@ -35,10 +35,10 @@ import ra.core.block.blockTick
 import ra.core.block.BreakTest
 import ra.core.block.forEachMarker
 import io.github.ayfri.kore.functions.Function
-import ra.core.block.markerSel
 
 /**
- * Wireless Receiver: powers its shell while an emitter on its `channel` string transmits, or for a
+ * Wireless Receiver: powers its shell while an emitter (Wireless, or Analog sending 1 or more) on
+ * its `channel` string transmits, or for a
  * few ticks after a Redstone Remote pulses its channel.
  *
  * No on/off switch: the channel is the control. Until v6.0.1 it also had an `enabled` property the
@@ -71,11 +71,12 @@ object Receiver {
 		}
 		pack.blockRegisterMessage(block)
 		pack.blockGive(block)
-		pack.shapedRecipe(block.ns, block.id, item.recipeResult(), Unlock(Items.PURPUR_BLOCK)) {
-			pattern("GPG", "PRP", "GPG")
-			key("G", Items.GOLD_INGOT)
-			key("P", Items.PURPUR_BLOCK)
-			key("R", Items.REDSTONE)
+		pack.shapedRecipe(block.ns, block.id, item.recipeResult(), Unlock(Items.AMETHYST_SHARD)) {
+			pattern(" L ", "APA", "SSS")
+			key("L", Items.LIGHTNING_ROD)
+			key("A", Items.AMETHYST_SHARD)
+			key("P", Items.REPEATER)
+			key("S", Items.SMOOTH_STONE_SLAB)
 		}
 
 		// As bat, at bat position.
@@ -130,7 +131,8 @@ object Receiver {
 		raw("data modify storage ra:temp receiver_channel set from entity @s data.properties.channel")
 		tag(self()) { add(CHECKING) }
 
-		executeRun("as ${Emitter.block.markerSel("tag=${Emitter.TRANSMITTING}")}", checkEmitterChannel)
+		// Both kinds of emitter: an Analog Emitter is transmitting while it sends 1 or more.
+		executeRun("as @e[type=marker,tag=${Emitter.TRANSMITTING}]", checkEmitterChannel)
 
 		// Output based on receiving state.
 		raw("execute if entity @s[tag=$RECEIVING] at @s run fill ~-1 ~-1 ~-1 ~1 ~1 ~1 redstone_block replace iron_block")

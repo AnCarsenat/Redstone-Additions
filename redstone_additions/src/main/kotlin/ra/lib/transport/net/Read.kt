@@ -10,6 +10,10 @@ import ra.api.RaLib
 import ra.core.Obj
 import ra.core.Ra
 import ra.core.define
+import io.github.ayfri.kore.features.predicates.providers.sub
+import ra.core.defineProvider
+import ra.core.provider
+import ra.core.scoreOf
 import ra.core.raw
 import ra.lib.lib
 import ra.lib.transport.TR
@@ -32,6 +36,11 @@ object Read {
 		macroCall(migratePick, "{id:\$(id)}")
 
 	fun Ra.registerRead() {
+		// The room on the network `read` loaded: capacity - amount. A named provider because
+		// every machine that puts something on a network asks it (pumps, drains, boilers, bridges,
+		// creative sources). See RaLib.Transport.Net.free.
+		pack.defineProvider(RaLib.Transport.Net.free, provider { sub(scoreOf("#net_capacity", Obj.TR_TMP), scoreOf("#net_amount", Obj.TR_TMP)) })
+
 		// `read`: load this node's network state into scratch. Context: as a node marker.
 		// Output: #net_amount / #net_capacity ra.tr.tmp -- the TOTAL across every medium -- and
 		// storage ra:transport cur:

@@ -23,5 +23,11 @@ object SettingsPages {
 		YouPage,
 		// Appended, not sorted in: every page after an insertion would renumber its buttons.
 		GogglesPage,
+		DisplaysPage,
+		AutomationPage,
+		SecurityPage,
+		FarmingPage,
+		RailworksPage,
+		AudioPage,
 	)
 }

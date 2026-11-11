@@ -71,12 +71,12 @@ object Unboxer {
 		}
 		pack.blockRegisterMessage(block)
 		pack.specGive(block, item)
-		pack.shapedRecipe(block.ns, block.id, item.recipeResult(), Unlock(Items.DISPENSER), count = null) {
-			pattern("III", "RDR", "PPP")
-			key("I", listOf(Items.IRON_INGOT))
+		pack.shapedRecipe(block.ns, block.id, item.recipeResult(), Unlock(Items.STICKY_PISTON), count = null) {
+			pattern("CSC", "CBC", "CRC")
+			key("C", listOf(Items.COBBLESTONE, Items.BLACKSTONE, Items.COBBLED_DEEPSLATE))
+			key("S", listOf(Items.STICKY_PISTON))
+			key("B", listOf(Items.BARREL))
 			key("R", listOf(Items.REDSTONE))
-			key("D", listOf(Items.DISPENSER))
-			key("P", listOf(Items.PAPER))
 		}
 
 		pack.define(block.handlePlacement) {

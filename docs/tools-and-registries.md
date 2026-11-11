@@ -121,12 +121,18 @@ declares for you). `ra/core/Properties.kt` holds the builder.
 | Declaration | Type | Editor in the Data Handler |
 | --- | --- | --- |
 | `number(name, min = 0, max = 9999)` | int | number prompt, bounded |
+| `number(name, min = 1, max = 100, adminMax = 256)` | int, a range or radius | number prompt, bounded by `max` for players and by `adminMax` for admins (see [Admin limits](#admin-limits)) |
 | `bool(name)` | byte `0b`/`1b` | **[Toggle]** |
 | `text(name)` | string | the book; stored as typed, never parsed |
 | `item(name)` | string (item id) | the book, or **[Set from hand]** |
 | `text(name, TextFormat.SELECTOR)` | string in a [format](#text-formats) | the book, checked against the format |
 | `list(name, of = PropType.TEXT, max = 15, pad = true)` | list | a header with **[Add]** (until `max` entries), **[Edit all]** and **[List]**, which shows one row per entry ([Edit], [Remove]/[Clear]) |
-| `textList(name, max, pad, format, choices = "ra:ender" to "anchor_ids", entryLabel = "Strength ")` | list of text | the same, with **[Choose]** from `storage <choices>` and entries labelled *Strength 1…* |
+| `textList(name, max, pad, format, entryLabel = "Strength ")` | list of text | the same, each entry checked against the format, entries labelled *Strength 1…* |
+| `text(name, TextFormat.ID, unique = "ra:ender" to "anchors")` | string, one per world | the book; refused when it is already a key of the compound `storage ra:ender anchors` (unless it is this block's own value). The format must be `ID` or `TAG`, since the value is pasted as a path key |
+| `vec3(name, Vec3Spec(...))` | compound `{x:<int>,y:<int>,z:<int>}` | **[Edit]** opens per-axis **[Type]** (number prompt, bounded) and **[-X]**/**[+X]** nudges, a step choice, **[Pick]** and **[Reset]** (see [Vec3 properties](#vec3-properties)) |
+| `direction(name, default = "south")` | string, one of `down` `up` `north` `south` `west` `east` | six buttons on the row, the current one in gold (see [Direction, facing and colour](#direction-facing-and-colour)) |
+| `facing(name, FacingSpec(...))` | compound `{yaw:<int>,pitch:<int>}`, degrees | **[Edit]** opens yaw and pitch **[Type]** (number prompt, bounded) and **[-]**/**[+]** nudges, a step choice, compass buttons for a `WORLD` facing, **[Reset]** |
+| `color(name, ColorSpec(...))` | int, RGB or ARGB | **[Edit]** opens the sixteen chat colours, an opacity row (ARGB), **[Type]** (the book, parsed), **[None]** when allowed, **[Reset]** |
 | `dynamic(name)` | read from the block instance | — (see below) |
 
 Each also takes these flags:
@@ -134,10 +140,89 @@ Each also takes these flags:
 | Flag | Data Handler | Wrench | Clipboard paste |
 | --- | --- | --- | --- |
 | `readonly = true` | shown, locked, reason on hover; writes refused | never cycled | not pasted (the target keeps its own) |
-| `adminOnly = true` | locked for players without `ra.admin` (server-settings access), editable for admins; re-checked when the value is written | not offered to non-admins | not pasted by non-admins |
+| `adminOnly = true` | locked for players without `ra.admin` (server-settings access), editable for admins; re-checked when the value is written. Marked *(admin)* in gold for everyone | not offered to non-admins; marked *(admin)* for admins | not pasted by non-admins |
+| `adminMax = N` (numbers) | admins may type up to `N`, players up to `max`; a value above `max` is marked *(admin)* | — | pasted only within the holder's bound |
 | `adminOnly = true, adminSetting = "<key>"` | as `adminOnly`, unless the GLOBAL bool setting `<key>` is on (then everyone may edit it) | as `adminOnly` | as the Data Handler |
 | `visible = false` | not shown at all to non-admins (nor in the Properties summary); admins see it marked *(hidden from players)* and can edit it | not offered to non-admins | not pasted by non-admins |
 | `default = …` (`20`, `false`, `"@e"`, `listOf("custom_tag")` for `textList`, SNBT for `list`) | on a block that lacks the property, the row shows this value marked *(default)*; the first edit writes it to the block (an entry edit or **[Toggle]** starts from it). Without a default such a row says *(not set)* and the first edit writes what is typed. Generated as `storage ra:dh defaults."<type>"` | — | — |
+
+### Vec3 properties
+
+A position or an offset is three integers, never text (`ra/core/Vec3Props.kt`; the design is
+`planning/design/coordinates-input.md`, option S2). Everything about it is declared once:
+
+```kotlin
+val TARGET = Vec3Spec(
+	min = Vec3i(-16), max = Vec3i(16),            // per axis, what a player may set
+	adminMin = Vec3i(-64), adminMax = Vec3i(64),  // what an admin may set; also the use-time cap
+	unit = 1,                                     // steps per block: 1, or 16 for sixteenths
+	grid = 1,                                     // values must be multiples of it
+	frame = Vec3Frame.RELATIVE,                   // LOCAL (on the block's face), RELATIVE (~), ABSOLUTE
+	steps = listOf(1, 4, 16),                     // the nudge sizes offered, in the unit (at most 4)
+	default = Vec3i(0, 1, 0),
+)
+properties(block) { vec3("target", TARGET) }
+```
+
+- **Ranges** are per axis. For an `ABSOLUTE` frame they bound the distance from the block, and the
+  Data Handler shows them as world coordinates.
+- **Admins** get `adminMin`/`adminMax` when declared (the existing admin rule); a value outside
+  the players' range is marked *(admin)*.
+- **Use time**: `readVec3("target", TARGET, "storage ra:temp x.pos")` as the marker writes
+  `{x,y,z}` as three integers, each copied through a score and clamped to the admin range, then
+  `$execute positioned ~$(x) ~$(y) ~$(z) …`. No `guardProperty` is needed: nothing a player typed
+  can reach the command as text.
+- **Editing** is by the number prompt per axis (`ra_lib:input`, bounded), nudges, or **[Pick]** (a
+  look ray up to 24 blocks; `RELATIVE` stores the offset from the block, `ABSOLUTE` the block's
+  coordinates; `LOCAL` has none). Every write is checked again against the range and the grid.
+- **Clipboard**: pasted only inside the holder's range and on the grid, rewritten as three
+  integers; an `ABSOLUTE` value is not pasted.
+- Schema entry: `v3:{min,max,amin,amax,unit,grid,frame,steps,labels,def,unit_label,frame_label}`.
+
+### Direction, facing and colour
+
+Three more types that are never typed text by the time they are stored
+(`ra/core/DirectionProps.kt`, `ra/core/ColorProps.kt`; editors in
+`tools/datahandler/props/DataHandlerDirection.kt`, `DataHandlerFacing.kt`, `DataHandlerColor.kt`).
+
+```kotlin
+properties(block) {
+	direction("facing", default = "south")
+	facing("rotation", FacingSpec(frame = FacingFrame.LOCAL, steps = listOf(1, 15, 45)))
+	color("background", ColorSpec(alpha = true, none = true, default = 0, presetAlpha = 204))
+}
+```
+
+- **direction**: one of the six faces, stored as the block-state word. The Data Handler writes one
+  of six constants; a block reads it with NBT matches against the same six, anything else being
+  its default. Schema entry: the type alone.
+- **facing**: a yaw and a pitch in whole degrees, in Minecraft's sense (yaw 0 south, 90 west, 180
+  north, -90 east, clockwise seen from above; a positive pitch tips the front down). This is the
+  yaw/pitch choice for #166: a horizontal facing is the yaw with pitch 0, and a `WORLD` facing's
+  editor has **[North] [East] [South] [West]** buttons that set exactly that. `FacingSpec` takes the
+  yaw and pitch ranges (yaw wraps round when the range is a full turn), `grid`, up to four nudge
+  `steps`, the `frame` (`LOCAL`: from the block's front, no compass; `WORLD`) and the default.
+  Use time: `readFacing("rotation", spec)` leaves two clamped integers in `#fc.yaw` / `#fc.pitch`.
+  Schema entry: `fc:{min:[I;yaw,pitch],max:[I;yaw,pitch],grid,wrap,frame,steps,labels,def,frame_label}`.
+- **color**: one int. RGB (`alpha = false`) is 0..0xFFFFFF, and -1 is "none" when `none = true`.
+  ARGB (`alpha = true`) is the signed int a text display's `background` takes, and 0 (alpha 0) is
+  "none"; only that value is none (`#00FF0000` is a transparent red, shown and kept as such).
+  The editor offers the sixteen chat colours (an ARGB value keeps its alpha, or gets
+  `presetAlpha` when it was none), 100/75/50/25 % opacity (ARGB), **[None]** and **[Reset]**.
+  **[Type]** takes a chat colour's name, `none`, `#RRGGBB`, `#AARRGGBB` (ARGB) or a decimal int:
+  the text is read one character at a time and turned into a number with score arithmetic
+  (`ColorParse.kt`), so no typed character is ever part of a command. Use time:
+  `readColor("background", spec)` leaves an int in `#col.v`, then
+  `execute store result entity <display> background int 1 run scoreboard players get #col.v ra.temp`.
+  Schema entry: `col:{alpha,none,def,pa,nv}`.
+- **Clipboard**: a direction is pasted only when it is one of the six faces; a facing only with both
+  parts in range and on the grid, rewritten as two integers; a colour only when it is a number (an
+  RGB one in range or its none), rewritten as an int.
+
+Every Data Handler button that changes a block at once (a toggle, a face, a nudge, a colour, an
+item from the hand) and every question it asks first checks that the menu it was drawn in showed
+the block selected now (`ra.dh.msel` against `ra.dh.sel`, in `run_action`); a click in an older
+menu changes nothing and redraws the menu for the selected block.
 
 One more flag concerns only the Goggles:
 
@@ -207,6 +292,12 @@ with plain NBT tests first; every other character is looked up as a quoted key i
 and the last refused one in `data.data.unsafe.<p>`, so an unchanged value costs a comparison.
 In Kotlin, `guardProperty("entity_selector", TextFormat.SELECTOR)` before the macro call.
 
+Where a value must be shown or pasted whatever it holds, `ra_lib:safe/clean` makes it safe instead
+of refusing it (free text loses its quotes and line breaks, an identifier the characters its format
+does not accept), and `ra_lib:safe/number` turns a value into an int or says it is not a number.
+See [the core sanitiser](developer-guide.md#safe-player-input-in-commands). The Clipboard checks
+each text value against its format too, for players without server-settings access.
+
 The checks apply to admins too: a value that needs more than its format can carry more than one
 argument, which no block ever needs. Admin-only status decides *who* may choose what a block
 targets; the format decides that what they write is only ever that one argument.
@@ -265,11 +356,10 @@ A row's button runs `/trigger ra.dh.action set <stamp × 10000 + code>`: code `1
 (item rows), `700 + i` edits the
 undeclared property `known[i]`. A declared list's entries (rows 0–29, entries 0–98) use
 `1000 + 300 i + j` (**[Edit]** entry `j`), `+ 99` (**[Add]**), `+ 100 + j` (**[Remove]** /
-**[Clear]**), `+ 199` (**[List]**: show or hide the entries) and `+ 200 + j` (**[Choose]**);
-`+ 299` is unused. The open list is the player's `ra.dh.expand`, its row index + 1 (0 or unset:
-none), reset when a block is selected with a Data Handler and on load. A picker is a menu of its own (`ra.dh.mkind` 1)
-whose choices are kept, as drawn, in `storage ra:dh pick.s<stamp>`; its buttons are
-`100 + k`. An entry edit is filed under the player's input request with its index
+**[Clear]**) and `+ 199` (**[List]**: show or hide the entries); `+ 200` to `+ 299` are unused
+(6.0.1 and 6.0.2 had a **[Choose]** there). The open list is the player's `ra.dh.expand`, its
+row index + 1 (0 or unset: none), reset when a block is selected with a Data Handler and on
+load. An entry edit is filed under the player's input request with its index
 (`pend.r<id>.j`, `-1` for an append). The stamp numbers the menu (1 – 200,000); each player's
 latest is in `ra.dh.menu`, and loading resets it for everyone. A click carrying any other stamp — an old menu
 scrolled back to, or one drawn before a `/reload` that may have reordered a schema — redraws the
@@ -284,7 +374,44 @@ menu instead, so schemas can be reordered freely.
 | Menu order | the same declaration order, in `storage ra:dh order."<type>"` |
 | A dynamic property's type and flags | the marker, `data.property_types.<name>` |
 | A server-wide default | the settings `PropRow`, merged in at placement from `storage ra:settings global.props."<type>"` |
-| Who is an admin | the `ra.admin` player tag (server-settings access) |
+| Who is an admin | the `ra.admin` player tag (server-settings access), `Admin.TAG` in `ra/core/Admin.kt` |
+
+### Admin limits
+
+`ra/core/Admin.kt` is the one place admins are defined (`Admin.TAG`, the `ra.admin` tag) and
+the one place their limits are. A range or radius declares two ceilings:
+
+```kotlin
+number("radius", min = 1, max = BigTorch.MAX_RADIUS, adminMax = BigTorch.ADMIN_MAX_RADIUS)
+```
+
+`max` is what a player may set; `adminMax` (generated as `admin_max`) is what an admin may set.
+`adminMax` is a technical cap, not a balance one: past it the block would cost the server too much.
+
+| Where | Helper | What it does |
+| --- | --- | --- |
+| Edit time (Data Handler, Clipboard) | `raiseMaxForAdmin(spec, maxScore, obj, adminCond)` | the bound becomes `admin_max` for an admin |
+| Display (Data Handler) | `overPlayerMax(spec, value, into, obj)` | 1 when the value is above `max`, so the row is marked *(admin)* |
+| Use time (the block) | `readCappedProperty(name, default, min, adminMax, writeBack)` | reads the property clamped to `min..adminMax` only |
+
+The player maximum is checked **when the value is written**, never when the block uses it. A block
+an admin set to a large range keeps it, whoever powers or stands near it later, and there is no
+"set by an admin" state on the block: a value above `max` can only have been written by an admin
+(or the Creative Data Handler), which is also how the menus know to mark it.
+
+| Block | Player max | Admin max | Why the admin cap |
+| --- | --- | --- | --- |
+| Big Torch `radius` | 100 | 256 | a sphere selector every 10 ticks per torch |
+| Magic Crate `radius` | 20 | 64 | an item selector every pull |
+| Message Block `range` | 128 | 1024 | a sane ceiling (one player selector per pulse) |
+| Elevator `range` | 64 | 384 | a world's height (one box selector per ride) |
+| Fan `range` | 16 | 64 | two box selectors of that length every other tick while powered |
+| Fan `strength` | 5 | 10 | a sane ceiling (10 blocks a second) |
+| Held Item Detector `radius` | 16 | 64 | an item test on every player in range, once a second |
+| Player Detector `radius` | 16 | 64 | one player selector per listed name, once a second |
+
+The server settings' placement defaults for these (`PropRow`) step up to the admin cap, since
+only admins reach those pages.
 
 `channel`, `anchor_id`, `tag` and `entity_selector` are declared `text` on purpose: they are
 identifiers blocks compare as text, and turning a channel into a number is the 5.1.6 bug that

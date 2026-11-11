@@ -86,6 +86,16 @@ internal val jetpacksTree = listOf(
 
 internal val wiresTree = listOf(
 	category("ra_wires", Items.CONDUIT, "Fluid and EU Networks", "Build merged fluid transport and electric infrastructure with RA Wires.", "get_wires_item", Items.COPPER_INGOT),
+	egg("ra_wires", "air_charger", "Air Charger", Items.WAXED_WEATHERED_COPPER_GRATE, ONE),
+	// Partial: a tank also carries its air.
+	Unlock(
+		"ra_wires/get_air_tank", "ra_wires", Items.IRON_CHESTPLATE, "Deep Breath", "Craft an Air Tank: fifteen minutes of air under water.",
+		"get_air_tank", Items.IRON_CHESTPLATE, Match.Partial(raData("air_tank", TRUE)),
+	),
+	Unlock(
+		"ra_wires/get_heavy_boots", "ra_wires/get_air_tank", Items.IRON_BOOTS, "Walking on the Seabed", "Craft Heavy Boots: sink, and walk on the bottom.",
+		"get_heavy_boots", Items.IRON_BOOTS, Match.Partial(raData("heavy_boots", TRUE)),
+	),
 	egg("ra_wires", "battery", "Battery", Items.WAXED_COPPER_GRATE, ONE),
 	egg("ra_wires", "boiler", "Boiler", Items.FURNACE, TRUE),
 	egg("ra_wires", "electric_breaker", "EU Breaker", Items.WAXED_COPPER_BULB, ONE),
@@ -98,11 +108,16 @@ internal val wiresTree = listOf(
 	egg("ra_wires", "gas_tank", "Gas Tank", Items.IRON_BLOCK, TRUE),
 	egg("ra_wires", "gas_valve", "Gas Valve", Items.SMOOTH_BASALT, TRUE),
 	egg("ra_wires", "industrial_light", "Industrial Light", Items.SEA_LANTERN, ONE),
-	egg("ra_wires", "liquid_drain", "Liquid Drain", Items.DROPPER, TRUE),
+	egg("ra_wires", "liquid_drain", "Fluid Drain", Items.DROPPER, TRUE),
 	egg("ra_wires", "liquid_filter", "Liquid Filter", Items.WAXED_EXPOSED_CUT_COPPER, ONE, "Obtain the Liquid Filter item."),
 	egg("ra_wires", "liquid_pipe_copper", "Copper Pipe", Items.COPPER_BLOCK, TRUE),
 	egg("ra_wires", "liquid_pump", "Liquid Pump", Items.DISPENSER, TRUE),
 	egg("ra_wires", "liquid_tank", "Liquid Tank", Items.WAXED_COPPER_BLOCK, TRUE),
 	egg("ra_wires", "liquid_valve", "Liquid Valve", Items.WAXED_CUT_COPPER, TRUE),
+	egg("ra_wires", "network_gauge", "Network Gauge", Items.COMPARATOR, TRUE),
 	egg("ra_wires", "solar_panel", "Solar Panel", Items.DAYLIGHT_DETECTOR, TRUE),
+	egg("ra_wires", "spout", "Spout", Items.WAXED_EXPOSED_COPPER_GRATE, ONE),
+	egg("ra_wires", "tesla_coil", "Tesla Coil", Items.LIGHTNING_ROD, ONE),
+	egg("ra_wires", "usage_meter", "Usage Meter", Items.CLOCK, TRUE),
+	egg("ra_wires", "water_wheel", "Water Wheel", Items.STRIPPED_SPRUCE_LOG, TRUE),
 )

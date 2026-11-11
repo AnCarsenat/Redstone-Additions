@@ -14,5 +14,7 @@
   "minecraft:structure_block": "minecraft:ancient_debris",
   "minecraft:chain_command_block": "minecraft:flowering_azalea",
   "minecraft:structure_void": "minecraft:coal",
-  "minecraft:barrier": "minecraft:coal_block"
+  "minecraft:barrier": "minecraft:coal_block",
+  "minecraft:test_instance_block": "minecraft:nether_star",
+  "minecraft:rabbit_hide": "minecraft:bundle"
 }

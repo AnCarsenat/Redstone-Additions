@@ -20,11 +20,10 @@ import ra.modules.multiblock.blocks.Bases
 import ra.modules.multiblock.blocks.Bases.registerBases
 import ra.modules.multiblock.drills.RockMetallicDrill.registerRockMetallicDrill
 import ra.modules.multiblock.goggles.ShowIoLabel
-import ra.modules.multiblock.upgradeplatform.UpgradePlatform.registerUpgradePlatform
 
 /**
  * Multiblocks (`ra_multiblock`): the five Multiblock Base tiers and the structures assembled on
- * them (Blast Forge, Upgrade Platform, Rock Metallic Drill). The assembly machinery itself is
+ * them (Blast Forge, Rock Metallic Drill). The assembly machinery itself is
  * ra_lib_multiblock; this module plugs into it through the #ra_lib_multiblock:* hooks.
  */
 object MultiblockModule : GameplayModule {
@@ -34,11 +33,10 @@ object MultiblockModule : GameplayModule {
 	override fun Ra.register() {
 		registerBases()
 		ShowIoLabel.register(pack)
-		// All three are compiled specs. Registration order is the order the library tries them in
-		// (spec/validate, spec/tier/copper) and the tick hook order: Blast Forge, Upgrade
-		// Platform, Drill.
+		// Both are compiled specs. Registration order is the order the library tries them in
+		// (spec/validate, spec/tier/copper) and the tick hook order: Blast Forge, then Drill.
+		// The Upgrade Platform was removed in 6.0.3; ra_migrations takes old ones apart.
 		registerBlastForge()
-		registerUpgradePlatform()
 		registerRockMetallicDrill()
 
 		pack.define(load) {

@@ -82,6 +82,12 @@ class Ra(val pack: DataPack) {
 	val wrenchToggles = mutableListOf<TagRoute>()
 
 	/**
+	 * Wrench Shift+RMB on an entity: functions run as the player before the block ray, in order;
+	 * the first that returns non-zero handled the click (the Railworks cart upgrades).
+	 */
+	val wrenchEntityHooks = mutableListOf<FunctionArgument>()
+
+	/**
 	 * Each block type's property schema (see [PropertiesBuilder]), keyed by the marker's
 	 * `data.type`, in declaration order -- which is menu order.
 	 */

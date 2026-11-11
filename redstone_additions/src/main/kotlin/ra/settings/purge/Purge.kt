@@ -239,9 +239,9 @@ internal object Purge {
 			raw("data modify storage ra:transport nets set value {}")
 			for (key in listOf("dirtyq", "dirtyset", "pending", "full")) raw("data remove storage ra:transport $key")
 			raw("data modify storage ra:transport dirty set value 0b")
-			// Ender: the Teleport Anchor id list the Data Handler offers. Every anchor re-files its
-			// id when it next ticks, so a list of ids nothing carries any more must not survive.
-			raw("data modify storage ra:ender anchor_ids set value []")
+			// Ender: the Teleport Anchor destinations table. Every anchor was just removed (loaded
+			// ones here, the others by the sweep below), so no entry has an anchor any more.
+			raw("data modify storage ra:ender anchors set value {}")
 			// Data Handler: pending edits (keyed by input request), the hand-over slots, and every
 			// player's selected block number (offline players too, hence `*`). `#next ra.dh.mid`
 			// stays, so a new block never gets an old number.

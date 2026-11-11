@@ -11,6 +11,10 @@ package ra.core
  *     list("targets", max = 15, pad = true)
  *     item("filter_item")
  *     number("generation_rate", min = 1, readonly = true)
+ *     vec3("target", Vec3Spec(min = Vec3i(-16), max = Vec3i(16)))   // see Vec3Props.kt
+ *     direction("facing", default = "south")                       // see DirectionProps.kt
+ *     facing("rotation", FacingSpec())                             // yaw / pitch, DirectionProps.kt
+ *     color("background", ColorSpec(alpha = true))                // see ColorProps.kt
  * }
  * ```
  *
@@ -29,8 +33,11 @@ package ra.core
  * Flags:
  *   readonly    the block's own working value. Shown, never editable by the Data Handler, never
  *               cycled by the wrench. The Creative Data Handler still edits it.
- *   adminOnly   only players holding `ra.admin` (server-settings access) may change it. Others
- *               see it locked, with the reason on hover; the write re-checks.
+ *   adminOnly   only players holding `ra.admin` (server-settings access, [Admin.TAG]) may change
+ *               it. Others see it locked, with the reason on hover; the write re-checks. Every
+ *               player sees the row marked "(admin)".
+ *   adminMax    a number's ceiling for admins, above the players' `max` (a range or radius). See
+ *               [Admin]: checked at edit time; use time clamps only to this technical cap.
  *   visible     false: not shown to players without `ra.admin`, and not editable by them. Admins
  *               see it greyed "hidden from players" and can edit it.
  *   goggles     whether a `prop_line` of it is drawn on the Goggles billboard. Unset (null) follows
@@ -52,6 +59,18 @@ enum class PropType(val id: String, val code: Int) {
 
 	/** Text that is an item id; the Data Handler offers [Set from hand]. */
 	ITEM("item", 4),
+
+	/** Three integers `{x,y,z}`, a position or an offset; see [Vec3Spec] (Vec3Props.kt). */
+	VEC3("vec3", 6),
+
+	/** One of the six faces, a string: `"down"`, `"up"`, `"north"`, ...; see [direction] (DirectionProps.kt). */
+	DIRECTION("direction", 7),
+
+	/** A yaw and a pitch in whole degrees, `{yaw, pitch}`; see [FacingSpec] (DirectionProps.kt). */
+	FACING("facing", 8),
+
+	/** A colour as one int, RGB or ARGB; see [ColorSpec] (ColorProps.kt). */
+	COLOR("color", 9),
 }
 
 data class PropSpec(
@@ -59,6 +78,8 @@ data class PropSpec(
 	val type: PropType,
 	val min: Int? = null,
 	val max: Int? = null,
+	/** A number's ceiling for admins (players stop at [max]); see [Admin]. */
+	val adminMax: Int? = null,
 	/** A list's entry type; only [PropType.TEXT] is checked. */
 	val of: PropType? = null,
 	/** A list's longest length. */
@@ -73,8 +94,13 @@ data class PropSpec(
 	val format: TextFormat? = null,
 	/** With [adminOnly]: the GLOBAL bool setting that, when on, lets every player edit it. */
 	val adminSetting: String? = null,
-	/** A list whose entries can be picked from `storage <first> <second>` (the Data Handler's [Choose]). */
-	val choices: Pair<String, String>? = null,
+	/**
+	 * A text that must be the only one of its kind in the world: the Data Handler refuses a value
+	 * that is already a key of the compound `storage <first> <second>`, unless it is the block's
+	 * own current value (a Teleport Anchor's id, keyed in `storage ra:ender anchors`). The value
+	 * is pasted as a path key, so the format must be [TextFormat.ID] or [TextFormat.TAG].
+	 */
+	val unique: Pair<String, String>? = null,
 	/** The Data Handler's label before a list entry's number ("Strength " -> "Strength 3"). */
 	val entryLabel: String? = null,
 	/** Goggles billboard: null follows [visible]. See the class comment. */
@@ -88,12 +114,23 @@ data class PropSpec(
 	 * starting value, the one its placement writes.
 	 */
 	val default: String? = null,
+	/** A vec3's range, unit, grid, frame and nudge steps. */
+	val vec3: Vec3Spec? = null,
+	/** A facing's ranges, grid, nudge steps and frame. */
+	val facing: FacingSpec? = null,
+	/** A colour's alpha, "none" and default. */
+	val color: ColorSpec? = null,
 ) {
 	init {
 		require(name.matches(Regex("[a-z_][a-z0-9_]*"))) { "property name '$name' must be [a-z_][a-z0-9_]*" }
 		require(type == PropType.NUMBER || (min == null && max == null)) { "$name: only a number has bounds" }
 		require(type == PropType.LIST || (of == null && maxLength == null && !pad)) { "$name: only a list has of / max / pad" }
 		require(adminSetting == null || adminOnly) { "$name: adminSetting needs adminOnly" }
+		require(adminMax == null || (max != null && adminMax > max)) { "$name: adminMax must be above max" }
+		require((type == PropType.VEC3) == (vec3 != null)) { "$name: a vec3 needs its Vec3Spec, and only a vec3 has one" }
+		require((type == PropType.FACING) == (facing != null)) { "$name: a facing needs its FacingSpec, and only a facing has one" }
+		require((type == PropType.COLOR) == (color != null)) { "$name: a color needs its ColorSpec, and only a color has one" }
+		require(unique == null || (type == PropType.TEXT && format in listOf(TextFormat.ID, TextFormat.TAG))) { "$name: unique needs a text in format ID or TAG" }
 	}
 
 	/** The registry entry, `{type:"number",min:1,...}`, at menu position [index]. */
@@ -104,6 +141,7 @@ data class PropSpec(
 		}
 		min?.let { add("min:$it") }
 		max?.let { add("max:$it") }
+		adminMax?.let { add("${Admin.MAX_KEY}:$it") }
 		of?.let { add("of:\"${it.id}\""); add("of_code:${it.code}") }
 		maxLength?.let { add("max_length:$it") }
 		if (pad) add("pad:1b")
@@ -112,8 +150,11 @@ data class PropSpec(
 		add("visible:${if (visible) 1 else 0}b")
 		if (type == PropType.TEXT || type == PropType.ITEM || type == PropType.LIST) add("fmt:${(format ?: TextFormat.ID).code}")
 		adminSetting?.let { add("admin_setting:\"$it\"") }
-		choices?.let { (st, path) -> add("choices:{storage:\"$st\",path:\"$path\"}") }
+		unique?.let { (st, path) -> add("unique:{storage:\"$st\",path:\"$path\"}") }
 		entryLabel?.let { add("entry_label:\"$it\"") }
+		vec3?.let { add(it.snbtFields()) }
+		facing?.let { add(it.snbtFields()) }
+		color?.let { add(it.snbtFields()) }
 		if (!dynamic) add("goggles:${if (goggles ?: visible) 1 else 0}b")
 		add("i:$index")
 	}.joinToString(",", "{", "}")
@@ -129,8 +170,9 @@ class PropertiesBuilder {
 		specs += spec
 	}
 
-	fun number(name: String, min: Int = 0, max: Int = 9999, readonly: Boolean = false, adminOnly: Boolean = false, visible: Boolean = true, goggles: Boolean? = null, default: Int? = null) =
-		add(PropSpec(name, PropType.NUMBER, min, max, readonly = readonly, adminOnly = adminOnly, visible = visible, goggles = goggles, default = default?.toString()))
+	/** [adminMax]: for a range or radius, how far an admin may go past [max]; see [Admin]. */
+	fun number(name: String, min: Int = 0, max: Int = 9999, readonly: Boolean = false, adminOnly: Boolean = false, visible: Boolean = true, goggles: Boolean? = null, default: Int? = null, adminMax: Int? = null) =
+		add(PropSpec(name, PropType.NUMBER, min, max, adminMax, readonly = readonly, adminOnly = adminOnly, visible = visible, goggles = goggles, default = default?.toString()))
 
 	fun bool(name: String, readonly: Boolean = false, adminOnly: Boolean = false, visible: Boolean = true, goggles: Boolean? = null, default: Boolean? = null) =
 		add(PropSpec(name, PropType.BOOL, readonly = readonly, adminOnly = adminOnly, visible = visible, goggles = goggles, default = default?.let { if (it) "1b" else "0b" }))

@@ -16,6 +16,8 @@ import ra.core.define
 import ra.core.executeReturnRun
 import ra.core.executeRun
 import ra.core.raw
+import ra.core.block.WRENCH_HEAR_TAG
+import ra.core.block.noticeReceiversSel
 import ra.tools.REACH_4
 import ra.tools.ToolItems
 import ra.tools.raycast
@@ -28,6 +30,7 @@ object Wrench {
 	val rmbFunction = tool("wrench/rmb_function")
 	val shiftRmbFunction = tool("wrench/shift_rmb_function")
 	val foundBlock = tool("wrench/found_block")
+	private val entityHooks = tool("wrench/entity_hooks")
 
 	/** Multiblock bases answer to either tag: older ones were placed before the custom_block form. */
 	private val BASE_TAGS = listOf("ra.multiblock_base", "ra.custom_block.multiblock_base")
@@ -41,6 +44,13 @@ object Wrench {
 		pack.define(rmbFunction) { rmb() }
 		pack.define(shiftRmbFunction) { shiftRmb() }
 		pack.define(foundBlock) { foundBlock(this@registerWrench) }
+		// Written once every part has added its hooks.
+		afterAllParts {
+			pack.define(entityHooks) {
+				for (hook in wrenchEntityHooks) raw("execute if function ${hook.asId()} run return 1")
+				raw("return 0")
+			}
+		}
 	}
 
 	/** As the player, from the `ra:tools/wrench_use` advancement. */
@@ -63,6 +73,8 @@ object Wrench {
 	/** RMB, not sneaking: toggle wireless blocks, or assemble/toggle multiblocks. As the player. */
 	private fun Function.rmb() {
 		data(Storage.TEMP) { remove("wrench_found") }
+		// A toggle's readout (a Book Printer giving its Schematic back) goes to WRENCH_READOUT too.
+		tagReadoutHearers()
 		raycast("wrench_found", foundBlock)
 
 		// If no custom block found, try multiblock assembly/interaction at the looked-at block.
@@ -73,14 +85,18 @@ object Wrench {
 
 		raw("""execute unless data storage ra:temp wrench_found run tellraw @s [{text:"[Wrench] ",color:"gold"},{text:"No custom block or multiblock found nearby.",color:"gray"}]""")
 		data(Storage.TEMP) { remove("wrench_found") }
+		tag(allPlayers()) { remove(WRENCH_HEAR_TAG) }
 	}
 
 	/** Shift+RMB: cycle the block in front of the player. As the player. */
 	private fun Function.shiftRmb() {
+		// An entity the registered hooks handle (a cart upgrade) comes before the blocks behind it.
+		raw("execute if function ${entityHooks.asId()} run return 1")
 		data(Storage.TEMP) { remove("wrench_found") }
 		// The menu and every cycler message this player specifically; the wrench runs `as` the
 		// marker from here on and would otherwise have no idea who swung it.
 		tag(self()) { add("ra.wrench_user") }
+		tagReadoutHearers()
 		// The block the crosshair is on.
 		raycast("wrench_found", WrenchMenu.cycleBlock)
 
@@ -88,6 +104,16 @@ object Wrench {
 		data(Storage.TEMP) { remove("wrench_found") }
 
 		tag(allPlayers()) { remove("ra.wrench_user") }
+		tag(allPlayers()) { remove(WRENCH_HEAR_TAG) }
+	}
+
+	/**
+	 * Tags who hears the cycle's readout ([ra.core.block.WRENCH_READOUT]): this player, and the
+	 * players within 10 blocks with chat notices on. As the player; untag every player after.
+	 */
+	fun Function.tagReadoutHearers() {
+		tag(self()) { add(WRENCH_HEAR_TAG) }
+		raw("execute at @s run tag ${noticeReceiversSel(10)} add $WRENCH_HEAR_TAG")
 	}
 
 	/**

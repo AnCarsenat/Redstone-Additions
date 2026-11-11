@@ -19,8 +19,8 @@ import ra.modules.multiblock.MultiblockModule
 import ra.modules.multiblock.blastforge.BlastForge
 import ra.modules.multiblock.blocks.BaseTier
 import ra.modules.multiblock.blocks.Bases
-import ra.modules.multiblock.upgradeplatform.UpgradePlatform
 import ra.multiblocklib.spec.Compiled
+import ra.core.block.PlacementBat
 
 /**
  * Example addon (`ra_example`): the worked example behind docs/extension-examples.md.
@@ -46,13 +46,12 @@ object ExamplePart : PackPart {
 			"item_name" to "\"$name\"",
 			"lore" to """[{text:"$lore",color:"gray",italic:false}]""",
 			"custom_data" to "{ra:{$customData:1b}}",
-			"entity_data" to """{id:"minecraft:bat",Tags:["ra","ra.spawned","$placeTag"],Silent:1b,NoAI:1b,Invulnerable:1b}""",
+			"entity_data" to """{id:"minecraft:bat",Tags:["ra","ra.spawned","$placeTag"],${PlacementBat.FLAGS}}""",
 		)
 	}
 
 	private val bases = listOf(
 		ExampleBase("copper_base", BaseTier.all.first { it.tier == "copper" }, "minecraft:blast_furnace", "Blast Forge Base", "Example multiblock core for the blast forge"),
-		ExampleBase("netherite_base", BaseTier.all.first { it.tier == "netherite" }, "minecraft:lodestone", "Upgrade Platform Base", "Example multiblock core for the upgrade platform"),
 	)
 
 	override fun Ra.register() {
@@ -82,18 +81,17 @@ object ExamplePart : PackPart {
 			for (b in bases) function(ref(ns, "blocks/${b.dir}/give"))
 		}
 
-		// The example multiblocks' hooks, each delegating to the real ra_multiblock function.
-		// Both are compiled specs now, so the hook bodies are the library's generated functions,
-		// each guarded the way a hook tag entry must be (it runs for every type).
+		// The example multiblock's hooks, each delegating to the real ra_multiblock function.
+		// It is a compiled spec, so the hook bodies are the library's generated functions, each
+		// guarded the way a hook tag entry must be (it runs for every type).
 		hooks("blast_forge", BlastForge.SPEC, BlastForge.tickDispatch)
-		hooks("upgrade_platform", UpgradePlatform.SPEC, UpgradePlatform.tickDispatch)
 	}
 
 	private fun Ra.hooks(dir: String, spec: MultiblockSpec, tickDispatch: FunctionArgument) {
 		pack.define(ref(ns, "$dir/check_structure")) {
 			raw("execute if entity @s[tag=${spec.tag}] run function ${Compiled.checkOf(spec).asId()}")
 		}
-		// Neither structure needs cleanup: nothing to do on break.
+		// The structure needs no cleanup: nothing to do on break.
 		pack.define(ref(ns, "$dir/on_break")) { raw("return 0") }
 		pack.define(ref(ns, "$dir/setup_type")) {
 			raw("""execute if data entity @s data{type:"${spec.id}"} run tag @s add ${spec.tag}""")

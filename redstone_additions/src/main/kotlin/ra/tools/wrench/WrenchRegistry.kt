@@ -11,6 +11,7 @@ import ra.core.define
 import ra.core.executeReturnRun
 import ra.core.raw
 import ra.tools.tool
+import ra.core.block.WRENCH_READOUT
 
 /**
  * `ra:tools/wrench/init_registry`: which properties each block can cycle, and what cycles them.
@@ -88,7 +89,7 @@ object WrenchRegistry {
 		}
 		pack.define(cycleUniGateNotify) {
 			raw("data modify storage ra:temp current_gate set from entity @s data.properties.gate_type")
-			raw("""tellraw @a[distance=..10] [{text:"[Wrench] ",color:"gold"},{text:"UNI Gate mode: ",color:"gray"},{nbt:"current_gate",storage:"ra:temp",color:"light_purple",bold:true}]""")
+			raw("""tellraw $WRENCH_READOUT [{text:"[Wrench] ",color:"gold"},{text:"UNI Gate mode: ",color:"gray"},{nbt:"current_gate",storage:"ra:temp",color:"light_purple",bold:true}]""")
 			raw("playsound minecraft:block.note_block.hat block @a[distance=..16,scores={${Obj.USER_SOUND}=1..}] ~ ~ ~ 0.5 2")
 			raw("particle minecraft:happy_villager ~ ~0.5 ~ 0.3 0.3 0.3 0 5 normal @a[scores={${Obj.USER_PARTICLES}=1..}]")
 			data(Storage.TEMP) { remove("current_gate") }

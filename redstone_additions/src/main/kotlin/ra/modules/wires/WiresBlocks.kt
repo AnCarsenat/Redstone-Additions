@@ -31,6 +31,7 @@ import ra.modules.wires.blocks.Placement
 import ra.modules.wires.blocks.creative_fluid.CreativeFluid
 import ra.modules.wires.blocks.electric_consumer.ElectricConsumer
 import ra.modules.wires.blocks.electric_furnace.ElectricFurnaceSettings
+import ra.modules.wires.diving.DivingItems
 import ra.modules.wires.fluid.Drain
 
 /**
@@ -80,16 +81,17 @@ object WiresBlocks : PackPart {
 			recipe = WiresRecipe(listOf("IRI", "PDP", "IBI"), listOf("I" to Items.IRON_INGOT, "R" to Items.REDSTONE, "P" to Items.COPPER_INGOT, "D" to Items.DISPENSER, "B" to Items.BUCKET), Items.DISPENSER, Criterion.MATERIAL)),
 		WiresItem(item("liquid_valve", "Liquid Valve", "minecraft:waxed_cut_copper", "minecraft:waxed_cut_copper"),
 			recipe = WiresRecipe(listOf(" C ", "RLR", " C "), listOf("C" to Items.COPPER_INGOT, "R" to Items.REDSTONE, "L" to Items.LEVER), Items.LEVER, Criterion.MATERIAL)),
-		WiresItem(item("liquid_drain", "Liquid Drain", "minecraft:dropper", "minecraft:dropper"),
+		WiresItem(item("liquid_drain", "Fluid Drain", "minecraft:dropper", "minecraft:dropper"),
+			lore = listOf("Takes fluid in; redstone lets it out" to "gray", "Gases are vented with their effect" to "gray"),
 			recipe = WiresRecipe(listOf("ICI", "RDR", "IBI"), listOf("I" to Items.IRON_INGOT, "C" to Items.COPPER_INGOT, "R" to Items.REDSTONE, "D" to Items.DROPPER, "B" to Items.BUCKET), Items.DROPPER, Criterion.MATERIAL)),
 		WiresItem(item("gas_tank", "Gas Tank", "minecraft:iron_block", "minecraft:iron_block"),
 			recipe = WiresRecipe(listOf("I I", "IBI", "I I"), listOf("I" to Items.IRON_INGOT, "B" to Items.BARREL), Items.BARREL, Criterion.MATERIAL)),
 		WiresItem(item("gas_pump", "Gas Pump", "minecraft:smoker", "minecraft:smoker"),
 			recipe = WiresRecipe(listOf("IRI", "PSP", "IBI"), listOf("I" to Items.IRON_INGOT, "R" to Items.REDSTONE, "P" to Items.COPPER_INGOT, "S" to Items.SMOKER, "B" to Items.GLASS_BOTTLE), Items.SMOKER, Criterion.MATERIAL)),
 		WiresItem(item("gas_valve", "Gas Valve", "minecraft:smooth_basalt", "minecraft:smooth_basalt"),
-			recipe = WiresRecipe(listOf(" C ", "ILI", " C "), listOf("I" to Items.IRON_INGOT, "C" to Items.COBBLESTONE, "L" to Items.LEVER), Items.SMOOTH_BASALT, Criterion.MATERIAL)),
+			recipe = WiresRecipe(listOf(" I ", "RLR", " I "), listOf("I" to Items.IRON_INGOT, "R" to Items.REDSTONE, "L" to Items.LEVER), Items.LEVER, Criterion.MATERIAL)),
 		WiresItem(item("electric_wire_copper", "Wire", "minecraft:orange_candle", "minecraft:conduit", "electric_wire"), marker = "electric_wire",
-			recipe = WiresRecipe(listOf("CCC"), listOf("C" to Items.COPPER_INGOT), Items.BLACK_DYE, Criterion.MATERIAL, count = 8)),
+			recipe = WiresRecipe(listOf("CCC"), listOf("C" to Items.COPPER_INGOT), Items.COPPER_INGOT, Criterion.MATERIAL, count = 8)),
 		// Creative only -- no recipe, on purpose. The bundle and items/give_creative are the only ways to get one.
 		WiresItem(item("creative_eu", "Creative EU Source", "minecraft:beacon", "minecraft:beacon"), epic = true, lore = listOf(CREATIVE to "light_purple")),
 		WiresItem(item("creative_fluid", "Creative Fluid Source", "minecraft:beacon", "minecraft:beacon"), epic = true, lore = listOf(CREATIVE to "light_purple")),
@@ -97,11 +99,11 @@ object WiresBlocks : PackPart {
 			lore = listOf("Smelts with EU - no fuel" to "gray", "Top row in, rows 2-3 out" to "gray"),
 			recipe = WiresRecipe(listOf("III", "CFC", "IRI"), listOf("I" to Items.IRON_INGOT, "C" to Items.COPPER_INGOT, "F" to Items.BLAST_FURNACE, "R" to Items.REDSTONE_BLOCK), Items.BLAST_FURNACE, Criterion.NAMED, count = null)),
 		WiresItem(item("electric_generator", "EU Generator", "minecraft:blast_furnace", "minecraft:barrel"),
-			recipe = WiresRecipe(listOf("IRI", "CBC", "RFR"), listOf("I" to Items.IRON_INGOT, "R" to Items.REDSTONE, "C" to Items.COPPER_INGOT, "B" to Items.BARREL, "F" to Items.FURNACE), Items.BARREL, Criterion.MATERIAL)),
+			recipe = WiresRecipe(listOf("IRI", "CBC", "RFR"), listOf("I" to Items.IRON_INGOT, "R" to Items.REDSTONE, "C" to Items.COPPER_INGOT, "B" to Items.BARREL, "F" to Items.FURNACE), Items.FURNACE, Criterion.MATERIAL)),
 		WiresItem(item("electric_consumer", "EU Consumer", "minecraft:observer", "minecraft:observer"),
 			recipe = WiresRecipe(listOf("IRI", "COC", "RCR"), listOf("I" to Items.IRON_INGOT, "R" to Items.REDSTONE, "C" to Items.COPPER_INGOT, "O" to Items.OBSERVER), Items.OBSERVER, Criterion.MATERIAL)),
 		WiresItem(item("electric_switch", "EU Switch", "minecraft:redstone_lamp", "minecraft:waxed_cut_copper"),
-			recipe = WiresRecipe(listOf(" C ", "RLR", "CLC"), listOf("C" to Items.COPPER_INGOT, "R" to Items.REDSTONE, "L" to Items.LEVER), Items.REDSTONE_LAMP, Criterion.MATERIAL)),
+			recipe = WiresRecipe(listOf(" C ", "RLR", "CLC"), listOf("C" to Items.COPPER_INGOT, "R" to Items.REDSTONE, "L" to Items.LEVER), Items.LEVER, Criterion.MATERIAL)),
 		WiresItem(item("battery", "Battery", "minecraft:waxed_copper_grate", "minecraft:waxed_copper_grate"),
 			lore = listOf("Stores 10000 EU for its grid" to "gray"),
 			recipe = WiresRecipe(listOf("CRC", "RBR", "CRC"), listOf("C" to Items.COPPER_INGOT, "R" to Items.REDSTONE_BLOCK, "B" to Items.WAXED_COPPER_GRATE), Items.COPPER_INGOT, Criterion.INGREDIENT)),
@@ -116,10 +118,28 @@ object WiresBlocks : PackPart {
 			recipe = WiresRecipe(listOf("III", "IFI", "III"), listOf("I" to Items.IRON_INGOT, "F" to Items.FURNACE), Items.FURNACE, Criterion.INGREDIENT)),
 		WiresItem(item("solar_panel", "Solar Panel", "minecraft:daylight_detector", "minecraft:daylight_detector"),
 			lore = listOf("Generates EU from sunlight" to "gray"),
-			recipe = WiresRecipe(listOf("GGG", "QQQ", "CRC"), listOf("G" to Items.GLASS, "Q" to Items.QUARTZ, "C" to Items.COPPER_INGOT, "R" to Items.REDSTONE), Items.DAYLIGHT_DETECTOR, Criterion.INGREDIENT)),
+			recipe = WiresRecipe(listOf("GGG", "QDQ", "CRC"), listOf("G" to Items.GLASS, "Q" to Items.QUARTZ, "D" to Items.DAYLIGHT_DETECTOR, "C" to Items.COPPER_INGOT, "R" to Items.REDSTONE), Items.DAYLIGHT_DETECTOR, Criterion.INGREDIENT)),
 		WiresItem(item("liquid_filter", "Liquid Filter", "minecraft:waxed_exposed_cut_copper", "minecraft:waxed_exposed_cut_copper"),
 			lore = listOf("Passes only the medium it is set to" to "gray", "Set filter_medium with the Data Handler" to "dark_gray"),
 			recipe = WiresRecipe(listOf("CIC", "CHC", "CIC"), listOf("C" to Items.COPPER_INGOT, "I" to Items.IRON_INGOT, "H" to Items.HOPPER), Items.HOPPER, Criterion.MATERIAL, notify = false)),
+		WiresItem(item("network_gauge", "Network Gauge", "minecraft:comparator", "minecraft:target"),
+			lore = listOf("Redstone 0-15 from how full" to "gray", "the network behind it is" to "gray"),
+			recipe = WiresRecipe(listOf("CGC", "RKR", "CTC"), listOf("C" to Items.COPPER_INGOT, "G" to Items.GLASS, "R" to Items.REDSTONE, "K" to Items.COMPARATOR, "T" to Items.TARGET), Items.COMPARATOR, Criterion.INGREDIENT)),
+		WiresItem(item("usage_meter", "Usage Meter", "minecraft:clock", "minecraft:target"),
+			lore = listOf("A redstone pulse every N units used" to "gray", "or made on the network behind it" to "gray"),
+			recipe = WiresRecipe(listOf("CGC", "RKR", "CTC"), listOf("C" to Items.COPPER_INGOT, "G" to Items.GLASS, "R" to Items.REDSTONE, "K" to Items.CLOCK, "T" to Items.TARGET), Items.CLOCK, Criterion.INGREDIENT)),
+		WiresItem(item("tesla_coil", "Tesla Coil", "minecraft:lightning_rod", "minecraft:waxed_lightning_rod"),
+			lore = listOf("Redstone + EU: zaps hostile mobs" to "gray", "around it once a second" to "gray"),
+			recipe = WiresRecipe(listOf("CLC", "RBR", "CIC"), listOf("C" to Items.COPPER_INGOT, "L" to Items.LIGHTNING_ROD, "R" to Items.REDSTONE, "B" to Items.REDSTONE_BLOCK, "I" to Items.IRON_INGOT), Items.LIGHTNING_ROD, Criterion.INGREDIENT)),
+		WiresItem(item("spout", "Spout", "minecraft:waxed_exposed_copper_grate", "minecraft:waxed_exposed_copper_grate"),
+			lore = listOf("Fills buckets and bottles under it" to "gray", "from its fluid network" to "gray"),
+			recipe = WiresRecipe(listOf("C C", "CBC", " D "), listOf("C" to Items.COPPER_INGOT, "B" to Items.BUCKET, "D" to Items.POINTED_DRIPSTONE), Items.BUCKET, Criterion.INGREDIENT)),
+		WiresItem(item("water_wheel", "Water Wheel", "minecraft:stripped_spruce_log", "minecraft:stripped_spruce_log"),
+			lore = listOf("Generates EU from flowing water" to "gray", "around its paddles" to "gray"),
+				recipe = WiresRecipe(listOf("PSP", "SCS", "PRP"), listOf("P" to Items.SPRUCE_SLAB, "S" to Items.STICK, "C" to Items.COPPER_BLOCK, "R" to Items.REDSTONE), Items.SPRUCE_SLAB, Criterion.INGREDIENT)),
+		WiresItem(item("air_charger", "Air Charger", "minecraft:waxed_weathered_copper_grate", "minecraft:waxed_weathered_copper_grate"),
+			lore = listOf("Stand on it to fill an Air Tank" to "gray", "from its gas network's oxygen" to "gray"),
+			recipe = WiresRecipe(listOf("IPI", "CBC", "IRI"), listOf("I" to Items.IRON_INGOT, "P" to Items.HEAVY_WEIGHTED_PRESSURE_PLATE, "C" to Items.COPPER_INGOT, "B" to Items.GLASS_BOTTLE, "R" to Items.REDSTONE), Items.HEAVY_WEIGHTED_PRESSURE_PLATE, Criterion.INGREDIENT)),
 	)
 
 	/** Goggles readouts, in the order `ra:tools/goggles/draw_block` listed the module's markers. */
@@ -127,7 +147,8 @@ object WiresBlocks : PackPart {
 		"liquid_pipe", "liquid_tank", "liquid_pump", "liquid_valve", "liquid_filter", "liquid_drain",
 		"gas_tank", "gas_pump", "gas_valve", "boiler", "electric_wire", "electric_generator",
 		"electric_consumer", "electric_switch", "solar_panel", "battery", "creative_eu",
-		"creative_fluid", "electric_furnace", "industrial_light", "electric_breaker",
+		"creative_fluid", "electric_furnace", "industrial_light", "electric_breaker", "network_gauge", "usage_meter",
+		"tesla_coil", "spout", "water_wheel", "air_charger",
 	)
 
 	private fun loreNbt(lore: List<Pair<String, String>>) = NbtList(lore.map { (text, color) ->
@@ -156,7 +177,8 @@ object WiresBlocks : PackPart {
 
 		for (it in items) it.recipe?.let { r -> recipe(it, r) }
 
-		bundles += GiveBundle("wires", "Wires Bundle", "Fluid and electric network blocks", Ns.WIRES, items.map { it.stackNbt() })
+		bundles += GiveBundle("wires", "Wires Bundle", "Fluid and electric network blocks", Ns.WIRES,
+			items.map { it.stackNbt() } + listOf(DivingItems.airTank.stackNbt(), DivingItems.heavyBoots.stackNbt()))
 
 		// The retired pipe and wire tiers (see SPECS) place a Copper Pipe or a Wire; a refused
 		// placement gives that back.
@@ -173,7 +195,7 @@ object WiresBlocks : PackPart {
 		// Property schemas, by marker type (what data.type holds -- liquid_pipe, not
 		// liquid_pipe_copper). `readonly` ones are the block's own working numbers: shown by the Data
 		// Handler, never edited there or cycled by the wrench.
-		for (t in listOf("liquid_pipe", "liquid_tank", "gas_tank", "liquid_pump", "gas_pump", "electric_wire", "electric_switch", "battery", "creative_eu", "boiler"))
+		for (t in listOf("liquid_pipe", "liquid_tank", "gas_tank", "liquid_pump", "gas_pump", "electric_wire", "electric_switch", "battery", "creative_eu", "boiler", "network_gauge"))
 			properties(t) {}
 		for (t in listOf("liquid_valve", "gas_valve", "electric_breaker"))
 			properties(t) { number("rate", min = 1, max = 1000000, readonly = true) }

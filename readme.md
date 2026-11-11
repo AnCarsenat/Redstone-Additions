@@ -5,7 +5,7 @@
 <h1 align="center">Redstone Additions</h1>
 
 <p align="center">
-  <strong>59 custom blocks. 7 tools. 69 recipes. 2 jetpacks and 3 upgrade kits. Vanilla datapack for Minecraft 26.3.</strong>
+  <strong>97 custom blocks. 9 tools. 116 recipes. 2 jetpacks and 3 upgrade kits. Vanilla datapack for Minecraft 26.3.</strong>
 </p>
 
 <p align="center">
@@ -15,10 +15,10 @@
 
 <p align="center">
   <img src="https://img.shields.io/badge/Minecraft-26.3-2EA44F" alt="Minecraft 26.3">
-  <img src="https://img.shields.io/badge/Version-v6.0.2-blue" alt="Version v6.0.2">
-  <img src="https://img.shields.io/badge/Blocks-59-red" alt="59 blocks">
-  <img src="https://img.shields.io/badge/Tools-7-lightgrey" alt="7 tools">
-  <img src="https://img.shields.io/badge/Recipes-69-8A2BE2" alt="69 recipes">
+  <img src="https://img.shields.io/badge/Version-v6.0.3-blue" alt="Version v6.0.3">
+  <img src="https://img.shields.io/badge/Blocks-97-red" alt="97 blocks">
+  <img src="https://img.shields.io/badge/Tools-9-lightgrey" alt="9 tools">
+  <img src="https://img.shields.io/badge/Recipes-116-8A2BE2" alt="116 recipes">
 </p>
 
 <p align="center">
@@ -82,29 +82,41 @@ listed A to Z and grouped by module.
 | Jetpacks | <img src="https://github.com/AnCarsenat/Redstone-Additions/raw/main/docs/images/screenshots/JetpackHover.png" alt="Hover flight" width="320"> |
 | Infinite Generators | <img src="https://github.com/AnCarsenat/Redstone-Additions/raw/main/docs/images/banners/media-missing.png" alt="No screenshot yet" width="320"> |
 | Ender Links | <img src="https://github.com/AnCarsenat/Redstone-Additions/raw/main/docs/images/banners/media-missing.png" alt="No screenshot yet" width="320"> |
+| Displays | <img src="https://github.com/AnCarsenat/Redstone-Additions/raw/main/docs/images/banners/media-missing.png" alt="No screenshot yet" width="320"> |
+| Automation | <img src="https://github.com/AnCarsenat/Redstone-Additions/raw/main/docs/images/banners/media-missing.png" alt="No screenshot yet" width="320"> |
+| Security | <img src="https://github.com/AnCarsenat/Redstone-Additions/raw/main/docs/images/banners/media-missing.png" alt="No screenshot yet" width="320"> |
+| Farming | <img src="https://github.com/AnCarsenat/Redstone-Additions/raw/main/docs/images/banners/media-missing.png" alt="No screenshot yet" width="320"> |
+| Railworks | <img src="https://github.com/AnCarsenat/Redstone-Additions/raw/main/docs/images/banners/media-missing.png" alt="No screenshot yet" width="320"> |
+| Audio | <img src="https://github.com/AnCarsenat/Redstone-Additions/raw/main/docs/images/banners/media-missing.png" alt="No screenshot yet" width="320"> |
 | Tools | <img src="https://github.com/AnCarsenat/Redstone-Additions/raw/main/docs/images/banners/media-missing.png" alt="No screenshot yet" width="320"> |
 
 ---
 
 ## Blocks
 
-### Logic Gates (6)
+### Logic Gates (10)
 - UNI Gate
 - Clock
 - Delayer
 - Extender
 - Randomizer
 - Shortener
+- Counter
+- Edge Detector
+- Signal Calculator
+- Sequencer
 
-### Interactive Machines (12)
+### Interactive Machines (14)
 - Block Breaker
 - Block Placer
 - Item Pipe — filters by an item id set from your hand, no item frame
 - Item Mover
 - Spitter
-- Breeder
 - Magic Crate — pulls dropped items in from 5-20 blocks
 - Big Torch — drops mobs that spawn within 1-100 blocks into the void
+- Elevator — jump to go up, sneak to go down, to the next one in the column
+- Trash Can — destroys every item put into it
+- Fan — pushes items, mobs and players along its face while powered
 - Infinite Water Cauldron
 - Infinite Lava Cauldron
 - Infinite Snow Cauldron
@@ -114,16 +126,23 @@ listed A to Z and grouped by module.
 - Boxer
 - Unboxer
 
-### Sensors (3)
+### Sensors (8)
 - Entity Detector
 - Tag Adder
 - Tag Remover
+- Light Sensor — outputs the light level in front of it (0-15)
+- Weather Sensor — on during rain, thunder, day or night
+- Held Item Detector — on while a nearby player carries an item
+- Player Detector — on while a listed player is near
+- Block Detector — on while the block at its target is the chosen block
 
-### Wireless (2)
+### Wireless (4)
 - Wireless Emitter
 - Wireless Receiver
+- Analog Emitter — sends its input level (0-15) on a channel
+- Analog Receiver — outputs its channel's level on target blocks
 
-### Transport Networks (21)
+### Transport Networks (27)
 
 Fluids, in millilitres:
 
@@ -132,11 +151,13 @@ Fluids, in millilitres:
 - Liquid Pump
 - Liquid Valve — moves contents between the two networks it separates
 - Liquid Filter — passes only the one medium it is set to
-- Liquid Drain — world source in, or network contents back out
+- Fluid Drain — world source in, or network contents back out; vents gases with their effect
 - Gas Tank
 - Gas Pump
 - Gas Valve
 - Boiler — water plus heat to steam
+- Spout — fills buckets and bottles under it from the network
+- Air Charger — fills the Air Tank of whoever stands on it, from the network's oxygen
 
 Electricity, in EU:
 
@@ -147,8 +168,20 @@ Electricity, in EU:
 - Battery — 10000 EU of grid capacity
 - EU Breaker — evens EU between the grids either side
 - Solar Panel
+- Water Wheel — EU from flowing water, with a turning wheel
 - Industrial Light — redstone plus EU, a 10 block beam of real light
 - Electric Furnace — smelts on EU with no fuel, four power modes
+- Tesla Coil — redstone plus EU, zaps hostile mobs around it once a second
+
+Reading a network with redstone:
+
+- Network Gauge — redstone 0-15 from how full the network behind it is
+- Usage Meter — a pulse every N mL or EU used or made, and a running total
+
+Diving gear (worn, not placed):
+
+- Air Tank — a chestplate holding 15 minutes of air under water
+- Heavy Boots — sink and walk on the bottom at your usual pace
 
 Creative, for building and testing:
 
@@ -160,6 +193,11 @@ Pipes and wires have a single tier.
 ### Chunk Loader (1)
 - Chunk Loader
 
+### Enchant Crafting (3)
+- Disenchanter — moves an item's enchantments onto a book, for liquid experience
+- Book Upgrader — raises one enchantment of a book by a level, each level twice the price of the last
+- Book Printer — a small chance of a book's Schematic, then prints copies of it for liquid experience
+
 ### Infinite Generators (3)
 - Mineral Generator
 - Nether Generator
@@ -168,11 +206,43 @@ Pipes and wires have a single tier.
 Built from a crafted Generator Casing plus a Core won by sacrificing stone,
 netherrack or poppies on an enchanting table.
 
-### Ender Links (4)
+### Ender Links (5)
 - Ender Item Vault — barrels that share their contents across a channel
 - Ender Fluid Vault — liquid and gas across a channel, as a fluid network node
 - Ender Power Vault — EU across a channel, as an electric node
 - Teleport Anchor — redstone strength 1-15 picks which anchor you arrive at
+- Anchor Terminal — stand on it and sneak to pick a destination from a menu
+
+### Displays (3)
+- Gauge Bar — a bar on its face, filled to the redstone level feeding it
+- Item Hologram — shows the item inside it, turning above the block, with its name
+- Text Screen — glowing nixie-style text: the redstone level picks which item's name it shows
+
+### Automation (6)
+- Crafter Controller — fires the crafter next to it once it holds what its Pattern says; with a container on its other side it fills the crafter itself
+- Uncrafter — takes items back apart into their ingredients, for EU
+- Experience Absorber — collects experience orbs into a fluid network
+- Item Pipe Splitter — shares the items of the container above it between the containers around it
+- Conveyor — a slab that carries items, mobs and players the way its arrow points
+
+### Security (1)
+- Keypad — a crafter whose slots are the code; the right code gives a redstone pulse
+
+### Farming (2)
+- Sprinkler — waters the farmland around it; with liquid experience, crops grow 4x as fast
+- Breeder
+
+Items: Capture Net (carries an animal) and Master Capture Net (carries any mob but bosses)
+
+### Railworks (1)
+- Route Rail — under a rail junction: switches it for each cart by its name, tag, cargo or rider
+
+Items: Ram Upgrade (a minecart that hurts what it runs into) and Rail Builder (a hopper minecart that digs a tunnel and lays a straight track by itself)
+
+### Audio (3)
+- Alarm — sounds one of seven alarms while powered, heard within its range
+- Doorbell — a button that plays one of six chimes when pressed
+- Jukebox Controller — redstone plays, stops and skips the jukebox next to it; a chest of discs is the playlist
 
 ### Multiblock Bases (5)
 - Copper Multiblock Base
@@ -181,7 +251,7 @@ netherrack or poppies on an enchanting table.
 - Diamond Multiblock Base
 - Netherite Multiblock Base
 
-### Items (12)
+### Items (15)
 - Iron Jetpack Kit — right-click while wearing any chestplate to fit it
 - Infinite Iron Jetpack Kit — won on an enchanting table; burns no fuel
 - Thruster Kit — hold sprint while airborne to accelerate
@@ -194,11 +264,14 @@ netherrack or poppies on an enchanting table.
 - Enchanted Coal — won by sacrificing coal on an enchanting table
 - Enchanted Coal Block — nine Enchanted Coal make one; one block plus a stick makes a Big Torch
 - Item Crate — what the Boxer packs a chest into, and the Unboxer unpacks
+- Pattern — sneak + right-click a crafter to record its grid, for the Crafter Controller
+- Goggles Lens — fits into any helmet and gives it the Goggles' view;
+  `/trigger ra.goggles` switches it off or takes it back out
 
 Fitted kits live on the chestplate and are listed in its lore.
 `/trigger ra.jp.kits` switches one off or takes it back as an item.
 
-### Tools (7)
+### Tools (9)
 - Wrench — the only tool that **changes** a block. Shift+RMB cycles a setting, or
   opens a menu when the block has more than one
 - Goggles — wear or hold to read every block in range. Read-only
@@ -207,6 +280,8 @@ Fitted kits live on the chestplate and are listed in its lore.
 - Clipboard — copies one block's settings onto others of the same kind
 - Multimeter — reads a network's numbers into chat
 - Redstone Remote — wireless channel control
+- Pager — alerts you when its channel turns on, anywhere in your inventory
+- Anchor Tablet — teleport to any Teleport Anchor from anywhere, for ender pearls; crafted with an Overstar
 
 See the [Tools page](https://ancarsenat.github.io/Redstone-Additions/tools/) for
 recipes and usage.
@@ -288,6 +363,12 @@ Starter command:
 | Jetpacks | https://ancarsenat.github.io/Redstone-Additions/jetpacks/ |
 | Infinite Generators | https://ancarsenat.github.io/Redstone-Additions/infinite-generators/ |
 | Ender Links | https://ancarsenat.github.io/Redstone-Additions/ender-links/ |
+| Displays | https://ancarsenat.github.io/Redstone-Additions/displays/ |
+| Automation | https://ancarsenat.github.io/Redstone-Additions/automation/ |
+| Security | https://ancarsenat.github.io/Redstone-Additions/security/ |
+| Farming | https://ancarsenat.github.io/Redstone-Additions/farming/ |
+| Railworks | https://ancarsenat.github.io/Redstone-Additions/railworks/ |
+| Audio | https://ancarsenat.github.io/Redstone-Additions/audio/ |
 | Item Reference | https://ancarsenat.github.io/Redstone-Additions/item-reference/ |
 | Recipe Atlas | https://ancarsenat.github.io/Redstone-Additions/recipe-atlas/ |
 | Changelog | https://ancarsenat.github.io/Redstone-Additions/changelog/ |
@@ -309,11 +390,19 @@ Starter command:
 | `/function ra_multiblock:blocks/give_all` | Multiblock base items |
 | `/function ra_infinite:items/give_all` | Generator casing and generators |
 | `/function ra_jetpacks:items/give_all` | Jetpack kits |
-| `/function ra_ender:items/give_all` | Ender vaults and Teleport Anchors |
+| `/function ra_enchanting:items/give_all` | Disenchanter, Book Upgrader and Book Printer |
+| `/function ra_ender:items/give_all` | Ender vaults, Teleport Anchor, Anchor Terminal, Anchor Tablet and an Overstar |
+| `/function ra_displays:items/give_all` | Display blocks |
+| `/function ra_automation:items/give_all` | Crafter Controller, a Pattern, Uncrafter, Experience Absorber, Item Pipe Splitter and Conveyor |
+| `/function ra_security:items/give_all` | Keypad |
+| `/function ra_farming:items/give_all` | Sprinkler, Breeder, a Capture Net and a Master Capture Net |
+| `/function ra_railworks:items/give_all` | Route Rail, Ram Upgrade and Rail Builder |
+| `/function ra_audio:items/give_all` | Alarm, Doorbell and Jukebox Controller |
 | `/function ra:tools/wrench/give` | Wrench |
 | `/function ra:tools/data_handler/give` | Data Handler |
 | `/function ra:tools/creative_data_handler/give` | Creative Data Handler |
 | `/function ra:tools/goggles/give` | Goggles |
+| `/function ra:tools/goggles/lens/give` | Goggles Lens |
 | `/function ra_wireless:tools/remote/give` | Redstone Remote |
 | `/function ra:uninstall` | Clean uninstall |
 

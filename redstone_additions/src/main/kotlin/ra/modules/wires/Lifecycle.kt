@@ -20,9 +20,13 @@ import ra.modules.wires.blocks.creative_fluid.CreativeFluid
 import ra.modules.wires.blocks.electric_furnace.ElectricFurnaceSettings
 import ra.modules.wires.bridge.Bridge
 import ra.modules.wires.common.Common
+import ra.modules.wires.diving.AirTank
 import ra.modules.wires.electric.Electric
 import ra.modules.wires.fluid.Fluid
 import ra.modules.wires.media.Media
+import ra.modules.wires.machine.MachineClock
+import ra.modules.wires.readout.Readout
+import ra.modules.wires.readout.Readout.resetFlag
 
 object WiresLifecycle : PackPart {
 	val giveCreative = ref(Ns.WIRES, "items/give_creative")
@@ -54,6 +58,11 @@ object WiresLifecycle : PackPart {
 			data(Storage.WIRES) { modify("initialized", NbtByte(1)) }
 
 			function(Placement.registerAll)
+			// The readout clock's schedule may not have survived; the next tick starts it again.
+			resetFlag()
+			with(MachineClock) { resetClock() }
+			// The Air Tank's once-a-second clock, replacing any run a reload left scheduled.
+			with(AirTank) { startClock() }
 
 			moduleLoaded("Wires module loaded!", "aqua")
 		}
@@ -74,6 +83,8 @@ object WiresLifecycle : PackPart {
 
 			function(Fluid.tick)
 			function(Electric.tick)
+			function(Readout.tick)
+			function(MachineClock.tick)
 		}
 	}
 }

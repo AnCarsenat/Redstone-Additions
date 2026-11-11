@@ -74,7 +74,7 @@ A gameplay module must define its `<ns>:load` and, unless it overrides `tick` to
 | 2 | `MultiblockLibPart` | `ra_lib_multiblock` | `ra.multiblocklib` |
 | 3 | `SettingsPart` | `ra_settings` | `ra.settings` |
 | 4 | `MigrationsPart` | `ra_migrations` | `ra.migrations` |
-| 5 | `InteractiveModule` … `EnderModule` (the 12 entries of `modules`) | `ra_interactive` … `ra_ender` | `ra.modules.*` |
+| 5 | `InteractiveModule` … `AudioModule` (the 18 entries of `modules`) | `ra_interactive` … `ra_audio` | `ra.modules.*` |
 | 6 | `ExamplePart` | `ra_example` | `ra.example` |
 | 7 | `AdvancementsPart` | `ra_advancements` | `ra.advancements` |
 | 8 | `ToolsPart` | `ra` (`tools/*`, tool recipes, predicates, advancements) | `ra.tools` |
@@ -84,7 +84,8 @@ A gameplay module must define its `<ns>:load` and, unless it overrides `tick` to
 
 ```
 InteractiveModule, StorageModule, SensorsModule, GatesModule, WirelessModule, WiresModule,
-ChunkLoaderModule, MultiblockModule, EnchantingModule, InfiniteModule, JetpacksModule, EnderModule
+ChunkLoaderModule, MultiblockModule, EnchantingModule, InfiniteModule, JetpacksModule, EnderModule,
+DisplaysModule, AutomationModule, SecurityModule, FarmingModule, RailworksModule, AudioModule
 ```
 
 That is the order the beet `ra:load` and `ra:tick` hard-coded, and `ra:load` / `ra:tick` still
@@ -186,7 +187,7 @@ function(RaLib.Util.property, nbt { this["name"] = "delay"; this["default"] = 20
 Hooked into `#minecraft:load` by Hub (`ra/hub/Load.kt`). In order:
 
 1. Scoreboards for the tools (`ra.edit_type`, `ra.dh.action`, `ra.dh.pending`, `ra.dh.mid`,
-   `ra.dh.sel`, `ra.dh.req`, `ra.hold.wrench`, `ra.hold.dh`, `ra.clip.id`).
+   `ra.dh.sel`, `ra.dh.req`, `ra.hold.wrench`, `ra.hold.dh`, `ra.goggles`, `ra.clip.id`).
 2. `data merge storage ra:temp {…}`: the shared scratch roots.
 3. `ra:tools/goggles/billboard/init_offsets`.
 4. `ra_lib:init`.
@@ -209,7 +210,7 @@ Rescheduled every tick by itself, not run from `#minecraft:tick` (`ra/hub/Tick.k
 1. `schedule function ra:tick 1t replace`. **First**, so a tick cut short by
    `maxCommandChainLength` has already scheduled the next one; at the end, the cut took the
    reschedule with it and the pack stopped until `/reload`.
-2. Tool "active" tag cleanup (`cdh`, `dh`, `wrench`, `clip`, `meter`, `remote`).
+2. Tool "active" tag cleanup (`cdh`, `dh`, `wrench`, `clip`, `meter`, `remote`, `pager`, `lens`).
 3. `ra_migrations:entities`: custom blocks saved by an older version, migrated before anything
    below reads them (see [Migrations](#migrations)).
 4. `ra_settings:tick`: per-player defaults, menu clicks. Early, because module ticks filter
@@ -220,7 +221,7 @@ Rescheduled every tick by itself, not run from `#minecraft:tick` (`ra/hub/Tick.k
 8. `ra_settings:input_tick`: **after** `input/tick`, so a form finished this tick is seen this tick.
 9. `ra:placement/detect_bats`: the placement router.
 10. Every module's `tick`, in `modules` order.
-11. `ra:tools/goggles/tick`.
+11. `ra:tools/goggles/tick`, which also runs the Goggles Lens menu (`/trigger ra.goggles`).
 12. Tool menu triggers: hold timers, `enable` / `reset` of `ra.wrench`, `ra.dh.action`,
     `ra.edit_type`, then `ra:tools/wrench/menu_action` for players who clicked.
 

@@ -6,6 +6,9 @@ import io.github.ayfri.kore.commands.data
 import io.github.ayfri.kore.commands.function
 import io.github.ayfri.kore.commands.scoreboard.scoreboard
 import io.github.ayfri.kore.commands.tag
+import ra.core.Admin
+import ra.core.Admin.overPlayerMax
+import ra.core.Admin.raiseMaxForAdmin
 import ra.core.Obj
 import ra.core.Ra
 import ra.core.Storage
@@ -21,6 +24,7 @@ import ra.core.executeReturnRun
 import ra.tools.datahandler.props.DataHandlerTypes.registerDataHandlerTypes
 import ra.tools.datahandler.props.DataHandlerTypes.typeOfProbe
 import ra.tools.datahandler.props.PropRows.registerPropRows
+import ra.tools.datahandler.props.DataHandlerUnique.registerDataHandlerUnique
 import ra.tools.tool
 
 /**
@@ -48,6 +52,9 @@ object DataHandlerProps {
 	val clearAction = tool("data_handler/props/clear_action")
 	val clearItem = tool("data_handler/props/clear_item")
 
+	/** The refusal sound; returns 0. For `return run function` after a refusal's message. */
+	val refusedSound = tool("data_handler/props/refused")
+
 	/** {name}: write the shown default into the block when it does not carry the property yet. */
 	val materialize = tool("data_handler/props/materialize")
 
@@ -67,7 +74,7 @@ object DataHandlerProps {
 	/** #dh.lock -> why the row is locked, for its hover and for the refusal. */
 	internal val LOCK_REASON = mapOf(
 		1 to "This block sets this itself — it cannot be changed here.",
-		2 to "Only server admins (server-settings access) can change this.",
+		2 to Admin.ONLY_REASON,
 	)
 
 	internal const val TARGET = ra.tools.datahandler.DataHandlerSelection.TARGET
@@ -134,13 +141,16 @@ object DataHandlerProps {
 		}
 
 		// {name}: what is this property, and what may this player do with it?
-		//   #dh.type  0 text  1 number  2 bool  3 list  4 item id  5 compound (guessed only)
+		//   #dh.type  0 text  1 number  2 bool  3 list  4 item id  5 compound (guessed only)  6 vec3
+		//             7 direction  8 facing  9 color (PropType.code)
 		//   #dh.decl  1 declared (the block type's schema, or the instance for a dynamic one),
 		//             0 guessed from the value
 		//   #dh.lock  0 editable  1 read-only  2 admin only, and this player is not an admin
 		//             3 hidden from this player
 		//   #dh.hid   1 when declared invisible (an admin still sees it, marked)
-		//   #dh.min / #dh.max  a declared number's bounds; the whole int range otherwise
+		//   #dh.min / #dh.max  a declared number's bounds (the max is admin_max for an admin, when
+		//             declared); the whole int range otherwise
+		//   #dh.ao    1 when only an admin may change it (adminOnly, not waived by its setting)
 		// and storage ra:dh spec, the declaration itself (absent when guessed).
 		//
 		// A declaration always wins over the value: it is the one source an earlier bad write
@@ -160,6 +170,8 @@ object DataHandlerProps {
 			raw("execute if data storage ra:dh spec.code store result score #dh.type $T run data get storage ra:dh spec.code")
 			raw("execute if data storage ra:dh spec.min store result score #dh.min $T run data get storage ra:dh spec.min")
 			raw("execute if data storage ra:dh spec.max store result score #dh.max $T run data get storage ra:dh spec.max")
+			// Admins bypass a range's player maximum, up to its admin_max (ra.core.Admin).
+			raiseMaxForAdmin("storage ra:dh spec", "#dh.max", T, "if score #dh.adm $T matches 1")
 			raw("scoreboard players set #dh.vis $T 1")
 			raw("execute if data storage ra:dh spec.visible store result score #dh.vis $T run data get storage ra:dh spec.visible")
 			raw("execute if score #dh.vis $T matches 0 run scoreboard players set #dh.hid $T 1")
@@ -315,24 +327,51 @@ object DataHandlerProps {
 		}
 		pack.define(writeText) { raw("\$data modify entity $TARGET data.properties.\$(name) set from storage ra:input consume.text") }
 
+		pack.define(refusedSound) {
+			raw("playsound minecraft:block.note_block.bass block @s[scores={${Obj.USER_SOUND}=1..}] ~ ~ ~ 0.7 0.7")
+			raw("return 0")
+		}
+
 		registerRender()
 		registerDataHandlerList()
 		registerDataHandlerEntries()
 		registerDataHandlerTypes()
 		registerPropRows()
+		registerDataHandlerUnique()
+		with(DataHandlerVec3) { registerDataHandlerVec3() }
+		with(DataHandlerDirection) { registerDataHandlerDirection() }
+		with(DataHandlerFacing) { registerDataHandlerFacing() }
+		with(DataHandlerColor) { registerDataHandlerColor() }
 	}
 
 	/** On a player: server-settings access. */
-	internal const val ADMIN = "ra.admin"
+	internal const val ADMIN = ra.core.Admin.TAG
 
 	/** storage ra:dh q for one row: the name at [from], its action, and every field a row reads. */
 	private fun io.github.ayfri.kore.functions.Function.newRow(from: String) {
-		raw("data modify storage ra:dh q set value {warn:\"\",guess:\"\",note:\"\",reason:\"\"}")
+		raw("data modify storage ra:dh q set value {warn:\"\",guess:\"\",note:\"\",reason:\"\",admin:\"\",admin_why:\"\"}")
 		raw("data modify storage ra:dh q.name set from storage ra:dh $from")
 		raw("execute store result storage ra:dh q.action int 1 run scoreboard players get #dh.act $T")
 	}
 
-	// {name,action,hand_action,warn,guess,note,reason}: one property row, if the selected block
+	/**
+	 * q.admin / q.admin_why for the row, after probe ({name} in q): marked " (admin)" when only an
+	 * admin may change the property, or when its value is above the players' maximum (only an
+	 * admin could have set it). For every player: an admin sees what is theirs alone, a player
+	 * sees why. See ra.core.Admin and PropRows.ADMIN_MARK.
+	 */
+	private fun io.github.ayfri.kore.functions.Function.adminMark() {
+		raw("execute if score #dh.ao $T matches 1 run data modify storage ra:dh q.admin set value \"${Admin.MARK}\"")
+		raw("execute if score #dh.ao $T matches 1 run data modify storage ra:dh q.admin_why set value \"${LOCK_REASON.getValue(2)}\"")
+		raw("data remove storage ra:dh cur")
+		raw("\$data modify storage ra:dh cur set from storage ra:dh properties.\$(name)")
+		overPlayerMax("storage ra:dh spec", "storage ra:dh cur", "#dh.aov", T)
+		raw("data remove storage ra:dh cur")
+		raw("execute if score #dh.aov $T matches 1 run data modify storage ra:dh q.admin set value \"${Admin.MARK}\"")
+		raw("execute if score #dh.aov $T matches 1 run data modify storage ra:dh q.admin_why set value \"${Admin.OVER_REASON}\"")
+	}
+
+	// {name,action,hand_action,warn,guess,note,reason,admin,admin_why}: one property row, if the selected block
 	// has that property. As the player.
 	private fun Ra.registerRender() = pack.define(render) {
 		raw("\$data remove storage ra:dh rest.\$(name)")
@@ -344,6 +383,7 @@ object DataHandlerProps {
 		// Hidden from this player: no row at all.
 		raw("execute if score #dh.lock $T matches 3 run return 0")
 		raw("execute if score #dh.hid $T matches 1 run data modify storage ra:dh q.note set value \" (hidden from players)\"")
+		adminMark()
 		// Not on the block yet: the value shown is the schema's default, written on the first edit --
 		// or there is none, and the first edit writes what is typed.
 		for ((state, cond) in listOf("default" to "if", "not set" to "unless")) {
@@ -368,6 +408,12 @@ object DataHandlerProps {
 		executeReturnRun("if score #dh.lock $T matches 1..2 if score #dh.type $T matches 3 if score #dh.decl $T matches 1", DataHandlerEntries.renderLocked, "with storage ra:dh q")
 		raw("execute if score #dh.lock $T matches 1..2 run return run function ${PropRows.rowLocked.asId()} with storage ra:dh q")
 
+		// A declared vec3 gets its editor (DataHandlerVec3).
+		executeReturnRun("if score #dh.type $T matches 6 if score #dh.decl $T matches 1", DataHandlerVec3.render, "with storage ra:dh q")
+		// Direction, facing and colour get theirs (DataHandlerDirection, DataHandlerFacing, DataHandlerColor).
+		executeReturnRun("if score #dh.type $T matches 7 if score #dh.decl $T matches 1", DataHandlerDirection.render, "with storage ra:dh q")
+		executeReturnRun("if score #dh.type $T matches 8 if score #dh.decl $T matches 1", DataHandlerFacing.render, "with storage ra:dh q")
+		executeReturnRun("if score #dh.type $T matches 9 if score #dh.decl $T matches 1", DataHandlerColor.render, "with storage ra:dh q")
 		// A declared list gets the per-entry editor (DataHandlerEntries); a guessed one the whole-list row.
 		executeReturnRun("if score #dh.type $T matches 3 if score #dh.decl $T matches 1", DataHandlerEntries.render, "with storage ra:dh q")
 		val rows = listOf(1 to PropRows.rowNumber, 2 to PropRows.rowBool, 3 to PropRows.rowList, 0 to PropRows.rowString, 4 to PropRows.rowItem, 5 to PropRows.rowCompound)

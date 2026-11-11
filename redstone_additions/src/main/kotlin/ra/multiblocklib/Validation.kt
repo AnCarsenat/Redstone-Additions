@@ -18,6 +18,7 @@ import ra.core.define
 import ra.core.raw
 import ra.core.ref
 import ra.multiblocklib.spec.Compiled
+import ra.core.block.noticeReceiversSel
 
 /** Periodic validation of standing multiblocks, and disassembly of broken ones. */
 internal object Validation {
@@ -67,7 +68,7 @@ internal object Validation {
 
 			raw("execute at @s run playsound minecraft:block.anvil.land block ${soundListenersSel(16)} ~ ~ ~ 0.5 0.8")
 			raw("execute at @s run particle minecraft:smoke ~ ~0.5 ~ 0.3 0.3 0.3 0.02 15 normal ${particleViewersSel()}")
-			raw("""tellraw @a[distance=..16] [{text:"[RA] ",color:"gold"},{text:"Multiblock disassembled.",color:"yellow"}]""")
+			raw("""tellraw ${noticeReceiversSel(16)} [{text:"[RA] ",color:"gold"},{text:"Multiblock disassembled.",color:"yellow"}]""")
 
 			kill(self())
 		}

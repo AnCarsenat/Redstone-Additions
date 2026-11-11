@@ -63,7 +63,15 @@ object DrainPotion : PackPart {
 			function(RaLib.Transport.Net.read)
 			raw("execute unless data storage ra:transport cur.amounts.potion run return run data modify entity @s data.status.drain_state set value \"nothing_to_pour\"")
 
+			// The colour is read before the take: a pour that empties the network must still show
+			// the potion it poured, not the default blue. pc.id is the network id for the macro.
+			data(Storage.WIRES) { remove("pc") }
+			raw("data modify storage ra:wires pc.color set value $DEFAULT_COLOR")
+			raw("execute store result storage ra:wires pc.id int 1 run scoreboard players get @s ra.tr.net")
+			function(DrainPotion.drainPotionColor, Storage.WIRES, "pc")
+
 			executeRun("store result score #pt.got ra.wires.tmp", RaLib.Transport.Net.take, """{amount:${Drain.ML_PER_ACTION},medium:"potion"}""")
+			raw("execute if score #pt.got ra.wires.tmp matches ..0 run data remove storage ra:wires pc")
 			raw("execute if score #pt.got ra.wires.tmp matches ..0 run return run data modify entity @s data.status.drain_state set value \"nothing_to_pour\"")
 
 			// Nobody to pour it over is not a failure, but the potion has already left the
@@ -76,18 +84,13 @@ object DrainPotion : PackPart {
 			raw("execute store result storage ra:wires apply.id int 1 run scoreboard players get @s ra.tr.net")
 			function(DrainPotion.drainPotionRead, Storage.WIRES, "apply")
 
-			// The colour is worked out after the effects were applied: drain_potion_read empties
-			// its own copy of the effect list, and this reads the network's potion afresh.
-			data(Storage.WIRES) { remove("pc") }
-			raw("data modify storage ra:wires pc.color set value $DEFAULT_COLOR")
-			function(DrainPotion.drainPotionColor, Storage.WIRES, "apply")
 			function(DrainPotion.drainPotionParticle, Storage.WIRES, "pc")
 			data(Storage.WIRES) { remove("pc") }
 		}
 
 		pack.define(DrainPotion.drainPotionColor) {
 			// Internal: the colour of this network's potion, into storage ra:wires pc.color.
-			// Macro: {id} (the network id).
+			// Macro: {id} (the network id, pc.id). Run before the take, see drain_potion.
 			//
 			// A potion that names its colour (custom_color) is that colour. Otherwise it is the
 			// colour of its first effect -- custom_effects first, then the preset's table entry --

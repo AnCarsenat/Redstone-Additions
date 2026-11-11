@@ -2,6 +2,734 @@
 
 This page mirrors key datapack milestones from the main project changelog.
 
+## [v6.0.3] - 2026-11-11 - Automation, farms, rails and sound
+
+Six new modules (Automation, Security, Railworks, Audio, Farming, Displays),
+new logic gates and sensors, more transport blocks, positions and directions in the Data Handler,
+recipes rebalanced for survival, and automatic chat notices off by default.
+
+### Added
+
+- **Ram Upgrade** (Railworks). An item fitted onto a minecart: sneak and right-click the cart with
+  it, or right-click while riding a plain minecart (a chest or hopper minecart opens its inventory instead, so
+  it does not take one). While the cart goes faster than 3 blocks a second, living things in the
+  block ahead of it are hurt, more the faster it goes (3 to 7 damage, 1.5 to 3.5 hearts, up to the
+  vanilla top speed, more on worlds with faster carts), with its rider as the attacker. Its own
+  riders, players riding any minecart, and anything that is not a living mob (vehicles, armor
+  stands, frames, paintings, displays) are left alone, and a victim is hit again
+  only once its hurt animation is over. Shift+RMB with the Wrench takes it off and gives it back;
+  breaking the cart drops it. Crafted from four iron ingots, an iron block and a piston.
+- **Rail Builder** (Railworks). A hopper minecart that lays a straight track by itself. Place it
+  on a straight rail, load it with rails, a filler block (cobblestone, stone, deepslate, dirt,
+  netherrack and other blocks that stay put) and redstone torches, and push it. It then builds
+  one block every 6 ticks in the direction it was pushed: digs a tunnel two blocks high as a
+  diamond pickaxe would (what it digs goes into its inventory; what does not fit stays on the
+  track), fills the floor under the track where there is air, liquid, grass or snow, and lays a
+  rail. Every 8 blocks it hangs a redstone torch on the tunnel wall; with powered rails in its
+  inventory, the rail under that torch is a powered rail, powered by it. It never breaks bedrock,
+  barriers, portals, end portal frames, reinforced deepslate, command blocks, chests or any other
+  block entity, or a Redstone Additions block. When it cannot go on (out of rails or filler, a
+  block it may not break, liquid ahead, the void, an unloaded chunk, a track that is not straight)
+  it says why and rolls back along its track to where it started. It breaks every other block in
+  its path, player builds included, and it does not stop at the world border (a data pack cannot
+  read it). Breaking it drops its contents
+  and the Rail Builder. Crafted from two rails, a diamond pickaxe, two dispensers and a hopper
+  minecart.
+- **Counter** (Logic Gates). Counts the times its input turns on and fires when the count
+  reaches its *target* (1 to 1000, default 10). By default it then starts again from 0 and gives
+  a 2-tick pulse, so it divides a pulse train; with *hold* on (Shift+RMB with the Wrench, or the
+  Data Handler) the output stays on until it is reset. Redstone on the top of the block resets it
+  to 0; any other side counts. The Goggles show the count and the target.
+- **Edge Detector** (Logic Gates). Gives a pulse of *pulse* ticks (default 2) when its input turns
+  on (*rising*), turns off (*falling*), or both. Shift+RMB with the Wrench cycles the mode.
+- **Signal Calculator** (Logic Gates). Maths on signal strengths: A is the strongest signal on
+  the bottom or sides, B the signal on the top, and the result (0 to 15) is the output. Operations,
+  stepped through with Shift+RMB with the Wrench: *add* (at most 15), *subtract* (at least 0),
+  *max*, *min*, *greater* / *equal* / *less* (15 or 0), *invert* (15 − A). Place **target blocks**
+  around it for the analog output; iron blocks around it turn into redstone blocks while the result
+  is above 0. The Goggles show the operation, A, B and the output.
+- **Sequencer** (Logic Gates). Each input pulse moves it on one step, 1 to *steps* (up to 15,
+  default 4) and round again; redstone on the top resets it. The step number is its output level on
+  the target blocks around it, so one dust line carries the step and a Signal Calculator set to
+  *equal* or a comparator picks one out. Iron blocks around it light on the last step, to chain
+  Sequencers. Shift+RMB with the Wrench adds a step.
+- **Light Sensor** (Sensors). Outputs the light level of the block in front of it as a redstone
+  signal of the same strength, 0 to 15, read once a second. It faces the way it was placed, like a
+  dispenser, and is itself the source: dust, a repeater or a comparator next to it picks up the
+  level, no iron blocks needed. The Goggles show the level and the facing. Crafted from three glass,
+  two redstone, a daylight detector and three cobblestone. The world sensors share one slow clock
+  that only runs while one of them is loaded.
+- **Weather Sensor** (Sensors). Turns on while it rains, during a thunderstorm, by day or by
+  night, depending on its mode; Shift+right-click with the Wrench steps through them, and the
+  Goggles show the mode and the output. Output as the Entity Detector's: iron blocks around it turn
+  into redstone blocks. Read once a second on the same clock as the Light Sensor. Crafted from
+  three glass, two redstone, a lightning rod and three copper ingots.
+- **Held Item Detector** (Sensors). Turns on while a player within its *radius* (1 to 16, default
+  5) carries its *item* in the main hand, the offhand, either hand or anywhere in the inventory
+  (*slot*; Shift+right-click with the Wrench steps through them). The item is an id or an item tag
+  (`minecraft:diamond`, `#minecraft:logs`), set with the Data Handler, [Set from hand] included; an
+  id the game does not know detects nothing. Spectators are never counted. Output as the Entity
+  Detector's: iron blocks around it turn into redstone blocks. Read once a second on the world
+  sensors' clock. The Goggles show the item, the slot, the radius and the output. Crafted from five
+  copper ingots, an item frame, an observer and two redstone.
+- **Player Detector** (Sensors). Turns on while a player from its list of names is within its
+  *radius* (1 to 16, default 5). The list holds up to 16 names, edited in the Data Handler like the
+  Tag Adder's tags ([Add], [Edit all], [List]); names are matched exactly, capitals included, and a
+  new detector starts with an empty list. Spectators are never counted. Output as the Entity
+  Detector's. Read once a second on the world sensors' clock. The Goggles show how many names are
+  listed, the radius and the output. Crafted from five copper ingots, a book and quill, an observer
+  and two redstone.
+- **Block Detector** (Sensors). Turns on while the block at its *target* is its *block*: a block
+  id or a block tag (`#minecraft:logs`), set from the hand in the Data Handler; empty means any
+  block but air. The target is a position from the detector, 16 blocks each way (admins 64); a new
+  detector watches the block in front of it. Output as the Entity Detector's, read once a second
+  on the world sensors' clock. The Goggles show the block, the target and the output. Crafted from
+  five copper ingots, an eye of ender, an observer and two redstone.
+- **Positions in the Data Handler.** A setting that is a position or an offset (the Block
+  Detector's target, a display's offset) is three whole numbers with an editor of its own:
+  **[Edit]** opens one row per axis with **[Type]** (the number prompt, showing the range) and
+  **[-X]**/**[+X]** buttons that move it by a chosen step (1, 4 or 16 blocks; 1/16, 1/4 or 1 block
+  for an offset), **[Pick]** to take the block you are looking at, and **[Reset]**. The block a
+  position points at is outlined in green while you edit. Each block sets the range, and admins
+  get a wider one where the block has one, marked **(admin)**. Nothing typed is ever pasted into a
+  command.
+- **Network Gauge** (Transport Networks). A redstone signal, 0 to 15, from how full a network
+  is: `ceil(15 × stored / capacity)`, so any contents give at least 1 and only a full network gives
+  15, as a comparator reads a chest. One block for every network: place it against a pipe, tank,
+  wire or battery and it reads the network behind it (or the first one beside it). It is a target
+  block, so dust, a repeater or a comparator next to it picks up the level; it is not part of the
+  network, so placing it never splits or joins anything. Read twice a second, on a clock that only
+  runs while a gauge is loaded. The Goggles show the level, the network and what it holds out of
+  its capacity. Crafted from four copper ingots, glass, two redstone, a comparator and a target.
+- **Usage Meter** (Transport Networks). A redstone pulse every *every* units (1 to 100000000,
+  default 1000, mL or EU) consumed from or produced into the network behind it, for electricity
+  or water bills, with a running *total* that the Wrench resets (plain right-click) and the
+  Data Handler shows read only. Shift+right-click with the Wrench switches between *consumed*
+  (what is taken out: machines, drains pouring, a valve or breaker moving it away) and *produced*
+  (what is put in). The pulse is 2 ticks on the meter's own target block, at most one per read
+  (twice a second); pulses due beyond that wait their turn and none are lost. Only networks a
+  meter reads keep counts, so others cost one test per transfer. The Goggles show the mode, the
+  total, the pulse size and what has gone through since the last pulse. The default *every* for
+  new meters is on the Power & Fluids settings page. Crafted like the Network Gauge with a clock
+  in place of the comparator.
+- **Tesla Coil** (Transport Networks). On an EU grid and with a redstone signal, zaps every hostile
+  mob within its *radius* (1 to 16, default 8, stepped by Shift+right-click with the Wrench;
+  admins up to 32) once a second for *damage*
+  (default 6) of lightning damage, with an electric arc to each one and a crackle. Each mob
+  hit costs *eu_per_zap* (default 200), paid per mob: with EU for three, the three nearest are hit,
+  at most 16. No mob in range costs nothing. Targets are the entity tag `#ra_wires:tesla_targets`
+  (hostile mobs only, no bosses), so players, pets, villagers, golems and armour stands are never
+  hit. *damage* and *eu_per_zap* are admin only, with defaults for new coils on the Power & Fluids
+  settings page. The Goggles show what it is doing, the radius, the cost per mob and the grid's EU.
+  Crafted from four copper ingots, a lightning rod, two redstone, a block of redstone and an iron
+  ingot.
+- **Spout** (Transport Networks). Fills one empty container a second from its fluid network: a
+  bucket becomes a water, lava, powder snow or milk bucket (5000 mL), a glass bottle a water
+  bottle or the network's potion, with its effects and colour (1000 mL), or a bottle o'
+  enchanting (700 mL of experience). The empty is taken from a container under it (hopper, chest,
+  barrel…), and the filled one goes back into it, so a hopper line makes a bottling line; an empty
+  dropped under it works too. Only a whole container's worth is taken; the fluid that arrived
+  first is tried first. Redstone locks it, like a hopper. Other packs can add their own fluids to
+  `storage ra:wires item_fills`. The Goggles show what it is doing and the network's fluid.
+  Crafted from five copper ingots, a bucket and pointed dripstone.
+- **Water Wheel** (Transport Networks). An EU generator turned by flowing water. Its wheel turns
+  facing you as you place it, and the eight blocks around the hub in the wheel's plane are where
+  its paddles dip: each one holding flowing or falling water (not a source block) adds
+  *eu_per_block* EU per tick (default 5, so 5 to 40 EU/t; admin only, default on the settings
+  page), day and night. The wheel is drawn with block displays and turns smoothly while water
+  flows, faster with three or more flowing blocks, and stops where it is when the water does.
+  The Goggles show what it is doing, the flowing water it finds, what it makes and the grid's EU.
+  It holds 1000 EU. Crafted from four spruce slabs, four sticks, a copper block and redstone.
+- **Air Tank, Air Charger and Heavy Boots** (Transport Networks). The Air Tank is a chestplate
+  (iron armour) holding 15 minutes of air: worn with your head under water, it breathes for you
+  and counts down a second of air per second, and keeps its air out of the water or while you have
+  Water Breathing or Conduit Power. Its tooltip shows the air left, and while you dive the action
+  bar shows a gauge (turn it off with *Air tank gauge* in Your Preferences). The **Air Charger**, a
+  gas network block, fills the tank of whoever stands on it from the network's **oxygen**: a minute
+  of air for 600 mL each second, all or nothing, so an empty tank is full in 15 seconds. **Heavy
+  Boots** (iron armour) make you sink in water and walk on the bottom at your usual pace; on land
+  they are ordinary boots. Neither item runs any command while worn: the tank breathes through a
+  hidden attribute, the boots through their own *Heavy* enchantment. Crafted from an iron
+  chestplate, iron, copper and two glass bottles; iron boots, iron and two heavy weighted pressure
+  plates; iron, copper, a heavy weighted pressure plate, a glass bottle and redstone.
+- **Oxygen in survival** (Transport Networks). A Gas Pump beside an upward bubble column (soul
+  sand under water) draws oxygen from it, 500 mL a second, without using it up.
+
+- **Elevator** (Interactive Machines). Stand on it and jump to go up, or sneak to go down, to the
+  next Elevator straight above or below in the same column, at most *range* blocks away (2 to 64,
+  default 16; admins up to 384). You land on top of it facing the same way, if the two blocks above
+  it are free. Pressing sneak rides once, holding it does not keep going down. Teleport sound and
+  particles follow each player's settings. Crafted from eight white wool around an ender pearl,
+  two per craft. Only players who jump or sneak are checked, so idle Elevators cost nothing.
+- **Trash Can** (Interactive Machines). A barrel that destroys whatever enters it: items put in by
+  hand, pushed in by a hopper, an Item Pipe or an Item Mover, and dropped items landing on top of
+  it. Smoke and a hiss follow each player's particle and sound settings. Crafted from six iron
+  ingots, a cactus and a barrel. An empty can costs two quick tests a tick.
+- **Fan** (Interactive Machines). While powered, pushes dropped items, mobs and players along its
+  face through the *range* blocks in front of it (1 to 16, default 8; admins up to 64), at a speed
+  set by *strength* (1 to 5, default 2, one block a second per step; admins up to 10). It faces
+  the way it was placed, up and down included. Players move in small steps every tick, so the
+  push looks smooth; they are never pushed into a wall, an upward Fan
+  lifts them with Levitation, and spectators and flying creative players are left alone. A wind
+  puff follows each player's particle setting. Crafted from four cobblestone, three feathers, a
+  dropper and redstone. An unpowered Fan only checks its own block every other tick.
+- **Analog Emitter and Analog Receiver** (Wireless Redstone). Carry a signal strength, 0 to 15,
+  over a channel instead of only on or off. The Analog Emitter sends the strongest signal reaching
+  it; every Analog Receiver on the same channel outputs the strongest level the emitters on it
+  send, on the **target blocks** around it (dust or a comparator next to a target picks it up),
+  and iron blocks around it turn into redstone blocks while the level is above 0. A Wireless
+  Emitter on the channel counts as 15, and a Wireless Receiver turns on while an Analog Emitter on
+  its channel sends 1 or more. The level only travels when an emitter's signal changes, so a still
+  channel costs nothing; receivers check their channel again every two seconds, which picks up a
+  channel changed with the Data Handler. The Goggles show the channel and the level. Crafted like
+  the Wireless Emitter and Receiver, with a comparator (end stone) or a target (amethyst blocks) in
+  the middle.
+- **Pager** (Wireless Redstone). Carried anywhere in the inventory or in the offhand, it alerts you
+  when its channel turns on: a title, a chat line and a chime (the chime follows your *Machine
+  sounds* setting). A channel turns on when its first emitter starts sending, a Wireless Emitter
+  being powered or an Analog Emitter going above 0. Right-click shows the channel; Sneak+right-click
+  sets it with an Input Form book, like the Redstone Remote (letters, digits, spaces and
+  `_ . + - : / #`). Nothing runs while channels stay as they are: players are only checked on the
+  tick a channel turns on. Crafted from an amethyst shard, two iron ingots, a note block and
+  redstone.
+- **Jetpack fuel gauge.** While an Iron jetpack is in the air, the action bar shows the fuel left
+  in the burning piece as a coloured bar and a percentage, and the coal you carry
+  (`Fuel ▮▮▮▮▮▮▯▯▯▯ 63% · 12 coal`). Green while there is coal to come, then yellow, red under a
+  quarter of the last piece. It waits for the jetpack's other action bar messages instead of
+  overwriting them. Turn it off for yourself with *Jetpack fuel gauge* in Your Preferences.
+- **Anchor Terminal** (Ender Links). A block to choose where to go: stand on it and sneak, and a
+  menu opens in chat with its *favourites* (up to 8 anchor names, set with the Data Handler) as
+  **[Go]** buttons, and **[Type a destination]**, which asks for any anchor name in the Input Form
+  book. You arrive on top of that Teleport Anchor, in any chunk or dimension, with the usual
+  arrival grace. The anchors of the world are not listed: a destination is a favourite or a name
+  you know. Using it is free. Looks like a lodestone; crafted from five obsidian, a glass pane, two
+  ender pearls and a compass. The Goggles show how many favourites it has.
+- **Anchor Tablet** (Ender Links). An item that sends you to a Teleport Anchor from anywhere:
+  right-click it for the same menu as the Anchor Terminal. The tablet keeps its own favourites (up
+  to 8) and its last trip: **[Save]** keeps the last trip, **[Forget]** removes a favourite. A trip
+  costs 1 ender pearl (none in creative) and the tablet then recharges for 10 seconds; both are
+  server settings on the Ender Links page (`ender_tablet_pearls`, 0 to 16, and
+  `ender_tablet_cooldown`, 0 to 600 seconds). Hard to craft on purpose: an Overstar in the middle,
+  a recovery compass below, three gold ingots and four eyes of ender; the recipe unlocks when you
+  hold an Overstar.
+- **Disenchanter** (Enchant Crafting). Moves an item's enchantments onto a book. Throw an
+  enchanted item and a book on top: it makes an enchanted book holding the item's enchantments and
+  leaves the item without them, its repair cost reset as at a grindstone. Curses stay on the item.
+  The price is 1000 mL of liquid experience (10 points) per enchantment moved, taken all at once
+  from a fluid network touching the block (a pipe, tank or drain on a side or below); the server
+  setting `disenchanter_xp` (0 to 100000, 0 = free, no network needed) changes it. Looks like
+  crying obsidian; crafted from two books, a grindstone, a diamond and five obsidian. The Goggles
+  show what it is doing and the last price. It only works while something lies on it.
+- **Book Upgrader** (Enchant Crafting). Raises one enchantment of a book by one level. Throw an
+  enchanted book on top: it raises the enchantment named by its *enchantment* property (set with
+  the Data Handler, `sharpness` or `minecraft:sharpness`), or with none set the first one in
+  alphabetical order that is below the highest level. Going from level L to L+1 costs 500 × 2^L mL
+  of liquid experience (Sharpness V to VI: 16000 mL), all at once, from a fluid network touching
+  the block. The highest level it makes is 10. Server settings `book_upgrader_base` (1 to 1000)
+  and `book_upgrader_max` (1 to 20). The raised book stays on the block: throw it again for the
+  next level. Looks like a lapis block; crafted from four lapis blocks, four books and an
+  enchanting table. The Goggles show the chosen enchantment, what it is doing and the last price.
+- **Book Printer** (Enchant Crafting). Copies enchanted books. Throw an enchanted book on top: it
+  is used up, and with a 2% chance a **Schematic** of it comes out (otherwise the book is simply
+  gone, a gamble like the enchanting table). Right-click the printer with a Schematic to set it
+  as the target (one is taken from your hand; the one it held comes back to you), then throw plain
+  books on top: twice a second, one book becomes a copy of the enchanted book, for 1000 mL of
+  liquid experience per enchantment level of the copy (Sharpness V: 5000 mL), all at once, from a
+  fluid network touching the block. The Schematic stays in the printer, so one lucky draw prints as
+  many copies as you have books and experience; a plain Wrench click takes it back out, and
+  breaking the printer drops it. Server settings `book_printer_chance` (0 to 100%) and
+  `book_printer_xp` (0 to 100000 mL; 0 prints for free). The Schematic lists its enchantments in
+  its lore and cannot be crafted; an anvil or grindstone does not take it for a book. Looks like a
+  fletching table; crafted from two ink sacs, a piston, two books, a lectern and three obsidian.
+  The Goggles show what it is doing, the last price and the stored Schematic's enchantments; the
+  Data Handler shows whether a Schematic is set. New advancement *Lucky Draw* for the first
+  Schematic.
+- **Goggles Lens** (Tools). An expensive upgrade that gives any helmet the Goggles' view: hold it,
+  wear a helmet (leather, copper, chainmail, iron, gold, diamond, netherite or a turtle shell) and
+  right-click; the lens is used up and the helmet keeps its material, enchantments, trims and
+  durability. A lensed helmet shows every block's label exactly like the Goggles, worn or held.
+  `/trigger ra.goggles` opens a small menu to switch the lens off and on (the helmet's lore says
+  which) or remove it and get the lens back. Crafted from four tinted glass, two diamonds, two gold
+  ingots and a netherite ingot; unlocked by picking up a netherite ingot. Any helmet takes it,
+  whatever lore, name or data it already has; only the Goggles and an already-lensed helmet are
+  refused.
+- **Displays** (new module, `ra_displays`). Blocks that show something with display entities;
+  `/function ra_displays:items/give_all` gives them, and the settings have a Displays page to turn
+  each one off and to set the scale new ones get. Every display can be configured after it is
+  placed, with the Data Handler (and the Wrench for the choices): **facing** (the face it is
+  drawn on or floats from, all six), **direction** (how it is turned on that face), **colour**,
+  **position** (`offset`, x, y and z each -16 to 16 sixteenths of a block), **scale** (25 % to 400 %,
+  admins up to 1600 %) and **rotation** (a tilt of the text or the hologram's item, yaw -180 to 180
+  and pitch -90 to 90 degrees, about its own middle; the hologram's name stays upright). Text displays have a **background** colour,
+  none by default, so only the block's face shows behind the text; pick one of the sixteen chat
+  colours and an opacity, or type `#AARRGGBB`. A Data Handler change shows within a second.
+- **Gauge Bar** (Displays). A bar on its front face, filled to the redstone level feeding it, 0 to
+  15, from any side; a repeater or comparator pointing in fills it. It faces the way it was placed,
+  up and down included. It is drawn as text, like the Text Screen: fifteen segments, one per
+  level, lit in the fill colour and the rest in the track colour, crisp at any scale. *direction*
+  is which way it fills (from the left, the right, the bottom or the top); *color* and
+  *track_color* take a colour name or `#RRGGBB`; *background* is a colour behind it, none by default. The
+  Goggles show the level. The bar is only redrawn when the level changes. Crafted from three
+  glass panes, two redstone, a comparator and three polished blackstone.
+- **Item Hologram** (Displays). A barrel that shows the first item inside it floating above its
+  lid, turning slowly, with the item's name (its anvil name, or its usual name in your language)
+  over it. Fill it by hand or with a hopper or an Item Pipe; the hologram follows within a second.
+  It can float out of any face; *direction* is where a still item faces, *color* the name's colour
+  (a colour name or `#RRGGBB`). Shift+right-click with the Wrench turns the spin or the name off,
+  or changes the rest. Nothing runs per tick: one
+  check a second, and the turning is done by the client. Crafted from a glass block, two amethyst
+  shards, an ender pearl and a barrel.
+- **Text Screen** (Displays). A barrel whose lid shows one line of
+  glowing amber text, nixie-tube style, picked by the redstone level feeding it from any side:
+  15 shows the name of the item in the first slot, 14 the second, down to 1 for the fifteenth
+  (an anvil name, or the usual name in your language); 0 or an empty slot leaves the tube dark,
+  and an empty barrel shows the level itself in large digits. The text is only rewritten when what
+  it shows changes; new contents show within a second. It faces the way it was placed, up and
+  down included (the lid follows a new facing, contents kept); *direction* turns the text a
+  quarter at a time and *color* takes a colour name or `#RRGGBB`. Breaking it spills the barrel. Crafted from three glass panes, two glowstone
+  dust, a comparator and a barrel.
+- **Automation**, a new module (`ra_automation`, [Automation](automation.md)): blocks and items
+  that run vanilla machines for you. Its settings page lists its blocks, and it has its own branch
+  in the advancement tab.
+- **Pattern** (Automation). An item that remembers a 3×3 crafting grid: sneak + right-click a
+  crafter to copy which item is in each of its nine slots (counts and item details are ignored),
+  sneak + right-click air to clear it. The lore shows the grid as item names. Patterns stack to
+  64 (identical ones together, blank with blank); recording or clearing from a stack rewrites one
+  Pattern and hands it to you, the rest of the stack stays as it was. Three paper and a redstone
+  dust make three; unlocked by picking up a crafter.
+- **Crafter Controller** (Automation). A target block placed against a vanilla crafter. Right-click
+  it with a recorded Pattern to load it (it takes one from a stack; the Pattern it held comes back
+  to you). Twice a second it compares the crafter's slots with the Pattern; when every slot holds
+  the Pattern's item and every slot the Pattern leaves empty is empty, it gives the crafter a
+  short redstone pulse and the crafter crafts once. It then waits until the crafter's contents
+  change, so a crafter that cannot craft is not fired again and again. **A container on the
+  Controller's far side, opposite the crafter, is pulled from**: every half second the Controller
+  moves one ingredient from it into each empty slot the Pattern names, then fires once every slot
+  is right, craft after craft. Only vanilla containers count (never another crafter or a block of
+  this pack, such as a Trash Can or a Magic Crate). Only plain items are taken (never a renamed, enchanted or damaged one), an
+  item leaves the container only once it is in the crafter, a slot holding something else is left
+  alone, and a slot disabled in the crafter is never filled (the Goggles say so when the Pattern
+  needs one). With no container there it only compares and fires. Shift+RMB with the Wrench
+  switches it off and on, a plain wrench click takes the Pattern back out, and breaking it drops
+  the Pattern. The Goggles show its state and how many times it has fired. Crafted from five iron
+  ingots, a redstone dust, two target blocks and a crafter.
+- **Uncrafter** (Automation). Takes items back apart into the ingredients of their vanilla crafting
+  recipe: a container on top is its input, a container underneath receives the ingredients, and a
+  wire or Battery beside it pays 2000 EU per item (`eu_per_uncraft`, admin only, default on the
+  Automation settings page). It knows storage blocks, iron, gold and diamond tools and armour,
+  hoppers, observers, dispensers, repeaters, comparators, anvils, beacons, enchanting tables and
+  more, and waits for a full recipe's worth (three iron doors, sixteen iron bars). It never gives
+  back more than went in: only exact recipes, none a stonecutter makes more cheaply, none taking
+  "any planks", none returning buckets or bottles. Damaged, enchanted, renamed or unknown items
+  are passed to the output unchanged. Nothing moves until the output has room and the grid holds
+  the whole price; a redstone signal stops it. One item a second. It is a grindstone standing on
+  the floor, turned the way it was placed. Crafted from six iron ingots, a grindstone, a crafter
+  and a redstone block.
+- **Experience Absorber** (Automation). Collects the experience orbs within its *radius* (default
+  4, up to 8, admins up to 16; Shift+RMB with the Wrench cycles 2, 4, 6, 8) once a second and sends
+  them into a pipe, tank or drain touching it as liquid experience, at 100 mL a point like the Fluid
+  Drain, so it pays for the Disenchanter, Book Upgrader and Book Printer. It takes only what the
+  network has room for, leaving the rest of a large orb on the ground, and leaves a network holding
+  another fluid alone. The Goggles show its state, radius and the points absorbed. Crafted from six
+  copper ingots, a lapis block, a hopper and a bucket.
+- **Security**, a new module (`ra_security`, [Security](security.md)): blocks that open only for the right code. Its
+  settings page lists its blocks and the Keypad's defaults, and it has its own branch in the
+  advancement tab.
+- **Keypad** (Security). A crafter, placed facing you like a vanilla one, whose slots are the keypad: open it and click its
+  empty slots to switch them off and on, and the set of slots switched off is the code. A
+  combination is entered once the grid has stopped changing for 1 second, and every slot is then
+  switched back on. The first combination entered becomes the code ("code set"); after that the
+  right one gives a redstone pulse (`pulse`, 20 ticks by default) and a chime, and a wrong one
+  buzzes; after three wrong tries in a row it refuses every try for 30 seconds (`max_attempts` and
+  `lockout`, which only admins can change). The pulse is the pack's standard output: the iron
+  blocks around it (the 3x3x3, corners included) become redstone blocks for the pulse, then iron
+  again, even when the pulse is cut by breaking it, an unload or a /reload. Its owner
+  (whoever placed it) or an admin clears the code with a plain Wrench click, and the next combination entered sets a new one. It
+  never crafts: items put into it are thrown back out at once. The code is never shown: the Goggles say only whether one is set, who
+  owns the Keypad and its state, and the Data Handler and Clipboard never see it.
+  Shift+RMB with the Wrench steps the pulse through 2, 10, 20 and 40 ticks. Crafted from three
+  stone buttons, four iron ingots, a crafter and a redstone dust.
+- **Railworks**, a new module (`ra_railworks`, `/function ra_railworks:items/give_all`), with its
+  page in the docs, an advancement branch and a settings page.
+- **Route Rail** (Railworks). A block placed under a rail junction. When a minecart on one of the
+  junction's lines comes within 2 blocks, the rail on top is set to *on_match* if the cart carries
+  the *route*, or to *on_miss* if it does not; carts on a parallel track beside it are ignored, and
+  a slope on top is never changed. What the route is read from is *source*: the cart's name (a name tag),
+  an entity tag on the cart (from a Tag Adder, say), an item in a chest or hopper minecart (its id,
+  like `minecraft:coal`), or *rider* (anyone riding it). The shapes are rail shapes
+  (`north_south`, `east_west`, `north_east`, `north_west`, `south_east`, `south_west`) or `none` to
+  leave the rail alone. Shift+RMB with the Wrench steps through the source, the match shape and
+  the other shape; the Data Handler edits all four, and the Goggles also show the last cart's
+  result. The route is compared with the cart's data, never put into a command, so any text is
+  safe. Carts are looked for every other tick, with two small boxes per Route Rail. Crafted from six copper ingots, a rail, a name tag and a redstone dust.
+- **Audio**, a new module (`ra_audio`, [Audio](audio.md)): blocks that make sound on a redstone
+  signal. Sounds come from a fixed list in the pack, picked by number, and are heard by every
+  player within the block's *range* (1 to 64 blocks; admins up to 256) at its *volume* (10 to
+  100 %).
+  - **Alarm**: a redstone lamp that, while powered, plays its sound every *interval* ticks (20 by
+    default, 10 to 1200). Seven sounds: bell, siren, klaxon, beeper, alarm clock, toll and buzzer.
+    Shift+RMB with the Wrench steps to the next sound and plays it. Crafted from five iron ingots,
+    a note block, two redstone and a redstone lamp.
+  - **Doorbell**: a polished blackstone button that plays its chime once per press, and gives the
+    usual button pulse. Six chimes: ding-dong, Westminster, chime, bell, buzzer and knock. It is
+    placed on the face of the block you click, like a button, and refused (item given back) where
+    there is no full face to hold it. Crafted from a polished blackstone
+    button, a gold ingot and a note block, stacked.
+  - **Jukebox Controller**: a waxed copper bulb that runs the jukebox next to it. A pulse of
+    strength 15 (a button or lever against it) plays or stops, 8 to 14 plays the next disc, 1 to 7
+    stops. A chest, barrel or shulker box of music discs next to it is the playlist, played in slot
+    order, each disc going back to its slot; with *continuous* on (the default, Shift+RMB with the
+    Wrench) the next disc plays when one ends. Without a chest it stops and restarts the disc in
+    the jukebox. The bulb is lit while it plays. Crafted from five copper ingots, a comparator, two
+    redstone and a hopper.
+  - Idle, each costs one block test per tick: the vanilla block (a lit lamp, a pressed button, a
+    powered bulb) carries the input. The Audio settings page holds the Alarm's interval and range
+    and the Doorbell's range for new blocks.
+
+- **Farming**, a new module (`ra_farming`, [Farming](farming.md)): blocks that tend crops and animals. Its
+  settings page lists its blocks and the Sprinkler's radius, and it has its own branch in the
+  advancement tab.
+- **Sprinkler** (Farming). Waters the farmland around it from a fluid network: put a pipe, tank or
+  drain against any face and fill it with water, and every 5 seconds all the farmland in its
+  square (`radius` blocks each way, 1 to 8, default 4; admins up to 16) becomes fully moist, for 4
+  mL of water per block of the square. With liquid experience in the network, the crops in the
+  square also grow about 4 times as fast on moist farmland: once a second it grows crops at
+  random spots, three times as often as the game itself would, for 10 mL (a tenth of a point) per
+  stage. The experience is taken first and what did not grow anything goes back to the network. It
+  reaches crops level with it, one block above or one below, so it works in place of a farm's
+  water hole or standing among the crops. Wheat, carrots, potatoes, beetroots, nether wart, melon
+  and pumpkin stems, torchflower crops and sweet berry bushes. Redstone locks it. The Goggles show
+  its state, the watering, the experience boost and the radius. Crafted from a copper grate, four
+  copper ingots and a bucket.
+- **Capture Net** and **Master Capture Net** (Farming). Both look like a bundle.
+  Right-click a mob to catch it into the net
+  and carry it; right-click a block to let it out there. The mob keeps its name, health, equipment,
+  owner and, for a villager, its trades; the net shows what it holds. The Capture Net catches farm
+  animals and other small peaceful mobs; the Master Capture Net catches any mob but the wither,
+  the ender dragon and players. Neither catches a mob with a rider or a pet tamed by another
+  player. A mob on a lead is let off it first: the lead drops
+  where it is tied, and a mob it was holding on a lead drops that lead too, one lead per leash, as
+  when a leash breaks; no leash goes into the net. Only the types on the net's list come back out.
+  The mob is only removed once the net holds it, and the net is only emptied once the mob is back.
+  The Capture Net is crafted from three string and two sticks. The Master Capture Net is not
+  crafted: throw an **empty** Capture Net onto an enchanting table, and 35% of the time it comes
+  back as an empty Master Capture Net; otherwise the net is used up. A net holding a mob is left
+  alone on the table.
+- **Item Pipe Splitter** (Automation). Looks like an Item Pipe (a dispenser, its opening facing
+  up) but is neither a container nor a pipe: nothing can be put into it, redstone never makes it
+  shoot anything, and Item Pipes do not push into it. Takes the items out of the container above
+  it (a chest, a hopper pointing into it, the end of an Item Pipe) and shares them out between the containers on
+  its four sides and under it, one item at a time and each side in turn. Each side has a share
+  (0 to 16, default 1) in the Data Handler: a side gets that many items in a row before the next
+  side's turn, so 2 and 1 splits two thirds and one third, and 0 switches a side off. A side with
+  no container or no room is skipped (and a shulker box is never sent into a shulker box); items
+  only leave the input once there is room, so none are dropped. 8 items a second by default (Shift+RMB with the Wrench: 2, 4, 8, 16; admins up to 64),
+  on the automation clock; redstone stops it. The Goggles show its state, speed and the items
+  moved. Crafted from a hopper, a comparator and four iron ingots.
+- **Conveyor** (Automation). A smooth stone slab with an arrow that carries dropped items, mobs
+  and players the way it points, at *speed* blocks a second (1 to 5, default 2; admins up to 10;
+  Shift+RMB with the Wrench). Players ride in small steps every tick, so the ride is smooth, and
+  are never pushed into a wall; Conveyors in a line hand things on straight away. An idle
+  Conveyor costs one test every 5 ticks. Crafted from three dried kelp over two iron ingots and a
+  redstone (makes six).
+
+- **Direction, facing and colour settings in the Data Handler.** A setting that is one of the six
+  faces (a display's *facing*) has a button per face on its row. A yaw and pitch (a display's
+  *rotation*) opens with **[Edit]**: **[Type]** an angle, nudge it by 1, 15 or 45 degrees, or
+  **[Reset]**; a compass facing also has **[North] [East] [South] [West]**. A colour (a display's
+  *background*) shows a swatch and opens with **[Edit]**: the sixteen chat colours, an opacity
+  (100, 75, 50, 25 %), **[None]**, **[Reset]**, or **[Type]** a name, `#RRGGBB`, `#AARRGGBB` or a
+  number. What is typed is read as a number, never pasted into a command. The Clipboard pastes
+  these settings only when the Data Handler would have taken them.
+- **Overstar** (Ender Links). A nether star thrown onto an enchanting table is used up, one star a
+  second, and 1 time in 10 it comes back as an Overstar (epic, glinting, the nether star look).
+  Particles and a sound show each hit and miss, and the player who threw the stars is told how each
+  one went. Only plain nether stars are taken: a renamed star, or one with any custom data (an
+  Overstar, an RA item, another pack's item), is left alone. Its only use is the Anchor Tablet
+  recipe. Advancement: *Overstar* (Ender Links tab).
+- **Ender Links advancements**: a new Ender Links branch in the Redstone Additions tab, with
+  *Overstar* and *Anchor Tablet*.
+
+### Changed
+
+- **Less chat text: automatic notices are off by default.** A new setting in Your Preferences
+  (`/trigger ra.settings.open`), **Chat notices**, off unless you turn it on, now holds the lines
+  the pack used to send without being asked:
+  - the result of an enchanting-table sacrifice (the Overstar, the Master Capture Net);
+  - the Rail Builder's progress lines ("Building east", "Stopped: ...", "Back at the start.");
+  - "Ram Upgrade fitted", "Iron jetpack fitted", "Infinite jetpack
+    fitted", "... kit fitted" and "Goggles Lens fitted";
+  - "Pattern recorded.", "Pattern cleared.", "Pattern loaded into the Crafter Controller.",
+    "Schematic set" on the Book Printer, "Caught: ..." from the Capture Net, "Pulsed receivers on
+    channel ..." from the Remote, the Keypad's "Code accepted." and "Multiblock disassembled.";
+  - wrench readouts (`[Wrench] Conveyor speed: 3`, the Route Rail's settings and every
+    other one) and "Multiblock assembled!" for the players within 10 blocks of the one holding
+    the wrench.
+    The player who used the wrench always reads them.
+
+  Menus, readouts you open yourself (Goggles, Multimeter, Data Handler, Pager, wrench menus),
+  "Received ..." lines, load messages and the reason an action was refused always show.
+
+- **Recipes rebalanced.** Every recipe now asks for things you can get in survival at the point
+  in the game where the block is worth having, is laid out like a vanilla recipe, and uses
+  ingredients that match what the block does. No two recipes share a grid, with each other or
+  with vanilla. Items you already have are not touched; only new crafts cost the new price. The
+  [Recipe Atlas](recipe-atlas.md) shows every new grid. Notable changes:
+  - **Logic Gates** are all built like a repeater: a row of three stone under the part that does
+    the work. Delayer: three repeaters. Extender: repeaters and a slime ball. Shortener: repeaters
+    and shears. Randomizer: repeaters and a dropper. Edge Detector: repeaters and an observer.
+    UNI Gate: redstone torches and a repeater. Counter: a comparator over repeaters and a hopper.
+    Signal Calculator: comparators and quartz. Sequencer: repeaters and a comparator. The simple
+    gates no longer need quartz from the Nether.
+  - **Wireless Emitter, Receiver and the Analog pair** no longer need End stone or purpur: a
+    lightning rod as the antenna, amethyst shards (or comparators for the analog ones) and a row
+    of smooth stone slabs. The Emitter has a redstone torch in the middle, the Receiver a repeater.
+  - **Block Breaker, Block Placer, Breeder and Fan** are crafted like a dispenser, with the part
+    that does the job in the middle: an iron pickaxe, a piston, a hay bale, a breeze rod (the Fan
+    no longer uses feathers). Cobblestone, blackstone and cobbled deepslate all work.
+  - **Boxer** (piston and barrel) and **Unboxer** (sticky piston and barrel) in a cobblestone frame.
+  - **Item Pipe**: six iron ingots and a hopper make 8.
+  - **Infinite Lava Cauldron** needs magma blocks and blaze rods: endless lava is Nether-tier, like
+    a blaze farm.
+  - **Tag Adder** gains a redstone; the **Tag Remover** is a name tag and a water bucket.
+  - **Multiblock Bases**: Copper, Gold and Diamond now take eight ingots or diamonds around a
+    redstone, like the Iron Base, instead of eight blocks (the Diamond Base cost 72 diamonds).
+  - **Generator Casing** takes a netherite ingot instead of a scrap, so a Nether Generator no
+    longer pays for itself in ten minutes.
+  - **Book Upgrader** needs a nether star: raising books past their vanilla maximum is a
+    post-Wither upgrade.
+  - **Ender Item Vault** is built around an ender chest with purpur, like the other two vaults;
+    the **Teleport Anchor** takes ender eyes instead of pearls.
+  - **Iron Jetpack Kit**: four iron ingots, a blaze rod, a redstone block and two fire charges as
+    the exhaust. **Thruster Kit**: firework rockets and wind charges.
+  - **Solar Panel** is built around a daylight detector; the **Gas Valve** is the iron twin of the
+    Liquid Valve.
+  - **Prices**: the Disenchanter costs 3000 mL of experience per enchantment (was 1000), the Book
+    Printer 2500 mL per level (was 1000), and the Book Upgrader's base price is 1000 mL (was 500).
+    A server that already saved its own value in the settings keeps it.
+  - **Recipe book**: recipes unlock on an item they actually use (the Wrench on iron, the Data
+    Handler on a redstone torch, the Entity Detector on an observer, the Clock on a clock...). The
+    Big Torch and the Enchanted Coal Block now appear in the recipe book once you hold Enchanted
+    Coal or an Enchanted Coal Block. The Wrench and the Data Handler moved to the Equipment tab.
+  - The Creative EU Source and Creative Fluid Source stay creative only, with no recipe.
+
+- **The Liquid Drain is now the Fluid Drain, and also vents gases** (Transport Networks). Powered
+  by redstone on a gas network, it lets the gas out of its front with the gas's effect, renewed
+  at each action (once a second at the default rate): **Oxygen** bubbles up the water straight
+  above its front, like a magma block, and gives water breathing (10 seconds) to whoever is in
+  that column; the new **Toxic Gas** withers (3 seconds) everyone and every mob within 4 blocks. Steam and smoke are only vented, as before; liquids pour out as before. The Goggles say
+  `venting` for a gas. Other packs can give their own gases an effect in
+  `storage ra:wires gas_effects`. Only the name changed: drains already placed or in a chest keep
+  working, and its recipe is the same. Oxygen and Toxic Gas have no source in survival yet (the
+  Chemistry module will make them); the Creative Fluid Source now cycles through both.
+- **Anyone can change a Message Block's text.** It was locked to admins in v6.0.1 because rich
+  chat text can carry a clickable command. The text a player types is always shown exactly as
+  typed, quotes and braces included, so it can never become a command. Rich text (colours,
+  links) is something only an operator can write, with the Creative Data Handler or `/data`, and
+  the Clipboard no longer pastes it for players without server-settings access. The selector
+  still follows *Players may edit entity selectors and tags*.
+- **The Clipboard checks text settings like the Data Handler.** For players without
+  server-settings access, a copied text value that its block would refuse from the Data Handler
+  (a selector with a command after it, a tag with spaces) is left out of the paste; the rest of
+  the paste goes through.
+- **Admins go past range limits.** Players with server-settings access can set a range or radius
+  above the players' maximum, up to a higher ceiling that protects the server: Big Torch radius
+  up to 256 (players 100), Magic Crate radius up to 64 (players 20), Message Block range up to
+  1024 (players 128), in the Data Handler and on the server settings' placement defaults. The
+  block keeps the larger value whoever uses it later; only the ceiling is applied when it runs.
+  Other players can still lower it within their own range, and the Clipboard pastes a number only
+  within the range its holder could type.
+- **Admin-only settings are marked.** A setting only an admin may change shows a gold *(admin)*
+  after its name in the Data Handler, for everyone: admins see which changes are theirs alone,
+  other players see why the row is locked. A value above the players' maximum is marked the same
+  way, and the Wrench's cycle menu marks admin-only rows for admins. The Wrench now also offers an
+  admin-only setting to everyone when its server setting opens it to players, like the Data
+  Handler.
+- **Teleport Anchor names are unique, and anchors reach anywhere.** Every anchor is filed by name
+  in one destinations table, so a teleport looks the name up instead of searching the loaded
+  anchors: the destination may be in a chunk that is not loaded, or in another dimension. A name
+  belongs to one anchor: the Data Handler (and `/function ra_ender:tools/anchor/set_id`) refuses a
+  name another anchor has, and a new anchor is named `anchor`, `anchor_2`, … instead of `A`. Names
+  use letters, digits and `_ . + - : / #`, without spaces. An anchor that ends up with a taken
+  name some other way (a Clipboard paste) becomes `name_2`, and its owner, admins and players
+  nearby are told. The Goggles mark a target no anchor has with *(no such anchor)*. Operators can
+  drop the entry of an anchor removed without being broken with
+  `/function ra_ender:tools/anchor/forget {id:"…"}`. In an existing world, names and targets lose
+  the characters no longer allowed (`Main base` becomes `Mainbase`); where several anchors shared
+  a name (every anchor was `A` until now), the first one loaded keeps it and the others become
+  `A_2`, `A_3`, …, each announced in chat, and targets that named it lead to the one that kept it.
+- **Smoother Thruster.** The Thruster Kit's push now builds up over about half a second when you
+  start sprinting in the air and fades the same way when you stop, instead of arriving and
+  vanishing in one tick.
+
+- **The Breeder is part of Farming** (was Interactive Machines). It is listed, handed out
+  (`/function ra_farming:items/give_all`, the Farming Bundle), switched off and documented with the
+  Farming module now, and its advancement is in the Farming branch. Its recipe and ids are the
+  same, so Breeders already placed keep working.
+
+### Removed
+
+- **The Upgrade Platform.** The netherite-tier multiblock that gambled dropped materials into the
+  next tier (10% success, otherwise destroyed) is gone, with its recipes and its two example
+  advancements (*Upgrade Platform Base* and *Example Progression*). Everything it made is a
+  vanilla item with its normal source, so nothing becomes unobtainable. In an existing world,
+  assembled platforms are taken apart on the first load (one in a chunk that is not loaded comes
+  apart when the chunk loads); the Netherite Base and the smooth stone stay where they were, and
+  the base can be broken and picked up as before. The Netherite Base itself stays, as a tier with
+  no machine yet.
+- **The Teleport Anchor destination list** (v6.0.1): the Data Handler's **[Choose]** on each
+  strength and `/function ra_ender:tools/anchor/list`. Destinations are typed with **[Edit]**,
+  and anchor names are no longer listed anywhere to pick from.
+
+### Fixed
+
+- **Fan** pushed armor stands, including the armor-stand markers of custom blocks placed before
+  5.1.8, and any other entity the pack itself placed: it now leaves alone everything tagged `ra`
+  and every armor stand, like markers and displays. It also no longer pushes a player who is
+  riding something or gliding with an elytra, and a player a Conveyor already moved this tick.
+- **A Data Handler button in an old menu never changes another block.** A **[Toggle]**, a vec3
+  **[Edit]** or any other button clicked in a menu drawn for one block changed the block selected
+  since (with the Creative Data Handler, which shares the selection). Every button now checks
+  that its menu showed the selected block; otherwise nothing changes and the menu is shown again
+  for the block selected now.
+- **The bat a block's item spawns no longer shows while the block is placed.** It now spawns with
+  an infinite, hidden invisibility effect (no particles, no icon), as well as silent, frozen and
+  invulnerable as before. Every copy of a block's item carries it: `give`, recipes, the drop when
+  the block is broken, refunds and bundles. There is no migration: items made before 6.0.3 keep a
+  visible bat until they are used up, and do not stack with new copies of the same block.
+- **No shulker box into a shulker box.** `ra_lib:inventory/insert_or_drop` drops a shulker box
+  instead of putting it into a shulker box, and `can_accept_one` reports no room for it, as the
+  game itself refuses it. The Uncrafter leaves a shulker box in its input when the container below
+  is a shulker box, instead of passing it on.
+- **The Goggles Lens fits a helmet that has a description of its own.** A helmet with lore (or
+  another pack's data) was refused with "That helmet carries a description of its own". The lens
+  now fits any helmet, whatever its lore, name, enchantments, trim, damage, dye or other data. The
+  helmet keeps its own lore: the lens adds its lines above it, switching changes only those lines,
+  and removing the lens takes away only its own lines and data. Goggles and a helmet that already
+  has a lens are still refused.
+
+- **A Message Block's range reaches as far as it says.** A block without a selector sent to the
+  players within its `range`, but the range was rounded to 8, 16, 32 or 64 blocks, so a range of
+  10 reached 16 and a range of 128 stopped at 64. It now reaches the exact range.
+- **A poured potion shows its own colour when the pour empties the network.** A powered Liquid
+  Drain pours a potion out as a cloud in the potion's colour, but the colour was read after the
+  potion had been taken from the network, so the pour that emptied it could come out in the
+  default water-bottle blue. The colour is now read first.
+- **The Item Crate shows its box skin again.** Its head only named the skin's owner
+  (`profile:"BoxMan01234"`), which the game has to look up, and the crate showed a broken head
+  when it could not. The skin itself is now written into the crate. Crates made before keep the old
+  head until the Boxer next adds a stack to them, which gives them the skin.
+- **A Liquid Drain pouring water in the Nether makes it evaporate.** The check for dimensions
+  where water evaporates used the predicate key from before 26.3, so it never ran, and its sizzle
+  sound had a pitch the game refuses. Both are fixed.
+
+- **The Breeder's advancement unlocks.** It looked for the item's marker as a number rather
+  than the flag the item carries, so picking up a Breeder never granted it.
+
+### For contributors
+
+- **Cart tracker** (`ra/modules/railworks/carts/CartTracker.kt`). A minecart has no death event,
+  so a cart that carries something of ours has a marker that follows it every tick, linked by a
+  number in `ra.rw.id`. A tracker its cart did not stamp this tick (`ra.rw.seen`) looks for the
+  cart item the game dropped at the cart's last position (`Age:0s`, within a block, each item
+  claimed once, by kind): found, it drops the Ram Upgrade, or turns the vanilla hopper minecart item
+  into a Rail Builder; not found (`/kill`, creative, an unloaded
+  chunk), it removes itself and the cart makes a new one when it is back. Only carts tagged
+  `ra.rw.tracked` are looked at. `Ra.wrenchEntityHooks` lets a part handle a Wrench Shift+RMB on an
+  entity before the block ray (`ra:tools/wrench/entity_hooks`).
+- **Minecart speed upgrade design** (`planning/design/minecart-speed-upgrade.md`): what a data
+  pack can do about minecart speed in 26.3, the options with their costs, and how it relates to the
+  Speed Setter note (#97). Both were dropped: 26.3 caps every cart at 8 blocks a second.
+- **Property types `direction`, `facing` and `color`** (`ra/core/DirectionProps.kt`,
+  `ra/core/ColorProps.kt`), declared like `vec3`: `direction(name, default)`,
+  `facing(name, FacingSpec(...))` (yaw and pitch in degrees, `LOCAL` or `WORLD` frame), and
+  `color(name, ColorSpec(alpha, none, default, presetAlpha))` (one int, RGB or ARGB). Use time:
+  `readFacing` and `readColor` leave clamped integers in scores. The editors are
+  `tools/datahandler/props/DataHandlerDirection.kt`, `DataHandlerFacing.kt` and
+  `DataHandlerColor.kt` (`ColorParse.kt` turns typed text into a number one character at a time).
+  See [Tools and Registries](tools-and-registries.md#direction-facing-and-colour).
+- **Displays**: `facing` is now a `direction` property, `rotation` a `facing` and `background` a
+  `color` (the Gauge Bar's old `background:1b` flag reads as the colour 1, transparent: a Gauge
+  Bar placed by an earlier 6.0.3 build loses its dark plate on its next redraw, since text displays
+  have no backdrop by default). `defineForms(..., tilt = true)` and
+  `Form(pivot = ...)` give a part the tilt, about its centre; the quaternion comes from a sine table
+  written at load (`DisplayTilt.kt`, `storage ra:displays trig`).
+
+- **Goggles Lens** (`ra/tools/goggles/lens/GogglesLens.kt`). A switched-on lensed helmet carries
+  `{ra:{goggles:1b,lensed:1b}}`, so goggles/tick finds it with its existing
+  `custom_data~{ra:{goggles:1b}}` check and nothing per tick was added for detection; off is
+  `{ra:{lensed:1b}}`. Unlike a jetpack kit's switch, "off" is on the item, not a player tag, so the
+  Goggles check stays one predicate. The `ra.goggles` trigger is polled with one score selector
+  per tick and handed to lensed-helmet wearers once per Goggles redraw. Fitting merges the keys
+  with `set_custom_data` and inserts the lens lines at the top of the lore with `set_lore`; a
+  switch or a removal replaces only those top lines, and takes keys out of `custom_data.ra` by
+  copying it through `storage ra:temp lens` and back with `copy_custom_data`, in the same modifier
+  list as the lore change so the lines and keys cannot drift apart. The lens is used up only once
+  the helmet reads lensed, and given back only once it no longer does.
+- **Channel items share one prompt** (`ra/modules/wireless/tools/ChannelPrompt.kt`). The Redstone
+  Remote's Sneak+right-click book prompt is now a class with one instance per item (its own
+  pending, slot and request objectives), used by the Remote and the Pager; the Remote's functions
+  are generated unchanged. An optional text format refuses a channel the item could not use.
+- **A core sanitiser for player input** (`ra_lib:safe/clean`, `ra_lib:safe/number`,
+  `ra/lib/safe/SafeClean.kt`). `clean` turns a value into one that is safe to paste in a given
+  text format: free text loses its double quotes, backslashes and line breaks, so it can sit inside
+  `{text:"$(value)"}` without closing it; an id, name or tag loses the characters its format does
+  not accept; a selector or coordinates are kept only when valid. `number` says whether a value is
+  a number and hands it back as an int. The Data Handler's number test now lives there, and the
+  Goggles' Teleport Anchor and Fluid Vault lines pass their value through `clean` before pasting
+  it. See the developer guide, *safe: player input in commands*.
+- **Admin limits in one place** (`ra/core/Admin.kt`). `Admin.TAG` is the `ra.admin` tag every
+  admin check uses. A number declares `adminMax` next to `max` (generated as `admin_max`);
+  `raiseMaxForAdmin` lifts an edit-time bound for an admin, `overPlayerMax` tells a menu to mark
+  a value, and `readCappedProperty` reads a property at use time clamped only to `adminMax`. See
+  *Admin limits* in Tools and registries.
+- **The Teleport Anchor destinations table** (`storage ra:ender anchors`,
+  `ra/modules/ender/anchors/AnchorTable.kt`): one entry per anchor, keyed by its id,
+  `{id, x, y, z, dim, owner}`. `ra_ender:anchors/lookup` reads an entry from `lookup.id`, and
+  `ra_ender:anchors/send` teleports `@s` to it; neither searches entities. A text property can
+  declare `unique = "<storage>" to "<path>"` (format `ID` or `TAG`): the Data Handler then refuses a
+  value that is already a key of that compound. The Data Handler's list picker and the `choices`
+  declaration are gone with the destination list.
+- **Automation module** (`ra/modules/automation/`). A block that takes Patterns adds itself to
+  `Pattern.targets` (`TagRoute(markerTag, fn)`); right-clicking it with a Pattern runs `fn` as its
+  marker, the player tagged `ra.auto.pattern_user`. The Pattern's data is
+  `{ra:{pattern:{slots:[<nine item ids, "" for empty>]}}}` in crafter slot order; check an id with
+  `ra_lib:safe/check` (format ID) before pasting it, as the Crafter Controller does when a Pattern
+  is loaded. A Recipe Pattern made with an earlier 6.0.3 build (`recipe:1b` beside `slots`) is a
+  plain Pattern: nothing reads the flag. The Controller only runs while one with a valid Pattern is loaded (tag
+  `ra.auto.cc_armed`, a 10-tick schedule), and skips the slot comparison while the crafter's
+  `Items` are unchanged since its last look.
+- **Uncrafter table** (`ra/modules/automation/uncrafter/UncraftTable.kt`): a curated list of
+  vanilla recipes, written at load into `storage ra_automation:uncraft map` as
+  `{"<id>":{n:<made per craft>,out:[{id,count},...]}}`. The Uncrafter and the Experience Absorber
+  share one 20-tick schedule (`AutomationClock`, markers tagged `ra.auto.clocked`) started at
+  load, with no per-tick test, and neither is a network node: they reach into the network of a node beside
+  them, as the Boiler does.
+- **Fake Player not included** (`ra/modules/automation/fakeplayer/`). Its natural spawning uses
+  simplified biome lists and spawns single mobs, so it is not a good enough stand-in for a player.
+  The code stays in the source, switched off by `FakePlayer.ENABLED`: no recipe, item, bundle
+  entry, advancement, settings row or spawning. Only two things stay on for worlds built with an
+  earlier 6.0.3 build: its break check (a broken one drops its item and loses its marker) and the
+  sweep on the automation clock that lets the mobs it spawned despawn again.
+- **Dev worlds from earlier 6.0.3 builds**: an Uncrafter still on chiseled tuff bricks and an Item
+  Pipe Splitter still on chiseled tuff fail their break check on the next tick, so the item comes
+  back and the marker goes; the old vanilla block stays where it was. Place the item again.
+- **`ra_lib:skin/apply_facing {real, skin, id, facing}`**: a skin turned to a fixed facing over a
+  real block that has no `facing` of its own. The Item Pipe Splitter is cobblestone wearing a
+  dispenser facing up, repaired on the automation clock when its skin goes missing.
+- **Shared formulas are named providers** (`ra/core/Compute.kt`: `namedProvider`,
+  `defineProvider`). A formula used in more than one place is a 26.3 `context_int_provider` file
+  that `/compute` names by id: `ra_lib:transport/net/free` (the room on a network, used by pumps,
+  drains, boilers, bridges and the creative sources), `ra_wires:blocks/solar_panel/eu` (the solar
+  curve), `ra_wires:bridge/move` (bridge levelling), `ra_jetpacks:flight/smooth_x`/`smooth_z` and
+  `ramp_up`/`ramp_down` (Thruster smoothing and easing), `ra_wires:diving/air_minutes`/`air_seconds`
+  and `ra_wires:fluid/experience_ml`. Same values, same rounding. A Solar Panel now reads its
+  curve in one `compute block ~ ~ ~` instead of eleven `execute if block` lines a tick. The build
+  fails on a reference with no file. See *Arithmetic with `/compute`* in the developer guide.
+- **Sacrifice messages**: `sacrificeRecipe(..., won = "...", lost = "...")` (and
+  `storage ra:enchant won` / `lost` for addons) sends a message to the player who threw the item,
+  through `execute on origin`, on a hit and on a miss.
+
 ## v6.0.2 (2026-11-09) — Drains, lists and fixes
 
 ### Fixed

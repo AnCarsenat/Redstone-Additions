@@ -23,14 +23,23 @@ No permissions needed. Click a value to change it.
 |---|---|---|
 | Machine sounds | on | Sounds made by Redstone Additions blocks |
 | Machine particles | on | Particles made by Redstone Additions blocks |
+| Chat notices | off | Chat and action bar lines nobody asked for: a sacrifice's result, Rail Builder progress, "fitted" and Pattern confirmations, and wrench readouts from other players within 10 blocks |
 | Debug messages | off | Extra diagnostic messages in chat |
 | Show filter previews | on | The item an Item Pipe filters for, floating above its Goggles label |
+| Jetpack fuel gauge | on | The [fuel bar](jetpacks.md#fuel-gauge) on the action bar while you fly an Iron jetpack |
+| Air tank gauge | on | The [air bar](transport-networks.md#diving-air-tank-air-charger-heavy-boots) on the action bar while you dive with an Air Tank or stand on an Air Charger |
 
 These only change what **you** see and hear — with one exception. Goggles labels are shared:
 everyone near a block sees the same label. So *Show filter previews* decides whether **you** ask
 for the floating filter item, and a pipe draws it while any Goggles wearer within range of it has
 the setting on. With yours off you can still see a preview drawn for another wearer next to you.
 Hover a setting's name in the menu to read this there.
+
+*Chat notices* is off so chat stays quiet. With it off you still get every menu and readout you
+open, the line a wrench prints for the player holding it, and the reason an action was refused
+("That cart already has a Ram Upgrade"). Turn it on to also read the automatic lines: the result
+of an enchanting-table sacrifice, the Rail Builder's progress, confirmations such as "Ram Upgrade
+fitted" or "Pattern recorded.", and the wrench readouts of players within 10 blocks of you.
 
 ## Server settings
 
@@ -69,15 +78,22 @@ Every setting is also a command, so you can tab-complete your way through them:
 | --- | --- |
 | General | *Show the load message* (on): every line the pack prints in chat on load or `/reload` — the version, each module's "loaded!" line and the settings links. Warnings (some block types are disabled) are shown either way; chat prefix (`RA`); subcategory **Goggles** |
 | General › Goggles | Goggles range (16 blocks); Goggles redraw (20 ticks); *Filter previews* (on): draw the item an Item Pipe filters for above its readout. Off here means off for everyone; on lets each player choose with *Show filter previews* |
-| Logic Gates | default Clock interval (20), Delayer delay (20), Extender duration (20), Shortener pulse (2), Randomizer chance (50%) |
-| Interactive | default Magic Crate radius (8) and interval (20), Message Block range (16) |
-| Power & Fluids | default Generator EU/tick (60), Consumer EU draw (40), Industrial Light EU use (10), Liquid Drain rate (5000 mL per second) |
-| Ender Links | default Power Vault EU/tick (80), Fluid Vault transfer (200) |
+| Logic Gates | default Clock interval (20), Delayer delay (20), Extender duration (20), Shortener pulse (2), Randomizer chance (50%), Counter target (10), Edge Detector pulse (2), Sequencer steps (4) |
+| Interactive | default Magic Crate radius (8) and interval (20), Message Block range (16), Elevator range (16), Fan range (8) and strength (2) |
+| Power & Fluids | default Generator EU/tick (60), Consumer EU draw (40), Industrial Light EU use (10), Fluid Drain rate (5000 mL per second), Usage Meter units per pulse (1000), Tesla Coil damage per zap (6) and EU per mob zapped (200), Water Wheel EU per tick per flowing block (5) |
+| Ender Links | default Power Vault EU/tick (80), Fluid Vault transfer (200); Anchor Tablet ender pearls per trip (1, 0 to 16) and recharge (10 seconds, 0 to 600) |
 | Infinite Generators | default interval of each generator (100) |
+| Displays | default scale of a Gauge Bar, Item Hologram and Text Screen (100%, 25 to 1600) |
 | Jetpacks | Thruster Kit thrust (80%), speed cap (350), dead zone (25) |
-| Enchant Crafting | enchant crafting on/off |
+| Enchant Crafting | enchant crafting on/off; Disenchanter experience per enchantment moved (3000 mL, 0 to 100000); Book Upgrader base price (1000 mL, 1 to 1000, doubled per level) and highest level (10, 1 to 20); Book Printer chance of a Schematic (2%, 0 to 100) and experience per level printed (2500 mL, 0 to 100000) |
 | Sensors | *Players may edit entity selectors and tags* (off): when on, players without server-settings access may change the selectors and tags of the Entity Detector, Tag Adder, Tag Remover and Message Block |
+| Audio | default Alarm interval (20 ticks, 10 to 1200) and range (32), Doorbell range (24) |
 | every module | which of its blocks may be placed |
+
+A few block settings are kept for players with server-settings access, whatever the pages say:
+the Block Breaker, Block Placer, generator and Magic Crate cooldowns and the Fluid Drain rate.
+A Message Block's **text** is no longer one of them (since v6.0.3): it is shown exactly as typed,
+so any player may change it. Its selector follows *Players may edit entity selectors and tags*.
 
 ### Defaults for new blocks
 
@@ -110,6 +126,10 @@ operator gives you the tag automatically.
 /function ra_settings:admin/revoke     take it away
 ```
 
+Admins (players with this tag) also go past the players' maximum of a range or radius, in the
+Data Handler and on the placement-default rows here (Magic Crate radius up to 64, Message Block
+range up to 1024, Elevator range up to 384, Fan range up to 64 and strength up to 10); see [Tools](tools.md).
+
 !!! warning "Access stays until you revoke it"
     The tag survives reloads and is **not** removed when someone loses operator status. Use
     `/function ra_settings:admin/revoke` (or `/tag <player> remove ra.admin`).
@@ -122,7 +142,7 @@ player preferences and scoreboards stay. Placed blocks stay too, as ordinary van
 
 | Option | Removes | Keeps |
 |---|---|---|
-| **Everything** | every RA marker (so every machine, network and multiblock), block skins, pipe and wire displays, goggles readouts, RA-tagged dropped items, abandoned input books; releases the chunks powered Chunk Loaders kept loaded; clears transport networks, the Teleport Anchor name list and pending Data Handler edits | settings, disabled blocks, player preferences, clipboards |
+| **Everything** | every RA marker (so every machine, network and multiblock), block skins, pipe and wire displays, goggles readouts, RA-tagged dropped items, abandoned input books; releases the chunks powered Chunk Loaders kept loaded; clears transport networks, the Teleport Anchor destinations table and pending Data Handler edits | settings, disabled blocks, player preferences, clipboards |
 | **Orphaned displays** | skins, pipe and wire displays and floating block items with no block under them | working blocks, goggles readouts |
 | **Goggles readouts** | the floating goggles text and icons (redrawn for anyone still wearing goggles) | everything else |
 | **Dropped RA items** | RA-tagged items on the ground (including a dropped Clock, UNI Gate or Message Block nobody picked up) and Data Handler or settings input books lying around | everything else |

@@ -1,9 +1,6 @@
 package ra.modules.wires.blocks.creative_fluid
 
-import io.github.ayfri.kore.features.predicates.providers.sub
 import ra.core.computeScore
-import ra.core.provider
-import ra.core.scoreOf
 import io.github.ayfri.kore.arguments.types.literals.literal
 import io.github.ayfri.kore.arguments.types.literals.self
 import io.github.ayfri.kore.commands.data
@@ -26,6 +23,8 @@ import ra.core.executeRun
 import ra.core.raw
 import ra.core.ref
 import ra.modules.wires.fluid.Fluid
+import ra.core.block.PlacementBat
+import ra.core.block.WRENCH_READOUT
 
 object CreativeFluid : PackPart {
 	val cycleMedium = ref(Ns.WIRES, "blocks/creative_fluid/cycle_medium")
@@ -39,7 +38,8 @@ object CreativeFluid : PackPart {
 		pack.define(CreativeFluid.cycleMedium) {
 			// Wrench: step the medium round. Context: as the marker, at the block.
 			//
-			// Only the media a network can actually be built around. Potions and experience
+			// Only the media a network can actually be built around (oxygen and toxic gas have no
+			// survival source yet, so this is how they are tested). Potions and experience
 			// are media too, but they arrive by other routes and a creative source for them
 			// would be a different kind of block.
 
@@ -51,6 +51,8 @@ object CreativeFluid : PackPart {
 			raw("""execute if data entity @s data.properties{medium:"powder_snow"} run scoreboard players set #cr.m ra.wires.tmp 3""")
 			raw("""execute if data entity @s data.properties{medium:"milk"} run scoreboard players set #cr.m ra.wires.tmp 4""")
 			raw("""execute if data entity @s data.properties{medium:"steam"} run scoreboard players set #cr.m ra.wires.tmp 5""")
+			raw("""execute if data entity @s data.properties{medium:"smoke"} run scoreboard players set #cr.m ra.wires.tmp 6""")
+			raw("""execute if data entity @s data.properties{medium:"oxygen"} run scoreboard players set #cr.m ra.wires.tmp 7""")
 
 			raw("execute if score #cr.m ra.wires.tmp matches 0 run data modify entity @s data.properties.medium set value \"water\"")
 			raw("execute if score #cr.m ra.wires.tmp matches 1 run data modify entity @s data.properties.medium set value \"lava\"")
@@ -58,15 +60,17 @@ object CreativeFluid : PackPart {
 			raw("execute if score #cr.m ra.wires.tmp matches 3 run data modify entity @s data.properties.medium set value \"milk\"")
 			raw("execute if score #cr.m ra.wires.tmp matches 4 run data modify entity @s data.properties.medium set value \"steam\"")
 			raw("execute if score #cr.m ra.wires.tmp matches 5 run data modify entity @s data.properties.medium set value \"smoke\"")
+			raw("execute if score #cr.m ra.wires.tmp matches 6 run data modify entity @s data.properties.medium set value \"oxygen\"")
+			raw("execute if score #cr.m ra.wires.tmp matches 7 run data modify entity @s data.properties.medium set value \"toxic_gas\"")
 
-			raw("""tellraw @a[distance=..10] [{text:"[Wrench] ",color:"gold"},{text:"Creative source: ",color:"gray"},{nbt:"data.properties.medium",entity:"@s",color:"aqua"}]""")
+			raw("""tellraw $WRENCH_READOUT [{text:"[Wrench] ",color:"gold"},{text:"Creative source: ",color:"gray"},{nbt:"data.properties.medium",entity:"@s",color:"aqua"}]""")
 			raw("playsound minecraft:block.lever.click block ${soundListenersSel(10)} ~ ~ ~ 0.6 1.4")
 		}
 
 		pack.define(CreativeFluid.give) {
 			// Give the Creative Fluid Source. Creative only -- there is no recipe for it, on purpose.
 
-			raw("""give @s bat_spawn_egg[item_model="minecraft:beacon",item_name="Creative Fluid Source",rarity=epic,lore=[{text:"Creative: makes something from nothing",color:"light_purple",italic:false}],custom_data={ra:{creative_fluid:1b}},entity_data={id:"minecraft:bat",Tags:["ra","ra.spawned","ra.place.creative_fluid"],Silent:1b,NoAI:1b,Invulnerable:1b}]""")
+			raw("""give @s bat_spawn_egg[item_model="minecraft:beacon",item_name="Creative Fluid Source",rarity=epic,lore=[{text:"Creative: makes something from nothing",color:"light_purple",italic:false}],custom_data={ra:{creative_fluid:1b}},entity_data={id:"minecraft:bat",Tags:["ra","ra.spawned","ra.place.creative_fluid"],${PlacementBat.FLAGS}}]""")
 			raw("""tellraw @s [{text:"[RA] ",color:"gold"},{text:"Received ",color:"gray"},{text:"Creative Fluid Source",color:"light_purple"}]""")
 		}
 
@@ -133,7 +137,7 @@ object CreativeFluid : PackPart {
 			raw("execute if score #cr.known ra.wires.tmp matches ..0 run return run data modify entity @s data.status.state set value \"Unknown medium\"")
 
 			function(RaLib.Transport.Net.read)
-			computeScore("#cr.fill", "ra.wires.tmp", provider { sub(scoreOf("#net_capacity", "ra.tr.tmp"), scoreOf("#net_amount", "ra.tr.tmp")) })
+			computeScore("#cr.fill", "ra.wires.tmp", RaLib.Transport.Net.free)
 
 			raw("execute if score #cr.fill ra.wires.tmp matches ..0 run return run data modify entity @s data.status.state set value \"Network full\"")
 

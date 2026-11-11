@@ -32,10 +32,13 @@ import ra.core.Tag
 import ra.core.block.blockTick
 import ra.core.block.BreakTest
 import ra.core.block.forEachMarker
+import ra.core.Obj
+import ra.core.executeRun
 
 /**
  * Wireless Emitter: transmits its redstone input to every receiver on the same `channel` string.
- * It only tags itself `ra.transmitting`; receivers look for transmitting emitters on their channel.
+ * It tags itself `ra.transmitting` while powered; receivers look for transmitting emitters on their
+ * channel. Turning on or off also tells the channel ([Channel.changed]), where it counts as 15.
  *
  * No on/off switch: its redstone input and its channel are the controls. Until v6.0.1 it also had an
  * `enabled` property the wrench toggled, invisible on the block, which left an emitter silently
@@ -50,6 +53,8 @@ object Emitter {
 	const val TRANSMITTING = "ra.transmitting"
 
 	private val process = block.fn("process")
+	private val rise = block.fn("rise")
+	private val fall = block.fn("fall")
 
 	fun Ra.registerEmitter() {
 		block(block)
@@ -61,11 +66,12 @@ object Emitter {
 		}
 		pack.blockRegisterMessage(block)
 		pack.blockGive(block)
-		pack.shapedRecipe(block.ns, block.id, item.recipeResult(), Unlock(Items.END_STONE_BRICKS)) {
-			pattern("GEG", "ERE", "GEG")
-			key("G", Items.GOLD_INGOT)
-			key("E", Items.END_STONE_BRICKS)
-			key("R", Items.REDSTONE)
+		pack.shapedRecipe(block.ns, block.id, item.recipeResult(), Unlock(Items.AMETHYST_SHARD)) {
+			pattern(" L ", "ARA", "SSS")
+			key("L", Items.LIGHTNING_ROD)
+			key("A", Items.AMETHYST_SHARD)
+			key("R", Items.REDSTONE_TORCH)
+			key("S", Items.SMOOTH_STONE_SLAB)
 		}
 
 		// As bat, at bat position.
@@ -86,9 +92,23 @@ object Emitter {
 			// Detect redstone state from all supported sources.
 			function(RaLib.Redstone.detectSwitch)
 
-			// If powered, tag as transmitting.
-			raw("execute if entity @s[tag=${Tag.POWERED}] run tag @s add $TRANSMITTING")
-			raw("execute unless entity @s[tag=${Tag.POWERED}] run tag @s remove $TRANSMITTING")
+			// Tagged transmitting while powered. The two edges also tell the channel, for the
+			// Analog Receivers on it (it counts as 15 there).
+			executeRun("if entity @s[tag=${Tag.POWERED},tag=!$TRANSMITTING]", rise)
+			executeRun("if entity @s[tag=!${Tag.POWERED},tag=$TRANSMITTING]", fall)
+		}
+
+		pack.define(rise) {
+			raw("tag @s add $TRANSMITTING")
+			raw("scoreboard players set #wl.old ${Obj.TEMP} 0")
+			raw("scoreboard players set #wl.new ${Obj.TEMP} 15")
+			function(Channel.changed)
+		}
+		pack.define(fall) {
+			raw("tag @s remove $TRANSMITTING")
+			raw("scoreboard players set #wl.old ${Obj.TEMP} 15")
+			raw("scoreboard players set #wl.new ${Obj.TEMP} 0")
+			function(Channel.changed)
 		}
 
 		pack.define(block.goggles) {
@@ -96,7 +116,11 @@ object Emitter {
 			propLine("channel", "Channel: ", "aqua", y = 0.8)
 		}
 
-		val onBreak = pack.blockOnBreak(block, drop = { dropItem(item) }, sound = STONE_BREAK_SOUND, cloud = true)
+		val onBreak = pack.blockOnBreak(
+			block, drop = { dropItem(item) }, sound = STONE_BREAK_SOUND, cloud = true,
+			// A broken emitter that was on stops sending.
+			cleanup = { executeRun("if entity @s[tag=$TRANSMITTING]", fall) },
+		)
 		// Break detection: the emitter is end stone bricks, anything else means it is gone.
 		pack.blockTick(block, onBreak, BreakTest.NotBlock(Blocks.END_STONE_BRICKS)) { forEachMarker(block, process) }
 	}

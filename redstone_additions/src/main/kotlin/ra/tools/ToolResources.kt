@@ -27,6 +27,7 @@ import ra.core.block.shapedRecipe
 import ra.tools.clipboard.Clipboard
 import ra.tools.creativedatahandler.CreativeDataHandler
 import ra.tools.datahandler.DataHandler
+import ra.tools.goggles.lens.GogglesLens
 import ra.tools.inputdatahandler.InputDataHandler
 import ra.tools.multimeter.Multimeter
 import ra.tools.wrench.Wrench
@@ -36,11 +37,11 @@ import ra.tools.wrench.Wrench
  * advancements that turn a right-click into a function call, and the two player predicates.
  */
 internal fun DataPack.registerToolResources() {
-	toolRecipe(ToolItems.wrench, Items.BLAZE_ROD, RecipeCategory.REDSTONE, Items.BLAZE_ROD) {
+	toolRecipe(ToolItems.wrench, Items.BLAZE_ROD, RecipeCategory.EQUIPMENT, Items.IRON_INGOT) {
 		pattern("I I", " S ", " S ")
 		key("S", Items.STICK); key("I", Items.IRON_INGOT)
 	}
-	toolRecipe(ToolItems.dataHandler, Items.BLAZE_ROD, RecipeCategory.REDSTONE, Items.BLAZE_ROD) {
+	toolRecipe(ToolItems.dataHandler, Items.BLAZE_ROD, RecipeCategory.EQUIPMENT, Items.REDSTONE_TORCH) {
 		pattern("T T", "ISI", "ISI")
 		key("T", Items.REDSTONE_TORCH); key("I", Items.IRON_INGOT); key("S", Items.STICK)
 	}
@@ -48,6 +49,12 @@ internal fun DataPack.registerToolResources() {
 	toolRecipe(ToolItems.goggles, Items.LEATHER_HELMET, RecipeCategory.EQUIPMENT, Items.COPPER_INGOT, trigger = "has_copper") {
 		pattern(" H ", "PGP")
 		key("H", Items.COPPER_INGOT); key("P", Items.GLASS_PANE); key("G", Items.GOLD_INGOT)
+	}
+	// The lens is the expensive way to the same view: the Goggles' gold and glass, made precious.
+	// A recipe ingredient cannot ask for the Goggles item itself (it would take any leather helmet).
+	toolRecipe(ToolItems.gogglesLens, Items.FIREWORK_STAR, RecipeCategory.EQUIPMENT, Items.NETHERITE_INGOT) {
+		pattern("TDT", "GNG", "TDT")
+		key("T", Items.TINTED_GLASS); key("D", Items.DIAMOND); key("G", Items.GOLD_INGOT); key("N", Items.NETHERITE_INGOT)
 	}
 	toolRecipe(ToolItems.clipboard, Items.PAPER, RecipeCategory.EQUIPMENT, Items.PAPER) {
 		pattern("III", "PPP", "IPI")
@@ -60,6 +67,7 @@ internal fun DataPack.registerToolResources() {
 
 	useAdvancement(ToolItems.clipboard, Items.PAPER, Clipboard.onUse)
 	useAdvancement(ToolItems.creativeDataHandler, Items.BLAZE_ROD, CreativeDataHandler.onUse)
+	useAdvancement(ToolItems.gogglesLens, Items.FIREWORK_STAR, GogglesLens.onUse)
 	useAdvancement(ToolItems.dataHandler, Items.BLAZE_ROD, DataHandler.onUse)
 	useAdvancement(ToolItems.inputDataHandler, Items.BLAZE_ROD, InputDataHandler.onUse)
 	useAdvancement(ToolItems.multimeter, Items.CLOCK, Multimeter.onUse)

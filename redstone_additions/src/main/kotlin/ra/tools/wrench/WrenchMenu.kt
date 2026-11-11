@@ -8,7 +8,9 @@ import io.github.ayfri.kore.commands.scoreboard.scoreboard
 import io.github.ayfri.kore.commands.tag
 import net.benwoodworth.knbt.NbtByte
 import ra.api.Tools
+import ra.core.Admin
 import ra.core.Obj
+import ra.tools.datahandler.props.DataHandlerEntries
 import ra.core.Ra
 import ra.core.Storage
 import ra.core.Tag
@@ -20,6 +22,9 @@ import ra.core.macroCall
 import ra.core.raw
 import ra.tools.RAY_TARGET
 import ra.tools.tool
+import ra.core.block.WRENCH_READOUT
+import ra.core.block.WRENCH_HEAR_TAG
+import ra.tools.wrench.Wrench.tagReadoutHearers
 
 /**
  * Shift+RMB: the cycle menu.
@@ -27,8 +32,9 @@ import ra.tools.tool
  * Nothing block-specific lives here. A block declares what it can cycle (`ra.wrenchCycle`, built
  * into `storage ra:wrench cyclables` by [WrenchRegistry]), properties the player may not change are
  * dropped using the block type's property schema the Data Handler reads (`storage ra:dh types`):
- * read-only ones always, admin-only and hidden ones unless the player holds `ra.admin`. What is
- * left decides the presentation:
+ * read-only ones always, admin-only and hidden ones unless the player holds `ra.admin`. An
+ * admin-only one an admin keeps is marked " (admin)" on its row. What is left decides the
+ * presentation:
  *
  *   0 entries   say it does not cycle
  *   1 entry     do it, no menu -- a menu with one button is a worse button
@@ -63,11 +69,11 @@ object WrenchMenu {
 		// its tags names its kind, so placement writes the kind down.
 		pack.define(cycleBlock) {
 			data(Storage.TEMP) { modify("wrench_found", NbtByte(1)) }
-			raw("""execute unless data entity @s data.type run return run tellraw @a[distance=..10] [{text:"[Wrench] ",color:"gold"},{text:"This block predates wrench menus — break and replace it.",color:"gray"}]""")
+			raw("""execute unless data entity @s data.type run return run tellraw $WRENCH_READOUT [{text:"[Wrench] ",color:"gold"},{text:"This block predates wrench menus — break and replace it.",color:"gray"}]""")
 			function(loadForBlock)
 			scoreboard.players.set(literal("#wr.n"), Obj.TEMP, 0)
 			raw("execute if data storage ra:wrench list run execute store result score #wr.n ${Obj.TEMP} run data get storage ra:wrench list")
-			raw("""execute if score #wr.n ${Obj.TEMP} matches 0 run return run tellraw @a[distance=..10] [{text:"[Wrench] ",color:"gold"},{text:"This block doesn't support cycling.",color:"gray"}]""")
+			raw("""execute if score #wr.n ${Obj.TEMP} matches 0 run return run tellraw $WRENCH_READOUT [{text:"[Wrench] ",color:"gold"},{text:"This block doesn't support cycling.",color:"gray"}]""")
 			executeReturnRun("if score #wr.n ${Obj.TEMP} matches 1", runEntry, "{i:0}")
 			function(openMenu)
 		}
@@ -131,8 +137,15 @@ object WrenchMenu {
 			raw("\$execute if data storage ra:wrench fs.dynamic run data modify storage ra:wrench fs set from entity @s data.property_types.\$(prop)")
 			raw("execute store result score #wr.ro ${Obj.TEMP} run data get storage ra:wrench fs.readonly")
 			raw("execute if score #wr.ro ${Obj.TEMP} matches 1 run return 0")
-			raw("execute if entity @a[tag=ra.wrench_user,tag=ra.admin,limit=1] run return run data modify storage ra:wrench keep append from storage ra:wrench fq")
+			// Admin-only, unless its server setting lets every player change it (the Data Handler's
+			// rule). Kept for an admin, marked " (admin)" on the row (ra.core.Admin).
 			raw("execute store result score #wr.ao ${Obj.TEMP} run data get storage ra:wrench fs.admin_only")
+			raw("scoreboard players set #wr.wv ${Obj.TEMP} 0")
+			raw("execute if score #wr.ao ${Obj.TEMP} matches 1 if data storage ra:wrench fs.admin_setting store result score #wr.wv ${Obj.TEMP} run function ${DataHandlerEntries.waived.asId()} with storage ra:wrench fs")
+			raw("execute if score #wr.wv ${Obj.TEMP} matches 1 run scoreboard players set #wr.ao ${Obj.TEMP} 0")
+			raw("data modify storage ra:wrench fq.mark set value \"\"")
+			raw("execute if score #wr.ao ${Obj.TEMP} matches 1 run data modify storage ra:wrench fq.mark set value \"${Admin.MARK}\"")
+			raw("execute if entity @a[tag=ra.wrench_user,tag=${Admin.TAG},limit=1] run return run data modify storage ra:wrench keep append from storage ra:wrench fq")
 			raw("execute if score #wr.ao ${Obj.TEMP} matches 1 run return 0")
 			raw("scoreboard players set #wr.vis ${Obj.TEMP} 1")
 			raw("execute if data storage ra:wrench fs.visible store result score #wr.vis ${Obj.TEMP} run data get storage ra:wrench fs.visible")
@@ -173,11 +186,13 @@ object WrenchMenu {
 		// number carried by the button is the entry's index, so the handler only has to look the
 		// same list up again rather than keep any state of its own.
 		pack.define(menuRow) {
-			raw("""${'$'}tellraw @a[tag=ra.wrench_user,limit=1] [{text:"  $(label): ",color:"white"},{text:"[",color:"dark_gray"},{nbt:"data.properties.$(prop)",entity:"@e[tag=ra.wrench.sel,limit=1]",color:"aqua"},{text:"]",color:"dark_gray"},{text:"  "},{text:"[ CYCLE ]",color:"yellow",bold:true,hover_event:{action:"show_text",value:"Step this setting to its next value"},click_event:{action:"run_command",command:"/trigger ra.wrench set $(i)"}}]""")
+			raw("""${'$'}tellraw @a[tag=ra.wrench_user,limit=1] [{text:"  $(label)",color:"white"},{text:"$(mark)",color:"${Admin.MARK_COLOR}",hover_event:{action:"show_text",value:"${Admin.ONLY_REASON}"}},{text:": ",color:"white"},{text:"[",color:"dark_gray"},{nbt:"data.properties.$(prop)",entity:"@e[tag=ra.wrench.sel,limit=1]",color:"aqua"},{text:"]",color:"dark_gray"},{text:"  "},{text:"[ CYCLE ]",color:"yellow",bold:true,hover_event:{action:"show_text",value:"Step this setting to its next value"},click_event:{action:"run_command",command:"/trigger ra.wrench set $(i)"}}]""")
 		}
 		pack.define(menuRowNext) {
 			raw("execute unless data storage ra:wrench list[0] run return 0")
 			raw("data modify storage ra:wrench row set from storage ra:wrench list[0]")
+			// A block without a schema skips the filter, so its rows carry no mark.
+			raw("execute unless data storage ra:wrench row.mark run data modify storage ra:wrench row.mark set value \"\"")
 			// The button carries index+1. A trigger score of 0 is indistinguishable from "nobody
 			// clicked anything", and row 0 is a real row -- so every action id is shifted by one and
 			// menu_action shifts it back.
@@ -204,8 +219,10 @@ object WrenchMenu {
 				raw("execute store result storage ra:wrench at.$axis int 1 run scoreboard players get @s ra.wr.$axis")
 			raw("execute store result storage ra:wrench at.i int 1 run scoreboard players get #wr.act ${Obj.TEMP}")
 			tag(self()) { add("ra.wrench_user") }
+			tagReadoutHearers()
 			callWith(menuAt, "storage ra:wrench at")
 			tag(self()) { remove("ra.wrench_user") }
+			raw("tag @a remove $WRENCH_HEAR_TAG")
 		}
 
 		// {x,y,z,i}: find the remembered block and cycle entry i on it.

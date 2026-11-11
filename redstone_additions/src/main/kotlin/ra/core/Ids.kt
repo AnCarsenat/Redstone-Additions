@@ -64,6 +64,16 @@ object Obj {
 	 * preview is drawn when any goggles wearer in range has it on. See ra.tools.goggles.GogglesTool.
 	 */
 	const val USER_FILTER_PREVIEW = "ra.u.fprev"
+	/** Player wants the jetpack fuel gauge on the actionbar while flying. See ra.modules.jetpacks.flight.Gauge. */
+	const val USER_JETPACK_GAUGE = "ra.u.jpfuel"
+	/** Player wants the Air Tank's air gauge on the actionbar under water. See ra.modules.wires.diving.AirTank. */
+	const val USER_AIR_GAUGE = "ra.u.airg"
+	/**
+	 * Player wants chat notices: the automatic lines the pack sends without being asked (a
+	 * sacrifice's result, a Rail Builder's progress, "fitted" confirmations, other players' wrench
+	 * readouts). Off by default. Filter: `scores={ra.u.msg=1..}`; see ra.core.block.noticeReceiversSel.
+	 */
+	const val USER_NOTICES = "ra.u.msg"
 }
 
 /** Entity tags shared across modules. Per-block tags are built by [ra.core.block.CustomBlock]. */

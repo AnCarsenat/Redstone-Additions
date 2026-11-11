@@ -1,6 +1,6 @@
 # Recipe Atlas
 
-Every recipe in the pack, in one place: 69 of them.
+Every recipe in the pack, in one place: 116 of them.
 
 !!! tip "Finding one"
     Use the search box with the item's name — every recipe below is indexed by
@@ -14,22 +14,40 @@ what the pack actually contains rather than what someone remembered to add.
 
 | Item | Module | Station |
 | ---- | ------ | ------- |
+| [Air Charger](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
+| [Air Tank](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
+| [Alarm](#audio) | [Audio](audio.md) | Crafting table |
+| [Analog Emitter](#wireless-redstone) | [Wireless Redstone](wireless-redstone.md) | Crafting table |
+| [Analog Receiver](#wireless-redstone) | [Wireless Redstone](wireless-redstone.md) | Crafting table |
+| [Anchor Tablet](#ender-links) | [Ender Links](ender-links.md) | Crafting table |
+| [Anchor Terminal](#ender-links) | [Ender Links](ender-links.md) | Crafting table |
 | [Battery](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
 | [Big Torch](#interactive-machines) | [Interactive Machines](interactive-machines.md) | Crafting table |
 | [Block Breaker](#interactive-machines) | [Interactive Machines](interactive-machines.md) | Crafting table |
+| [Block Detector](#sensors) | [Sensors](sensors.md) | Crafting table |
 | [Block Placer](#interactive-machines) | [Interactive Machines](interactive-machines.md) | Crafting table |
 | [Boiler](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
+| [Book Printer](#enchant-crafting) | [Enchant Crafting](enchant-crafting.md) | Crafting table |
+| [Book Upgrader](#enchant-crafting) | [Enchant Crafting](enchant-crafting.md) | Crafting table |
 | [Boxer](#storage) | [Storage](storage.md) | Crafting table |
-| [Breeder](#interactive-machines) | [Interactive Machines](interactive-machines.md) | Crafting table |
+| [Breeder](#farming) | [Farming](farming.md) | Crafting table |
+| [Capture Net](#farming) | [Farming](farming.md) | Crafting table |
 | [Chunk Loader](#chunk-loader) | [Chunk Loader](chunk-loader.md) | Crafting table |
 | [Clipboard](#tools) | [Tools](tools.md) | Crafting table |
 | [Clock](#logic-gates) | [Logic Gates](logic-gates.md) | Crafting table |
+| [Conveyor](#automation) | [Automation](automation.md) | Crafting table |
 | [Copper Multiblock Base](#multiblocks) | [Multiblocks](multiblocks.md) | Crafting table |
 | [Copper Pipe](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
+| [Counter](#logic-gates) | [Logic Gates](logic-gates.md) | Crafting table |
+| [Crafter Controller](#automation) | [Automation](automation.md) | Crafting table |
 | [Data Handler](#tools) | [Tools](tools.md) | Crafting table |
 | [Delayer](#logic-gates) | [Logic Gates](logic-gates.md) | Crafting table |
 | [Diamond Multiblock Base](#multiblocks) | [Multiblocks](multiblocks.md) | Crafting table |
+| [Disenchanter](#enchant-crafting) | [Enchant Crafting](enchant-crafting.md) | Crafting table |
+| [Doorbell](#audio) | [Audio](audio.md) | Crafting table |
+| [Edge Detector](#logic-gates) | [Logic Gates](logic-gates.md) | Crafting table |
 | [Electric Furnace](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
+| [Elevator](#interactive-machines) | [Interactive Machines](interactive-machines.md) | Crafting table |
 | [Enchanted Coal](#not-crafted-won-on-an-enchanting-table) | [Interactive Machines](interactive-machines.md) | Enchanting table |
 | [Enchanted Coal Block](#interactive-machines) | [Interactive Machines](interactive-machines.md) | Crafting table |
 | [Ender Fluid Vault](#ender-links) | [Ender Links](ender-links.md) | Crafting table |
@@ -40,13 +58,20 @@ what the pack actually contains rather than what someone remembered to add.
 | [EU Consumer](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
 | [EU Generator](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
 | [EU Switch](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
+| [Experience Absorber](#automation) | [Automation](automation.md) | Crafting table |
 | [Extender](#logic-gates) | [Logic Gates](logic-gates.md) | Crafting table |
+| [Fan](#interactive-machines) | [Interactive Machines](interactive-machines.md) | Crafting table |
+| [Fluid Drain](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
 | [Gas Pump](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
 | [Gas Tank](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
 | [Gas Valve](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
+| [Gauge Bar](#displays) | [Displays](displays.md) | Crafting table |
 | [Generator Casing](#infinite-generators) | [Infinite Generators](infinite-generators.md) | Crafting table |
 | [Goggles](#tools) | [Tools](tools.md) | Crafting table |
+| [Goggles Lens](#tools) | [Tools](tools.md) | Crafting table |
 | [Gold Multiblock Base](#multiblocks) | [Multiblocks](multiblocks.md) | Crafting table |
+| [Heavy Boots](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
+| [Held Item Detector](#sensors) | [Sensors](sensors.md) | Crafting table |
 | [Industrial Light](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
 | [Infinite Iron Jetpack Kit](#not-crafted-won-on-an-enchanting-table) | [Jetpacks](jetpacks.md) | Enchanting table |
 | [Infinite Lava Cauldron](#interactive-machines) | [Interactive Machines](interactive-machines.md) | Crafting table |
@@ -54,15 +79,20 @@ what the pack actually contains rather than what someone remembered to add.
 | [Infinite Water Cauldron](#interactive-machines) | [Interactive Machines](interactive-machines.md) | Crafting table |
 | [Iron Jetpack Kit](#jetpacks) | [Jetpacks](jetpacks.md) | Crafting table |
 | [Iron Multiblock Base](#multiblocks) | [Multiblocks](multiblocks.md) | Crafting table |
+| [Item Hologram](#displays) | [Displays](displays.md) | Crafting table |
 | [Item Mover](#interactive-machines) | [Interactive Machines](interactive-machines.md) | Crafting table |
 | [Item Pipe](#interactive-machines) | [Interactive Machines](interactive-machines.md) | Crafting table |
+| [Item Pipe Splitter](#automation) | [Automation](automation.md) | Crafting table |
+| [Jukebox Controller](#audio) | [Audio](audio.md) | Crafting table |
+| [Keypad](#security) | [Security](security.md) | Crafting table |
 | [Lift Kit](#jetpacks) | [Jetpacks](jetpacks.md) | Crafting table |
-| [Liquid Drain](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
+| [Light Sensor](#sensors) | [Sensors](sensors.md) | Crafting table |
 | [Liquid Filter](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
 | [Liquid Pump](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
 | [Liquid Tank](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
 | [Liquid Valve](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
 | [Magic Crate](#interactive-machines) | [Interactive Machines](interactive-machines.md) | Crafting table |
+| [Master Capture Net](#not-crafted-won-on-an-enchanting-table) | [Farming](farming.md) | Enchanting table |
 | [Message Block](#interactive-machines) | [Interactive Machines](interactive-machines.md) | Crafting table |
 | [Mineral Core](#not-crafted-won-on-an-enchanting-table) | [Infinite Generators](infinite-generators.md) | Enchanting table |
 | [Mineral Generator](#infinite-generators) | [Infinite Generators](infinite-generators.md) | Crafting table, shapeless |
@@ -70,24 +100,66 @@ what the pack actually contains rather than what someone remembered to add.
 | [Nether Core](#not-crafted-won-on-an-enchanting-table) | [Infinite Generators](infinite-generators.md) | Enchanting table |
 | [Nether Generator](#infinite-generators) | [Infinite Generators](infinite-generators.md) | Crafting table, shapeless |
 | [Netherite Multiblock Base](#multiblocks) | [Multiblocks](multiblocks.md) | Crafting table |
+| [Network Gauge](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
+| [Overstar](#not-crafted-won-on-an-enchanting-table) | [Ender Links](ender-links.md) | Enchanting table |
+| [Pager](#wireless-redstone) | [Wireless Redstone](wireless-redstone.md) | Crafting table |
+| [Pattern](#automation) | [Automation](automation.md) | Crafting table |
+| [Player Detector](#sensors) | [Sensors](sensors.md) | Crafting table |
 | [Poppy Core](#not-crafted-won-on-an-enchanting-table) | [Infinite Generators](infinite-generators.md) | Enchanting table |
 | [Poppy Generator](#infinite-generators) | [Infinite Generators](infinite-generators.md) | Crafting table, shapeless |
+| [Rail Builder](#railworks) | [Railworks](railworks.md) | Crafting table |
+| [Ram Upgrade](#railworks) | [Railworks](railworks.md) | Crafting table |
 | [Randomizer](#logic-gates) | [Logic Gates](logic-gates.md) | Crafting table |
 | [Redstone Remote](#wireless-redstone) | [Wireless Redstone](wireless-redstone.md) | Crafting table |
+| [Route Rail](#railworks) | [Railworks](railworks.md) | Crafting table |
 | [Scorch Kit](#jetpacks) | [Jetpacks](jetpacks.md) | Crafting table |
+| [Sequencer](#logic-gates) | [Logic Gates](logic-gates.md) | Crafting table |
 | [Shortener](#logic-gates) | [Logic Gates](logic-gates.md) | Crafting table |
+| [Signal Calculator](#logic-gates) | [Logic Gates](logic-gates.md) | Crafting table |
 | [Solar Panel](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
 | [Spitter](#interactive-machines) | [Interactive Machines](interactive-machines.md) | Crafting table |
+| [Spout](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
+| [Sprinkler](#farming) | [Farming](farming.md) | Crafting table |
 | [Tag Adder](#sensors) | [Sensors](sensors.md) | Crafting table |
 | [Tag Remover](#sensors) | [Sensors](sensors.md) | Crafting table |
 | [Teleport Anchor](#ender-links) | [Ender Links](ender-links.md) | Crafting table |
+| [Tesla Coil](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
+| [Text Screen](#displays) | [Displays](displays.md) | Crafting table |
 | [Thruster Kit](#jetpacks) | [Jetpacks](jetpacks.md) | Crafting table |
+| [Trash Can](#interactive-machines) | [Interactive Machines](interactive-machines.md) | Crafting table |
 | [Unboxer](#storage) | [Storage](storage.md) | Crafting table |
+| [Uncrafter](#automation) | [Automation](automation.md) | Crafting table |
 | [UNI Gate](#logic-gates) | [Logic Gates](logic-gates.md) | Crafting table |
+| [Usage Meter](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
+| [Water Wheel](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
+| [Weather Sensor](#sensors) | [Sensors](sensors.md) | Crafting table |
 | [Wire](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
 | [Wireless Emitter](#wireless-redstone) | [Wireless Redstone](wireless-redstone.md) | Crafting table |
 | [Wireless Receiver](#wireless-redstone) | [Wireless Redstone](wireless-redstone.md) | Crafting table |
 | [Wrench](#tools) | [Tools](tools.md) | Crafting table |
+
+## Audio
+
+Module page: [Audio](audio.md) — give everything: `/function ra_audio:items/give_all`
+
+| Item | Recipe | Station | Namespace id |
+| ---- | ------ | ------- | ------------ |
+| **Alarm** | ![Alarm recipe](images/recipes/ra_audio/alarm.png){ width="220" } | Crafting table | `ra_audio:alarm` |
+| **Doorbell** | ![Doorbell recipe](images/recipes/ra_audio/doorbell.png){ width="220" } | Crafting table | `ra_audio:doorbell` |
+| **Jukebox Controller** | ![Jukebox Controller recipe](images/recipes/ra_audio/jukebox_controller.png){ width="220" } | Crafting table | `ra_audio:jukebox_controller` |
+
+## Automation
+
+Module page: [Automation](automation.md) — give everything: `/function ra_automation:items/give_all`
+
+| Item | Recipe | Station | Namespace id |
+| ---- | ------ | ------- | ------------ |
+| **Conveyor** | ![Conveyor recipe](images/recipes/ra_automation/conveyor.png){ width="220" } | Crafting table | `ra_automation:conveyor` |
+| **Crafter Controller** | ![Crafter Controller recipe](images/recipes/ra_automation/crafter_controller.png){ width="220" } | Crafting table | `ra_automation:crafter_controller` |
+| **Experience Absorber** | ![Experience Absorber recipe](images/recipes/ra_automation/experience_absorber.png){ width="220" } | Crafting table | `ra_automation:experience_absorber` |
+| **Item Pipe Splitter** | ![Item Pipe Splitter recipe](images/recipes/ra_automation/item_pipe_splitter.png){ width="220" } | Crafting table | `ra_automation:item_pipe_splitter` |
+| **Pattern** | ![Pattern recipe](images/recipes/ra_automation/pattern.png){ width="220" } | Crafting table | `ra_automation:pattern` |
+| **Uncrafter** | ![Uncrafter recipe](images/recipes/ra_automation/uncrafter.png){ width="220" } | Crafting table | `ra_automation:uncrafter` |
 
 ## Chunk Loader
 
@@ -97,16 +169,48 @@ Module page: [Chunk Loader](chunk-loader.md) — give everything: `/function ra_
 | ---- | ------ | ------- | ------------ |
 | **Chunk Loader** | ![Chunk Loader recipe](images/recipes/ra_chunk_loader/chunk_loader.png){ width="220" } | Crafting table | `ra_chunk_loader:chunk_loader` |
 
+## Displays
+
+Module page: [Displays](displays.md) — give everything: `/function ra_displays:items/give_all`
+
+| Item | Recipe | Station | Namespace id |
+| ---- | ------ | ------- | ------------ |
+| **Gauge Bar** | ![Gauge Bar recipe](images/recipes/ra_displays/gauge_bar.png){ width="220" } | Crafting table | `ra_displays:gauge_bar` |
+| **Item Hologram** | ![Item Hologram recipe](images/recipes/ra_displays/item_hologram.png){ width="220" } | Crafting table | `ra_displays:item_hologram` |
+| **Text Screen** | ![Text Screen recipe](images/recipes/ra_displays/text_screen.png){ width="220" } | Crafting table | `ra_displays:text_screen` |
+
+## Enchant Crafting
+
+Module page: [Enchant Crafting](enchant-crafting.md) — give everything: `/function ra_enchanting:items/give_all`
+
+| Item | Recipe | Station | Namespace id |
+| ---- | ------ | ------- | ------------ |
+| **Book Printer** | ![Book Printer recipe](images/recipes/ra_enchanting/book_printer.png){ width="220" } | Crafting table | `ra_enchanting:book_printer` |
+| **Book Upgrader** | ![Book Upgrader recipe](images/recipes/ra_enchanting/book_upgrader.png){ width="220" } | Crafting table | `ra_enchanting:book_upgrader` |
+| **Disenchanter** | ![Disenchanter recipe](images/recipes/ra_enchanting/disenchanter.png){ width="220" } | Crafting table | `ra_enchanting:disenchanter` |
+
 ## Ender Links
 
 Module page: [Ender Links](ender-links.md) — give everything: `/function ra_ender:items/give_all`
 
 | Item | Recipe | Station | Namespace id |
 | ---- | ------ | ------- | ------------ |
+| **Anchor Tablet** | ![Anchor Tablet recipe](images/recipes/ra_ender/anchor_tablet.png){ width="220" } | Crafting table | `ra_ender:anchor_tablet` |
+| **Anchor Terminal** | ![Anchor Terminal recipe](images/recipes/ra_ender/anchor_terminal.png){ width="220" } | Crafting table | `ra_ender:anchor_terminal` |
 | **Ender Fluid Vault** | ![Ender Fluid Vault recipe](images/recipes/ra_ender/ender_fluid_vault.png){ width="220" } | Crafting table | `ra_ender:ender_fluid_vault` |
 | **Ender Item Vault** | ![Ender Item Vault recipe](images/recipes/ra_ender/ender_item_vault.png){ width="220" } | Crafting table | `ra_ender:ender_item_vault` |
 | **Ender Power Vault** | ![Ender Power Vault recipe](images/recipes/ra_ender/ender_power_vault.png){ width="220" } | Crafting table | `ra_ender:ender_power_vault` |
 | **Teleport Anchor** | ![Teleport Anchor recipe](images/recipes/ra_ender/teleport_anchor.png){ width="220" } | Crafting table | `ra_ender:teleport_anchor` |
+
+## Farming
+
+Module page: [Farming](farming.md) — give everything: `/function ra_farming:items/give_all`
+
+| Item | Recipe | Station | Namespace id |
+| ---- | ------ | ------- | ------------ |
+| **Breeder** | ![Breeder recipe](images/recipes/ra_interactive/breeder.png){ width="220" } | Crafting table | `ra_interactive:breeder` |
+| **Capture Net** | ![Capture Net recipe](images/recipes/ra_farming/capture_net.png){ width="220" } | Crafting table | `ra_farming:capture_net` |
+| **Sprinkler** | ![Sprinkler recipe](images/recipes/ra_farming/sprinkler.png){ width="220" } | Crafting table | `ra_farming:sprinkler` |
 
 ## Infinite Generators
 
@@ -128,8 +232,9 @@ Module page: [Interactive Machines](interactive-machines.md) — give everything
 | **Big Torch** | ![Big Torch recipe](images/recipes/ra_interactive/big_torch.png){ width="220" } | Crafting table | `ra_interactive:big_torch` |
 | **Block Breaker** | ![Block Breaker recipe](images/recipes/ra_interactive/block_breaker.png){ width="220" } | Crafting table | `ra_interactive:block_breaker` |
 | **Block Placer** | ![Block Placer recipe](images/recipes/ra_interactive/block_placer.png){ width="220" } | Crafting table | `ra_interactive:block_placer` |
-| **Breeder** | ![Breeder recipe](images/recipes/ra_interactive/breeder.png){ width="220" } | Crafting table | `ra_interactive:breeder` |
+| **Elevator** | ![Elevator recipe](images/recipes/ra_interactive/elevator.png){ width="220" } | Crafting table | `ra_interactive:elevator` |
 | **Enchanted Coal Block** | ![Enchanted Coal Block recipe](images/recipes/ra_interactive/enchanted_coal_block.png){ width="220" } | Crafting table | `ra_interactive:enchanted_coal_block` |
+| **Fan** | ![Fan recipe](images/recipes/ra_interactive/fan.png){ width="220" } | Crafting table | `ra_interactive:fan` |
 | **Infinite Lava Cauldron** | ![Infinite Lava Cauldron recipe](images/recipes/ra_interactive/infinite_lava_cauldron.png){ width="220" } | Crafting table | `ra_interactive:infinite_lava_cauldron` |
 | **Infinite Snow Cauldron** | ![Infinite Snow Cauldron recipe](images/recipes/ra_interactive/infinite_snow_cauldron.png){ width="220" } | Crafting table | `ra_interactive:infinite_snow_cauldron` |
 | **Infinite Water Cauldron** | ![Infinite Water Cauldron recipe](images/recipes/ra_interactive/infinite_water_cauldron.png){ width="220" } | Crafting table | `ra_interactive:infinite_water_cauldron` |
@@ -138,6 +243,7 @@ Module page: [Interactive Machines](interactive-machines.md) — give everything
 | **Magic Crate** | ![Magic Crate recipe](images/recipes/ra_interactive/magic_crate.png){ width="220" } | Crafting table | `ra_interactive:magic_crate` |
 | **Message Block** | ![Message Block recipe](images/recipes/ra_interactive/message_block.png){ width="220" } | Crafting table | `ra_interactive:message_block` |
 | **Spitter** | ![Spitter recipe](images/recipes/ra_interactive/spitter.png){ width="220" } | Crafting table | `ra_interactive:spitter` |
+| **Trash Can** | ![Trash Can recipe](images/recipes/ra_interactive/trash_can.png){ width="220" } | Crafting table | `ra_interactive:trash_can` |
 
 ## Jetpacks
 
@@ -157,10 +263,14 @@ Module page: [Logic Gates](logic-gates.md) — give everything: `/function ra_ga
 | Item | Recipe | Station | Namespace id |
 | ---- | ------ | ------- | ------------ |
 | **Clock** | ![Clock recipe](images/recipes/ra_gates/clock.png){ width="220" } | Crafting table | `ra_gates:clock` |
+| **Counter** | ![Counter recipe](images/recipes/ra_gates/counter.png){ width="220" } | Crafting table | `ra_gates:counter` |
 | **Delayer** | ![Delayer recipe](images/recipes/ra_gates/delayer.png){ width="220" } | Crafting table | `ra_gates:delayer` |
+| **Edge Detector** | ![Edge Detector recipe](images/recipes/ra_gates/edge_detector.png){ width="220" } | Crafting table | `ra_gates:edge_detector` |
 | **Extender** | ![Extender recipe](images/recipes/ra_gates/extender.png){ width="220" } | Crafting table | `ra_gates:extender` |
 | **Randomizer** | ![Randomizer recipe](images/recipes/ra_gates/randomizer.png){ width="220" } | Crafting table | `ra_gates:randomizer` |
+| **Sequencer** | ![Sequencer recipe](images/recipes/ra_gates/sequencer.png){ width="220" } | Crafting table | `ra_gates:sequencer` |
 | **Shortener** | ![Shortener recipe](images/recipes/ra_gates/shortener.png){ width="220" } | Crafting table | `ra_gates:shortener` |
+| **Signal Calculator** | ![Signal Calculator recipe](images/recipes/ra_gates/signal_calculator.png){ width="220" } | Crafting table | `ra_gates:signal_calculator` |
 | **UNI Gate** | ![UNI Gate recipe](images/recipes/ra_gates/uni_gate.png){ width="220" } | Crafting table | `ra_gates:uni_gate` |
 
 ## Multiblocks
@@ -175,15 +285,38 @@ Module page: [Multiblocks](multiblocks.md) — give everything: `/function ra_mu
 | **Iron Multiblock Base** | ![Iron Multiblock Base recipe](images/recipes/ra_multiblock/iron_base.png){ width="220" } | Crafting table | `ra_multiblock:iron_base` |
 | **Netherite Multiblock Base** | ![Netherite Multiblock Base recipe](images/recipes/ra_multiblock/netherite_base.png){ width="220" } | Crafting table | `ra_multiblock:netherite_base` |
 
+## Railworks
+
+Module page: [Railworks](railworks.md) — give everything: `/function ra_railworks:items/give_all`
+
+| Item | Recipe | Station | Namespace id |
+| ---- | ------ | ------- | ------------ |
+| **Rail Builder** | ![Rail Builder recipe](images/recipes/ra_railworks/rail_builder.png){ width="220" } | Crafting table | `ra_railworks:rail_builder` |
+| **Ram Upgrade** | ![Ram Upgrade recipe](images/recipes/ra_railworks/ram_upgrade.png){ width="220" } | Crafting table | `ra_railworks:ram_upgrade` |
+| **Route Rail** | ![Route Rail recipe](images/recipes/ra_railworks/route_rail.png){ width="220" } | Crafting table | `ra_railworks:route_rail` |
+
+## Security
+
+Module page: [Security](security.md) — give everything: `/function ra_security:items/give_all`
+
+| Item | Recipe | Station | Namespace id |
+| ---- | ------ | ------- | ------------ |
+| **Keypad** | ![Keypad recipe](images/recipes/ra_security/keypad.png){ width="220" } | Crafting table | `ra_security:keypad` |
+
 ## Sensors
 
 Module page: [Sensors](sensors.md) — give everything: `/function ra_sensors:items/give_all`
 
 | Item | Recipe | Station | Namespace id |
 | ---- | ------ | ------- | ------------ |
+| **Block Detector** | ![Block Detector recipe](images/recipes/ra_sensors/block_detector.png){ width="220" } | Crafting table | `ra_sensors:block_detector` |
 | **Entity Detector** | ![Entity Detector recipe](images/recipes/ra_sensors/entity_detector.png){ width="220" } | Crafting table | `ra_sensors:entity_detector` |
+| **Held Item Detector** | ![Held Item Detector recipe](images/recipes/ra_sensors/held_item_detector.png){ width="220" } | Crafting table | `ra_sensors:held_item_detector` |
+| **Light Sensor** | ![Light Sensor recipe](images/recipes/ra_sensors/light_sensor.png){ width="220" } | Crafting table | `ra_sensors:light_sensor` |
+| **Player Detector** | ![Player Detector recipe](images/recipes/ra_sensors/player_detector.png){ width="220" } | Crafting table | `ra_sensors:player_detector` |
 | **Tag Adder** | ![Tag Adder recipe](images/recipes/ra_sensors/tag_adder.png){ width="220" } | Crafting table | `ra_sensors:tag_adder` |
 | **Tag Remover** | ![Tag Remover recipe](images/recipes/ra_sensors/tag_remover.png){ width="220" } | Crafting table | `ra_sensors:tag_remover` |
+| **Weather Sensor** | ![Weather Sensor recipe](images/recipes/ra_sensors/weather_sensor.png){ width="220" } | Crafting table | `ra_sensors:weather_sensor` |
 
 ## Storage
 
@@ -203,6 +336,7 @@ Module page: [Tools](tools.md) — give everything: `/function ra:tools/give_all
 | **Clipboard** | ![Clipboard recipe](images/recipes/ra/clipboard.png){ width="220" } | Crafting table | `ra:clipboard` |
 | **Data Handler** | ![Data Handler recipe](images/recipes/ra/data_handler.png){ width="220" } | Crafting table | `ra:data_handler` |
 | **Goggles** | ![Goggles recipe](images/recipes/ra/goggles.png){ width="220" } | Crafting table | `ra:goggles` |
+| **Goggles Lens** | ![Goggles Lens recipe](images/recipes/ra/goggles_lens.png){ width="220" } | Crafting table | `ra:goggles_lens` |
 | **Multimeter** | ![Multimeter recipe](images/recipes/ra/multimeter.png){ width="220" } | Crafting table | `ra:multimeter` |
 | **Wrench** | ![Wrench recipe](images/recipes/ra/wrench.png){ width="220" } | Crafting table | `ra:wrench` |
 
@@ -212,6 +346,8 @@ Module page: [Transport Networks](transport-networks.md) — give everything: `/
 
 | Item | Recipe | Station | Namespace id |
 | ---- | ------ | ------- | ------------ |
+| **Air Charger** | ![Air Charger recipe](images/recipes/ra_wires/air_charger.png){ width="220" } | Crafting table | `ra_wires:air_charger` |
+| **Air Tank** | ![Air Tank recipe](images/recipes/ra_wires/air_tank.png){ width="220" } | Crafting table | `ra_wires:air_tank` |
 | **Battery** | ![Battery recipe](images/recipes/ra_wires/battery.png){ width="220" } | Crafting table | `ra_wires:battery` |
 | **Boiler** | ![Boiler recipe](images/recipes/ra_wires/boiler.png){ width="220" } | Crafting table | `ra_wires:boiler` |
 | **Copper Pipe** | ![Copper Pipe recipe](images/recipes/ra_wires/liquid_pipe_copper.png){ width="220" } | Crafting table | `ra_wires:liquid_pipe_copper` |
@@ -220,16 +356,22 @@ Module page: [Transport Networks](transport-networks.md) — give everything: `/
 | **EU Consumer** | ![EU Consumer recipe](images/recipes/ra_wires/electric_consumer.png){ width="220" } | Crafting table | `ra_wires:electric_consumer` |
 | **EU Generator** | ![EU Generator recipe](images/recipes/ra_wires/electric_generator.png){ width="220" } | Crafting table | `ra_wires:electric_generator` |
 | **EU Switch** | ![EU Switch recipe](images/recipes/ra_wires/electric_switch.png){ width="220" } | Crafting table | `ra_wires:electric_switch` |
+| **Fluid Drain** | ![Fluid Drain recipe](images/recipes/ra_wires/liquid_drain.png){ width="220" } | Crafting table | `ra_wires:liquid_drain` |
 | **Gas Pump** | ![Gas Pump recipe](images/recipes/ra_wires/gas_pump.png){ width="220" } | Crafting table | `ra_wires:gas_pump` |
 | **Gas Tank** | ![Gas Tank recipe](images/recipes/ra_wires/gas_tank.png){ width="220" } | Crafting table | `ra_wires:gas_tank` |
 | **Gas Valve** | ![Gas Valve recipe](images/recipes/ra_wires/gas_valve.png){ width="220" } | Crafting table | `ra_wires:gas_valve` |
+| **Heavy Boots** | ![Heavy Boots recipe](images/recipes/ra_wires/heavy_boots.png){ width="220" } | Crafting table | `ra_wires:heavy_boots` |
 | **Industrial Light** | ![Industrial Light recipe](images/recipes/ra_wires/industrial_light.png){ width="220" } | Crafting table | `ra_wires:industrial_light` |
-| **Liquid Drain** | ![Liquid Drain recipe](images/recipes/ra_wires/liquid_drain.png){ width="220" } | Crafting table | `ra_wires:liquid_drain` |
 | **Liquid Filter** | ![Liquid Filter recipe](images/recipes/ra_wires/liquid_filter.png){ width="220" } | Crafting table | `ra_wires:liquid_filter` |
 | **Liquid Pump** | ![Liquid Pump recipe](images/recipes/ra_wires/liquid_pump.png){ width="220" } | Crafting table | `ra_wires:liquid_pump` |
 | **Liquid Tank** | ![Liquid Tank recipe](images/recipes/ra_wires/liquid_tank.png){ width="220" } | Crafting table | `ra_wires:liquid_tank` |
 | **Liquid Valve** | ![Liquid Valve recipe](images/recipes/ra_wires/liquid_valve.png){ width="220" } | Crafting table | `ra_wires:liquid_valve` |
+| **Network Gauge** | ![Network Gauge recipe](images/recipes/ra_wires/network_gauge.png){ width="220" } | Crafting table | `ra_wires:network_gauge` |
 | **Solar Panel** | ![Solar Panel recipe](images/recipes/ra_wires/solar_panel.png){ width="220" } | Crafting table | `ra_wires:solar_panel` |
+| **Spout** | ![Spout recipe](images/recipes/ra_wires/spout.png){ width="220" } | Crafting table | `ra_wires:spout` |
+| **Tesla Coil** | ![Tesla Coil recipe](images/recipes/ra_wires/tesla_coil.png){ width="220" } | Crafting table | `ra_wires:tesla_coil` |
+| **Usage Meter** | ![Usage Meter recipe](images/recipes/ra_wires/usage_meter.png){ width="220" } | Crafting table | `ra_wires:usage_meter` |
+| **Water Wheel** | ![Water Wheel recipe](images/recipes/ra_wires/water_wheel.png){ width="220" } | Crafting table | `ra_wires:water_wheel` |
 | **Wire** | ![Wire recipe](images/recipes/ra_wires/electric_wire_copper.png){ width="220" } | Crafting table | `ra_wires:electric_wire_copper` |
 
 ## Wireless Redstone
@@ -238,6 +380,9 @@ Module page: [Wireless Redstone](wireless-redstone.md) — give everything: `/fu
 
 | Item | Recipe | Station | Namespace id |
 | ---- | ------ | ------- | ------------ |
+| **Analog Emitter** | ![Analog Emitter recipe](images/recipes/ra_wireless/analog_emitter.png){ width="220" } | Crafting table | `ra_wireless:analog_emitter` |
+| **Analog Receiver** | ![Analog Receiver recipe](images/recipes/ra_wireless/analog_receiver.png){ width="220" } | Crafting table | `ra_wireless:analog_receiver` |
+| **Pager** | ![Pager recipe](images/recipes/ra_wireless/pager.png){ width="220" } | Crafting table | `ra_wireless:pager` |
 | **Redstone Remote** | ![Redstone Remote recipe](images/recipes/ra_wireless/remote.png){ width="220" } | Crafting table | `ra_wireless:remote` |
 | **Wireless Emitter** | ![Wireless Emitter recipe](images/recipes/ra_wireless/emitter.png){ width="220" } | Crafting table | `ra_wireless:emitter` |
 | **Wireless Receiver** | ![Wireless Receiver recipe](images/recipes/ra_wireless/receiver.png){ width="220" } | Crafting table | `ra_wireless:receiver` |
@@ -253,6 +398,8 @@ second, so a stack of 64 is 64 separate rolls. Full explanation on
 | --------- | ------- | ------ | ------ |
 | Coal | **Enchanted Coal** | 1% | [Interactive Machines](interactive-machines.md) |
 | Iron Jetpack Kit | **Infinite Iron Jetpack Kit** | 1% | [Jetpacks](jetpacks.md) |
+| Capture Net (empty) | **Master Capture Net** | 35% | [Farming](farming.md) |
 | Stone | **Mineral Core** | 1% | [Infinite Generators](infinite-generators.md) |
 | Netherrack | **Nether Core** | 1% | [Infinite Generators](infinite-generators.md) |
+| Nether Star | **Overstar** | 10% | [Ender Links](ender-links.md) |
 | Poppy | **Poppy Core** | 1% | [Infinite Generators](infinite-generators.md) |

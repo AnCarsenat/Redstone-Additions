@@ -12,5 +12,10 @@ val SensorsPage = Page(
 		"entity_detector" to "Entity Detector",
 		"tag_adder" to "Tag Adder",
 		"tag_remover" to "Tag Remover",
+		"light_sensor" to "Light Sensor",
+		"weather_sensor" to "Weather Sensor",
+		"held_item_detector" to "Held Item Detector",
+		"player_detector" to "Player Detector",
+		"block_detector" to "Block Detector",
 	),
 )

@@ -35,6 +35,9 @@ import ra.core.block.forEachMarker
 import ra.core.block.breakSound
 import ra.core.block.placementGuard
 import ra.core.block.dropItem
+import io.github.ayfri.kore.arguments.components.matchers.customData
+import io.github.ayfri.kore.features.predicates.sub.predicates
+import ra.core.block.Unlock
 import ra.core.block.recipeResult
 import ra.core.block.shapedRecipe
 import io.github.ayfri.kore.features.recipes.types.pattern
@@ -55,16 +58,31 @@ object BigTorch {
 	/** Mobs the torch denies. */
 	const val SPAWN_BLOCKED = "spawn_blocked"
 
+	/** A player's largest radius. */
+	const val MAX_RADIUS = 100
+
+	/**
+	 * An admin's (see ra.core.Admin): the technical ceiling. The sweep's selector is a sphere, so
+	 * this is about 17 times the volume of a 100-block torch, every ten ticks.
+	 */
+	const val ADMIN_MAX_RADIUS = 256
+
 	fun Ra.registerBigTorch() {
 		block(block)
 		properties(block) {
-			number("radius", min = 1, max = 100)
+			number("radius", min = 1, max = MAX_RADIUS, adminMax = ADMIN_MAX_RADIUS)
 		}
 		pack.blockRegisterMessage(block)
 		pack.specGive(block, item)
 		// Crafted from the Enchanted Coal Block (a barrier, see EnchantedCoal) and a stick. The beet
 		// pack gave it no unlock advancement and no recipe notification; kept that way.
-		pack.shapedRecipe(block.ns, block.id, item.recipeResult(), unlock = null, notify = false) {
+		pack.shapedRecipe(block.ns, block.id, item.recipeResult(),
+			// Holding an Enchanted Coal Block, matched on its custom data: a bare barrier is a creative item.
+			Unlock(Items.BARRIER, "has_enchanted_coal_block") {
+				predicates { customData { this["ra"] = nbt { this["enchanted_coal_block"] = true } } }
+			},
+			notify = false,
+		) {
 			pattern("B", "S")
 			key("B", listOf(Items.BARRIER))
 			key("S", listOf(Items.STICK))
@@ -113,7 +131,7 @@ object BigTorch {
 			forEachMarker(block, skin)
 
 			// THE SWEEP RUNS EVERY 10 TICKS, NOT EVERY TICK. Its selector reaches as far as the
-			// radius does, which is up to 100 blocks, and there is no reason for it to be prompt: a
+			// radius does, which is up to 100 blocks (256 set by an admin), and there is no reason for it to be prompt: a
 			// mob that lives half a second before being denied is indistinguishable from one that
 			// never spawned. Paying a 100-block entity selector per torch per tick to shorten that
 			// would be the most expensive thing in the pack.

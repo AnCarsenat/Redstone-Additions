@@ -43,14 +43,11 @@ object DataHandlerRegistry {
 	const val MUL = 10000
 	const val STAMP_MAX = 200000
 
-	/** On a player: what their latest menu was, 0 the block's settings, 1 a picker. */
-	const val KIND = "ra.dh.mkind"
-
-	/** On a player: the stamp of their open picker, whose choices are in storage ra:dh pick.s<stamp>. */
-	const val PSTAMP = "ra.dh.pstamp"
-
 	/** On a player: the row index + 1 of the list they have open in the menu (DataHandlerEntries); 0 or unset, none. */
 	const val EXPAND = "ra.dh.expand"
+
+	/** On a player: the ra.dh.mid of the block their last menu showed (DataHandler.showMenu). */
+	const val MENU_SEL = "ra.dh.msel"
 
 	fun Ra.registerDataHandlerRegistry() {
 		val schemas = blockProperties.toSortedMap()
@@ -72,12 +69,11 @@ object DataHandlerRegistry {
 			for (old in listOf("registry", "numeric", "item_names", "readonly")) raw("data remove storage ra:dh $old")
 			// Menus drawn before this load may name rows of a schema that changed: void them all.
 			raw("scoreboard objectives add $MENU dummy")
-			raw("scoreboard objectives add $KIND dummy")
-			raw("scoreboard objectives add $PSTAMP dummy")
 			raw("scoreboard objectives add $EXPAND dummy")
-			// Pickers drawn before this load are void too.
-			raw("data remove storage ra:dh pick")
-			raw("scoreboard players reset * $PSTAMP")
+			raw("scoreboard objectives add ${ra.tools.datahandler.props.DataHandlerVec3.STEP} dummy")
+			raw("scoreboard objectives add $MENU_SEL dummy")
+			// Vec3 points left by an editor when the world was saved: their clock did not survive.
+			raw("function ${ra.tools.datahandler.props.Vec3Ops.expire.asId()}")
 			raw("scoreboard players reset * $MENU")
 			// Row indexes of a schema that may have changed.
 			raw("scoreboard players reset * $EXPAND")

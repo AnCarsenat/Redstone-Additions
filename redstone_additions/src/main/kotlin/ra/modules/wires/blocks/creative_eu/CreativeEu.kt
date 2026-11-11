@@ -1,9 +1,6 @@
 package ra.modules.wires.blocks.creative_eu
 
-import io.github.ayfri.kore.features.predicates.providers.sub
 import ra.core.computeScore
-import ra.core.provider
-import ra.core.scoreOf
 import io.github.ayfri.kore.commands.data
 import io.github.ayfri.kore.commands.function
 import ra.api.Goggles
@@ -20,6 +17,7 @@ import ra.core.executeRun
 import ra.core.raw
 import ra.core.ref
 import ra.modules.wires.electric.EuApi
+import ra.core.block.PlacementBat
 
 object CreativeEu : PackPart {
 	val give = ref(Ns.WIRES, "blocks/creative_eu/give")
@@ -30,7 +28,7 @@ object CreativeEu : PackPart {
 		pack.define(CreativeEu.give) {
 			// Give the Creative EU Source. Creative only -- there is no recipe for it, on purpose.
 
-			raw("""give @s bat_spawn_egg[item_model="minecraft:beacon",item_name="Creative EU Source",rarity=epic,lore=[{text:"Creative: makes something from nothing",color:"light_purple",italic:false}],custom_data={ra:{creative_eu:1b}},entity_data={id:"minecraft:bat",Tags:["ra","ra.spawned","ra.place.creative_eu"],Silent:1b,NoAI:1b,Invulnerable:1b}]""")
+			raw("""give @s bat_spawn_egg[item_model="minecraft:beacon",item_name="Creative EU Source",rarity=epic,lore=[{text:"Creative: makes something from nothing",color:"light_purple",italic:false}],custom_data={ra:{creative_eu:1b}},entity_data={id:"minecraft:bat",Tags:["ra","ra.spawned","ra.place.creative_eu"],${PlacementBat.FLAGS}}]""")
 			raw("""tellraw @s [{text:"[RA] ",color:"gold"},{text:"Received ",color:"gray"},{text:"Creative EU Source",color:"light_purple"}]""")
 		}
 
@@ -60,7 +58,7 @@ object CreativeEu : PackPart {
 			// here.
 
 			function(RaLib.Transport.Net.read)
-			computeScore("#cr.fill", "ra.wires.tmp", provider { sub(scoreOf("#net_capacity", "ra.tr.tmp"), scoreOf("#net_amount", "ra.tr.tmp")) })
+			computeScore("#cr.fill", "ra.wires.tmp", RaLib.Transport.Net.free)
 
 			raw("execute if score #cr.fill ra.wires.tmp matches ..0 run return run data modify entity @s data.status.state set value \"Grid full\"")
 

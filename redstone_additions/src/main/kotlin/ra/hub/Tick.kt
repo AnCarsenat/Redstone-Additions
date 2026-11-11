@@ -28,7 +28,7 @@ import ra.hub.placement.detectBats
  * not refreshed this tick means the player stopped clicking. (The debug-only input handler's
  * pair stays disabled, as in beet.)
  */
-private val ACTIVE_TOOLS = listOf("cdh", "dh", "wrench", "clip", "meter", "remote")
+private val ACTIVE_TOOLS = listOf("cdh", "dh", "wrench", "clip", "meter", "remote", "pager", "lens")
 
 internal fun Ra.registerTick() {
 	pack.define(tick) {

@@ -2,7 +2,7 @@
 
 <img src="images/icon.png" alt="Redstone Additions" width="128">
 
-**Version:** v6.0.2  
+**Version:** v6.0.3  
 **Minecraft:** 26.3  
 **Author:** [AnCarsenat](https://github.com/AnCarsenat)
 
@@ -37,32 +37,38 @@ described in [Contributing Guidelines](contributing-guidelines.md#installing-int
 
 ## Modules
 
-**Looking for a recipe? [The Recipe Atlas](recipe-atlas.md) has all 69 of them on one
-page**, listed A to Z and grouped by module — plus the four items that have no recipe
+**Looking for a recipe? [The Recipe Atlas](recipe-atlas.md) has all 116 of them on one
+page**, listed A to Z and grouped by module — plus the five items that have no recipe
 and are instead gambled for on an [enchanting table](enchant-crafting.md). This table
 is the shortcut: one sample per module, and where to read about it.
 
 | Module | What you get | Sample recipe |
 |---|---|---|
-| [Logic Gates](logic-gates.md) | 6 timing/logic blocks | ![Clock recipe](images/recipes/ra_gates/clock.png){ width="220" } |
-| [Interactive Machines](interactive-machines.md) | 12 automation and utility blocks | ![Block Placer recipe](images/recipes/ra_interactive/block_placer.png){ width="220" } |
+| [Logic Gates](logic-gates.md) | 10 timing/logic blocks | ![Clock recipe](images/recipes/ra_gates/clock.png){ width="220" } |
+| [Interactive Machines](interactive-machines.md) | 14 automation and utility blocks | ![Block Placer recipe](images/recipes/ra_interactive/block_placer.png){ width="220" } |
 | [Storage](storage.md) | Boxer + Unboxer workflow | ![Boxer recipe](images/recipes/ra_storage/boxer.png){ width="220" } |
-| [Sensors](sensors.md) | Entity detector + tag operators | ![Entity Detector recipe](images/recipes/ra_sensors/entity_detector.png){ width="220" } |
-| [Wireless Redstone](wireless-redstone.md) | Emitter, Receiver, and Remote | ![Wireless Emitter recipe](images/recipes/ra_wireless/emitter.png){ width="220" } |
-| [Transport Networks](transport-networks.md) | Liquid, gas, EU, Boiler, Solar Panel | ![Liquid Pump recipe](images/recipes/ra_wires/liquid_pump.png){ width="220" } |
+| [Sensors](sensors.md) | Entity detector, tag operators, light and weather sensors, held item, player and block detectors | ![Entity Detector recipe](images/recipes/ra_sensors/entity_detector.png){ width="220" } |
+| [Wireless Redstone](wireless-redstone.md) | Emitters and Receivers (on/off and analog), Remote and Pager | ![Wireless Emitter recipe](images/recipes/ra_wireless/emitter.png){ width="220" } |
+| [Transport Networks](transport-networks.md) | Liquid, gas, EU, Boiler, Solar Panel, Water Wheel, Spout, Tesla Coil, Air Tank and Heavy Boots | ![Liquid Pump recipe](images/recipes/ra_wires/liquid_pump.png){ width="220" } |
 | [Chunk Loader](chunk-loader.md) | 1 force-load block | ![Chunk Loader recipe](images/recipes/ra_chunk_loader/chunk_loader.png){ width="220" } |
 | [Multiblocks](multiblocks.md) | 5 base tiers + structures | ![Copper Base recipe](images/recipes/ra_multiblock/copper_base.png){ width="220" } |
-| [Enchant Crafting](enchant-crafting.md) | Sacrifice items on an enchanting table | No recipe — uses the vanilla table |
+| [Enchant Crafting](enchant-crafting.md) | Sacrifice items on an enchanting table; Disenchanter, Book Upgrader and Book Printer | ![Disenchanter recipe](images/recipes/ra_enchanting/disenchanter.png){ width="220" } |
 | [Jetpacks](jetpacks.md) | 2 jetpacks + 3 upgrade kits | ![Iron Jetpack Kit recipe](images/recipes/ra_jetpacks/iron_jetpack_kit.png){ width="220" } |
 | [Infinite Generators](infinite-generators.md) | 3 self-growing blocks + casing | ![Mineral Generator recipe](images/recipes/ra_infinite/mineral_generator.png){ width="220" } |
-| [Ender Links](ender-links.md) | 3 remote vaults + teleport anchor | ![Teleport Anchor recipe](images/recipes/ra_ender/teleport_anchor.png){ width="220" } |
+| [Ender Links](ender-links.md) | 3 remote vaults, teleport anchor, Anchor Terminal and Anchor Tablet | ![Teleport Anchor recipe](images/recipes/ra_ender/teleport_anchor.png){ width="220" } |
+| [Displays](displays.md) | Gauge Bar, Item Hologram and Text Screen | ![Gauge Bar recipe](images/recipes/ra_displays/gauge_bar.png){ width="220" } |
+| [Automation](automation.md) | Crafter Controller, the Pattern item, Uncrafter, Experience Absorber, Item Pipe Splitter and Conveyor | ![Crafter Controller recipe](images/recipes/ra_automation/crafter_controller.png){ width="220" } |
+| [Security](security.md) | Keypad, a crafter whose slots are the code | ![Keypad recipe](images/recipes/ra_security/keypad.png){ width="220" } |
+| [Farming](farming.md) | Sprinkler, Breeder and the Capture Nets: crops, animals, carrying mobs | ![Sprinkler recipe](images/recipes/ra_farming/sprinkler.png){ width="220" } |
+| [Railworks](railworks.md) | Route Rail, a junction that sends each cart its own way; the Ram Upgrade and the Rail Builder cart | ![Route Rail recipe](images/recipes/ra_railworks/route_rail.png){ width="220" } |
+| [Audio](audio.md) | Alarm, Doorbell and Jukebox Controller | ![Alarm recipe](images/recipes/ra_audio/alarm.png){ width="220" } |
 
 Current pack totals:
 
-- 59 placeable custom blocks
-- 69 recipes, all of them in the [Recipe Atlas](recipe-atlas.md)
-- 7 tools (Wrench, Goggles, Data Handler, Creative Data Handler, Clipboard,
-  Multimeter, Redstone Remote)
+- 97 placeable custom blocks
+- 116 recipes, all of them in the [Recipe Atlas](recipe-atlas.md)
+- 9 tools (Wrench, Goggles, Data Handler, Creative Data Handler, Clipboard,
+  Multimeter, Redstone Remote, Pager, Anchor Tablet)
 
 ## Commands Most Players Need
 
@@ -79,7 +85,13 @@ Current pack totals:
 | `/function ra_multiblock:blocks/give_all` | Multiblock bases |
 | `/function ra_infinite:items/give_all` | Generator casing and generators |
 | `/function ra_jetpacks:items/give_all` | Jetpack kits |
-| `/function ra_ender:items/give_all` | Ender vaults and Teleport Anchors |
+| `/function ra_ender:items/give_all` | Ender vaults, Teleport Anchor, Anchor Terminal, Anchor Tablet and an Overstar |
+| `/function ra_displays:items/give_all` | Display blocks |
+| `/function ra_automation:items/give_all` | Crafter Controller, a Pattern, Uncrafter, Experience Absorber, Item Pipe Splitter and Conveyor |
+| `/function ra_security:items/give_all` | Keypad |
+| `/function ra_farming:items/give_all` | Sprinkler, Breeder, a Capture Net and a Master Capture Net |
+| `/function ra_railworks:items/give_all` | Route Rail, Ram Upgrade and Rail Builder |
+| `/function ra_audio:items/give_all` | Alarm, Doorbell and Jukebox Controller |
 | `/function ra:uninstall` | Opens uninstall confirmation dialog |
 
 ## Tools At A Glance
@@ -89,6 +101,7 @@ Current pack totals:
 | Wrench | `/function ra:tools/wrench/give` | ![Wrench recipe](images/recipes/ra/wrench.png){ width="200" } | Change block modes, assemble multiblocks |
 | Data Handler | `/function ra:tools/data_handler/give` | ![Data Handler recipe](images/recipes/ra/data_handler.png){ width="200" } | Edit a block's settings |
 | Goggles | `/function ra:tools/goggles/give` | ![Goggles recipe](images/recipes/ra/goggles.png){ width="200" } | See every block's status |
+| Goggles Lens | `/function ra:tools/goggles/lens/give` | ![Goggles Lens recipe](images/recipes/ra/goggles_lens.png){ width="200" } | Gives any helmet the Goggles' view |
 
 ## What's New
 

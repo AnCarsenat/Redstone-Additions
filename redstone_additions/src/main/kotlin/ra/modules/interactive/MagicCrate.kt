@@ -1,13 +1,8 @@
 package ra.modules.interactive
 
-import ra.core.computeInto
-import ra.core.provider
-import ra.core.scoreOf
-import ra.core.storeInt
 import io.github.ayfri.kore.arguments.types.literals.self
 import io.github.ayfri.kore.commands.function
-import io.github.ayfri.kore.features.predicates.providers.min
-import ra.core.Storage
+import ra.core.Admin.readCappedProperty
 import io.github.ayfri.kore.commands.kill
 import io.github.ayfri.kore.functions.Function
 import io.github.ayfri.kore.generated.Blocks
@@ -59,13 +54,19 @@ object MagicCrate {
 	private val sweep = block.fn("sweep")
 	private val tickOne = block.fn("tick_one")
 
+	/** A player's largest radius. */
+	const val MAX_RADIUS = 20
+
+	/** An admin's (see ra.core.Admin): the technical ceiling of the item selector. */
+	const val ADMIN_MAX_RADIUS = 64
+
 
 	fun Ra.registerMagicCrate() {
 		block(block)
 		properties(block) {
-			// The same ceiling tick_one clamps to: a schema that allowed 32 let players type a
-			// radius the crate silently ignored.
-			number("radius", min = 5, max = 20)
+			// Players up to 20, admins up to 64; tick_one clamps only to 64, so an admin's radius
+			// stays (ra.core.Admin).
+			number("radius", min = 5, max = MAX_RADIUS, adminMax = ADMIN_MAX_RADIUS)
 			// A server admin's setting (a fast pulse is a server cost), and not what you look at a
 			// crate to learn: the Goggles show its state, radius and last pulse instead.
 			number("cooldown", min = 1, max = 1200, adminOnly = true, goggles = false)
@@ -183,11 +184,12 @@ object MagicCrate {
 		readProperty("cooldown", default = 20, min = 1)
 		raw("scoreboard players operation @s ${Obj.COOLDOWN} = #prop ${Obj.TEMP}")
 
-		// Radius is clamped at both ends. The floor lives in util/property; the ceiling is here
-		// because a radius the player could raise without limit would turn one block into a
-		// server-wide entity selector.
-		readProperty("radius", default = 8, min = 5)
-		computeInto(storeInt(Storage.INTERACTIVE, "mh.r"), provider { min(scoreOf("#prop", Obj.TEMP), 20) })
+		// Radius is clamped at both ends. The floor lives in util/property; the ceiling is the
+		// admin one, because a radius raised without limit would turn one block into a server-wide
+		// entity selector. The players' 20 is checked when the value is written, not here: an
+		// admin's 40 must survive the crate being used by anyone (ra.core.Admin).
+		readCappedProperty("radius", default = 8, min = 5, adminMax = ADMIN_MAX_RADIUS)
+		raw("execute store result storage ra:interactive mh.r int 1 run scoreboard players get #prop ${Obj.TEMP}")
 
 		scoreboard.players.set(literal("#mh.pulled"), Obj.TEMP, 0)
 		callWith(sweep, "storage ra:interactive mh")

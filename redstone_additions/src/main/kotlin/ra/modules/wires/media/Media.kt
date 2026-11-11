@@ -42,7 +42,7 @@ object Media : PackPart {
 			//           block, orb or effect out as: milk as white dust, steam as cloud, and so on
 			// bucket    bucket item, when it has one
 
-			raw("""data modify storage ra:wires media set value {water:{name:"Water",state:"liquid",color:"aqua",particle:"minecraft:splash",drip:"minecraft:falling_water",block:"minecraft:water",bucket:"minecraft:water_bucket"},lava:{name:"Lava",state:"liquid",color:"gold",particle:"minecraft:lava",drip:"minecraft:falling_lava",block:"minecraft:lava",bucket:"minecraft:lava_bucket"},powder_snow:{name:"Powder Snow",state:"liquid",color:"white",particle:"minecraft:snowflake",block:"minecraft:powder_snow",bucket:"minecraft:powder_snow_bucket"},milk:{name:"Milk",state:"liquid",color:"white",particle:"minecraft:item_slime",pour:"minecraft:dust{color:16777215,scale:1.5f}",bucket:"minecraft:milk_bucket"},experience:{name:"Experience",state:"liquid",color:"green",particle:"minecraft:glow",orb:1b},potion:{name:"Potion",state:"liquid",color:"light_purple",particle:"minecraft:effect",effect:1b},steam:{name:"Steam",state:"gas",color:"gray",particle:"minecraft:cloud",pour:"minecraft:cloud"},smoke:{name:"Smoke",state:"gas",color:"dark_gray",particle:"minecraft:smoke",pour:"minecraft:large_smoke"},oxygen:{name:"Oxygen",state:"gas",color:"blue",particle:"minecraft:bubble",pour:"minecraft:dust{color:11068671,scale:1.5f}"}}""")
+			raw("""data modify storage ra:wires media set value {water:{name:"Water",state:"liquid",color:"aqua",particle:"minecraft:splash",drip:"minecraft:falling_water",block:"minecraft:water",bucket:"minecraft:water_bucket"},lava:{name:"Lava",state:"liquid",color:"gold",particle:"minecraft:lava",drip:"minecraft:falling_lava",block:"minecraft:lava",bucket:"minecraft:lava_bucket"},powder_snow:{name:"Powder Snow",state:"liquid",color:"white",particle:"minecraft:snowflake",block:"minecraft:powder_snow",bucket:"minecraft:powder_snow_bucket"},milk:{name:"Milk",state:"liquid",color:"white",particle:"minecraft:item_slime",pour:"minecraft:dust{color:16777215,scale:1.5f}",bucket:"minecraft:milk_bucket"},experience:{name:"Experience",state:"liquid",color:"green",particle:"minecraft:glow",orb:1b},potion:{name:"Potion",state:"liquid",color:"light_purple",particle:"minecraft:effect",effect:1b},steam:{name:"Steam",state:"gas",color:"gray",particle:"minecraft:cloud",pour:"minecraft:cloud"},smoke:{name:"Smoke",state:"gas",color:"dark_gray",particle:"minecraft:smoke",pour:"minecraft:large_smoke"},oxygen:{name:"Oxygen",state:"gas",color:"blue",particle:"minecraft:bubble",pour:"minecraft:dust{color:11068671,scale:1.5f}"},toxic_gas:{name:"Toxic Gas",state:"gas",color:"dark_green",particle:"minecraft:mycelium",pour:"minecraft:dust{color:5617468,scale:1.5f}"}}""")
 
 			// Which world blocks a pump or drain can pick a medium up from. Kept separate
 			// from the registry above because several block states map to one medium, and
@@ -52,6 +52,24 @@ object Media : PackPart {
 			// a data edit rather than a code one -- which is how potions and experience will
 			// arrive once a network can hold more than one medium at a time.
 			raw("""data modify storage ra:wires item_sources set value [{item:"minecraft:water_bucket",medium:"water",volume:5000,empty:"minecraft:bucket"},{item:"minecraft:lava_bucket",medium:"lava",volume:5000,empty:"minecraft:bucket"},{item:"minecraft:powder_snow_bucket",medium:"powder_snow",volume:5000,empty:"minecraft:bucket"},{item:"minecraft:milk_bucket",medium:"milk",volume:5000,empty:"minecraft:bucket"},{item:"minecraft:experience_bottle",medium:"experience",volume:700,empty:"minecraft:glass_bottle"},{item:"minecraft:potion",medium:"potion",volume:1000,empty:"minecraft:glass_bottle"}]""")
+
+			// The other way round, for the Spout: what an empty container under it becomes, by
+			// medium. Keyed by medium because the spout walks the network's media in arrival
+			// order (the primary first) and asks each one what it can fill. Each entry: `empty`
+			// the container it takes, `item` what it gives back, `volume` in mL, optional
+			// `components` for the filled stack and `sound`. `potion:1b` gets the network's own
+			// potion_contents in place of `components` (water when the network has none on
+			// record). Another pack appends to item_fills.<its medium> after ra_wires:load.
+			raw("""data modify storage ra:wires item_fills set value {water:[{empty:"minecraft:bucket",item:"minecraft:water_bucket",volume:5000,sound:"minecraft:item.bucket.fill"},{empty:"minecraft:glass_bottle",item:"minecraft:potion",volume:1000,components:{"minecraft:potion_contents":{potion:"minecraft:water"}},sound:"minecraft:item.bottle.fill"}],lava:[{empty:"minecraft:bucket",item:"minecraft:lava_bucket",volume:5000,sound:"minecraft:item.bucket.fill_lava"}],powder_snow:[{empty:"minecraft:bucket",item:"minecraft:powder_snow_bucket",volume:5000,sound:"minecraft:item.bucket.fill_powder_snow"}],milk:[{empty:"minecraft:bucket",item:"minecraft:milk_bucket",volume:5000,sound:"minecraft:item.bucket.fill"}],experience:[{empty:"minecraft:glass_bottle",item:"minecraft:experience_bottle",volume:700,sound:"minecraft:item.bottle.fill"}],potion:[{empty:"minecraft:glass_bottle",item:"minecraft:potion",volume:1000,potion:1b,components:{"minecraft:potion_contents":{potion:"minecraft:water"}},sound:"minecraft:item.bottle.fill"}]}""")
+
+			// What a powered Fluid Drain venting a gas does to the living entities in front of it, by
+			// gas: the effect, how many seconds it lasts and its amplifier (0 = level I). Given again
+			// at each action (once a second at the default rate), so a few seconds keeps it up. A gas
+			// with no entry is only vented. `area` is "column" (only in the water straight above the
+			// front, like a magma block: oxygen) or "radius" (4 blocks around it, the default when
+			// absent: toxic gas). Another pack sets gas_effects.<its gas> after
+			// ra_wires:load. See ra_wires:fluid/drain_pour_away.
+			raw("""data modify storage ra:wires gas_effects set value {oxygen:{effect:"minecraft:water_breathing",seconds:10,amplifier:0,area:"column"},toxic_gas:{effect:"minecraft:wither",seconds:3,amplifier:0,area:"radius"}}""")
 
 			// What the EU Generator will burn, and for how many ticks. Same shape as the
 			// other registries here, so a new fuel is a data edit.
@@ -77,9 +95,10 @@ object Media : PackPart {
 
 			// `state` is the medium's state, copied here so a scan can skip sources its pump cannot
 			// lift without a lookup per entry. `keep:1b` marks a source that is never used up: a lit
-			// campfire gives smoke for as long as it burns, and is left as it is (`drained` names it
+			// campfire gives smoke for as long as it burns, and an upward bubble column (soul sand under
+			// water) oxygen for as long as it rises; both are left as they are (`drained` names it
 			// anyway, since every entry must carry every field the probe's macro reads).
-			raw("""data modify storage ra:wires source_blocks set value [{match:"minecraft:water[level=0]",medium:"water",state:"liquid",volume:5000,drained:"minecraft:air"},{match:"minecraft:lava[level=0]",medium:"lava",state:"liquid",volume:5000,drained:"minecraft:air"},{match:"minecraft:powder_snow",medium:"powder_snow",state:"liquid",volume:5000,drained:"minecraft:air"},{match:"minecraft:water_cauldron[level=3]",medium:"water",state:"liquid",volume:1667,drained:"minecraft:water_cauldron[level=2]"},{match:"minecraft:water_cauldron[level=2]",medium:"water",state:"liquid",volume:1667,drained:"minecraft:water_cauldron[level=1]"},{match:"minecraft:water_cauldron[level=1]",medium:"water",state:"liquid",volume:1666,drained:"minecraft:cauldron"},{match:"minecraft:lava_cauldron",medium:"lava",state:"liquid",volume:5000,drained:"minecraft:cauldron"},{match:"minecraft:campfire[lit=true]",medium:"smoke",state:"gas",volume:500,drained:"minecraft:campfire[lit=true]",keep:1b},{match:"minecraft:soul_campfire[lit=true]",medium:"smoke",state:"gas",volume:500,drained:"minecraft:soul_campfire[lit=true]",keep:1b}]""")
+			raw("""data modify storage ra:wires source_blocks set value [{match:"minecraft:water[level=0]",medium:"water",state:"liquid",volume:5000,drained:"minecraft:air"},{match:"minecraft:lava[level=0]",medium:"lava",state:"liquid",volume:5000,drained:"minecraft:air"},{match:"minecraft:powder_snow",medium:"powder_snow",state:"liquid",volume:5000,drained:"minecraft:air"},{match:"minecraft:water_cauldron[level=3]",medium:"water",state:"liquid",volume:1667,drained:"minecraft:water_cauldron[level=2]"},{match:"minecraft:water_cauldron[level=2]",medium:"water",state:"liquid",volume:1667,drained:"minecraft:water_cauldron[level=1]"},{match:"minecraft:water_cauldron[level=1]",medium:"water",state:"liquid",volume:1666,drained:"minecraft:cauldron"},{match:"minecraft:lava_cauldron",medium:"lava",state:"liquid",volume:5000,drained:"minecraft:cauldron"},{match:"minecraft:campfire[lit=true]",medium:"smoke",state:"gas",volume:500,drained:"minecraft:campfire[lit=true]",keep:1b},{match:"minecraft:soul_campfire[lit=true]",medium:"smoke",state:"gas",volume:500,drained:"minecraft:soul_campfire[lit=true]",keep:1b},{match:"minecraft:bubble_column[drag=false]",medium:"oxygen",state:"gas",volume:500,drained:"minecraft:bubble_column[drag=false]",keep:1b}]""")
 		}
 
 		pack.define(Media.label) {

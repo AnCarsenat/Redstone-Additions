@@ -1,6 +1,7 @@
 package ra.api
 
 import ra.core.Ns
+import ra.core.namedProvider
 import ra.core.ref
 
 /**
@@ -72,6 +73,13 @@ object RaLib {
 			val take = ref(Ns.LIB, "transport/net/take")
 			val takeAny = ref(Ns.LIB, "transport/net/take_any")
 			val read = ref(Ns.LIB, "transport/net/read")
+
+			/**
+			 * Named provider `ra_lib:transport/net/free`: `#net_capacity - #net_amount` (ra.tr.tmp),
+			 * the room left on the network [read] just loaded. Negative while an overfull network
+			 * waits for its clamp, exactly as the subtraction it replaces.
+			 */
+			val free = namedProvider(Ns.LIB, "transport/net/free")
 		}
 	}
 
@@ -79,6 +87,8 @@ object RaLib {
 	object Skin {
 		val apply = ref(Ns.LIB, "skin/apply")
 		val applyStatic = ref(Ns.LIB, "skin/apply_static")
+		/** `{real, skin, id, facing}`: a skin with a fixed facing, over a real block that has none. */
+		val applyFacing = ref(Ns.LIB, "skin/apply_facing")
 		val applyLit = ref(Ns.LIB, "skin/apply_lit")
 		val setLit = ref(Ns.LIB, "skin/set_lit")
 		val clear = ref(Ns.LIB, "skin/clear")
@@ -104,6 +114,10 @@ object RaLib {
 		val check = ref(Ns.LIB, "safe/check")
 		/** Macro `{p, f}`, as a marker: 1 when data.properties.<p> is safe; cached by value. */
 		val guard = ref(Ns.LIB, "safe/guard")
+		/** storage ra:safe {s, f} -> storage ra:safe out, s made safe in TextFormat f; 1 when usable. The core sanitiser. */
+		val clean = ref(Ns.LIB, "safe/clean")
+		/** storage ra:safe {s} -> storage ra:safe n (int) and #sf.n ra.temp; 1 when s is a number. */
+		val number = ref(Ns.LIB, "safe/number")
 	}
 
 	object Util {

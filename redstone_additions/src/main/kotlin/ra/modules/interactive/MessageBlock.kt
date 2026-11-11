@@ -1,6 +1,6 @@
 package ra.modules.interactive
 
-import ra.core.block.soundListenersSel
+import ra.core.callWith
 import ra.core.TextFormat
 import ra.core.text
 import ra.lib.safe.SafeText.guardProperty
@@ -36,7 +36,7 @@ import ra.core.block.recipeResult
 import ra.core.block.shapedRecipe
 import ra.core.block.markerSel
 import ra.core.block.setOnNew
-import ra.core.block.readProperty
+import ra.core.Admin.readCappedProperty
 import io.github.ayfri.kore.features.recipes.types.pattern
 import io.github.ayfri.kore.features.recipes.types.key
 import io.github.ayfri.kore.commands.returnValue
@@ -51,21 +51,34 @@ object MessageBlock {
 	val registerBlock = block.fn("register_block")
 	private val send = block.fn("send_message_block")
 	private val sendMacro = block.fn("send_message_block_macro")
+	private val sendRange = block.fn("send_message_block_range")
+
+	/** A player's largest range. */
+	const val MAX_RANGE = 128
+
+	/**
+	 * An admin's (see ra.core.Admin): a sane ceiling rather than a cost one. A message is one
+	 * player selector on a rising edge, not a tick cost.
+	 */
+	const val ADMIN_MAX_RANGE = 1024
 
 	private const val WAS_POWERED = "ra.was_powered"
 
-	/** `[Message] <text>`: the message is stored JSON text, so it is interpreted. */
+	/** `[Message] <text>`: interpreted, so an operator's compound shows as rich text; a string shows as typed. */
 	private const val MESSAGE = """[{text:"[Message] ",color:"yellow"},{nbt:"message_block",storage:"ra:temp",interpret:true}]"""
 
 	fun Ra.registerMessageBlock() {
 		block(block)
 		properties(block) {
-			// Shown, never pasted into a command, but drawn with interpret:true: the text can carry
-			// a click_event that runs a command as whoever clicks it. So any text, admins only.
-			text("message_block", TextFormat.FREE, adminOnly = true)
+			// Shown, never pasted into a command. Drawn with interpret:true, which decodes the stored
+			// tag itself (since 1.21.5): a string is plain text, whatever it spells, and only a
+			// compound is rich text that could carry a click_event. Players can only ever write a
+			// string (the Data Handler types text, the Clipboard checks it with ra_lib:safe/check),
+			// so the text is everyone's; rich text stays with operators and commands.
+			text("message_block", TextFormat.FREE)
 			// Pasted into a command: admins only unless the server allows it (Sensors settings).
 			text("entity_selector", TextFormat.SELECTOR, adminOnly = true, adminSetting = SELECTOR_SETTING)
-			number("range", min = 1, max = 128)
+			number("range", min = 1, max = MAX_RANGE, adminMax = ADMIN_MAX_RANGE)
 		}
 		pack.blockRegisterMessage(block)
 		pack.specGive(block, item)
@@ -84,6 +97,7 @@ object MessageBlock {
 		}
 		pack.define(send) { send() }
 		pack.define(sendMacro) { sendMacro() }
+		pack.define(sendRange) { sendRange() }
 
 		val onBreak = pack.blockOnBreak(block, drop = { dropItem(item, tagged = true) }, sound = "minecraft:block.wood.break", cloud = true)
 
@@ -127,16 +141,22 @@ object MessageBlock {
 		executeRun("if data entity @s data.properties.entity_selector", sendMacro, "with storage ra:temp")
 		raw("execute if data entity @s data.properties.entity_selector run return 1")
 
-		// Legacy fallback for old blocks that still use `range`.
-		readProperty("range", default = 16, min = 1)
-		raw("scoreboard players operation @s ${Obj.TEMP} = #prop ${Obj.TEMP}")
-		raw("execute if score @s ${Obj.TEMP} matches ..0 run scoreboard players set @s ${Obj.TEMP} 16")
+		// Legacy fallback for old blocks that still use `range`. Capped at the admin ceiling only:
+		// the players' 128 was checked when it was written (ra.core.Admin).
+		readCappedProperty("range", default = 16, min = 1, adminMax = ADMIN_MAX_RANGE)
+		raw("execute store result storage ra:temp message_range.range int 1 run scoreboard players get #prop ${Obj.TEMP}")
+		callWith(sendRange, "storage ra:temp message_range")
+		raw("data remove storage ra:temp message_range")
+	}
 
-		// Players within range, in brackets: a selector's distance cannot come from a score.
-		for ((range, dist) in listOf("..8" to 8, "9..16" to 16, "17..32" to 32, "33.." to 64))
-			raw("execute if score @s ${Obj.TEMP} matches $range run tellraw @a[distance=..$dist] $MESSAGE")
-		for ((range, dist) in listOf("..16" to 16, "17..32" to 32, "33.." to 64))
-			raw("execute if score @s ${Obj.TEMP} matches $range run playsound minecraft:block.note_block.chime block ${soundListenersSel(dist)} ~ ~ ~ 0.5 1.2")
+	/**
+	 * Macro `{range}`: the players within it. A selector's distance cannot come from a score, so
+	 * the range is pasted in; it used to be picked from brackets that stopped at 64, so a range
+	 * of 128 reached only 64 blocks. Runs on a rising edge only, so the macro costs nothing idle.
+	 */
+	private fun Function.sendRange() {
+		raw("\$tellraw @a[distance=..\$(range)] $MESSAGE")
+		raw("\$playsound minecraft:block.note_block.chime block @a[distance=..\$(range),scores={${Obj.USER_SOUND}=1..}] ~ ~ ~ 0.5 1.2")
 	}
 
 	/** Macro `{entity_selector}`: the send path using the block's own selector. */

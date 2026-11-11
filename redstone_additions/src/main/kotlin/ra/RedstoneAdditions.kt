@@ -19,14 +19,20 @@ import ra.hub.uninstall.uninstallGaps
 import ra.settings.purge.Purge
 import ra.lib.RaLibPart
 import ra.migrations.MigrationsPart
+import ra.modules.audio.AudioModule
+import ra.modules.automation.AutomationModule
 import ra.modules.chunkloader.ChunkLoaderModule
+import ra.modules.displays.DisplaysModule
 import ra.modules.enchanting.EnchantingModule
 import ra.modules.ender.EnderModule
+import ra.modules.farming.FarmingModule
 import ra.modules.gates.GatesModule
 import ra.modules.infinite.InfiniteModule
 import ra.modules.interactive.InteractiveModule
 import ra.modules.jetpacks.JetpacksModule
 import ra.modules.multiblock.MultiblockModule
+import ra.modules.railworks.RailworksModule
+import ra.modules.security.SecurityModule
 import ra.modules.sensors.SensorsModule
 import ra.modules.storage.StorageModule
 import ra.modules.wireless.WirelessModule
@@ -66,6 +72,12 @@ object RedstoneAdditions {
 		InfiniteModule,
 		JetpacksModule,
 		EnderModule,
+		DisplaysModule,
+		AutomationModule,
+		SecurityModule,
+		FarmingModule,
+		RailworksModule,
+		AudioModule,
 	)
 
 	/**
@@ -125,8 +137,14 @@ object RedstoneAdditions {
 		PackValidator.itemSummonsWithoutItem(this).let { bad ->
 			check(bad.isEmpty()) { "Item entities summoned empty (discarded at once, and whatever fills them in hits another item):\n" + bad.joinToString("\n") { "  - $it" } }
 		}
+		PackValidator.preTwentySixThreeSyntax(this).let { bad ->
+			check(bad.isEmpty()) { "Lines Minecraft 26.3 cannot parse (each one drops its whole function):\n" + bad.joinToString("\n") { "  - $it" } }
+		}
 		PackValidator.ungatedLoadMessages(this).let { bad ->
 			check(bad.isEmpty()) { "Load-time chat lines that ignore \"Show the load message\" (use loadMessage, or loadNotice for a warning):\n" + bad.joinToString("\n") { "  - $it" } }
+		}
+		PackValidator.undefinedProviders(this).let { bad ->
+			check(bad.isEmpty()) { "Named providers with no file (every function naming one fails to load):\n" + bad.joinToString("\n") { "  - $it" } }
 		}
 		if (strict) PackValidator.validate(this) else PackValidator.report(this)
 	}

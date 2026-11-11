@@ -17,7 +17,10 @@ import ra.core.ref
 import ra.core.registeredLine
 import ra.modules.wires.blocks.electric_furnace.ElectricFurnace
 import ra.modules.wires.blocks.electric_generator.ElectricGenerator
+import ra.modules.wires.blocks.water_wheel.WaterWheel
 import ra.modules.wires.common.Common
+import ra.modules.wires.machine.MachineClock
+import ra.modules.wires.readout.Readout
 
 object Placement : PackPart {
 	val handlePlacement = ref(Ns.WIRES, "blocks/handle_placement")
@@ -97,10 +100,13 @@ object Placement : PackPart {
 			// A bridge is deliberately not a node: ra_wires:bridge/tick reaches into the
 			// networks on either side of it instead of joining one.
 			raw("execute if data storage ra:wires spec.bridge run tag @s add ra.wires.bridge")
+			raw("execute if data storage ra:wires spec.readout run tag @s add ${Readout.TAG}")
+			raw("execute if data storage ra:wires spec.clocked run tag @s add ${MachineClock.TAG}")
 			executeRun("if data storage ra:wires spec.net", Placement.placeJoin, "with storage ra:wires spec")
 
 			executeRun("""if data storage ra:wires spec{marker:"electric_generator"}""", ElectricGenerator.refreshDisplay)
 			executeRun("""if data storage ra:wires spec{marker:"electric_furnace"}""", ElectricFurnace.refreshDisplay)
+			executeRun("""if data storage ra:wires spec{marker:"water_wheel"}""", WaterWheel.setup)
 
 			function(Common.updateModelLocalAndNeighbors)
 		}
@@ -134,7 +140,7 @@ object Placement : PackPart {
 				"Liquid Tank",
 				"Liquid Pump",
 				"Liquid Valve",
-				"Liquid Drain",
+				"Fluid Drain",
 				"Gas Tank",
 				"Gas Pump",
 				"Gas Valve",
@@ -147,6 +153,12 @@ object Placement : PackPart {
 				"Battery",
 				"EU Breaker",
 				"Industrial Light",
+				"Network Gauge",
+				"Usage Meter",
+				"Tesla Coil",
+				"Spout",
+				"Water Wheel",
+				"Air Charger",
 			)) registeredLine(name)
 		}
 	}

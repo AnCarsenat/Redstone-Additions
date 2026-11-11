@@ -5,7 +5,6 @@ import ra.core.provider
 import ra.core.scoreOf
 import ra.core.storeInt
 import io.github.ayfri.kore.arguments.types.resources.FunctionArgument
-import io.github.ayfri.kore.features.predicates.providers.min
 import io.github.ayfri.kore.features.predicates.providers.plus
 import io.github.ayfri.kore.functions.Function
 import ra.core.Ns
@@ -16,7 +15,7 @@ import ra.core.define
 import ra.core.raw
 import ra.core.callWith
 import ra.core.block.particleViewersSel
-import ra.core.block.readProperty
+import ra.core.Admin.readCappedProperty
 
 /**
  * The Big Torch's mob denial: `blocks/big_torch/sweep` and `sweep_at`.
@@ -53,23 +52,24 @@ object BigTorchSweep {
 
 	/** One torch's sweep. As the torch marker, at the torch position. */
 	private fun Function.sweep() {
-		readProperty("radius", default = 16, min = 1)
-
-		// THE 100-BLOCK CEILING IS WRITTEN BACK, NOT ONLY APPLIED. The selector cost is the reason
-		// for it: `distance` describes a sphere, so doubling the radius is eight times the volume
-		// to search, and this runs per torch every ten ticks.
+		// THE CEILING IS WRITTEN BACK, NOT ONLY APPLIED. The selector cost is the reason for it:
+		// `distance` describes a sphere, so doubling the radius is eight times the volume to
+		// search, and this runs per torch every ten ticks.
 		//
 		// Clamping the working value alone was not enough. `data.properties.radius` kept whatever
 		// was typed, and the goggles read that path directly -- so a torch set to 500 advertised
-		// `Radius: 500 blocks` while sweeping 100, and the Data Handler offered the same 500 back
-		// for editing. The stored value is corrected here so every reader of it agrees with what
-		// the block actually does. The write-back goes first: it tests the value as typed, and the
-		// clamp below is what would otherwise have already hidden it.
-		raw("execute if score #prop ${Obj.TEMP} matches 101.. run data modify entity @s data.properties.radius set value 100")
-		// The radius, clamped, and the remembering band 16 blocks past it.
-		val radius = provider { min(scoreOf("#prop", Obj.TEMP), 100) }
-		computeInto(storeInt(Storage.TEMP, "big_torch.radius"), radius)
-		computeInto(storeInt(Storage.TEMP, "big_torch.outer"), radius + 16)
+		// `Radius: 500 blocks` while sweeping less, and the Data Handler offered the same 500 back
+		// for editing. The stored value is corrected so every reader of it agrees with what the
+		// block actually does.
+		//
+		// The ceiling is the ADMIN one (256), not the players' 100: the players' limit is checked
+		// when the radius is written, so a torch an admin set to 200 keeps sweeping 200 whoever
+		// is around it (ra.core.Admin).
+		readCappedProperty("radius", default = 16, min = 1, adminMax = BigTorch.ADMIN_MAX_RADIUS, writeBack = true)
+		// The radius, and the remembering band 16 blocks past it.
+		val radius = scoreOf("#prop", Obj.TEMP)
+		raw("execute store result storage ra:temp big_torch.radius int 1 run scoreboard players get #prop ${Obj.TEMP}")
+		computeInto(storeInt(Storage.TEMP, "big_torch.outer"), provider { radius + 16 })
 
 		callWith(sweepAt, "storage ra:temp big_torch")
 	}

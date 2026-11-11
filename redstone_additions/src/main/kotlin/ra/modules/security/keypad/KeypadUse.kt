@@ -1,0 +1,344 @@
+package ra.modules.security.keypad
+
+import io.github.ayfri.kore.functions.Function
+import ra.core.Admin
+import ra.core.Obj
+import ra.core.RA_CHAT_PREFIX
+import ra.core.Ra
+import ra.core.block.soundListenersSel
+import ra.core.define
+import ra.core.executeRun
+import ra.core.raw
+import ra.core.block.noticeReceiversSel
+
+/**
+ * How a [Keypad] reads its grid, what an entered combination does, and the clock that ends its
+ * entries, pulses and lockouts.
+ *
+ * THE GRID. The Keypad is a vanilla crafter. Its `disabled_slots` (the switched-off slots, 0..8)
+ * is the combination being typed, read as a 9-bit mask ([mask], sum of 2^slot): order-free, and 0
+ * when the array is empty or missing. The code (`data.data.code`) and the last look
+ * (`data.data.seen`) are masks too.
+ *
+ * ENTERING. A data pack cannot see the grid screen close, so a combination is entered once the grid
+ * has not changed for [SETTLE_TICKS] ticks. Every 4 ticks, keypads with a player within 10 blocks
+ * (nobody else can click the grid) and a switched-off slot, or mid-entry ([ENTRY]), run [watch]: a
+ * mask other than `seen` (all slots back on included) is a change, which (re)starts the wait
+ * (`data.data.due`) and tags the keypad [ENTRY]; an unchanged mask on an [ENTRY] keypad whose wait
+ * is over runs [entryDue]: the grid is read, switched back on, and checked against the lockout and
+ * the code. Changes are seen on the 4-tick grid, so an entry lands 20 to 23 ticks after the last
+ * click. The clock's once-a-second pass over [ENTRY] keypads is only the fallback for one whose
+ * players walked away before the wait was over.
+ *
+ * NO CRAFTING. Every tick an `if items` test (no NBT read) finds items put into the crafter (by a
+ * player or a hopper), and [eject] throws them out of the front face, before the crafter's own
+ * scheduled craft could run, so a redstone signal on it only plays the "nothing to craft" sound.
+ *
+ * THE PULSE. [PULSE_ON_FILL] turns the iron blocks in the 3x3x3 around the keypad into redstone
+ * blocks, [PULSE_OFF_FILL] turns them back, as the sensors do. A right code during a pulse starts
+ * it again from that tick; a wrong one counts as a wrong try.
+ *
+ * THE CLOCK. A keypad that is pulsing carries [PULSE], one that is locked out [LOCKED], one waiting
+ * for its grid to settle [ENTRY], and any of them [TIMED]. While one is [PULSE], [run] runs every
+ * tick (pulse lengths are exact); while only [LOCKED] or [ENTRY] ones are left, once a second;
+ * with none, nothing is scheduled. A keypad whose chunk unloaded mid-pulse is found by the block's
+ * tick ([startIfIdle], one score test while the clock runs), which starts the clock again, and its
+ * pulse ends (back to iron) on the clock's next tick; the same after a /reload.
+ */
+object KeypadUse {
+	/** `storage ra_security:keypad`: scratch. */
+	private const val STORE = "ra_security:keypad"
+	private const val T = Obj.TEMP
+
+	/** How long the grid must stay unchanged before it counts as entered: 1 second. */
+	const val SETTLE_TICKS = 20
+
+	/** At the keypad: the iron blocks around it become redstone blocks, and back. */
+	const val PULSE_ON_FILL = "fill ~-1 ~-1 ~-1 ~1 ~1 ~1 minecraft:redstone_block replace minecraft:iron_block"
+	const val PULSE_OFF_FILL = "fill ~-1 ~-1 ~-1 ~1 ~1 ~1 minecraft:iron_block replace minecraft:redstone_block"
+
+	/** On a keypad whose iron blocks around it are redstone blocks until `data.data.until`. */
+	const val PULSE = "ra.sec.kp_pulse"
+	/** On a keypad refusing every try until `data.data.locked_until`. */
+	private const val LOCKED = "ra.sec.kp_locked"
+	/** On a keypad whose grid changed less than [SETTLE_TICKS] ago. */
+	const val ENTRY = "ra.sec.kp_entry"
+	/** On a keypad with [PULSE], [LOCKED] or [ENTRY]: what the clock looks for. */
+	private const val TIMED = "ra.sec.kp_timed"
+	/** 1 while [run] is scheduled. */
+	private const val FLAG = "#sec.kp_clock"
+	/** Item entities [eject] just spawned, before their stack is filled in. */
+	private const val OUT = "ra.sec.kp_out"
+	/** On the player [isOwner] asks about. */
+	const val USER = "ra.sec.kp_user"
+
+	/** The crafter's twelve orientations, the index [orient] gives. */
+	val ORIENTATIONS = listOf(
+		"north_up", "south_up", "east_up", "west_up",
+		"up_north", "up_south", "up_east", "up_west",
+		"down_north", "down_south", "down_east", "down_west",
+	)
+
+	private fun fn(path: String) = Keypad.block.fn(path)
+
+	/** As the marker, the player tagged [USER]: 1 when that player owns it or is an admin. */
+	val isOwner = fn("is_owner")
+	/** As the marker: forget the code. */
+	val clearCode = fn("clear_code")
+	/** As the marker, at the block, whose crafter has a switched-off slot or is mid-entry. */
+	val watch = fn("watch")
+	/** As the marker, at the block, whose crafter holds items: throw them out. */
+	val eject = fn("eject")
+	private val ejectNext = fn("eject_next")
+	/** As the marker, at the block: the grid's mask, also left in `#kp.m`. */
+	private val mask = fn("mask")
+	/** As a keypad [watch] found unchanged, at it: enter its combination once the wait is over. */
+	private val settled = fn("settled")
+	/** At the block: the crafter's [ORIENTATIONS] index into `#kp.o`. */
+	private val orient = fn("orient")
+	/** The clock; cleared by the uninstall. */
+	val run = fn("clock/run")
+	private val startFast = fn("clock/start_fast")
+	private val startSlow = fn("clock/start_slow")
+	private val pulseDue = fn("clock/pulse_due")
+	private val lockDue = fn("clock/lock_due")
+	private val entryDue = fn("clock/entry_due")
+	private val setCode = fn("set_code")
+	private val accept = fn("accept")
+	private val reject = fn("reject")
+	private val locked = fn("locked")
+
+	/** In the block's tick: one score test while the clock runs. */
+	fun Function.startIfIdle() = executeRun("unless score $FLAG $T matches 1 if entity @e[type=minecraft:marker,tag=$TIMED,limit=1]", startFast)
+
+	/** The players who hear about it: whoever is at the grid. */
+	private const val NEAR = "@a[distance=..8]"
+	private fun say(text: String, color: String) = """tellraw $NEAR [$RA_CHAT_PREFIX,{text:"$text",color:"$color"}]"""
+	private fun sound(id: String, pitch: String) = "playsound $id block ${soundListenersSel(10)} ~ ~ ~ 0.8 $pitch"
+	private const val FAIL_SOUND = "minecraft:block.note_block.bass"
+
+	/** Every slot back on, and remembered as seen that way. As the marker, at the crafter. */
+	private fun Function.resetGrid() {
+		raw("execute if block ~ ~ ~ minecraft:crafter run data modify block ~ ~ ~ disabled_slots set value [I;]")
+		raw("data modify entity @s data.data.seen set value 0")
+	}
+
+	fun Ra.registerKeypadUse() {
+		pack.define(isOwner) {
+			raw("execute if entity @a[tag=$USER,tag=${Admin.TAG},limit=1] run return 1")
+			raw("execute unless data entity @s data.data.owner run return 0")
+			raw("data modify storage $STORE u set from entity @s data.data.owner")
+			raw("execute store success score #kp.d $T run data modify storage $STORE u set from entity @a[tag=$USER,limit=1] UUID")
+			raw("data remove storage $STORE u")
+			raw("execute if score #kp.d $T matches 0 run return 1")
+			raw("return 0")
+		}
+
+		pack.define(clearCode) {
+			raw("data remove entity @s data.data.code")
+			raw("data modify entity @s data.status.code set value \"not set\"")
+			raw("data modify entity @s data.data.fails set value 0")
+		}
+
+		// The grid as a 9-bit mask, sum of 2^slot over the switched-off slots: order-free, and 0 for
+		// an empty or missing `disabled_slots` (and for a block that is no crafter). The int array is
+		// copied into a list one entry at a time (one block read), which (unlike an int array) an NBT
+		// pattern matches element by element.
+		pack.define(mask) {
+			raw("data remove storage $STORE a")
+			raw("data modify storage $STORE l set value []")
+			raw("execute if block ~ ~ ~ minecraft:crafter run data modify storage $STORE a set from block ~ ~ ~ disabled_slots")
+			for (j in 0 until 9) raw("execute if data storage $STORE a[$j] run data modify storage $STORE l append from storage $STORE a[$j]")
+			raw("data remove storage $STORE a")
+			raw("scoreboard players set #kp.m $T 0")
+			for (i in 0 until 9) raw("execute if data storage $STORE {l:[$i]} run scoreboard players add #kp.m $T ${1 shl i}")
+			raw("data remove storage $STORE l")
+			raw("return run scoreboard players get #kp.m $T")
+		}
+
+		// A change of the mask restarts the wait.
+		pack.define(watch) {
+			raw("execute store result score #kp.m $T run function ${mask.asId()}")
+			raw("execute store result score #kp.s $T run data get entity @s data.data.seen")
+			raw("execute if score #kp.m $T = #kp.s $T run return run function ${settled.asId()}")
+			raw("execute store result entity @s data.data.seen int 1 run scoreboard players get #kp.m $T")
+			raw("execute store result score #kp.due $T run time query gametime")
+			raw("scoreboard players add #kp.due $T $SETTLE_TICKS")
+			raw("execute store result entity @s data.data.due int 1 run scoreboard players get #kp.due $T")
+			raw("tag @s add $ENTRY")
+			raw("tag @s add $TIMED")
+			raw("execute unless score $FLAG $T matches 1 run function ${startSlow.asId()}")
+		}
+
+		// Unchanged since the last look: an entry under way whose wait is over is entered now.
+		pack.define(settled) {
+			raw("execute unless entity @s[tag=$ENTRY] run return 0")
+			raw("execute store result score #kp.now $T run time query gametime")
+			raw("function ${entryDue.asId()}")
+		}
+
+		// Out of the front face, where the crafter would put a result: a hopper above (the usual
+		// feeder) would take an item dropped on top straight back. At most one chat line a minute.
+		pack.define(eject) {
+			raw("data modify storage $STORE ej set from block ~ ~ ~ Items")
+			raw("data modify block ~ ~ ~ Items set value []")
+			raw("function ${orient.asId()}")
+			raw("execute if score #kp.o $T matches 0 positioned ~ ~ ~-0.8 run function ${ejectNext.asId()}")
+			raw("execute if score #kp.o $T matches 1 positioned ~ ~ ~0.8 run function ${ejectNext.asId()}")
+			raw("execute if score #kp.o $T matches 2 positioned ~0.8 ~ ~ run function ${ejectNext.asId()}")
+			raw("execute if score #kp.o $T matches 3 positioned ~-0.8 ~ ~ run function ${ejectNext.asId()}")
+			raw("execute if score #kp.o $T matches 4..7 positioned ~ ~0.8 ~ run function ${ejectNext.asId()}")
+			raw("execute if score #kp.o $T matches 8..11 positioned ~ ~-1.1 ~ run function ${ejectNext.asId()}")
+			raw("data remove storage $STORE ej")
+			raw("execute store result score #kp.now $T run time query gametime")
+			raw("scoreboard players set #kp.said $T -1200")
+			raw("execute if data entity @s data.data.said store result score #kp.said $T run data get entity @s data.data.said")
+			raw("scoreboard players add #kp.said $T 1200")
+			raw("execute if score #kp.now $T < #kp.said $T run return 0")
+			raw("execute store result entity @s data.data.said int 1 run scoreboard players get #kp.now $T")
+			raw(say("The Keypad takes no items: switch its slots off and on to enter a code.", "gray"))
+		}
+		// [ORIENTATIONS] index of the crafter here -> #kp.o (0 when it is no crafter).
+		pack.define(orient) {
+			raw("scoreboard players set #kp.o $T 0")
+			ORIENTATIONS.forEachIndexed { i, o ->
+				if (i > 0) raw("execute if block ~ ~ ~ minecraft:crafter[orientation=$o] run scoreboard players set #kp.o $T $i")
+			}
+		}
+		pack.define(ejectNext) {
+			raw("execute unless data storage $STORE ej[0] run return 0")
+			raw("data remove storage $STORE ej[0].Slot")
+			raw("""summon minecraft:item ~ ~ ~ {Item:{id:"minecraft:stone",count:1},Tags:["$OUT"],PickupDelay:10s}""")
+			raw("data modify entity @n[type=minecraft:item,tag=$OUT,distance=..0.5] Item set from storage $STORE ej[0]")
+			raw("tag @e[type=minecraft:item,tag=$OUT] remove $OUT")
+			raw("data remove storage $STORE ej[0]")
+			raw("function ${ejectNext.asId()}")
+		}
+
+		// As a keypad tagged ENTRY, at it, `#kp.now` set: the grid has settled, or not yet.
+		pack.define(entryDue) {
+			raw("execute store result score #kp.u $T run data get entity @s data.data.due")
+			raw("execute if score #kp.u $T > #kp.now $T run return 0")
+			raw("tag @s remove $ENTRY")
+			raw("data remove entity @s data.data.due")
+			raw("execute unless entity @s[tag=$PULSE] unless entity @s[tag=$LOCKED] run tag @s remove $TIMED")
+			raw("execute store result score #kp.in $T run function ${mask.asId()}")
+			resetGrid()
+			// Every slot back on before the wait ran out: nothing was entered.
+			raw("execute if score #kp.in $T matches 0 run return 0")
+			// The lockout first: a code cleared during one cannot be replaced before it ends.
+			raw("scoreboard players set #kp.lock $T 0")
+			raw("execute if data entity @s data.data.locked_until store result score #kp.lock $T run data get entity @s data.data.locked_until")
+			raw("execute if score #kp.now $T < #kp.lock $T run return run function ${locked.asId()}")
+			raw("execute unless data entity @s data.data.code run return run function ${setCode.asId()}")
+			raw("execute store result score #kp.c $T run data get entity @s data.data.code")
+			raw("execute if score #kp.in $T = #kp.c $T run return run function ${accept.asId()}")
+			raw("function ${reject.asId()}")
+		}
+
+		pack.define(setCode) {
+			raw("execute store result entity @s data.data.code int 1 run scoreboard players get #kp.in $T")
+			raw("data modify entity @s data.status.code set value \"set\"")
+			raw("data modify entity @s data.data.fails set value 0")
+			raw(say("Keypad code set. Switch the same slots off to open it.", "green"))
+			raw(sound("minecraft:ui.cartography_table.take_result", "1.2"))
+		}
+
+		pack.define(accept) {
+			raw("data modify entity @s data.data.fails set value 0")
+			raw("scoreboard players set #kp.p $T ${Keypad.DEFAULT_PULSE}")
+			raw("execute if data entity @s data.properties.pulse store result score #kp.p $T run data get entity @s data.properties.pulse")
+			raw("execute if score #kp.p $T matches ..0 run scoreboard players set #kp.p $T 1")
+			raw("scoreboard players operation #kp.p $T += #kp.now $T")
+			raw("execute store result entity @s data.data.until int 1 run scoreboard players get #kp.p $T")
+			raw(PULSE_ON_FILL)
+			raw("tag @s add $PULSE")
+			raw("tag @s add $TIMED")
+			raw("data modify entity @s data.status.state set value \"open\"")
+			raw("function ${startFast.asId()}")
+			raw("""tellraw ${noticeReceiversSel(8)} [$RA_CHAT_PREFIX,{text:"Code accepted.",color:"green"}]""")
+			raw(sound("minecraft:block.note_block.chime", "1.4"))
+		}
+
+		pack.define(reject) {
+			raw("execute store result score #kp.f $T run data get entity @s data.data.fails")
+			raw("scoreboard players add #kp.f $T 1")
+			raw("scoreboard players set #kp.max $T ${Keypad.DEFAULT_ATTEMPTS}")
+			raw("execute if data entity @s data.properties.max_attempts store result score #kp.max $T run data get entity @s data.properties.max_attempts")
+			raw("execute store result entity @s data.data.fails int 1 run scoreboard players get #kp.f $T")
+			raw(sound(FAIL_SOUND, "0.5"))
+			raw("execute if score #kp.f $T < #kp.max $T run return run ${say("Wrong code.", "red")}")
+			// Too many: locked for `lockout` seconds.
+			raw("data modify entity @s data.data.fails set value 0")
+			raw("scoreboard players set #kp.l $T ${Keypad.DEFAULT_LOCKOUT}")
+			raw("execute if data entity @s data.properties.lockout store result score #kp.l $T run data get entity @s data.properties.lockout")
+			raw("execute if score #kp.l $T matches ..0 run scoreboard players set #kp.l $T 1")
+			raw("scoreboard players set #kp.20 $T 20")
+			raw("scoreboard players operation #kp.u $T = #kp.l $T")
+			raw("scoreboard players operation #kp.u $T *= #kp.20 $T")
+			raw("scoreboard players operation #kp.u $T += #kp.now $T")
+			raw("execute store result entity @s data.data.locked_until int 1 run scoreboard players get #kp.u $T")
+			raw("tag @s add $LOCKED")
+			raw("tag @s add $TIMED")
+			raw("data modify entity @s data.status.state set value \"locked\"")
+			raw("execute unless score $FLAG $T matches 1 run function ${startSlow.asId()}")
+			raw("""tellraw $NEAR [$RA_CHAT_PREFIX,{text:"Wrong code. The Keypad is locked for ",color:"red"},{score:{name:"#kp.l",objective:"$T"},color:"yellow"},{text:" seconds.",color:"red"}]""")
+		}
+
+		// `#kp.now` before `#kp.lock`: how long is left, in seconds rounded up.
+		pack.define(locked) {
+			raw("data remove storage $STORE in")
+			raw("scoreboard players operation #kp.lock $T -= #kp.now $T")
+			raw("scoreboard players add #kp.lock $T 19")
+			raw("scoreboard players set #kp.20 $T 20")
+			raw("scoreboard players operation #kp.lock $T /= #kp.20 $T")
+			raw("""tellraw $NEAR [$RA_CHAT_PREFIX,{text:"This Keypad is locked: try again in ",color:"red"},{score:{name:"#kp.lock",objective:"$T"},color:"yellow"},{text:" s.",color:"red"}]""")
+			raw(sound(FAIL_SOUND, "0.5"))
+		}
+
+		registerClock()
+	}
+
+	private fun Ra.registerClock() {
+		pack.define(startFast) {
+			raw("scoreboard players set $FLAG $T 1")
+			raw("schedule function ${run.asId()} 1t replace")
+		}
+		pack.define(startSlow) {
+			raw("scoreboard players set $FLAG $T 1")
+			raw("schedule function ${run.asId()} 20t replace")
+		}
+		pack.define(run) {
+			raw("scoreboard players set $FLAG $T 0")
+			raw("execute store result score #kp.now $T run time query gametime")
+			raw("execute as @e[type=minecraft:marker,tag=$PULSE] at @s run function ${pulseDue.asId()}")
+			raw("execute as @e[type=minecraft:marker,tag=$LOCKED] run function ${lockDue.asId()}")
+			raw("execute as @e[type=minecraft:marker,tag=$ENTRY] at @s run function ${entryDue.asId()}")
+			raw("execute if entity @e[type=minecraft:marker,tag=$PULSE,limit=1] run return run function ${startFast.asId()}")
+			raw("execute if entity @e[type=minecraft:marker,tag=$TIMED,limit=1] run function ${startSlow.asId()}")
+		}
+		// As a pulsing keypad, at it. Also ends, late, a pulse cut by an unload or a /reload.
+		pack.define(pulseDue) {
+			raw("execute store result score #kp.u $T run data get entity @s data.data.until")
+			raw("execute if score #kp.u $T > #kp.now $T run return 0")
+			raw(PULSE_OFF_FILL)
+			raw("tag @s remove $PULSE")
+			raw("data remove entity @s data.data.until")
+			raw("execute unless entity @s[tag=$LOCKED] run data modify entity @s data.status.state set value \"ready\"")
+			raw("execute unless entity @s[tag=$LOCKED] unless entity @s[tag=$ENTRY] run tag @s remove $TIMED")
+		}
+		// As a locked keypad.
+		pack.define(lockDue) {
+			raw("execute store result score #kp.u $T run data get entity @s data.data.locked_until")
+			raw("execute if score #kp.u $T > #kp.now $T run return 0")
+			raw("tag @s remove $LOCKED")
+			raw("data remove entity @s data.data.locked_until")
+			raw("execute if entity @s[tag=$PULSE] run data modify entity @s data.status.state set value \"open\"")
+			raw("execute unless entity @s[tag=$PULSE] run data modify entity @s data.status.state set value \"ready\"")
+			raw("execute unless entity @s[tag=$PULSE] unless entity @s[tag=$ENTRY] run tag @s remove $TIMED")
+		}
+	}
+
+	/** In the module's load: a schedule that did not survive is started again by [startIfIdle]. */
+	fun Function.resetFlag() = raw("scoreboard players set $FLAG $T 0")
+}

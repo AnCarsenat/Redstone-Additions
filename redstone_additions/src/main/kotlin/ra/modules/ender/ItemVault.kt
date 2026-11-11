@@ -78,10 +78,11 @@ object ItemVault {
 		pack.blockRegisterMessage(block)
 		pack.enderGive(block, item, """{text:" — set the channel with the Data Handler",color:"gray"}""")
 		pack.enderRecipe(block, item, RecipeCategory.MISC) {
-			pattern(" P ", "PBP", "OOO")
+			pattern("IPI", "UXU", "IUI")
+			key("I", Items.IRON_INGOT)
 			key("P", Items.ENDER_PEARL)
-			key("B", Items.BARREL)
-			key("O", Items.OBSIDIAN)
+			key("U", Items.PURPUR_BLOCK)
+			key("X", Items.ENDER_CHEST)
 		}
 
 		// As bat, at bat position.

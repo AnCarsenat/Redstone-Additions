@@ -23,7 +23,11 @@ import ra.core.block.soundListenersSel
 import ra.core.block.markerSel
 import ra.api.Goggles
 import ra.core.Storage
+import ra.core.TextFormat
+import ra.lib.safe.SafeClean
+import ra.lib.safe.SafeClean.cleanFrom
 import io.github.ayfri.kore.commands.function
+import ra.core.block.WRENCH_READOUT
 
 /**
  * What every `ra_ender` block shares: identifiers, the item shape, the recipe and the break.
@@ -90,9 +94,9 @@ internal fun DataPack.enderGive(block: CustomBlock, item: ItemSpec, hint: String
 	raw("tellraw @s [{text:\"[RA] \",color:\"gold\"},{text:\"${block.name}\",color:\"light_purple\"},$hint]")
 }
 
-/** One wrench line: `[Wrench] <name>: <mode>`, for players within 10 blocks. */
+/** One wrench line: `[Wrench] <name>: <mode>`, for the wrench user and nearby players with chat notices on. */
 internal fun wrenchSay(name: String, mode: String, color: String) =
-	"""tellraw @a[distance=..10] [{text:"[Wrench] ",color:"gold"},{text:"$name: ",color:"gray"},{text:"$mode",color:"$color"}]"""
+	"""tellraw $WRENCH_READOUT [{text:"[Wrench] ",color:"gold"},{text:"$name: ",color:"gray"},{text:"$mode",color:"$color"}]"""
 
 internal val WRENCH_CLICK = "playsound minecraft:block.lever.click block ${soundListenersSel(10)} ~ ~ ~ 0.6 1.4"
 
@@ -129,6 +133,14 @@ internal fun DataPack.cycleLinkSendReceive(block: CustomBlock) = define(block.fn
 internal fun Function.tagUnlessMode(block: CustomBlock, notMode: String, tag: String) =
 	raw("execute as ${block.markerSel()} unless data entity @s data.properties{mode:\"$notMode\"} run tag @s add $tag")
 
-/** `function ra:tools/goggles/billboard/stacked_text_line with storage ra:temp ender_line`. */
-internal fun Function.stackedTextLineFromStorage() =
+/**
+ * `function ra:tools/goggles/billboard/stacked_text_line with storage ra:temp ender_line`. The
+ * value is pasted inside `{text:"$(value)"}` and can be a player's text (a Teleport Anchor
+ * target), so it goes through the core sanitiser first: a `"` in it can never close the string.
+ */
+internal fun Function.stackedTextLineFromStorage() {
+	cleanFrom("storage ra:temp ender_line.value", TextFormat.FREE)
+	raw("execute if score ${SafeClean.OK} ${Obj.TEMP} matches 1 run data modify storage ra:temp ender_line.value set from storage ra:safe out")
+	raw("execute if score ${SafeClean.OK} ${Obj.TEMP} matches 0 run data modify storage ra:temp ender_line.value set value \"?\"")
 	function(Goggles.Billboard.stackedTextLine, Storage.TEMP, "ender_line")
+}

@@ -50,4 +50,18 @@ internal val SPECS: List<Pair<String, String>> = listOf(
 	"electric_breaker" to """{block:"minecraft:waxed_copper_bulb",marker:"electric_breaker",bridge:1b,props:{rate:200}}""",
 
 	"boiler" to """{block:"minecraft:furnace",marker:"boiler",props:{}}""",
+
+	// Readouts: a target block facing the player (dir 3, so the marker carries the facing) that
+	// reads the network behind it without joining it. `readout` tags the marker for the slow
+	// clock in ra_wires:readout.
+	"network_gauge" to """{block:"minecraft:target",marker:"network_gauge",dir:3,readout:1b}""",
+	"usage_meter" to """{block:"minecraft:target",marker:"usage_meter",dir:3,readout:1b,props:{mode:"consumed",every:${ra.modules.wires.blocks.usage_meter.UsageMeter.DEFAULT_EVERY},total:0}}""",
+
+	// Machines on the once-a-second clock (ra_wires:machine): `clocked` tags the marker for it.
+	"tesla_coil" to """{block:"minecraft:waxed_lightning_rod",marker:"tesla_coil",electric:1b,net:"electric",capacity:0,clocked:1b,props:{radius:${ra.modules.wires.blocks.tesla_coil.TeslaCoil.DEFAULT_RADIUS},damage:${ra.modules.wires.blocks.tesla_coil.TeslaCoil.DEFAULT_DAMAGE},eu_per_zap:${ra.modules.wires.blocks.tesla_coil.TeslaCoil.DEFAULT_EU}}}""",
+	"air_charger" to """{block:"${ra.modules.wires.blocks.air_charger.AirCharger.BLOCK}",marker:"air_charger",fluid:1b,net:"fluid",capacity:1000,clocked:1b}""",
+	"spout" to """{block:"minecraft:waxed_exposed_copper_grate",marker:"spout",fluid:1b,net:"fluid",capacity:1000,clocked:1b}""",
+	// dir 3: the marker carries the facing (the wheel's axle), the log is placed plain and turned
+	// along the axle by blocks/water_wheel/setup.
+	"water_wheel" to """{block:"${ra.modules.wires.blocks.water_wheel.WaterWheel.BLOCK}",marker:"water_wheel",electric:1b,net:"electric",dir:3,capacity:${ra.modules.wires.blocks.water_wheel.WaterWheel.CAPACITY},clocked:1b,props:{eu_per_block:${ra.modules.wires.blocks.water_wheel.WaterWheel.DEFAULT_EU}}}""",
 )

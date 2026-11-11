@@ -10,6 +10,7 @@ import net.benwoodworth.knbt.NbtCompound
 import net.benwoodworth.knbt.NbtList
 import net.benwoodworth.knbt.NbtString
 import ra.core.Tag
+import ra.core.block.PlacementBat
 
 /**
  * One tier of the Multiblock Base: a single block type with five tiers, which is why its give,
@@ -62,13 +63,7 @@ data class BaseTier(
 
 	fun customDataNbt() = nbt { this["ra"] = nbt { this["multiblock_base"] = tier } }
 
-	fun entityDataNbt() = nbt {
-		this["id"] = "minecraft:bat"
-		this["Tags"] = NbtList(listOf(Tag.RA, Tag.SPAWNED, Tag.place("multiblock_base"), Tag.place(blockTag)).map(::NbtString))
-		this["Silent"] = true
-		this["NoAI"] = true
-		this["Invulnerable"] = true
-	}
+	fun entityDataNbt() = PlacementBat.nbt(listOf(Tag.RA, Tag.SPAWNED, Tag.place("multiblock_base"), Tag.place(blockTag)))
 
 	/** The item as an SNBT stack, for the give bundle. */
 	fun itemStackNbt(): NbtCompound = nbt {
@@ -88,7 +83,7 @@ data class BaseTier(
 			BaseTier(
 				"copper", "Copper", 1, Blocks.WAXED_COPPER_BLOCK,
 				"minecraft:block.copper.break", "1", "0.8", "minecraft:block.copper.place", "1", "0.8", "minecraft:blast_furnace",
-				ring = Items.COPPER_BLOCK, core = Items.REDSTONE, ringKey = "C", coreKey = "R", unlockedBy = Items.COPPER_INGOT,
+				ring = Items.COPPER_INGOT, core = Items.REDSTONE, ringKey = "C", coreKey = "R", unlockedBy = Items.COPPER_INGOT,
 			),
 			BaseTier(
 				"iron", "Iron", 2, Blocks.IRON_BLOCK,
@@ -98,12 +93,12 @@ data class BaseTier(
 			BaseTier(
 				"gold", "Gold", 3, Blocks.GOLD_BLOCK,
 				"minecraft:block.metal.break", "1", "0.8", "minecraft:entity.experience_orb.pickup", "0.5", "0.8", "minecraft:gold_block",
-				ring = Items.GOLD_BLOCK, core = Items.REDSTONE, ringKey = "G", coreKey = "R", unlockedBy = Items.GOLD_INGOT,
+				ring = Items.GOLD_INGOT, core = Items.REDSTONE, ringKey = "G", coreKey = "R", unlockedBy = Items.GOLD_INGOT,
 			),
 			BaseTier(
 				"diamond", "Diamond", 4, Blocks.DIAMOND_BLOCK,
 				"minecraft:block.amethyst_block.break", "1", "1", "minecraft:block.amethyst_block.chime", "1", "1.2", "minecraft:diamond_block",
-				ring = Items.DIAMOND_BLOCK, core = Items.REDSTONE, ringKey = "D", coreKey = "R", unlockedBy = Items.DIAMOND,
+				ring = Items.DIAMOND, core = Items.REDSTONE, ringKey = "D", coreKey = "R", unlockedBy = Items.DIAMOND,
 			),
 			BaseTier(
 				"netherite", "Netherite", 5, Blocks.NETHERITE_BLOCK,

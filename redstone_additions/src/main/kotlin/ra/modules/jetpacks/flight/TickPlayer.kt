@@ -26,9 +26,9 @@ object TickPlayer {
 		pack.define(tickPlayer) { tickPlayer() }
 	}
 
-	/** Drops the Thruster's smoothing state: x/z samples, smoothed speed and the thrusting tag. */
+	/** Drops the Thruster's smoothing state: x/z samples, smoothed speed, throttle and the thrusting tag. */
 	private fun Function.resetThrust(condition: String) {
-		for (obj in listOf(Jp.X, Jp.Z, Jp.VX, Jp.VZ)) raw("execute if score $condition run scoreboard players reset @s $obj")
+		for (obj in listOf(Jp.X, Jp.Z, Jp.VX, Jp.VZ, Jp.RAMP)) raw("execute if score $condition run scoreboard players reset @s $obj")
 		raw("execute if score $condition run tag @s remove ${Jp.THRUSTING}")
 	}
 
@@ -77,6 +77,10 @@ object TickPlayer {
 		// It also used to be an attribute modifier, which is the wrong lever entirely -- see
 		// flight/thrust for why movement_speed does almost nothing once you are in the air.
 		resetThrust("#jp.airborne $t matches 0")
+
+		// Fuel gauge on the actionbar. Above the dry check so its hold timer keeps counting; it
+		// draws nothing on the ground, when dry, or for the infinite tier.
+		function(Gauge.gauge)
 
 		// A jetpack that ran dry comes back the moment there is fuel again.
 		for (fuel in listOf("minecraft:coal", "minecraft:charcoal")) for (slot in listOf("container.*", "weapon.offhand")) {

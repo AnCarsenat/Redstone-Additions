@@ -18,6 +18,7 @@ import ra.core.define
 import ra.core.raw
 import ra.core.ref
 import ra.modules.enchanting.EnchantingModule
+import ra.core.block.noticeOnly
 
 /** The `ra_enchanting:sacrifice` functions: one sacrificed stack, as the item entity, at it. */
 object Sacrifice {
@@ -44,6 +45,8 @@ object Sacrifice {
 		data(Storage.ENCHANT) { modify("input") { set(self(), "Item") } }
 		data(Storage.ENCHANT) { remove("result") }
 		data(Storage.ENCHANT) { remove("chance") }
+		data(Storage.ENCHANT) { remove("won") }
+		data(Storage.ENCHANT) { remove("lost") }
 		function(EnchantingModule.match)
 
 		// Nothing wants this item -- leave the stack alone.
@@ -97,6 +100,7 @@ object Sacrifice {
 		raw("particle minecraft:end_rod ~ ~0.4 ~ 0.15 0.15 0.15 0.05 12 normal ${particleViewersSel()}")
 		raw("playsound minecraft:block.enchantment_table.use block ${soundListenersSel()} ~ ~ ~ 1 1.2")
 		raw("playsound minecraft:entity.player.levelup block ${soundListenersSel()} ~ ~ ~ 0.8 1.4")
+		tellThrower("won", "light_purple")
 	}
 
 	/** The roll missed -- the item is gone, nothing comes back. */
@@ -105,5 +109,15 @@ object Sacrifice {
 		raw("particle minecraft:smoke ~ ~0.4 ~ 0.2 0.2 0.2 0.02 12 normal ${particleViewersSel()}")
 		raw("playsound minecraft:block.fire.extinguish block ${soundListenersSel()} ~ ~ ~ 1 0.6")
 		raw("playsound minecraft:entity.item.break block ${soundListenersSel()} ~ ~ ~ 0.8 0.8")
+		tellThrower("lost", "gray")
+	}
+
+	/**
+	 * The recipe's message ([ra.modules.enchanting.sacrificeRecipe] `won` / `lost`), if it has one,
+	 * to the player who threw the item. `on origin` is an item's Thrower; an item dropped by a
+	 * hopper or a mob, or thrown by a player who has left, has none and nobody is told.
+	 */
+	private fun Function.tellThrower(key: String, color: String) {
+		raw("""execute if data storage ra:enchant $key on origin run tellraw ${noticeOnly("@s[type=player]")} [{text:"[RA] ",color:"gold"},{storage:"ra:enchant",nbt:"$key",color:"$color"}]""")
 	}
 }

@@ -43,10 +43,11 @@ object Extender {
 			number("extend", min = 1, max = 1200)
 		}
 		pack.blockGive(block)
-		pack.blockRecipe(block, unlockedBy = Items.QUARTZ_BLOCK) {
-			pattern(" R ", " C ", "   ")
-			key("C", Items.QUARTZ_BLOCK)
+		pack.blockRecipe(block, unlockedBy = Items.REPEATER) {
+			pattern("RBR", "SSS")
 			key("R", Items.REPEATER)
+			key("B", Items.SLIME_BALL)
+			key("S", Items.STONE)
 		}
 		pack.blockRegisterMessage(block)
 		pack.define(block.handlePlacement) { handlePlacement() }

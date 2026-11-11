@@ -4,9 +4,10 @@ import io.github.ayfri.kore.features.predicates.providers.constant
 import io.github.ayfri.kore.features.predicates.providers.floorDiv
 import io.github.ayfri.kore.features.predicates.providers.min
 import io.github.ayfri.kore.features.predicates.providers.mul
-import io.github.ayfri.kore.features.predicates.providers.sub
 import ra.core.computeInto
 import ra.core.computeScore
+import ra.core.defineProvider
+import ra.core.namedProvider
 import ra.core.provider
 import ra.core.scoreOf
 import ra.core.storeInt
@@ -43,7 +44,16 @@ object DrainExperience : PackPart {
 	val drainPlaceExp = ref(Ns.WIRES, "fluid/drain_place_exp")
 	val drainPlaceOrb = ref(Ns.WIRES, "fluid/drain_place_orb")
 
+	/**
+	 * Named provider `ra_wires:fluid/experience_ml`: `#dr.pts * 100` (ra.wires.tmp), the mL that
+	 * many points are worth. Pouring in and pulling out both charge through it, so the rate is
+	 * one number in one file.
+	 */
+	private val POINTS_ML = namedProvider(Ns.WIRES, "fluid/experience_ml")
+
 	override fun Ra.register() {
+		pack.defineProvider(POINTS_ML, provider { mul(scoreOf("#dr.pts", "ra.wires.tmp"), constant(ML_PER_POINT)) })
+
 		pack.define(DrainExperience.drainExp) {
 			// Draw a sneaking player's experience into the network.
 			// Context: as a vertical drain marker, at the drain position.
@@ -79,7 +89,7 @@ object DrainExperience : PackPart {
 					min(
 						scoreOf("#dr.pts", "ra.wires.tmp"),
 						constant(POINTS_PER_ACTION),
-						floorDiv(sub(scoreOf("#net_capacity", "ra.tr.tmp"), scoreOf("#net_amount", "ra.tr.tmp")), constant(ML_PER_POINT)),
+						floorDiv(RaLib.Transport.Net.free, constant(ML_PER_POINT)),
 					)
 				},
 			)
@@ -89,7 +99,7 @@ object DrainExperience : PackPart {
 
 			// Charge the grid for exactly the points about to be taken, so neither side can
 			// end up owing the other a fraction of a point.
-			computeInto(storeInt(Storage.WIRES, "xp.amount"), provider { mul(scoreOf("#dr.pts", "ra.wires.tmp"), constant(ML_PER_POINT)) })
+			computeInto(storeInt(Storage.WIRES, "xp.amount"), POINTS_ML)
 			function(DrainExperience.drainExpOffer, Storage.WIRES, "xp")
 
 			raw("execute store result storage ra:wires xp.points int 1 run scoreboard players get #dr.pts ra.wires.tmp")
@@ -147,7 +157,7 @@ object DrainExperience : PackPart {
 			computeScore("#dr.pts", "ra.wires.tmp", provider { min(constant(POINTS_PER_ACTION), floorDiv(scoreOf("#dx.have", "ra.wires.tmp"), constant(ML_PER_POINT))) })
 			raw("execute if score #dr.pts ra.wires.tmp matches ..0 run return run data modify entity @s data.status.drain_state set value \"network_empty\"")
 
-			computeInto(storeInt(Storage.WIRES, "xp.amount"), provider { mul(scoreOf("#dr.pts", "ra.wires.tmp"), constant(ML_PER_POINT)) })
+			computeInto(storeInt(Storage.WIRES, "xp.amount"), POINTS_ML)
 			function(DrainExperience.drainExpPull, Storage.WIRES, "xp")
 
 			raw("execute store result storage ra:wires xp.points int 1 run scoreboard players get #dr.pts ra.wires.tmp")

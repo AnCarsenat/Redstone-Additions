@@ -60,12 +60,12 @@ object Boxer {
 		}
 		pack.blockRegisterMessage(block)
 		pack.specGive(block, item)
-		pack.shapedRecipe(block.ns, block.id, item.recipeResult(), Unlock(Items.DROPPER), count = null) {
-			pattern("PPP", "RDR", " I ")
-			key("P", listOf(Items.PAPER))
+		pack.shapedRecipe(block.ns, block.id, item.recipeResult(), Unlock(Items.PISTON), count = null) {
+			pattern("CPC", "CBC", "CRC")
+			key("C", listOf(Items.COBBLESTONE, Items.BLACKSTONE, Items.COBBLED_DEEPSLATE))
+			key("P", listOf(Items.PISTON))
+			key("B", listOf(Items.BARREL))
 			key("R", listOf(Items.REDSTONE))
-			key("D", listOf(Items.DROPPER))
-			key("I", listOf(Items.IRON_INGOT))
 		}
 
 		pack.define(block.handlePlacement) { handlePlacement(block, input = "^ ^ ^-1") }

@@ -58,6 +58,17 @@ object Skin {
 			returnValue(1)
 		}
 
+		// `apply_facing {real, skin, id, facing}`: the skin always turned to `facing`, over a real
+		// block with no `facing` of its own (the Item Pipe Splitter: a dispenser facing up drawn over
+		// a block that is not a container).
+		pack.define(RaLib.Skin.applyFacing) {
+			killSkins()
+			raw("\$execute unless block ~ ~ ~ \$(real) run return 0")
+			sampleLight()
+			raw("\$" + macroCall(Spawn.spawnWithLight, "{skin:\"\$(skin)\",id:\"\$(id)\",facing:\"\$(facing)\"}"))
+			returnValue(1)
+		}
+
 		// `apply_lit {real, skin, id, lit}`: draw `skin` over the `real` block, carrying a `lit`
 		// block state. Context: at the block position.
 		//

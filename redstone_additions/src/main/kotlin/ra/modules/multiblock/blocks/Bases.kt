@@ -37,6 +37,7 @@ import ra.core.raMessage
 import ra.core.raw
 import ra.core.ref
 import ra.core.registeredLine
+import ra.core.block.PlacementBat
 
 /**
  * Multiblock Bases (`ra_multiblock:blocks/...`): the core block every multiblock is assembled
@@ -99,7 +100,7 @@ object Bases {
 
 	/** `$(tier)` macro arguments: see [BaseTier.tierDataSnbt]. */
 	private fun Function.baseGive() {
-		raw("""${'$'}give @s bat_spawn_egg[item_model="$(block_model)",item_name="$(tier_name) Multiblock Base",lore=[{text:"$(lore_text)",color:"gray",italic:false}],custom_data={ra:{multiblock_base:"$(tier)"}},entity_data={id:"minecraft:bat",Tags:["ra","ra.spawned","ra.place.multiblock_base","ra.place.multiblock_base.$(tier)"],Silent:1b,NoAI:1b,Invulnerable:1b}]""")
+		raw("""${'$'}give @s bat_spawn_egg[item_model="$(block_model)",item_name="$(tier_name) Multiblock Base",lore=[{text:"$(lore_text)",color:"gray",italic:false}],custom_data={ra:{multiblock_base:"$(tier)"}},entity_data={id:"minecraft:bat",Tags:["ra","ra.spawned","ra.place.multiblock_base","ra.place.multiblock_base.$(tier)"],${PlacementBat.FLAGS}}]""")
 	}
 
 	/** As the spawned bat, at its position. Macro: tier data. */
@@ -140,7 +141,7 @@ object Bases {
 			run { function(MultiblockLib.disassemble) }
 		}
 
-		raw("""${'$'}summon item ~ ~ ~ {Item:{id:"minecraft:bat_spawn_egg",count:1,components:{"minecraft:item_model":"$(block_model)","minecraft:item_name":"$(tier_name) Multiblock Base","minecraft:custom_data":{ra:{multiblock_base:"$(tier)"}},"minecraft:entity_data":{id:"minecraft:bat",Tags:["ra","ra.spawned","ra.place.multiblock_base","ra.place.multiblock_base.$(tier)"],Silent:1b,NoAI:1b,Invulnerable:1b},"minecraft:lore":[{text:"$(lore_text)",color:"gray",italic:false}]}}}""")
+		raw("""${'$'}summon item ~ ~ ~ {Item:{id:"minecraft:bat_spawn_egg",count:1,components:{"minecraft:item_model":"$(block_model)","minecraft:item_name":"$(tier_name) Multiblock Base","minecraft:custom_data":{ra:{multiblock_base:"$(tier)"}},"minecraft:entity_data":{id:"minecraft:bat",Tags:["ra","ra.spawned","ra.place.multiblock_base","ra.place.multiblock_base.$(tier)"],${PlacementBat.FLAGS}},"minecraft:lore":[{text:"$(lore_text)",color:"gray",italic:false}]}}}""")
 
 		raw("\$playsound $(break_sound) block ${soundListenersSel(16)} ~ ~ ~ $(break_volume) $(break_pitch)")
 		raw("particle minecraft:cloud ~ ~ ~ 0.2 0.2 0.2 0.02 5 normal ${particleViewersSel()}")

@@ -37,7 +37,7 @@ described in [Contributing Guidelines](contributing-guidelines.md#installing-int
 
 ## Modules
 
-**Looking for a recipe? [The Recipe Atlas](recipe-atlas.md) has all 108 of them on one
+**Looking for a recipe? [The Recipe Atlas](recipe-atlas.md) has all 113 of them on one
 page**, listed A to Z and grouped by module — plus the five items that have no recipe
 and are instead gambled for on an [enchanting table](enchant-crafting.md). This table
 is the shortcut: one sample per module, and where to read about it.
@@ -47,7 +47,7 @@ is the shortcut: one sample per module, and where to read about it.
 | [Logic Gates](logic-gates.md) | 10 timing/logic blocks | ![Clock recipe](images/recipes/ra_gates/clock.png){ width="220" } |
 | [Interactive Machines](interactive-machines.md) | 14 automation and utility blocks | ![Block Placer recipe](images/recipes/ra_interactive/block_placer.png){ width="220" } |
 | [Storage](storage.md) | Boxer + Unboxer workflow | ![Boxer recipe](images/recipes/ra_storage/boxer.png){ width="220" } |
-| [Sensors](sensors.md) | Entity detector, tag operators, light and weather sensors, held item and player detectors | ![Entity Detector recipe](images/recipes/ra_sensors/entity_detector.png){ width="220" } |
+| [Sensors](sensors.md) | Entity detector, tag operators, light and weather sensors, held item, player and block detectors | ![Entity Detector recipe](images/recipes/ra_sensors/entity_detector.png){ width="220" } |
 | [Wireless Redstone](wireless-redstone.md) | Emitters and Receivers (on/off and analog), Remote and Pager | ![Wireless Emitter recipe](images/recipes/ra_wireless/emitter.png){ width="220" } |
 | [Transport Networks](transport-networks.md) | Liquid, gas, EU, Boiler, Solar Panel, Water Wheel, Spout, Tesla Coil, Air Tank and Heavy Boots | ![Liquid Pump recipe](images/recipes/ra_wires/liquid_pump.png){ width="220" } |
 | [Chunk Loader](chunk-loader.md) | 1 force-load block | ![Chunk Loader recipe](images/recipes/ra_chunk_loader/chunk_loader.png){ width="220" } |
@@ -57,7 +57,7 @@ is the shortcut: one sample per module, and where to read about it.
 | [Infinite Generators](infinite-generators.md) | 3 self-growing blocks + casing | ![Mineral Generator recipe](images/recipes/ra_infinite/mineral_generator.png){ width="220" } |
 | [Ender Links](ender-links.md) | 3 remote vaults, teleport anchor, Anchor Terminal and Anchor Tablet | ![Teleport Anchor recipe](images/recipes/ra_ender/teleport_anchor.png){ width="220" } |
 | [Displays](displays.md) | Gauge Bar, Item Hologram and Text Screen | ![Gauge Bar recipe](images/recipes/ra_displays/gauge_bar.png){ width="220" } |
-| [Automation](automation.md) | Crafter Controller, the Pattern item, Uncrafter and Experience Absorber | ![Crafter Controller recipe](images/recipes/ra_automation/crafter_controller.png){ width="220" } |
+| [Automation](automation.md) | Crafter Controller, the Pattern and Recipe Pattern items, Uncrafter, Experience Absorber and Item Pipe Splitter | ![Crafter Controller recipe](images/recipes/ra_automation/crafter_controller.png){ width="220" } |
 | [Security](security.md) | Keypad, a crafter whose slots are the code | ![Keypad recipe](images/recipes/ra_security/keypad.png){ width="220" } |
 | [Farming](farming.md) | Sprinkler and Breeder: water and grow crops, breed animals | ![Sprinkler recipe](images/recipes/ra_farming/sprinkler.png){ width="220" } |
 | [Railworks](railworks.md) | Route Rail, a junction that sends each cart its own way | ![Route Rail recipe](images/recipes/ra_railworks/route_rail.png){ width="220" } |
@@ -65,8 +65,8 @@ is the shortcut: one sample per module, and where to read about it.
 
 Current pack totals:
 
-- 94 placeable custom blocks
-- 111 recipes, all of them in the [Recipe Atlas](recipe-atlas.md)
+- 96 placeable custom blocks
+- 113 recipes, all of them in the [Recipe Atlas](recipe-atlas.md)
 - 9 tools (Wrench, Goggles, Data Handler, Creative Data Handler, Clipboard,
   Multimeter, Redstone Remote, Pager, Anchor Tablet)
 
@@ -87,7 +87,7 @@ Current pack totals:
 | `/function ra_jetpacks:items/give_all` | Jetpack kits |
 | `/function ra_ender:items/give_all` | Ender vaults and Teleport Anchors |
 | `/function ra_displays:items/give_all` | Display blocks |
-| `/function ra_automation:items/give_all` | Crafter Controller, a Pattern, Uncrafter and Experience Absorber |
+| `/function ra_automation:items/give_all` | Crafter Controller, a Pattern, a Recipe Pattern, Uncrafter, Experience Absorber and Item Pipe Splitter |
 | `/function ra_security:items/give_all` | Keypad |
 | `/function ra_farming:items/give_all` | Sprinkler, Breeder |
 | `/function ra_railworks:items/give_all` | Route Rail |

@@ -36,6 +36,10 @@ internal object InsertOrDrop {
 	val placeNext = lib("inventory/insert_or_drop/place_next")
 	val stackSize = lib("inventory/stack_size")
 	val writeCount = lib("inventory/insert_or_drop/write_count")
+	/** Is storage ra:inventory item a shulker box (any colour)? Returns 1 or 0. */
+	val isShulkerItem = lib("inventory/is_shulker_item")
+	/** The same for storage ra:temp inv_item, can_accept_one's input. */
+	val isShulkerProbe = lib("inventory/is_shulker_probe")
 
 	private val INV = Storage.INVENTORY
 	private val slot = fake("#inv_slot")
@@ -71,6 +75,15 @@ internal object InsertOrDrop {
 		}
 
 		pack.define(RaLib.Inventory.insertOrDrop) { insertOrDrop() }
+		// Every shulker box id ends in "shulker_box" (`shulker_box`, `red_shulker_box`, ...); the
+		// last 11 characters, copied as a string, are compared without a macro.
+		for ((fn, path) in listOf(isShulkerItem to "ra:inventory item.id", isShulkerProbe to "ra:temp inv_item.id")) pack.define(fn) {
+			raw("data remove storage ra:inventory tail")
+			raw("data modify storage ra:inventory tail set string storage $path -11")
+			raw("execute store success score #inv_shk ${Obj.TEMP} if data storage ra:inventory {tail:\"shulker_box\"}")
+			raw("data remove storage ra:inventory tail")
+			raw("return run scoreboard players get #inv_shk ${Obj.TEMP}")
+		}
 		pack.define(mergeNext) { mergeNext() }
 		pack.define(mergeOne) { mergeOne() }
 		pack.define(placeNext) { placeNext() }
@@ -245,6 +258,13 @@ internal object InsertOrDrop {
 			unlessCondition { block(here, BlockTags.containers) }
 			run { returnValue(0) }
 		}
+
+		// A shulker box never goes into a shulker box (the game refuses it too): dropped, like
+		// anything else that does not fit.
+		raw("scoreboard players set #inv_shk_in ${Obj.TEMP} 0")
+		raw("execute if block ~ ~ ~ #minecraft:shulker_boxes store success score #inv_shk_in ${Obj.TEMP} if function ${isShulkerItem.asId()}")
+		raw("execute if score #inv_shk_in ${Obj.TEMP} matches 1 run function ${dropItem.asId()}")
+		raw("execute if score #inv_shk_in ${Obj.TEMP} matches 1 run return 0")
 
 		// A container that has never held anything may have no Items list at all.
 		execute {

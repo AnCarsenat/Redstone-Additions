@@ -5,7 +5,7 @@
 <h1 align="center">Redstone Additions</h1>
 
 <p align="center">
-  <strong>91 custom blocks. 9 tools. 108 recipes. 2 jetpacks and 3 upgrade kits. Vanilla datapack for Minecraft 26.3.</strong>
+  <strong>96 custom blocks. 9 tools. 113 recipes. 2 jetpacks and 3 upgrade kits. Vanilla datapack for Minecraft 26.3.</strong>
 </p>
 
 <p align="center">
@@ -16,9 +16,9 @@
 <p align="center">
   <img src="https://img.shields.io/badge/Minecraft-26.3-2EA44F" alt="Minecraft 26.3">
   <img src="https://img.shields.io/badge/Version-v6.0.3-blue" alt="Version v6.0.3">
-  <img src="https://img.shields.io/badge/Blocks-94-red" alt="94 blocks">
+  <img src="https://img.shields.io/badge/Blocks-96-red" alt="96 blocks">
   <img src="https://img.shields.io/badge/Tools-9-lightgrey" alt="9 tools">
-  <img src="https://img.shields.io/badge/Recipes-111-8A2BE2" alt="111 recipes">
+  <img src="https://img.shields.io/badge/Recipes-113-8A2BE2" alt="113 recipes">
 </p>
 
 <p align="center">
@@ -126,7 +126,7 @@ listed A to Z and grouped by module.
 - Boxer
 - Unboxer
 
-### Sensors (7)
+### Sensors (8)
 - Entity Detector
 - Tag Adder
 - Tag Remover
@@ -134,6 +134,7 @@ listed A to Z and grouped by module.
 - Weather Sensor — on during rain, thunder, day or night
 - Held Item Detector — on while a nearby player carries an item
 - Player Detector — on while a listed player is near
+- Block Detector — on while the block at its target is the chosen block
 
 ### Wireless (4)
 - Wireless Emitter
@@ -217,10 +218,11 @@ netherrack or poppies on an enchanting table.
 - Item Hologram — shows the item inside it, turning above the block, with its name
 - Text Screen — glowing nixie-style text: the redstone level picks which item's name it shows
 
-### Automation (3)
-- Crafter Controller — fires the crafter next to it once it holds what its Pattern says
+### Automation (4)
+- Crafter Controller — fires the crafter next to it once it holds what its Pattern says; with a Recipe Pattern it fills the crafter itself from a container
 - Uncrafter — takes items back apart into their ingredients, for EU
 - Experience Absorber — collects experience orbs into a fluid network
+- Item Pipe Splitter — shares the items of the container above it between the containers around it
 
 ### Security (1)
 - Keypad — a crafter whose slots are the code; the right code gives a redstone pulse
@@ -243,7 +245,7 @@ netherrack or poppies on an enchanting table.
 - Diamond Multiblock Base
 - Netherite Multiblock Base
 
-### Items (14)
+### Items (15)
 - Iron Jetpack Kit — right-click while wearing any chestplate to fit it
 - Infinite Iron Jetpack Kit — won on an enchanting table; burns no fuel
 - Thruster Kit — hold sprint while airborne to accelerate
@@ -257,6 +259,7 @@ netherrack or poppies on an enchanting table.
 - Enchanted Coal Block — nine Enchanted Coal make one; one block plus a stick makes a Big Torch
 - Item Crate — what the Boxer packs a chest into, and the Unboxer unpacks
 - Pattern — sneak + right-click a crafter to record its grid, for the Crafter Controller
+- Recipe Pattern — a Pattern the Crafter Controller fills the crafter from
 - Goggles Lens — fits into any helmet and gives it the Goggles' view;
   `/trigger ra.goggles` switches it off or takes it back out
 
@@ -385,7 +388,7 @@ Starter command:
 | `/function ra_enchanting:items/give_all` | Disenchanter, Book Upgrader and Book Printer |
 | `/function ra_ender:items/give_all` | Ender vaults, Teleport Anchor, Anchor Terminal and Anchor Tablet |
 | `/function ra_displays:items/give_all` | Display blocks |
-| `/function ra_automation:items/give_all` | Crafter Controller, a Pattern, Uncrafter and Experience Absorber |
+| `/function ra_automation:items/give_all` | Crafter Controller, a Pattern, a Recipe Pattern, Uncrafter, Experience Absorber and Item Pipe Splitter |
 | `/function ra_security:items/give_all` | Keypad |
 | `/function ra_farming:items/give_all` | Sprinkler, Breeder |
 | `/function ra_railworks:items/give_all` | Route Rail |

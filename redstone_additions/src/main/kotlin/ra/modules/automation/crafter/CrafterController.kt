@@ -47,6 +47,9 @@ import ra.modules.automation.pattern.Pattern
  * load it (one Pattern from a held stack); the Pattern it held comes back to you. A plain
  * wrench click gives the Pattern back, Shift+RMB with the wrench switches it off and on (`enabled`). Breaking it drops the Pattern.
  *
+ * A Recipe Pattern loads the same way and makes it fill the crafter itself from the container on
+ * its other side ([CrafterFill], tag [CrafterFill.FILL]).
+ *
  * FIRING. A crafter crafts on a rising redstone edge. The controller powers itself for
  * [CrafterControllerRun.PULSE_TICKS] ticks (`target[power=15]`, a state change of the same
  * block, which updates its neighbours) and that is the crafter's edge.
@@ -172,7 +175,8 @@ object CrafterController {
 		raw("data modify entity @s data.properties.pattern set from storage $CC slots")
 		raw("data remove storage $CC new")
 		raw("function ${CrafterControllerRun.arm.asId()}")
-		raw("""tellraw $USER [$RA_CHAT_PREFIX,{text:"Pattern loaded into the Crafter Controller.",color:"green"}]""")
+		raw("""execute unless entity @s[tag=${CrafterFill.FILL}] run tellraw $USER [$RA_CHAT_PREFIX,{text:"Pattern loaded into the Crafter Controller.",color:"green"}]""")
+		raw("""execute if entity @s[tag=${CrafterFill.FILL}] run tellraw $USER [$RA_CHAT_PREFIX,{text:"Recipe Pattern loaded: the Controller fills the crafter from the container on its other side.",color:"green"}]""")
 		raw("playsound minecraft:ui.cartography_table.take_result block ${soundListenersSel(10)} ~ ~ ~ 0.7 1.0")
 	}
 }

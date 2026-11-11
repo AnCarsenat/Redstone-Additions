@@ -10,6 +10,8 @@ import ra.core.macroCall
 import ra.core.raw
 import ra.modules.automation.conveyor.Conveyor.readSpeed
 import ra.modules.interactive.Fan
+import ra.modules.interactive.FanPush
+import ra.modules.interactive.FanPush.playerGuards
 
 /**
  * What an active [Conveyor] does, every tick: a push for each thing standing on it. The same
@@ -17,8 +19,8 @@ import ra.modules.interactive.Fan
  *
  * WHAT STANDS ON IT. The box is the half block above the slab and the half above that
  * (`align xyz positioned ~ ~0.5 ~`, `dx=0,dy=0,dz=0`), which every hitbox resting on the slab
- * meets. Pack scaffolding, displays and what hangs on walls are left alone (the Fan's
- * [Fan.UNMOVED] entity tag).
+ * meets. The pack's own entities (tagged `ra`), armour stands, markers, displays, interactions
+ * and what hangs on walls are left alone ([FanPush.MOVABLE], the Fan's [Fan.UNMOVED] tag).
  *
  * MOBS AND ITEMS get their `Motion` along the push axis raised to the Conveyor's speed (lowered,
  * for a negative axis), never cut, and the other axes left alone: something already moving faster
@@ -32,7 +34,9 @@ import ra.modules.interactive.Fan
  * feet), so one standing across two Conveyors is not pushed twice, and not at all in the air.
  * Each step first checks the cells the player's front edge would enter, at the feet (a passable
  * block or a bottom slab, such as the next Conveyor) and at both head heights: a Conveyor never
- * pushes anyone into a wall. Spectators and creative players who are flying are left alone.
+ * pushes anyone into a wall. Spectators, riders, elytra gliders and creative players who are
+ * flying are left alone, and a player a Fan already stepped this tick is not stepped again
+ * ([FanPush.PUSHED]).
  *
  * CHAINS. A Conveyor that pushed something tags the one in front of it [Conveyor.ACTIVE], so the
  * next one carries on at once instead of at its next poll.
@@ -40,8 +44,8 @@ import ra.modules.interactive.Fan
 internal object ConveyorPush {
 	private val T = Obj.TEMP
 
-	/** The selector filter for what a Conveyor may carry. */
-	val MOVABLE = "type=!#${Ns.INTERACTIVE.id}:${Fan.UNMOVED}"
+	/** The selector filter for what a Conveyor may carry: the Fan's, nothing tagged `ra`. */
+	val MOVABLE get() = FanPush.MOVABLE
 
 	/** On the Conveyor running, for the player's "is this the one under me" test. */
 	private const val SELF = "ra.auto.cv_self"
@@ -127,11 +131,12 @@ internal object ConveyorPush {
 
 	/** Macro: one step for a player. As the player, at them. */
 	private fun Function.pushPlayer() {
-		raw("execute if entity @s[gamemode=creative,nbt={abilities:{flying:1b}}] run return 0")
+		playerGuards()
 		val passable = "#ra_lib:ray_passable"
 		raw("\$execute positioned ~\$(cx) ~ ~\$(cz) unless block ~ ~ ~ $passable unless block ~ ~ ~ #minecraft:slabs[type=bottom] run return 0")
 		raw("\$execute positioned ~\$(cx) ~1 ~\$(cz) unless block ~ ~ ~ $passable run return 0")
 		raw("\$execute positioned ~\$(cx) ~1.75 ~\$(cz) unless block ~ ~ ~ $passable run return 0")
+		raw("scoreboard players operation @s ${FanPush.PUSHED} = ${FanPush.NOW} $T")
 		raw("\$tp @s ~\$(dx) ~ ~\$(dz)")
 	}
 }

@@ -33,6 +33,7 @@ import ra.core.item.loreItem
 import ra.core.item.loreLine
 import ra.core.raw
 import ra.lib.orientation.Orientation
+import ra.modules.interactive.FanPush
 
 /**
  * Conveyor: a smooth stone slab that carries what stands on it, items, mobs and players, the way
@@ -163,6 +164,7 @@ object Conveyor {
 			raw("scoreboard players add $PHASE $T 1")
 			raw("execute if score $PHASE $T matches $POLL.. run scoreboard players set $PHASE $T 0")
 			executeRun("if score $PHASE $T matches 0", poll)
+			raw("execute if score $ON $T matches 1.. store result score ${FanPush.NOW} $T run time query gametime")
 			executeRun("if score $ON $T matches 1.. as @e[type=minecraft:marker,tag=$ACTIVE] at @s", ConveyorPush.run)
 		}
 

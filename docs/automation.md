@@ -257,7 +257,9 @@ runs that spawner the way the spawner runs itself when a player is near:
   spawner.
 - The mob is the one the spawner shows. A spawner set with a plain spawn egg gives mobs with the
   usual random equipment, babies and jockeys. A spawner whose mob carries more data (set by
-  command) gives exactly that mob.
+  command) gives exactly that mob, except that a spawner whose mob has riders (`Passengers`) is
+  not run: only the spawner's own mob type ever comes out.
+- If the game refuses to summon the mob, the EU is paid back.
 - It runs these spawner mobs: zombie, husk, zombie villager, drowned, skeleton, stray, bogged,
   wither skeleton, spider, cave spider, blaze, silverfish, creeper, witch, enderman and zombified
   piglin.
@@ -271,15 +273,16 @@ mobs in the cube of *radius* blocks around it (default 8, up to 16; admins up to
   barriers, magma, a bottom slab or stair, fences, walls, carpets or the like.
 - The mob is drawn from the biome's vanilla monster list with the vanilla weights: spiders,
   zombies, zombie villagers, skeletons, creepers, endermen and witches. Deserts use the desert
-  list, Snowy Plains and Ice Spikes the snowy list, every other biome the plains list. The
-  Mushroom Fields and the Deep Dark spawn nothing.
+  list, Snowy Plains and Ice Spikes the snowy list. **Every other biome uses the plains list**,
+  so what a biome adds of its own is not spawned: no swamp slimes, no drowned in caves or rivers,
+  no bogged. The Mushroom Fields and the Deep Dark spawn nothing.
 - Spiders need the eight blocks around their feet free too, endermen three blocks of headroom.
-- It stops while *max_mobs* hostile mobs (default 20, up to 70, vanilla's monster cap) are within
-  the radius, counting every hostile mob there, not only its own.
+- It stops while *max_mobs* hostile mobs (default 20, up to 70, vanilla's monster cap) are in the
+  same cube it spawns in, counting every hostile mob there, not only its own.
 
 **Keeping its mobs.** A mob it spawns does not despawn while a Fake Player is within 48 blocks of
-it, as a mob near a player does not. A mob that has had no Fake Player near it for 30 seconds
-(it wandered off, the block was broken) goes back to the normal rules and despawns like any
+it, as a mob near a player does not. A mob that has had no Fake Player near it for 30 to 60
+seconds (it wandered off, the block was broken) goes back to the normal rules and despawns like any
 other. A mob you name keeps its name tag's protection.
 
 ### What it never does
@@ -325,10 +328,12 @@ players) the way the arrow points. The recipe makes six.
   10).
 - Players are carried in small steps every tick, so the ride looks smooth, and can still walk,
   jump and turn while on it. A Conveyor never pushes anyone into a wall. Players in the air,
-  flying in creative or spectating are not moved.
+  riding something, gliding with an elytra, flying in creative or spectating are not moved, and a
+  player a Fan is already pushing is not pushed by the Conveyor in the same tick.
 - Items and mobs get the Conveyor's speed along the arrow. Anything already moving faster that way
   keeps its speed, and mobs still walk sideways and fall.
-- Markers, displays, item frames, paintings and the like are left alone.
+- Armor stands, markers, displays, interactions, item frames, paintings and everything the pack
+  itself places (anything tagged `ra`) are left alone.
 - Breaking it, or putting a second slab on it, drops the Conveyor.
 
 ### Wrench and tools
@@ -466,15 +471,17 @@ Each item is checked with `ra_lib:inventory/can_accept_one` before it moves and 
 | `data.properties.eu_per_mob` | EU per mob spawned (admin only) |
 | `data.data.delay` | the spawner countdown, in ticks |
 | `data.status.state`, `data.status.spawned` | what the Goggles show |
-| tag `ra.auto.fp_mob`, score `ra.auto.fp_seen` | on a mob it spawned: held (persistent), and the game time a Fake Player last held it |
+| tags `ra.auto.fp_mob`, `ra.auto.fp_held` | on a mob it spawned (persistent while tagged), and on one a Fake Player held since the last sweep. No scores: a mob that dies leaves nothing behind |
 | `storage ra_automation:fake_player allow` | the spawner mobs it runs, written at load: `{"minecraft:zombie":{h:2,w:0},...}` (`h` blocks of headroom, `w` 1 for a mob wider than a block) |
 
 Light is read with a `location_check` predicate (`light` 0 for natural spawning, up to 11 for a
 spawner), which tests the light the game shows there. The spawner's mob id is checked with
-`ra_lib:safe/check` (format ID) and must be a key of `allow` before it is used. A held mob gets
-`PersistenceRequired:1b`; releasing it sets it back to `0b` (unless it has a name). The release
-check runs on the clock, only while some mob carries the tag. Uninstalling releases every held
-mob.
+`ra_lib:safe/check` (format ID) and must be a key of `allow` before it is used; a spawner mob
+with `Passengers` is refused. A held mob gets `PersistenceRequired:1b`. Each run a Fake Player
+tags the `ra.auto.fp_mob` mobs within 48 blocks `ra.auto.fp_held`; every 30 clock runs, while
+some mob carries the tag, a sweep releases the ones not held since the last sweep
+(`PersistenceRequired` back to `0b` unless it has a name) and clears `ra.auto.fp_held`.
+Uninstalling releases every held mob.
 
 ### Conveyor data
 

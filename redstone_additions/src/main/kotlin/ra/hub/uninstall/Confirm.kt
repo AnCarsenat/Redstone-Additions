@@ -126,6 +126,7 @@ internal fun DataPack.registerUninstallConfirm() {
 		// persistence it gave them (a named one keeps its own) and the tag.
 		raw("execute as @e[tag=ra.auto.fp_mob] unless data entity @s CustomName run data modify entity @s PersistenceRequired set value 0b")
 		raw("tag @e[tag=ra.auto.fp_mob] remove ra.auto.fp_mob")
+		raw("tag @e[tag=ra.auto.fp_held] remove ra.auto.fp_held")
 
 		PLAYER_TAGS.forEach { t -> tag(allPlayers()) { remove(t) } }
 		untagMarkers("ra.dh_target")

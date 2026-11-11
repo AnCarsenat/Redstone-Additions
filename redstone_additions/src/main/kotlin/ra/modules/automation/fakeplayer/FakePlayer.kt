@@ -73,20 +73,20 @@ object FakePlayer {
 	/** On every mob a Fake Player spawned, while one holds it. */
 	const val MOB = "ra.auto.fp_mob"
 
-	/** The game time a Fake Player last held the mob. */
-	const val SEEN = "ra.auto.fp_seen"
+	/** On a [MOB] a Fake Player held since the last sweep. */
+	const val HELD = "ra.auto.fp_held"
 
 	/** A Fake Player holds its mobs within this many blocks (a player keeps mobs within 32). */
 	const val HOLD = 48
 
-	/** A mob no Fake Player has held for this many ticks goes back to the vanilla rules. */
-	const val RELEASE_AFTER = 600
+	/** Clock runs (seconds) between two sweeps: a mob unheld for 30 to 60 seconds goes back to the vanilla rules. */
+	const val SWEEP_RUNS = 30
 
 	val T = Obj.TEMP
 
 	val registerBlock = block.fn("register_block")
 	val run get() = FakePlayerRun.run
-	val releaseCheck get() = FakePlayerRun.releaseCheck
+	val sweep get() = FakePlayerRun.sweep
 	private val cycleRadius = block.fn("cycle_radius")
 
 	fun Ra.registerFakePlayer() {

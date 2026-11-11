@@ -19,7 +19,7 @@ import ra.modules.automation.fakeplayer.FakePlayerRun.state
  *
  * WHEN. Not with `spawn_monsters` off, not outside the Overworld, and not while a player (not a
  * spectator) is within 128 blocks: vanilla is spawning around that player already, or, within
- * 24, would spawn nothing here. Not while `max_mobs` hostile mobs are within the radius.
+ * 24, would spawn nothing here. Not while `max_mobs` hostile mobs are in the cube it spawns in.
  *
  * WHERE. [ATTEMPTS] random blocks a run in the cube of `radius` around it. A spot is good when the
  * mob's feet and head are in free space ([SPACE]), the block under it has a full top it can stand
@@ -31,7 +31,8 @@ import ra.modules.automation.fakeplayer.FakePlayerRun.state
  * below, taken from the 26.3 biome files). Entries that cannot spawn in the dark the way the Fake
  * Player looks (slimes need slime chunks or swamps, husks, strays and parched need open sky,
  * zombie horses the surface) keep their weight and spawn nothing when drawn, so the others come
- * no more often than in vanilla. Biomes not listed use the plains list; the Mushroom Fields and
+ * no more often than in vanilla. Biomes not listed use the plains list (so no swamp slimes, no
+ * drowned in caves or rivers, no bogged, whatever those biomes add); the Mushroom Fields and
  * the Deep Dark spawn nothing. One mob a good spot, where vanilla spawns a pack of up to four.
  */
 internal object FakePlayerNatural {
@@ -95,6 +96,9 @@ internal object FakePlayerNatural {
 			raw("execute if entity @a[gamemode=!spectator,distance=..128,limit=1] run return run ${state("a player is near: vanilla spawning runs")}")
 			readCappedProperty("radius", default = FakePlayer.DEFAULT_RADIUS, min = 1, adminMax = FakePlayer.ADMIN_MAX_RADIUS)
 			raw("execute store result storage $S n.r int 1 run scoreboard players get #prop $T")
+			raw("scoreboard players operation #fp.d $T = #prop $T")
+			raw("scoreboard players operation #fp.d $T += #prop $T")
+			raw("execute store result storage $S n.d int 1 run scoreboard players get #fp.d $T")
 			readProperty("max_mobs", default = FakePlayer.DEFAULT_MAX_MOBS, min = 1)
 			raw("execute if score #prop $T matches ${FakePlayer.MAX_MOBS + 1}.. run scoreboard players set #prop $T ${FakePlayer.MAX_MOBS}")
 			raw("scoreboard players operation #fp.cap $T = #prop $T")
@@ -108,16 +112,17 @@ internal object FakePlayerNatural {
 			raw(state("looking for dark, free spots"))
 		}
 
-		// {r}: the radius, a number read from the block and capped. One attempt, then the next.
+		// {r, d}: the radius, a number read from the block and capped, and twice it. One attempt, then the next.
 		pack.define(attempts) {
 			raw("execute if score #fp.i $T matches $ATTEMPTS.. run return 0")
 			raw("scoreboard players add #fp.i $T 1")
 			raw("execute if score #fp.noeu $T matches 1 run return 0")
-			raw("\$execute store result score #fp.n $T if entity @e[type=#ra_interactive:spawn_blocked,distance=..\$(r)]")
+			// The same cube the spawns land in: the blocks -r..r around it.
+			raw("\$execute align xyz positioned ~-\$(r) ~-\$(r) ~-\$(r) store result score #fp.n $T if entity @e[type=#ra_interactive:spawn_blocked,dx=\$(d),dy=\$(d),dz=\$(d)]")
 			raw("execute if score #fp.n $T >= #fp.cap $T run return run scoreboard players set #fp.cap $T -1")
 			for (a in listOf("x", "y", "z")) raw("\$execute store result storage $S n.$a int 1 run random value -\$(r)..\$(r)")
 			raw("function ${attempt.asId()} with storage $S n")
-			raw("\$function ${attempts.asId()} {r:\$(r)}")
+			raw("function ${attempts.asId()} with storage $S n")
 		}
 
 		// {x, y, z}: random offsets this pack drew.

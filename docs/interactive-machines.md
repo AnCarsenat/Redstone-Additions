@@ -184,10 +184,11 @@ with a reach.
   already had beyond it; sideways and falling are not touched.
 - Players are moved a small step every tick and never into a wall: a step that would put your
   feet or head inside a solid block is not taken. An upward Fan lifts you with Levitation, which
-  ends a moment after you leave its column. Spectators and creative players who are flying are
-  not pushed.
-- Paintings, item frames, displays and other fixed entities stay put
-  (`#ra_interactive:fan_unmoved`).
+  ends a moment after you leave its column. Spectators, players riding something or gliding with
+  an elytra, and creative players who are flying are not pushed, nor a player a Conveyor already
+  moved that tick.
+- Armor stands, paintings, item frames, displays, interactions and other fixed entities stay put
+  (`#ra_interactive:fan_unmoved`), and so does everything the pack itself placed (tagged `ra`).
 - A wind puff leaves the face for the players with block particles on.
 - It is a dropper underneath; leave it empty, or it drops its items when powered.
 

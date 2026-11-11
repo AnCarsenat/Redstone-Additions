@@ -388,9 +388,10 @@ This page mirrors key datapack milestones from the main project changelog.
   up to 32), 4 tries a second, until *max_mobs* hostile mobs (default 20, up to 70) are around.
   Never more than vanilla: nothing in peaceful or with the spawning gamerules off, and nothing
   while a player is in range, since vanilla is spawning then. Its mobs do not despawn while a Fake
-  Player is within 48 blocks and go back to the normal rules 30 seconds after none is. The
+  Player is within 48 blocks and go back to the normal rules 30 to 60 seconds after none is. The
   Goggles show what it is doing and how many it spawned. Crafted from four gold ingots, an eye of
-  ender, an armor stand and a redstone block. [Automation](automation.md) lists exactly what it
+  ender, an armor stand and a redstone block. A spawner whose mob has riders is not run, and a
+  summon the game refuses gives its EU back. [Automation](automation.md) lists exactly what it
   does and does not do.
 - **Conveyor** (Automation). A smooth stone slab with an arrow that carries dropped items, mobs
   and players the way it points, at *speed* blocks a second (1 to 5, default 2; admins up to 10;
@@ -514,6 +515,10 @@ This page mirrors key datapack milestones from the main project changelog.
 
 ### Fixed
 
+- **Fan** pushed armor stands, including the armor-stand markers of custom blocks placed before
+  5.1.8, and any other entity the pack itself placed: it now leaves alone everything tagged `ra`
+  and every armor stand, like markers and displays. It also no longer pushes a player who is
+  riding something or gliding with an elytra, and a player a Conveyor already moved this tick.
 - **The bat a block's item spawns no longer shows while the block is placed.** It now spawns with
   an infinite, hidden invisibility effect (no particles, no icon), as well as silent, frozen and
   invulnerable as before. Every copy of a block's item carries it: `give`, recipes, the drop when

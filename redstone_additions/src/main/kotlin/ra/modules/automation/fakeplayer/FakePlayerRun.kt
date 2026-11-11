@@ -8,9 +8,9 @@ import ra.core.block.particleViewersSel
 import ra.core.block.readProperty
 import ra.core.define
 import ra.core.raw
+import ra.modules.automation.fakeplayer.FakePlayer.HELD
 import ra.modules.automation.fakeplayer.FakePlayer.HOLD
 import ra.modules.automation.fakeplayer.FakePlayer.MOB
-import ra.modules.automation.fakeplayer.FakePlayer.SEEN
 import ra.modules.automation.fakeplayer.FakePlayer.T
 import ra.modules.automation.fakeplayer.FakePlayerNatural.registerFakePlayerNatural
 import ra.modules.automation.fakeplayer.FakePlayerSpawner.registerFakePlayerSpawner
@@ -22,16 +22,17 @@ import ra.modules.automation.fakeplayer.FakePlayerSpawner.registerFakePlayerSpaw
  * off. Then a vanilla spawner touching one of its six faces is run ([FakePlayerSpawner]); without
  * one, natural spawning around it ([FakePlayerNatural]).
  *
- * HOLDING. Every mob a Fake Player spawns is tagged [MOB] and made persistent, and each run every
- * such mob within [HOLD] blocks is stamped with the time ([SEEN]): as long as a Fake Player is
- * near, it does not despawn, as a mob near a player does not. A mob no Fake Player has stamped for
- * [FakePlayer.RELEASE_AFTER] ticks (it wandered off, the block was broken) loses the tag and the
- * persistence and is an ordinary mob again, despawning by the vanilla rules ([releaseCheck], from
- * the clock). A mob a player names keeps its own persistence: naming sets it, the release then
- * leaves a named mob alone.
+ * HOLDING, WITH TAGS ONLY. Every mob a Fake Player spawns is tagged [MOB] and made persistent, and
+ * each run every such mob within [HOLD] blocks is tagged [HELD]: as long as a Fake Player is near,
+ * it does not despawn, as a mob near a player does not. Every [FakePlayer.SWEEP_RUNS] clock runs
+ * the sweep ([sweep]) releases the [MOB]s that were not [HELD] since the last sweep (they wandered
+ * off, the block was broken): they lose both tags and the persistence and are ordinary mobs again,
+ * despawning by the vanilla rules. Then it clears [HELD] for the next round. No score per mob, so a
+ * mob that dies leaves nothing behind. A mob a player names keeps its own persistence.
  *
  * EU. Each mob costs `eu_per_mob`, taken whole from the first wire or battery touching the block
- * whose grid holds it, before the mob is summoned: no EU, no mob.
+ * whose grid holds it, before the mob is summoned: no EU, no mob. A summon that brings no mob
+ * (the game refused it) gives the price back ([refund]).
  */
 internal object FakePlayerRun {
 	const val S = "ra_automation:fake_player"
@@ -44,13 +45,18 @@ internal object FakePlayerRun {
 	private fun fn(path: String) = FakePlayer.block.fn(path)
 
 	val run = fn("run")
-	val releaseCheck = fn("release_check")
+	val sweep = fn("sweep")
 	private val release = fn("release")
 	private val scanEu = fn("scan_eu")
 	private val take = fn("take")
+	private val giveBack = fn("give_back")
+	private val offer = fn("offer")
 
 	/** As the marker: 1 when `eu_per_mob` was paid, 0 when no grid beside the block holds it. */
 	val pay = fn("pay")
+
+	/** As the marker: the `#fp.cost` just paid back into a grid beside the block. */
+	val refund = fn("refund")
 
 	/** As the new mob: tagged, persistent, held now. */
 	val mark = fn("mark")
@@ -73,8 +79,7 @@ internal object FakePlayerRun {
 		}
 
 		pack.define(run) {
-			raw("execute store result score #now $T run time query gametime")
-			raw("execute if entity @e[tag=$MOB,distance=..$HOLD,limit=1] run scoreboard players operation @e[tag=$MOB,distance=..$HOLD] $SEEN = #now $T")
+			raw("tag @e[tag=$MOB,tag=!$HELD,distance=..$HOLD] add $HELD")
 			raw("scoreboard players set #fp.made $T 0")
 			raw("scoreboard players set #fp.noeu $T 0")
 			raw("execute store result score #fp.g $T run difficulty")
@@ -85,15 +90,17 @@ internal object FakePlayerRun {
 			raw("function ${FakePlayerNatural.run.asId()}")
 		}
 
-		pack.define(releaseCheck) {
-			raw("execute store result score #fp.cut $T run time query gametime")
-			raw("scoreboard players remove #fp.cut $T ${FakePlayer.RELEASE_AFTER}")
-			raw("execute as @e[tag=$MOB] unless score @s $SEEN >= #fp.cut $T run function ${release.asId()}")
+		// From the clock, while some mob is tagged: every SWEEP_RUNS runs, the unheld ones go back.
+		pack.define(sweep) {
+			raw("scoreboard players add #fp.sweep $T 1")
+			raw("execute if score #fp.sweep $T matches ..${FakePlayer.SWEEP_RUNS - 1} run return 0")
+			raw("scoreboard players set #fp.sweep $T 0")
+			raw("execute as @e[tag=$MOB,tag=!$HELD] run function ${release.asId()}")
+			raw("tag @e[tag=$HELD] remove $HELD")
 		}
 		pack.define(release) {
 			raw("execute unless data entity @s CustomName run data modify entity @s PersistenceRequired set value 0b")
 			raw("tag @s remove $MOB")
-			raw("scoreboard players reset @s $SEEN")
 		}
 
 		pack.define(counted) {
@@ -104,8 +111,8 @@ internal object FakePlayerRun {
 
 		pack.define(mark) {
 			raw("tag @s add $MOB")
+			raw("tag @s add $HELD")
 			raw("data modify entity @s PersistenceRequired set value 1b")
-			raw("scoreboard players operation @s $SEEN = #now $T")
 			raw("execute store result entity @s Rotation[0] float 1 run random value 0..359")
 			raw("scoreboard players add #fp.made $T 1")
 			raw("execute at @s run particle minecraft:poof ~ ~0.5 ~ 0.2 0.3 0.2 0.01 6 normal ${particleViewersSel(32)}")
@@ -125,7 +132,9 @@ internal object FakePlayerRun {
 		pack.define(spawnHere) {
 			raw("execute store result score #fp.paid $T run function ${pay.asId()}")
 			raw("execute unless score #fp.paid $T matches 1 run return run scoreboard players set #fp.noeu $T 1")
+			raw("scoreboard players operation #fp.before $T = #fp.made $T")
 			raw("\$execute positioned ~0.5 ~ ~0.5 summon \$(id) run function ${mark.asId()}")
+			raw("execute if score #fp.made $T = #fp.before $T run function ${refund.asId()}")
 		}
 
 		pack.define(pay) {
@@ -157,6 +166,24 @@ internal object FakePlayerRun {
 		// As the chosen node. `amount` is an int this pack computed, never a player's text.
 		pack.define(take) {
 			raw("\$return run function ${RaLib.Transport.Net.take.asId()} {amount:\$(amount),medium:\"eu\"}")
+		}
+
+		// The price back into the first grid beside the block (the one it was just taken from has
+		// that much room again).
+		pack.define(refund) {
+			raw("scoreboard players set #fp.found $T 0")
+			raw("execute store result storage $S pay.amount int 1 run scoreboard players get #fp.cost $T")
+			for (at in SIDES) raw("execute at @s positioned $at as @e[type=minecraft:marker,tag=ra.wires.electric_node,distance=..0.75,limit=1] run function ${giveBack.asId()}")
+			raw("data remove storage $S pay")
+		}
+		pack.define(giveBack) {
+			raw("execute if score #fp.found $T matches 1 run return 0")
+			raw("scoreboard players set #fp.found $T 1")
+			raw("function ${offer.asId()} with storage $S pay")
+		}
+		// As the node. `amount` is an int this pack computed.
+		pack.define(offer) {
+			raw("\$return run function ${RaLib.Transport.Net.offer.asId()} {amount:\$(amount),medium:\"eu\"}")
 		}
 
 		registerFakePlayerSpawner()

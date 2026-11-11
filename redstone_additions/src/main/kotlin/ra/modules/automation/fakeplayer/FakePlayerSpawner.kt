@@ -30,7 +30,9 @@ import ra.modules.automation.fakeplayer.FakePlayerRun.state
  *
  * WHICH MOBS. Only the hostile mobs of [ALLOWED], each with the room it needs: what vanilla's
  * dungeons, mineshafts, fortresses and strongholds hold, and the other common spawner mobs.
- * Slimes and magma cubes (a size of their own), animals and trial spawners are not run.
+ * Slimes and magma cubes (a size of their own), animals and trial spawners are not run, nor a
+ * spawner whose mob has `Passengers`: only the listed mob type ever comes out of it. A summon that
+ * brings no mob gives its EU back.
  */
 internal object FakePlayerSpawner {
 	/** Mob id -> blocks of headroom it needs, and 1 when it is wider than a block (the spider). */
@@ -83,6 +85,9 @@ internal object FakePlayerSpawner {
 			raw("data modify storage $S s.e set from block ~ ~ ~ SpawnData.entity")
 			raw("execute unless data storage $S s.e.id run data modify entity @s data.data.delay set value ${AutomationClock.PERIOD}")
 			raw("execute unless data storage $S s.e.id run return run ${state("the spawner is empty")}")
+			// Riders would bring other entities than the listed mob: such a spawner is not run.
+			raw("execute if data storage $S s.e.Passengers run data modify entity @s data.data.delay set value 200")
+			raw("execute if data storage $S s.e.Passengers run return run ${state("spawner mob not supported (riders)")}")
 			// The id is block data: a format check before it goes near a command, then the table.
 			raw("data modify storage ra:safe s set from storage $S s.e.id")
 			raw("data modify storage ra:safe f set value ${TextFormat.ID.code}")
@@ -180,8 +185,11 @@ internal object FakePlayerSpawner {
 		pack.define(spawnFull) {
 			raw("execute store result score #fp.paid $T run function ${FakePlayerRun.pay.asId()}")
 			raw("execute unless score #fp.paid $T matches 1 run return run scoreboard players set #fp.noeu $T 1")
+			raw("scoreboard players operation #fp.before $T = #fp.made $T")
 			raw("\$execute positioned ~0.5 ~ ~0.5 run summon \$(id) ~ ~ ~ \$(e2)")
 			raw("execute positioned ~0.5 ~ ~0.5 as @e[tag=$NEW,distance=..2] run function ${markNew.asId()}")
+			// No mob came out (the game refused the data): the price goes back.
+			raw("execute if score #fp.made $T = #fp.before $T run function ${FakePlayerRun.refund.asId()}")
 		}
 		pack.define(markNew) {
 			raw("tag @s remove $NEW")

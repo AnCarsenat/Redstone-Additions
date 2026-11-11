@@ -42,7 +42,7 @@ object AutomationClock {
 			raw("execute as @e[type=minecraft:marker,tag=${ItemSplitter.block.tag}] at @s run function ${ItemSplitter.run.asId()}")
 			raw("execute as @e[type=minecraft:marker,tag=${FakePlayer.block.tag}] at @s run function ${FakePlayer.run.asId()}")
 			// Mobs a Fake Player spawned that none has held for a while go back to the vanilla rules.
-			raw("execute if entity @e[tag=${FakePlayer.MOB},limit=1] run function ${FakePlayer.releaseCheck.asId()}")
+			raw("execute if entity @e[tag=${FakePlayer.MOB},limit=1] run function ${FakePlayer.sweep.asId()}")
 			schedule(run).replace(PERIOD.ticks)
 		}
 	}

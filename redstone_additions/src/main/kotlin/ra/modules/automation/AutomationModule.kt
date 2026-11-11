@@ -84,7 +84,6 @@ object AutomationModule : GameplayModule {
 
 		pack.define(load) {
 			raw("scoreboard objectives add ${PatternUse.USED} dummy")
-			raw("scoreboard objectives add ${FakePlayer.SEEN} dummy")
 			function(FakePlayerSpawner.load)
 			resetFlag()
 			startClock()

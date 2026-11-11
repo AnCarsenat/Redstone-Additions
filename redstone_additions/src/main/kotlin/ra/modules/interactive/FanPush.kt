@@ -33,7 +33,9 @@ import ra.core.raw
  *    (air, water, plants, rails, redstone...): a Fan never pushes anyone into a wall.
  *  - up, Levitation of the Fan's strength, refreshed every tick, and taken away within three
  *    ticks of leaving the column ([liftEnd]) -- a step up would be undone by gravity in between.
- * Spectators and creative players who are flying are left alone.
+ * Spectators, riders, elytra gliders and creative players who are flying are left alone, and a
+ * player a Conveyor already stepped this tick is not stepped again ([PUSHED]). The pack's own
+ * entities (tagged `ra`) are never moved ([MOVABLE]).
  */
 internal object FanPush {
 	val T = Obj.TEMP
@@ -44,8 +46,35 @@ internal object FanPush {
 	/** The game time the lift ends unless a Fan refreshes it. */
 	private const val LIFT_UNTIL = "ra.fan.lift"
 
+	/**
+	 * On a player: the game time a Fan or a Conveyor last stepped them. Whichever mover runs
+	 * first in a tick moves the player; the other skips them, so two movers never fight.
+	 */
+	const val PUSHED = "ra.pushed"
+
+	/** The game time this tick, read by the Fan's and the Conveyor's ticks while one is moving. */
+	const val NOW = "#push.now"
+
+	/**
+	 * The selector filter for what a Fan or a Conveyor may move: nothing of the pack's own
+	 * (every entity it summons carries `ra`, the old armour-stand block markers too), nothing of
+	 * [Fan.UNMOVED].
+	 */
+	val MOVABLE = "type=!#${Ns.INTERACTIVE.id}:${Fan.UNMOVED},tag=!ra"
+
 	/** The objectives, added by the module's load. */
-	val objectives = listOf("$LIFT_UNTIL dummy")
+	val objectives = listOf("$LIFT_UNTIL dummy", "$PUSHED dummy")
+
+	/**
+	 * The tests every mover makes before stepping a player, as the player: not riding, not
+	 * gliding with an elytra, not flying in creative, not already stepped this tick.
+	 */
+	fun Function.playerGuards() {
+		raw("execute if entity @s[gamemode=creative,nbt={abilities:{flying:1b}}] run return 0")
+		raw("execute on vehicle run return 0")
+		raw("execute if predicate {type:\"minecraft:entity_properties\",entity:\"this\",predicate:{flags:{is_fall_flying:true}}} run return 0")
+		raw("execute if score @s $PUSHED = $NOW $T run return 0")
+	}
 
 	private const val STORE = "ra:interactive fan"
 
@@ -140,7 +169,7 @@ internal object FanPush {
 	private fun Function.sweep() {
 		val box = "align xyz positioned ~\$(ox) ~\$(oy) ~\$(oz)"
 		val extent = "dx=\$(ex),dy=\$(ey),dz=\$(ez)"
-		raw("\$execute $box as @e[type=!minecraft:player,type=!#${Ns.INTERACTIVE.id}:${Fan.UNMOVED},$extent] run ${macroCall(pushMotion)}")
+		raw("\$execute $box as @e[type=!minecraft:player,$MOVABLE,$extent] run ${macroCall(pushMotion)}")
 		raw("\$execute $box as @a[gamemode=!spectator,$extent] at @s run ${macroCall(pushPlayer)} with storage $STORE")
 		// The puff every other tick, as before the push went every tick.
 		raw("\$execute if score ${Fan.PHASE} $T matches 0 run particle minecraft:cloud ~\$(qx) ~\$(qy) ~\$(qz) \$(px) \$(py) \$(pz) \$(ps) 0 normal ${particleViewersSel(32)}")
@@ -156,11 +185,12 @@ internal object FanPush {
 
 	/** Macro: one step for a player, or a lift. As the player, at them. */
 	private fun Function.pushPlayer() {
-		raw("execute if entity @s[gamemode=creative,nbt={abilities:{flying:1b}}] run return 0")
+		playerGuards()
 		executeReturnRun("if score #fan.up $T matches 1", lift, "with storage $STORE")
 		val passable = "#ra_lib:ray_passable"
 		raw("\$execute positioned ~\$(cx) ~\$(cy) ~\$(cz) unless block ~ ~ ~ $passable run return 0")
 		raw("\$execute positioned ~\$(cx) ~\$(cy) ~\$(cz) unless block ~ ~1 ~ $passable run return 0")
+		raw("scoreboard players operation @s $PUSHED = $NOW $T")
 		raw("\$tp @s ~\$(dx) ~\$(dy) ~\$(dz)")
 	}
 

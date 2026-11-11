@@ -1,5 +1,8 @@
 # Design note: Minecart Speed Upgrade (#169)
 
+> **Dropped (2026-11-11).** The maintainer decided not to build this: 26.3 caps every minecart
+> at 8 blocks per second, so it could not make a cart faster than vanilla. Kept for reference.
+
 > **Speed upgrade**: increases a minecart's speed. To design first: a note in `planning/design/`
 > with the options, then the maintainer decides. (#169)
 

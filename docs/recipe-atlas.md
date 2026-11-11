@@ -1,6 +1,6 @@
 # Recipe Atlas
 
-Every recipe in the pack, in one place: 120 of them.
+Every recipe in the pack, in one place: 119 of them.
 
 !!! tip "Finding one"
     Use the search box with the item's name — every recipe below is indexed by
@@ -128,7 +128,6 @@ what the pack actually contains rather than what someone remembered to add.
 | [Text Screen](#displays) | [Displays](displays.md) | Crafting table |
 | [Thruster Kit](#jetpacks) | [Jetpacks](jetpacks.md) | Crafting table |
 | [Trash Can](#interactive-machines) | [Interactive Machines](interactive-machines.md) | Crafting table |
-| [Tree Farm](#farming) | [Farming](farming.md) | Crafting table |
 | [Unboxer](#storage) | [Storage](storage.md) | Crafting table |
 | [Uncrafter](#automation) | [Automation](automation.md) | Crafting table |
 | [UNI Gate](#logic-gates) | [Logic Gates](logic-gates.md) | Crafting table |
@@ -216,7 +215,6 @@ Module page: [Farming](farming.md) — give everything: `/function ra_farming:it
 | **Capture Net** | ![Capture Net recipe](images/recipes/ra_farming/capture_net.png){ width="220" } | Crafting table | `ra_farming:capture_net` |
 | **Master Capture Net** | ![Master Capture Net recipe](images/recipes/ra_farming/master_capture_net.png){ width="220" } | Crafting table | `ra_farming:master_capture_net` |
 | **Sprinkler** | ![Sprinkler recipe](images/recipes/ra_farming/sprinkler.png){ width="220" } | Crafting table | `ra_farming:sprinkler` |
-| **Tree Farm** | ![Tree Farm recipe](images/recipes/ra_farming/tree_farm.png){ width="220" } | Crafting table | `ra_farming:tree_farm` |
 
 ## Infinite Generators
 

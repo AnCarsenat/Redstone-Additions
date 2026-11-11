@@ -228,14 +228,17 @@ This page mirrors key datapack milestones from the main project changelog.
   each one off and to set the scale new ones get. Every display can be configured after it is
   placed, with the Data Handler (and the Wrench for the choices): **facing** (the face it is
   drawn on or floats from, all six), **direction** (how it is turned on that face), **colour**,
-  **position** (`offset`, x, y and z each -16 to 16 sixteenths of a block) and **scale** (25 % to 400 %,
-  admins up to 1600 %). A Data Handler change shows within a second.
+  **position** (`offset`, x, y and z each -16 to 16 sixteenths of a block), **scale** (25 % to 400 %,
+  admins up to 1600 %) and **rotation** (a tilt of the text or the hologram's item, yaw -180 to 180
+  and pitch -90 to 90 degrees, about its own middle; the hologram's name stays upright). Text displays have a **background** colour,
+  none by default, so only the block's face shows behind the text; pick one of the sixteen chat
+  colours and an opacity, or type `#AARRGGBB`. A Data Handler change shows within a second.
 - **Gauge Bar** (Displays). A bar on its front face, filled to the redstone level feeding it, 0 to
   15, from any side; a repeater or comparator pointing in fills it. It faces the way it was placed,
   up and down included. It is drawn as text, like the Text Screen: fifteen segments, one per
   level, lit in the fill colour and the rest in the track colour, crisp at any scale. *direction*
   is which way it fills (from the left, the right, the bottom or the top); *color* and
-  *track_color* take a colour name or `#RRGGBB`; *background* puts a dark plate behind it. The
+  *track_color* take a colour name or `#RRGGBB`; *background* is a colour behind it, none by default. The
   Goggles show the level. The bar is only redrawn when the level changes. Crafted from three
   glass panes, two redstone, a comparator and three polished blackstone.
 - **Item Hologram** (Displays). A barrel that shows the first item inside it floating above its
@@ -400,6 +403,15 @@ This page mirrors key datapack milestones from the main project changelog.
   on the automation clock; redstone stops it. The Goggles show its state, speed and the items
   moved. Crafted from a hopper, a comparator and four iron ingots.
 
+- **Direction, facing and colour settings in the Data Handler.** A setting that is one of the six
+  faces (a display's *facing*) has a button per face on its row. A yaw and pitch (a display's
+  *rotation*) opens with **[Edit]**: **[Type]** an angle, nudge it by 1, 15 or 45 degrees, or
+  **[Reset]**; a compass facing also has **[North] [East] [South] [West]**. A colour (a display's
+  *background*) shows a swatch and opens with **[Edit]**: the sixteen chat colours, an opacity
+  (100, 75, 50, 25 %), **[None]**, **[Reset]**, or **[Type]** a name, `#RRGGBB`, `#AARRGGBB` or a
+  number. What is typed is read as a number, never pasted into a command. The Clipboard pastes
+  these settings only when the Data Handler would have taken them.
+
 ### Changed
 
 - **Recipes rebalanced.** Every recipe now asks for things you can get in survival at the point
@@ -515,6 +527,11 @@ This page mirrors key datapack milestones from the main project changelog.
 
 ### Fixed
 
+- **A Data Handler button in an old menu never changes another block.** A **[Toggle]**, a vec3
+  **[Edit]** or any other button clicked in a menu drawn for one block changed the block selected
+  since (with the Creative Data Handler, which shares the selection). Every button now checks
+  that its menu showed the selected block; otherwise nothing changes and the menu is shown again
+  for the block selected now.
 - **The bat a block's item spawns no longer shows while the block is placed.** It now spawns with
   an infinite, hidden invisibility effect (no particles, no icon), as well as silent, frozen and
   invulnerable as before. Every copy of a block's item carries it: `give`, recipes, the drop when
@@ -550,6 +567,21 @@ This page mirrors key datapack milestones from the main project changelog.
   than the flag the item carries, so picking up a Breeder never granted it.
 
 ### For contributors
+
+- **Property types `direction`, `facing` and `color`** (`ra/core/DirectionProps.kt`,
+  `ra/core/ColorProps.kt`), declared like `vec3`: `direction(name, default)`,
+  `facing(name, FacingSpec(...))` (yaw and pitch in degrees, `LOCAL` or `WORLD` frame), and
+  `color(name, ColorSpec(alpha, none, default, presetAlpha))` (one int, RGB or ARGB). Use time:
+  `readFacing` and `readColor` leave clamped integers in scores. The editors are
+  `tools/datahandler/props/DataHandlerDirection.kt`, `DataHandlerFacing.kt` and
+  `DataHandlerColor.kt` (`ColorParse.kt` turns typed text into a number one character at a time).
+  See [Tools and Registries](tools-and-registries.md#direction-facing-and-colour).
+- **Displays**: `facing` is now a `direction` property, `rotation` a `facing` and `background` a
+  `color` (the Gauge Bar's old `background:1b` flag reads as the colour 1, transparent: a Gauge
+  Bar placed by an earlier 6.0.3 build loses its dark plate on its next redraw, since text displays
+  have no backdrop by default). `defineForms(..., tilt = true)` and
+  `Form(pivot = ...)` give a part the tilt, about its centre; the quaternion comes from a sine table
+  written at load (`DisplayTilt.kt`, `storage ra:displays trig`).
 
 - **Goggles Lens** (`ra/tools/goggles/lens/GogglesLens.kt`). A switched-on lensed helmet carries
   `{ra:{goggles:1b,lensed:1b}}`, so goggles/tick finds it with its existing

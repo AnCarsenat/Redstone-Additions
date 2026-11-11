@@ -328,6 +328,9 @@ object DataHandlerEntries {
 			callWith(DataHandlerProps.probe, "storage ra:dh q")
 			// A vec3's editor shares this action space (DataHandlerVec3).
 			executeReturnRun("if score #dh.type $T matches 6 if score #dh.decl $T matches 1", DataHandlerVec3.action)
+			executeReturnRun("if score #dh.type $T matches 7 if score #dh.decl $T matches 1", DataHandlerDirection.action, "with storage ra:dh q")
+			executeReturnRun("if score #dh.type $T matches 8 if score #dh.decl $T matches 1", DataHandlerFacing.action)
+			executeReturnRun("if score #dh.type $T matches 9 if score #dh.decl $T matches 1", DataHandlerColor.action)
 			// [List] only shows: a locked list may be opened too.
 			executeReturnRun("if score #dh.r $T matches $LIST", toggle)
 			callWith(DataHandlerProps.refuse, "storage ra:dh q")

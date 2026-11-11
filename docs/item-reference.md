@@ -71,8 +71,6 @@ one page, A to Z and by module.
 | ra_wires:tesla_coil                  | Tesla Coil                | ![Tesla Coil recipe](images/recipes/ra_wires/tesla_coil.png){ width="220" } |
 | ra_wires:spout                       | Spout                     | ![Spout recipe](images/recipes/ra_wires/spout.png){ width="220" } |
 | ra_wires:air_charger                 | Air Charger               | ![Air Charger recipe](images/recipes/ra_wires/air_charger.png){ width="220" } |
-| ra_wires:air_tank                    | Air Tank                  | ![Air Tank recipe](images/recipes/ra_wires/air_tank.png){ width="220" } |
-| ra_wires:heavy_boots                 | Heavy Boots               | ![Heavy Boots recipe](images/recipes/ra_wires/heavy_boots.png){ width="220" } |
 | ra_wires:water_wheel                 | Water Wheel               | ![Water Wheel recipe](images/recipes/ra_wires/water_wheel.png){ width="220" } |
 | ra_wires:creative_eu                 | Creative EU Source        | Creative only, no recipe — `ra_wires:items/give_creative` |
 | ra_wires:creative_fluid              | Creative Fluid Source     | Creative only, no recipe — `ra_wires:items/give_creative` |
@@ -125,10 +123,15 @@ one page, A to Z and by module.
 | ra_ender:overstar | Overstar | Sacrifice `minecraft:nether_star` on an enchanting table (10%) |
 | ra_railworks:ram_upgrade | Ram Upgrade | ![Ram Upgrade recipe](images/recipes/ra_railworks/ram_upgrade.png){ width="220" } |
 | ra_railworks:rail_builder | Rail Builder | ![Rail Builder recipe](images/recipes/ra_railworks/rail_builder.png){ width="220" } |
-
-The Generator Casing and the Cores cannot be placed as blocks. A Schematic is paper carrying a book's enchantments in `custom_data` (`{ra:{schematic:1b,enchantments:{...}}}`), right-clicked into a [Book Printer](enchant-crafting.md#setting-the-schematic) to set what it prints. A Pattern is paper carrying a 3×3 grid of item ids (`{ra:{pattern:{slots:[<9 ids or "">]}}}`, see [Automation](automation.md#pattern-data)). A Capture Net is a rabbit hide wearing the bundle model; it carries a caught mob in `custom_data` (`{ra:{capture_net:{mob:{id,type,data}}}}`, see [Farming](farming.md#capture-net)). The Master Capture Net is an empty Capture Net that survived an enchanting table; a net holding a mob is never taken. The Overstar is a test instance block wearing the nether star model (`{ra:{overstar:1b}}`), so the Anchor Tablet recipe takes no other item; it cannot be placed, and only plain nether stars become one (see [Ender Links](ender-links.md#overstar)). The Ram Upgrade (`{ra:{ram_upgrade:1b}}`, a firework star) is fitted onto a minecart, and the Rail Builder (`{ra:{rail_builder:1b}}`) is a hopper minecart item whose `entity_data` tags the cart it places `ra.rw.builder`; see [Railworks](railworks.md).
+| ra_wires:air_tank | Air Tank | ![Air Tank recipe](images/recipes/ra_wires/air_tank.png){ width="220" } |
+| ra_wires:heavy_boots | Heavy Boots | ![Heavy Boots recipe](images/recipes/ra_wires/heavy_boots.png){ width="220" } |
 | ra_jetpacks:iron_jetpack_kit | Iron Jetpack Kit | Four iron ingots around a blaze rod and a redstone block, two fire charges below |
 | ra_jetpacks:infinite_jetpack_kit | Infinite Iron Jetpack Kit | Sacrifice an Iron Jetpack Kit on an enchanting table (1%) |
+| ra_jetpacks:speed_kit | Thruster Kit | ![Thruster Kit recipe](images/recipes/ra_jetpacks/speed_kit.png){ width="220" } |
+| ra_jetpacks:lift_kit | Lift Kit | ![Lift Kit recipe](images/recipes/ra_jetpacks/lift_kit.png){ width="220" } |
+| ra_jetpacks:scorch_kit | Scorch Kit | ![Scorch Kit recipe](images/recipes/ra_jetpacks/scorch_kit.png){ width="220" } |
+
+The Generator Casing and the Cores cannot be placed as blocks. A Schematic is paper carrying a book's enchantments in `custom_data` (`{ra:{schematic:1b,enchantments:{...}}}`), right-clicked into a [Book Printer](enchant-crafting.md#setting-the-schematic) to set what it prints. A Pattern is paper carrying a 3×3 grid of item ids (`{ra:{pattern:{slots:[<9 ids or "">]}}}`, see [Automation](automation.md#pattern-data)). A Capture Net is a rabbit hide wearing the bundle model; it carries a caught mob in `custom_data` (`{ra:{capture_net:{mob:{id,type,data}}}}`, see [Farming](farming.md#capture-net)). The Master Capture Net is an empty Capture Net that survived an enchanting table; a net holding a mob is never taken. The Overstar is a test instance block wearing the nether star model (`{ra:{overstar:1b}}`), so the Anchor Tablet recipe takes no other item; it cannot be placed, and only plain nether stars become one (see [Ender Links](ender-links.md#overstar)). The Ram Upgrade (`{ra:{ram_upgrade:1b}}`, a firework star) is fitted onto a minecart, and the Rail Builder (`{ra:{rail_builder:1b}}`) is a hopper minecart item whose `entity_data` tags the cart it places `ra.rw.builder`; see [Railworks](railworks.md).
 
 ## Tools
 

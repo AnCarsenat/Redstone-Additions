@@ -24,6 +24,7 @@ import ra.core.raw
 import ra.core.ref
 import ra.modules.wires.fluid.Fluid
 import ra.core.block.PlacementBat
+import ra.core.block.WRENCH_READOUT
 
 object CreativeFluid : PackPart {
 	val cycleMedium = ref(Ns.WIRES, "blocks/creative_fluid/cycle_medium")
@@ -62,7 +63,7 @@ object CreativeFluid : PackPart {
 			raw("execute if score #cr.m ra.wires.tmp matches 6 run data modify entity @s data.properties.medium set value \"oxygen\"")
 			raw("execute if score #cr.m ra.wires.tmp matches 7 run data modify entity @s data.properties.medium set value \"toxic_gas\"")
 
-			raw("""tellraw @a[distance=..10] [{text:"[Wrench] ",color:"gold"},{text:"Creative source: ",color:"gray"},{nbt:"data.properties.medium",entity:"@s",color:"aqua"}]""")
+			raw("""tellraw $WRENCH_READOUT [{text:"[Wrench] ",color:"gold"},{text:"Creative source: ",color:"gray"},{nbt:"data.properties.medium",entity:"@s",color:"aqua"}]""")
 			raw("playsound minecraft:block.lever.click block ${soundListenersSel(10)} ~ ~ ~ 0.6 1.4")
 		}
 

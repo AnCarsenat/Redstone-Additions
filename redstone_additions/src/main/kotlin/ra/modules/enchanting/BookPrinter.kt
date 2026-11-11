@@ -37,6 +37,8 @@ import ra.modules.enchanting.BookPrinterRun.SCH_ENCH
 import ra.modules.enchanting.BookPrinterRun.registerBookPrinterRun
 import ra.modules.enchanting.schematic.Schematic
 import ra.modules.enchanting.schematic.Schematic.registerSchematic
+import ra.core.block.WRENCH_READOUT
+import ra.core.block.noticeOnly
 
 /**
  * Book Printer: copies enchanted books, once you have their Schematic.
@@ -122,11 +124,11 @@ object BookPrinter {
 		registerBookPrinterRun()
 		pack.define(insert) { insert() }
 		pack.define(eject) {
-			raw("""execute unless data entity @s data.data.item run return run tellraw @a[distance=..10] [{text:"[Wrench] ",color:"gold"},{text:"${block.name}: ",color:"gray"},{text:"no Schematic set",color:"yellow"}]""")
+			raw("""execute unless data entity @s data.data.item run return run tellraw $WRENCH_READOUT [{text:"[Wrench] ",color:"gold"},{text:"${block.name}: ",color:"gray"},{text:"no Schematic set",color:"yellow"}]""")
 			raw("function ${dropSchematic.asId()}")
 			raw(untagOut)
 			raw("data modify entity @s data.status.state set value \"no Schematic: right-click it with one\"")
-			raw("""tellraw @a[distance=..10] [{text:"[Wrench] ",color:"gold"},{text:"${block.name}: ",color:"gray"},{text:"Schematic taken out",color:"aqua"}]""")
+			raw("""tellraw $WRENCH_READOUT [{text:"[Wrench] ",color:"gold"},{text:"${block.name}: ",color:"gray"},{text:"Schematic taken out",color:"aqua"}]""")
 			raw("playsound minecraft:item.book.page_turn block ${soundListenersSel(10)} ~ ~ ~ 0.7 1.0")
 		}
 		pack.define(dropSchematic) {
@@ -178,7 +180,7 @@ object BookPrinter {
 		raw("data modify entity @s data.properties.schematic set value 1b")
 		raw("data modify entity @s data.status.state set value \"ready: throw books on top\"")
 		raw("data remove storage ra:enchant pr")
-		raw("""tellraw $USER [$RA_CHAT_PREFIX,{text:"Schematic set: the Book Printer now prints this book.",color:"green"}]""")
+		raw("""tellraw ${noticeOnly(USER)} [$RA_CHAT_PREFIX,{text:"Schematic set: the Book Printer now prints this book.",color:"green"}]""")
 		raw("playsound minecraft:ui.cartography_table.take_result block ${soundListenersSel(10)} ~ ~ ~ 0.7 1.0")
 	}
 }

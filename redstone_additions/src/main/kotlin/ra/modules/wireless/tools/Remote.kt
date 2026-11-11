@@ -36,6 +36,7 @@ import ra.core.block.recipeResult
 import ra.core.block.Unlock
 import ra.core.executeRun
 import ra.core.block.markerSel
+import ra.core.block.noticeOnly
 
 /**
  * Redstone Remote: RMB pulses every receiver on the remote's channel, Shift+RMB asks for a new
@@ -156,7 +157,7 @@ object Remote {
 			executeRun("as ${Receiver.block.markerSel()}", checkReceiverChannel)
 
 			// Feedback.
-			raw("""tellraw @s [{text:"[Remote] ",color:"red"},{text:"Pulsed receivers on channel ",color:"gray"},{nbt:"remote_channel",storage:"ra:temp",color:"yellow"}]""")
+			raw("""tellraw ${noticeOnly("@s")} [{text:"[Remote] ",color:"red"},{text:"Pulsed receivers on channel ",color:"gray"},{nbt:"remote_channel",storage:"ra:temp",color:"yellow"}]""")
 			raw("playsound minecraft:block.lever.click block @s[scores={${Obj.USER_SOUND}=1..}] ~ ~ ~ 1 1")
 		}
 

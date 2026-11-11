@@ -45,6 +45,7 @@ import ra.modules.displays.DisplayStyle.Companion.defineForms
 import ra.modules.displays.TextColor.applyColor
 import kotlin.math.cos
 import kotlin.math.sin
+import ra.core.block.WRENCH_READOUT
 
 /**
  * Item Hologram: a barrel that shows the first item inside it floating out of its lid, turning
@@ -269,8 +270,8 @@ object ItemHologram : DisplayBlock {
 		raw("execute store result score $m run data get entity @s data.properties.$prop")
 		raw("execute if score $m matches 1.. run data modify entity @s data.properties.$prop set value 0b")
 		raw("execute if score $m matches ..0 run data modify entity @s data.properties.$prop set value 1b")
-		raw("""execute if score $m matches 1.. run tellraw @a[distance=..10] [{text:"[Wrench] ",color:"gold"},{text:"${block.name} $label: ",color:"gray"},{text:"off",color:"red"}]""")
-		raw("""execute if score $m matches ..0 run tellraw @a[distance=..10] [{text:"[Wrench] ",color:"gold"},{text:"${block.name} $label: ",color:"gray"},{text:"on",color:"green"}]""")
+		raw("""execute if score $m matches 1.. run tellraw $WRENCH_READOUT [{text:"[Wrench] ",color:"gold"},{text:"${block.name} $label: ",color:"gray"},{text:"off",color:"red"}]""")
+		raw("""execute if score $m matches ..0 run tellraw $WRENCH_READOUT [{text:"[Wrench] ",color:"gold"},{text:"${block.name} $label: ",color:"gray"},{text:"on",color:"green"}]""")
 		raw("playsound minecraft:block.lever.click block ${soundListenersSel(10)} ~ ~ ~ 0.6 1.4")
 	}
 }

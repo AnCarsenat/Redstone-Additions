@@ -33,6 +33,7 @@ import ra.core.item.loreLine
 import ra.core.raw
 import ra.core.text
 import ra.modules.interactive.specGive
+import ra.core.block.WRENCH_READOUT
 
 /**
  * Route Rail: a block placed under a rail junction. When a minecart comes near, the rail on top
@@ -137,7 +138,7 @@ object RouteRail {
 		for (k in 0..values.size) {
 			raw("execute if score #rr.cy $T matches $k run data modify entity @s data.properties.$prop set value \"${values[k % values.size]}\"")
 		}
-		raw("""tellraw @a[distance=..10] [{text:"[Wrench] ",color:"gold"},{text:"${block.name} ${label.lowercase()}: ",color:"gray"},{nbt:"data.properties.$prop",entity:"@s",color:"aqua"}]""")
+		raw("""tellraw $WRENCH_READOUT [{text:"[Wrench] ",color:"gold"},{text:"${block.name} ${label.lowercase()}: ",color:"gray"},{nbt:"data.properties.$prop",entity:"@s",color:"aqua"}]""")
 		raw("execute at @s run playsound minecraft:block.lever.click block ${soundListenersSel(10)} ~ ~ ~ 0.6 1.4")
 	}
 }

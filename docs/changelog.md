@@ -448,6 +448,24 @@ This page mirrors key datapack milestones from the main project changelog.
 
 ### Changed
 
+- **Less chat text: automatic notices are off by default.** A new setting in Your Preferences
+  (`/trigger ra.settings.open`), **Chat notices**, off unless you turn it on, now holds the lines
+  the pack used to send without being asked:
+  - the result of an enchanting-table sacrifice (the Overstar, the Master Capture Net);
+  - the Rail Builder's progress lines ("Building east", "Stopped: ...", "Back at the start.");
+  - "Ram Upgrade fitted", "Iron jetpack fitted", "Infinite jetpack
+    fitted", "... kit fitted" and "Goggles Lens fitted";
+  - "Pattern recorded.", "Pattern cleared.", "Pattern loaded into the Crafter Controller.",
+    "Schematic set" on the Book Printer, "Caught: ..." from the Capture Net, "Pulsed receivers on
+    channel ..." from the Remote, the Keypad's "Code accepted." and "Multiblock disassembled.";
+  - wrench readouts (`[Wrench] Conveyor speed: 3`, the Route Rail's settings and every
+    other one) and "Multiblock assembled!" for the players within 10 blocks of the one holding
+    the wrench.
+    The player who used the wrench always reads them.
+
+  Menus, readouts you open yourself (Goggles, Multimeter, Data Handler, Pager, wrench menus),
+  "Received ..." lines, load messages and the reason an action was refused always show.
+
 - **Text Screen**: no black panel behind the text any more; the text display's own background
   setting covers that. Screens placed earlier lose theirs on their next update.
 - **Recipes rebalanced.** Every recipe now asks for things you can get in survival at the point

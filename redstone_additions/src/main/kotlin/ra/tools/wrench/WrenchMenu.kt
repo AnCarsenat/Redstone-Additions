@@ -22,6 +22,9 @@ import ra.core.macroCall
 import ra.core.raw
 import ra.tools.RAY_TARGET
 import ra.tools.tool
+import ra.core.block.WRENCH_READOUT
+import ra.core.block.WRENCH_HEAR_TAG
+import ra.tools.wrench.Wrench.tagReadoutHearers
 
 /**
  * Shift+RMB: the cycle menu.
@@ -66,11 +69,11 @@ object WrenchMenu {
 		// its tags names its kind, so placement writes the kind down.
 		pack.define(cycleBlock) {
 			data(Storage.TEMP) { modify("wrench_found", NbtByte(1)) }
-			raw("""execute unless data entity @s data.type run return run tellraw @a[distance=..10] [{text:"[Wrench] ",color:"gold"},{text:"This block predates wrench menus — break and replace it.",color:"gray"}]""")
+			raw("""execute unless data entity @s data.type run return run tellraw $WRENCH_READOUT [{text:"[Wrench] ",color:"gold"},{text:"This block predates wrench menus — break and replace it.",color:"gray"}]""")
 			function(loadForBlock)
 			scoreboard.players.set(literal("#wr.n"), Obj.TEMP, 0)
 			raw("execute if data storage ra:wrench list run execute store result score #wr.n ${Obj.TEMP} run data get storage ra:wrench list")
-			raw("""execute if score #wr.n ${Obj.TEMP} matches 0 run return run tellraw @a[distance=..10] [{text:"[Wrench] ",color:"gold"},{text:"This block doesn't support cycling.",color:"gray"}]""")
+			raw("""execute if score #wr.n ${Obj.TEMP} matches 0 run return run tellraw $WRENCH_READOUT [{text:"[Wrench] ",color:"gold"},{text:"This block doesn't support cycling.",color:"gray"}]""")
 			executeReturnRun("if score #wr.n ${Obj.TEMP} matches 1", runEntry, "{i:0}")
 			function(openMenu)
 		}
@@ -216,8 +219,10 @@ object WrenchMenu {
 				raw("execute store result storage ra:wrench at.$axis int 1 run scoreboard players get @s ra.wr.$axis")
 			raw("execute store result storage ra:wrench at.i int 1 run scoreboard players get #wr.act ${Obj.TEMP}")
 			tag(self()) { add("ra.wrench_user") }
+			tagReadoutHearers()
 			callWith(menuAt, "storage ra:wrench at")
 			tag(self()) { remove("ra.wrench_user") }
+			raw("tag @a remove $WRENCH_HEAR_TAG")
 		}
 
 		// {x,y,z,i}: find the remembered block and cycle entry i on it.

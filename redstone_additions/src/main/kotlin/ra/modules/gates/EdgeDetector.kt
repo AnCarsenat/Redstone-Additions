@@ -26,6 +26,7 @@ import ra.core.block.soundListenersSel
 import ra.core.blockRegisterMessage
 import ra.core.define
 import ra.core.raw
+import ra.core.block.WRENCH_READOUT
 
 /**
  * Edge Detector: a pulse of `pulse` ticks each time its input turns on (`mode` "rising"), turns
@@ -112,7 +113,7 @@ object EdgeDetector {
 		MODES.forEachIndexed { i, _ ->
 			val (next, color) = MODES[(i + 1) % MODES.size]
 			raw("""execute if score $m matches $i run data modify entity @s data.properties.mode set value "$next"""")
-			raw("""execute if score $m matches $i run tellraw @a[distance=..10] [{text:"[Wrench] ",color:"gold"},{text:"${block.name}: ",color:"gray"},{text:"$next",color:"$color"}]""")
+			raw("""execute if score $m matches $i run tellraw $WRENCH_READOUT [{text:"[Wrench] ",color:"gold"},{text:"${block.name}: ",color:"gray"},{text:"$next",color:"$color"}]""")
 		}
 		raw("playsound minecraft:block.lever.click block ${soundListenersSel(10)} ~ ~ ~ 0.6 1.4")
 	}

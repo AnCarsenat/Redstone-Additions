@@ -31,6 +31,7 @@ import ra.core.raw
 import ra.modules.audio.AudioPlayer.patternId
 import ra.modules.audio.AudioPlayer.statusName
 import ra.modules.audio.AudioPlayer.storeArgs
+import ra.core.block.WRENCH_READOUT
 
 /**
  * Alarm: a redstone lamp that, while powered, plays its `sound` every `interval` ticks, heard by
@@ -119,7 +120,7 @@ object Alarm {
 			raw("execute unless score #au.c $T matches 0..${sounds.size - 1} run scoreboard players set #au.c $T 0")
 			raw("execute store result entity @s data.properties.sound int 1 run scoreboard players get #au.c $T")
 			statusName("sound", "sound", sounds)
-			raw("""tellraw @a[distance=..10] [{text:"[Wrench] ",color:"gold"},{text:"${block.name}: ",color:"gray"},{nbt:"data.status.sound",entity:"@s",color:"aqua"}]""")
+			raw("""tellraw $WRENCH_READOUT [{text:"[Wrench] ",color:"gold"},{text:"${block.name}: ",color:"gray"},{nbt:"data.status.sound",entity:"@s",color:"aqua"}]""")
 			storeArgs(DEFAULT_RANGE, ADMIN_MAX_RANGE)
 			patternId("sound", AudioPlayer.ALARM_BASE, sounds.size)
 			raw("function ${AudioPlayer.start.asId()}")

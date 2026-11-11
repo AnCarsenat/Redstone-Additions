@@ -9,6 +9,7 @@ import ra.core.block.soundListenersSel
 import ra.core.define
 import ra.core.executeRun
 import ra.core.raw
+import ra.core.block.noticeReceiversSel
 
 /**
  * How a [Keypad] reads its grid, what an entered combination does, and the clock that ends its
@@ -255,7 +256,7 @@ object KeypadUse {
 			raw("tag @s add $TIMED")
 			raw("data modify entity @s data.status.state set value \"open\"")
 			raw("function ${startFast.asId()}")
-			raw(say("Code accepted.", "green"))
+			raw("""tellraw ${noticeReceiversSel(8)} [$RA_CHAT_PREFIX,{text:"Code accepted.",color:"green"}]""")
 			raw(sound("minecraft:block.note_block.chime", "1.4"))
 		}
 

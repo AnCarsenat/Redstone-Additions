@@ -5,6 +5,7 @@ import ra.core.Obj
 import ra.core.Ra
 import ra.core.block.particleViewersSel
 import ra.core.block.soundListenersSel
+import ra.core.block.noticeOnly
 import ra.core.define
 import ra.core.raw
 import ra.tools.ToolItems
@@ -137,7 +138,7 @@ object GogglesLens {
 		raw("clear @s *[minecraft:custom_data~{ra:{goggles_lens:1b}}] 1")
 		raw("scoreboard players enable @s $TRIGGER")
 
-		raw("""title @s actionbar [{text:"Goggles Lens fitted",color:"green"},{text:" - /trigger $TRIGGER to switch it off",color:"gray"}]""")
+		raw("""title ${noticeOnly("@s")} actionbar [{text:"Goggles Lens fitted",color:"green"},{text:" - /trigger $TRIGGER to switch it off",color:"gray"}]""")
 		raw("particle minecraft:enchant ~ ~1.8 ~ 0.3 0.3 0.3 0.6 40 normal ${particleViewersSel()}")
 		raw("playsound minecraft:block.amethyst_block.resonate player ${soundListenersSel()} ~ ~ ~ 0.8 1.2")
 		raw("playsound minecraft:entity.player.levelup player $SELF_IF_SOUND ~ ~ ~ 0.6 1.6")

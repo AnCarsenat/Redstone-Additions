@@ -43,6 +43,7 @@ import ra.core.raw
 import ra.core.scoreOf
 import ra.lib.redstone.Side
 import ra.lib.redstone.SideReaders
+import ra.core.block.WRENCH_READOUT
 
 /**
  * Signal Calculator: maths on two signal levels, with an analog 0-15 output.
@@ -221,7 +222,7 @@ object SignalCalculator {
 		OPERATIONS.forEachIndexed { i, _ ->
 			val (next, color) = OPERATIONS[(i + 1) % OPERATIONS.size]
 			raw("""execute if score $m matches $i run data modify entity @s data.properties.operation set value "$next"""")
-			raw("""execute if score $m matches $i run tellraw @a[distance=..10] [{text:"[Wrench] ",color:"gold"},{text:"${block.name}: ",color:"gray"},{text:"$next",color:"$color"}]""")
+			raw("""execute if score $m matches $i run tellraw $WRENCH_READOUT [{text:"[Wrench] ",color:"gold"},{text:"${block.name}: ",color:"gray"},{text:"$next",color:"$color"}]""")
 		}
 		raw("playsound minecraft:block.lever.click block ${soundListenersSel(10)} ~ ~ ~ 0.6 1.4")
 		// The next process rewrites the output with the new operation.

@@ -22,6 +22,7 @@ import ra.core.item.loreLine
 import ra.core.item.raData
 import ra.core.raw
 import ra.core.ref
+import ra.core.block.noticeReceiversSel
 
 /**
  * The Rail Builder: a hopper minecart that lays a straight track by itself.
@@ -178,7 +179,7 @@ internal object RailBuilder {
 			raw("execute if score @s $DIR matches 1..2 store result score @s $START run data get entity @s Pos[0] 2")
 			raw("execute if score @s $DIR matches 3..4 store result score @s $START run data get entity @s Pos[2] 2")
 			for ((d, name) in listOf(1 to "east", 2 to "west", 3 to "south", 4 to "north"))
-				raw("""execute if score @s $DIR matches $d run tellraw @a[distance=..32] [{text:"[Rail Builder] ",color:"gold"},{text:"Building $name",color:"green"}]""")
+				raw("""execute if score @s $DIR matches $d run tellraw ${noticeReceiversSel(32)} [{text:"[Rail Builder] ",color:"gold"},{text:"Building $name",color:"green"}]""")
 			raw("playsound minecraft:block.piston.extend block ${soundListenersSel(24)} ~ ~ ~ 0.6 0.8")
 		}
 
@@ -188,7 +189,7 @@ internal object RailBuilder {
 			raw("scoreboard players set @s $TIMER 0")
 			raw("data modify entity @s Motion set value [0.0d,0.0d,0.0d]")
 			for ((code, reason) in RailBuilderStep.REASONS)
-				raw("""execute if score #rb.why $T matches $code run tellraw @a[distance=..32] [{text:"[Rail Builder] ",color:"gold"},{text:"Stopped: $reason",color:"yellow"},{text:". Going back, ",color:"gray"},{score:{name:"@s",objective:"$BUILT"},color:"aqua"},{text:" blocks built.",color:"gray"}]""")
+				raw("""execute if score #rb.why $T matches $code run tellraw ${noticeReceiversSel(32)} [{text:"[Rail Builder] ",color:"gold"},{text:"Stopped: $reason",color:"yellow"},{text:". Going back, ",color:"gray"},{score:{name:"@s",objective:"$BUILT"},color:"aqua"},{text:" blocks built.",color:"gray"}]""")
 			raw("playsound minecraft:block.piston.contract block ${soundListenersSel(24)} ~ ~ ~ 0.6 0.8")
 		}
 	}
@@ -217,13 +218,13 @@ internal object RailBuilder {
 			raw("execute store result entity @s Pos[$axis] double 0.5 run scoreboard players get @s $START")
 			raw("data modify entity @s Motion set value [0.0d,0.0d,0.0d]")
 			raw("scoreboard players set @s $STATE 0")
-			raw("""tellraw @a[distance=..32] [{text:"[Rail Builder] ",color:"gold"},{text:"Back at the start.",color:"green"}]""")
+			raw("""tellraw ${noticeReceiversSel(32)} [{text:"[Rail Builder] ",color:"gold"},{text:"Back at the start.",color:"green"}]""")
 			raw("playsound minecraft:block.note_block.bell block ${soundListenersSel(24)} ~ ~ ~ 0.6 1.2")
 		}
 		pack.define(stuck) {
 			raw("data modify entity @s Motion set value [0.0d,0.0d,0.0d]")
 			raw("scoreboard players set @s $STATE 0")
-			raw("""tellraw @a[distance=..32] [{text:"[Rail Builder] ",color:"gold"},{text:"Something blocks the way back; it stopped here.",color:"yellow"}]""")
+			raw("""tellraw ${noticeReceiversSel(32)} [{text:"[Rail Builder] ",color:"gold"},{text:"Something blocks the way back; it stopped here.",color:"yellow"}]""")
 		}
 	}
 

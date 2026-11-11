@@ -35,6 +35,7 @@ import ra.core.raw
 import ra.core.ref
 import ra.modules.railworks.RouteRailScan
 import ra.modules.railworks.carts.CartRay.cartRay
+import ra.core.block.noticeOnly
 
 /**
  * The Ram Upgrade: fitted to a minecart, the cart hurts the living things in its way while it goes
@@ -158,7 +159,7 @@ internal object RamUpgrade {
 			raw("execute if score #rw.ok $T matches 0 run return 1")
 			raw("tag @s add $TAG")
 			raw("execute at @s run function ${CartTracker.attach.asId()}")
-			raw("""title $USER_SEL actionbar [{text:"Ram Upgrade fitted",color:"green"},{text:" - the cart now hurts what it runs into",color:"gray"}]""")
+			raw("""title ${noticeOnly(USER_SEL)} actionbar [{text:"Ram Upgrade fitted",color:"green"},{text:" - the cart now hurts what it runs into",color:"gray"}]""")
 			raw("execute at @s run particle minecraft:crit ~ ~0.5 ~ 0.4 0.2 0.4 0.2 20 normal ${particleViewersSel()}")
 			raw("execute at @s run playsound minecraft:block.anvil.use block ${soundListenersSel()} ~ ~ ~ 0.6 1.4")
 			raw("return 1")

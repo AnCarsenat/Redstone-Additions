@@ -27,6 +27,7 @@ import ra.core.TextFormat
 import ra.lib.safe.SafeClean
 import ra.lib.safe.SafeClean.cleanFrom
 import io.github.ayfri.kore.commands.function
+import ra.core.block.WRENCH_READOUT
 
 /**
  * What every `ra_ender` block shares: identifiers, the item shape, the recipe and the break.
@@ -93,9 +94,9 @@ internal fun DataPack.enderGive(block: CustomBlock, item: ItemSpec, hint: String
 	raw("tellraw @s [{text:\"[RA] \",color:\"gold\"},{text:\"${block.name}\",color:\"light_purple\"},$hint]")
 }
 
-/** One wrench line: `[Wrench] <name>: <mode>`, for players within 10 blocks. */
+/** One wrench line: `[Wrench] <name>: <mode>`, for the wrench user and nearby players with chat notices on. */
 internal fun wrenchSay(name: String, mode: String, color: String) =
-	"""tellraw @a[distance=..10] [{text:"[Wrench] ",color:"gold"},{text:"$name: ",color:"gray"},{text:"$mode",color:"$color"}]"""
+	"""tellraw $WRENCH_READOUT [{text:"[Wrench] ",color:"gold"},{text:"$name: ",color:"gray"},{text:"$mode",color:"$color"}]"""
 
 internal val WRENCH_CLICK = "playsound minecraft:block.lever.click block ${soundListenersSel(10)} ~ ~ ~ 0.6 1.4"
 

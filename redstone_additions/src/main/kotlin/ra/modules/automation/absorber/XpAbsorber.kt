@@ -33,6 +33,7 @@ import ra.core.item.loreLine
 import ra.core.raw
 import ra.modules.automation.AutomationClock
 import ra.modules.automation.absorber.XpAbsorberRun.registerXpAbsorberRun
+import ra.core.block.WRENCH_READOUT
 
 /**
  * Experience Absorber: collects the experience orbs around it and sends them, as liquid
@@ -94,7 +95,7 @@ object XpAbsorber {
 			raw("scoreboard players set #xa.r ra.temp 2")
 			for (r in listOf(2, 4, 6)) raw("execute if score #prop ra.temp matches $r run scoreboard players set #xa.r ra.temp ${r + 2}")
 			raw("execute store result entity @s data.properties.radius int 1 run scoreboard players get #xa.r ra.temp")
-			raw("""tellraw @a[distance=..10] [{text:"[Wrench] ",color:"gold"},{text:"${block.name} radius: ",color:"gray"},{nbt:"data.properties.radius",entity:"@s",color:"aqua"},{text:" blocks",color:"aqua"}]""")
+			raw("""tellraw $WRENCH_READOUT [{text:"[Wrench] ",color:"gold"},{text:"${block.name} radius: ",color:"gray"},{nbt:"data.properties.radius",entity:"@s",color:"aqua"},{text:" blocks",color:"aqua"}]""")
 			raw("playsound minecraft:block.lever.click block ${soundListenersSel(10)} ~ ~ ~ 0.6 1.4")
 		}
 

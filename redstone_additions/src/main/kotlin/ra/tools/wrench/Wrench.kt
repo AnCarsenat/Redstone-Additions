@@ -28,6 +28,7 @@ object Wrench {
 	val rmbFunction = tool("wrench/rmb_function")
 	val shiftRmbFunction = tool("wrench/shift_rmb_function")
 	val foundBlock = tool("wrench/found_block")
+	private val entityHooks = tool("wrench/entity_hooks")
 
 	/** Multiblock bases answer to either tag: older ones were placed before the custom_block form. */
 	private val BASE_TAGS = listOf("ra.multiblock_base", "ra.custom_block.multiblock_base")
@@ -41,6 +42,13 @@ object Wrench {
 		pack.define(rmbFunction) { rmb() }
 		pack.define(shiftRmbFunction) { shiftRmb() }
 		pack.define(foundBlock) { foundBlock(this@registerWrench) }
+		// Written once every part has added its hooks.
+		afterAllParts {
+			pack.define(entityHooks) {
+				for (hook in wrenchEntityHooks) raw("execute if function ${hook.asId()} run return 1")
+				raw("return 0")
+			}
+		}
 	}
 
 	/** As the player, from the `ra:tools/wrench_use` advancement. */
@@ -77,6 +85,8 @@ object Wrench {
 
 	/** Shift+RMB: cycle the block in front of the player. As the player. */
 	private fun Function.shiftRmb() {
+		// An entity the registered hooks handle (a cart upgrade) comes before the blocks behind it.
+		raw("execute if function ${entityHooks.asId()} run return 1")
 		data(Storage.TEMP) { remove("wrench_found") }
 		// The menu and every cycler message this player specifically; the wrench runs `as` the
 		// marker from here on and would otherwise have no idea who swung it.

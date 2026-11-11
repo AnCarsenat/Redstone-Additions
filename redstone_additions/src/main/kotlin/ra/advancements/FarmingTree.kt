@@ -12,9 +12,8 @@ internal val farmingTree = listOf(
 	category("ra_farming", Items.WHEAT, "Farming", "Tend crops and animals without lifting a finger.", "get_farming_item", Items.WHEAT_SEEDS),
 	egg("ra_farming", "breeder", "Breeder", Items.DISPENSER, TRUE, "Obtain the Breeder item."),
 	egg("ra_farming", "sprinkler", "Sprinkler", Items.WATER_BUCKET, TRUE),
-	egg("ra_farming", "tree_farm", "Tree Farm", Items.OAK_SAPLING, TRUE),
 	Unlock(
-		"ra_farming/get_capture_net", "ra_farming", Items.COBWEB, "Capture Net", "Obtain a Capture Net.", "get_capture_net",
+		"ra_farming/get_capture_net", "ra_farming", Items.BUNDLE, "Capture Net", "Obtain a Capture Net.", "get_capture_net",
 		Items.RABBIT_HIDE, Match.Partial(nbt { this["capture_net"] = nbt {} }),
 	),
 	// By model and rarity: an upgraded rabbit hide carries no custom data until it first catches.

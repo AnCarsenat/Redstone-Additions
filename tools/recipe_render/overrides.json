@@ -16,5 +16,5 @@
   "minecraft:structure_void": "minecraft:coal",
   "minecraft:barrier": "minecraft:coal_block",
   "minecraft:test_instance_block": "minecraft:nether_star",
-  "minecraft:rabbit_hide": "minecraft:cobweb"
+  "minecraft:rabbit_hide": "minecraft:bundle"
 }

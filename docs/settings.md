@@ -23,7 +23,7 @@ No permissions needed. Click a value to change it.
 |---|---|---|
 | Machine sounds | on | Sounds made by Redstone Additions blocks |
 | Machine particles | on | Particles made by Redstone Additions blocks |
-| Chat notices | off | Chat and action bar lines nobody asked for: a sacrifice's result, Rail Builder progress, "fitted" and Pattern confirmations, and wrench readouts from other players near you |
+| Chat notices | off | Chat and action bar lines nobody asked for: a sacrifice's result, Rail Builder progress, "fitted" and Pattern confirmations, and wrench readouts from other players within 10 blocks |
 | Debug messages | off | Extra diagnostic messages in chat |
 | Show filter previews | on | The item an Item Pipe filters for, floating above its Goggles label |
 | Jetpack fuel gauge | on | The [fuel bar](jetpacks.md#fuel-gauge) on the action bar while you fly an Iron jetpack |
@@ -39,7 +39,7 @@ Hover a setting's name in the menu to read this there.
 open, the line a wrench prints for the player holding it, and the reason an action was refused
 ("That cart already has a Ram Upgrade"). Turn it on to also read the automatic lines: the result
 of an enchanting-table sacrifice, the Rail Builder's progress, confirmations such as "Ram Upgrade
-fitted" or "Pattern recorded.", and the wrench readouts of players near you.
+fitted" or "Pattern recorded.", and the wrench readouts of players within 10 blocks of you.
 
 ## Server settings
 

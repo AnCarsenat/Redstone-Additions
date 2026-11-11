@@ -180,7 +180,7 @@ internal object RamUpgrade {
 			// The item comes back only once the cart no longer carries the upgrade.
 			raw("execute if entity @s[tag=$TAG] run return 1")
 			raw("give $USER_SEL ${item.giveArg()}")
-			raw("""title ${noticeOnly(USER_SEL)} actionbar [{text:"Ram Upgrade removed",color:"yellow"}]""")
+			raw("""title $USER_SEL actionbar [{text:"Ram Upgrade removed",color:"yellow"}]""")
 			raw("execute at @s run playsound minecraft:block.grindstone.use block ${soundListenersSel()} ~ ~ ~ 0.6 1.2")
 			raw("return 1")
 		}

@@ -33,6 +33,8 @@ to stop. Items with no recipe are left alone on the table.
 | Poppy | Poppy Core | 1% |
 | Coal | Enchanted Coal | 1% |
 | Iron Jetpack Kit | Infinite Iron Jetpack Kit | 1% |
+| Nether Star | [Overstar](ender-links.md#overstar) | 10% |
+| Capture Net (empty) | [Master Capture Net](farming.md#capture-net) | 35% |
 
 Cores are half of an [Infinite Generator](infinite-generators.md); the other half is the crafted
 Generator Casing.
@@ -185,6 +187,10 @@ execute if data storage ra:enchant result run return 1
 | `ra:enchant input` | the sacrificed item, components and all |
 | `ra:enchant result` | the item to produce; leave it unset for "not mine" |
 | `ra:enchant chance` | percent, `1..100`, default `5` |
+| `ra:enchant won`, `ra:enchant lost` | optional plain-text messages for the player who threw the item, on a hit and on a miss |
+
+The messages go to the item's thrower (`execute on origin`); an item dropped by a hopper, a mob or
+a player who has since left tells nobody. The Overstar and the Master Capture Net use them.
 
 The first recipe that matches wins: every list in the tag runs, so each must start with the
 `if data … result run return 0` line. In the pack's own Kotlin, `sacrificeRecipe(...)`

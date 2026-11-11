@@ -18,8 +18,8 @@ internal val farmingTree = listOf(
 	),
 	// By model and rarity: an upgraded rabbit hide carries no custom data until it first catches.
 	Unlock(
-		"ra_farming/get_master_capture_net", "ra_farming/get_capture_net", Items.NETHER_STAR, "Master Capture Net",
-		"Upgrade a Capture Net with a nether star.", "get_master_capture_net", Items.RABBIT_HIDE,
+		"ra_farming/get_master_capture_net", "ra_farming/get_capture_net", Items.ENCHANTING_TABLE, "Master Capture Net",
+		"Sacrifice an empty Capture Net on an enchanting table and win a Master Capture Net.", "get_master_capture_net", Items.RABBIT_HIDE,
 		Match.Components(mapOf("item_model" to NbtString(CaptureNet.MODEL), "rarity" to NbtString("epic"))),
 	),
 )

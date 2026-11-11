@@ -375,6 +375,27 @@
   only leave the input once there is room, so none are dropped. 8 items a second by default (Shift+RMB with the Wrench: 2, 4, 8, 16; admins up to 64),
   on the automation clock; redstone stops it. The Goggles show its state, speed and the items
   moved. Crafted from a hopper, a comparator and four iron ingots.
+- **Fake Player** (Automation). Keeps a mob farm or a spawner running while nobody is near: a
+  data pack cannot add a player, so it does the spawning itself, by the vanilla rules, for EU per
+  mob (*eu_per_mob*, default 250, admins only) from a wire or battery touching it. Next to a
+  vanilla spawner it runs that spawner with the spawner's own delay, count, range and nearby-mob
+  limit, light 11 or less (zombies, skeletons, spiders, cave spiders, blazes, silverfish and the
+  other common hostile spawner mobs; not slimes, magma cubes, animals or trial spawners). On its
+  own it spawns the Overworld's hostile mobs from the biome's vanilla list and weights at
+  completely dark spots with room and a solid floor in its *radius* (default 8, up to 16; admins
+  up to 32), 4 tries a second, until *max_mobs* hostile mobs (default 20, up to 70) are around.
+  Never more than vanilla: nothing in peaceful or with the spawning gamerules off, and nothing
+  while a player is in range, since vanilla is spawning then. Its mobs do not despawn while a Fake
+  Player is within 48 blocks and go back to the normal rules 30 seconds after none is. The
+  Goggles show what it is doing and how many it spawned. Crafted from four gold ingots, an eye of
+  ender, an armor stand and a redstone block. [Automation](https://ancarsenat.github.io/Redstone-Additions/automation/) lists exactly what it
+  does and does not do.
+- **Conveyor** (Automation). A smooth stone slab with an arrow that carries dropped items, mobs
+  and players the way it points, at *speed* blocks a second (1 to 5, default 2; admins up to 10;
+  Shift+RMB with the Wrench). Players ride in small steps every tick, so the ride is smooth, and
+  are never pushed into a wall; Conveyors in a line hand things on straight away. An idle
+  Conveyor costs one test every 5 ticks. Crafted from three dried kelp over two iron ingots and a
+  redstone (makes six).
 
 ### Changed
 

@@ -17,9 +17,9 @@ import ra.core.ref
  * A MINECART HAS NO DEATH EVENT. When a cart breaks it is simply gone, and the game drops its own
  * item (`minecraft:minecart`, `minecraft:hopper_minecart`...). So each tracked cart has a marker,
  * its tracker, that follows it: every tick the cart moves its tracker onto itself and stamps it
- * with the game time ([SEEN]). A tracker that was not stamped this tick has lost its cart. If a
- * cart item dropped this tick or the last two lies within 2 blocks of it, the cart was broken
- * there: the tracker drops the Ram Upgrade, turns the vanilla hopper minecart item into a Rail
+ * with the game time ([SEEN]). A tracker that was not stamped this tick has lost its cart. If the
+ * game dropped a cart item at its cart's last position since the last tick (Age 0, within a
+ * block), the cart was broken there: the tracker drops the Ram Upgrade, turns the vanilla hopper minecart item into a Rail
  * Builder, and removes itself. If there is no such item, the cart was removed some other way
  * (`/kill`, a creative player, a chunk that unloaded under it, a portal): the tracker removes
  * itself and drops nothing, and a cart that comes back makes itself a new tracker.
@@ -44,7 +44,6 @@ internal object CartTracker {
 	const val TRACKER = "ra.rw.tracker"
 	private const val NEW = "ra.rw.new"
 	private const val CLAIMED = "ra.rw.claimed"
-	private const val LOST = "ra.rw.lost"
 
 	/** Tracker tags: what the cart carried. */
 	const val T_RAM = "ra.rw.t.ram"
@@ -123,9 +122,13 @@ internal object CartTracker {
 			raw("execute as @e[type=marker,tag=$TRACKER,distance=..$FOLLOW] if score @s $ID = #rw.id $T run kill @s")
 		}
 
-		// As the cart, at it.
+		// As the cart, at it. Any other tracker with this cart's id, wherever it is, goes first: a
+		// stale one left behind (the cart moved faster than FOLLOW, or came back from an unloaded
+		// chunk) would otherwise run `lost` later for a cart that still exists.
 		pack.define(summon) {
 			val sel = "@e[type=marker,tag=$NEW,distance=..0.1,limit=1]"
+			raw("scoreboard players operation #rw.id $T = @s $ID")
+			raw("execute as @e[type=marker,tag=$TRACKER] if score @s $ID = #rw.id $T run kill @s")
 			raw("""summon minecraft:marker ~ ~ ~ {Tags:["ra","$TRACKER","$NEW"]}""")
 			raw("scoreboard players operation $sel $ID = @s $ID")
 			raw("execute store result score $sel $SEEN run time query gametime")
@@ -139,24 +142,27 @@ internal object CartTracker {
 			raw("execute as @e[type=marker,tag=$TRACKER] unless score @s $SEEN = #rw.now $T at @s run function ${lost.asId()}")
 		}
 
-		// As a tracker whose cart was not seen this tick, at it.
+		// As a tracker whose cart was not seen this tick, at the cart's last position. The cart's own
+		// drop is the item the game spawned there since the last tick (Age 0: a new item has not
+		// ticked yet), within a block of where the cart last was. Each tracker claims at most one
+		// such item for each thing it carried, of the right kind, and an item is claimed only once.
+		// The minecart item itself stays: the player still gets their cart.
 		pack.define(lost) {
-			raw("tag @s add $LOST")
-			raw("scoreboard players set #rw.drop $T 0")
-			raw("execute unless entity @s[tag=$T_RAM] unless entity @s[tag=$T_BUILDER] run scoreboard players set #rw.drop $T 1")
-			raw("execute as @e[type=item,distance=..2,tag=!$CLAIMED] if score #rw.drop $T matches 0 if items entity @s contents $CART_ITEMS at @s run function ${claim.asId()}")
+			for ((kind, items) in listOf(T_RAM to CART_ITEMS, T_BUILDER to "minecraft:hopper_minecart")) {
+				raw("scoreboard players set #rw.drop $T 1")
+				raw("execute if entity @s[tag=$kind] run scoreboard players set #rw.drop $T 0")
+				raw("scoreboard players set #rw.kind $T ${if (kind == T_RAM) 1 else 2}")
+				raw("execute if score #rw.drop $T matches 0 as @e[type=minecraft:item,distance=..1,tag=!$CLAIMED,nbt={Age:0s}] if score #rw.drop $T matches 0 if items entity @s contents $items at @s run function ${claim.asId()}")
+			}
 			raw("kill @s")
 		}
 
-		// As a cart item near a lost tracker, at it.
+		// As the claimed cart item, at it. #rw.kind: 1 the Ram Upgrade, 2 the Rail Builder.
 		pack.define(claim) {
-			raw("execute store result score #rw.age $T run data get entity @s Age")
-			raw("execute unless score #rw.age $T matches 0..2 run return 0")
 			raw("scoreboard players set #rw.drop $T 1")
 			raw("tag @s add $CLAIMED")
-			fun lostWith(tag: String) = "@e[type=marker,tag=$LOST,tag=$tag,distance=..3,limit=1]"
-			raw("execute if entity ${lostWith(T_RAM)} run summon minecraft:item ~ ~ ~ {Item:$ramStack,PickupDelay:10s}")
-			raw("execute if entity ${lostWith(T_BUILDER)} if items entity @s contents minecraft:hopper_minecart run function ${convert.asId()}")
+			raw("execute if score #rw.kind $T matches 1 run summon minecraft:item ~ ~ ~ {Item:$ramStack,PickupDelay:10s}")
+			raw("execute if score #rw.kind $T matches 2 run function ${convert.asId()}")
 		}
 
 		// As the vanilla hopper minecart item a Rail Builder dropped: one of them becomes the Rail Builder.

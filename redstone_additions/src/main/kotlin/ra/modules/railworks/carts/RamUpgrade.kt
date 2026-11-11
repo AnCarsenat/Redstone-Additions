@@ -13,6 +13,7 @@ import io.github.ayfri.kore.features.recipes.types.pattern
 import io.github.ayfri.kore.generated.Items
 import io.github.ayfri.kore.utils.nbt
 import io.github.ayfri.kore.utils.set
+import io.github.ayfri.kore.features.tags.entityTypeTag
 import ra.core.Ns
 import ra.core.Obj
 import ra.core.Ra
@@ -32,13 +33,14 @@ import ra.core.item.loreLine
 import ra.core.item.raData
 import ra.core.raw
 import ra.core.ref
+import ra.modules.railworks.RouteRailScan
 import ra.modules.railworks.carts.CartRay.cartRay
 
 /**
  * The Ram Upgrade: fitted to a minecart, the cart hurts the living things in its way while it goes
  * fast.
  *
- * FITTING. Sneak and use the upgrade on a minecart, or use it while riding one. Sneaking is what
+ * FITTING. Sneak and use the upgrade on a minecart, or use it while riding a plain minecart. Sneaking is what
  * keeps the click from seating the player; a chest or hopper minecart opens its inventory instead,
  * whatever the player does, so only carts without an inventory take it. The cart gets the tag
  * [TAG] and the item is used up only once that is certain. Shift+RMB with the Wrench takes it off
@@ -47,8 +49,8 @@ import ra.modules.railworks.carts.CartRay.cartRay
  * RAMMING. Each tick, for upgraded carts only (from [CartTracker.cartTick]): the horizontal speed is
  * read from `Motion`; under [MIN_SPEED] nothing else runs. Above it, one 1x1x1 box ahead of the
  * cart in its direction of travel is searched for living entities (they have `HurtTime`; items,
- * frames and other carts do not), leaving out armor stands, the cart's own riders and any player
- * riding a minecart. Each is hurt by [BANDS] (more the faster the cart), with the cart as the
+ * frames and other carts do not), leaving out `#ra_railworks:ram_ignored` (vehicles, armor stands,
+ * frames, paintings, displays...), the cart's own riders and any player riding a minecart. Each is hurt by [BANDS] (more the faster the cart), with the cart as the
  * direct source and its rider, if any, as the attacker (a player rider gets the kill). A victim is
  * hit only when its `HurtTime` is 0: once hurt, it is safe for the 10 ticks of its hurt animation,
  * so a cart that keeps pushing a mob does not hit it every tick.
@@ -97,6 +99,8 @@ internal object RamUpgrade {
 		add("consumable", comp("consume_seconds" to SInt(1000000), "animation" to SStr("none"), "has_consume_particles" to SBool(false)))
 	}
 
+	private const val IGNORED = "#ra_railworks:ram_ignored"
+
 	private const val HELD = "*[minecraft:custom_data~{ra:{ram_upgrade:1b}}]"
 	private const val USER_SEL = "@a[tag=$USER,limit=1]"
 
@@ -137,7 +141,7 @@ internal object RamUpgrade {
 			raw("execute if score #rw.prev $T >= #rw.now $T run return 0")
 			raw("tag @s add $USER")
 			raw("scoreboard players set #rw.done $T 0")
-			raw("execute on vehicle if entity @s[type=${CartTracker.CARTS}] at @s store result score #rw.done $T run function ${apply.asId()}")
+			raw("execute on vehicle if entity @s[type=minecraft:minecart] at @s store result score #rw.done $T run function ${apply.asId()}")
 			raw("execute if score #rw.done $T matches 0 store result score #rw.done $T run function ${ray.asId()}")
 			raw("""execute if score #rw.done $T matches 0 run title @s actionbar [{text:"Sneak and use it on a minecart, or use it while riding one",color:"red"}]""")
 			raw("tag @s remove $USER")
@@ -185,6 +189,19 @@ internal object RamUpgrade {
 
 	/** Each tick, as an upgraded cart, at it. */
 	private fun Ra.registerRamTick() {
+		// Never hurt, even if they could be: vehicles, decorations, displays and other things that
+		// are not mobs. Living things are also told apart by having a `HurtTime`.
+		pack.entityTypeTag("ram_ignored", Ns.RAILWORKS.id) {
+			add(RouteRailScan.CARTS_TAG, Ns.RAILWORKS.id, true)
+			add("boat", "minecraft", true)
+			for (e in listOf(
+				"oak_chest_boat", "spruce_chest_boat", "birch_chest_boat", "jungle_chest_boat", "acacia_chest_boat",
+				"cherry_chest_boat", "dark_oak_chest_boat", "pale_oak_chest_boat", "mangrove_chest_boat",
+				"poplar_chest_boat", "bamboo_chest_raft", "armor_stand", "item_frame", "glow_item_frame", "painting",
+				"block_display", "item_display", "text_display", "interaction", "marker", "item", "experience_orb",
+				"leash_knot", "end_crystal", "falling_block", "tnt",
+			)) add("minecraft:$e")
+		}
 		pack.define(tick) {
 			raw("execute store result score #ram.vx $T run data get entity @s Motion[0] 1000")
 			raw("execute store result score #ram.vz $T run data get entity @s Motion[2] 1000")
@@ -204,7 +221,7 @@ internal object RamUpgrade {
 			raw("execute on passengers run scoreboard players set #ram.by $T 1")
 			raw("execute on passengers if entity @s[type=minecraft:player] run scoreboard players set #ram.by $T 2")
 
-			val victims = "@e[dx=0,dy=0,dz=0,type=!${CartTracker.CARTS},type=!minecraft:armor_stand,tag=!$RIDER]"
+			val victims = "@e[dx=0,dy=0,dz=0,type=!$IGNORED,tag=!$RIDER]"
 			val ahead = listOf(
 				"if score #ram.ax $T >= #ram.az $T if score #ram.vx $T matches 1.." to "~0.4 ~ ~-0.5",
 				"if score #ram.ax $T >= #ram.az $T if score #ram.vx $T matches ..0" to "~-1.4 ~ ~-0.5",

@@ -90,13 +90,14 @@ Breaking it drops it; the rail on top stays where it is.
 
 An upgrade for a minecart: while the cart goes fast, it hurts the living things in its way.
 
-**Fitting it.** Hold the upgrade, sneak and right-click a minecart, or right-click while riding
-one. The upgrade is used up. A chest or hopper minecart opens its inventory
-when right-clicked, whatever you do, so those carts cannot take one; a plain minecart (or a TNT,
-spawner or command block minecart) can. A cart takes one Ram Upgrade.
+**Fitting it.** Hold the upgrade and sneak and right-click a minecart, or right-click while
+riding a plain minecart. The upgrade is used up. A chest or hopper minecart opens its inventory
+when right-clicked, whatever you do, so those carts cannot take one; a plain minecart (or, by
+sneaking, a TNT, spawner or command block minecart) can. A cart takes one Ram Upgrade.
 
-**What it does.** While the cart goes faster than 3 blocks a second, each tick it looks at the
-block in front of it, in the direction it is going. Every living thing there is hurt:
+**What it does.** While the cart goes faster than 3 blocks a second, each tick it looks at a
+block-sized box just in front of it, centred on its track, in the direction it is going. Every
+living thing touching that box is hurt:
 
 | Cart speed | Damage |
 | --- | --- |
@@ -108,7 +109,8 @@ block in front of it, in the direction it is going. Every living thing there is 
 
 The rider, if there is one, is the attacker: a player riding the cart gets the kill and its
 drops, a mob riding it the blame. Left alone: the cart's own riders, every player riding a
-minecart, armor stands, and anything that is not alive (items, item frames, other carts). A victim
+minecart, and anything that is not a living mob: armor stands, minecarts, boats, item frames,
+paintings, display entities, items, experience orbs. A victim
 is hit again only once its hurt animation is over (half a second), so a cart pushing a mob along
 does not hit it every tick. The hit knocks it back as any attack does.
 
@@ -121,6 +123,12 @@ its own item.
 
 A hopper minecart that builds a straight track by itself, tunnelling through what is in its way.
 
+!!! warning "It digs through anything it is allowed to break"
+    The Rail Builder breaks every block in its path that is not on the list below ("When it
+    stops"), **your own builds included**: walls, floors, glass, farms. Point it where nothing of
+    yours is in the way. It also **does not stop at the world border**: a data pack cannot read
+    where the border is.
+
 1. Place it on a **straight rail** (north-south or east-west), where the track should start.
 2. Load it (it is a hopper minecart: five slots): **rails**, a **filler block** for gaps in the
    floor, **redstone torches**, and **powered rails** if you want them.
@@ -129,7 +137,7 @@ A hopper minecart that builds a straight track by itself, tunnelling through wha
 
 Every 6 ticks (a bit over 3 blocks a second) it does one block of track:
 
-- **Digs** the two blocks ahead, at track height and above, as a diamond pickaxe would: stone gives
+- **Digs** the two blocks ahead, at track height first and then above, as a diamond pickaxe would: stone gives
   cobblestone, ores give their ore, gravel can give flint. What it digs falls onto it and goes into
   its inventory like any hopper minecart's pickup; what does not fit stays on the track behind it.
   Cobblestone it digs is filler it can use.
@@ -157,7 +165,7 @@ along its track to the block it started from:
 | --- | --- |
 | out of rails | no plain rail left (powered rails alone are not enough) |
 | out of filler blocks | the floor needs filling and it has no filler block |
-| a block it may not break | bedrock, a barrier, an end portal frame, a portal, reinforced deepslate, a command, structure or test block, budding amethyst, a chest, furnace, spawner or any other block with an inventory or data, or a Redstone Additions block |
+| a block it may not break | bedrock, a barrier, an end portal frame, a portal, reinforced deepslate, a command, structure or test block, a light block, budding amethyst, a chest, furnace, spawner or any other block with an inventory or data, or a Redstone Additions block; ahead of it, or under the track where it would have to fill the floor |
 | liquid ahead | water or lava where the tunnel goes (it fills liquid under the track, but never digs into it) |
 | nothing to build on | the void below the track |
 | the way ahead is not loaded | the next blocks are in a chunk that is not loaded |
@@ -232,8 +240,9 @@ time.
 
 **Dropping what a cart carried.** A minecart has no "broken" event: it is just gone, and the game
 drops its own item. So a cart with an upgrade, and every Rail Builder, has a marker that follows
-it each tick. When a tracker's cart is gone and a minecart item that dropped in the last two ticks
-lies within 2 blocks, the cart was broken there: the tracker drops the Ram Upgrade next to it, or
+it each tick. When a tracker's cart is gone and the game dropped a minecart item at the cart's last
+position since the last tick (an item that has not aged yet, within a block), the cart was broken
+there: the tracker drops the Ram Upgrade next to it, or
 turns the hopper minecart item into a Rail Builder. Without such an item (creative, `/kill`, a
 chunk unloading under the cart) it drops nothing; a cart that comes back gets a new tracker.
 

@@ -20,6 +20,8 @@ internal object CartRay {
 	private const val T = Obj.TEMP
 	private const val STEPS = 45
 	private const val ADMIN_STEPS = 80
+	private const val PROBE = "ra.rw.probe"
+	private const val PICK = "ra.rw.pick"
 
 	/**
 	 * `ra_railworks:carts/ray/<name>`: as the player, run [fn] as the first cart on the look and
@@ -28,8 +30,19 @@ internal object CartRay {
 	fun Ra.cartRay(name: String, fn: FunctionArgument): FunctionArgument {
 		val start = ref(Ns.RAILWORKS, "carts/ray/$name")
 		val step = ref(Ns.RAILWORKS, "carts/ray/${name}_step")
+		val pick = ref(Ns.RAILWORKS, "carts/ray/${name}_pick")
+		pack.define(pick) {
+			raw("tag @s remove $PICK")
+			raw("return run function ${fn.asId()}")
+		}
 		pack.define(step) {
-			raw("execute positioned ~-0.5 ~-0.5 ~-0.5 if entity @e[type=${CartTracker.CARTS},dx=0,dy=0,dz=0] positioned ~0.5 ~0.5 ~0.5 as @n[type=${CartTracker.CARTS},distance=..2] run return run function ${fn.asId()}")
+			// The carts whose box meets the block-sized box centred on this point; of those, the one
+			// nearest the point.
+			raw("scoreboard players set #rw.hit $T 0")
+			raw("execute positioned ~-0.5 ~-0.5 ~-0.5 as @e[type=${CartTracker.CARTS},dx=0,dy=0,dz=0] store success score #rw.hit $T run tag @s add $PROBE")
+			raw("execute if score #rw.hit $T matches 1 as @n[type=${CartTracker.CARTS},tag=$PROBE] run tag @s add $PICK")
+			raw("execute if score #rw.hit $T matches 1 run tag @e[type=${CartTracker.CARTS},tag=$PROBE] remove $PROBE")
+			raw("execute if score #rw.hit $T matches 1 as @n[type=${CartTracker.CARTS},tag=$PICK] run return run function ${pick.asId()}")
 			raw("execute unless block ~ ~ ~ ${BlockTags.rayPassable.asId()} align xyz unless entity @s[dx=0,dy=0,dz=0] run return 0")
 			raw("scoreboard players remove #rw.ray $T 1")
 			raw("execute if score #rw.ray $T matches 1.. positioned ^ ^ ^0.1 run return run function ${step.asId()}")

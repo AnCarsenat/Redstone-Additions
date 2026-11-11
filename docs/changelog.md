@@ -7,11 +7,12 @@ This page mirrors key datapack milestones from the main project changelog.
 ### Added
 
 - **Ram Upgrade** (Railworks). An item fitted onto a minecart: sneak and right-click the cart with
-  it, or right-click while riding one (a chest or hopper minecart opens its inventory instead, so
+  it, or right-click while riding a plain minecart (a chest or hopper minecart opens its inventory instead, so
   it does not take one). While the cart goes faster than 3 blocks a second, living things in the
   block ahead of it are hurt, more the faster it goes (3 to 7 damage, 1.5 to 3.5 hearts, up to the
   vanilla top speed, more on worlds with faster carts), with its rider as the attacker. Its own
-  riders, players riding any minecart and armor stands are left alone, and a victim is hit again
+  riders, players riding any minecart, and anything that is not a living mob (vehicles, armor
+  stands, frames, paintings, displays) are left alone, and a victim is hit again
   only once its hurt animation is over. Shift+RMB with the Wrench takes it off and gives it back;
   breaking the cart drops it. Crafted from four iron ingots, an iron block and a piston.
 - **Rail Builder** (Railworks). A hopper minecart that lays a straight track by itself. Place it
@@ -25,7 +26,9 @@ This page mirrors key datapack milestones from the main project changelog.
   barriers, portals, end portal frames, reinforced deepslate, command blocks, chests or any other
   block entity, or a Redstone Additions block. When it cannot go on (out of rails or filler, a
   block it may not break, liquid ahead, the void, an unloaded chunk, a track that is not straight)
-  it says why and rolls back along its track to where it started. Breaking it drops its contents
+  it says why and rolls back along its track to where it started. It breaks every other block in
+  its path, player builds included, and it does not stop at the world border (a data pack cannot
+  read it). Breaking it drops its contents
   and the Rail Builder. Crafted from two rails, a diamond pickaxe, two dispensers and a hopper
   minecart.
 - **Counter** (Logic Gates). Counts the times its input turns on and fires when the count
@@ -618,9 +621,10 @@ This page mirrors key datapack milestones from the main project changelog.
 
 - **Cart tracker** (`ra/modules/railworks/carts/CartTracker.kt`). A minecart has no death event,
   so a cart that carries something of ours has a marker that follows it every tick, linked by a
-  number in `ra.rw.id`. A tracker its cart did not stamp this tick (`ra.rw.seen`) looks for a cart
-  item dropped in the last 2 ticks within 2 blocks: found, it drops the Ram Upgrade and turns the
-  vanilla hopper minecart item into a Rail Builder; not found (`/kill`, creative, an unloaded
+  number in `ra.rw.id`. A tracker its cart did not stamp this tick (`ra.rw.seen`) looks for the
+  cart item the game dropped at the cart's last position (`Age:0s`, within a block, each item
+  claimed once, by kind): found, it drops the Ram Upgrade, or turns the vanilla hopper minecart item
+  into a Rail Builder; not found (`/kill`, creative, an unloaded
   chunk), it removes itself and the cart makes a new one when it is back. Only carts tagged
   `ra.rw.tracked` are looked at. `Ra.wrenchEntityHooks` lets a part handle a Wrench Shift+RMB on an
   entity before the block ray (`ra:tools/wrench/entity_hooks`).

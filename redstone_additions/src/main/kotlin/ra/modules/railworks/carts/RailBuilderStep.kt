@@ -28,9 +28,9 @@ import ra.modules.railworks.carts.RailBuilder.UNBREAKABLE
  * 1. A straight rail along the line already at F: just move onto it. Any other rail: stop.
  * 2. Stop ([REASONS]) when F is in an unloaded chunk (or the block after it is), when F or H can
  *    not be broken (`#minecraft:wither_immune`, portals, a block entity such as a chest or a
- *    spawner, a Redstone Additions block), when F or H is a liquid, when B is the void, when it has
+ *    spawner, a Redstone Additions block; the same for B when it needs filling), when F or H is a liquid, when B is the void, when it has
  *    no rail, or no filler while B needs one.
- * 3. Dig H and F: their drops as a diamond pickaxe gets them (`loot ... mine`), put onto the
+ * 3. Dig F, then H: their drops as a diamond pickaxe gets them (`loot ... mine`), put onto the
  *    builder, which picks them up. The block is removed after the loot is made, and the loot is
  *    thrown away again if the block could not be removed, so nothing is doubled.
  * 4. B is replaceable (air, a liquid, grass, snow...): put a filler block there, taken from the
@@ -135,6 +135,14 @@ internal object RailBuilderStep {
 
 	private fun Function.why(code: Int, cond: String) = raw("execute $cond run return run function ${stopWith(code).asId()}")
 
+	/** Stop (3) when [p] is a block it may not break: unbreakable, a block entity, a Redstone Additions block. */
+	private fun Function.protectedBlock(guard: String, p: String) {
+		why(3, "${guard}if block $p $UNBREAKABLE")
+		why(3, "${guard}if data block $p id")
+		for (tag in listOf(Tag.CUSTOM_BLOCK, "ra.multiblock"))
+			why(3, "${guard}positioned $p align xyz positioned ~0.5 ~0.5 ~0.5 if entity @e[type=minecraft:marker,tag=$tag,distance=..0.6]")
+	}
+
 	private fun Function.stepFor(d: Dir, torch: io.github.ayfri.kore.arguments.types.resources.FunctionArgument, advance: io.github.ayfri.kore.arguments.types.resources.FunctionArgument) {
 		val f = d.at(1, 0)
 		val h = d.at(1, 1)
@@ -145,18 +153,18 @@ internal object RailBuilderStep {
 		why(2, "unless loaded ${d.at(2, 0)}")
 		why(7, "if block $b minecraft:void_air")
 		for (p in listOf(f, h)) {
-			why(3, "if block $p $UNBREAKABLE")
 			why(4, "if block $p $LIQUID")
-			why(3, "if data block $p id")
-			for (tag in listOf(Tag.CUSTOM_BLOCK, "ra.multiblock"))
-				why(3, "positioned $p align xyz positioned ~0.5 ~0.5 ~0.5 if entity @e[type=minecraft:marker,tag=$tag,distance=..0.6]")
+			protectedBlock("", p)
 		}
 		raw("scoreboard players set #rb.fl $T 0")
 		raw("execute if block $b $FLOOR run scoreboard players set #rb.fl $T 1")
+		// B is only replaced when it needs filling, and then with the same guards as F and H.
+		protectedBlock("if score #rb.fl $T matches 1 ", b)
 		why(5, "unless items entity @s container.* minecraft:rail")
 		why(6, "if score #rb.fl $T matches 1 unless items entity @s container.* $FILLER")
 
-		for (p in listOf(h, f)) raw("execute unless block $p $CLEAR positioned $p align xyz positioned ~0.5 ~0.5 ~0.5 run function ${mine.asId()}")
+		// F first: digging the lower half of a door or a tall plant drops it whole.
+		for (p in listOf(f, h)) raw("execute unless block $p $CLEAR positioned $p align xyz positioned ~0.5 ~0.5 ~0.5 run function ${mine.asId()}")
 		why(8, "unless block $f $CLEAR")
 		why(8, "unless block $h $CLEAR")
 

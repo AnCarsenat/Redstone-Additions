@@ -22,8 +22,8 @@ import ra.modules.enchanting.sacrificeRecipe
  * own: the enchanting module already looks at items on tables every five ticks, and this is one
  * more entry in `#ra_enchanting:recipes`.
  *
- * Only a plain nether star counts. A nether star that carries RA custom data (any RA item built on
- * one) is left alone, so nothing of the pack's is ever turned into something else.
+ * Only a plain nether star counts. One with any custom data (from this pack or any other) or a
+ * custom name is left alone, so nobody loses a renamed star or another pack's item built on one.
  *
  * WHY A TEST INSTANCE BLOCK. A crafting recipe matches ingredients by id alone, so the tablet's
  * recipe needs an id nothing else in the game or the pack uses, and one no survival player can
@@ -55,8 +55,10 @@ object Overstar {
 		}
 
 		pack.define(enchantRecipes) {
-			// Not an RA item that happens to be a nether star: the filter below matches partially.
-			raw("""execute if data storage ra:enchant input.components."minecraft:custom_data".ra run return 0""")
+			// Only a plain star: the filter below matches partially, so a star with any custom data
+			// (any pack's) or a name would match it too.
+			raw("""execute if data storage ra:enchant input.components."minecraft:custom_data" run return 0""")
+			raw("""execute if data storage ra:enchant input.components."minecraft:custom_name" run return 0""")
 			sacrificeRecipe(
 				"{id:\"minecraft:nether_star\"}", item.stackSnbt(), chance = CHANCE,
 				won = "The nether star became an Overstar.",

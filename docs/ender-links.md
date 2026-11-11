@@ -184,9 +184,10 @@ enchanting table: once a second the table takes **one star** off the stack and r
 - **The other 9 times** the star is gone, with smoke and a fizz.
 
 A whole stack burns down one star a second, so throw only as many as you want to spend. The player
-who threw the stars is told how each one went. Only plain nether stars are taken: an Overstar, or
-any other Redstone Additions item, is left lying on the table. The Overstar's only use is the
-Anchor Tablet recipe. It cannot be placed.
+who threw the stars is told how each one went. Only plain nether stars are taken: a star with a
+custom name (renamed on an anvil) or any custom data (an Overstar, any Redstone Additions item, or
+an item from another data pack or mod built on a nether star) is left lying on the table, untouched.
+The Overstar's only use is the Anchor Tablet recipe. It cannot be placed.
 
 This is the same table sacrifice as [Enchant Crafting](enchant-crafting.md), so it stops working if
 an operator switches the enchanting module off.

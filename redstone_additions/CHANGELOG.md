@@ -452,8 +452,9 @@
 - **Overstar** (Ender Links). A nether star thrown onto an enchanting table is used up, one star a
   second, and 1 time in 10 it comes back as an Overstar (epic, glinting, the nether star look).
   Particles and a sound show each hit and miss, and the player who threw the stars is told how each
-  one went. Only plain nether stars are taken: an Overstar or any other RA item is left alone. Its
-  only use is the Anchor Tablet recipe. Advancement: *Overstar* (Ender Links tab).
+  one went. Only plain nether stars are taken: a renamed star, or one with any custom data (an
+  Overstar, an RA item, another pack's item), is left alone. Its only use is the Anchor Tablet
+  recipe. Advancement: *Overstar* (Ender Links tab).
 - **Ender Links advancements**: a new Ender Links branch in the Redstone Additions tab, with
   *Overstar* and *Anchor Tablet*.
 

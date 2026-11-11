@@ -230,7 +230,7 @@ This page mirrors key datapack milestones from the main project changelog.
   drawn on or floats from, all six), **direction** (how it is turned on that face), **colour**,
   **position** (`offset`, x, y and z each -16 to 16 sixteenths of a block), **scale** (25 % to 400 %,
   admins up to 1600 %) and **rotation** (a tilt of the text or the hologram's item, yaw -180 to 180
-  and pitch -90 to 90 degrees, about its own middle). Text displays have a **background** colour,
+  and pitch -90 to 90 degrees, about its own middle; the hologram's name stays upright). Text displays have a **background** colour,
   none by default, so only the block's face shows behind the text; pick one of the sixteen chat
   colours and an opacity, or type `#AARRGGBB`. A Data Handler change shows within a second.
 - **Gauge Bar** (Displays). A bar on its front face, filled to the redstone level feeding it, 0 to
@@ -550,7 +550,9 @@ This page mirrors key datapack milestones from the main project changelog.
   `DataHandlerColor.kt` (`ColorParse.kt` turns typed text into a number one character at a time).
   See [Tools and Registries](tools-and-registries.md#direction-facing-and-colour).
 - **Displays**: `facing` is now a `direction` property, `rotation` a `facing` and `background` a
-  `color` (the Gauge Bar's old `background` flag reads as none). `defineForms(..., tilt = true)` and
+  `color` (the Gauge Bar's old `background:1b` flag reads as the colour 1, transparent: a Gauge
+  Bar placed by an earlier 6.0.3 build loses its dark plate on its next redraw, since text displays
+  have no backdrop by default). `defineForms(..., tilt = true)` and
   `Form(pivot = ...)` give a part the tilt, about its centre; the quaternion comes from a sine table
   written at load (`DisplayTilt.kt`, `storage ra:displays trig`).
 

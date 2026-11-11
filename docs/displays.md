@@ -26,8 +26,8 @@ Handler change within a second.
 | `color` | see each block below; anything else draws the default | |
 | `offset` | a position (x, y, z), each -16 to 16 in sixteenths of a block: right, up, and out of the face, as you look at it. In the Data Handler, **[Edit]** nudges it by 1/16, 1/4 or a whole block, or types an axis | 0, 0, 0 |
 | `scale` | 25 to 400 (percent), about the middle of the face; admins up to 1600 | 100 |
-| `rotation` | a tilt, yaw -180 to 180 and pitch -90 to 90 degrees, from straight out of the face: yaw turns it clockwise seen from its top, a positive pitch tips its front down. The text (the Text Screen's screen stays flat on the block) or the hologram's item turns about its own middle. In the Data Handler, **[Edit]** nudges it by 1, 15 or 45 degrees, or types an angle | 0, 0 |
-| `background` | the colour behind the text (Text Screen, Gauge Bar, the hologram's name): *none*, one of the sixteen chat colours with an opacity, or typed as `#AARRGGBB`. None shows only the block's face behind the text | none |
+| `rotation` | a tilt, yaw -180 to 180 and pitch -90 to 90 degrees, from straight out of the face: yaw turns it clockwise seen from its top, a positive pitch tips its front down. The text (the Text Screen's screen stays flat on the block) or the hologram's item turns about its own middle; the hologram's name stays upright above it. In the Data Handler, **[Edit]** nudges it by 1, 15 or 45 degrees, or types an angle | 0, 0 |
+| `background` | the colour behind the text (Text Screen, Gauge Bar, the hologram's name): *none*, one of the sixteen chat colours with an opacity, or typed as `#AARRGGBB`. None shows only the block's face behind the text. Only `#00000000` is none: a colour typed with opacity 00, such as `#00FF0000`, is kept as typed (and draws nothing) | none |
 
 The scale a new display gets is on the Displays settings page (*Gauge Bar scale* and the others).
 
@@ -132,7 +132,8 @@ Crafted from three glass panes, two glowstone dust, a comparator and a barrel.
   `data.properties` differs from `data.data.style`. Missing properties (a block placed by an
   earlier build) get their defaults then; until then a missing `rotation` reads as no tilt and a
   missing `background` as none. A Gauge Bar placed by an earlier 6.0.3 build with the old
-  `background:1b` flag reads it as the colour 1, which is transparent: none. Text colours are checked
+  `background:1b` flag reads it as the colour 1, which is transparent: its dark plate is gone
+  from its next redraw, as text displays have no backdrop by default. Text colours are checked
   (`ra_displays:text_color/check`) and copied, never pasted into a command.
 - One slow clock, `ra_displays:poll/run`, runs once a second while a display block that needs it is
   loaded, and stops when none is. It puts back a display killed by hand.

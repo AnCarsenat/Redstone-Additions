@@ -16,7 +16,8 @@ import ra.tools.tool
  *          The words are NBT matches against constants; every other text is read one character at
  *          a time (`set string ... i i+1`), each compared with the digits by NBT match ([digit]),
  *          and the number built with score arithmetic. A `#RRGGBB` for an ARGB colour is opaque;
- *          a name keeps the alpha in `#col.cur` (the value before), or `#col.pa` when that was none.
+ *          a name keeps the alpha in `#col.cur` (the value before), or `#col.pa` when that was none
+ *          (exactly the none value: `#00FF0000` is a transparent red, not none).
  *
  * [hex]    score `#col.v` -> storage ra:temp col.rgb `"#RRGGBB"` and col.argb `"#AARRGGBB"`, scores
  *          `#col.rgb` (0..0xFFFFFF) and `#col.al` (0..255). The string is joined by one macro line
@@ -99,7 +100,7 @@ internal object ColorParse {
 			raw("execute if score #col.nm $T matches 1 run scoreboard players operation #col.keep $T = #col.rgb $T")
 			raw("execute if score #col.nm $T matches 1 run scoreboard players operation #col.v $T = #col.cur $T")
 			raw("execute if score #col.nm $T matches 1 run function ${hex.asId()}")
-			raw("execute if score #col.nm $T matches 1 if score #col.al $T matches 0 run scoreboard players operation #col.al $T = #col.pa $T")
+			raw("execute if score #col.nm $T matches 1 if score #col.n $T matches 1 if score #col.cur $T = #col.nv $T run scoreboard players operation #col.al $T = #col.pa $T")
 			raw("execute if score #col.nm $T matches 1 run scoreboard players operation #col.rgb $T = #col.keep $T")
 			raw("execute if score #col.nm $T matches 1 run function ${compose.asId()}")
 			raw("execute if score #col.nm $T matches 1 run return 1")

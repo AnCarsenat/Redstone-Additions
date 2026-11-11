@@ -120,8 +120,7 @@ object DataHandlerColor {
 			raw("execute if score #col.isn $T matches 1 store result score #col.v $T run data get storage ra:dh cprobe")
 			raw("data remove storage ra:dh cprobe")
 		}
-		// cq.sw (the swatch's colour) and cq.lbl (what is written) for #col.v: "none" for the none
-		// value or a transparent ARGB.
+		// cq.sw (the swatch's colour) and cq.lbl (what is written) for #col.v: "none" for the none value.
 		pack.define(label) {
 			raw("scoreboard players operation #col.cur $T = #col.v $T")
 			raw("function ${ColorParse.hex.asId()}")
@@ -129,11 +128,10 @@ object DataHandlerColor {
 			raw("data modify storage ra:dh cq.sw set from storage ra:temp col.rgb")
 			raw("data modify storage ra:dh cq.lbl set from storage ra:temp col.rgb")
 			raw("execute if score #col.a $T matches 1 run data modify storage ra:dh cq.lbl set from storage ra:temp col.argb")
-			val none = listOf("if score #col.a $T matches 1 if score #col.al $T matches 0", "if score #col.a $T matches 0 if score #col.v $T = #col.nv $T if score #col.n $T matches 1")
-			for (c in none) {
-				raw("execute $c run data modify storage ra:dh cq.sw set value \"dark_gray\"")
-				raw("execute $c run data modify storage ra:dh cq.lbl set value \"none\"")
-			}
+			// Only the none value itself is none: `#00FF0000` is a transparent red, shown as such.
+			val none = "if score #col.n $T matches 1 if score #col.v $T = #col.nv $T"
+			raw("execute $none run data modify storage ra:dh cq.sw set value \"dark_gray\"")
+			raw("execute $none run data modify storage ra:dh cq.lbl set value \"none\"")
 		}
 		// {name}: #col.v into the selected block, as an int.
 		pack.define(write) {
@@ -153,7 +151,7 @@ object DataHandlerColor {
 			raw("function ${ColorParse.hex.asId()}")
 			// A chat colour: RGB as it is; ARGB keeps its alpha, or gets the preset alpha when none.
 			for ((k, p) in ColorSpec.PRESETS.withIndex()) raw("execute if score #dh.r $T matches $k run scoreboard players set #col.rgb $T ${p.second}")
-			raw("execute if score #dh.r $T matches 0..15 if score #col.al $T matches 0 run scoreboard players operation #col.al $T = #col.pa $T")
+			raw("execute if score #dh.r $T matches 0..15 if score #col.n $T matches 1 if score #col.cur $T = #col.nv $T run scoreboard players operation #col.al $T = #col.pa $T")
 			// An opacity: ARGB only, the colour kept (black when it was none).
 			raw("""execute if score #dh.r $T matches 40..43 if score #col.a $T matches 0 run return run tellraw @s [$PREFIX,{nbt:"q.name",storage:"ra:dh",color:"yellow"},{text:" has no opacity.",color:"red"}]""")
 			for ((k, o) in ColorSpec.OPACITIES.withIndex()) raw("execute if score #dh.r $T matches ${40 + k} run scoreboard players set #col.al $T ${o.second}")

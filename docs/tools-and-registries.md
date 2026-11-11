@@ -206,7 +206,8 @@ properties(block) {
   Schema entry: `fc:{min:[I;yaw,pitch],max:[I;yaw,pitch],grid,wrap,frame,steps,labels,def,frame_label}`.
 - **color**: one int. RGB (`alpha = false`) is 0..0xFFFFFF, and -1 is "none" when `none = true`.
   ARGB (`alpha = true`) is the signed int a text display's `background` takes, and 0 (alpha 0) is
-  "none". The editor offers the sixteen chat colours (an ARGB value keeps its alpha, or gets
+  "none"; only that value is none (`#00FF0000` is a transparent red, shown and kept as such).
+  The editor offers the sixteen chat colours (an ARGB value keeps its alpha, or gets
   `presetAlpha` when it was none), 100/75/50/25 % opacity (ARGB), **[None]** and **[Reset]**.
   **[Type]** takes a chat colour's name, `none`, `#RRGGBB`, `#AARRGGBB` (ARGB) or a decimal int:
   the text is read one character at a time and turned into a number with score arithmetic

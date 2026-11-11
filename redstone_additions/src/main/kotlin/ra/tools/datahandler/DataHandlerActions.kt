@@ -218,7 +218,9 @@ object DataHandlerActions {
 
 			// Asked about one block, answered while pointing at another: the value was meant for the
 			// first, under a property the second may not have or may keep to itself.
-			raw("execute store result score #dh.pmid ${Obj.TEMP} run data get storage ra:dh cur.mid")
+			// -1 first: a missing cur.mid must not leave a value from another player's call standing.
+			raw("scoreboard players set #dh.pmid ${Obj.TEMP} -1")
+			raw("execute if data storage ra:dh cur.mid store result score #dh.pmid ${Obj.TEMP} run data get storage ra:dh cur.mid")
 			raw("""execute unless score #dh.pmid ${Obj.TEMP} = @s $SEL run tellraw @s [$PREFIX,{text:"You selected another block since; the value was not applied.",color:"red"}]""")
 			raw("execute unless score #dh.pmid ${Obj.TEMP} = @s $SEL run return 0")
 

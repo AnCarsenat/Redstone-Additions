@@ -20,6 +20,7 @@ import ra.modules.multiblock.blastforge.BlastForge
 import ra.modules.multiblock.blocks.BaseTier
 import ra.modules.multiblock.blocks.Bases
 import ra.multiblocklib.spec.Compiled
+import ra.core.block.PlacementBat
 
 /**
  * Example addon (`ra_example`): the worked example behind docs/extension-examples.md.
@@ -45,7 +46,7 @@ object ExamplePart : PackPart {
 			"item_name" to "\"$name\"",
 			"lore" to """[{text:"$lore",color:"gray",italic:false}]""",
 			"custom_data" to "{ra:{$customData:1b}}",
-			"entity_data" to """{id:"minecraft:bat",Tags:["ra","ra.spawned","$placeTag"],Silent:1b,NoAI:1b,Invulnerable:1b}""",
+			"entity_data" to """{id:"minecraft:bat",Tags:["ra","ra.spawned","$placeTag"],${PlacementBat.FLAGS}}""",
 		)
 	}
 

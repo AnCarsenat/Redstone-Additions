@@ -42,7 +42,7 @@ import ra.modules.farming.net.CaptureNet.STORE
  * CATCHING (empty net). A walk from the eyes, 0.1 block a step, finds the first mob of
  * [CaptureNetMobs.ANY] whose hitbox holds the point, stopping at the first block the crosshair
  * would stop on. It is refused (nothing changes) when it is not a [CaptureNetMobs.SMALL] mob and
- * the net is not a Master net, is tagged `ra`, is leashed, is invulnerable, carries a rider, or is
+ * the net is not a Master net, is tagged `ra`, is invulnerable, carries a rider, or is
  * tamed by another player. Otherwise, in this order:
  *   1. its data is copied into `storage ra:farming net.mob`, its type added ([CaptureNetMobs.typeOf]);
  *   2. that is copied into the held net, and the net is read back: it must now hold a mob;
@@ -77,6 +77,7 @@ internal object CaptureNetUse {
 	private val summonMob = fn("summon")
 	private val mergeMob = fn("merge")
 	private val vanish = fn("vanish")
+	private val ownerCheck = fn("owner_check")
 
 	/** The game time the player's net was last seen in use. */
 	const val USED = "ra.farm.net_used"
@@ -95,6 +96,9 @@ internal object CaptureNetUse {
 		"UUID", "Pos", "Motion", "FallDistance", "fall_distance", "Fire", "OnGround", "PortalCooldown",
 		"Air", "Brain", "leash", "Leash", "sleeping_pos", "SleepingX", "SleepingY", "SleepingZ",
 		"HurtTime", "HurtByTimestamp", "DeathTime", "AngryAt", "angry_at", "AngerTime", "anger_end_time",
+		// Never another entity, never a leash, never a flag a player could not set: whatever rides
+		// it or holds it stays out of the net, and so do tags and invulnerability.
+		"Passengers", "RootVehicle", "leash_holder", "Tags", "Invulnerable",
 	)
 
 	private val holdsLore = """{text:"",color:"gray",italic:false,extra:[{text:"Holds: "},{nbt:"net.mob.type",storage:"$STORE",interpret:true,color:"white"}]}"""
@@ -166,19 +170,24 @@ internal object CaptureNetUse {
 		// As the player, with the mob tagged TARGET: every refusal, then the catch.
 		pack.define(take) {
 			raw("execute unless items entity @s weapon.mainhand ${net(MASTER)} if entity @e[tag=$TARGET,distance=..8,limit=1,type=!${CaptureNetMobs.SMALL_TAG}] run return run ${say("This net only catches animals. A Master Capture Net catches any mob.", "yellow")}")
-			raw("execute if data entity $TARGET_SEL leash run return run ${say("Unleash it first.", "yellow")}")
 			raw("execute if entity @e[tag=$TARGET,distance=..8,limit=1,nbt={Invulnerable:1b}] run return run ${say("It cannot be caught.", "yellow")}")
 			raw("scoreboard players set #cn.rider $T 0")
 			raw("execute as $TARGET_SEL on passengers run scoreboard players set #cn.rider $T 1")
 			raw("execute if score #cn.rider $T matches 1 run return run ${say("Something is riding it.", "yellow")}")
-			// Tamed by someone else: its Owner differs from this player's UUID.
-			raw("data remove $N.own")
-			raw("data modify $N.own set from entity $TARGET_SEL Owner")
+			// Tamed by someone else: its Owner differs from this player's UUID in any of the four ints.
 			raw("scoreboard players set #cn.other $T 0")
-			raw("execute if data $N.own store success score #cn.other $T run data modify $N.own set from entity @s UUID")
-			raw("data remove $N.own")
+			raw("execute if data entity $TARGET_SEL Owner run function ${ownerCheck.asId()}")
 			raw("execute if score #cn.other $T matches 1 run return run ${say("It belongs to another player.", "red")}")
 			raw("execute as $TARGET_SEL run function ${takeAsMob.asId()}")
+		}
+
+		// As the player, the target tamed: #cn.other 1 unless Owner[i] = UUID[i] for i 0..3.
+		pack.define(ownerCheck) {
+			for (i in 0..3) {
+				raw("execute store result score #cn.o$i $T run data get entity $TARGET_SEL Owner[$i]")
+				raw("execute store result score #cn.u$i $T run data get entity @s UUID[$i]")
+				raw("execute unless score #cn.o$i $T = #cn.u$i $T run scoreboard players set #cn.other $T 1")
+			}
 		}
 
 		// As the mob, the player tagged USER.
@@ -211,6 +220,12 @@ internal object CaptureNetUse {
 
 		// As the caught mob: gone without a trace. Far below the world, whatever it drops falls out.
 		pack.define(removeMob) {
+			// Tied to a fence or a mob: the lead comes off where it is, one lead, as when a leash
+			// breaks. Its own leash then goes with it below the world, where nothing it drops is
+			// left. A mob it holds on a lead drops that lead by itself once its holder is gone.
+			raw("scoreboard players set #cn.leashed $T 0")
+			raw("execute on leasher run scoreboard players set #cn.leashed $T 1")
+			raw("""execute at @s if score #cn.leashed $T matches 1 run summon minecraft:item ~ ~0.5 ~ {Item:{id:"minecraft:lead",count:1},PickupDelay:10s}""")
 			raw("""data merge entity @s {Silent:1b,DeathLootTable:"minecraft:empty",Size:0}""")
 			// No "<name> died" sent to an owner.
 			raw("execute if data entity @s Owner run data modify entity @s Owner set value [I;0,0,0,0]")
@@ -227,6 +242,10 @@ internal object CaptureNetUse {
 			raw("data modify storage ra:safe f set value ${TextFormat.ID.code}")
 			raw("scoreboard players set #cn.ok $T 0")
 			raw("execute store result score #cn.ok $T run function ${RaLib.Safe.check.asId()}")
+			raw("execute unless score #cn.ok $T matches 1 run return run ${say("This net holds something it cannot let out.", "red")}")
+			// Only a type on this net's list, checked before anything is summoned.
+			raw("scoreboard players set #cn.ok $T 0")
+			raw("execute store result score #cn.ok $T run function ${CaptureNetMobs.allowed.asId()} with $N.mob")
 			raw("execute unless score #cn.ok $T matches 1 run return run ${say("This net holds something it cannot let out.", "red")}")
 			raw("scoreboard players set #cn.hit $T 0")
 			raw("scoreboard players set #cn.ray $T $REACH_STEPS")

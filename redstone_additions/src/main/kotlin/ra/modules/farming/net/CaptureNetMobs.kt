@@ -20,7 +20,7 @@ import ra.core.ref
  * A mob's type id cannot be read off the entity, so [typeOf] tests it against each type in [ANY]
  * in turn: one function call per catch, never per tick.
  */
-internal object CaptureNetMobs {
+object CaptureNetMobs {
 	val SMALL = listOf(
 		"armadillo", "axolotl", "bat", "bee", "cat", "chicken", "cod", "cow", "fox", "frog",
 		"glow_squid", "goat", "mooshroom", "ocelot", "parrot", "pig", "pufferfish", "rabbit",
@@ -52,7 +52,30 @@ internal object CaptureNetMobs {
 	 */
 	val typeOf = ref(Ns.FARMING, "capture_net/type_of")
 
+	/**
+	 * `storage ra:farming capture_net.{small,any}."<id>"`: the same lists as maps, for the check a
+	 * net's stored type passes before it is summoned ([allowed]). Written at the module load.
+	 */
+	fun allowMapsSnbt(): String {
+		fun map(list: List<String>) = list.joinToString(",", "{", "}") { "\"minecraft:$it\":1b" }
+		return "{small:${map(SMALL)},any:${map(ANY)}}"
+	}
+
+	/**
+	 * `{id}`, as the player holding a full net: 1 when a net of that tier may let this type out
+	 * (a Master net: [ANY]; a Capture Net: [SMALL]), 0 otherwise. `id` passed `ra_lib:safe/check`
+	 * (format ID), so it holds no quote and is safe inside the path.
+	 */
+	val allowed = ref(Ns.FARMING, "capture_net/allowed")
+
 	fun Ra.registerCaptureNetMobs() {
+		pack.define(allowed) {
+			raw("\$execute unless data storage ${CaptureNet.STORE} capture_net.any.\"\$(id)\" run return 0")
+			raw("execute if items entity @s weapon.mainhand ${CaptureNet.net(CaptureNet.MASTER)} run return 1")
+			raw("\$execute if data storage ${CaptureNet.STORE} capture_net.small.\"\$(id)\" run return 1")
+			raw("return 0")
+		}
+
 		for ((name, list) in listOf("small" to SMALL, "any" to ANY, "hostile" to HOSTILE)) {
 			pack.entityTypeTag("capture_net/$name", Ns.FARMING.id) {
 				for (id in list) add("minecraft:$id")

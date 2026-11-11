@@ -14,6 +14,7 @@ import ra.modules.farming.Breeder.registerBreeder
 import ra.modules.farming.Sprinkler.registerSprinkler
 import ra.modules.farming.net.CaptureNet
 import ra.modules.farming.net.CaptureNet.registerCaptureNet
+import ra.modules.farming.net.CaptureNetMobs
 import ra.modules.farming.net.CaptureNetUse
 import ra.modules.farming.tree.TreeFarm
 import ra.modules.farming.tree.TreeFarm.registerTreeFarm
@@ -47,6 +48,7 @@ object FarmingModule : GameplayModule {
 
 		pack.define(load) {
 			raw("scoreboard objectives add ${CaptureNetUse.USED} dummy")
+			raw("data modify storage ${CaptureNet.STORE} capture_net set value ${CaptureNetMobs.allowMapsSnbt()}")
 			function(Breeder.registerBlock)
 			function(Sprinkler.registerBlock)
 			function(TreeFarm.registerBlock)

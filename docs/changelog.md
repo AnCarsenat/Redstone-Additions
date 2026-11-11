@@ -362,8 +362,9 @@ This page mirrors key datapack milestones from the main project changelog.
   copper ingots and a bucket.
 - **Tree Farm** (Farming). Plants a sapling on the first free block beside it that stands on dirt
   or grass, and fells the tree once it has grown: the logs of that wood connected to the trunk (and
-  never below its base), then the tree's own leaves that were not placed by hand, within 12 blocks
-  of the tree and at most 96 logs and 384 leaves. The drops, as if cut with an axe (logs,
+  never below its base), then the tree's own leaves that were not placed by hand and are no further
+  from one of those logs than their own distance to a log says, within 12 blocks of the tree and at
+  most 96 logs and 384 leaves. A tree of the same kind touching it keeps its own leaves. The drops, as if cut with an axe (logs,
   saplings, sticks, apples), go into the container below it, or fall on the spot when it has fewer
   than three free slots; saplings and bone meal come from the container above. With its
   *bone_meal* property on (the default) it uses one bone meal a second on the sapling, as a player
@@ -374,10 +375,13 @@ This page mirrors key datapack milestones from the main project changelog.
   and carry it; right-click a block to let it out there. The mob keeps its name, health, equipment,
   owner and, for a villager, its trades; the net shows what it holds. The Capture Net catches farm
   animals and other small peaceful mobs; the Master Capture Net, a Capture Net upgraded with a
-  nether star, catches any mob but the wither, the ender dragon and players. Neither catches a
-  leashed mob, one with a rider, or a pet tamed by another player. The mob is only removed once the
-  net holds it, and the net is only emptied once the mob is back. The Capture Net is crafted from
-  three string and two sticks; the upgrade keeps whatever the net holds.
+  nether star, catches any mob but the wither, the ender dragon and players. Neither catches a mob
+  with a rider or a pet tamed by another player. A mob on a lead is let off it first: the lead drops
+  where it is tied, and a mob it was holding on a lead drops that lead too, one lead per leash, as
+  when a leash breaks; no leash goes into the net. Only the types on the net's list come back out.
+  The mob is only removed once the net holds it, and the net is only emptied once the mob is back.
+  The Capture Net is crafted from three string and two sticks; the upgrade keeps whatever the net
+  holds, and a plain rabbit hide with a nether star makes an empty Master Capture Net too.
 - **Recipe Pattern** (Automation). A Pattern that makes the Crafter Controller fill the crafter
   itself: put a container on the Controller's other side, opposite the crafter, and every half
   second the Controller moves one ingredient from it into each empty slot the Pattern names, then

@@ -19,7 +19,9 @@ the trees into a chest. The **Capture Net** catches a mob so you can carry it so
 | Master Capture Net | cobweb, purple name | ![Master Capture Net recipe](images/recipes/ra_farming/master_capture_net.png){ width="220" } |
 
 The Master Capture Net is a Capture Net (the cobweb in the picture) and a nether star, anywhere in
-the crafting grid. The upgrade keeps whatever the net holds.
+the crafting grid. The upgrade keeps whatever the net holds. A plain rabbit hide works in place of
+the Capture Net too, by design: the recipe cannot tell them apart, and the result is an empty
+Master Capture Net either way.
 
 Operators: `/function ra_farming:items/give_all` (every block and both nets),
 `/function ra_farming:capture_net/give`, `/function ra_farming:capture_net/give_master`.
@@ -129,7 +131,9 @@ Once a second it looks at its spot:
 
 **Felling** takes only the tree that grew there: starting from the log on the spot, the logs of
 that one wood connected to it, beside or above (never below the trunk's base), then that tree's
-leaves that were not placed by hand. Everything must be within 12 blocks of a point 8 blocks above
+leaves that were not placed by hand. A leaf is taken only when one of the felled logs is within its
+own distance to a log (the `distance` every leaf carries), so a tree of the same kind whose leaves
+touch keeps them. Everything must be within 12 blocks of a point 8 blocks above
 the spot, and at most 96 logs and 384 leaves are taken. Each block's drops, as if cut with an axe
 (logs, saplings, sticks, apples), go into the container below while it has three free slots; when
 it is fuller, they fall on the spot instead, so nothing is lost. With no container below it does
@@ -163,8 +167,10 @@ was: its name, health, equipment, owner, baby or grown, and a villager's trades 
 | Capture Net | Farm animals and small peaceful mobs: armadillo, axolotl, bat, bee, cat, chicken, cod, cow, fox, frog, glow squid, goat, mooshroom, ocelot, parrot, pig, pufferfish, rabbit, salmon, sheep, squid, tadpole, tropical fish, turtle, wolf |
 | Master Capture Net | Any mob but the wither, the ender dragon and players: villagers, horses, golems, hostile mobs, the warden |
 
-It refuses a mob that is leashed (unleash it first), has something riding it, is invulnerable, or
-is a pet tamed by another player. One net holds one mob, so nets do not stack. A mob that Peaceful
+It refuses a mob that has something riding it, is invulnerable, or is a pet tamed by another
+player. A mob on a lead is let off it first, as when a leash breaks: the lead drops where the mob
+was, and if the mob was holding other mobs on leads, each of those drops its lead too. One lead per
+leash, and no leash is ever kept in the net. A net only lets out the types on its own list above. One net holds one mob, so nets do not stack. A mob that Peaceful
 removes (a zombie, a creeper) is not let out on Peaceful: it stays in the net.
 
 !!! tip "Chests, villagers and allays"

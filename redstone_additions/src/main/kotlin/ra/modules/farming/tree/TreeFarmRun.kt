@@ -30,7 +30,9 @@ import ra.core.ref
  * FELLING. Only what grew from that spot: starting from the log on it, logs of that one wood,
  * reached from a log beside or above it (the 17 neighbours level with it or one up, so a trunk's
  * diagonal steps are followed and nothing below its base is), then that tree's leaves that are not
- * `persistent` (placed by hand) reached through its logs and leaves. Every block must also lie within
+ * `persistent` (placed by hand) reached through its logs and leaves, each only when a felled log is
+ * within its `distance` state (how far its nearest log is): a touching tree of the same kind,
+ * whose leaves are nearer its own logs, keeps them. Every block must also lie within
  * [REACH] of a point [CENTRE_UP] above the spot, and at most [MAX_LOGS] logs and [MAX_LEAVES]
  * leaves are taken. Each block's drops (as if broken with an axe) go into the container below while
  * it has three free slots, and drop on the spot when it does not: nothing is destroyed.
@@ -52,6 +54,8 @@ internal object TreeFarmRun {
 	private fun growTree(k: TreeKind) = fn("grow_tree/${k.name}")
 	private fun fellLog(k: TreeKind) = fn("fell_log/${k.name}")
 	private fun fellLeaf(k: TreeKind) = fn("fell_leaf/${k.name}")
+	private fun tryLeaf(k: TreeKind) = fn("try_leaf/${k.name}")
+	private fun leavesFrom(k: TreeKind) = fn("leaves_from/${k.name}")
 	/** `ra_lib:inventory/remove` of one [id], at the container: 1 when one was taken. */
 	private fun take(id: String) = "${RaLib.Inventory.remove.asId()} {id:\"$id\",count:1}"
 	private val plantHere = fn("plant_here")
@@ -64,6 +68,10 @@ internal object TreeFarmRun {
 	private const val T = Obj.TEMP
 	private const val S = "storage ra:farming tf"
 	private const val ANCHOR = "ra.tf.anchor"
+	/** On a marker where a felled log stood, for one fell. */
+	private const val LOG_MARK = "ra.tf.log"
+	/** Every felled log lies within this of the spot (REACH around a point CENTRE_UP above it). */
+	private const val MARK_REACH = REACH + CENTRE_UP + 1
 	private const val ANCHOR_NEAR = "@e[type=minecraft:marker,tag=$ANCHOR,distance=..$REACH,limit=1]"
 	private const val SAPLINGS_TAG = "#ra_farming:tree_farm/saplings"
 
@@ -174,11 +182,24 @@ internal object TreeFarmRun {
 				raw("scoreboard players remove #tf.logs $T 1")
 				raw("function ${mine.asId()} with $S")
 				raw("setblock ~ ~ ~ minecraft:air")
+				// Where this tree's logs stood, for the leaves. Killed by `fell` before the function
+				// chain ends, so it never lives to the next tick: no `ra` tag, no purge stamp.
+				raw("summon minecraft:marker ~ ~ ~ {Tags:[\"$LOG_MARK\"]}")
 				for (d in LOG_STEPS) {
 					raw("execute if score #tf.logs $T matches 1.. positioned $d if block ~ ~ ~ ${k.log} if entity $ANCHOR_NEAR run function ${fellLog(k).asId()}")
 				}
-				for (d in LEAF_STEPS) {
-					raw("execute if score #tf.leaves $T matches 1.. positioned $d if block ~ ~ ~ ${leavesTag(k)}[persistent=false] if entity $ANCHOR_NEAR run function ${fellLeaf(k).asId()}")
+			}
+			// At a felled log: its six neighbours, for leaves.
+			pack.define(leavesFrom(k)) {
+				for (d in LEAF_STEPS) raw("execute positioned $d run function ${tryLeaf(k).asId()}")
+			}
+			// At a block: a leaf of this tree is felled. A leaf's `distance` is how far its nearest log
+			// is; it is this tree's only when one of the felled logs is that close. A touching tree's
+			// leaves are nearer their own logs and stay.
+			pack.define(tryLeaf(k)) {
+				raw("execute unless score #tf.leaves $T matches 1.. run return 0")
+				for (dist in 1..7) {
+					raw("execute if block ~ ~ ~ ${leavesTag(k)}[persistent=false,distance=$dist] if entity @e[type=minecraft:marker,tag=$LOG_MARK,distance=..$dist.01,limit=1] run return run function ${fellLeaf(k).asId()}")
 				}
 			}
 			// At a leaf of the tree.
@@ -186,9 +207,7 @@ internal object TreeFarmRun {
 				raw("scoreboard players remove #tf.leaves $T 1")
 				raw("function ${mine.asId()} with $S")
 				raw("setblock ~ ~ ~ minecraft:air")
-				for (d in LEAF_STEPS) {
-					raw("execute if score #tf.leaves $T matches 1.. positioned $d if block ~ ~ ~ ${leavesTag(k)}[persistent=false] if entity $ANCHOR_NEAR run function ${fellLeaf(k).asId()}")
-				}
+				for (d in LEAF_STEPS) raw("execute positioned $d run function ${tryLeaf(k).asId()}")
 			}
 		}
 
@@ -208,6 +227,9 @@ internal object TreeFarmRun {
 			raw("scoreboard players set #tf.logs $T $MAX_LOGS")
 			raw("scoreboard players set #tf.leaves $T $MAX_LEAVES")
 			for (k in TreeKinds) raw("execute if score #tf.kind $T matches ${k.index} run function ${fellLog(k).asId()}")
+			// The leaves, only after every log is down, from the logs' own places.
+			for (k in TreeKinds) raw("execute if score #tf.kind $T matches ${k.index} as @e[type=minecraft:marker,tag=$LOG_MARK,distance=..$MARK_REACH] at @s run function ${leavesFrom(k).asId()}")
+			raw("kill @e[type=minecraft:marker,tag=$LOG_MARK,distance=..$MARK_REACH]")
 			raw("kill @e[type=minecraft:marker,tag=$ANCHOR,distance=..${CENTRE_UP + 1}]")
 			raw("data remove $S")
 			raw("data remove entity @s data.data.side")

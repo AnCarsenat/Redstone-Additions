@@ -32,11 +32,14 @@ import ra.core.Ns
  * - [Plain]: any item of that id (the category roots).
  * - [Exact]: `components` -- an EXACT `custom_data` match.
  * - [Partial]: `predicates` -- `custom_data` must CONTAIN the given data.
+ * - [Components]: `components` -- each named component exactly equal (an item recognised by its
+ *   model and rarity rather than its custom data, like the Master Capture Net).
  */
 internal sealed interface Match {
 	data object Plain : Match
 	data class Exact(val ra: NbtCompound) : Match
 	data class Partial(val ra: NbtCompound) : Match
+	data class Components(val values: Map<String, NbtTag>) : Match
 }
 
 /**
@@ -99,6 +102,7 @@ internal fun DataPack.unlock(u: Unlock) = advancement(u.path) {
 					Match.Plain -> Unit
 					is Match.Exact -> components { this["custom_data"] = CustomComponent(nbt { this["ra"] = m.ra }) }
 					is Match.Partial -> predicates { customData { this["ra"] = m.ra } }
+					is Match.Components -> components { for ((k, v) in m.values) this[k] = CustomComponent(v) }
 				}
 			}
 		}

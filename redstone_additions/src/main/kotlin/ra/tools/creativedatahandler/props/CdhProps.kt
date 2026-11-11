@@ -71,7 +71,8 @@ internal object CdhProps {
 			raw("\$execute unless data storage ra:cdh properties.\$(name) run return 0")
 			raw("scoreboard players set #cdh.type $T -1")
 			raw("\$execute if data storage ra:dh schema.\$(name).code store result score #cdh.type $T run data get storage ra:dh schema.\$(name).code")
-			for (code in listOf(ra.core.PropType.TEXT.code, ra.core.PropType.ITEM.code))
+			// A direction is a string too; a facing (a compound) and a colour (an int) are written plain.
+			for (code in listOf(ra.core.PropType.TEXT.code, ra.core.PropType.ITEM.code, ra.core.PropType.DIRECTION.code))
 				raw("execute if score #cdh.type $T matches $code run return run function ${rowQuoted.asId()} with storage ra:cdh row")
 			raw("execute unless score #cdh.type $T matches -1 run return run function ${rowPlain.asId()} with storage ra:cdh row")
 			raw("data remove storage ra:dh probe")

@@ -1,8 +1,9 @@
 # Farming
 
-Blocks that tend crops and animals. The **Sprinkler** waters the farmland around it from a fluid
-network, and with liquid experience makes the crops there grow about four times as fast. The
-**Breeder** feeds the animals in front of it.
+Blocks that tend crops, trees and animals. The **Sprinkler** waters the farmland around it from a
+fluid network, and with liquid experience makes the crops there grow about four times as fast. The
+**Breeder** feeds the animals in front of it. The **Tree Farm** plants saplings, grows them and fells
+the trees into a chest. The **Capture Net** catches a mob so you can carry it somewhere else.
 
 ## Getting them
 
@@ -10,8 +11,20 @@ network, and with liquid experience makes the crops there grow about four times 
 | --- | --- | --- |
 | Sprinkler | oxidized copper grate | ![Sprinkler recipe](images/recipes/ra_farming/sprinkler.png){ width="220" } |
 | Breeder | dispenser | ![Breeder recipe](images/recipes/ra_interactive/breeder.png){ width="220" } |
+| Tree Farm | bamboo mosaic | ![Tree Farm recipe](images/recipes/ra_farming/tree_farm.png){ width="220" } |
 
-Operators: `/function ra_farming:items/give_all`.
+| Item | Looks like | Recipe |
+| --- | --- | --- |
+| Capture Net | cobweb | ![Capture Net recipe](images/recipes/ra_farming/capture_net.png){ width="220" } |
+| Master Capture Net | cobweb, purple name | ![Master Capture Net recipe](images/recipes/ra_farming/master_capture_net.png){ width="220" } |
+
+The Master Capture Net is a Capture Net (the cobweb in the picture) and a nether star, anywhere in
+the crafting grid. The upgrade keeps whatever the net holds. A plain rabbit hide works in place of
+the Capture Net too, by design: the recipe cannot tell them apart, and the result is an empty
+Master Capture Net either way.
+
+Operators: `/function ra_farming:items/give_all` (every block and both nets),
+`/function ra_farming:capture_net/give`, `/function ra_farming:capture_net/give_master`.
 
 !!! note "The Breeder moved here"
     The Breeder was part of [Interactive Machines](interactive-machines.md) until v6.0.3. Only
@@ -24,6 +37,7 @@ Operators: `/function ra_farming:items/give_all`.
 | --- | --- | --- |
 | Sprinkler | no (redstone locks it) | Waters the farmland around it; with liquid experience, crops grow about 4x as fast |
 | Breeder | while powered | Feeds the animals in front of it from its inventory |
+| Tree Farm | no (redstone locks it) | Plants saplings beside it, grows them with bone meal, fells the tree into the container below |
 
 ## Sprinkler
 
@@ -97,6 +111,73 @@ experience boost is on, and its radius.
 | Frog | slime ball |
 | Armadillo | spider eye |
 
+## Tree Farm
+
+1. Place it next to a block of dirt or grass (podzol, moss, mud and the other dirt blocks work too),
+   with air above that block: that is where the tree grows. Any of its four sides will do; it uses
+   the first free one and keeps it until the tree is down.
+2. Put a chest, barrel or hopper **on top** of it and fill it with saplings, and bone meal if you
+   want the trees to grow fast.
+3. Put a chest or barrel **under** it for the wood.
+
+Once a second it looks at its spot:
+
+| The spot holds | It does |
+| --- | --- |
+| Nothing | Plants the first sapling it finds in the container above |
+| Its sapling | Waits for it to grow. With bone meal above and `bone_meal` on, uses one a second, as a player would: 45% of the time the sapling moves on a stage, and the second stage grows the tree |
+| The tree's log | Fells the tree into the container below |
+| Anything else | Forgets the spot and plants again where it can |
+
+**Felling** takes only the tree that grew there: starting from the log on the spot, the logs of
+that one wood connected to it, beside or above (never below the trunk's base), then that tree's
+leaves that were not placed by hand. A leaf is taken only when one of the felled logs is within its
+own distance to a log (the `distance` every leaf carries), so a tree of the same kind whose leaves
+touch keeps them. Everything must be within 12 blocks of a point 8 blocks above
+the spot, and at most 96 logs and 384 leaves are taken. Each block's drops, as if cut with an axe
+(logs, saplings, sticks, apples), go into the container below while it has three free slots; when
+it is fuller, they fall on the spot instead, so nothing is lost. With no container below it does
+not fell at all.
+
+**Trees it grows:** oak (one in ten a fancy oak), spruce, birch, jungle, acacia, cherry and poplar,
+each from a single sapling. Dark oak and pale oak need four saplings, mangroves grow on roots, and
+the giant spruce and jungle trees need four saplings, so it does not grow those.
+
+| Setting | Default | Meaning |
+| --- | --- | --- |
+| `bone_meal` | on | Use bone meal from the container above on the sapling |
+
+Change it with the [Data Handler](tools.md). The [Goggles](tools.md) show what it is doing and how
+many trees it has felled. Redstone locks it, as it does a hopper.
+
+!!! warning "Keep your own builds of the same wood out of reach"
+    A log is felled when it is of the tree's wood and touches the tree, within 12 blocks of it.
+    A fence of oak logs built against an oak tree would go with it; planks, stripped logs, wood
+    blocks and leaves you placed yourself never do. A bee nest an oak or birch grew on its own stays
+    where it was.
+
+## Capture Net
+
+Right-click a mob with a net in your main hand to catch it. The net now shows what it holds and
+glints. Right-click a block to let the mob out on that side of the block. The mob comes back as it
+was: its name, health, equipment, owner, baby or grown, and a villager's trades and level.
+
+| Net | Catches |
+| --- | --- |
+| Capture Net | Farm animals and small peaceful mobs: armadillo, axolotl, bat, bee, cat, chicken, cod, cow, fox, frog, glow squid, goat, mooshroom, ocelot, parrot, pig, pufferfish, rabbit, salmon, sheep, squid, tadpole, tropical fish, turtle, wolf |
+| Master Capture Net | Any mob but the wither, the ender dragon and players: villagers, horses, golems, hostile mobs, the warden |
+
+It refuses a mob that has something riding it, is invulnerable, or is a pet tamed by another
+player. A mob on a lead is let off it first, as when a leash breaks: the lead drops where the mob
+was, and if the mob was holding other mobs on leads, each of those drops its lead too. One lead per
+leash, and no leash is ever kept in the net. A net only lets out the types on its own list above. One net holds one mob, so nets do not stack. A mob that Peaceful
+removes (a zombie, a creeper) is not let out on Peaceful: it stays in the net.
+
+!!! tip "Chests, villagers and allays"
+    Right-clicking a chest opens it: sneak to let a mob out on one. Right-clicking a villager opens
+    its trades and catches it at the same time. An allay takes any item it is offered, a net
+    included, so the plain Capture Net does not catch allays.
+
 ---
 
 ## Advanced
@@ -115,8 +196,24 @@ experience boost is on, and its radius.
   as were really taken are made; what a spot with nothing to grow did not use is put back into
   the same network. A short take of water (the network changed since it was read) is put back and
   waters nothing.
-- **Physical blocks.** The Sprinkler is a waxed oxidized copper grate. The Breeder is a barrel
+- **Tree Farm cost.** It runs on the same once-a-second clock as the Sprinkler. With nothing to
+  plant a second is a redstone read and one item test; a growing sapling a few block tests. Felling
+  happens once per tree, in one go, and checks each log's 17 neighbours (beside it and one up) and
+  each leaf's 6.
+- **Capture Net data.** A caught mob is stored in the net's `custom_data`:
+  `{ra:{capture_net:{mob:{id:"minecraft:cow",type:{translate:"entity.minecraft.cow"},data:{...}}}}}`.
+  `data` is the mob's own entity data without its UUID, position, motion, brain and the like. The
+  mob is removed only after the net has been read back holding it, by moving it far below the world
+  and removing it there so nothing it drops is left. Letting it out summons the type, merges the
+  data in, and only then empties the net. The type id is checked (`ra_lib:safe/check`) before it
+  is used. A net is any rabbit hide wearing the cobweb model; the Master Capture Net is the one with
+  the epic rarity.
+- **Physical blocks.** The Sprinkler is a waxed oxidized copper grate. The Tree Farm is bamboo
+  mosaic. The Breeder is a barrel
   wearing a dispenser skin, so redstone never makes it throw its food.
 - **Ids.** The Breeder keeps the `ra_interactive` namespace it was created in: its functions
   (`ra_interactive:blocks/breeder/...`), its recipe and the entity tag `#ra_interactive:breedable`.
-  The crop list is the block tag `#ra_farming:sprinkler_crops`.
+  The crop list is the block tag `#ra_farming:sprinkler_crops`. The Tree Farm's saplings are the
+  item tag `#ra_farming:tree_farm/saplings`; the nets' mob lists are the entity type tags
+  `#ra_farming:capture_net/small`, `#ra_farming:capture_net/any` and
+  `#ra_farming:capture_net/hostile`.

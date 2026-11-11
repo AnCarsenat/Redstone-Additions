@@ -11,6 +11,8 @@ internal val automationTree = listOf(
 	egg("ra_automation", "uncrafter", "Uncrafter", Items.CHISELED_TUFF_BRICKS, Flag.TRUE),
 	egg("ra_automation", "experience_absorber", "Experience Absorber", Items.VERDANT_FROGLIGHT, Flag.TRUE),
 	egg("ra_automation", "item_pipe_splitter", "Item Pipe Splitter", Items.CHISELED_TUFF, Flag.TRUE),
+	egg("ra_automation", "fake_player", "Fake Player", Items.PLAYER_HEAD, Flag.TRUE),
+	egg("ra_automation", "conveyor", "Conveyor", Items.MAGENTA_GLAZED_TERRACOTTA, Flag.TRUE),
 	// Partial: a Pattern also carries its grid.
 	Unlock(
 		"ra_automation/get_pattern", "ra_automation", Items.FLOW_BANNER_PATTERN, "Pattern", "Obtain a Pattern.", "get_pattern",

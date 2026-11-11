@@ -32,6 +32,8 @@ import ra.tools.datahandler.DataHandlerRegistry
 import ra.tools.datahandler.props.DataHandlerTypes
 import ra.tools.datahandler.props.DataHandlerUnique
 import ra.tools.datahandler.props.DataHandlerVec3
+import ra.tools.datahandler.props.DataHandlerFacing
+import ra.tools.datahandler.props.DataHandlerColor
 import ra.tools.tool
 
 /**
@@ -94,6 +96,13 @@ object DataHandlerActions {
 			raw("execute if score #dh.stamp ${Obj.TEMP} = @s ${DataHandlerRegistry.MENU} run scoreboard players set #dh.fresh ${Obj.TEMP} 1")
 			raw("""execute if score #dh.code ${Obj.TEMP} matches 100.. if score #dh.fresh ${Obj.TEMP} matches 0 run tellraw @s [$PREFIX,{text:"That menu is out of date; here is the current one.",color:"gray"}]""")
 			executeRun("if score #dh.code ${Obj.TEMP} matches 100.. if score #dh.fresh ${Obj.TEMP} matches 0", refresh)
+			// The latest menu, but drawn for another block than the one selected now (the Creative Data
+			// Handler, which shares the selection, picked another since): every row button acts on the
+			// selected block, so none may run. This one check covers every action, immediate ones (a
+			// toggle, a nudge, a face, a colour) and questions alike (#167).
+			raw("execute if score #dh.code ${Obj.TEMP} matches 100.. if score #dh.fresh ${Obj.TEMP} matches 1 unless score @s ${DataHandlerRegistry.MENU_SEL} = @s $SEL run scoreboard players set #dh.fresh ${Obj.TEMP} 2")
+			raw("""execute if score #dh.fresh ${Obj.TEMP} matches 2 run tellraw @s [$PREFIX,{text:"You selected another block since; nothing was changed. Here is its menu.",color:"red"}]""")
+			executeRun("if score #dh.fresh ${Obj.TEMP} matches 2", refresh)
 
 			val main = "if score #dh.fresh ${Obj.TEMP} matches 1"
 			executeRun("$main if score #dh.code ${Obj.TEMP} matches ${DataHandlerProps.HAND_BASE}..${DataHandlerProps.CLEAR_BASE - 1}", DataHandlerProps.handAction)
@@ -176,6 +185,10 @@ object DataHandlerActions {
 
 			// A vec3: its editor (DataHandlerVec3), opened or closed. #dh.code is the row.
 			executeReturnRun("if score #dh.type ${Obj.TEMP} matches 6 if score #dh.decl ${Obj.TEMP} matches 1", DataHandlerVec3.openRow)
+			// A facing or a colour: the same. A direction has nothing to type: its buttons are on its row.
+			executeReturnRun("if score #dh.type ${Obj.TEMP} matches 8 if score #dh.decl ${Obj.TEMP} matches 1", DataHandlerFacing.openRow)
+			executeReturnRun("if score #dh.type ${Obj.TEMP} matches 9 if score #dh.decl ${Obj.TEMP} matches 1", DataHandlerColor.openRow)
+			executeReturnRun("if score #dh.type ${Obj.TEMP} matches 7", refresh)
 
 			// A compound has no editor: there is nothing safe to type one in with.
 			raw("""execute if score #dh.type ${Obj.TEMP} matches 5 run tellraw @s [$PREFIX,{text:"A compound cannot be edited here. Use the Creative Data Handler.",color:"red"}]""")
@@ -205,7 +218,9 @@ object DataHandlerActions {
 
 			// Asked about one block, answered while pointing at another: the value was meant for the
 			// first, under a property the second may not have or may keep to itself.
-			raw("execute store result score #dh.pmid ${Obj.TEMP} run data get storage ra:dh cur.mid")
+			// -1 first: a missing cur.mid must not leave a value from another player's call standing.
+			raw("scoreboard players set #dh.pmid ${Obj.TEMP} -1")
+			raw("execute if data storage ra:dh cur.mid store result score #dh.pmid ${Obj.TEMP} run data get storage ra:dh cur.mid")
 			raw("""execute unless score #dh.pmid ${Obj.TEMP} = @s $SEL run tellraw @s [$PREFIX,{text:"You selected another block since; the value was not applied.",color:"red"}]""")
 			raw("execute unless score #dh.pmid ${Obj.TEMP} = @s $SEL run return 0")
 
@@ -223,6 +238,8 @@ object DataHandlerActions {
 
 			// One axis of a vec3 (DataHandlerVec3), checked against its range as it is now.
 			executeReturnRun("if data storage ra:dh cur{kind:\"vec3\"}", DataHandlerVec3.applyTyped)
+			// One part of a facing (DataHandlerFacing), the same way.
+			executeReturnRun("if data storage ra:dh cur{kind:\"facing\"}", DataHandlerFacing.applyTyped)
 			// The number form's answer, checked against the bounds probe just read.
 			executeReturnRun("if data storage ra:dh cur{kind:\"number\"}", DataHandlerProps.writeNumber, "with storage ra:dh q")
 
@@ -235,6 +252,12 @@ object DataHandlerActions {
 			// An answer for one entry of a list (DataHandlerEntries).
 			executeReturnRun("if data storage ra:dh cur{kind:\"entry\"}", DataHandlerEntries.applyEntry)
 			executeReturnRun("if data storage ra:dh cur{kind:\"append\"}", DataHandlerEntries.applyEntry)
+			// A colour, parsed one character at a time (ColorParse), never pasted.
+			executeReturnRun("if data storage ra:dh cur{kind:\"color\"}", DataHandlerColor.applyTyped)
+			// A direction, facing or colour answered by another form (its type changed with a /reload):
+			// typed text is none of them.
+			raw("""execute if score #dh.type ${Obj.TEMP} matches 7..9 run tellraw @s [$PREFIX,{nbt:"q.name",storage:"ra:dh",color:"yellow"},{text:" is not edited this way any more; nothing was changed.",color:"red"}]""")
+			raw("execute if score #dh.type ${Obj.TEMP} matches 7..9 run return 0")
 			executeReturnRun("if score #dh.type ${Obj.TEMP} matches 1", DataHandlerTypes.writeTypedNumber, "with storage ra:dh q")
 			executeReturnRun("if score #dh.type ${Obj.TEMP} matches 2", DataHandlerTypes.writeTypedBool, "with storage ra:dh q")
 			executeReturnRun("if score #dh.type ${Obj.TEMP} matches 3", DataHandlerList.apply)

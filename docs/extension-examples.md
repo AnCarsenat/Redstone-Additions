@@ -80,7 +80,7 @@ function ra_myaddon:blocks/pulse_beacon/give
 
 ```mcfunction
 # /ra_myaddon:blocks/pulse_beacon/give
-give @s bat_spawn_egg[item_model="minecraft:lightning_rod",item_name="Pulse Beacon",custom_data={ra:{pulse_beacon:1b}},entity_data={id:"minecraft:bat",Tags:["ra.spawned","ra.place.pulse_beacon"],Silent:1b,NoAI:1b,Invulnerable:1b}]
+give @s bat_spawn_egg[item_model="minecraft:lightning_rod",item_name="Pulse Beacon",custom_data={ra:{pulse_beacon:1b}},entity_data={id:"minecraft:bat",Tags:["ra.spawned","ra.place.pulse_beacon"],Silent:1b,NoAI:1b,Invulnerable:1b,active_effects:[{id:"minecraft:invisibility",duration:-1,amplifier:0b,ambient:1b,show_particles:0b,show_icon:0b}]}]
 ```
 
 ### blocks/pulse_beacon/handle_placement.mcfunction
@@ -137,7 +137,7 @@ execute as @e[tag=ra.custom_block.pulse_beacon] at @s run fill ~-1 ~-1 ~-1 ~1 ~1
 ```mcfunction
 # /ra_myaddon:blocks/pulse_beacon/on_break
 kill @e[type=item,nbt={Item:{id:"minecraft:lightning_rod"}},distance=..2,limit=1,sort=nearest]
-summon item ~ ~ ~ {Item:{id:"minecraft:bat_spawn_egg",count:1,components:{"minecraft:item_model":"minecraft:lightning_rod","minecraft:item_name":"Pulse Beacon","minecraft:custom_data":{ra:{pulse_beacon:1b}},"minecraft:entity_data":{id:"minecraft:bat",Tags:["ra.spawned","ra.place.pulse_beacon"],Silent:1b,NoAI:1b,Invulnerable:1b}}}}
+summon item ~ ~ ~ {Item:{id:"minecraft:bat_spawn_egg",count:1,components:{"minecraft:item_model":"minecraft:lightning_rod","minecraft:item_name":"Pulse Beacon","minecraft:custom_data":{ra:{pulse_beacon:1b}},"minecraft:entity_data":{id:"minecraft:bat",Tags:["ra.spawned","ra.place.pulse_beacon"],Silent:1b,NoAI:1b,Invulnerable:1b,active_effects:[{id:"minecraft:invisibility",duration:-1,amplifier:0b,ambient:1b,show_particles:0b,show_icon:0b}]}}}}
 kill @s
 ```
 
@@ -169,7 +169,10 @@ kill @s
         "Tags": ["ra.spawned", "ra.place.pulse_beacon"],
         "Silent": true,
         "NoAI": true,
-        "Invulnerable": true
+        "Invulnerable": true,
+        "active_effects": [
+          { "id": "minecraft:invisibility", "duration": -1, "amplifier": 0, "ambient": true, "show_particles": false, "show_icon": false }
+        ]
       }
     }
   },

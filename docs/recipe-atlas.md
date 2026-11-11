@@ -1,6 +1,6 @@
 # Recipe Atlas
 
-Every recipe in the pack, in one place: 115 of them.
+Every recipe in the pack, in one place: 120 of them.
 
 !!! tip "Finding one"
     Use the search box with the item's name — every recipe below is indexed by
@@ -31,9 +31,11 @@ what the pack actually contains rather than what someone remembered to add.
 | [Book Upgrader](#enchant-crafting) | [Enchant Crafting](enchant-crafting.md) | Crafting table |
 | [Boxer](#storage) | [Storage](storage.md) | Crafting table |
 | [Breeder](#farming) | [Farming](farming.md) | Crafting table |
+| [Capture Net](#farming) | [Farming](farming.md) | Crafting table |
 | [Chunk Loader](#chunk-loader) | [Chunk Loader](chunk-loader.md) | Crafting table |
 | [Clipboard](#tools) | [Tools](tools.md) | Crafting table |
 | [Clock](#logic-gates) | [Logic Gates](logic-gates.md) | Crafting table |
+| [Conveyor](#automation) | [Automation](automation.md) | Crafting table |
 | [Copper Multiblock Base](#multiblocks) | [Multiblocks](multiblocks.md) | Crafting table |
 | [Copper Pipe](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
 | [Counter](#logic-gates) | [Logic Gates](logic-gates.md) | Crafting table |
@@ -58,6 +60,7 @@ what the pack actually contains rather than what someone remembered to add.
 | [EU Switch](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
 | [Experience Absorber](#automation) | [Automation](automation.md) | Crafting table |
 | [Extender](#logic-gates) | [Logic Gates](logic-gates.md) | Crafting table |
+| [Fake Player](#automation) | [Automation](automation.md) | Crafting table |
 | [Fan](#interactive-machines) | [Interactive Machines](interactive-machines.md) | Crafting table |
 | [Fluid Drain](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
 | [Gas Pump](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
@@ -90,6 +93,7 @@ what the pack actually contains rather than what someone remembered to add.
 | [Liquid Tank](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
 | [Liquid Valve](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
 | [Magic Crate](#interactive-machines) | [Interactive Machines](interactive-machines.md) | Crafting table |
+| [Master Capture Net](#farming) | [Farming](farming.md) | Crafting table |
 | [Message Block](#interactive-machines) | [Interactive Machines](interactive-machines.md) | Crafting table |
 | [Mineral Core](#not-crafted-won-on-an-enchanting-table) | [Infinite Generators](infinite-generators.md) | Enchanting table |
 | [Mineral Generator](#infinite-generators) | [Infinite Generators](infinite-generators.md) | Crafting table, shapeless |
@@ -124,6 +128,7 @@ what the pack actually contains rather than what someone remembered to add.
 | [Text Screen](#displays) | [Displays](displays.md) | Crafting table |
 | [Thruster Kit](#jetpacks) | [Jetpacks](jetpacks.md) | Crafting table |
 | [Trash Can](#interactive-machines) | [Interactive Machines](interactive-machines.md) | Crafting table |
+| [Tree Farm](#farming) | [Farming](farming.md) | Crafting table |
 | [Unboxer](#storage) | [Storage](storage.md) | Crafting table |
 | [Uncrafter](#automation) | [Automation](automation.md) | Crafting table |
 | [UNI Gate](#logic-gates) | [Logic Gates](logic-gates.md) | Crafting table |
@@ -151,8 +156,10 @@ Module page: [Automation](automation.md) — give everything: `/function ra_auto
 
 | Item | Recipe | Station | Namespace id |
 | ---- | ------ | ------- | ------------ |
+| **Conveyor** | ![Conveyor recipe](images/recipes/ra_automation/conveyor.png){ width="220" } | Crafting table | `ra_automation:conveyor` |
 | **Crafter Controller** | ![Crafter Controller recipe](images/recipes/ra_automation/crafter_controller.png){ width="220" } | Crafting table | `ra_automation:crafter_controller` |
 | **Experience Absorber** | ![Experience Absorber recipe](images/recipes/ra_automation/experience_absorber.png){ width="220" } | Crafting table | `ra_automation:experience_absorber` |
+| **Fake Player** | ![Fake Player recipe](images/recipes/ra_automation/fake_player.png){ width="220" } | Crafting table | `ra_automation:fake_player` |
 | **Item Pipe Splitter** | ![Item Pipe Splitter recipe](images/recipes/ra_automation/item_pipe_splitter.png){ width="220" } | Crafting table | `ra_automation:item_pipe_splitter` |
 | **Pattern** | ![Pattern recipe](images/recipes/ra_automation/pattern.png){ width="220" } | Crafting table | `ra_automation:pattern` |
 | **Recipe Pattern** | ![Recipe Pattern recipe](images/recipes/ra_automation/recipe_pattern.png){ width="220" } | Crafting table | `ra_automation:recipe_pattern` |
@@ -206,7 +213,10 @@ Module page: [Farming](farming.md) — give everything: `/function ra_farming:it
 | Item | Recipe | Station | Namespace id |
 | ---- | ------ | ------- | ------------ |
 | **Breeder** | ![Breeder recipe](images/recipes/ra_interactive/breeder.png){ width="220" } | Crafting table | `ra_interactive:breeder` |
+| **Capture Net** | ![Capture Net recipe](images/recipes/ra_farming/capture_net.png){ width="220" } | Crafting table | `ra_farming:capture_net` |
+| **Master Capture Net** | ![Master Capture Net recipe](images/recipes/ra_farming/master_capture_net.png){ width="220" } | Crafting table | `ra_farming:master_capture_net` |
 | **Sprinkler** | ![Sprinkler recipe](images/recipes/ra_farming/sprinkler.png){ width="220" } | Crafting table | `ra_farming:sprinkler` |
+| **Tree Farm** | ![Tree Farm recipe](images/recipes/ra_farming/tree_farm.png){ width="220" } | Crafting table | `ra_farming:tree_farm` |
 
 ## Infinite Generators
 

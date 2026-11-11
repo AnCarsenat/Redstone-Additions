@@ -5,7 +5,7 @@
 <h1 align="center">Redstone Additions</h1>
 
 <p align="center">
-  <strong>96 custom blocks. 9 tools. 115 recipes. 2 jetpacks and 3 upgrade kits. Vanilla datapack for Minecraft 26.3.</strong>
+  <strong>99 custom blocks. 9 tools. 120 recipes. 2 jetpacks and 3 upgrade kits. Vanilla datapack for Minecraft 26.3.</strong>
 </p>
 
 <p align="center">
@@ -16,9 +16,9 @@
 <p align="center">
   <img src="https://img.shields.io/badge/Minecraft-26.3-2EA44F" alt="Minecraft 26.3">
   <img src="https://img.shields.io/badge/Version-v6.0.3-blue" alt="Version v6.0.3">
-  <img src="https://img.shields.io/badge/Blocks-96-red" alt="96 blocks">
+  <img src="https://img.shields.io/badge/Blocks-99-red" alt="99 blocks">
   <img src="https://img.shields.io/badge/Tools-9-lightgrey" alt="9 tools">
-  <img src="https://img.shields.io/badge/Recipes-115-8A2BE2" alt="115 recipes">
+  <img src="https://img.shields.io/badge/Recipes-120-8A2BE2" alt="120 recipes">
 </p>
 
 <p align="center">
@@ -218,22 +218,28 @@ netherrack or poppies on an enchanting table.
 - Item Hologram — shows the item inside it, turning above the block, with its name
 - Text Screen — glowing nixie-style text: the redstone level picks which item's name it shows
 
-### Automation (4)
+### Automation (6)
 - Crafter Controller — fires the crafter next to it once it holds what its Pattern says; with a Recipe Pattern it fills the crafter itself from a container
 - Uncrafter — takes items back apart into their ingredients, for EU
 - Experience Absorber — collects experience orbs into a fluid network
 - Item Pipe Splitter — shares the items of the container above it between the containers around it
+- Fake Player — keeps a mob farm or a spawner beside it running with no player around, for EU per mob
+- Conveyor — a slab that carries items, mobs and players the way its arrow points
 
 ### Security (1)
 - Keypad — a crafter whose slots are the code; the right code gives a redstone pulse
 
-### Farming (2)
+### Farming (3)
 - Sprinkler — waters the farmland around it; with liquid experience, crops grow 4x as fast
 - Breeder
+- Tree Farm — plants saplings beside it, grows them with bone meal and fells the tree into a chest
+
+Items: Capture Net (carries an animal) and Master Capture Net (carries any mob but bosses)
+
 ### Railworks (1)
 - Route Rail — under a rail junction: switches it for each cart by its name, tag, cargo or rider
 
-And two carts: the **Ram Upgrade** (a minecart that hurts what it runs into) and the **Rail Builder** (a hopper minecart that digs a tunnel and lays a straight track by itself).
+Items: Ram Upgrade (a minecart that hurts what it runs into) and Rail Builder (a hopper minecart that digs a tunnel and lays a straight track by itself)
 
 ### Audio (3)
 - Alarm — sounds one of seven alarms while powered, heard within its range
@@ -390,9 +396,9 @@ Starter command:
 | `/function ra_enchanting:items/give_all` | Disenchanter, Book Upgrader and Book Printer |
 | `/function ra_ender:items/give_all` | Ender vaults, Teleport Anchor, Anchor Terminal and Anchor Tablet |
 | `/function ra_displays:items/give_all` | Display blocks |
-| `/function ra_automation:items/give_all` | Crafter Controller, a Pattern, a Recipe Pattern, Uncrafter, Experience Absorber and Item Pipe Splitter |
+| `/function ra_automation:items/give_all` | Crafter Controller, a Pattern, a Recipe Pattern, Uncrafter, Experience Absorber, Item Pipe Splitter, Fake Player and Conveyor |
 | `/function ra_security:items/give_all` | Keypad |
-| `/function ra_farming:items/give_all` | Sprinkler, Breeder |
+| `/function ra_farming:items/give_all` | Sprinkler, Breeder, Tree Farm, a Capture Net and a Master Capture Net |
 | `/function ra_railworks:items/give_all` | Route Rail, Ram Upgrade and Rail Builder |
 | `/function ra_audio:items/give_all` | Alarm, Doorbell and Jukebox Controller |
 | `/function ra:tools/wrench/give` | Wrench |

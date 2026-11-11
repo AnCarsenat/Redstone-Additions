@@ -466,6 +466,8 @@ This page mirrors key datapack milestones from the main project changelog.
   Menus, readouts you open yourself (Goggles, Multimeter, Data Handler, Pager, wrench menus),
   "Received ..." lines, load messages and the reason an action was refused always show.
 
+- **Text Screen**: no black panel behind the text any more; the text display's own background
+  setting covers that. Screens placed earlier lose theirs on their next update.
 - **Recipes rebalanced.** Every recipe now asks for things you can get in survival at the point
   in the game where the block is worth having, is laid out like a vanilla recipe, and uses
   ingredients that match what the block does. No two recipes share a grid, with each other or
@@ -579,6 +581,7 @@ This page mirrors key datapack milestones from the main project changelog.
 
 ### Fixed
 
+- **Conveyor**: breaking it left its arrow display behind; the arrow is removed with it now.
 - Items put into a container by any block (Uncrafter, Item Pipe Splitter, Storage Box, Unboxer, Spout,
   Blast Forge output and others) were destroyed: the shared insert function failed to load in 26.3
   because one of its lines ended in `if function`, which the game does not accept.

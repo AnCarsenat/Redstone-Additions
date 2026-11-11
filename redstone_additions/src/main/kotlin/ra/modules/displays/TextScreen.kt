@@ -83,6 +83,8 @@ object TextScreen : DisplayBlock {
 	private val draw = block.fn("draw")
 	private val summon = block.fn("summon")
 	private val restyle = block.fn("restyle")
+	/** In the migrations namespace: it names a retired display. */
+	private val dropPanel = ra.core.ref(ra.core.Ns.MIGRATIONS, "dev-6.0.3/text_screen_panel")
 	override val poll = block.fn("poll")
 
 	private const val TAG = "ra.displays.screen"
@@ -97,7 +99,7 @@ object TextScreen : DisplayBlock {
 	private val style = DisplayStyle(
 		block, defaultFacing = "south", directions = listOf("up", "left", "down", "right"),
 		colors = listOf(ColorProp("color", "Colour", AMBER, listOf(AMBER, "red", "gold", "yellow", "green", "aqua", "blue", "light_purple", "white"))),
-		displays = listOf(PANEL, TEXT), barrel = true, backgrounds = listOf(TEXT),
+		displays = listOf(TEXT), barrel = true, backgrounds = listOf(TEXT),
 	)
 
 	/** The text's roll for each direction, counter-clockwise. */
@@ -149,7 +151,6 @@ object TextScreen : DisplayBlock {
 			}
 		}
 		with(style) { registerStyle(restyle) }
-		val panelForm = defineForms(block, "panel", PANEL, mapOf("" to Form(Vec(-0.4375, -0.4375, 0.5), Vec(0.875, 0.875, 0.03125), FACE)))
 		// A text display grows up from its origin: each form is moved down by half a line (10 px *
 		// 0.025 * scale) to sit in the middle of the face; a name wraps at `line_width` (75 px).
 		val nameForm = defineForms(block, "name", TEXT, ROLLS.mapValues { (_, r) -> Form(Vec(0.0, -0.056, 0.54), Vec(0.45, 0.45, 0.45), FACE, r, pivot = HALF_LINE) }, tilt = true)
@@ -159,7 +160,8 @@ object TextScreen : DisplayBlock {
 		pack.define(show) { show() }
 		pack.define(draw) { draw(nameForm, digitForm) }
 		pack.define(summon) { summon() }
-		pack.define(restyle) { restyle(panelForm) }
+		pack.define(dropPanel) { raw("kill @e[type=minecraft:block_display,tag=$PANEL_TAG,distance=..0.01]") }
+		pack.define(restyle) { restyle() }
 		pack.define(poll) { poll() }
 
 		pack.define(block.goggles) {
@@ -228,32 +230,31 @@ object TextScreen : DisplayBlock {
 	}
 
 	/** Everything from the properties, both displays put back if one is missing, then drawn again. As the marker, at it. */
-	private fun Function.restyle(panelForm: FunctionArgument) {
+	private fun Function.restyle() {
 		function(style.defaults)
-		executeRun("unless entity $PANEL", summon)
 		executeRun("unless entity $TEXT", summon)
 		raw("data modify entity @s data.data.style set from entity @s data.properties")
 
 		function(style.turn)
 		applyColor("color", AMBER)
 		function(style.read)
-		function(panelForm)
 		raw("data remove entity @s data.data.shown")
 		function(show)
 	}
 
-	/** Both displays, new and empty, and nothing remembered as drawn; restyle shapes them. As the marker, at it. */
+	/** The text display, new and empty, and nothing remembered as drawn; restyle shapes them. As the marker, at it. */
 	private fun Function.summon() {
 		raw("kill @e[tag=$TAG,distance=..0.01]")
 		val zero = "transformation:{left_rotation:[0f,0f,0f,1f],right_rotation:[0f,0f,0f,1f],translation:[0f,0f,0f],scale:[0f,0f,0f]}"
-		summonDisplay("block_display", listOf(TAG, PANEL_TAG), """block_state:{id:"minecraft:black_concrete"},$zero""")
 		summonDisplay("text_display", listOf(TAG, TEXT_TAG), """text:"",background:0,shadow:1b,line_width:75,alignment:"center",$zero""")
 		raw("data remove entity @s data.data.shown")
 	}
 
 	/** Once a second, as the marker at its block: a display put back, a property change drawn, the barrel looked at. */
 	private fun Function.poll() {
-		executeReturnRun("unless entity $PANEL", restyle)
+		// Placed by a 6.0.3 dev build, which put a black panel behind the text: removed. Displays are
+		// unreleased, so no versioned migration step can reach these.
+		raw("execute if entity $PANEL run function ${dropPanel.asId()}")
 		executeReturnRun("unless entity $TEXT", restyle)
 		// Placed before the display settings existed: restyle fills the defaults (scale, colours).
 		executeReturnRun("unless data entity @s data.properties.scale", restyle)

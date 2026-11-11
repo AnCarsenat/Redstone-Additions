@@ -146,7 +146,8 @@ object Conveyor {
 		}
 
 		val onBreak = pack.blockOnBreak(block, drop = { dropItem(item) }, sound = STONE_BREAK_SOUND, cloud = true, cleanup = {
-			raw("execute align xyz positioned ~0.5 ~0.5 ~0.5 run kill @e[type=minecraft:block_display,tag=$ARROW,distance=..0.6]")
+			// The arrow stands on the block's corner (summoned `align xyz`), 0.87 from its centre.
+			raw("execute align xyz run kill @e[type=minecraft:block_display,tag=$ARROW,distance=..0.01]")
 		})
 
 		pack.define(poll) {

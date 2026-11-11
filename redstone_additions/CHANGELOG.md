@@ -4,6 +4,31 @@
 
 ### Added
 
+- **Ram Upgrade** (Railworks). An item fitted onto a minecart: sneak and right-click the cart with
+  it, or right-click while riding a plain minecart (a chest or hopper minecart opens its inventory instead, so
+  it does not take one). While the cart goes faster than 3 blocks a second, living things in the
+  block ahead of it are hurt, more the faster it goes (3 to 7 damage, 1.5 to 3.5 hearts, up to the
+  vanilla top speed, more on worlds with faster carts), with its rider as the attacker. Its own
+  riders, players riding any minecart, and anything that is not a living mob (vehicles, armor
+  stands, frames, paintings, displays) are left alone, and a victim is hit again
+  only once its hurt animation is over. Shift+RMB with the Wrench takes it off and gives it back;
+  breaking the cart drops it. Crafted from four iron ingots, an iron block and a piston.
+- **Rail Builder** (Railworks). A hopper minecart that lays a straight track by itself. Place it
+  on a straight rail, load it with rails, a filler block (cobblestone, stone, deepslate, dirt,
+  netherrack and other blocks that stay put) and redstone torches, and push it. It then builds
+  one block every 6 ticks in the direction it was pushed: digs a tunnel two blocks high as a
+  diamond pickaxe would (what it digs goes into its inventory; what does not fit stays on the
+  track), fills the floor under the track where there is air, liquid, grass or snow, and lays a
+  rail. Every 8 blocks it hangs a redstone torch on the tunnel wall; with powered rails in its
+  inventory, the rail under that torch is a powered rail, powered by it. It never breaks bedrock,
+  barriers, portals, end portal frames, reinforced deepslate, command blocks, chests or any other
+  block entity, or a Redstone Additions block. When it cannot go on (out of rails or filler, a
+  block it may not break, liquid ahead, the void, an unloaded chunk, a track that is not straight)
+  it says why and rolls back along its track to where it started. It breaks every other block in
+  its path, player builds included, and it does not stop at the world border (a data pack cannot
+  read it). Breaking it drops its contents
+  and the Rail Builder. Crafted from two rails, a diamond pickaxe, two dispensers and a hopper
+  minecart.
 - **Counter** (Logic Gates). Counts the times its input turns on and fires when the count
   reaches its *target* (1 to 1000, default 10). By default it then starts again from 0 and gives
   a 2-tick pulse, so it divides a pulse train; with *hold* on (Shift+RMB with the Wrench, or the
@@ -368,18 +393,8 @@
   and pumpkin stems, torchflower crops and sweet berry bushes. Redstone locks it. The Goggles show
   its state, the watering, the experience boost and the radius. Crafted from a copper grate, four
   copper ingots and a bucket.
-- **Tree Farm** (Farming). Plants a sapling on the first free block beside it that stands on dirt
-  or grass, and fells the tree once it has grown: the logs of that wood connected to the trunk (and
-  never below its base), then the tree's own leaves that were not placed by hand and are no further
-  from one of those logs than their own distance to a log says, within 12 blocks of the tree and at
-  most 96 logs and 384 leaves. A tree of the same kind touching it keeps its own leaves. The drops, as if cut with an axe (logs,
-  saplings, sticks, apples), go into the container below it, or fall on the spot when it has fewer
-  than three free slots; saplings and bone meal come from the container above. With its
-  *bone_meal* property on (the default) it uses one bone meal a second on the sapling, as a player
-  would. Grows oak, spruce, birch, jungle, acacia, cherry and poplar from single saplings. Redstone
-  locks it. Runs once a second on the network machines' clock. The Goggles show what it is doing
-  and how many trees it has felled. Crafted from six logs, an iron axe, a hopper and redstone.
-- **Capture Net** and **Master Capture Net** (Farming). Right-click a mob to catch it into the net
+- **Capture Net** and **Master Capture Net** (Farming). Both look like a bundle.
+  Right-click a mob to catch it into the net
   and carry it; right-click a block to let it out there. The mob keeps its name, health, equipment,
   owner and, for a villager, its trades; the net shows what it holds. The Capture Net catches farm
   animals and other small peaceful mobs; the Master Capture Net, a Capture Net upgraded with a
@@ -577,6 +592,18 @@
 
 ### For contributors
 
+- **Cart tracker** (`ra/modules/railworks/carts/CartTracker.kt`). A minecart has no death event,
+  so a cart that carries something of ours has a marker that follows it every tick, linked by a
+  number in `ra.rw.id`. A tracker its cart did not stamp this tick (`ra.rw.seen`) looks for the
+  cart item the game dropped at the cart's last position (`Age:0s`, within a block, each item
+  claimed once, by kind): found, it drops the Ram Upgrade, or turns the vanilla hopper minecart item
+  into a Rail Builder; not found (`/kill`, creative, an unloaded
+  chunk), it removes itself and the cart makes a new one when it is back. Only carts tagged
+  `ra.rw.tracked` are looked at. `Ra.wrenchEntityHooks` lets a part handle a Wrench Shift+RMB on an
+  entity before the block ray (`ra:tools/wrench/entity_hooks`).
+- **Minecart speed upgrade design** (`planning/design/minecart-speed-upgrade.md`): what a data
+  pack can do about minecart speed in 26.3, the options with their costs, and how it relates to the
+  Speed Setter note (#97). Not built; the maintainer decides.
 - **Property types `direction`, `facing` and `color`** (`ra/core/DirectionProps.kt`,
   `ra/core/ColorProps.kt`), declared like `vec3`: `direction(name, default)`,
   `facing(name, FacingSpec(...))` (yaw and pitch in degrees, `LOCAL` or `WORLD` frame), and

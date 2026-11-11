@@ -102,6 +102,7 @@ one page, A to Z and by module.
 | ra_automation:item_pipe_splitter     | Item Pipe Splitter        | ![Item Pipe Splitter recipe](images/recipes/ra_automation/item_pipe_splitter.png){ width="220" } |
 | ra_security:keypad                   | Keypad                    | ![Keypad recipe](images/recipes/ra_security/keypad.png){ width="220" } |
 | ra_farming:sprinkler                 | Sprinkler                 | ![Sprinkler recipe](images/recipes/ra_farming/sprinkler.png){ width="220" } |
+| ra_farming:tree_farm                 | Tree Farm                 | ![Tree Farm recipe](images/recipes/ra_farming/tree_farm.png){ width="220" } |
 | ra_railworks:route_rail              | Route Rail                | ![Route Rail recipe](images/recipes/ra_railworks/route_rail.png){ width="220" } |
 | ra_audio:alarm                       | Alarm                     | ![Alarm recipe](images/recipes/ra_audio/alarm.png){ width="220" } |
 | ra_audio:doorbell                    | Doorbell                  | ![Doorbell recipe](images/recipes/ra_audio/doorbell.png){ width="220" } |
@@ -119,9 +120,11 @@ one page, A to Z and by module.
 | ra_interactive:enchanted_coal_block | Enchanted Coal Block | Nine Enchanted Coal |
 | ra_enchanting:schematic | Schematic | Throw an enchanted book on a Book Printer (2%); not craftable |
 | ra_automation:pattern | Pattern | ![Pattern recipe](images/recipes/ra_automation/pattern.png){ width="220" } |
+| ra_farming:capture_net | Capture Net | ![Capture Net recipe](images/recipes/ra_farming/capture_net.png){ width="220" } |
+| ra_farming:master_capture_net | Master Capture Net | ![Master Capture Net recipe](images/recipes/ra_farming/master_capture_net.png){ width="220" } |
 | ra_automation:recipe_pattern | Recipe Pattern | ![Recipe Pattern recipe](images/recipes/ra_automation/recipe_pattern.png){ width="220" } |
 
-The Generator Casing and the Cores cannot be placed as blocks. A Schematic is paper carrying a book's enchantments in `custom_data` (`{ra:{schematic:1b,enchantments:{...}}}`), right-clicked into a [Book Printer](enchant-crafting.md#setting-the-schematic) to set what it prints. A Pattern is paper carrying a 3×3 grid of item ids (`{ra:{pattern:{slots:[<9 ids or "">]}}}`, see [Automation](automation.md#pattern-data)); a Recipe Pattern is the same with `recipe:1b` beside `slots`.
+The Generator Casing and the Cores cannot be placed as blocks. A Schematic is paper carrying a book's enchantments in `custom_data` (`{ra:{schematic:1b,enchantments:{...}}}`), right-clicked into a [Book Printer](enchant-crafting.md#setting-the-schematic) to set what it prints. A Pattern is paper carrying a 3×3 grid of item ids (`{ra:{pattern:{slots:[<9 ids or "">]}}}`, see [Automation](automation.md#pattern-data)); a Recipe Pattern is the same with `recipe:1b` beside `slots`. A Capture Net is a rabbit hide wearing the cobweb model; it carries a caught mob in `custom_data` (`{ra:{capture_net:{mob:{id,type,data}}}}`, see [Farming](farming.md#capture-net)). The Master Capture Net is a Capture Net upgraded with a nether star.
 | ra_jetpacks:iron_jetpack_kit | Iron Jetpack Kit | Four iron ingots around a blaze rod and a redstone block, two fire charges below |
 | ra_jetpacks:infinite_jetpack_kit | Infinite Iron Jetpack Kit | Sacrifice an Iron Jetpack Kit on an enchanting table (1%) |
 

@@ -5,7 +5,7 @@
 <h1 align="center">Redstone Additions</h1>
 
 <p align="center">
-  <strong>96 custom blocks. 9 tools. 113 recipes. 2 jetpacks and 3 upgrade kits. Vanilla datapack for Minecraft 26.3.</strong>
+  <strong>97 custom blocks. 9 tools. 116 recipes. 2 jetpacks and 3 upgrade kits. Vanilla datapack for Minecraft 26.3.</strong>
 </p>
 
 <p align="center">
@@ -16,9 +16,9 @@
 <p align="center">
   <img src="https://img.shields.io/badge/Minecraft-26.3-2EA44F" alt="Minecraft 26.3">
   <img src="https://img.shields.io/badge/Version-v6.0.3-blue" alt="Version v6.0.3">
-  <img src="https://img.shields.io/badge/Blocks-96-red" alt="96 blocks">
+  <img src="https://img.shields.io/badge/Blocks-97-red" alt="97 blocks">
   <img src="https://img.shields.io/badge/Tools-9-lightgrey" alt="9 tools">
-  <img src="https://img.shields.io/badge/Recipes-113-8A2BE2" alt="113 recipes">
+  <img src="https://img.shields.io/badge/Recipes-116-8A2BE2" alt="116 recipes">
 </p>
 
 <p align="center">
@@ -227,9 +227,13 @@ netherrack or poppies on an enchanting table.
 ### Security (1)
 - Keypad — a crafter whose slots are the code; the right code gives a redstone pulse
 
-### Farming (2)
+### Farming (3)
 - Sprinkler — waters the farmland around it; with liquid experience, crops grow 4x as fast
 - Breeder
+- Tree Farm — plants saplings beside it, grows them with bone meal and fells the tree into a chest
+
+Items: Capture Net (carries an animal) and Master Capture Net (carries any mob but bosses)
+
 ### Railworks (1)
 - Route Rail — under a rail junction: switches it for each cart by its name, tag, cargo or rider
 
@@ -390,7 +394,7 @@ Starter command:
 | `/function ra_displays:items/give_all` | Display blocks |
 | `/function ra_automation:items/give_all` | Crafter Controller, a Pattern, a Recipe Pattern, Uncrafter, Experience Absorber and Item Pipe Splitter |
 | `/function ra_security:items/give_all` | Keypad |
-| `/function ra_farming:items/give_all` | Sprinkler, Breeder |
+| `/function ra_farming:items/give_all` | Sprinkler, Breeder, Tree Farm, a Capture Net and a Master Capture Net |
 | `/function ra_railworks:items/give_all` | Route Rail |
 | `/function ra_audio:items/give_all` | Alarm, Doorbell and Jukebox Controller |
 | `/function ra:tools/wrench/give` | Wrench |

@@ -1,6 +1,6 @@
 # Recipe Atlas
 
-Every recipe in the pack, in one place: 113 of them.
+Every recipe in the pack, in one place: 116 of them.
 
 !!! tip "Finding one"
     Use the search box with the item's name — every recipe below is indexed by
@@ -31,6 +31,7 @@ what the pack actually contains rather than what someone remembered to add.
 | [Book Upgrader](#enchant-crafting) | [Enchant Crafting](enchant-crafting.md) | Crafting table |
 | [Boxer](#storage) | [Storage](storage.md) | Crafting table |
 | [Breeder](#farming) | [Farming](farming.md) | Crafting table |
+| [Capture Net](#farming) | [Farming](farming.md) | Crafting table |
 | [Chunk Loader](#chunk-loader) | [Chunk Loader](chunk-loader.md) | Crafting table |
 | [Clipboard](#tools) | [Tools](tools.md) | Crafting table |
 | [Clock](#logic-gates) | [Logic Gates](logic-gates.md) | Crafting table |
@@ -90,6 +91,7 @@ what the pack actually contains rather than what someone remembered to add.
 | [Liquid Tank](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
 | [Liquid Valve](#transport-networks) | [Transport Networks](transport-networks.md) | Crafting table |
 | [Magic Crate](#interactive-machines) | [Interactive Machines](interactive-machines.md) | Crafting table |
+| [Master Capture Net](#farming) | [Farming](farming.md) | Crafting table |
 | [Message Block](#interactive-machines) | [Interactive Machines](interactive-machines.md) | Crafting table |
 | [Mineral Core](#not-crafted-won-on-an-enchanting-table) | [Infinite Generators](infinite-generators.md) | Enchanting table |
 | [Mineral Generator](#infinite-generators) | [Infinite Generators](infinite-generators.md) | Crafting table, shapeless |
@@ -122,6 +124,7 @@ what the pack actually contains rather than what someone remembered to add.
 | [Text Screen](#displays) | [Displays](displays.md) | Crafting table |
 | [Thruster Kit](#jetpacks) | [Jetpacks](jetpacks.md) | Crafting table |
 | [Trash Can](#interactive-machines) | [Interactive Machines](interactive-machines.md) | Crafting table |
+| [Tree Farm](#farming) | [Farming](farming.md) | Crafting table |
 | [Unboxer](#storage) | [Storage](storage.md) | Crafting table |
 | [Uncrafter](#automation) | [Automation](automation.md) | Crafting table |
 | [UNI Gate](#logic-gates) | [Logic Gates](logic-gates.md) | Crafting table |
@@ -204,7 +207,10 @@ Module page: [Farming](farming.md) — give everything: `/function ra_farming:it
 | Item | Recipe | Station | Namespace id |
 | ---- | ------ | ------- | ------------ |
 | **Breeder** | ![Breeder recipe](images/recipes/ra_interactive/breeder.png){ width="220" } | Crafting table | `ra_interactive:breeder` |
+| **Capture Net** | ![Capture Net recipe](images/recipes/ra_farming/capture_net.png){ width="220" } | Crafting table | `ra_farming:capture_net` |
+| **Master Capture Net** | ![Master Capture Net recipe](images/recipes/ra_farming/master_capture_net.png){ width="220" } | Crafting table | `ra_farming:master_capture_net` |
 | **Sprinkler** | ![Sprinkler recipe](images/recipes/ra_farming/sprinkler.png){ width="220" } | Crafting table | `ra_farming:sprinkler` |
+| **Tree Farm** | ![Tree Farm recipe](images/recipes/ra_farming/tree_farm.png){ width="220" } | Crafting table | `ra_farming:tree_farm` |
 
 ## Infinite Generators
 

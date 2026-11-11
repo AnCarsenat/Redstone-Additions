@@ -37,7 +37,7 @@ described in [Contributing Guidelines](contributing-guidelines.md#installing-int
 
 ## Modules
 
-**Looking for a recipe? [The Recipe Atlas](recipe-atlas.md) has all 117 of them on one
+**Looking for a recipe? [The Recipe Atlas](recipe-atlas.md) has all 119 of them on one
 page**, listed A to Z and grouped by module — plus the five items that have no recipe
 and are instead gambled for on an [enchanting table](enchant-crafting.md). This table
 is the shortcut: one sample per module, and where to read about it.
@@ -60,13 +60,13 @@ is the shortcut: one sample per module, and where to read about it.
 | [Automation](automation.md) | Crafter Controller, the Pattern and Recipe Pattern items, Uncrafter, Experience Absorber, Item Pipe Splitter, Fake Player and Conveyor | ![Crafter Controller recipe](images/recipes/ra_automation/crafter_controller.png){ width="220" } |
 | [Security](security.md) | Keypad, a crafter whose slots are the code | ![Keypad recipe](images/recipes/ra_security/keypad.png){ width="220" } |
 | [Farming](farming.md) | Sprinkler, Breeder and the Capture Nets: crops, animals, carrying mobs | ![Sprinkler recipe](images/recipes/ra_farming/sprinkler.png){ width="220" } |
-| [Railworks](railworks.md) | Route Rail, a junction that sends each cart its own way | ![Route Rail recipe](images/recipes/ra_railworks/route_rail.png){ width="220" } |
+| [Railworks](railworks.md) | Route Rail, a junction that sends each cart its own way; the Ram Upgrade and the Rail Builder cart | ![Route Rail recipe](images/recipes/ra_railworks/route_rail.png){ width="220" } |
 | [Audio](audio.md) | Alarm, Doorbell and Jukebox Controller | ![Alarm recipe](images/recipes/ra_audio/alarm.png){ width="220" } |
 
 Current pack totals:
 
 - 98 placeable custom blocks
-- 117 recipes, all of them in the [Recipe Atlas](recipe-atlas.md)
+- 119 recipes, all of them in the [Recipe Atlas](recipe-atlas.md)
 - 9 tools (Wrench, Goggles, Data Handler, Creative Data Handler, Clipboard,
   Multimeter, Redstone Remote, Pager, Anchor Tablet)
 
@@ -90,7 +90,7 @@ Current pack totals:
 | `/function ra_automation:items/give_all` | Crafter Controller, a Pattern, a Recipe Pattern, Uncrafter, Experience Absorber, Item Pipe Splitter, Fake Player and Conveyor |
 | `/function ra_security:items/give_all` | Keypad |
 | `/function ra_farming:items/give_all` | Sprinkler, Breeder, a Capture Net and a Master Capture Net |
-| `/function ra_railworks:items/give_all` | Route Rail |
+| `/function ra_railworks:items/give_all` | Route Rail, Ram Upgrade and Rail Builder |
 | `/function ra_audio:items/give_all` | Alarm, Doorbell and Jukebox Controller |
 | `/function ra:uninstall` | Opens uninstall confirmation dialog |
 
